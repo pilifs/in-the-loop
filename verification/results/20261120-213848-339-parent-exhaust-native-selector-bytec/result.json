@@ -1,0 +1,463 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-213848-339-parent-exhaust-native-selector-bytec",
+  "title": "339 parent exhaust native selector bytecode",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.6s, peak 122.8 MiB (estimated 2m00s, 2.0 GiB); 37 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-213848-339-parent-exhaust-native-selector-bytec.json",
+    "sha256": "36d2d9d38b05484a86681202de3aa108d50fc126e1526dd513439feabb6c22a2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-213848-339-parent-exhaust-native-selector-bytec",
+      "title": "339 parent exhaust native selector bytecode",
+      "description": "Check every admitted selector by calling the frozen original or projection with a constant on its actual classpath. Verify all compiled call sites and Java-folded guards, bind the real IO/CSV/Codec closure and replay a native violation on the original property. A positive claim requires every admitted selector. Include the different-first consumer from the CSV producer.",
+      "kind": "real-world",
+      "capabilities": [
+        "native:finite-partition",
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "339"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T21:38:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Prove original properties by complete native case analysis",
+          "run": "python3 examples/tools/build.py 339 --native-selectors fields-parent,start-one-parent --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/339-commons-csv-page-numbers/records/native-selectors/parent"
+      ]
+    }
+  },
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "startedAt": "2026-11-20T21:47:27+00:00",
+  "finishedAt": "2026-11-20T21:51:45+00:00",
+  "wallSeconds": 258.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1837703,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 128794624,
+    "wallSeconds": 5.6,
+    "cpuSeconds": 8.5,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove original properties by complete native case analysis",
+      "run": "python3 examples/tools/build.py 339 --native-selectors fields-parent,start-one-parent --checker-seconds 90",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 5.616,
+      "cpuSeconds": 8.514,
+      "cpuThrottledSeconds": 0.512,
+      "peakMemoryBytes": 128794624,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-original-properties-by-c.log",
+        "lines": 2,
+        "bytes": 102,
+        "sha256": "f643724852038bbc3b0cec2ae348ef58362d907c7ab4126c55b9a10869de1700",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fields-parent refuted, 1/24 admitted selectors",
+        "start-one-parent established, 12/12 admitted selectors"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/Calls.java",
+      "change": "added",
+      "bytes": 2104,
+      "sha256": "d04474bd00390748780564e224bb3787b9170da8afd72f0119a0368e922b427f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1375,
+      "sha256": "1037be977329983657922c96ec9f3db3c29fa59298929fe05b6aeee160717573",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p0/native.json",
+      "change": "added",
+      "bytes": 4315,
+      "sha256": "a50a431aaa684349fb90f3e7f742f8cda379b651c0b1cdb142d51f582084cf6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p0/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p1/native.json",
+      "change": "added",
+      "bytes": 4318,
+      "sha256": "55e10ddf04bd4b3c35d3cf704938ef417ba3e45259572533e21bae9c49aa440b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p1/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p10/native.json",
+      "change": "added",
+      "bytes": 4321,
+      "sha256": "ac687ec98aeb607974264e8c4b71fc2ce20ab5b64a3f86ff197b6e0062583a24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p10/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p11/native.json",
+      "change": "added",
+      "bytes": 4322,
+      "sha256": "a61a483cd0b561bdbb5ac490566164bdf990aaad5a4094e243eb1caf3ca21e42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p11/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p16/native.json",
+      "change": "added",
+      "bytes": 4322,
+      "sha256": "916c0264a97c153d504baa8697cad5d3e3de5eca02d69f8683494baf1a65f174",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p16/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p17/native.json",
+      "change": "added",
+      "bytes": 4321,
+      "sha256": "ceb090e661066e6cf9eaf80b1da8352b115506fb7a1e2cbb1d5ca4157c3bca1f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p17/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p18/native.json",
+      "change": "added",
+      "bytes": 4320,
+      "sha256": "6d3d019a15ed5de1e7eea481eed2a8e0dfa65b1bc1123bc7cbd8b35504cf97e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p18/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p19/native.json",
+      "change": "added",
+      "bytes": 4321,
+      "sha256": "c12bf5964b3ef2c1777f0b98979e6553576dcda473dbdc628b2d44735cfb17e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p19/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p2/native.json",
+      "change": "added",
+      "bytes": 4318,
+      "sha256": "7c8dbe4be241a613983a0d7fc5c032dffee06dfc72f28c21dea3d6f3448d5241",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p2/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p3/native.json",
+      "change": "added",
+      "bytes": 4316,
+      "sha256": "2375ee194f61d6b691144d451a6509d02082b7eeb54b4a6917114914f9d7c0ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p3/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p4/native.json",
+      "change": "added",
+      "bytes": 5127,
+      "sha256": "b55884cad4101e97d256fb13b788f414bc51eb026a29065661bd7258fa6f58fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p4/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p8/native.json",
+      "change": "added",
+      "bytes": 4318,
+      "sha256": "70df6d41502b2703ef1cbbb30f26ab3253bed2fe515e2191c103c9272eb606fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p8/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p9/native.json",
+      "change": "added",
+      "bytes": 4318,
+      "sha256": "11ecf791dd3e0ff49385b728ddce03e8dbbe6f1893129b6700b9d52e3ce47b3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p9/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/verificationselectors/Calls.class",
+      "change": "added",
+      "bytes": 1375,
+      "sha256": "1037be977329983657922c96ec9f3db3c29fa59298929fe05b6aeee160717573",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/fields-parent/Admission.java",
+      "change": "added",
+      "bytes": 1690,
+      "sha256": "06f65f099fff1ff879dbbbe0d6a869329116204459e3f86c05eeec875c773a47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/fields-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 958,
+      "sha256": "51e10c99d2dd96504fe014a469a919c747ed9cefbda818e613b49236d424a6e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/fields-parent/result.json",
+      "change": "added",
+      "bytes": 7364,
+      "sha256": "35a41fdc112e736adc55a32218ee8dd258d22ccc7793c85ba3dcdd69c0d150dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/fields-parent/verificationselectors/Admission.class",
+      "change": "added",
+      "bytes": 958,
+      "sha256": "51e10c99d2dd96504fe014a469a919c747ed9cefbda818e613b49236d424a6e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/start-one-parent/Admission.java",
+      "change": "added",
+      "bytes": 2136,
+      "sha256": "3d80aaf970170c2de66c303b7d402fa9bbe1f4c5eb7c7af9dab912dfd49f4592",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/start-one-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 958,
+      "sha256": "857525677caa4e6c9c560081e179a14186f658c8defbcbe5bb3d3ee1e84d55fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/start-one-parent/result.json",
+      "change": "added",
+      "bytes": 13907,
+      "sha256": "32a3279fe7b665527efc737d22b821c7619834c3229fb54cbe90a00b9df2b7c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/start-one-parent/verificationselectors/Admission.class",
+      "change": "added",
+      "bytes": 958,
+      "sha256": "857525677caa4e6c9c560081e179a14186f658c8defbcbe5bb3d3ee1e84d55fc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T21:52:15+00:00",
+    "applied": [
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/Calls.java",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/Calls.jvm-bytecode",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p0/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p0/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p1/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p1/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p10/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p10/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p11/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p11/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p16/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p16/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p17/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p17/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p18/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p18/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p19/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p19/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p2/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p2/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p3/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p3/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p4/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p4/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p8/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p8/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p9/native.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/cases/p9/stderr",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/calls/6b44b9aaf5701e9c953c/verificationselectors/Calls.class",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/fields-parent/Admission.java",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/fields-parent/Admission.jvm-bytecode",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/fields-parent/result.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/fields-parent/verificationselectors/Admission.class",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/start-one-parent/Admission.java",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/start-one-parent/Admission.jvm-bytecode",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/start-one-parent/result.json",
+      "examples/339-commons-csv-page-numbers/records/native-selectors/parent/20261120T215140Z-03465d94/tasks/start-one-parent/verificationselectors/Admission.class"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

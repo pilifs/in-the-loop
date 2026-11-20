@@ -23,7 +23,6 @@ ZERO = "#x00000000"
 ONE = "#x00000001"
 NEG_ONE = "#xffffffff"
 BV = "(_ BitVec 32)"
-ARRAY = f"(Array {BV} {BV})"
 COMPARE = {"eq": "=", "ne": "distinct", "lt": "bvslt", "le": "bvsle", "gt": "bvsgt", "ge": "bvsge"}
 
 
@@ -95,6 +94,7 @@ class Induction:
     def __init__(self, code, rule):
         self.code = code
         self.rule = rule
+        self.cell_bits = 32
         self.conditions = []
         self.trace = []
 
@@ -117,7 +117,7 @@ class Induction:
             ins = instructions[index]
             op, arg = ins.op, ins.arg
             next_pc = instructions[index + 1].pc if index + 1 < len(instructions) else None
-            if match := re.fullmatch(r"([ai])(load|store)(?:_(\d))?", op):
+            if match := re.fullmatch(r"([ail])(load|store)(?:_(\d))?", op):
                 slot = int(match[3] or arg)
                 if match[2] == "load":
                     state = state.push(state.locals[slot])
@@ -137,7 +137,22 @@ class Induction:
                 state = replace(
                     state, locals={**state.locals, slot: term("bvadd", state.locals[slot], word(delta))}
                 )
-            elif op in ("arraylength", "iaload", "iastore"):
+            elif op == "lcmp":
+                right, state = state.pop()
+                left, state = state.pop()
+                if self.cell_bits != 64:
+                    raise ValueError("unexpected long comparison in an int traversal")
+                state = state.push(
+                    term(
+                        "ite",
+                        term("=", left, right),
+                        ZERO,
+                        term("ite", term("bvslt", left, right), NEG_ONE, ONE),
+                    )
+                )
+            elif op in ("arraylength", "iaload", "laload", "iastore"):
+                if op != "arraylength" and ((op == "laload") != (self.cell_bits == 64)):
+                    raise ValueError("array opcode and selected cell width disagree")
                 if op == "iastore":
                     value, state = state.pop()
                 if op != "arraylength":
@@ -151,7 +166,7 @@ class Induction:
                     self.vc(f"safe array access at {pc}", state.path, between(ZERO, offset, "length"))
                     state = (
                         state.push(term("select", state.heap, offset))
-                        if op == "iaload"
+                        if op in ("iaload", "laload")
                         else replace(state, heap=term("store", state.heap, offset, value))
                     )
             elif op.startswith("if"):
@@ -223,11 +238,20 @@ class Induction:
         domain = [term("bvsle", ZERO, "length")]
         if self.rule == "first-index":
             wrapper = method["code"]
-            if method["handlers"] or "static " not in method["header"] or descriptor != "([II)I":
-                raise ValueError("first-index requires the public static int-array search descriptor")
+            if (
+                method["handlers"]
+                or "static " not in method["header"]
+                or descriptor not in ("([II)I", "([JJ)I")
+            ):
+                raise ValueError("first-index requires a static int- or long-array search")
+            wide = descriptor == "([JJ)I"
+            if wide:
+                self.cell_bits = 64
+                # The long target takes two JVM local slots. The indexes remain Java ints.
+                initial = State({0: "@array", 1: "target", 3: ZERO, 4: "length"})
             if [i.op for i in wrapper] != [
                 "aload_0",
-                "iload_1",
+                "lload_1" if wide else "iload_1",
                 "iconst_0",
                 "aload_0",
                 "arraylength",
@@ -236,7 +260,7 @@ class Induction:
             ]:
                 raise ValueError("entry does not forward the same array and target with [0,length) bounds")
             owner, helper, desc = self.call(wrapper[-2])
-            if owner or desc != "([IIII)I":
+            if owner or desc != ("([JJII)I" if wide else "([IIII)I"):
                 raise ValueError(
                     "array search does not forward to a same-class helper with the checked descriptor"
                 )
@@ -338,15 +362,31 @@ def solve(induction, domain, work, seconds):
     solver = shutil.which("z3")
     if not solver:
         raise ValueError("Z3 must be on PATH to check array induction obligations")
+    cell_sort = f"(_ BitVec {induction.cell_bits})"
     lines = ["(set-logic QF_ABV)"] + [
-        f"(declare-const {x} {BV})" for x in ("length", "cursor", "target", "k", "from", "to", "value")
+        f"(declare-const {x} {cell_sort if x in ('target', 'value') else BV})"
+        for x in ("length", "cursor", "target", "k", "from", "to", "value")
     ]
-    lines += [f"(declare-const {x} {ARRAY})" for x in ("initial", "heap", "otherInitial")]
+    lines += [f"(declare-const {x} (Array {BV} {cell_sort}))" for x in ("initial", "heap", "otherInitial")]
     lines += [f"(declare-const otherLength {BV})", "(declare-const aliases Bool)"]
     checks = [
         ("nonempty input domain", both(*domain), "sat"),
         ("maximal signed length admitted", both(*domain, term("=", "length", word(2**31 - 1))), "sat"),
     ]
+    if induction.cell_bits == 64:
+        cell = term("select", "initial", ZERO)
+        checks.append(
+            (
+                "distinct elements can have identical low 32 bits",
+                both(
+                    *domain,
+                    term("bvslt", ZERO, "length"),
+                    term("distinct", cell, "target"),
+                    term("=", term("(_ extract 31 0)", cell), term("(_ extract 31 0)", "target")),
+                ),
+                "sat",
+            )
+        )
     checks.extend(
         (label, both(path, term("not", conclusion)), "unsat")
         for label, path, conclusion in induction.conditions
@@ -453,7 +493,7 @@ def record_key(folder, target, contract):
         "commit": locked.commit,
         "lengths": "all already allocated non-null Java arrays",
         "indexArithmetic": "signed 32-bit Java operations",
-        "heap": "primitive int cells",
+        "heap": "primitive long cells" if contract["entry"].endswith("([JJ)I") else "primitive int cells",
     }
     return plan, workflow.canonical_digest(declaration)
 
@@ -604,13 +644,15 @@ def run(folder, target, spec, seconds):
             "revision": spec["revision"],
             "rule": spec["rule"],
             "status": "established" if passed else "unresolved",
-            "domain": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs"
+            "domain": f"Every non-null, already allocated {'long' if induction.cell_bits == 64 else 'int'} array of legal Java length and all signed scalar inputs"
             + (" with 0 <= from <= to <= length." if spec["rule"] == "range-fill" else "."),
             "preparation": prepared.commit,
             "classpath": cp,
             "classes": classes,
             "jdk": runtime_jdk.identity(home),
             "rulesSha256": runtime.sha256(Path(__file__)),
+            "heapCellBits": induction.cell_bits,
+            "indexBits": 32,
             "javapSha256": runtime.sha256(home / "bin/javap"),
             "solver": solver,
             "solverTimeoutSeconds": seconds,

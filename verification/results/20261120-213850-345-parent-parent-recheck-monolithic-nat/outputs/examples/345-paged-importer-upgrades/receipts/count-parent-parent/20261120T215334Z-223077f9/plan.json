@@ -1,0 +1,378 @@
+{
+  "plan": {
+    "example": "345",
+    "task": "count-parent-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+    "revisions": [
+      "parent-parent"
+    ],
+    "claim": {
+      "task": "count-parent-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "file": "claims/count.json",
+      "sha256": "422a7fc74ffebeb2e0b386125f693a4f8b244aa62b06072126f144831e04113a",
+      "property": "count",
+      "claimKind": "property",
+      "statement": "The count is the smaller of supplied rows and the cap.",
+      "assume": "code >= 0 && code < 96",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/importer/ImportCases.java",
+          "sha256": "2043f0f8fe6c4eaf0530c4e61daff47e1a3fb9d75cd7f1828f5eccb2c1009a18"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "adb9160876b33fc23376fe4c171e138c5ef8a9c90b335c9cab559d325ba248e0"
+        }
+      ],
+      "adapter": {
+        "entry": "importer.Projection#count(I)I",
+        "mapping": "Bits 4 through 0 select BOM, one-byte reads, preview/reset, start minus one and cap minus one. The high bits select one of three literal documents. A fresh input stream is used for each observer.",
+        "cases": 96,
+        "correspondence": "finite-oracle"
+      },
+      "key": "cfc57f4f30efaf82"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent-parent",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-parent",
+          "csv-parent",
+          "codec"
+        ],
+        "libraries": {
+          "csv-fix": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+            "parent": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701"
+          },
+          "io-api": {
+            "coordinates": "commons-io:commons-io:2.22.0",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+          },
+          "codec": {
+            "coordinates": "commons-codec:commons-codec:1.22.0",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+          },
+          "io-parent": {
+            "repository": "https://github.com/apache/commons-io",
+            "commit": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+            "class": "org.apache.commons.io.input.BOMInputStream",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
+          },
+          "csv-parent": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe"
+          }
+        },
+        "adapters": [
+          "adapter/importer/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/count-parent-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213850-345-parent-parent-recheck-monolithic-nat/examples/345-paged-importer-upgrades",
+    "network": true
+  },
+  "inputs": {
+    "example": "345",
+    "task": "count-parent-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+    "revisions": [
+      "parent-parent"
+    ],
+    "claim": {
+      "task": "count-parent-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "file": "claims/count.json",
+      "sha256": "422a7fc74ffebeb2e0b386125f693a4f8b244aa62b06072126f144831e04113a",
+      "property": "count",
+      "claimKind": "property",
+      "statement": "The count is the smaller of supplied rows and the cap.",
+      "assume": "code >= 0 && code < 96",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/importer/ImportCases.java",
+          "sha256": "2043f0f8fe6c4eaf0530c4e61daff47e1a3fb9d75cd7f1828f5eccb2c1009a18"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "adb9160876b33fc23376fe4c171e138c5ef8a9c90b335c9cab559d325ba248e0"
+        }
+      ],
+      "adapter": {
+        "entry": "importer.Projection#count(I)I",
+        "mapping": "Bits 4 through 0 select BOM, one-byte reads, preview/reset, start minus one and cap minus one. The high bits select one of three literal documents. A fresh input stream is used for each observer.",
+        "cases": 96,
+        "correspondence": "finite-oracle"
+      },
+      "key": "cfc57f4f30efaf82"
+    },
+    "artifacts": [
+      {
+        "revision": "parent-parent",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-parent",
+          "csv-parent",
+          "codec"
+        ],
+        "libraries": {
+          "csv-fix": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+            "parent": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701"
+          },
+          "io-api": {
+            "coordinates": "commons-io:commons-io:2.22.0",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+          },
+          "codec": {
+            "coordinates": "commons-codec:commons-codec:1.22.0",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+          },
+          "io-parent": {
+            "repository": "https://github.com/apache/commons-io",
+            "commit": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+            "class": "org.apache.commons.io.input.BOMInputStream",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
+          },
+          "csv-parent": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe"
+          }
+        },
+        "adapters": [
+          "adapter/importer/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/importer/Projection.java",
+        "sha256": "c269a10eb814e3c14a72e28de2d2ff18bfb5e6cde8c81912cf578cb54744a7c0"
+      }
+    ]
+  },
+  "key": "477bd8491ff2b469b523eb98c71ceaaed6b921d478bc9375d4c8f9507f0ace79"
+}

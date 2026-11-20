@@ -1,0 +1,213 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "prove",
+    "chunks.Inputs#eof(int)",
+    "--classes",
+    "prepare/stream/stream.jar",
+    "--assume",
+    "code >= 0 && code < 5578",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "160",
+    "--max-array-length",
+    "48",
+    "--timeout",
+    "90",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 90.216,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "chunks.Inputs#eof(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 5578",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the engine did not finish within the time limit",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "chunks.Inputs#eof(int) cannot be verified: the engine did not finish within the time limit",
+          "uri": null,
+          "line": 43
+        }
+      ],
+      "output": "✗ chunks.Inputs#eof(int) cannot be verified: the engine did not finish within the time limit\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 90.143481908,
+        "properties": 1,
+        "unwind": 160,
+        "max_array_length": 48,
+        "stage": null,
+        "native": {
+          "paths": 4658,
+          "merges": 4032,
+          "solver_calls": 6313,
+          "solving_seconds": 74.591329935,
+          "gates_evaluated": 39522561,
+          "evaluating_seconds": 1.115661354,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 248453,
+          "clauses": 880015,
+          "seconds": 90.010911639,
+          "loading_seconds": 0.003178455,
+          "decoding_seconds": 0.000763713,
+          "encoding_seconds": 1.121141139,
+          "witness_seconds": 0.0,
+          "assumed": [
+            "system properties use the standard JVM Properties table and the running JVM permits this property access"
+          ]
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "jdk-static-method:java.lang.Character.isSupplementaryCodePoint(I)Z@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.Character.isSupplementaryCodePoint(int)",
+            "sites": [
+              "sun.nio.cs.UTF_8$Decoder.decodeArrayLoop:310"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 90.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 90.0,
+            "seconds": 90.011,
+            "ended": "out-of-time",
+            "ending": "timeout",
+            "phases": {
+              "loading": 0.003,
+              "lowering": 0.001,
+              "symbolic": 14.294,
+              "encoding": 1.121,
+              "solving": 74.591,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 248453,
+              "clauses": 880015
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 90.155,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 90.011,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.143
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 5578",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 160,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 5336,
+    "sha256": "09b2869b4a39f5ee727fba9f1d151825fdcf735a65fcc84be35d0fefb35634f9"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

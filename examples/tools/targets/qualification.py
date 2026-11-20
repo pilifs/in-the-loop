@@ -15,6 +15,14 @@ def alias_groups(pairs):
     return sorted(sorted(g) for g in groups)
 
 
+def signed_input(value, element):
+    # Long values can be canonical signed decimal text on the wire.
+    if element == "long" and isinstance(value, str) and len(value) <= 20 and re.fullmatch(r"0|-?[1-9][0-9]*", value):
+        value = int(value)
+    limit = 1 << (63 if element == "long" else 31)
+    return type(value) is int and -limit <= value < limit
+
+
 def witness_problem(inputs, parameters, nullable, aliases, bound):
     if not isinstance(inputs, list) or len(inputs) != len(parameters):
         return "the JVM witness does not give every planned root"
@@ -27,20 +35,17 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
                 return f"{name} is null outside its planned domain"
         elif isinstance(data, dict):
             earlier = data.get("same")
-            if (expected["type"] != "int[]" or set(data) != {"same"} or type(earlier) is not int or not 0 <= earlier < i
+            if (expected["type"] not in ("int[]", "long[]") or set(data) != {"same"} or type(earlier) is not int or not 0 <= earlier < i
                     or inputs[earlier]["type"] != expected["type"] or inputs[earlier]["value"] is None
                     or not any(name in group and inputs[earlier]["name"] in group for group in aliases)):
                 return f"{name} has an alias outside its planned domain"
         elif expected["type"] in ("int", "long"):
-            limit = 1 << (63 if expected["type"] == "long" else 31)
-            # The wire format preserves every long as signed decimal text even in JSON readers with binary64 numbers.
-            if expected["type"] == "long" and isinstance(data, str) and len(data) <= 20 and re.fullmatch(r"0|-?[1-9][0-9]*", data):
-                data = int(data)
-            if type(data) is not int or not -limit <= data < limit:
+            if not signed_input(data, expected["type"]):
                 return f"{name} is outside the planned {expected['type']} domain"
-        elif expected["type"] == "int[]":
-            if not isinstance(data, list) or len(data) > bound or not all(type(n) is int and -(2**31) <= n < 2**31 for n in data):
-                return f"{name} is outside the planned int-array domain at bound {bound}"
+        elif expected["type"] in ("int[]", "long[]"):
+            element = expected["type"][:-2]
+            if not isinstance(data, list) or len(data) > bound or not all(signed_input(n, element) for n in data):
+                return f"{name} is outside the planned {element}-array domain at bound {bound}"
         else:
             return f"witness membership for {expected['type']} needs qualification"
     return None

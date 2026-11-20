@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-221803-331-rerun-the-remaining-helper-check-at",
+  "title": "331 rerun the remaining helper check at its original budget",
+  "description": "Ten of eleven tiling checks succeeded on the decoder checker. The recursive/iterative helper preservation exhausted 25 seconds. Repeat that exact claim in isolation on the same release, Bitwuzla finite solver, 25-second budget, classpaths and zero array bound; retain both attempts.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "proof:reuse"
+  ],
+  "links": {
+    "examples": [
+      "331"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T22:18:03+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Recheck the original helper preservation",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 331 --task helper-preservation --retry-of 20261120T215335Z-5bb9c0e2 --checker-seconds 25",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation"
+  ]
+}

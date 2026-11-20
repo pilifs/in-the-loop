@@ -1,0 +1,558 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T215347Z-0f23c474",
+  "task": "eof-stream",
+  "claimKey": "d8e48b42f9e862f0",
+  "revisions": [
+    "stream"
+  ],
+  "startedAt": "2026-11-20T21:53:47.062012+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 90
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-213849-341-retry-streaming-utf-8-and-bom-transf",
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.7743
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.0523
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.0992
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 92.3185
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 92.4694
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "stream": {
+      "revision": "fixture:stream",
+      "target": {
+        "class": "chunks.Inputs",
+        "method": "eof",
+        "descriptor": "(I)I",
+        "loadedFrom": "stream.jar",
+        "classSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "02818b97eef048130069f81534c81d1c03ae4a5dae46645799d101c822831013",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "stream.jar",
+          "sha256": "792939bf7432bf6af2a6cebd19b0bdeaf85fba0aff9adf869deef1e766b7272e",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from stream by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "f67b3b0cfcd8eac434e5cf99c5539e929004193f020bb732060e451d6f200f95",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "prove",
+    "chunks.Inputs#eof(int)",
+    "--classes",
+    "prepare/stream/stream.jar",
+    "--assume",
+    "code >= 0 && code < 5578",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "160",
+    "--max-array-length",
+    "48",
+    "--timeout",
+    "90",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6",
+    "commit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 160,
+      "maxArrayLength": 48
+    },
+    "timeout": 90,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "chunks.Inputs#eof(I)I",
+      "revisions": {
+        "stream": {
+          "commit": "fixture:stream",
+          "loadedFrom": "stream.jar",
+          "classSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f",
+          "origin": "built from stream by the fixture recipe",
+          "parameters": {
+            "names": [
+              "code"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "stream": [
+        {
+          "path": "stream.jar",
+          "sha256": "792939bf7432bf6af2a6cebd19b0bdeaf85fba0aff9adf869deef1e766b7272e",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "chunks.Inputs#eof(I)I",
+    "entryBindings": {
+      "stream": {
+        "entry": "chunks.Inputs#eof(I)I",
+        "classSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f",
+        "loadedFrom": "stream.jar",
+        "subject": "chunks.Inputs#eof(I)I",
+        "subjectClassSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "chunks.Inputs#eof(I)I",
+      "checkedEntry": "chunks.Inputs#eof(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 5578"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "160"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "48"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "stream": "fixture:stream"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "stream": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+          "gaps",
+          "--target",
+          "chunks.Inputs#eof(int)",
+          "--classes",
+          "prepare/stream/stream.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-stream.stdout",
+        "stderr": "verifier/probe-stream.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.lang.AssertionError.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.AssertionError.<init>(int)",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.lockedRead0:161",
+              "sun.nio.cs.StreamDecoder.readBytes:365"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+            "sites": [
+              "java.nio.charset.CharsetDecoder.decode:609",
+              "sun.nio.cs.StreamDecoder.readBytes:355"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.nio.HeapByteBuffer.<init>(IILjava/lang/foreign/MemorySegment;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.nio.HeapByteBuffer.<init>(int, int, java.lang.foreign.MemorySegment)",
+            "sites": [
+              "java.nio.ByteBuffer.allocate:391"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.nio.HeapCharBuffer.<init>([CIILjava/lang/foreign/MemorySegment;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.nio.HeapCharBuffer.<init>(char[], int, int, java.lang.foreign.MemorySegment)",
+            "sites": [
+              "java.nio.CharBuffer.wrap:436"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.nio.charset.CoderMalfunctionError.<init>(Ljava/lang/Exception;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.nio.charset.CoderMalfunctionError.<init>(java.lang.Exception)",
+            "sites": [
+              "java.nio.charset.CharsetDecoder.decode:588"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.nio.charset.MalformedInputException.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.nio.charset.MalformedInputException.<init>(int)",
+            "sites": [
+              "java.nio.charset.CoderResult.throwException:279"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.nio.charset.UnmappableCharacterException.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.nio.charset.UnmappableCharacterException.<init>(int)",
+            "sites": [
+              "java.nio.charset.CoderResult.throwException:280"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.util.concurrent.locks.ReentrantLock.<init>()",
+            "sites": [
+              "jdk.internal.misc.InternalLock.<init>:52"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+            "sites": [
+              "chunks.Inputs.read:29"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.nio.channels.ReadableByteChannel.close()V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.nio.channels.ReadableByteChannel.close()",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.implClose:443"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.concurrent.locks.ReentrantLock.lock()V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.concurrent.locks.ReentrantLock.lock()",
+            "sites": [
+              "jdk.internal.misc.InternalLock.lock:74"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.concurrent.locks.ReentrantLock.unlock()V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.concurrent.locks.ReentrantLock.unlock()",
+            "sites": [
+              "jdk.internal.misc.InternalLock.unlock:78"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.nio.ByteBuffer.compact()Ljava/nio/ByteBuffer;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.nio.ByteBuffer.compact()",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.readBytes:337"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.nio.ByteBuffer.flip()Ljava/nio/ByteBuffer;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.nio.ByteBuffer.flip()",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.<init>:320",
+              "sun.nio.cs.StreamDecoder.readBytes:361"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.nio.ByteBuffer.position(I)Ljava/nio/ByteBuffer;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.nio.ByteBuffer.position(int)",
+            "sites": [
+              "java.nio.charset.CharsetDecoder.decode:623",
+              "sun.nio.cs.StreamDecoder.readBytes:356"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.nio.CharBuffer.put(Ljava/lang/String;)Ljava/nio/CharBuffer;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.nio.CharBuffer.put(java.lang.String)",
+            "sites": [
+              "java.nio.charset.CharsetDecoder.decode:617"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.nio.CharBuffer.slice()Ljava/nio/CharBuffer;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.nio.CharBuffer.slice()",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.implRead:380"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.nio.charset.Charset.newDecoder()Ljava/nio/charset/CharsetDecoder;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.nio.charset.Charset.newDecoder()",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.<init>:308"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.Map.computeIfAbsent(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.Map.computeIfAbsent(java.lang.Object, java.util.function.Function)",
+            "sites": [
+              "java.nio.charset.CoderResult.malformedForLength:222"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Class.desiredAssertionStatus()",
+            "sites": [
+              "java.nio.charset.CharsetDecoder.<clinit>:138",
+              "java.nio.charset.CoderResult.<clinit>:84",
+              "sun.nio.cs.StreamDecoder.<clinit>:49"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.nio.ByteBuffer.arrayOffset()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.nio.ByteBuffer.arrayOffset()",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.readBytes:350"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.nio.ByteBuffer.hasRemaining()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.nio.ByteBuffer.hasRemaining()",
+            "sites": [
+              "java.nio.charset.CharsetDecoder.decode:595",
+              "sun.nio.cs.StreamDecoder.implRead:396",
+              "sun.nio.cs.StreamDecoder.implReady:438"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.nio.ByteBuffer.limit()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.nio.ByteBuffer.limit()",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.readBytes:346"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.nio.ByteBuffer.position()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.nio.ByteBuffer.position()",
+            "sites": [
+              "java.nio.charset.CharsetDecoder.decode:623",
+              "sun.nio.cs.StreamDecoder.readBytes:347"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.nio.ByteBuffer.remaining()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.nio.ByteBuffer.remaining()",
+            "sites": [
+              "java.nio.charset.CharsetDecoder.decode:596",
+              "sun.nio.cs.StreamDecoder.readBytes:364"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.nio.CharBuffer.hasRemaining()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.nio.CharBuffer.hasRemaining()",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.implRead:389"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.nio.CharBuffer.position()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.nio.CharBuffer.position()",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.implRead:378",
+              "sun.nio.cs.StreamDecoder.implRead:391",
+              "sun.nio.cs.StreamDecoder.implRead:396",
+              "sun.nio.cs.StreamDecoder.implRead:402",
+              "sun.nio.cs.StreamDecoder.implRead:413",
+              "sun.nio.cs.StreamDecoder.implRead:419"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.nio.CharBuffer.remaining()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.nio.CharBuffer.remaining()",
+            "sites": [
+              "java.nio.charset.CharsetDecoder.decode:615"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.nio.channels.ReadableByteChannel.read(Ljava/nio/ByteBuffer;)I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.nio.channels.ReadableByteChannel.read(java.nio.ByteBuffer)",
+            "sites": [
+              "sun.nio.cs.StreamDecoder.readBytes:341"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.nio.ByteBuffer.createCapacityException(I)Ljava/lang/IllegalArgumentException;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.nio.ByteBuffer.createCapacityException(int)",
+            "sites": [
+              "java.nio.ByteBuffer.allocate:390"
+            ]
+          },
+          {
+            "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+            "sites": [
+              "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 90.201,
+      "peakRssBytes": 546283520,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": true,
+  "usage": {
+    "cpuSeconds": 90.201,
+    "peakRssBytes": 546283520,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 90.216,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/eof-stream/20261120T215347Z-0f23c474/result.json",
+  "preparedClaim": "d97b14844f5d65d4",
+  "firstBlocker": "the engine did not finish within the time limit",
+  "endedAt": "2026-11-20T21:55:19.531555+00:00"
+}

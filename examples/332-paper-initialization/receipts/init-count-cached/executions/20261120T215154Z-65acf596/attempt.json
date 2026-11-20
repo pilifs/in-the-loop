@@ -1,0 +1,292 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T215154Z-65acf596",
+  "task": "init-count-cached",
+  "claimKey": "3ef63deb082003f6",
+  "revisions": [
+    "cached"
+  ],
+  "startedAt": "2026-11-20T21:51:54.416463+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 90
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-213849-332-check-explicit-jvm-property-writes-v",
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.4064
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.9731
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.0223
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.0658
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.1964
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "cached": {
+      "revision": "fixture:cached",
+      "target": {
+        "class": "paper.Scenario",
+        "method": "count",
+        "descriptor": "(I)I",
+        "loadedFrom": "cached.jar",
+        "classSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "2fed89888d17a3800a3f4bd45e89c74e59c5019b2cd8b3b03a535f879e2dd827",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "cached.jar",
+          "sha256": "4089a95112f6dade8743866c6cb90d3e704871323fea638fef8cb5cfa27051c6",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from cached by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "4bccb8824c85fcd9f1315b82379c04e19e28908bf862a90fcc8236e38b623792",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "prove",
+    "paper.Scenario#count(int)",
+    "--classes",
+    "prepare/cached/cached.jar",
+    "--assume",
+    "code >= 0 && code < 9",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "32",
+    "--max-array-length",
+    "24",
+    "--timeout",
+    "90",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6",
+    "commit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 32,
+      "maxArrayLength": 24
+    },
+    "timeout": 90,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "paper.Scenario#count(I)I",
+      "revisions": {
+        "cached": {
+          "commit": "fixture:cached",
+          "loadedFrom": "cached.jar",
+          "classSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815",
+          "origin": "built from cached by the fixture recipe",
+          "parameters": {
+            "names": [
+              "code"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "cached": [
+        {
+          "path": "cached.jar",
+          "sha256": "4089a95112f6dade8743866c6cb90d3e704871323fea638fef8cb5cfa27051c6",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "paper.Scenario#count(I)I",
+    "entryBindings": {
+      "cached": {
+        "entry": "paper.Scenario#count(I)I",
+        "classSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815",
+        "loadedFrom": "cached.jar",
+        "subject": "paper.Scenario#count(I)I",
+        "subjectClassSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "paper.Scenario#count(I)I",
+      "checkedEntry": "paper.Scenario#count(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 9"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "32"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "24"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "cached": "fixture:cached"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "cached": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+          "gaps",
+          "--target",
+          "paper.Scenario#count(int)",
+          "--classes",
+          "prepare/cached/cached.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-cached.stdout",
+        "stderr": "verifier/probe-cached.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0407,
+      "peakRssBytes": 80531456,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0407,
+    "peakRssBytes": 80531456,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.041,
+  "missing": [],
+  "receipt": "receipts/init-count-cached/20261120T215154Z-65acf596/result.json",
+  "preparedClaim": "1e2f9eb197ebd413",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T21:51:56.612952+00:00"
+}

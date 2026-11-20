@@ -1,0 +1,392 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "importer-four-byte-field",
+    "family": "paged-importer-upgrades",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "parent-parent": {
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-parent",
+          "csv-parent",
+          "codec"
+        ]
+      },
+      "parent-fix": {
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-parent",
+          "csv-fix",
+          "codec"
+        ]
+      },
+      "fix-parent": {
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-fix",
+          "csv-parent",
+          "codec"
+        ]
+      },
+      "fix-fix": {
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-fix",
+          "csv-fix",
+          "codec"
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "name": "install-both",
+        "kind": "exact-fix",
+        "before": "parent-parent",
+        "after": "fix-fix"
+      },
+      {
+        "name": "repair-io",
+        "kind": "exact-fix",
+        "before": "parent-fix",
+        "after": "fix-fix"
+      },
+      {
+        "name": "repair-csv",
+        "kind": "exact-fix",
+        "before": "fix-parent",
+        "after": "fix-fix"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json",
+    "adapters": [
+      "adapter/importer/Projection.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "install-both",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;"
+    },
+    {
+      "id": "replay-io",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "repair-io",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;"
+    },
+    {
+      "id": "replay-csv",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "repair-csv",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;"
+    },
+    {
+      "id": "bytes-parent-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#remaining([BZZ)[B",
+      "claim": "claims/bytes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent-parent"
+    },
+    {
+      "id": "count-parent-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/count.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent-parent"
+    },
+    {
+      "id": "page-parent-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/page.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent-parent"
+    },
+    {
+      "id": "positive-parent-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/positive.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent-parent"
+    },
+    {
+      "id": "bytes-parent-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#remaining([BZZ)[B",
+      "claim": "claims/bytes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-io"
+      ],
+      "expected": "refuted",
+      "revision": "parent-fix"
+    },
+    {
+      "id": "count-parent-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/count.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-io"
+      ],
+      "expected": "established",
+      "revision": "parent-fix"
+    },
+    {
+      "id": "page-parent-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/page.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-io"
+      ],
+      "expected": "refuted",
+      "revision": "parent-fix"
+    },
+    {
+      "id": "positive-parent-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/positive.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-io"
+      ],
+      "expected": "established",
+      "revision": "parent-fix"
+    },
+    {
+      "id": "bytes-fix-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#remaining([BZZ)[B",
+      "claim": "claims/bytes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-csv"
+      ],
+      "expected": "established",
+      "revision": "fix-parent"
+    },
+    {
+      "id": "count-fix-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/count.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-csv"
+      ],
+      "expected": "refuted",
+      "revision": "fix-parent"
+    },
+    {
+      "id": "page-fix-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/page.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-csv"
+      ],
+      "expected": "refuted",
+      "revision": "fix-parent"
+    },
+    {
+      "id": "positive-fix-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/positive.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-csv"
+      ],
+      "expected": "established",
+      "revision": "fix-parent"
+    },
+    {
+      "id": "bytes-fix-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#remaining([BZZ)[B",
+      "claim": "claims/bytes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix-fix"
+    },
+    {
+      "id": "count-fix-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/count.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix-fix"
+    },
+    {
+      "id": "page-fix-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/page.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix-fix"
+    },
+    {
+      "id": "positive-fix-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "claim": "claims/positive.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix-fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/importer/ImportCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

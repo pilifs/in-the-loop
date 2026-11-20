@@ -1,4 +1,4 @@
-"""Qualify concrete int, long and int[] witnesses on each revision's own ordered classpath."""
+"""Qualify concrete int and long scalars and arrays on each revision's ordered classpath."""
 
 import hashlib
 import json
@@ -16,7 +16,7 @@ def supported(entry, claim):
     if not descriptor or descriptor.split(")")[-1] not in ("I", "J") or claim.get("throws"):
         return False
     params = descriptor_parameters(descriptor)
-    return params is not None and all(t in ("int", "long", "int[]") for t in params)
+    return params is not None and all(t in ("int", "long", "int[]", "long[]") for t in params)
 
 
 def snapshot_assertion(assertion, inputs, names):
@@ -25,7 +25,7 @@ def snapshot_assertion(assertion, inputs, names):
         return assertion, []
     declarations = []
     for index, arg in enumerate(inputs):
-        if arg["type"] != "int[]":
+        if arg["type"] not in ("int[]", "long[]"):
             continue
         name = arg["name"]
         saved = f"originalArray{index}"
@@ -35,7 +35,7 @@ def snapshot_assertion(assertion, inputs, names):
         pattern = r"\\old\(" + re.escape(name) + r"(\[(?:[0-9]+|[A-Za-z_$][A-Za-z0-9_$]*)\]|\.length)\)"
         assertion, count = re.subn(pattern, lambda match: saved + match.group(1), assertion)
         if count:
-            declarations.append(f"int[] {saved} = {name} == null ? null : {name}.clone();")
+            declarations.append(f"{arg['type']} {saved} = {name} == null ? null : {name}.clone();")
     if "\\old(" in assertion:
         raise ValueError("independent JVM replay cannot snapshot this old expression")
     return assertion, declarations
@@ -83,7 +83,8 @@ def source(entry, claim, inputs, names):
         elif isinstance(value, dict):
             literal = names[value["same"]]
         elif isinstance(value, list):
-            literal = "new int[]{" + ",".join(map(str, value)) + "}"
+            suffix = "L" if arg["type"] == "long[]" else ""
+            literal = "new " + arg["type"] + "{" + ",".join(str(n) + suffix for n in value) + "}"
         elif arg["type"] == "long":
             literal = str(value) + "L"
         else:
@@ -135,7 +136,7 @@ def check(plan, prepared, inputs, work, entry=None):
     aliases = qualification.alias_groups([p.split(",") for p in claim.get("mayAlias", [])])
     try:
         if not supported(entry, claim):
-            raise ValueError("this independent replay requires int, long or int[] arguments and an int or long result")
+            raise ValueError("this independent replay requires int/long scalars or arrays and an int or long result")
         jdk = runtime._verifier_jdk(plan, prepared)
         report["jdkRelease"] = jdk["release"]
         work = Path(work)

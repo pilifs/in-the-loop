@@ -1,0 +1,96 @@
+[
+  {
+    "claimKey": "26dd8caec33692e1",
+    "entry": "importer.Projection#bytes(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 87
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent-fix": {
+        "entryClassSha256": "d670e786fe5c9e39e0e42201593288dcb9c4a34253195d72446e3b7c913833b0",
+        "classpath": [
+          "bf22b30bf9d9a5acd671d3c9d7a056b8dcc03fd9b279560d39c49485b5a85319",
+          "5d0a2eefe440fc7795a177e2fc37c8c1cce0d4c77ce5c08128d3f5e9410713cc",
+          "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+          "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+          "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 87;\nif (!(code >= 0 && code < 96)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = importer.Projection.bytes(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 87,
+      "input": {
+        "doc": "z,1\nz,2\nz,3\n",
+        "bom": true,
+        "oneByte": false,
+        "preview": true,
+        "start": 2,
+        "cap": 2
+      },
+      "field": "bytes",
+      "direct": {
+        "parent-fix": {
+          "bytes": [
+            239,
+            187,
+            191,
+            122,
+            44,
+            49,
+            10,
+            122,
+            44,
+            50,
+            10,
+            122,
+            44,
+            51,
+            10
+          ],
+          "count": 2,
+          "page": [
+            [
+              2,
+              [
+                "﻿z",
+                "1"
+              ]
+            ],
+            [
+              3,
+              [
+                "z",
+                "2"
+              ]
+            ]
+          ]
+        }
+      },
+      "tableSha256": "adb9160876b33fc23376fe4c171e138c5ef8a9c90b335c9cab559d325ba248e0"
+    }
+  }
+]

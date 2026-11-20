@@ -1,0 +1,2321 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-213848-345-fix-parent-exhaust-native-selector-b",
+  "title": "345 fix-parent exhaust native selector bytecode",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m54s, peak 159.2 MiB (estimated 15m00s, 2.0 GiB); 269 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-213848-345-fix-parent-exhaust-native-selector-b.json",
+    "sha256": "0d29f425d77688b49ade82cfddfed65122149cf316c93b5bac95a99883555cb3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-213848-345-fix-parent-exhaust-native-selector-b",
+      "title": "345 fix-parent exhaust native selector bytecode",
+      "description": "Check every admitted selector by calling the frozen original or projection with a constant on its actual classpath. Verify all compiled call sites and Java-folded guards, bind the real IO/CSV/Codec closure and replay a native violation on the original property. A positive claim requires every admitted selector. Include the different-first consumer from the CSV producer.",
+      "kind": "real-world",
+      "capabilities": [
+        "native:finite-partition",
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "345"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T21:38:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "15m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Prove original properties by complete native case analysis",
+          "run": "python3 examples/tools/build.py 345 --native-selectors bytes-fix-parent,count-fix-parent,page-fix-parent,positive-fix-parent --checker-seconds 90 --first 6",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent"
+      ]
+    }
+  },
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "startedAt": "2026-11-20T21:47:27+00:00",
+  "finishedAt": "2026-11-20T21:53:35+00:00",
+  "wallSeconds": 368.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1837703,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 166924288,
+    "wallSeconds": 114.7,
+    "cpuSeconds": 123.4,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove original properties by complete native case analysis",
+      "run": "python3 examples/tools/build.py 345 --native-selectors bytes-fix-parent,count-fix-parent,page-fix-parent,positive-fix-parent --checker-seconds 90 --first 6",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 114.71,
+      "cpuSeconds": 123.367,
+      "cpuThrottledSeconds": 1.796,
+      "peakMemoryBytes": 166924288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-original-properties-by-c.log",
+        "lines": 4,
+        "bytes": 212,
+        "sha256": "d6bcbfdeda455c05934bffc3d2a96ace98f2f5c199d8da33810b6726a52c29cc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "bytes-fix-parent established, 96/96 admitted selectors",
+        "count-fix-parent refuted, 1/96 admitted selectors",
+        "page-fix-parent refuted, 1/96 admitted selectors",
+        "positive-fix-parent established, 24/24 admitted selectors"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/Calls.java",
+      "change": "added",
+      "bytes": 7912,
+      "sha256": "23fdcf9901cc45795569d0abacc14f3b698402308965b111eeaa5077e5dfb5a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 4827,
+      "sha256": "c53c896beaee48dd933dece412abadfe6fac23e5252e0f05fbc9e9ca1c457081",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p0/native.json",
+      "change": "added",
+      "bytes": 4712,
+      "sha256": "bb797389ad34b1547a8fb8e841683179b4a053e2e431319f088b1f7243076224",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p0/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p1/native.json",
+      "change": "added",
+      "bytes": 4720,
+      "sha256": "cf448abf2b6799f0b69ecfe6dcfd71fb2f03ac01409a77afb72b8df1abf33c60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p1/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p16/native.json",
+      "change": "added",
+      "bytes": 4717,
+      "sha256": "22eecc86c20c0413627bcc5372523fc973e2c6580714458bcd2663d710e2532a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p16/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p17/native.json",
+      "change": "added",
+      "bytes": 4731,
+      "sha256": "6d8c5ff73ade69ea2b70388b939113ce3891410d7b477da919237d959091ac4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p17/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p24/native.json",
+      "change": "added",
+      "bytes": 4717,
+      "sha256": "6a32d575eb29195bb83206af60e66262871c39b98ed7c78dd07b82a5ec181fe3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p24/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p25/native.json",
+      "change": "added",
+      "bytes": 4717,
+      "sha256": "22781d3f1b6b2baf56cdd46d32624f6a30b8870ac6a93e45cb1c63fe30fb2942",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p25/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p32/native.json",
+      "change": "added",
+      "bytes": 4715,
+      "sha256": "f393c403f0576ecbfee80643478663a958cf85bce222a8de3e69b410455ad1b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p32/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p33/native.json",
+      "change": "added",
+      "bytes": 4723,
+      "sha256": "369138d280829fec7dee0253eeed25d9096c999113f63406310e335f1b6b24da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p33/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p40/native.json",
+      "change": "added",
+      "bytes": 4724,
+      "sha256": "a982b091d55d23ee1d762cfe2a3e6f87ab2bcf7a1cc7a23148f9668bc2932b27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p40/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p41/native.json",
+      "change": "added",
+      "bytes": 4716,
+      "sha256": "c69b7a00f59634dba4428bcb0b2b28da39e3e2412566785e2ee6c897165aa318",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p41/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p48/native.json",
+      "change": "added",
+      "bytes": 4715,
+      "sha256": "e9c883ef2a49d14473bde78ac23aedd2a16bfbe92cc8ed76973e29db9c6180d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p48/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p49/native.json",
+      "change": "added",
+      "bytes": 4716,
+      "sha256": "71ff3e545d89f1e5d9618a91546436b69e5c06e2e9ebb6814342085ce314673b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p49/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p56/native.json",
+      "change": "added",
+      "bytes": 4717,
+      "sha256": "fee58e4b4fd2607b3218eb89c9528071b38d42c18b86983865575b8489a90541",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p56/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p57/native.json",
+      "change": "added",
+      "bytes": 4718,
+      "sha256": "dd1880eb0596c6674855400e1df4a25743064e81bb0df8d0989efb9ca37e32c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p57/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p6/native.json",
+      "change": "added",
+      "bytes": 5520,
+      "sha256": "1a966a8eab776d0c52d054f95db3e7d40b2dca94c1f05870ef8e20a3c6efe75a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p6/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p64/native.json",
+      "change": "added",
+      "bytes": 4714,
+      "sha256": "1fa5df5df5f200833aaae7a1681442ee12e326f66ad51eb5883d6ca15f1a9e91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p64/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p65/native.json",
+      "change": "added",
+      "bytes": 4714,
+      "sha256": "1ac5ae76ff6ac733513de872e7e5e9592ab9c73a3a4acda0339f62e54fea72c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p65/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p72/native.json",
+      "change": "added",
+      "bytes": 4719,
+      "sha256": "53cf1679b8f91acb73a99fc14d5f6643b311bddcb58a79766e513c3b8b0f56fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p72/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p73/native.json",
+      "change": "added",
+      "bytes": 4719,
+      "sha256": "2fe7adf0c1480a9566d5cb26ce25c357c1b5e4eeb92ffa3e5e8b0aadf192a5bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p73/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p8/native.json",
+      "change": "added",
+      "bytes": 4713,
+      "sha256": "42930288899f3f1ecd9d037b0e04dcadd948181e355bba12d068eb35b97a05b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p8/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p80/native.json",
+      "change": "added",
+      "bytes": 4718,
+      "sha256": "e43e7cb2536356a73cc543f5e246c5dfefd0250a16a25934c0c9c78805ee6b69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p80/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p81/native.json",
+      "change": "added",
+      "bytes": 4718,
+      "sha256": "982e195a5e87d999c9e4ab44950b1170954a4dbe15af5431b0a9950c1bc6b1bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p81/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p88/native.json",
+      "change": "added",
+      "bytes": 4718,
+      "sha256": "9c7909b63a6394b01f731c2cc074c934159c174b8198b445b58638d700f92ce0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p88/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p89/native.json",
+      "change": "added",
+      "bytes": 4719,
+      "sha256": "6c233a0c5db679f52fd2b02a20fb7a40b88957dc2ecf3d395d6dae7741096d41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p89/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p9/native.json",
+      "change": "added",
+      "bytes": 4713,
+      "sha256": "2ba3859ad34ebf2b554348ab711a09629bc8cbb78c73b60b63f3219a07fc44c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p9/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/verificationselectors/Calls.class",
+      "change": "added",
+      "bytes": 4827,
+      "sha256": "c53c896beaee48dd933dece412abadfe6fac23e5252e0f05fbc9e9ca1c457081",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/Calls.java",
+      "change": "added",
+      "bytes": 8008,
+      "sha256": "3056da602ad0e279af8a29e9642dfba1ae6c35108883550146dbea750178747e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 4828,
+      "sha256": "2a6b82c9320d24e458fdfad3b6cf60c781aed4cdcb0ce34b220dcc3e6cf9bb4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p0/native.json",
+      "change": "added",
+      "bytes": 4335,
+      "sha256": "10f0553847321ac7fcbb28dacda0605307396e26b2e05c728ea08478ca8b59fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p0/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p1/native.json",
+      "change": "added",
+      "bytes": 4334,
+      "sha256": "1a77aba38c04e2f877718cf5812c95d2997e94a2e321fc0cc279b832571a2bc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p1/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p10/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "9924f449da00e40f9016cc9e7cfecf3f13eca2292fbebbfaea168946c5dc5677",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p10/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p11/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "9bb942d5c7c41b17c020504c2522fb91ea7610fe0717908c0c2c9ef2c3412b09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p11/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p12/native.json",
+      "change": "added",
+      "bytes": 4342,
+      "sha256": "ba8abf910371713eec93967198e89f7386b7c61741e41fda6bbd5b706abd3242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p12/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p13/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "a17bbcaca7076e15f192a9f70d0881fd1853d79dad1264ac6295d54ba0cc7b3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p13/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p14/native.json",
+      "change": "added",
+      "bytes": 4342,
+      "sha256": "f8a2d0d3e36523ba1e3f18ec32a160e45ce581398de0b55d9d61f444ffece460",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p14/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p15/native.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "77e0df75f27020d741cdaf6a42dfc92aebd2a4ebf40564b9a8541f8e2bec47ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p15/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p16/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "cafeb0919ff513d12256522a50a51bf04240878889b1d7e0837dbf158c4b3925",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p16/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p17/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "26f7ffb006c6aaf7a9366027a2b318adc54525b1d0f23dd74e9016761ddbcbc0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p17/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p18/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "52f667b1cff8716f443168c883d6232e8ed6c08c9aeae749c86c8b745f12f9f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p18/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p19/native.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "d801fb6ec0b1acb135716085a69660040f0a282ea587d101a15f2a003b36c9ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p19/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p2/native.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "25b798c0282c6af3bf230778fab1514e999a7d41b10d757c538c2b7b8ddc4097",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p2/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p20/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "e31191a855e1c88a64aff294cd9fc6a2973c647bba1a9f72ab632ba6727ad7f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p20/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p21/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "17fa0838ad93b5bd611f73dd4fee663e97c96e2ad80fcd7f37f3a855c3b5481e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p21/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p22/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "831f36037b88993f25b2a37174918d893a064d768205012255dfd3c9958775ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p22/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p23/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "b3914e324d5c910918f06ca4aea255fc22686291e8c6e69212687fc0b041e418",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p23/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p24/native.json",
+      "change": "added",
+      "bytes": 4337,
+      "sha256": "622505e501c927e8523edd6a1b5e414db3ce7adfb0c16686f7dd883439897cab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p24/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p25/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "8d9f173799f9c855f187c3549fffc2b65330fe37c67cc9e697d974670b0b396e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p25/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p26/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "a0c703d7d5bda5ebce8f9e46832720aa3e7c87b297fe5c130f905b6edf808974",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p26/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p27/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "487aac148fda562d111e9bb8b22dcc8072f0a3eeee2fe4e3d8e2fed19711d33e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p27/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p28/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "6cc1350c99a4fa57e6b3c4b50083f281bdeb8a1bf70fb1e0160d94fbb18a1c3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p28/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p29/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "5c3e92a669ea41ba8b4d4a3ca8d20c93f564e241a7808a8b8beb3a09dbb88425",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p29/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p3/native.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "24dd11bfb09923274ecdf2ee4abec9aa710349109f8ee13bdbf0e0cc31a22e8e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p3/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p30/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "c8ce0477f0242dffe34b35f7c9e8e19ea361738c9820be971b9224c4ef703998",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p30/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p31/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "c67c7b8c84aa50f376fe4d1f67e251e9fadf833f3a80825254633d38cf50d2f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p31/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p32/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "baf882c234eeb57964e58788cfa432cd37182a36c5eec4442a088afa8978a35b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p32/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p33/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "f527fc7133739363b83f151439018c24fd5e987e09a449e829a47df2b9f62e89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p33/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p34/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "b532a5759360fc8e27cb0343ac04d62e8a453d625b41129e33a687fb1d243067",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p34/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p35/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "1df4d155310bccad433bf90a324c944ac09006a8a5e7ab0235d1f70822106d83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p35/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p36/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "0a8c10d21b30cce95cba37e0044ce03a52a7c6201b4428f5989fad7fa1a02a36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p36/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p37/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "7aa6e283791c6633bd14bd7494c08f834e78aa358d12735b61bb35e49458f3cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p37/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p38/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "a28d7487cb1229deda6579e3941507d6e4c39b572f3078b61d4c6572dcedfe9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p38/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p39/native.json",
+      "change": "added",
+      "bytes": 4343,
+      "sha256": "da42a3b3d1314be810fd722e411c4937d0ad488bd37411db95e85902596e5998",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p39/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p4/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "a4f9dc9616989de5192fde8d90e90a5c5eb3ce981b51a8e609ee5acb761a6d7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p4/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p40/native.json",
+      "change": "added",
+      "bytes": 4342,
+      "sha256": "8d9828d263230f5cbc4cb056782e9957f179ddf506c3e3b1c50a93b5face5db3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p40/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p41/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "30b7a366d0338f20107457bffcae1ad6a807ef9a23f2e819f2bbd8d2647dfddf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p41/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p42/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "63238ca2542de81106d49536ec89fd93eafdf6cf67b588bd2e25e16aae436220",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p42/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p43/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "b73df927afafa3377f72e7c3d8ccde6ebbb1b366c7a4864cbd6af3f4f77cae21",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p43/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p44/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "c099ed93872688fb8b9ba2325a3928d29e11fcb492ce974e58d6678737abc1ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p44/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p45/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "af25ecc474124e260834b660b4f34b6722d3aa54b03628b9c4669075be1a530a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p45/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p46/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "2e215c10ca1957701efd486c403e85796e801e0a2318fd42d5a931956fd618af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p46/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p47/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "0d5b144bf29721825186bfc77b0917c2cbea558250f33992863f82abc506b461",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p47/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p48/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "3d0aee78dcf1016b87b38734cff33b7374bfb3a8000646113ef81c392d06ca55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p48/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p49/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "6bf225d7e89ed70a7dc68c62ae204791fb0ab09509c592efce9324421154e9ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p49/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p5/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "c2213e51f4b2e1e56d34bfd45b05e2d1d652dd3645c3a0af54514deab2e0ba67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p5/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p50/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "23dc657885a2fd7966fefb61a626f8e16522e8e8396f12b445f8cee798a2d138",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p50/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p51/native.json",
+      "change": "added",
+      "bytes": 4337,
+      "sha256": "1a1ab382c3b545b19e858358102c66d9d8ab9aa0b90e6d4f84c1d72565077696",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p51/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p52/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "d312fac51f0ba3494c5ce7a8e79b3b8850d0256768a00353c7fbca9a4aa02e3d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p52/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p53/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "321bc428a780e8520ee9b929d3b1f8560045c9d4b4599c7db30521131c85f706",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p53/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p54/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "00427e0533556c424e51bc6513b7288ee1c83ad505f11bfaa854ed8db56eb075",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p54/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p55/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "9079f5e75fafd89553a366570ac61ba123dd6c8477c29510d20be8dcef5621ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p55/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p56/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "a73d85cfcfce9a6803ceb59035241bfcac36449ab86425689d01289f5e233dc0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p56/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p57/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "e39a87e7f58f5eebf0337b588ccc23cacc74275ea0cca6e213a89dc4edbafeb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p57/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p58/native.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "d5cecd5fe3c2c3275bd2fab437123f4513272a3dd8c094300167f9ca2ad62bf5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p58/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p59/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "2940ef731febe2678ec74539b2e9126c76a94a36f506671064c9464591d4f502",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p59/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p6/native.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "a98a63dc8fd36016a8a1a58aec2f3603621e33dc5ea918f75296ba103860da52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p6/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p60/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "6cb39e397702739a55c95d99eed9ff0b2595d0df7dc1aa01a21154e2cdc5cf1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p60/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p61/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "71672b5c1a054d7d32393300bfc55193db866648ec434f3b5fcd348820dd9abb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p61/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p62/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "8a258c45fc7190ffd7f7fb76b4d7ce835d547781a115d5548072029028bc8b0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p62/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p63/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "8b3ea6c83dd22c1d3598118fbf97013e39397105c8d1eed3cdc047b53ba34518",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p63/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p64/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "b6ed71b74d746115f16471657ef221b04debae58c68c09948fb3729f248ec12f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p64/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p65/native.json",
+      "change": "added",
+      "bytes": 4337,
+      "sha256": "d1ca3e669daccee7aa19d5f9198ce1238c283604107ebdf0609239f19ca1b81c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p65/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p66/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "e8edd58bad001f3fc2cc9b8bdaf273740a01ae4baad48f69a8bedfbbf11bec27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p66/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p67/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "ff53e1c09b53f807b9115e7ff284574b6167877a400c6a514097e6558bbab250",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p67/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p68/native.json",
+      "change": "added",
+      "bytes": 4335,
+      "sha256": "7e3ab11c0bf2a4e902e6125caaa63dff735be2600a4bc4f9d08713000e87b36a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p68/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p69/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "29bdf45b21a0cd9ae72afb46cdd3fcd863621497e2b3d10a61ba1b36a5012390",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p69/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p7/native.json",
+      "change": "added",
+      "bytes": 4335,
+      "sha256": "f19180616d29b0b81d423d502d50bf308a2b8aad7d39d443054726b6c7cc9fe2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p7/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p70/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "0fb6ec83d9e26e5db4d027111cc24ff0bf1b71a7be86908c4cbd856cd2b22639",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p70/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p71/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "e8ccd61383c62b224410e0954c090cea862db55c025906e6965a23ce9bfe2006",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p71/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p72/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "4f9b84799465d97363c4f39d8df9c832193c662a03d6b2a01cbb8c5d2e6baeef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p72/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p73/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "8fadb99bf8a4237c405677b69d5b4c44244d7aa9db1cc367d3d0a4d960fc2631",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p73/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p74/native.json",
+      "change": "added",
+      "bytes": 4337,
+      "sha256": "91e7058e3e08995487a86942d7698183d4328abe1cb3d21b85fef7b4f56945ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p74/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p75/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "865d62bebba7afbf5a30c633cfd4a5bdac798c7a72170718fcb3a68a9c879572",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p75/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p76/native.json",
+      "change": "added",
+      "bytes": 4335,
+      "sha256": "3cefd7411c2dcc307b2b7a289c8de87c49ebc78cd5f9c6da23c53f85c2118a66",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p76/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p77/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "42c835fc22c7b506e48294bedb73361a3be793a0f4d7a5d17c1b4400bb18e5f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p77/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p78/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "bf75f8c0732bc478630e73c918c8a44afdaa58fa0a46d1aa0b37b0900157d809",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p78/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p79/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "ad0b3889af2eb2c25358507a04f4e4cb4d6fe8295495f00fb0ede4e6c52b5c09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p79/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p8/native.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "87d322eacd5e292e29dd2007a390771ac21a8a2bfd5c9476d3baaf3c14a67096",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p8/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p80/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "719c0467d323ab8f2fc3343ad294a88cb6ca843a7f6e71d289339082682cac47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p80/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p81/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "36917dc88a99b4942e23502145a0c83a1ceda965074447d46d34926ada01b779",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p81/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p82/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "a6ac011d17013eab554113d36eaf57e29d43d080a333a5f97c426019fde3cf46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p82/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p83/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "ab4839f760d718b3e5bfc559bfc2350f2a8cf42199ab1e910b7765e583ce6aae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p83/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p84/native.json",
+      "change": "added",
+      "bytes": 4337,
+      "sha256": "062c90f30c96f4f02e16cd1a6ce852e93170d87b24d5154ef124c32a148b5cb2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p84/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p85/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "de7f015a620f676c0948f44f89b6538a405cd188e6b042cba4ba0b6286776973",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p85/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p86/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "b84780274cf938553a41f2504e4d77f18080abeff873d730834f1a12218650c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p86/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p87/native.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "4ad85b308340ee08df816c7d5e239658c8a145e1f19168d5a21ff23e11b61d6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p87/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p88/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "31b1720560bc342bbfe1a6e18d8a4a9fd97ad0116290c43783bd0e7220389332",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p88/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p89/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "96545ec17090890faef907bd8e23221308eaeb8c3fcf66c61090cd5cb8985272",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p89/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p9/native.json",
+      "change": "added",
+      "bytes": 4334,
+      "sha256": "f310ad505114f98155b7d4abe7e5d9a447eb2524e6e72308c2e237cb02716fcd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p9/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p90/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "759030e921d5b0b95d956662675f49a7777d4d6ff186ba61729659f3352b3a63",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p90/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p91/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "750dbc7eaa8adbf8feac847ceb454cfc9f74d774566336a4c8cd6d5b37af6f61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p91/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p92/native.json",
+      "change": "added",
+      "bytes": 4339,
+      "sha256": "c2502112025f5f24e0670d053dd9edf1f718f54fc6767e7c7014d055d23b5664",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p92/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p93/native.json",
+      "change": "added",
+      "bytes": 4338,
+      "sha256": "d6d78c400f09e9fffbdc74e714332b3801523600f4649fad11df8d17e9907307",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p93/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p94/native.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "a59cfd135df272b6a3a5fca80b09a5416f940f8c9bcc5df879d65532517c6542",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p94/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p95/native.json",
+      "change": "added",
+      "bytes": 4340,
+      "sha256": "5834ca464fc614ed6493cd9faf67ea9c150ff7896f7feecb78e68e495a191c5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p95/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/verificationselectors/Calls.class",
+      "change": "added",
+      "bytes": 4828,
+      "sha256": "2a6b82c9320d24e458fdfad3b6cf60c781aed4cdcb0ce34b220dcc3e6cf9bb4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/Calls.java",
+      "change": "added",
+      "bytes": 8008,
+      "sha256": "3db8f8e67902dc3a7aab0f90c2bb43175be89456de9c64440026a185eb150aa7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 4828,
+      "sha256": "3541f3d65133866cd6efdb98ab1ccf4496c8c4e72809843d4fe1511d7448014c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/cases/p6/native.json",
+      "change": "added",
+      "bytes": 5521,
+      "sha256": "60a630f1440aca125bb8d0b8bc9dbad50f8493062893594d1142a2f56b1ecb5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/cases/p6/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/verificationselectors/Calls.class",
+      "change": "added",
+      "bytes": 4828,
+      "sha256": "3541f3d65133866cd6efdb98ab1ccf4496c8c4e72809843d4fe1511d7448014c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/bytes-fix-parent/Admission.java",
+      "change": "added",
+      "bytes": 6658,
+      "sha256": "0640c73001ecad3c8cd0f825bd3e5f8ac0717fe3798b9b6be421f90b407196f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/bytes-fix-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "9f9ec4dca403255ea4ef1acaacccdd42ad67e23101d09346907cd2d355a55c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/bytes-fix-parent/result.json",
+      "change": "added",
+      "bytes": 77347,
+      "sha256": "bca6db95892c293a60f91c5152dc55e82a5bada620954f66898715a65f57e130",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/bytes-fix-parent/verificationselectors/Admission.class",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "9f9ec4dca403255ea4ef1acaacccdd42ad67e23101d09346907cd2d355a55c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/count-fix-parent/Admission.java",
+      "change": "added",
+      "bytes": 6658,
+      "sha256": "0640c73001ecad3c8cd0f825bd3e5f8ac0717fe3798b9b6be421f90b407196f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/count-fix-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "9f9ec4dca403255ea4ef1acaacccdd42ad67e23101d09346907cd2d355a55c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/count-fix-parent/result.json",
+      "change": "added",
+      "bytes": 7290,
+      "sha256": "e0dd8fcdcabfd9e6c87feb0bcd32c49c1ce2553852ee9b12adb10e371e562b12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/count-fix-parent/verificationselectors/Admission.class",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "9f9ec4dca403255ea4ef1acaacccdd42ad67e23101d09346907cd2d355a55c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/page-fix-parent/Admission.java",
+      "change": "added",
+      "bytes": 6658,
+      "sha256": "0640c73001ecad3c8cd0f825bd3e5f8ac0717fe3798b9b6be421f90b407196f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/page-fix-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "9f9ec4dca403255ea4ef1acaacccdd42ad67e23101d09346907cd2d355a55c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/page-fix-parent/result.json",
+      "change": "added",
+      "bytes": 7284,
+      "sha256": "360907d8662be988883a35ea3636a25d6d3191b6b00b011dbb6485d626d1035d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/page-fix-parent/verificationselectors/Admission.class",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "9f9ec4dca403255ea4ef1acaacccdd42ad67e23101d09346907cd2d355a55c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/positive-fix-parent/Admission.java",
+      "change": "added",
+      "bytes": 8472,
+      "sha256": "097c3be459285b54ece0c40fe5a45b472d81a3a21fafaf59c6d077ba5fd64f58",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/positive-fix-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "e27e45c559188c6e335cf95da67d0c02d1ede807f41e51607f53f907d5a95392",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/positive-fix-parent/result.json",
+      "change": "added",
+      "bytes": 27074,
+      "sha256": "61abd5a44efaa4f1778bf006c531aa2c2cc54129d9b29650940ddac44202de06",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/positive-fix-parent/verificationselectors/Admission.class",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "e27e45c559188c6e335cf95da67d0c02d1ede807f41e51607f53f907d5a95392",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T21:56:37+00:00",
+    "applied": [
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/Calls.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/Calls.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p0/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p0/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p1/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p1/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p16/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p16/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p17/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p17/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p24/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p24/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p25/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p25/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p32/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p32/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p33/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p33/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p40/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p40/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p41/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p41/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p48/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p48/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p49/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p49/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p56/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p56/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p57/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p57/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p6/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p6/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p64/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p64/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p65/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p65/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p72/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p72/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p73/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p73/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p8/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p8/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p80/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p80/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p81/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p81/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p88/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p88/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p89/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p89/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p9/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/cases/p9/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b28c6a97259bfaaa1383/verificationselectors/Calls.class",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/Calls.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/Calls.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p0/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p0/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p1/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p1/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p10/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p10/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p11/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p11/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p12/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p12/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p13/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p13/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p14/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p14/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p15/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p15/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p16/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p16/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p17/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p17/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p18/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p18/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p19/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p19/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p2/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p2/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p20/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p20/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p21/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p21/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p22/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p22/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p23/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p23/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p24/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p24/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p25/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p25/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p26/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p26/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p27/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p27/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p28/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p28/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p29/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p29/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p3/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p3/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p30/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p30/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p31/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p31/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p32/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p32/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p33/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p33/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p34/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p34/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p35/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p35/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p36/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p36/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p37/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p37/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p38/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p38/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p39/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p39/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p4/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p4/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p40/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p40/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p41/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p41/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p42/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p42/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p43/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p43/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p44/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p44/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p45/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p45/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p46/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p46/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p47/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p47/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p48/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p48/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p49/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p49/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p5/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p5/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p50/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p50/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p51/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p51/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p52/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p52/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p53/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p53/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p54/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p54/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p55/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p55/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p56/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p56/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p57/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p57/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p58/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p58/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p59/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p59/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p6/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p6/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p60/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p60/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p61/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p61/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p62/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p62/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p63/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p63/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p64/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p64/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p65/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p65/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p66/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p66/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p67/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p67/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p68/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p68/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p69/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p69/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p7/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p7/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p70/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p70/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p71/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p71/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p72/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p72/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p73/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p73/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p74/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p74/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p75/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p75/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p76/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p76/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p77/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p77/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p78/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p78/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p79/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p79/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p8/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p8/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p80/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p80/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p81/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p81/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p82/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p82/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p83/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p83/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p84/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p84/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p85/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p85/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p86/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p86/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p87/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p87/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p88/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p88/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p89/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p89/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p9/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p9/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p90/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p90/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p91/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p91/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p92/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p92/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p93/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p93/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p94/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p94/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p95/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/cases/p95/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/b922647ea22fe2b1c204/verificationselectors/Calls.class",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/Calls.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/Calls.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/cases/p6/native.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/cases/p6/stderr",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/calls/d8081281f1a1f1deb5d3/verificationselectors/Calls.class",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/bytes-fix-parent/Admission.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/bytes-fix-parent/Admission.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/bytes-fix-parent/result.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/bytes-fix-parent/verificationselectors/Admission.class",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/count-fix-parent/Admission.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/count-fix-parent/Admission.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/count-fix-parent/result.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/count-fix-parent/verificationselectors/Admission.class",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/page-fix-parent/Admission.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/page-fix-parent/Admission.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/page-fix-parent/result.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/page-fix-parent/verificationselectors/Admission.class",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/positive-fix-parent/Admission.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/positive-fix-parent/Admission.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/positive-fix-parent/result.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/fix-parent/20261120T215140Z-04293ad9/tasks/positive-fix-parent/verificationselectors/Admission.class"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

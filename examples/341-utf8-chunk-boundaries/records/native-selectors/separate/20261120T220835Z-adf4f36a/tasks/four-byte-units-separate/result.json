@@ -1,0 +1,136 @@
+{
+  "schema": "native-selector-proof/v1",
+  "identity": {
+    "sourceClaim": "00fb96e30ac5bc29",
+    "inputsKey": "695e6f485daa3c60d88c7d570876f4690b32ad19a858d203fa6d3fe9ad5853d4",
+    "revisions": [
+      "separate"
+    ],
+    "expected": "refuted",
+    "sourceLocks": {
+      "separate": "e05456cc3493ab767d00bf65361486874479f0cb021ef273ad05755db784d971"
+    }
+  },
+  "task": "four-byte-units-separate",
+  "revision": "separate",
+  "entry": "chunks.Inputs#units(I)I",
+  "guard": "code >= 4 && code < 12",
+  "parameter": "code",
+  "assertion": "result == 1",
+  "bounds": {
+    "unwind": 160,
+    "maxArrayLength": 48
+  },
+  "envelope": [
+    4,
+    11
+  ],
+  "maxCases": 4096,
+  "admitted": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "JDK": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "checker": {
+    "commit": "096e0570c4a00071db8a43a4111a03435cc5a0a2",
+    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+    "sha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18"
+  },
+  "classpath": [
+    {
+      "path": "separate.jar",
+      "sha256": "b537544cdd230b309de2ba2ab224306c3e45453c1d9e6cba4c73a3e1ff3f584d",
+      "role": "original"
+    }
+  ],
+  "correspondence": [],
+  "ruleSha256": "b89514960728f920e57ecc034ef3cc46e1489d5899795eb6810f9f470d9c3d88",
+  "admissionClass": "tasks/four-byte-units-separate/Admission.jvm-bytecode",
+  "admissionSha256": "e9dfe554db0fad85be4615b42f11ef1df4853eb8edd19c9daafe47ae684ef719",
+  "callsClass": "calls/bd537bc4ab7505d448e7/Calls.jvm-bytecode",
+  "callsSha256": "d5824eaedab4730576c9ff007591c9f4a9aa616ea6ba2b3257357e45124fd401",
+  "checked": [
+    {
+      "selector": 11,
+      "status": "refuted",
+      "target": "verificationselectors.Calls#p11()",
+      "exit": 1,
+      "wallSeconds": 0.072,
+      "usage": {
+        "cpuSeconds": 0.0653,
+        "peakRssBytes": 78962688,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "2593bd38e3649a777ec2fb64f63b62cee5c10ff1b5da920091ab23caef56e1a4",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/bd537bc4ab7505d448e7/cases/p11/native.json",
+      "reusedInBatch": false
+    }
+  ],
+  "status": "refuted",
+  "originalJVMReplay": {
+    "claimKey": "00fb96e30ac5bc29",
+    "entry": "chunks.Inputs#units(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 11
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "separate": {
+        "entryClassSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f",
+        "classpath": [
+          "b537544cdd230b309de2ba2ab224306c3e45453c1d9e6cba4c73a3e1ff3f584d"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 11;\nif (!(code >= 4 && code < 12)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = chunks.Inputs.units(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "wallSeconds": 0.578,
+  "cost": {
+    "preparationAndCorrespondenceSeconds": 2.39042,
+    "checkerWallSeconds": 0.072,
+    "originalWitnessReplaySeconds": 0.50503,
+    "endToEndSeconds": 2.96844,
+    "peakNativeRssBytes": 78962688
+  }
+}

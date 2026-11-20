@@ -1,0 +1,169 @@
+{
+  "plan": {
+    "example": "331",
+    "task": "parity-one-tile",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "tiling.Floor#parity(I)I",
+    "revisions": [
+      "one-tile"
+    ],
+    "claim": {
+      "task": "parity-one-tile",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#parity(I)I",
+      "file": "claims/parity.json",
+      "sha256": "1eb848ea053d9c19af7aadf70a96ce9383720b83af0f568f0fe69103def29933",
+      "property": "parity",
+      "claimKind": "property",
+      "statement": "For n from zero to eighteen the parity caller agrees with the binomial tiling count.",
+      "assume": "n >= 0 && n <= 18",
+      "assert": "result == tiling.Oracle.parity(n)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 0
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 0
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/tiling/Cases.java",
+          "sha256": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa"
+        }
+      ],
+      "key": "69f24181ef8dfc59"
+    },
+    "prerequisites": [
+      "replay-one-tile"
+    ],
+    "artifacts": [
+      {
+        "revision": "one-tile",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "one-tile",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/parity-one-tile"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213850-331-recheck-compiler-and-downstream-help/examples/331-floor-tiling-proof-reuse",
+    "network": false
+  },
+  "inputs": {
+    "example": "331",
+    "task": "parity-one-tile",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "tiling.Floor#parity(I)I",
+    "revisions": [
+      "one-tile"
+    ],
+    "claim": {
+      "task": "parity-one-tile",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#parity(I)I",
+      "file": "claims/parity.json",
+      "sha256": "1eb848ea053d9c19af7aadf70a96ce9383720b83af0f568f0fe69103def29933",
+      "property": "parity",
+      "claimKind": "property",
+      "statement": "For n from zero to eighteen the parity caller agrees with the binomial tiling count.",
+      "assume": "n >= 0 && n <= 18",
+      "assert": "result == tiling.Oracle.parity(n)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 0
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 0
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/tiling/Cases.java",
+          "sha256": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa"
+        }
+      ],
+      "key": "69f24181ef8dfc59"
+    },
+    "artifacts": [
+      {
+        "revision": "one-tile",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "one-tile",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "5a85a3d5ee439a079889aebe7006316ef8e8cf529205cee57208b54dd26cfdc8"
+}

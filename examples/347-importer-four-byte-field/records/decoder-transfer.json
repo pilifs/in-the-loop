@@ -1,0 +1,109 @@
+{
+  "schema": "importer-charset-transfer/v1",
+  "jdk": {
+    "feature": "21",
+    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "originalClientClasses": {
+    "PageImporter$1.class": "e66692d36561cf08522bb9cef51da1c9785994a62388f2b4009356ddb16127ac",
+    "PageImporter$Row.class": "9a8889333fce06b657c118427005fd0bbdfd0cab43263b54a977a7d6c0e6c5ed",
+    "PageImporter.class": "b00740383acd7e63b1af061e0101518780826b8625f9576ef040191bfb3f1585"
+  },
+  "upstreamMatrix": "examples/345-paged-importer-upgrades/records/matrix/matrix.json",
+  "decoder": {
+    "task": "units-stream",
+    "sourceClaim": "729b5e29b253f054",
+    "inputsKey": "0555cb4017601fb32f12efdcdf475d048bfaecb8c14e9d29d0a218470c4dfc8f",
+    "finiteReceipt": "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/units-stream.json",
+    "receiptSha256": "9964a1a36ce8901581a2a129edd0d6bca60fd5ecfa43a382f76ab22bd4db42cf",
+    "standaloneSelectors": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "imageClasses": {
+      "java/io/InputStreamReader": "e63c6211d54500055d9eb807449f347545c5c85381d36763066f1ebb85b3c566",
+      "sun/nio/cs/StreamDecoder": "555be800adbcf5c65df37d81cfbcd03ef773f0914126b9910815a622905cf348",
+      "sun/nio/cs/UTF_8$Decoder": "d0728c69b75011f6901b18b3b531b6d6e355bf32960c0f3e3d4949b6a4218cc0"
+    },
+    "nativeProofs": [
+      {
+        "task": "four-byte-units-stream",
+        "record": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-units-stream/result.json",
+        "sha256": "37ff65dadf6d21cfc8b5e95fd926e1ebe7eb7baa9d040e72deff249450f32e15",
+        "checker": {
+          "commit": "096e0570c4a00071db8a43a4111a03435cc5a0a2",
+          "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+          "sha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18"
+        }
+      },
+      {
+        "task": "four-byte-eof-stream",
+        "record": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-eof-stream/result.json",
+        "sha256": "0cf0d32718034ab7afce395a815e4cde8ba27cf5aad1ed256799bc1488e67677",
+        "checker": {
+          "commit": "096e0570c4a00071db8a43a4111a03435cc5a0a2",
+          "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+          "sha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18"
+        }
+      },
+      {
+        "task": "four-byte-units-bom",
+        "record": "examples/341-utf8-chunk-boundaries/records/native-selectors/bom/20261120T220835Z-ad684965/tasks/four-byte-units-bom/result.json",
+        "sha256": "ab44e454198ceb52ab0ea9c188df365badb9fe77d8405876cfc8f3b10bbc2be3",
+        "checker": {
+          "commit": "096e0570c4a00071db8a43a4111a03435cc5a0a2",
+          "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+          "sha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18"
+        }
+      },
+      {
+        "task": "four-byte-eof-bom",
+        "record": "examples/341-utf8-chunk-boundaries/records/native-selectors/bom/20261120T220835Z-ad684965/tasks/four-byte-eof-bom/result.json",
+        "sha256": "d889dbb22a847c67777a396297d069b9744263faf36abeb66bd3781315d48b66",
+        "checker": {
+          "commit": "096e0570c4a00071db8a43a4111a03435cc5a0a2",
+          "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+          "sha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18"
+        }
+      }
+    ]
+  },
+  "field": {
+    "utf8": "f09f9880",
+    "utf16": "d83dde00",
+    "offsetInDocument": 4,
+    "oneByteReadCuts": [
+      5,
+      6,
+      7
+    ]
+  },
+  "downstream": {
+    "case": 14,
+    "directInputsPerCell": 32,
+    "correctNumberedRow": [
+      [
+        2,
+        [
+          "abc",
+          "😀"
+        ]
+      ]
+    ],
+    "scope": "The page, bytes and count are checked again on the real CSV, IO and decoder call chain."
+  }
+}

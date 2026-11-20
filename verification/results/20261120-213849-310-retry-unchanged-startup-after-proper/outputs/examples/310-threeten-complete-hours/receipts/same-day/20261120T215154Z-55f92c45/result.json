@@ -1,0 +1,336 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "d0c190692c109e21",
+    "format": 1,
+    "example": "310",
+    "statement": {
+      "approach": "target",
+      "task": "same-day",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "revisions": [
+        "parent",
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "same-day",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+        "file": "claims/same-day.json",
+        "sha256": "995ed88c59ae42a79a5e1d8162d6aab2fe24ee60b311100e583b734fe447ce40",
+        "property": "same-day",
+        "claimKind": "preservation",
+        "statement": "The revisions preserve whole hours for endpoints on the same day.",
+        "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191 && startTick / 96 == endTick / 96",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 16
+        },
+        "defaultBounds": [
+          "maxArrayLength"
+        ],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "clock-driver",
+            "kind": "driver",
+            "path": "driver/civil/ClockCases.java",
+            "sha256": "f438b7afc1663077cc9b24cb41983e334654ae1505d841c870eaf0584fab505f"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "f0e94343912deba019b0f590e0aa1a110bd5a491529d3a3b63c5f16131d5c081"
+          }
+        ],
+        "adapter": {
+          "entry": "civil.Hours#completeHours(II)J",
+          "mapping": "Independent ticks 0 through 191 denote quarter-hours from 2012-06-15 00:00, local civil time on June 15 and 16. The unit is ChronoUnit.HOURS. No zone conversion.",
+          "correspondence": "finite-oracle",
+          "cases": 36864
+        },
+        "key": "e5d30978a554dfeb"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "same-day",
+      "sidecar": "83b524044b3297d2baf45a93624c24343abb2d8292ca7b9db94e6db78bad4fb6",
+      "revisions": {
+        "parent": "fea38bd81e10d35ef8d991a4463733587e3ee7bc",
+        "fix": "f0b2eaf1856b7fb5fdf78de3cedc9781b6619b88"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "666493df1bcae8df9c6586ae1e479ddde4cb83f245335d2df23335c1ecc60a1f"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "85a8dc921b282c09d82a1d62bdcf70ed894107331cce5329c33fe6f1fea5a3bf"
+        },
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "666493df1bcae8df9c6586ae1e479ddde4cb83f245335d2df23335c1ecc60a1f"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/civil/Hours.java": "6e31ff7f00294ae0c6ea199da283dcb666d260cc50ba7cbd0c8da03320998974",
+        "claims/same-day.json": "995ed88c59ae42a79a5e1d8162d6aab2fe24ee60b311100e583b734fe447ce40",
+        "controls/oracle.py": "f0e94343912deba019b0f590e0aa1a110bd5a491529d3a3b63c5f16131d5c081",
+        "driver/civil/ClockCases.java": "f438b7afc1663077cc9b24cb41983e334654ae1505d841c870eaf0584fab505f"
+      },
+      "claimKey": "e5d30978a554dfeb",
+      "scopes": {
+        "parent": "extracted-source-slice",
+        "fix": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261120T215154Z-55f92c45",
+    "claim": "d0c190692c109e21",
+    "startedAt": "2026-11-20T21:51:54+00:00",
+    "seconds": 1.4,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/parent",
+      "--after",
+      "verifier/classes/fix",
+      "--target",
+      "civil.Hours#completeHours(int, int)",
+      "--classpath",
+      "prepare/fix/slice/fix.jar",
+      "--before-classpath",
+      "prepare/parent/slice/parent.jar",
+      "--assume",
+      "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191 && startTick / 96 == endTick / 96",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "c7d22869083b0ce6acafc8567279c5342804d6104d03767591c2da635cb29608",
+        "files": 1
+      },
+      "after": {
+        "sha256": "51a0142b507ae5e9c6f1a2b1b0ffc7785c9a648f189a78ead52b9f4ca651f21a",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-213849-310-retry-unchanged-startup-after-proper",
+      "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213849-310-retry-unchanged-startup-after-proper"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 1.163,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "d0c190692c109e21",
+    "attempt": "20261120T215154Z-55f92c45",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at before.org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "startTick: int × endTick: int",
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "59251e79f846380d190ab4d733302efb95a31a6fafaa9d77f9d0f51fe4f6d763",
+        "bytes": 126717
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "9d0d9a11b1d3511dd54f57eb7c3cacea5eabc9b8bc474b80f4662fb740addc82",
+        "bytes": 1371
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "0578ede23b9ce5b0ab21cc0e708e81074942b7a3e69f6dd660eb508ff524d790",
+        "bytes": 2647
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "b8a4776a604612bbc47417c80ceac0eba56a5788096bd49b3708e8704e2c7aae",
+        "bytes": 15828
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "e617e5a20f29bbbe377d734b559e175370063fe303d8987e4fea2861941fafda",
+        "bytes": 72280
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "9a41a5fd7b9a5932e6937a5633bacb300e7086c59219381b533c990fa3de4012",
+        "bytes": 15661
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "d09294cbd89f7b3c3ff6ef42f819ca89fc7c06aaee1f552dc9d0a828886ed1ff",
+        "bytes": 14463
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "35cbcd84fba9e0d2d50922b10c0d225b651a3a320657a2a6dfd23a823a77d1eb",
+        "bytes": 53576
+      }
+    ]
+  }
+}

@@ -1,0 +1,686 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-213849-337-close-bound-64-through-exact-compile",
+  "title": "337 close bound 64 through exact compiled fill loops",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m57s, peak 290.9 MiB (estimated 5m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-213849-337-close-bound-64-through-exact-compile.json",
+    "sha256": "0a0e17ba6c756954a5ec7c3f6aa05837c11d5538cb3ad870d792c9029009caa4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-213849-337-close-bound-64-through-exact-compile",
+      "title": "337 close bound 64 through exact compiled fill loops",
+      "description": "Repeat the same generic native proof at length 64, unwind 67 and 120 seconds per task. The accelerated loop executes the actual range check then proves safety and writes each selected cell under its exact bit-vector interval predicate; reassess both original and changed helper/caller.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "337"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T21:38:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 337 --tasks frame-64-original,caller-64-original,frame-64-extra,caller-64-extra --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/337-jdk-range-fill-alias/receipts/frame-64-original",
+        "examples/337-jdk-range-fill-alias/receipts/caller-64-original",
+        "examples/337-jdk-range-fill-alias/receipts/frame-64-extra",
+        "examples/337-jdk-range-fill-alias/receipts/caller-64-extra"
+      ]
+    }
+  },
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "startedAt": "2026-11-20T21:51:57+00:00",
+  "finishedAt": "2026-11-20T21:53:59+00:00",
+  "wallSeconds": 122.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1837703,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 305016832,
+    "wallSeconds": 117.2,
+    "cpuSeconds": 123.4,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 337 --tasks frame-64-original,caller-64-original,frame-64-extra,caller-64-extra --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 117.177,
+      "cpuSeconds": 123.435,
+      "cpuThrottledSeconds": 0.791,
+      "peakMemoryBytes": 305016832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 8,
+        "bytes": 912,
+        "sha256": "f61d4bff05682ace122315eca9a17812fc9a223c690e1073f86a851ad285ae23",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "337-jdk-range-fill-alias: task frame-64-original: established (completed; as expected), receipt receipts/frame-64-original/20261120T215202Z-7ab71de6/result.json",
+          "groups": [
+            "337",
+            "frame-64-original",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "337-jdk-range-fill-alias: task caller-64-original: established (completed; as expected), receipt receipts/caller-64-original/20261120T215228Z-ef138494/result.json",
+          "groups": [
+            "337",
+            "caller-64-original",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "337-jdk-range-fill-alias: task frame-64-extra: refuted (completed; as expected), receipt receipts/frame-64-extra/20261120T215333Z-4b49c242/result.json",
+          "groups": [
+            "337",
+            "frame-64-extra",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "337-jdk-range-fill-alias: task caller-64-extra: refuted (completed; as expected), receipt receipts/caller-64-extra/20261120T215336Z-a9e01eb6/result.json",
+          "groups": [
+            "337",
+            "caller-64-extra",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "337-jdk-range-fill-alias: running task frame-64-original (target route)",
+        "337-jdk-range-fill-alias: task frame-64-original: established (completed; as expected), receipt receipts/frame-64-original/20261120T215202Z-7ab71de6/result.json",
+        "337-jdk-range-fill-alias: running task caller-64-original (target route)",
+        "337-jdk-range-fill-alias: task caller-64-original: established (completed; as expected), receipt receipts/caller-64-original/20261120T215228Z-ef138494/result.json",
+        "337-jdk-range-fill-alias: running task frame-64-extra (target route)",
+        "337-jdk-range-fill-alias: task frame-64-extra: refuted (completed; as expected), receipt receipts/frame-64-extra/20261120T215333Z-4b49c242/result.json",
+        "337-jdk-range-fill-alias: running task caller-64-extra (target route)",
+        "337-jdk-range-fill-alias: task caller-64-extra: refuted (completed; as expected), receipt receipts/caller-64-extra/20261120T215336Z-a9e01eb6/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2799a1a0cfe88a1dd5bf43fda904d51dac2ade044bcaa48e0609550a835c1f6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/plan.json",
+      "change": "added",
+      "bytes": 5113,
+      "sha256": "e0bde4e80c34335e599f6bade190c5095fd1a388557570bdae06d8e23decd7a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 12008,
+      "sha256": "f0532337fe3b43758e9a746a13ddcf6b19b82717735cbac46797f9e407de9f01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/controls.json",
+      "change": "added",
+      "bytes": 43769,
+      "sha256": "41baeff1901a8385c83ac401d5cebc4e49aae3d1656adf1d428da0fa81761215",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/execution.json",
+      "change": "added",
+      "bytes": 59555,
+      "sha256": "a40a9abbeddba443e454e7b26021c002441b6a8fde57584f8f51f0b3fd5e87e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/streams.json",
+      "change": "added",
+      "bytes": 1987,
+      "sha256": "efa8cd96693a33dd1d5dd5042afb9c0ddc1565728b97d96b8d9be5820e0f0bdd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 693,
+      "sha256": "69837ffb90b89fdc43be0f1584513bb426efb1389f3fd53a9df0015bd4b31f3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/verifier.json",
+      "change": "added",
+      "bytes": 15689,
+      "sha256": "2d2d78941d860fb60382133420d4ba6636ebbdbe236434f68f66cca721ce03f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7354,
+      "sha256": "487ec604fb8d587db2156f5d67005fd4ef5bbb7e0274f16d0650aab67fb4cfa0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/result.json",
+      "change": "added",
+      "bytes": 20123,
+      "sha256": "4c3f3b7147ccc5f6d7211aed00c377cb560a6e6fd80f22074bd42931aa4ad60a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/executions/20261120T215202Z-7ab71de6/attempt.json",
+      "change": "added",
+      "bytes": 9407,
+      "sha256": "24575844638b6cce08fd6d76b64e9dafab3ac160de2862aa5ec50398dcc00e30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-original/executions/20261120T215202Z-7ab71de6/checker.json",
+      "change": "added",
+      "bytes": 8950,
+      "sha256": "7c24ab37ddaef064a5152a2ba2f1bec4d0f890f3c42a339d0f756642a208a59b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8e411a3d5f03d4e9aa058bb2b0bacfa2796ac989797ee469cb13ac6047c9a9d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/plan.json",
+      "change": "added",
+      "bytes": 4884,
+      "sha256": "d317a99839822db6d80e4ffb7ec02fdf7e07eb5f00d5d69c2515a7c36d081f09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 12008,
+      "sha256": "f0532337fe3b43758e9a746a13ddcf6b19b82717735cbac46797f9e407de9f01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/controls.json",
+      "change": "added",
+      "bytes": 43772,
+      "sha256": "a4ac892a79a91257ee61be94a350452f17e02c501e4a7c6c1f26f55d885e9206",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/execution.json",
+      "change": "added",
+      "bytes": 60051,
+      "sha256": "f9f64d18fb11ea442b32573ab8fb27ca238c1b576ece9c51b358ddc5d87e3ab7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/streams.json",
+      "change": "added",
+      "bytes": 1987,
+      "sha256": "35e4b7c70168662927d3d49a1add8779741828f8319aae5a7c847f78b7067487",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 863,
+      "sha256": "025e827025c83041c5a7ebb309400c3431fe3807afa9ccea3d786d2b42c7f2ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/verifier.json",
+      "change": "added",
+      "bytes": 16173,
+      "sha256": "62b3405afed847397b5a21590f5f72bd3956d293044bb7a1deb92f461da6bcb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7988,
+      "sha256": "12742f061f6ee33333a37e4ab8e284ae98ad6b090eaf0a3613f14b12900708e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/result.json",
+      "change": "added",
+      "bytes": 20720,
+      "sha256": "a90479aeabb07053d9bc8d17bfdbf93b859fa0547bb6593cdccfb942866a65fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/executions/20261120T215228Z-ef138494/attempt.json",
+      "change": "added",
+      "bytes": 9236,
+      "sha256": "c0429644459fd383c9acaf23bc4f53fb4aaff8431c8b686c094b742e4f819319",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-original/executions/20261120T215228Z-ef138494/checker.json",
+      "change": "added",
+      "bytes": 9488,
+      "sha256": "7eadc5ab84be5330b8c08bfc68dd1d51cf37d7658bc954617a5fbcff85357bc3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e519257e01c364a590ea92596a791d1724a8a11643457845636d81c62d5fe0ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/plan.json",
+      "change": "added",
+      "bytes": 5076,
+      "sha256": "9232e30c4cc09ec033c84a51435dc3efcf40a9cc3f3ca0aac7f7ba477cb1108d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/control-extra-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/control-extra-jdk21.stdout",
+      "change": "added",
+      "bytes": 12048,
+      "sha256": "a49b6f4f8cfbbf791cd32ae714a55177ebda46ea4ed40646a23e4ab665bde172",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/controls.json",
+      "change": "added",
+      "bytes": 43779,
+      "sha256": "165e2cb74979c6915bef8b2850589baf42c2fd5ef9db160eff3e95813852ce45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/execution.json",
+      "change": "added",
+      "bytes": 65591,
+      "sha256": "472f94b01f8419cb10f9d9101dd5475521ed2ae91afb4ec94ab7a882bade791c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/streams.json",
+      "change": "added",
+      "bytes": 1963,
+      "sha256": "34d30a200741492b4954ca1022b9e69ff780fb1ea36b3f58a1eeedca90f6956e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1034,
+      "sha256": "a171fbfb2d22f933c093fc97b46ed83ca337b2cc2468f8b3fec0849ae30d0d07",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/verifier.json",
+      "change": "added",
+      "bytes": 18466,
+      "sha256": "c0fb96d8b2508941b6585f3fb8ee105cb28af871b92852a7bf62ea0a7b52e011",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9817,
+      "sha256": "d9585368d6f4a149e0b5b4fba3f5242958a1973340478f207a4f900fdd3850c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/result.json",
+      "change": "added",
+      "bytes": 25353,
+      "sha256": "523bc33a95c7834ecddba85bbfc9a697fda63424025d21cf8a63ff664dcbf94e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/executions/20261120T215333Z-4b49c242/attempt.json",
+      "change": "added",
+      "bytes": 9449,
+      "sha256": "f9fa743cdf879a8804a9b7b1bbbc8028cabd38674199ea37ca6d339c06251cda",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/executions/20261120T215333Z-4b49c242/checker.json",
+      "change": "added",
+      "bytes": 11596,
+      "sha256": "178ded953d43dc1176e95fa42226335e32bad6d25b810a798cf67e6fd35004c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/executions/20261120T215333Z-4b49c242/replay.json",
+      "change": "added",
+      "bytes": 2515,
+      "sha256": "7d13b52ac2030a7f5b22140a71ffce26e68be53a12865bfefada6d9bc6e1d7fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "10d47102ce666b4d3d9013887f9b542027fa8108fb357811a7eb9de07844723a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/plan.json",
+      "change": "added",
+      "bytes": 4847,
+      "sha256": "b1af10801e5beebf8a93403043c0e4a62d4c88b7578ae286cce19d0ea36bf39b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/control-extra-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/control-extra-jdk21.stdout",
+      "change": "added",
+      "bytes": 12048,
+      "sha256": "a49b6f4f8cfbbf791cd32ae714a55177ebda46ea4ed40646a23e4ab665bde172",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/controls.json",
+      "change": "added",
+      "bytes": 43782,
+      "sha256": "773a2e09436e144d5d1cc39eb0905e13e35dc099634da14632a71a48c7f54f3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/execution.json",
+      "change": "added",
+      "bytes": 65688,
+      "sha256": "03a4419a4efd9d86e0acde70aa6aa8f8a7c809599b9b702c53bbec6366d7963a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "5dc011587fc32e1a8ffa9d2399d95d6d8ba49995ad1f95f799a53aec42f73ade",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 988,
+      "sha256": "9a6411a7094fa960f1cd69adad56ac6c1b142d99c36f5e53815f187493a2c125",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/verifier.json",
+      "change": "added",
+      "bytes": 18748,
+      "sha256": "bb564d6eaa10913855c2c61b166adb6d46328426ac374ca4b8f88ace17174382",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/verifier.stdout",
+      "change": "added",
+      "bytes": 10154,
+      "sha256": "5d5c1058fa741cd2850db4068d58a17526379af390b698dc4405ec4344e91585",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/result.json",
+      "change": "added",
+      "bytes": 25848,
+      "sha256": "408c5dac1ec92ac179b821bb04edc6a27fb56cbf382405b7625997cc4f4a169f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/executions/20261120T215336Z-a9e01eb6/attempt.json",
+      "change": "added",
+      "bytes": 9283,
+      "sha256": "de29f3f0b553e36c64521f1cd10997b69cb6eb2891110748ac2544197338b837",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/executions/20261120T215336Z-a9e01eb6/checker.json",
+      "change": "added",
+      "bytes": 11885,
+      "sha256": "8bc95b1be38415898fe991b2d28ae05137784233c324c4691958595fa91536ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/executions/20261120T215336Z-a9e01eb6/replay.json",
+      "change": "added",
+      "bytes": 2216,
+      "sha256": "3cea821d6221f1cbf32fec9d3e0052d18e279d513a8ccce9643fa518210ded8f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T21:56:38+00:00",
+    "applied": [
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/completion.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/plan.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/control-original-jdk21.stderr",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/control-original-jdk21.stdout",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/controls.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/execution.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/streams.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/verifier-output.txt",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/verifier.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/verifier.stderr",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/records/verifier.stdout",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/20261120T215202Z-7ab71de6/result.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/executions/20261120T215202Z-7ab71de6/attempt.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-original/executions/20261120T215202Z-7ab71de6/checker.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/completion.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/plan.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/control-original-jdk21.stderr",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/control-original-jdk21.stdout",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/controls.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/execution.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/streams.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/verifier-output.txt",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/verifier.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/verifier.stderr",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/records/verifier.stdout",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/20261120T215228Z-ef138494/result.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/executions/20261120T215228Z-ef138494/attempt.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-original/executions/20261120T215228Z-ef138494/checker.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/completion.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/plan.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/control-extra-jdk21.stderr",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/control-extra-jdk21.stdout",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/controls.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/execution.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/streams.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/verifier-output.txt",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/verifier.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/verifier.stderr",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/records/verifier.stdout",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/20261120T215333Z-4b49c242/result.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/executions/20261120T215333Z-4b49c242/attempt.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/executions/20261120T215333Z-4b49c242/checker.json",
+      "examples/337-jdk-range-fill-alias/receipts/frame-64-extra/executions/20261120T215333Z-4b49c242/replay.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/completion.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/plan.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/control-extra-jdk21.stderr",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/control-extra-jdk21.stdout",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/controls.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/execution.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/streams.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/verifier-output.txt",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/verifier.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/verifier.stderr",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/records/verifier.stdout",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/20261120T215336Z-a9e01eb6/result.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/executions/20261120T215336Z-a9e01eb6/attempt.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/executions/20261120T215336Z-a9e01eb6/checker.json",
+      "examples/337-jdk-range-fill-alias/receipts/caller-64-extra/executions/20261120T215336Z-a9e01eb6/replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

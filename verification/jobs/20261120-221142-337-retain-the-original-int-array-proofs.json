@@ -1,0 +1,65 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-221142-337-retain-the-original-int-array-proofs",
+  "title": "337 retain the original int-array proofs on the widened rule",
+  "description": "Repeat the previously checked JDK or Guava integer-array contracts and the caller invalidation control when declared. Adding long cells and lcmp must preserve the 32-bit transition proof and frame.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:array-invariant",
+    "proof:reuse"
+  ],
+  "links": {
+    "examples": [
+      "337"
+    ],
+    "jobs": [
+      "20261120-194432-337-validate-array-induction-and-caller"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T22:11:42+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "z3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "fill-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction fill-any-length --checker-seconds 60",
+      "cwd": "."
+    },
+    {
+      "name": "caller-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction caller-any-length --checker-seconds 60",
+      "cwd": "."
+    },
+    {
+      "name": "caller-extra-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction caller-extra-any-length --checker-seconds 60 || test \"$?\" -eq 1",
+      "cwd": "."
+    },
+    {
+      "name": "Check the failed postcondition and its concrete alias witness",
+      "run": "python3 -c 'import json,sys;from pathlib import Path;p=Path(sys.argv[1]);rs=[json.loads(f.read_text()) for f in p.glob(\"*/result.json\")];assert any(r[\"status\"]==\"unresolved\" and any(o[\"obtained\"]==\"sat\" and o[\"expected\"]==\"unsat\" and \"caller read\" in o[\"name\"] for o in r[\"obligations\"]) for r in rs);w=json.loads(Path(sys.argv[2]).read_text());assert w[\"status\"]==\"witness-reproduced\"' examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length examples/337-jdk-range-fill-alias/receipts/caller-8-extra/executions/20261120T194040Z-f2a36f64/attempt.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length",
+    "examples/337-jdk-range-fill-alias/records/array-induction/caller-any-length",
+    "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length"
+  ]
+}

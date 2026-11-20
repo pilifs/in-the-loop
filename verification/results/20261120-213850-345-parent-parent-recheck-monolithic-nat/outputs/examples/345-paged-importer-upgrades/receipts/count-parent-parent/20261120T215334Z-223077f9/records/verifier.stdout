@@ -1,0 +1,172 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "importer.Projection#count(int)",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 96",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the engine did not finish within the time limit",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "importer.Projection#count(int) cannot be verified: the engine did not finish within the time limit",
+        "uri": null,
+        "line": 44
+      }
+    ],
+    "output": "✗ importer.Projection#count(int) cannot be verified: the engine did not finish within the time limit\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 90.773700761,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 96,
+      "stage": null,
+      "native": {
+        "paths": 1276,
+        "merges": 655,
+        "solver_calls": 2590,
+        "solving_seconds": 77.902980195,
+        "gates_evaluated": 225177,
+        "evaluating_seconds": 0.012759366,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 3669536,
+        "clauses": 11524852,
+        "seconds": 90.090944621,
+        "loading_seconds": 0.008269089,
+        "decoding_seconds": 0.002304989,
+        "encoding_seconds": 8.588327548,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "system properties use the standard JVM Properties table and the running JVM permits this property access"
+        ]
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.lang.Character.isSurrogate(C)Z@jdk-21.0.13",
+          "kind": "jdk-static-method",
+          "call": "java.lang.Character.isSurrogate(char)",
+          "sites": [
+            "sun.nio.cs.UTF_8$Decoder.decodeArrayLoop:281"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 90.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 90.0,
+          "seconds": 90.091,
+          "ended": "out-of-time",
+          "ending": "timeout",
+          "phases": {
+            "loading": 0.008,
+            "lowering": 0.002,
+            "symbolic": 3.589,
+            "encoding": 8.588,
+            "solving": 77.903,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 3669536,
+            "clauses": 11524852
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 90.786,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 90.091,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.694
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 96",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

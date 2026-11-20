@@ -33,6 +33,11 @@ class RecipesTest(unittest.TestCase):
         self.assertEqual(disposition(raw, method, bounds, 0)[0], "open")
         raw.update(verdict="violation", counterexample={"inputs": []})
         self.assertEqual(disposition(raw, method, bounds, 1)[0], "open")
+        params = [{"name": "a", "type": "long[]"}]
+        values = [{"name": "a", "type": "long[]", "value": [str(-(1 << 63)), str((1 << 63) - 1)]}]
+        self.assertIsNone(qualification.witness_problem(values, params, set(), [], 2))
+        for bad in (str(1 << 63), "01", "7L", True):
+            self.assertIsNotNone(qualification.witness_problem([{**values[0], "value": [bad]}], params, set(), [], 2))
         for guard in ("n >= 0 && n < 5 || n == 9", "n >= 0 && (n < 3 || n == 7)", "n <= 2",
                       "n >= 5 && n < 2", "n >= 0 && n < 5000", "n >= 0 && n < 4 /*x*/"):
             with self.assertRaises(ValueError):

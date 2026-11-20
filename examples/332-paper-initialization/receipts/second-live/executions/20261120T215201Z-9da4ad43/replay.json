@@ -1,0 +1,41 @@
+[
+  {
+    "claimKey": "fec4de52f7b18f7b",
+    "entry": "paper.Scenario#value(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 5
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "live": {
+        "entryClassSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815",
+        "classpath": [
+          "be323bb19caec16f6f2f0ea197266bda6bf3c16f0bee9fff1ce016e64a7cfb84"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 5;\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = paper.Scenario.value(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code / 3 == 2 ? 2 : 1)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          2,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

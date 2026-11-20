@@ -1,0 +1,503 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-215815-341-stream-check-all-four-byte-character",
+  "title": "341 stream check all four-byte character partitions natively",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.2s, peak 128.2 MiB (estimated 2m00s, 2.0 GiB); 42 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-215815-341-stream-check-all-four-byte-character.json",
+    "sha256": "97110995140fe1661d26e032e4e048b7037d8b684b51512a86754f0bdc4582c4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-215815-341-stream-check-all-four-byte-character",
+      "title": "341 stream check all four-byte character partitions natively",
+      "description": "Run the unchanged decoder on each of the eight ways to partition U+1F600, including four one-byte reads. Check both UTF-16 code units and repeated EOF on the original stream, deliberately separate per-chunk strings, and the fixed BOM stream. The full 5,578-selector claim remains separately frozen.",
+      "kind": "real-world",
+      "capabilities": [
+        "native:finite-partition",
+        "jvm:unicode",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "341"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T21:58:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check exact scalar, UTF-16 and EOF on compiled classes",
+          "run": "python3 examples/tools/build.py 341 --native-selectors four-byte-units-stream,four-byte-eof-stream --first 11 --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/341-utf8-chunk-boundaries/records/native-selectors/stream"
+      ]
+    }
+  },
+  "sourceCommit": "096e0570c4a00071db8a43a4111a03435cc5a0a2",
+  "startedAt": "2026-11-20T22:05:37+00:00",
+  "finishedAt": "2026-11-20T22:08:44+00:00",
+  "wallSeconds": 187.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1837703,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 134418432,
+    "wallSeconds": 9.2,
+    "cpuSeconds": 12.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check exact scalar, UTF-16 and EOF on compiled classes",
+      "run": "python3 examples/tools/build.py 341 --native-selectors four-byte-units-stream,four-byte-eof-stream --first 11 --checker-seconds 90",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 9.217,
+      "cpuSeconds": 12.617,
+      "cpuThrottledSeconds": 0.589,
+      "peakMemoryBytes": 134418432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-exact-scalar-utf-16-and.log",
+        "lines": 2,
+        "bytes": 116,
+        "sha256": "c385babee90e9f0cffdf5b0125ec9e5f791b673a963e025fb1f2b0bf3e949fab",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "four-byte-units-stream established, 8/8 admitted selectors",
+        "four-byte-eof-stream established, 8/8 admitted selectors"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/Calls.java",
+      "change": "added",
+      "bytes": 648,
+      "sha256": "4db699002de2b78f7b917a502ed858ee85fedbbc3b1c6f28b40175798ef38bb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 604,
+      "sha256": "6371c5c51605166287b6336937ff0f16bbe76fe752f1f4a6738ca7da09c39ce0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p10/native.json",
+      "change": "added",
+      "bytes": 4715,
+      "sha256": "97ffe2ceeb2d4e05a401b4def7bf9fc392a0e32405f658cde2c6336c0afb9810",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p10/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p11/native.json",
+      "change": "added",
+      "bytes": 4717,
+      "sha256": "3b60b82a78b0df871d55b886e8bfb7110b1bfe6ecf5023b0a0918674e32dad88",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p11/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p4/native.json",
+      "change": "added",
+      "bytes": 4714,
+      "sha256": "aaa3c677e7b8defdff8f7e2253abe942408e4be58a8b7bcd899a5dff1e1b4f8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p4/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p5/native.json",
+      "change": "added",
+      "bytes": 4714,
+      "sha256": "053044bd9d9270db33ccc3a01317a32e228f44822176bacde3bb1f93ee72fb09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p5/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p6/native.json",
+      "change": "added",
+      "bytes": 4710,
+      "sha256": "888ea42a0dd2c7fe833a778442a8718965d8dfbdcb950f74742a8e171d345e71",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p6/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p7/native.json",
+      "change": "added",
+      "bytes": 4712,
+      "sha256": "65822406a2730b1c731bcf304dd823a4b959c8a30a53500292ac6d993adf469a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p7/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p8/native.json",
+      "change": "added",
+      "bytes": 4712,
+      "sha256": "6d19d2573c19aa9d6af1f5d9802521d55aabb0ad65f428bc586a9b61c9135b42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p8/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p9/native.json",
+      "change": "added",
+      "bytes": 4714,
+      "sha256": "2c67cd660d98f7433338c0c81ca92f46a52160354cd35a1df16d83ee0aae784d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p9/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/Calls.java",
+      "change": "added",
+      "bytes": 664,
+      "sha256": "c0434effcdbcae8dd01db4bcb39fc8f545481eb7fc10f736d4febb4e04ca2983",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 606,
+      "sha256": "d5824eaedab4730576c9ff007591c9f4a9aa616ea6ba2b3257357e45124fd401",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p10/native.json",
+      "change": "added",
+      "bytes": 4721,
+      "sha256": "b156c4b657933c4ec266b5cfec3d95ee8dc88697721dd82de1280ad65a037799",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p10/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p11/native.json",
+      "change": "added",
+      "bytes": 4722,
+      "sha256": "493ebefbcf4b3960412a3877a390a4ac988b1a74a2120289819036ab2ad01941",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p11/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p4/native.json",
+      "change": "added",
+      "bytes": 4716,
+      "sha256": "220ee1c6eb628138b87d33559e60f23f36d79c30ef4dd879d0b98fbe5680d668",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p4/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p5/native.json",
+      "change": "added",
+      "bytes": 4718,
+      "sha256": "79d787c72f1c484fc667c6e51652e9616c72f7747ffacec8e3eb0df78679f8bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p5/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p6/native.json",
+      "change": "added",
+      "bytes": 4719,
+      "sha256": "6b2edc96c5261d6f9658e19a948b2f31e82bbb7d7bd4ca8345cf879f0283ae20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p6/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p7/native.json",
+      "change": "added",
+      "bytes": 4718,
+      "sha256": "6ce892b25d2981bbc480ffac7e239ee6eb9c7164745a8b24250619dd89ab1cff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p7/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p8/native.json",
+      "change": "added",
+      "bytes": 4717,
+      "sha256": "c96b5b5241a6427fc0001aa58c4aa0a70047f3db4f31fb73f313f25096064cae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p8/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p9/native.json",
+      "change": "added",
+      "bytes": 4719,
+      "sha256": "3572ecd7a6ca8e37bae89b68fa8c585fff51fd4d0730bbd20c55a7e33a986fa2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p9/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-eof-stream/Admission.java",
+      "change": "added",
+      "bytes": 598,
+      "sha256": "1f8a4668026db50ecf0daaeddc6f14636aecbc1c79b62cb938f62854eb48cfe3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-eof-stream/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 418,
+      "sha256": "e9dfe554db0fad85be4615b42f11ef1df4853eb8edd19c9daafe47ae684ef719",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-eof-stream/result.json",
+      "change": "added",
+      "bytes": 9730,
+      "sha256": "0cf0d32718034ab7afce395a815e4cde8ba27cf5aad1ed256799bc1488e67677",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-units-stream/Admission.java",
+      "change": "added",
+      "bytes": 598,
+      "sha256": "1f8a4668026db50ecf0daaeddc6f14636aecbc1c79b62cb938f62854eb48cfe3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-units-stream/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 418,
+      "sha256": "e9dfe554db0fad85be4615b42f11ef1df4853eb8edd19c9daafe47ae684ef719",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-units-stream/result.json",
+      "change": "added",
+      "bytes": 9736,
+      "sha256": "37ff65dadf6d21cfc8b5e95fd926e1ebe7eb7baa9d040e72deff249450f32e15",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T22:12:18+00:00",
+    "applied": [
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/Calls.java",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/Calls.jvm-bytecode",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p10/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p10/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p11/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p11/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p4/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p4/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p5/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p5/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p6/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p6/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p7/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p7/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p8/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p8/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p9/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/2aa09b679ff00c464913/cases/p9/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/Calls.java",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/Calls.jvm-bytecode",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p10/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p10/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p11/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p11/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p4/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p4/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p5/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p5/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p6/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p6/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p7/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p7/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p8/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p8/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p9/native.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/calls/601a91f1b311b8cdf5e7/cases/p9/stderr",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-eof-stream/Admission.java",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-eof-stream/Admission.jvm-bytecode",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-eof-stream/result.json",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-units-stream/Admission.java",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-units-stream/Admission.jvm-bytecode",
+      "examples/341-utf8-chunk-boundaries/records/native-selectors/stream/20261120T220835Z-b4d41ec7/tasks/four-byte-units-stream/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "count",
+  "statement": "The count is the smaller of supplied rows and the cap.",
+  "assume": "code >= 0 && code < 32",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 96
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "importer.Projection#count(I)I",
+    "mapping": "The five selector bits choose BOM, one-byte delegate, preview/reset, starting number minus one and page cap minus one for the literal two-row document with a U+1F600 field.",
+    "cases": 32,
+    "correspondence": "finite-oracle"
+  }
+}

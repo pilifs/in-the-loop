@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-221141-346-bound-8-transfer-first-match-and-fra",
+  "title": "346 bound 8 transfer first-match and frame to long arrays",
+  "description": "Use the same original 32-bit lengths, return indexes and unwind progression as 336 with arbitrary signed 64-bit cells and target. Check the released forward search and the reversed negative control, and qualify long-array witnesses on the original JVM.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "346"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T22:11:41+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "7m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 346 --tasks first-8-release,frame-8-release,first-8-last,frame-8-last --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/346-guava-long-array-holdout/receipts/first-8-release",
+    "examples/346-guava-long-array-holdout/receipts/frame-8-release",
+    "examples/346-guava-long-array-holdout/receipts/first-8-last",
+    "examples/346-guava-long-array-holdout/receipts/frame-8-last"
+  ]
+}

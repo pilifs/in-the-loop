@@ -1,0 +1,936 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-213849-341-retry-streaming-utf-8-and-bom-transf",
+  "title": "341 retry streaming UTF-8 and BOM transfer on real reader bytecode",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 6m17s, peak 1.9 GiB (estimated 12m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-213849-341-retry-streaming-utf-8-and-bom-transf.json",
+    "sha256": "de2ad3cd3efd8e71f5071d1c4c40cda4b00bc0cf07ceea913c55d982af0996d1",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-213849-341-retry-streaming-utf-8-and-bom-transf",
+      "title": "341 retry streaming UTF-8 and BOM transfer on real reader bytecode",
+      "description": "Re-run the unchanged 5,578-selector obligations for streaming, per-chunk decoding and the historical fixed BOM stream. Record each strict result or next unsupported operation independently from the already exhaustive JVM decisions.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "341"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T21:38:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 341 --tasks units-stream,eof-stream,units-separate,eof-separate,units-bom,eof-bom --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/341-utf8-chunk-boundaries/receipts/units-stream",
+        "examples/341-utf8-chunk-boundaries/receipts/eof-stream",
+        "examples/341-utf8-chunk-boundaries/receipts/units-separate",
+        "examples/341-utf8-chunk-boundaries/receipts/eof-separate",
+        "examples/341-utf8-chunk-boundaries/receipts/units-bom",
+        "examples/341-utf8-chunk-boundaries/receipts/eof-bom"
+      ]
+    }
+  },
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "startedAt": "2026-11-20T21:52:09+00:00",
+  "finishedAt": "2026-11-20T21:58:32+00:00",
+  "wallSeconds": 383.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1837703,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2004926464,
+    "wallSeconds": 377.7,
+    "cpuSeconds": 388.1,
+    "memoryOfEstimate": 0.93,
+    "durationOfEstimate": 0.52
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 341 --tasks units-stream,eof-stream,units-separate,eof-separate,units-bom,eof-bom --checker-seconds 90",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 377.664,
+      "cpuSeconds": 388.136,
+      "cpuThrottledSeconds": 0.768,
+      "peakMemoryBytes": 2004926464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 12,
+        "bytes": 1394,
+        "sha256": "3e317e25250d249df4cdc733ad4c5dd14ec74855aa40fdbb8db41366bd4d5bee",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "341-utf8-chunk-boundaries: task units-stream: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/units-stream/20261120T215214Z-4f37e507/result.json",
+          "groups": [
+            "341",
+            "units-stream",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "341-utf8-chunk-boundaries: task eof-stream: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/eof-stream/20261120T215347Z-0f23c474/result.json",
+          "groups": [
+            "341",
+            "eof-stream",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "341-utf8-chunk-boundaries: task units-separate: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/units-separate/20261120T215519Z-870cdf51/result.json",
+          "groups": [
+            "341",
+            "units-separate",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "341-utf8-chunk-boundaries: task eof-separate: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/eof-separate/20261120T215521Z-96fdd339/result.json",
+          "groups": [
+            "341",
+            "eof-separate",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "341-utf8-chunk-boundaries: task units-bom: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/units-bom/20261120T215523Z-6fa20686/result.json",
+          "groups": [
+            "341",
+            "units-bom",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "341-utf8-chunk-boundaries: task eof-bom: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/eof-bom/20261120T215656Z-5276ff95/result.json",
+          "groups": [
+            "341",
+            "eof-bom",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "341-utf8-chunk-boundaries: running task units-stream (target route)",
+        "341-utf8-chunk-boundaries: task units-stream: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/units-stream/20261120T215214Z-4f37e507/result.json",
+        "341-utf8-chunk-boundaries: running task eof-stream (target route)",
+        "341-utf8-chunk-boundaries: task eof-stream: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/eof-stream/20261120T215347Z-0f23c474/result.json",
+        "341-utf8-chunk-boundaries: running task units-separate (target route)",
+        "341-utf8-chunk-boundaries: task units-separate: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/units-separate/20261120T215519Z-870cdf51/result.json",
+        "341-utf8-chunk-boundaries: running task eof-separate (target route)",
+        "341-utf8-chunk-boundaries: task eof-separate: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/eof-separate/20261120T215521Z-96fdd339/result.json",
+        "341-utf8-chunk-boundaries: running task units-bom (target route)",
+        "341-utf8-chunk-boundaries: task units-bom: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/units-bom/20261120T215523Z-6fa20686/result.json",
+        "341-utf8-chunk-boundaries: running task eof-bom (target route)",
+        "341-utf8-chunk-boundaries: task eof-bom: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/eof-bom/20261120T215656Z-5276ff95/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e50b0050a7d25885171d529e5690ee438c4c889ddfbc519f336e2a35571e4d4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/plan.json",
+      "change": "added",
+      "bytes": 4507,
+      "sha256": "78154bb82b2de303992eb9ef00a1e57d5b2d064519c297d25975bf09df521cd2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/control-stream-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/control-stream-jdk21.stdout",
+      "change": "added",
+      "bytes": 302314,
+      "sha256": "f03aa428a886c27ce6ac2f5461914b678ba686ccda92daf87bcd2e916c08b550",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "d7dfbd5e81f39d549c861aa57615b5c6611089329fec17cd297a2191414062d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/execution.json",
+      "change": "added",
+      "bytes": 631197,
+      "sha256": "7f60febce3c8216bcc8d105dbf3a72ede3d61bbfd18f7e2e1aa878616a0122b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "59617dbabc49f3f7a093ff0eae55906fdf3413043f1b3166374d7c649aa545f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 97,
+      "sha256": "a1f5c3da3ef1e5fc5ee1f62f8febf0d2d34d7d982af795b281f27d1d2e365e45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/verifier.json",
+      "change": "added",
+      "bytes": 24247,
+      "sha256": "bcaf4557e32ae21e1724d3763932645a4df97085fd7ea1e10955f90d1288233d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5346,
+      "sha256": "36cd4c06b74d1ef094c0f5a1a13c86e0f1aadc7a9ba50646b4fd1c3938662cbe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/result.json",
+      "change": "added",
+      "bytes": 13620,
+      "sha256": "db5604e58de873651e42fef13a652b649fca16dc6af10d727487f35ed5f3b29c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/executions/20261120T215214Z-4f37e507/attempt.json",
+      "change": "added",
+      "bytes": 19677,
+      "sha256": "02adbc9ac6fe419e28b29da0d8715f55e2d3370af3eee50ab37b43b1226dcc4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-stream/executions/20261120T215214Z-4f37e507/checker.json",
+      "change": "added",
+      "bytes": 6595,
+      "sha256": "1a0f22b0f3fdb0abbdd8fb239a7949e24b35d84d553d43b5fa427a76ba3db567",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "1d2e20bdea9e8e4f3c9e71580ef357458dbf8e83d930eae17b6ed459a0d5ecf5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/plan.json",
+      "change": "added",
+      "bytes": 4455,
+      "sha256": "b7fc80185767cbee34ba10a8b9fa70bcd3a07925988b6b2098b495c8bbfe4561",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/control-stream-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/control-stream-jdk21.stdout",
+      "change": "added",
+      "bytes": 302314,
+      "sha256": "f03aa428a886c27ce6ac2f5461914b678ba686ccda92daf87bcd2e916c08b550",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "27e595f52ec7b543c1ec1858ef7b5ec6ff51c0996433b7637c6d2d086e3fbd85",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/execution.json",
+      "change": "added",
+      "bytes": 631168,
+      "sha256": "c670871c8f310c04884039c7472d03ae5e9a20d210e311186180965d833fbfbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "2c357a43dcf98692aac1eabde85d5c6302e58df084dfc1e67542b275160b9cec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 95,
+      "sha256": "0aee2af823df7c3b1e2b1b4256e8a5d9317a04f2d44128cd3b8ebb29108c25d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/verifier.json",
+      "change": "added",
+      "bytes": 24214,
+      "sha256": "176dda1d40232333a8b2ba5854e974cf1fb76c0f1d416810ac067cf0124171e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5336,
+      "sha256": "09b2869b4a39f5ee727fba9f1d151825fdcf735a65fcc84be35d0fefb35634f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/result.json",
+      "change": "added",
+      "bytes": 13585,
+      "sha256": "2bfa4058e0202c867046c4e5ddc06c718a61ffe107479ebca9c5c43c562951b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/executions/20261120T215347Z-0f23c474/attempt.json",
+      "change": "added",
+      "bytes": 19654,
+      "sha256": "a40dc5e2b5d4ddecdf42bfbaee54af0598b49ced6cbd0804f8545ab37ea18acf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-stream/executions/20261120T215347Z-0f23c474/checker.json",
+      "change": "added",
+      "bytes": 6583,
+      "sha256": "6083b18f6c4684acef8252ab21b9c3461c807ddb6cc5b87ec868923100cf670d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7669c104c558856b28074d5e87634dc34d0ce821da1ac17295984ed9a69f5da5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/plan.json",
+      "change": "added",
+      "bytes": 4534,
+      "sha256": "03dc70345caf6c1da8c27317409991110fa9d8f55127bbb7a260d60c4dba3ec8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/control-separate-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/control-separate-jdk21.stdout",
+      "change": "added",
+      "bytes": 368182,
+      "sha256": "490d86a79c108abfc8af339d6e4cffc3fb654d214238123a8d51f8173512a52e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "7d738abdd60b923058c29b9598edf87854f867e37793f79f2ed9b3e380c00e61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/execution.json",
+      "change": "added",
+      "bytes": 686698,
+      "sha256": "fd61467a48eee784b1e2364e08656dc06bfb6e0aa00477e4a6e33a83e8cf7a92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/streams.json",
+      "change": "added",
+      "bytes": 1990,
+      "sha256": "c38dce04b5b6294405f4be84da69af322ab47abadc5172109511e6570ccb07ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 596,
+      "sha256": "e93de981a8c2a6ad1b92e27b09b09974189fc03f253d6cb01719588165e8a73f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/verifier.json",
+      "change": "added",
+      "bytes": 14382,
+      "sha256": "83adddf95ee394baf6eeef8a90dbb300fa4ab1c8851234701919a4ca79edaba8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6419,
+      "sha256": "54874fbaf476839a4650187cbe61e66c75cfbaa9101c364ab82af1be7589f184",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/result.json",
+      "change": "added",
+      "bytes": 14176,
+      "sha256": "7626512d464d2ca71111636314b9e1d63934b7c905357c4cfb2a971930c8a100",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/executions/20261120T215519Z-870cdf51/attempt.json",
+      "change": "added",
+      "bytes": 9768,
+      "sha256": "8ecf1ee4ac50f640d50be472b928374dff3a2023b9a2733888e77f7250f1c06f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-separate/executions/20261120T215519Z-870cdf51/checker.json",
+      "change": "added",
+      "bytes": 7655,
+      "sha256": "b7a27fa357f835fdd42a1eec6c256bd08ba3962f5901cec6ca55388eac0fc1c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "69d2a6c195e9ec42ca57ed10d454982f510fc204d90aa032da11d102fb61039b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/plan.json",
+      "change": "added",
+      "bytes": 4486,
+      "sha256": "5a31a146715abf0adbdaa5a511674b436eeaa5911559e51f2030a06c904a4b3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/control-separate-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/control-separate-jdk21.stdout",
+      "change": "added",
+      "bytes": 368182,
+      "sha256": "490d86a79c108abfc8af339d6e4cffc3fb654d214238123a8d51f8173512a52e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a2b727d4ae9b1c1a994e17300ea9300a671fab18a4e4cf34267d39b255a76398",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/execution.json",
+      "change": "added",
+      "bytes": 686669,
+      "sha256": "9df7ad05460df353e607bde3735e883ed9ba8c34f2dfc154b3c2984bffc6d23f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/streams.json",
+      "change": "added",
+      "bytes": 1990,
+      "sha256": "adb32058f516ff325a646ab50675f83fea057262ca329c80292c3f4422dc44eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 594,
+      "sha256": "fada804a206373e0dee8ae25cc1458728d51f54755e86c8844f4300dbeff1ba0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/verifier.json",
+      "change": "added",
+      "bytes": 14349,
+      "sha256": "4a017cf0223c7c370c5cf4c62cfa9eb6cc5249597f11658f8a4f183abae21732",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6409,
+      "sha256": "b2b1cf41804331c4bcb471f8810746ad9c54756133a72ed7ff7b4dbe866fe6a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/result.json",
+      "change": "added",
+      "bytes": 14146,
+      "sha256": "5ac016260b39bf1aebb368047c21e6704e47d321dd7455e6ce28e9b3d2cec12a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/executions/20261120T215521Z-96fdd339/attempt.json",
+      "change": "added",
+      "bytes": 9748,
+      "sha256": "89fe2c858ebabaebb5d9186e7fd8fe11e85c812a7eae94c9259fa58a67f624e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-separate/executions/20261120T215521Z-96fdd339/checker.json",
+      "change": "added",
+      "bytes": 7642,
+      "sha256": "75b8c8031282845242f70faf8ee8b49dd78c476046c54eb44aa7b988f6ba29a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "34837f03055a07ed6ca4ad15bcfcd941f0de9c280bc21e00322dff17cc749b09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/plan.json",
+      "change": "added",
+      "bytes": 6515,
+      "sha256": "4ef94fbdbf99765af67c6e0cbaee29c565cbda11c1b0a7c7fbe54acac87123ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/control-bom-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/control-bom-jdk21.stdout",
+      "change": "added",
+      "bytes": 302314,
+      "sha256": "f03aa428a886c27ce6ac2f5461914b678ba686ccda92daf87bcd2e916c08b550",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "1a0e1b8a68d41d1f3496402ce034c13b084dbc4fa62a039d2c0d49918f9d888d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/execution.json",
+      "change": "added",
+      "bytes": 638875,
+      "sha256": "bf76b389d956d6b9bc377fc9b64f7c13b83ea5bf4f5dfb65dc7ca814062d4727",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "cd96f9ca079d32d02e138b6f4a7ccfd00c03f239eaeb92ab3c87a0fb889ad67b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 97,
+      "sha256": "a1f5c3da3ef1e5fc5ee1f62f8febf0d2d34d7d982af795b281f27d1d2e365e45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/verifier.json",
+      "change": "added",
+      "bytes": 31426,
+      "sha256": "819707bb5e220d31f0509af60b506030acc5f107e8b1d92d2e197b87adf248af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5342,
+      "sha256": "80b0619f259777df7fb73b25ef304aaf0db9b86c0afce93050d7b1952ceb03cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/result.json",
+      "change": "added",
+      "bytes": 13826,
+      "sha256": "066f6242bdad8fbd3862f7e9bde806d066b8be4fae8460ad7c54b6d6b1236326",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/executions/20261120T215523Z-6fa20686/attempt.json",
+      "change": "added",
+      "bytes": 26889,
+      "sha256": "fcae7d688e46146c05635595b1523d8efd6e832851ae2779e89e80ef06c7075c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/units-bom/executions/20261120T215523Z-6fa20686/checker.json",
+      "change": "added",
+      "bytes": 6644,
+      "sha256": "d5a98133b895e18a5580fe18dd1e6e0cda88310c06237955da07b481b60ff7b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5cb5d5ae76aed7d129b1bc4b96fb0ad78285be3fccde1e33a4cda388152cfd69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/plan.json",
+      "change": "added",
+      "bytes": 6463,
+      "sha256": "af9e92ed0688a4bbb97ebdf2e98816afcecd7920eccf93fd9181b2aa979a1a64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/control-bom-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/control-bom-jdk21.stdout",
+      "change": "added",
+      "bytes": 302314,
+      "sha256": "f03aa428a886c27ce6ac2f5461914b678ba686ccda92daf87bcd2e916c08b550",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a36b284ea5801cd3fac8c637dad7ec0d33d2782d42639dff1f866ee067f80906",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/execution.json",
+      "change": "added",
+      "bytes": 638853,
+      "sha256": "44f3e4e40f65dec68f7cee9382d64434697b14a45729fcf1f58f858a7d28a1af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "784d8f3e7ee56824dfbd88f40ea3981fbf2d695b4e942a89107c348ea3ba7930",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 95,
+      "sha256": "0aee2af823df7c3b1e2b1b4256e8a5d9317a04f2d44128cd3b8ebb29108c25d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/verifier.json",
+      "change": "added",
+      "bytes": 31400,
+      "sha256": "bfb2b9bf0c24a771990149892425feb3881c2f9c260e0d556c9f202f1490ef62",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5338,
+      "sha256": "073c235419d5d1caeb08c67d6a14ada02f7b8de87d407d0332949f8d04699c21",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/result.json",
+      "change": "added",
+      "bytes": 13796,
+      "sha256": "328d14c67f4b468695d2eea4f711ed35fc8babbb346b85e7b69cde12fe400205",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/executions/20261120T215656Z-5276ff95/attempt.json",
+      "change": "added",
+      "bytes": 26866,
+      "sha256": "443ad78a8f6d01a5cf1213e70bb5077b656617bdfe1565007eb29822576996f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/receipts/eof-bom/executions/20261120T215656Z-5276ff95/checker.json",
+      "change": "added",
+      "bytes": 6638,
+      "sha256": "24d26ebaec14faf03b66d0fc10be48271c0bf2bd6a4d0251e64b89383999eed5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T21:58:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/completion.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/plan.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/control-stream-jdk21.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/control-stream-jdk21.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/controls.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/execution.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/streams.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/verifier-output.txt",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/verifier.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/verifier.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/records/verifier.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/20261120T215214Z-4f37e507/result.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/executions/20261120T215214Z-4f37e507/attempt.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-stream/executions/20261120T215214Z-4f37e507/checker.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/completion.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/plan.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/control-stream-jdk21.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/control-stream-jdk21.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/controls.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/execution.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/streams.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/verifier-output.txt",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/verifier.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/verifier.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/records/verifier.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/20261120T215347Z-0f23c474/result.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/executions/20261120T215347Z-0f23c474/attempt.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-stream/executions/20261120T215347Z-0f23c474/checker.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/completion.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/plan.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/control-separate-jdk21.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/control-separate-jdk21.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/controls.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/execution.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/streams.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/verifier-output.txt",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/verifier.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/verifier.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/records/verifier.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/20261120T215519Z-870cdf51/result.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/executions/20261120T215519Z-870cdf51/attempt.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-separate/executions/20261120T215519Z-870cdf51/checker.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/completion.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/plan.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/control-separate-jdk21.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/control-separate-jdk21.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/controls.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/execution.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/streams.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/verifier-output.txt",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/verifier.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/verifier.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/records/verifier.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/20261120T215521Z-96fdd339/result.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/executions/20261120T215521Z-96fdd339/attempt.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-separate/executions/20261120T215521Z-96fdd339/checker.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/completion.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/plan.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/control-bom-jdk21.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/control-bom-jdk21.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/controls.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/execution.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/streams.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/verifier-output.txt",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/verifier.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/verifier.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/records/verifier.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/20261120T215523Z-6fa20686/result.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/executions/20261120T215523Z-6fa20686/attempt.json",
+      "examples/341-utf8-chunk-boundaries/receipts/units-bom/executions/20261120T215523Z-6fa20686/checker.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/completion.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/plan.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/control-bom-jdk21.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/control-bom-jdk21.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/controls.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/execution.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/streams.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/verifier-output.txt",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/verifier.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/verifier.stderr",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/records/verifier.stdout",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/20261120T215656Z-5276ff95/result.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/executions/20261120T215656Z-5276ff95/attempt.json",
+      "examples/341-utf8-chunk-boundaries/receipts/eof-bom/executions/20261120T215656Z-5276ff95/checker.json"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 2459424,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213849-341-retry-streaming-utf-8-and-bom-transf"
+}

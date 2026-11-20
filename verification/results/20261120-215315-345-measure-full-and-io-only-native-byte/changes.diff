@@ -1,0 +1,4617 @@
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-clean-control/native.json
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.3 s; loops unwound 96 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-both-fixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ importer.Projection#bytes(int) satisfies `result == 1` on every input where code >= 0 && code < 96 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.3 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=20) reaches the calls\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-both-fixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.252000641,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": null,
++      "native": {
++        "paths": 549,
++        "merges": 32,
++        "solver_calls": 1145,
++        "solving_seconds": 0.044680918,
++        "gates_evaluated": 29185,
++        "evaluating_seconds": 0.000727029,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 21205,
++        "clauses": 67051,
++        "seconds": 1.246153219,
++        "loading_seconds": 0.005555412,
++        "decoding_seconds": 0.001104039,
++        "encoding_seconds": 0.085670181,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 1.246,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.006,
++            "lowering": 0.001,
++            "symbolic": 1.109,
++            "encoding": 0.086,
++            "solving": 0.045,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 21205,
++            "clauses": 67051
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 88.748,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 175,
++            "clauses": 484
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.27,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.251,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.018
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=20).",
++        "witness": "bytes(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-native/native.json
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/byte-only/solve-both-fixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ importer.Projection#bytes(int) satisfies `result == 1` on every input where code >= 0 && code < 96 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=20) reaches the calls\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/byte-only/solve-both-fixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.201197605,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": null,
++      "native": {
++        "paths": 549,
++        "merges": 32,
++        "solver_calls": 1145,
++        "solving_seconds": 0.058370427,
++        "gates_evaluated": 29185,
++        "evaluating_seconds": 0.00079736,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 21205,
++        "clauses": 67051,
++        "seconds": 1.192177767,
++        "loading_seconds": 0.004813095,
++        "decoding_seconds": 0.000794794,
++        "encoding_seconds": 0.087687991,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 1.192,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 1.041,
++            "encoding": 0.088,
++            "solving": 0.058,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 21205,
++            "clauses": 67051
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 88.799,
++          "seconds": 0.007,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.006,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 175,
++            "clauses": 484
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.219,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.199,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.019
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=20).",
++        "witness": "bytes(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-clean-control/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-cold/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-cold",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.267341789,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.004449704,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.00002838,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.264258168,
++        "loading_seconds": 0.00648827,
++        "decoding_seconds": 0.001030303,
++        "encoding_seconds": 0.017826972,
++        "witness_seconds": 0.000029014
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.264,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.006,
++            "lowering": 0.001,
++            "symbolic": 0.234,
++            "encoding": 0.018,
++            "solving": 0.004,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.361,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.264,
++        "replay": 0.005,
++        "jvm": 0.076,
++        "other": 0.015
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-native/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/byte-only/solve-cold/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/byte-only/solve-cold",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.229857609,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.004109472,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000020875,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.226580676,
++        "loading_seconds": 0.004749712,
++        "decoding_seconds": 0.000731567,
++        "encoding_seconds": 0.015897644,
++        "witness_seconds": 0.000028724
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.227,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.201,
++            "encoding": 0.016,
++            "solving": 0.004,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.346,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.227,
++        "replay": 0.006,
++        "jvm": 0.099,
++        "other": 0.013
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/csv-only-clean-control/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-csv-only/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-csv-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.256024192,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.004667357,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000023706,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.253059814,
++        "loading_seconds": 0.006571078,
++        "decoding_seconds": 0.00120214,
++        "encoding_seconds": 0.017272764,
++        "witness_seconds": 0.000030197
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.253,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.007,
++            "lowering": 0.001,
++            "symbolic": 0.223,
++            "encoding": 0.017,
++            "solving": 0.005,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.373,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.253,
++        "replay": 0.006,
++        "jvm": 0.096,
++        "other": 0.017
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-clean-control/native.json
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-io-only/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ importer.Projection#bytes(int) satisfies `result == 1` on every input where code >= 0 && code < 96 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=20) reaches the calls\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-io-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.228431761,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": null,
++      "native": {
++        "paths": 549,
++        "merges": 32,
++        "solver_calls": 1145,
++        "solving_seconds": 0.047798668,
++        "gates_evaluated": 29185,
++        "evaluating_seconds": 0.000666338,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 21205,
++        "clauses": 67051,
++        "seconds": 1.223029624,
++        "loading_seconds": 0.004498882,
++        "decoding_seconds": 0.000828417,
++        "encoding_seconds": 0.087132949,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 1.223,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 1.083,
++            "encoding": 0.087,
++            "solving": 0.048,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 21205,
++            "clauses": 67051
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 88.772,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 175,
++            "clauses": 484
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.244,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.228,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.015
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=20).",
++        "witness": "bytes(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-native/native.json
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/byte-only/solve-io-only/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ importer.Projection#bytes(int) satisfies `result == 1` on every input where code >= 0 && code < 96 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=20) reaches the calls\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/byte-only/solve-io-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.168813339,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": null,
++      "native": {
++        "paths": 549,
++        "merges": 32,
++        "solver_calls": 1145,
++        "solving_seconds": 0.043606634,
++        "gates_evaluated": 29185,
++        "evaluating_seconds": 0.00067186,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 21205,
++        "clauses": 67051,
++        "seconds": 1.1634582,
++        "loading_seconds": 0.005028154,
++        "decoding_seconds": 0.000795071,
++        "encoding_seconds": 0.084688794,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 1.163,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 1.029,
++            "encoding": 0.085,
++            "solving": 0.044,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 21205,
++            "clauses": 67051
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 88.831,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 175,
++            "clauses": 484
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.184,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.168,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.015
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=20).",
++        "witness": "bytes(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unchanged-clean-control/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-unchanged/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-unchanged",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.256896858,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.004861069,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000027133,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.254060721,
++        "loading_seconds": 0.00580081,
++        "decoding_seconds": 0.000951288,
++        "encoding_seconds": 0.017167167,
++        "witness_seconds": 0.000038902
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.254,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.006,
++            "lowering": 0.001,
++            "symbolic": 0.225,
++            "encoding": 0.017,
++            "solving": 0.005,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.352,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.254,
++        "replay": 0.006,
++        "jvm": 0.076,
++        "other": 0.015
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unused-only-clean-control/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-unused-only/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/byte-only/control-unused-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.278190355,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.005451043,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000024236,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.274691296,
++        "loading_seconds": 0.004549202,
++        "decoding_seconds": 0.000820866,
++        "encoding_seconds": 0.018996181,
++        "witness_seconds": 0.000037969
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.275,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.245,
++            "encoding": 0.019,
++            "solving": 0.005,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.399,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.275,
++        "replay": 0.007,
++        "jvm": 0.101,
++        "other": 0.014
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-clean-control/native.json
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/control-both-fixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ importer.Projection#bytes(int) satisfies `result == 1` on every input where code >= 0 && code < 96 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=20) reaches the calls\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/control-both-fixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.1632038470000001,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": null,
++      "native": {
++        "paths": 549,
++        "merges": 32,
++        "solver_calls": 1145,
++        "solving_seconds": 0.044415043,
++        "gates_evaluated": 29185,
++        "evaluating_seconds": 0.000667559,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 21205,
++        "clauses": 67051,
++        "seconds": 1.157518068,
++        "loading_seconds": 0.004413662,
++        "decoding_seconds": 0.000800846,
++        "encoding_seconds": 0.083273253,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 1.158,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 1.025,
++            "encoding": 0.083,
++            "solving": 0.044,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 21205,
++            "clauses": 67051
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 88.837,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 175,
++            "clauses": 484
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.179,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.163,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.015
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=20).",
++        "witness": "bytes(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-native/native.json
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/solve-both-fixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ importer.Projection#bytes(int) satisfies `result == 1` on every input where code >= 0 && code < 96 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=20) reaches the calls\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/solve-both-fixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.192097452,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": null,
++      "native": {
++        "paths": 549,
++        "merges": 32,
++        "solver_calls": 1145,
++        "solving_seconds": 0.042391104,
++        "gates_evaluated": 29185,
++        "evaluating_seconds": 0.000637522,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 21205,
++        "clauses": 67051,
++        "seconds": 1.18630824,
++        "loading_seconds": 0.004303433,
++        "decoding_seconds": 0.000789196,
++        "encoding_seconds": 0.086035878,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 1.186,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 1.053,
++            "encoding": 0.086,
++            "solving": 0.042,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 21205,
++            "clauses": 67051
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 88.808,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 175,
++            "clauses": 484
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.207,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.191,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.015
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=20).",
++        "witness": "bytes(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-clean-control/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/control-cold/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/control-cold",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.270714543,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.005155404,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000025655,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.267590897,
++        "loading_seconds": 0.004834481,
++        "decoding_seconds": 0.000873656,
++        "encoding_seconds": 0.02129858,
++        "witness_seconds": 0.000030258
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.268,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.235,
++            "encoding": 0.021,
++            "solving": 0.005,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.403,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.268,
++        "replay": 0.007,
++        "jvm": 0.112,
++        "other": 0.015
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-native/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/solve-cold/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/solve-cold",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.232051293,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.003498564,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000020986,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.229453713,
++        "loading_seconds": 0.004256545,
++        "decoding_seconds": 0.000823551,
++        "encoding_seconds": 0.016526456,
++        "witness_seconds": 0.000028304
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.229,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 0.204,
++            "encoding": 0.017,
++            "solving": 0.003,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.354,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.229,
++        "replay": 0.004,
++        "jvm": 0.102,
++        "other": 0.018
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-clean-control/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/control-csv-only/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/control-csv-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.249686252,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.004512749,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000023091,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.246089469,
++        "loading_seconds": 0.005894582,
++        "decoding_seconds": 0.000931338,
++        "encoding_seconds": 0.016408669,
++        "witness_seconds": 0.000031109
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.246,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.006,
++            "lowering": 0.001,
++            "symbolic": 0.218,
++            "encoding": 0.016,
++            "solving": 0.005,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.357,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.246,
++        "replay": 0.005,
++        "jvm": 0.084,
++        "other": 0.021
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-native/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/solve-csv-only/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/solve-csv-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.22785173,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.003826639,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000020587,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.224663654,
++        "loading_seconds": 0.004088589,
++        "decoding_seconds": 0.000858637,
++        "encoding_seconds": 0.015975479,
++        "witness_seconds": 0.000036888
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.225,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 0.2,
++            "encoding": 0.016,
++            "solving": 0.004,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.35,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.225,
++        "replay": 0.006,
++        "jvm": 0.104,
++        "other": 0.013
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-clean-control/native.json
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/control-io-only/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ importer.Projection#bytes(int) satisfies `result == 1` on every input where code >= 0 && code < 96 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.2 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=20) reaches the calls\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/control-io-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.249606353,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": null,
++      "native": {
++        "paths": 549,
++        "merges": 32,
++        "solver_calls": 1145,
++        "solving_seconds": 0.048122837,
++        "gates_evaluated": 29185,
++        "evaluating_seconds": 0.000709037,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 21205,
++        "clauses": 67051,
++        "seconds": 1.242401658,
++        "loading_seconds": 0.005081023,
++        "decoding_seconds": 0.000903335,
++        "encoding_seconds": 0.087006951,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 1.242,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 1.101,
++            "encoding": 0.087,
++            "solving": 0.048,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 21205,
++            "clauses": 67051
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 88.75,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 175,
++            "clauses": 484
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.271,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.247,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.022
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=20).",
++        "witness": "bytes(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-native/native.json
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.3 s; loops unwound 96 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/solve-io-only/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ importer.Projection#bytes(int) satisfies `result == 1` on every input where code >= 0 && code < 96 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.3 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=20) reaches the calls\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/solve-io-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.262941243,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": null,
++      "native": {
++        "paths": 549,
++        "merges": 32,
++        "solver_calls": 1145,
++        "solving_seconds": 0.047721006,
++        "gates_evaluated": 29185,
++        "evaluating_seconds": 0.000719029,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 21205,
++        "clauses": 67051,
++        "seconds": 1.256241503,
++        "loading_seconds": 0.004311907,
++        "decoding_seconds": 0.000793201,
++        "encoding_seconds": 0.090224486,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 1.256,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 1.113,
++            "encoding": 0.09,
++            "solving": 0.048,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 21205,
++            "clauses": 67051
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 88.737,
++          "seconds": 0.006,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.006,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 175,
++            "clauses": 484
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.281,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.262,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.018
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=20).",
++        "witness": "bytes(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unchanged-clean-control/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/control-unchanged/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/control-unchanged",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.269370613,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.005167412,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000021414,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.266128886,
++        "loading_seconds": 0.004621051,
++        "decoding_seconds": 0.000818003,
++        "encoding_seconds": 0.018704454,
++        "witness_seconds": 0.000047649
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.266,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.237,
++            "encoding": 0.019,
++            "solving": 0.005,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.396,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.266,
++        "replay": 0.006,
++        "jvm": 0.107,
++        "other": 0.016
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-clean-control/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/control-unused-only/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/control-unused-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.249734362,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.004280441,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.000020936,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.246677682,
++        "loading_seconds": 0.004739065,
++        "decoding_seconds": 0.000830546,
++        "encoding_seconds": 0.017113968,
++        "witness_seconds": 0.000030125
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.247,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.22,
++            "encoding": 0.017,
++            "solving": 0.004,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.377,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.247,
++        "replay": 0.005,
++        "jvm": 0.104,
++        "other": 0.019
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-native/native.json
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "importer.Projection#bytes(int)",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 96",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "bytes(code=87)",
++      "outcome": "0",
++      "values": [
++        "87"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 87
++        }
++      ],
++      "call": {
++        "class": "importer.Projection",
++        "class_file": "importer/Projection.class",
++        "classes": "after",
++        "method": "bytes",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 87,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/native-preview-cost-vifxmjvd/full/solve-unused-only/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0",
++        "uri": null,
++        "line": 39
++      }
++    ],
++    "output": "✗ Property of importer.Projection#bytes(int) violated: `result == 1` where code >= 0 && code < 96:\n  bytes(code=87)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.2 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/native-preview-cost-vifxmjvd/full/solve-unused-only",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.241283109,
++      "properties": 1,
++      "unwind": 96,
++      "max_array_length": 96,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 112,
++        "merges": 0,
++        "solver_calls": 247,
++        "solving_seconds": 0.004075582,
++        "gates_evaluated": 238,
++        "evaluating_seconds": 0.00002166,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 858,
++        "clauses": 1778,
++        "seconds": 0.23790684,
++        "loading_seconds": 0.004965743,
++        "decoding_seconds": 0.000891395,
++        "encoding_seconds": 0.016642268,
++        "witness_seconds": 0.000030266
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 90.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 90.0,
++          "seconds": 0.238,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.211,
++            "encoding": 0.017,
++            "solving": 0.004,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 858,
++            "clauses": 1778
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.369,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.238,
++        "replay": 0.005,
++        "jvm": 0.104,
++        "other": 0.02
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 96",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 96,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/result.json
+@@ -0,0 +1,938 @@
++{
++  "schema": "native-preview-closure/v1",
++  "jdk": {
++    "feature": "21",
++    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++    "release": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    }
++  },
++  "checker": {
++    "sha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++    "commit": "096e0570c4a00071db8a43a4111a03435cc5a0a2",
++    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d"
++  },
++  "scope": "Byte preview on all 96 frozen selectors at unwind 96. Both clients compile identical application and projection classes. The byte-only process has exactly the selected IO dependency; the full process also has CSV, Codec and the unused-class control. Every comparison includes a separately timed clean native recomputation.",
++  "cachePolicy": "Each scenario begins with only its strategy's cold parent/parent native evidence and matches all ordered class hashes, JDK, binary, guard, assertion and bounds. OS page cache is uncontrolled.",
++  "full": [
++    {
++      "scenario": "cold",
++      "cell": "parent-parent",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
++        }
++      ],
++      "key": "4bf7b4a809d32e813adb6e558909d2b84183f9e9b6a0e7432477640d0b0f6709",
++      "cacheHit": false,
++      "preparationSeconds": 2.734201,
++      "nativeSeconds": 0.365,
++      "independentReplaySeconds": 0.082,
++      "endToEndSeconds": 3.194912,
++      "peakProcessRssBytes": 117223424,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.365,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3808,
++        "rawSha256": "a9b9fcb2988fd1b43ea0fdbdec5585d3cb6872e1353a97914716977678d7df89",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/cold-native/native.json",
++        "nativeSearchSeconds": 0.232051293,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.416,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.4203,
++        "rawSha256": "667a9c36762bb3cd543901eb8edbdd36f931d462376eed974d2ce60d811f9383",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/cold-clean-control/native.json",
++        "nativeSearchSeconds": 0.270714543,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "unchanged",
++      "cell": "parent-parent",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
++        }
++      ],
++      "key": "4bf7b4a809d32e813adb6e558909d2b84183f9e9b6a0e7432477640d0b0f6709",
++      "cacheHit": true,
++      "preparationSeconds": 0,
++      "nativeSeconds": 0,
++      "independentReplaySeconds": 0.072,
++      "endToEndSeconds": 0.084957,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.365,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3808,
++        "rawSha256": "a9b9fcb2988fd1b43ea0fdbdec5585d3cb6872e1353a97914716977678d7df89",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/cold-native/native.json",
++        "nativeSearchSeconds": 0.232051293,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.406,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.4197,
++        "rawSha256": "5854148b03447e98b1b32310c4a20dd0927f4f0e6054a8349c30c65b69493a20",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/unchanged-clean-control/native.json",
++        "nativeSearchSeconds": 0.269370613,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "io-only",
++      "cell": "fix-parent",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
++        }
++      ],
++      "key": "d9a849dea0275c559f543855bcaec6996dd5a69ba0f8bde09b3dc3b64017ecf6",
++      "cacheHit": false,
++      "preparationSeconds": 0,
++      "nativeSeconds": 1.294,
++      "independentReplaySeconds": 0,
++      "endToEndSeconds": 1.303887,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "established",
++        "selector": null,
++        "wallSeconds": 1.294,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 1.2868,
++        "rawSha256": "36a24ff16c312cb2d15c5a642694e49e46b8f2cc524cf30d376c6c6d9c0f9c11",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/io-only-native/native.json",
++        "nativeSearchSeconds": 1.262941243,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "established",
++        "selector": null,
++        "wallSeconds": 1.286,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 1.2766,
++        "rawSha256": "2d960439d2e93a639ca239ea51cfd7cb7ff57d2fde681339687c0961851661fe",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/io-only-clean-control/native.json",
++        "nativeSearchSeconds": 1.249606353,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "csv-only",
++      "cell": "parent-fix",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
++        }
++      ],
++      "key": "4b19747bdbedfeb849b19fdc84cdad6ab0efbf39bf9accaf5fb212ac7c7c821a",
++      "cacheHit": false,
++      "preparationSeconds": 0,
++      "nativeSeconds": 0.355,
++      "independentReplaySeconds": 0.071,
++      "endToEndSeconds": 0.437126,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.355,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.37,
++        "rawSha256": "cb345a4bbb999fcfee7a147cb0193b64e46573bdca97984c464a489ff11194ba",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/csv-only-native/native.json",
++        "nativeSearchSeconds": 0.22785173,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.364,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3903,
++        "rawSha256": "e190e840bef9a519ddbfbf040d80b4271cefc0580cf8018d26a1c9bd833b298a",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/csv-only-clean-control/native.json",
++        "nativeSearchSeconds": 0.249686252,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "unused-only",
++      "cell": "parent-parent",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "15ed615953cd9984e6dd190136f22716531200894b1027383f9292d75306c8ab"
++        }
++      ],
++      "key": "56c764faeb06435b27aa4631a4c1d68960cd4a7be1ab447bd1777a988bed2fd2",
++      "cacheHit": false,
++      "preparationSeconds": 0,
++      "nativeSeconds": 0.385,
++      "independentReplaySeconds": 0.061,
++      "endToEndSeconds": 0.456238,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.385,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3932,
++        "rawSha256": "43a59357692eee69bc50023c3cba8932a9255c181d603dfcd551a79d4846eadd",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/unused-only-native/native.json",
++        "nativeSearchSeconds": 0.241283109,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.385,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.4056,
++        "rawSha256": "0b48e74ec7d7e5891a194b7ef7812ef01f43f11f86b656c00a39fd5310216673",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/unused-only-clean-control/native.json",
++        "nativeSearchSeconds": 0.249734362,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "both-fixes",
++      "cell": "fix-fix",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
++        }
++      ],
++      "key": "d2b251e08d165fd65c4e9e576d585eb34f9a88ffc148a15b863f0d335298951c",
++      "cacheHit": false,
++      "preparationSeconds": 0,
++      "nativeSeconds": 1.215,
++      "independentReplaySeconds": 0,
++      "endToEndSeconds": 1.225098,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "established",
++        "selector": null,
++        "wallSeconds": 1.215,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 1.2126,
++        "rawSha256": "96d4ef9d12a2580de49c5998e1d37f2fb5ea5f6e7785d7cc7343981720b47fcb",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/both-fixes-native/native.json",
++        "nativeSearchSeconds": 1.192097452,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "established",
++        "selector": null,
++        "wallSeconds": 1.188,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 1.1839,
++        "rawSha256": "a67faae4a84404699931addf09496e035bcc221640f53b3c14c8bcbf63dca492",
++        "raw": "records/native-preview/20261120T220835Z-91167742/full/both-fixes-clean-control/native.json",
++        "nativeSearchSeconds": 1.1632038470000001,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    }
++  ],
++  "byte-only": [
++    {
++      "scenario": "cold",
++      "cell": "parent-parent",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
++        }
++      ],
++      "key": "ff1c1fb3703cda03425e442a2c3a2ed445408904abc153394f4e8e0b35bbc309",
++      "cacheHit": false,
++      "preparationSeconds": 2.585658,
++      "nativeSeconds": 0.356,
++      "independentReplaySeconds": 0.061,
++      "endToEndSeconds": 3.01311,
++      "peakProcessRssBytes": 116252672,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.356,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3567,
++        "rawSha256": "d67a8c2f0c7eed45cc5947c238de8c8ed301f7178525f3b2890b1796c0a4b113",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/cold-native/native.json",
++        "nativeSearchSeconds": 0.229857609,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.367,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3853,
++        "rawSha256": "a018ef9da1903c54f9dcca17848e35c374c2a8495e3acff55488d491ff80fd74",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/cold-clean-control/native.json",
++        "nativeSearchSeconds": 0.267341789,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "unchanged",
++      "cell": "parent-parent",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
++        }
++      ],
++      "key": "ff1c1fb3703cda03425e442a2c3a2ed445408904abc153394f4e8e0b35bbc309",
++      "cacheHit": true,
++      "preparationSeconds": 0,
++      "nativeSeconds": 0,
++      "independentReplaySeconds": 0.071,
++      "endToEndSeconds": 0.081009,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.356,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3567,
++        "rawSha256": "d67a8c2f0c7eed45cc5947c238de8c8ed301f7178525f3b2890b1796c0a4b113",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/cold-native/native.json",
++        "nativeSearchSeconds": 0.229857609,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.366,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3785,
++        "rawSha256": "c937d604cea553f6fbe9075513db4ba6dceb19d96b10e5872e885c5d43d8dd15",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/unchanged-clean-control/native.json",
++        "nativeSearchSeconds": 0.256896858,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "io-only",
++      "cell": "fix-parent",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
++        }
++      ],
++      "key": "6a4b93c2db100abdb20c51b7b2916edbf2cd50d4c3f5e92df996ccbe7e9ae69a",
++      "cacheHit": false,
++      "preparationSeconds": 0,
++      "nativeSeconds": 1.198,
++      "independentReplaySeconds": 0,
++      "endToEndSeconds": 1.208569,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "established",
++        "selector": null,
++        "wallSeconds": 1.198,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 1.1899,
++        "rawSha256": "9fa49ad0caf00bd9cf8c2871fa3891d42eaeb619aef908c3b301d6719cd81d89",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/io-only-native/native.json",
++        "nativeSearchSeconds": 1.168813339,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "established",
++        "selector": null,
++        "wallSeconds": 1.258,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 1.2492,
++        "rawSha256": "f60f123eafb0b0170f312df00603b78adec881995dcd365a65921401ec05ebd0",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/io-only-clean-control/native.json",
++        "nativeSearchSeconds": 1.228431761,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "csv-only",
++      "cell": "parent-fix",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
++        }
++      ],
++      "key": "ff1c1fb3703cda03425e442a2c3a2ed445408904abc153394f4e8e0b35bbc309",
++      "cacheHit": true,
++      "preparationSeconds": 0,
++      "nativeSeconds": 0,
++      "independentReplaySeconds": 0.071,
++      "endToEndSeconds": 0.084247,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.356,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3567,
++        "rawSha256": "d67a8c2f0c7eed45cc5947c238de8c8ed301f7178525f3b2890b1796c0a4b113",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/cold-native/native.json",
++        "nativeSearchSeconds": 0.229857609,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.386,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.389,
++        "rawSha256": "1fd76b65b88af1707aa176b2a9fdbd2a49ffa91c2d4030507c451b25d50383c6",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/csv-only-clean-control/native.json",
++        "nativeSearchSeconds": 0.256024192,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "unused-only",
++      "cell": "parent-parent",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
++        }
++      ],
++      "key": "ff1c1fb3703cda03425e442a2c3a2ed445408904abc153394f4e8e0b35bbc309",
++      "cacheHit": true,
++      "preparationSeconds": 0,
++      "nativeSeconds": 0,
++      "independentReplaySeconds": 0.072,
++      "endToEndSeconds": 0.082138,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.356,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.3567,
++        "rawSha256": "d67a8c2f0c7eed45cc5947c238de8c8ed301f7178525f3b2890b1796c0a4b113",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/cold-native/native.json",
++        "nativeSearchSeconds": 0.229857609,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "refuted",
++        "selector": 87,
++        "wallSeconds": 0.406,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 0.4126,
++        "rawSha256": "acb9441eeb31e1566294f7cc733239becb4189003ceb38113394489b72273d12",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/unused-only-clean-control/native.json",
++        "nativeSearchSeconds": 0.278190355,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    },
++    {
++      "scenario": "both-fixes",
++      "cell": "fix-fix",
++      "preparedClasspath": [
++        {
++          "role": "projection",
++          "sha256": "b726cfe2a202cc76d14c01a55408f04a4d3ef4180b3fef87e7f6b25c0fcd602e"
++        },
++        {
++          "role": "application",
++          "sha256": "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a"
++        },
++        {
++          "role": "runtimeJar",
++          "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
++        }
++      ],
++      "key": "6a4b93c2db100abdb20c51b7b2916edbf2cd50d4c3f5e92df996ccbe7e9ae69a",
++      "cacheHit": false,
++      "preparationSeconds": 0,
++      "nativeSeconds": 1.229,
++      "independentReplaySeconds": 0,
++      "endToEndSeconds": 1.241677,
++      "peakProcessRssBytes": 52776960,
++      "coordinatorHighWaterBytes": 52776960,
++      "evidence": {
++        "status": "established",
++        "selector": null,
++        "wallSeconds": 1.229,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 1.2261,
++        "rawSha256": "19ea11aebebd4a3c97faf30b9801e8487e50b5b9bda059b00fcd4ade638754aa",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-native/native.json",
++        "nativeSearchSeconds": 1.201197605,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      },
++      "independentCleanRecomputation": {
++        "status": "established",
++        "selector": null,
++        "wallSeconds": 1.283,
++        "peakRssBytes": 52776960,
++        "cpuSeconds": 1.2764,
++        "rawSha256": "fc97d3500e93ef3b56ec548d97e792c693952792ab33615dc1c9a7a9ea9a6c0d",
++        "raw": "records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-clean-control/native.json",
++        "nativeSearchSeconds": 1.252000641,
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "code >= 0 && code < 96",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ]
++      }
++    }
++  ]
++}

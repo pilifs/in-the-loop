@@ -26,16 +26,16 @@ EXPECTED = {
 }
 
 
-def measure(work):
+def measure(work, example=EXAMPLE, expected_matrix=EXPECTED, inputs=96, positive=24, witness=6):
     library = EXAMPLE / "records/builds"
-    out = EXAMPLE / "records/matrix"
+    out = example / "records/matrix"
     out.mkdir(parents=True, exist_ok=True)
     home = runtime_jdk.home("21")
     if home is None:
         raise ValueError("the matrix requires JDK 21")
     java, javac = Path(home) / "bin/java", Path(home) / "bin/javac"
     cache = runtime_maven.Cache()
-    recipes = json.loads((EXAMPLE / "controls/libraries.json").read_text())
+    recipes = json.loads((example / "controls/libraries.json").read_text())
     jars = {}
     for name, recipe in recipes.items():
         if "build" not in recipe:
@@ -67,12 +67,13 @@ def measure(work):
         runtime_maven.acquire(item, jars[name], cache)
     classes = work / "classes"
     classes.mkdir()
-    sources = sorted(p for root in ("client", "adapter", "driver") for p in (EXAMPLE / root).rglob("*.java"))
+    sources = sorted(p for root in ("client", "adapter", "driver") for p in (example / root).rglob("*.java"))
     helpers = TOOLS / "targets/java"
     compile_cp = [jars[key] for key in ("csv-fix", "io-api", "codec")]
     subprocess.run(
         [
             javac,
+            "-J-XX:-UsePerfData",
             "--release",
             "21",
             "-encoding",
@@ -90,7 +91,7 @@ def measure(work):
         ],
         check=True,
     )
-    table = finite_oracle.Table(EXAMPLE / "controls/table.json")
+    table = finite_oracle.Table(example / "controls/table.json")
     report = {
         "jdk": runtime_jdk.identity(home),
         "compileClasspath": [runtime_maven.sha256_of(j) for j in compile_cp],
@@ -99,7 +100,7 @@ def measure(work):
         },
         "configurations": {},
     }
-    for cell, expected in EXPECTED.items():
+    for cell, expected in expected_matrix.items():
         io, csv = cell.split("-")
         selected = [jars["io-" + io], jars["csv-" + csv], jars["codec"]]
         cp = os.pathsep.join(map(str, [classes, *selected]))
@@ -108,7 +109,7 @@ def measure(work):
             "org.apache.commons.csv.CSVParser",
             "org.apache.commons.codec.binary.Base64",
         ]
-        origins = subprocess.check_output([java, "-cp", cp, "LoadedClasses", work, *names], text=True)
+        origins = subprocess.check_output([java, "-XX:-UsePerfData", "-cp", cp, "LoadedClasses", work, *names], text=True)
         rows = origins.splitlines()
         if len(rows) != len(names):
             raise ValueError("incomplete list of loaded classes")
@@ -117,7 +118,7 @@ def measure(work):
                 digest = hashlib.sha256(archive.read(name.replace(".", "/") + ".class")).hexdigest()
             if line.split("\t") != [name, jar.name, digest]:
                 raise ValueError(f"{cell}: JVM loaded a different {name}")
-        raw = subprocess.check_output([java, "-cp", cp, "importer.ImportCases"])
+        raw = subprocess.check_output([java, "-XX:-UsePerfData", "-cp", cp, "importer.ImportCases"])
         observations = [json.loads(line) for line in raw.splitlines()]
         mismatch = {key: 0 for key in table.fields}
         controls = 0
@@ -132,23 +133,24 @@ def measure(work):
                     )
                 mismatch[key] += not correct
         if (
-            len(observations) != 96
-            or controls != 24
+            len(observations) != inputs
+            or controls != positive
             or [mismatch[k] for k in ("bytes", "count", "page")] != expected
         ):
             raise ValueError(f"{cell}: unexpected matrix {mismatch}")
         (out / (cell + ".jsonl")).write_bytes(raw)
         report["configurations"][cell] = {
-            "inputs": 96,
+            "inputs": inputs,
             "positiveControls": controls,
             "mismatches": mismatch,
             "runtimeClasspath": [runtime_maven.sha256_of(jar) for jar in selected],
             "loaded": rows,
             "stdoutSha256": hashlib.sha256(raw).hexdigest(),
-            "example": next(row for row in observations if row["id"] == 6),
+            "example": next(row for row in observations if row["id"] == witness),
         }
         print(cell, mismatch, flush=True)
     (out / "matrix.json").write_text(json.dumps(report, indent=2) + "\n")
+    return report
 
 
 if __name__ == "__main__":

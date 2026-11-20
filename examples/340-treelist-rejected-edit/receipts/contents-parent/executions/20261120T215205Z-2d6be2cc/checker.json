@@ -1,0 +1,218 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "prove",
+    "trees.Projection#contents(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/built/commons-collections4-4.6.0-SNAPSHOT.jar",
+    "--classpath",
+    "prepare/parent/lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+    "--assume",
+    "code >= 0 && code < 112",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "48",
+    "--max-array-length",
+    "16",
+    "--timeout",
+    "90",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 0.234,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "trees.Projection#contents(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 112",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.2 s; loops unwound 48 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [],
+      "output": "✓ trees.Projection#contents(int) satisfies `result == 1` on every input where code >= 0 && code < 112 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.2 s; loops unwound 48 times with unwinding assertions)\n  not vacuous: contents(code=20) reaches the calls\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.195519977,
+        "properties": 1,
+        "unwind": 48,
+        "max_array_length": 16,
+        "stage": null,
+        "native": {
+          "paths": 114,
+          "merges": 0,
+          "solver_calls": 115,
+          "solving_seconds": 0.067686556,
+          "gates_evaluated": 1564,
+          "evaluating_seconds": 0.000170507,
+          "divisions": 2,
+          "divisions_built": 2,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 9319,
+          "clauses": 32224,
+          "seconds": 0.192043612,
+          "loading_seconds": 0.001960739,
+          "decoding_seconds": 0.000330531,
+          "encoding_seconds": 0.054651686,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 90.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 90.0,
+            "seconds": 0.192,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.002,
+              "lowering": 0.0,
+              "symbolic": 0.067,
+              "encoding": 0.055,
+              "solving": 0.068,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 9319,
+              "clauses": 32224
+            }
+          },
+          {
+            "checker": "native",
+            "purpose": "probe",
+            "stage": null,
+            "budget_seconds": 89.804,
+            "seconds": 0.006,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.005,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 177,
+              "clauses": 491
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.224,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.198,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.024
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 112",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 48,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found contents(code=20).",
+          "witness": "contents(code=20)"
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 5271,
+    "sha256": "d09dda819fd708ac15976a5f21144f5f02143930c2470f7432c8f4fcbe01a94c"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

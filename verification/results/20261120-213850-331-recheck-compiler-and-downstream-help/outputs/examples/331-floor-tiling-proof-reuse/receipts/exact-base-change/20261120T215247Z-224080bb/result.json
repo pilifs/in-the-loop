@@ -1,0 +1,571 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "9ce219c02a7bd8bc",
+    "format": 1,
+    "example": "331",
+    "statement": {
+      "approach": "target",
+      "task": "exact-base-change",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#exact(I)I",
+      "revisions": [
+        "base-change"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "exact-base-change",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "tiling.Floor#exact(I)I",
+        "file": "claims/exact.json",
+        "sha256": "dcbf82c259dc927aa498585834ac15c13fbfcb67080673ae73cae67a49c7984e",
+        "property": "exact",
+        "claimKind": "property",
+        "statement": "For n from zero to eighteen the exact caller agrees with the binomial tiling count.",
+        "assume": "n >= 0 && n <= 18",
+        "assert": "result == tiling.Oracle.exact(n)",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 24,
+          "maxArrayLength": 0
+        },
+        "explicitBounds": {
+          "unwind": 24,
+          "maxArrayLength": 0
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/tiling/Cases.java",
+            "sha256": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa"
+          }
+        ],
+        "key": "4502d9700b57c016"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 0
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "dc91b127902f68aa160ec831121aefee95095c684277c3e98ca39ebdcf8ed8ff",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "exact-base-change",
+      "sidecar": "6dc389dc1412c31e5b128223f07ba175873490af60ffd812197ba6e146650387",
+      "revisions": {
+        "base-change": "64ebbfd2cbf14747c8456426b59ac4cd0eeca4e7"
+      },
+      "dependencies": [
+        {
+          "revision": "base-change",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ec6cbf57fad3dcacd8a5415b841351adef7d466f8bd28df070e10e20bdd9952c"
+        },
+        {
+          "revision": "base-change",
+          "position": 1,
+          "role": "original",
+          "sha256": "d8b86fde84d5c59703c7367e5dbdd1bfa4e178f4f8ae30c981d99ea8f544aa65"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/exact.json": "dcbf82c259dc927aa498585834ac15c13fbfcb67080673ae73cae67a49c7984e",
+        "controls/table.json": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa",
+        "driver/tiling/Cases.java": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+      },
+      "claimKey": "4502d9700b57c016"
+    }
+  },
+  "attempt": {
+    "id": "20261120T215247Z-224080bb",
+    "claim": "9ce219c02a7bd8bc",
+    "startedAt": "2026-11-20T21:52:47+00:00",
+    "seconds": 15.5,
+    "engine": "native",
+    "options": [
+      "prove",
+      "tiling.Floor#exact(int)",
+      "--classes",
+      "prepare/base-change/base-change.jar",
+      "--assume",
+      "n >= 0 && n <= 18",
+      "--assert",
+      "result == tiling.Oracle.exact(n)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "24",
+      "--max-array-length",
+      "0",
+      "--timeout",
+      "25",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "7dd4a7f6f59f643eea967718bf11d069e84ad875ab360f4d0f640030a02f0be3",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-213850-331-recheck-compiler-and-downstream-help",
+      "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213850-331-recheck-compiler-and-downstream-help"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control base-change on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-base-change-jdk21.stdout",
+        "stderr": "records/control-base-change-jdk21.stderr"
+      },
+      {
+        "name": "verifier base-change on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 15.427,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 24,
+      "maxArrayLength": 0,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "9ce219c02a7bd8bc",
+    "attempt": "20261120T215247Z-224080bb",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == tiling.Oracle.exact(n)",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result == tiling.Oracle.exact(n)",
+          "assume": "n >= 0 && n <= 18",
+          "verdict": "violation",
+          "domain": "n: int",
+          "proof": "found by jvmcontract's own checker (Bitwuzla) in 14.6 s searching inputs in [0:20] as exact(n=18), shrunk to the input above in 1 interpreter runs, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain n: int",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "exact(n=0)",
+            "contract": "result == tiling.Oracle.exact(n)",
+            "actual": "0",
+            "found": "exact(n=18)",
+            "shrinkRuns": 1,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "n",
+                  "type": "int",
+                  "value": 0
+                }
+              ],
+              "foundInputs": [
+                {
+                  "name": "n",
+                  "type": "int",
+                  "value": 18
+                }
+              ],
+              "call": {
+                "class": "tiling.Floor",
+                "classFile": "tiling/Floor.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "exact",
+                "descriptor": "(I)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "n",
+                    "type": "int",
+                    "value": 0,
+                    "from": "n"
+                  }
+                ],
+                "revision": "base-change"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 14.629,
+            "properties": 1,
+            "unwind": 24,
+            "maxArrayLength": 0,
+            "stage": "[0:20]",
+            "deadlineSeconds": 25.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 25.0,
+                "seconds": 14.388,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.367,
+                  "encoding": 1.014,
+                  "solving": 12.975,
+                  "trace": 0.032,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 282672,
+                  "clauses": 1
+                }
+              }
+            ],
+            "native": {
+              "paths": 1,
+              "merges": 0,
+              "solverCalls": 15146,
+              "solvingSeconds": 12.974555284000001,
+              "gatesEvaluated": 23524,
+              "evaluatingSeconds": 0.018316659,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "wordOperations": 23505,
+              "finiteQueries": {
+                "diagrams": 15146,
+                "bitwuzla": 0
+              },
+              "variables": 282672,
+              "clauses": 1,
+              "seconds": 14.388277602,
+              "loadingSeconds": 0.00027709,
+              "decodingSeconds": 4.8881e-05,
+              "encodingSeconds": 1.014389818,
+              "witnessSeconds": 0.031929214
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "jvm",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "n",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "n: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "n >= 0 && n <= 18",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == tiling.Oracle.exact(n)",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 24,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 22,
+      "code": "\"base-change\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "exact(n=0)",
+        "contract": "result == tiling.Oracle.exact(n)",
+        "actual": "0",
+        "found": "exact(n=18)",
+        "shrinkRuns": 1,
+        "witness": {
+          "inputs": [
+            {
+              "name": "n",
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "n",
+              "type": "int",
+              "value": 18
+            }
+          ],
+          "call": {
+            "class": "tiling.Floor",
+            "classFile": "tiling/Floor.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "exact",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "n",
+                "type": "int",
+                "value": 0,
+                "from": "n"
+              }
+            ],
+            "revision": "base-change"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (Bitwuzla) in 14.6 s searching inputs in [0:20] as exact(n=18), shrunk to the input above in 1 interpreter runs, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain n: int",
+    "problem": null,
+    "domain": "n: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "result == tiling.Oracle.exact(n)",
+      "assume": "n >= 0 && n <= 18"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "n",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "n: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "n >= 0 && n <= 18",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == tiling.Oracle.exact(n)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "dd3ee4ab3c8e6506e7a1e9a52ba9be5c6f7b7454d8bdcabcd2214737796a5009",
+        "bytes": 23070
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "bd2fa7c5292072045122f9140e697836bc1ed79d4b0e365918c89fe914562fe0",
+        "bytes": 901
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "c6d933bbc05a485252a750e5f0170803780a12cda9a6341f38bf8fe1fae29db7",
+        "bytes": 2007
+      },
+      {
+        "path": "records/control-base-change-jdk21.stdout",
+        "sha256": "b83acf5ab5b1e14ddf6099722c6b0b02f20fbc7969af0151e5931098ab85b730",
+        "bytes": 1369
+      },
+      {
+        "path": "records/control-base-change-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "44520169b2c1cce2225ad5262419a780ae2287dc50b95d9dbfe241fe5b374f85",
+        "bytes": 6743
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "dff4f1753faaffdcfc30a1860e194d1efc3cc1e9f0358afffe6e753bfda48eaa",
+        "bytes": 6995
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "793e3845c85337bf144a14d3898463e730e28dfd920b89227b1300762bb2afc6",
+        "bytes": 14443
+      }
+    ]
+  }
+}
