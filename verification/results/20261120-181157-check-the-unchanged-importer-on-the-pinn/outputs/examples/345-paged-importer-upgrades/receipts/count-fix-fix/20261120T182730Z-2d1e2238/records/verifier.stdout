@@ -1,0 +1,164 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "importer.Projection#count(int)",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 96",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/Object;)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.append(java.lang.Object) at org.apache.commons.csv.CSVFormat$Builder.setQuote:810). With --gaps assume it assumes instead that java.lang.StringBuilder.append(java.lang.Object) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "importer.Projection#count(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/Object;)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.append(java.lang.Object) at org.apache.commons.csv.CSVFormat$Builder.setQuote:810). With --gaps assume it assumes instead that java.lang.StringBuilder.append(java.lang.Object) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+        "uri": null,
+        "line": 44
+      }
+    ],
+    "output": "✗ importer.Projection#count(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/Object;)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.append(java.lang.Object) at org.apache.commons.csv.CSVFormat$Builder.setQuote:810). With --gaps assume it assumes instead that java.lang.StringBuilder.append(java.lang.Object) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.008009598,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 96,
+      "stage": null,
+      "native": {
+        "paths": 26,
+        "merges": 0,
+        "solver_calls": 25,
+        "solving_seconds": 0.00011341,
+        "gates_evaluated": 132,
+        "evaluating_seconds": 4.949e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 161,
+        "clauses": 411,
+        "seconds": 0.006738036,
+        "loading_seconds": 0.001367231,
+        "decoding_seconds": 0.000164041,
+        "encoding_seconds": 0.000256912,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/Object;)Ljava/lang/StringBuilder;@jdk-21.0.13",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.append(java.lang.Object)",
+          "sites": [
+            "org.apache.commons.csv.CSVFormat$Builder.setQuote:810"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 90.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 90.0,
+          "seconds": 0.007,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 161,
+            "clauses": 411
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.017,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.007,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.009
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 96",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

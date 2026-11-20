@@ -2926,6 +2926,12 @@ change `uqrtnxoxqyty` · [log `c93e7b64b12c`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 1 of the 3 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-181156-exhaust-the-frozen-observations-for-the: passed: 1 passed step(s) in 45.5s, peak 188.2 MiB (estimated 3m00s, 2.0 GiB); 17 output file(s) changed Applied 17 output(s). 20261120-181157-check-commons-io-prefix-and-eof-on-the-p: failed: 1 failed step(s) in 5.4s, peak 142.4 MiB (estimated 3m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-181203-check-commons-csv-pagination-on-the-pinn: failed: 1 failed step(s) in 6.4s, peak 147.8 MiB (estimated 3m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
+### Record verification results for 1 job(s)
+
+change `wqpxklzzkrsk` · [log `c93e7b64b12c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/c93e7b64b12cb6cc9cee6c1a6c897a5423c1ed245285d9b03a893c11f3004b26.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-181157-check-the-unchanged-importer-on-the-pinn: failed: 1 failed step(s) in 23.0s, peak 181.2 MiB (estimated 3m00s, 2.0 GiB); 240 output file(s) changed; signals: example:task-unexpected×16 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/c93e7b64b12cb6cc9cee6c1a6c897a5423c1ed245285d9b03a893c11f3004b26.jsonl.gz) has every step in between: reasoning, tool calls and their results.
