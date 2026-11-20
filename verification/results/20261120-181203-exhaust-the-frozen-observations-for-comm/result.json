@@ -1,0 +1,240 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-181203-exhaust-the-frozen-observations-for-comm",
+  "title": "Exhaust the frozen observations for Commons CSV pagination",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 11.8s, peak 140.0 MiB (estimated 3m00s, 2.0 GiB); 9 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-181203-exhaust-the-frozen-observations-for-comm.json",
+    "sha256": "ca759e5b7436d91fe6f6ad408dc8060a55c6cd78857d409f10b4d6287d8e2d7f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-181203-exhaust-the-frozen-observations-for-comm",
+      "title": "Exhaust the frozen observations for Commons CSV pagination",
+      "description": "Check all 8 public claims for Commons CSV pagination on the certified selector envelope. Invoke the real guard, method and assertion with a fresh class loader. Compare every adapter to independently reconstructed JVM objects and replay the first failing selector separately.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "339"
+        ]
+      },
+      "expected": "All cases and controls agree with the independent original JVM observations.",
+      "submitted": {
+        "at": "2026-11-20T18:12:03+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "mvn"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "memoryLimit": "4G",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Exhaust original selector domains",
+          "run": "python3 examples/tools/build.py 339 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/339-commons-csv-page-numbers/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "d9d5a28566b1273cf7d15f776c9d69b227ae5b06",
+  "startedAt": "2026-11-20T18:23:51+00:00",
+  "finishedAt": "2026-11-20T18:24:07+00:00",
+  "wallSeconds": 16.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 294682,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 146796544,
+    "wallSeconds": 11.8,
+    "cpuSeconds": 20.9,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exhaust original selector domains",
+      "run": "python3 examples/tools/build.py 339 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 11.821,
+      "cpuSeconds": 20.891,
+      "cpuThrottledSeconds": 1.495,
+      "peakMemoryBytes": 146796544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exhaust-original-selector-doma.log",
+        "lines": 8,
+        "bytes": 324,
+        "sha256": "7c32f401a8a73ca1ea42678aaca9f2715b3e6cc5fe58209c75e7f24bc3141339",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "339 count-parent refuted 24 admitted ",
+        "339 labels-parent refuted 24 admitted ",
+        "339 fields-parent refuted 24 admitted ",
+        "339 start-one-parent established 12 admitted ",
+        "339 count-fix established 24 admitted ",
+        "339 labels-fix established 24 admitted ",
+        "339 fields-fix established 24 admitted ",
+        "339 start-one-fix established 12 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/batch.json",
+      "change": "added",
+      "bytes": 4638,
+      "sha256": "d187028797b7b129bc8a4672b88cbcce377e213dfa7a09107428e62bb49a25f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/count-fix.json",
+      "change": "added",
+      "bytes": 9879,
+      "sha256": "16b75247675186d0f51f2511e811bb1d08e12db0501b54d38f888676c72d5c5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/count-parent.json",
+      "change": "added",
+      "bytes": 12020,
+      "sha256": "a9fadba7cc96774f9f5d785702d13d4bdd06c5fd158445e73c3d10e20221823c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/fields-fix.json",
+      "change": "added",
+      "bytes": 9885,
+      "sha256": "1ae3c76ae754f97955db1f454ded73acae2d3410c1801dbbfe4370734bb41275",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/fields-parent.json",
+      "change": "added",
+      "bytes": 12026,
+      "sha256": "d177a48fc7feb15d69c8890361dc6698f06bf026742fded9eee6893f8720b7c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/labels-fix.json",
+      "change": "added",
+      "bytes": 9885,
+      "sha256": "f3430dfc9f63a5a356574fba0278538ece2e8e058eaa7605be3b1308714e6625",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/labels-parent.json",
+      "change": "added",
+      "bytes": 12027,
+      "sha256": "23967a8926c5d470e7c55460d3603273db27efdbc477915999ba9a0d78a576ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/start-one-fix.json",
+      "change": "added",
+      "bytes": 8695,
+      "sha256": "81df8213d65bc2f9a7a8bf0bbd99a963dfa5de1c978f49efced83888f5d784a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/start-one-parent.json",
+      "change": "added",
+      "bytes": 8716,
+      "sha256": "74f4120d4e0f3edee43b4da10bbcd25cc19e6ee8a971f0857fafb44bce1a332b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T18:24:09+00:00",
+    "applied": [
+      "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/batch.json",
+      "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/count-fix.json",
+      "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/count-parent.json",
+      "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/fields-fix.json",
+      "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/fields-parent.json",
+      "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/labels-fix.json",
+      "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/labels-parent.json",
+      "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/start-one-fix.json",
+      "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/start-one-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
