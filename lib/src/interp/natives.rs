@@ -110,7 +110,7 @@ fn set_throwable(m: &mut Machine, r: Ref, message: Option<Ref>, cause: Option<Re
                 *c = cause;
             }
         }
-        Object::Instance { base: Base::Throwable { message: msg, cause: c }, .. } => {
+        Object::Instance { base: Base::Throwable { message: msg, cause: c, .. }, .. } => {
             if set_message {
                 *msg = message;
             }
@@ -185,16 +185,7 @@ pub fn unbox(m: &mut Machine, v: Value) -> Exec<Value> {
 }
 
 fn boxed_type(class: &str) -> Type {
-    match class {
-        "java/lang/Boolean" => Type::Boolean,
-        "java/lang/Byte" => Type::Byte,
-        "java/lang/Character" => Type::Char,
-        "java/lang/Short" => Type::Short,
-        "java/lang/Long" => Type::Long,
-        "java/lang/Float" => Type::Float,
-        "java/lang/Double" => Type::Double,
-        _ => Type::Int,
-    }
+    Type::for_wrapper(class).unwrap_or(Type::Int)
 }
 
 // Strings and conversions
@@ -273,7 +264,8 @@ fn native_to_string(m: &mut Machine, r: Ref) -> Exec<JStr> {
             out.push_str("]");
             out
         }
-        Native::Iterator { .. } => return unsupported("Iterator.toString is identity-based"),
+        Native::Iterator { .. } | Native::ArrayListIterator { .. } => return unsupported("Iterator.toString is identity-based"),
+        Native::ArrayListSubList { .. } => return unsupported("rendering a live ArrayList sublist"),
         Native::Lambda { .. } => return unsupported("a lambda's toString is identity-based"),
     })
 }
@@ -292,10 +284,52 @@ pub fn equals(m: &mut Machine, a: Value, b: Value) -> Exec<bool> {
     }
 }
 
+/// The image-backed Arrays.asList and the interpreter's lists share the List
+/// equality contract. Compare in receiver order, dispatching each element's equals.
+pub(super) fn array_list_equality(m: &mut Machine, r: Ref, other: Value) -> Option<Exec<bool>> {
+    let s = other.as_ref()?;
+    let view = |v| matches!(m.heap.get(v), Object::Instance { class, .. } if class == "java/util/Arrays$ArrayList")
+        || matches!(m.heap.get(v), Object::Native(Native::ArrayListSubList { .. }));
+    let native = |v| matches!(m.heap.get(v), Object::Native(Native::List { .. }));
+    if !((view(r) && (native(s) || view(s))) || (native(r) && view(s))) { return None; }
+    if r == s { return Some(Ok(true)); }
+    let version = match m.heap.get(r) {
+        Object::Native(Native::ArrayListSubList { root, expected_mod_count, .. }) => Some((*root, *expected_mod_count)),
+        _ => m.array_list_mod_count.get(&r).map(|count| (r, *count)),
+    };
+    Some((|| {
+        let mut it = |v| m.call_virtual(Value::Ref(v), "java/util/List", "iterator", "()Ljava/util/Iterator;", vec![]);
+        let left = it(r)?.expect("list iterator");
+        let right = it(s)?.expect("list iterator");
+        let equal = loop {
+            let mut has = |v| m.call_virtual(v, "java/util/Iterator", "hasNext", "()Z", vec![]).map(|v| v.expect("boolean").as_int() != 0);
+            let (a, b) = (has(left)?, has(right)?);
+            if !a || !b { break a == b; }
+            let mut next = |v| m.call_virtual(v, "java/util/Iterator", "next", "()Ljava/lang/Object;", vec![]).map(|v| v.expect("element"));
+            let (a, b) = (next(left)?, next(right)?);
+            if !equals(m, a, b)? { break false; }
+        };
+        if version.is_some_and(|(root, count)| m.array_list_mod_count.get(&root) != Some(&count)) {
+            return Err(m.throw("java/util/ConcurrentModificationException", None));
+        }
+        Ok(equal)
+    })())
+}
+
 fn native_equals(m: &mut Machine, r: Ref, other: Value) -> Exec<bool> {
     let Value::Ref(o) = other else { return Ok(false) };
     if r == o {
         return Ok(true);
+    }
+    if matches!(m.heap.get(r), Object::Native(Native::ArrayListSubList { .. })) && m.cp.is_subtype(&m.class_of(o), "java/util/List") {
+        return unsupported("comparing a live sublist with this List implementation");
+    }
+    if let (Object::Native(Native::Map { entries, .. }), Object::Instance { class, .. }) = (m.heap.get(r), m.heap.get(o)) {
+        if class == "java/util/HashMap" {
+            let entries = entries.clone();
+            let other = map_entries(m, other)?;
+            return equal_map_entries(m, &entries, &other);
+        }
     }
     let (a, b) = match (m.heap.get(r), m.heap.get(o)) {
         (Object::Native(a), Object::Native(b)) => (a.clone(), b.clone()),
@@ -340,24 +374,7 @@ fn native_equals(m: &mut Machine, r: Ref, other: Value) -> Exec<bool> {
             }
             true
         }
-        (Native::Map { entries: x, .. }, Native::Map { entries: y, .. }) => {
-            if x.len() != y.len() {
-                return Ok(false);
-            }
-            for (k, v) in &x {
-                let mut found = false;
-                for (k2, v2) in &y {
-                    if equals(m, *k, *k2)? {
-                        found = equals(m, *v, *v2)?;
-                        break;
-                    }
-                }
-                if !found {
-                    return Ok(false);
-                }
-            }
-            true
-        }
+        (Native::Map { entries: x, .. }, Native::Map { entries: y, .. }) => equal_map_entries(m, &x, &y)?,
         (Native::Class(x), Native::Class(y)) => x == y,
         (Native::Optional(x), Native::Optional(y)) => match (x, y) {
             (None, None) => true,
@@ -434,6 +451,9 @@ fn native_hash(m: &mut Machine, r: Ref) -> Exec<i32> {
 // Static state of JDK classes
 
 pub fn get_static_jdk(m: &mut Machine, class: &str, name: &str) -> Exec<Value> {
+    if name == "TYPE" {
+        if let Some(ty) = Type::for_wrapper(class) { return Ok(m.class_object(&ty)); }
+    }
     match (class, name) {
         ("java/lang/Boolean", "TRUE") => Ok(box_value(m, "java/lang/Boolean", Value::Int(1))),
         ("java/lang/Boolean", "FALSE") => Ok(box_value(m, "java/lang/Boolean", Value::Int(0))),
@@ -457,7 +477,7 @@ pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
         "java/util/HashMap" | "java/util/LinkedHashMap" | "java/util/TreeMap" => Native::Map { entries: Vec::new(), mutable: true },
         "java/util/HashSet" | "java/util/LinkedHashSet" | "java/util/TreeSet" => Native::Set { elements: Vec::new(), mutable: true },
         "java/lang/Object" => return Ok(Value::Ref(m.alloc(Object::Instance { class: class.into(), fields: Default::default(), base: Base::Object }))),
-        _ if m.cp.is_subtype(class, "java/lang/Throwable") => Native::Throwable { class: class.into(), message: None, cause: None },
+        _ if m.cp.is_subtype(class, "java/lang/Throwable") => Native::Throwable { class: class.into(), message: None, cause: None, suppressed: None },
         _ => return unsupported(format!("new {}", class.replace('/', "."))),
     };
     Ok(Value::Ref(m.alloc_native(native)))
@@ -477,7 +497,7 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
     };
     match native {
         Native::Throwable { .. } => {
-            init_throwable(m, r, descriptor, &args)?;
+            init_throwable(m, r, owner, descriptor, &args)?;
         }
         Native::StringBuilder(_) => {
             let initial = match descriptor {
@@ -521,6 +541,7 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
                 _ => return unsupported(format!("ArrayList.<init>{descriptor}")),
             };
             *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable: true });
+            if owner == "java/util/ArrayList" { m.array_list_mod_count.insert(r, 0); }
         }
         Native::Set { .. } => {
             let mut elements = Vec::new();
@@ -564,7 +585,20 @@ fn hash_capacity(m: &mut Machine, descriptor: &str, args: &[Value]) -> Exec<()> 
     Ok(())
 }
 
-fn init_throwable(m: &mut Machine, r: Ref, descriptor: &str, args: &[Value]) -> Exec<()> {
+fn init_throwable(m: &mut Machine, r: Ref, owner: &str, descriptor: &str, args: &[Value]) -> Exec<()> {
+    use crate::bmc::throwables::{plain_constructor, SUPPRESSED, THROWABLE};
+    if plain_constructor(m.cp, owner, descriptor) || (owner == THROWABLE && descriptor == "(Ljava/lang/Throwable;)V") {
+        let fills_stack = args.get(3).is_none_or(|flag| flag.as_int() != 0);
+        if fills_stack && m.cp.bytecode_method(&m.class_of(r), "fillInStackTrace", "()Ljava/lang/Throwable;").is_some() {
+            return unsupported("Throwable constructor with an application fillInStackTrace override");
+        }
+        let state = if args.get(2).is_some_and(|flag| flag.as_int() == 0) {
+            Value::Null
+        } else {
+            m.get_static(THROWABLE, "SUPPRESSED_SENTINEL")?
+        };
+        m.put_field(Value::Ref(r), SUPPRESSED, state)?;
+    }
     match descriptor {
         "()V" => {}
         "(Ljava/lang/String;)V" => set_throwable(m, r, args[0].as_ref(), None, true, false),
@@ -585,6 +619,15 @@ fn init_throwable(m: &mut Machine, r: Ref, descriptor: &str, args: &[Value]) -> 
         _ => return unsupported(format!("Throwable.<init>{descriptor}")),
     }
     Ok(())
+}
+
+/// Execute the same final methods as the checker, on the ordinary interpreter heap.
+fn invoke_suppression(m: &mut Machine, r: Ref, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
+    let (class, method) = m.cp.throwable_image_method(crate::bmc::throwables::THROWABLE, name, descriptor)
+        .ok_or_else(|| Fault::Unsupported(format!("no selected JDK bytecode for Throwable.{name}{descriptor}")))?;
+    let mut full = vec![Value::Ref(r)];
+    full.extend(args);
+    m.invoke(&class, &method, full)
 }
 
 /// A method inherited from a JDK superclass, called on an application instance: `Enum.ordinal`,
@@ -634,7 +677,7 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
         },
         Base::Throwable { .. } => match name {
             "<init>" => {
-                init_throwable(m, r, descriptor, &args)?;
+                init_throwable(m, r, owner, descriptor, &args)?;
                 Ok(None)
             }
             "getMessage" | "getLocalizedMessage" => {
@@ -661,7 +704,7 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
                 Ok(Some(Value::Ref(r)))
             }
             "fillInStackTrace" => Ok(Some(Value::Ref(r))),
-            "addSuppressed" => Ok(None),
+            "addSuppressed" | "getSuppressed" => invoke_suppression(m, r, name, descriptor, args),
             "hashCode" => unsupported("Throwable.hashCode is identity-based"),
             _ => unsupported(format!("Throwable.{name}{descriptor}")),
         },
@@ -708,6 +751,19 @@ fn collection_elements(m: &mut Machine, v: Value) -> Exec<Vec<Value>> {
     let Some(r) = v.as_ref() else { return Err(m.npe()) };
     match m.heap.get(r) {
         Object::Native(Native::List { elements, .. }) | Object::Native(Native::Set { elements, .. }) => Ok(elements.clone()),
+        Object::Native(Native::ArrayListSubList { root, offset, length, expected_mod_count, .. }) => {
+            if m.array_list_mod_count.get(root) != Some(expected_mod_count) { return Err(m.throw("java/util/ConcurrentModificationException", None)); }
+            let Object::Native(Native::List { elements, .. }) = m.heap.get(*root) else { return unsupported("sublist without its root"); };
+            Ok(elements[*offset..*offset + *length].to_vec())
+        }
+        Object::Instance { class, .. } if matches!(class.as_str(), "java/util/HashMap$KeySet" | "java/util/HashMap$EntrySet" | "java/util/Arrays$ArrayList") => {
+            let it = m.call_virtual(v, "java/lang/Iterable", "iterator", "()Ljava/util/Iterator;", vec![])?.expect("iterator reference");
+            let mut elements = Vec::new();
+            while m.call_virtual(it, "java/util/Iterator", "hasNext", "()Z", vec![])?.expect("hasNext result").as_int() != 0 {
+                elements.push(m.call_virtual(it, "java/util/Iterator", "next", "()Ljava/lang/Object;", vec![])?.expect("next reference"));
+            }
+            Ok(elements)
+        }
         Object::Array { data, .. } => Ok(data.clone()),
         _ => unsupported(format!("iterating a {}", m.class_of(r).replace('/', "."))),
     }
@@ -717,8 +773,31 @@ fn map_entries(m: &mut Machine, v: Value) -> Exec<Vec<(Value, Value)>> {
     let Some(r) = v.as_ref() else { return Err(m.npe()) };
     match m.heap.get(r) {
         Object::Native(Native::Map { entries, .. }) => Ok(entries.clone()),
+        Object::Instance { class, .. } if class == "java/util/HashMap" => {
+            let set = m.call_virtual(v, "java/util/Map", "entrySet", "()Ljava/util/Set;", vec![])?.expect("entry set");
+            collection_elements(m, set)?.into_iter().map(|node| {
+                let key = m.call_virtual(node, "java/util/Map$Entry", "getKey", "()Ljava/lang/Object;", vec![])?.expect("entry key");
+                let value = m.call_virtual(node, "java/util/Map$Entry", "getValue", "()Ljava/lang/Object;", vec![])?.expect("entry value");
+                Ok((key, value))
+            }).collect()
+        }
         _ => unsupported(format!("{} is not a modelled Map", m.class_of(r).replace('/', "."))),
     }
+}
+
+fn equal_map_entries(m: &mut Machine, left: &[(Value, Value)], right: &[(Value, Value)]) -> Exec<bool> {
+    if left.len() != right.len() { return Ok(false); }
+    for &(key, value) in left {
+        let mut found = false;
+        for &(other_key, other_value) in right {
+            if equals(m, key, other_key)? {
+                found = equals(m, value, other_value)?;
+                break;
+            }
+        }
+        if !found { return Ok(false); }
+    }
+    Ok(true)
 }
 
 fn contains(m: &mut Machine, elements: &[Value], v: Value) -> Exec<bool> {
@@ -795,10 +874,26 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
     }
     match native {
         Native::String(s) => {
+            if (name, descriptor) == ("getChars", "(II[CI)V") {
+                let (begin, end, offset) = (args[0].as_int(), args[1].as_int(), args[3].as_int());
+                if begin < 0 || end < begin || end as usize > s.units().len() { return unsupported("String.getChars source range is not proven valid"); }
+                let Some(dst) = args[2].as_ref() else { return Err(m.npe()) };
+                let Object::Array { element: Type::Char, data } = m.heap.get(dst) else { return unsupported("String.getChars needs a known char array") };
+                let count = (end - begin) as usize;
+                if offset < 0 || offset as usize + count > data.len() { return unsupported("String.getChars destination range is not proven valid"); }
+                if count > 0 {
+                    m.check_write(dst, "String.getChars writes a char array")?;
+                    let Object::Array { data, .. } = m.heap.get_mut(dst) else { unreachable!() };
+                    for (cell, unit) in data[offset as usize..][..count].iter_mut().zip(&s.units()[begin as usize..end as usize]) {
+                        *cell = Value::Int(i32::from(*unit));
+                    }
+                }
+                return Ok(None);
+            }
             let value = string_method(m, &s, name, descriptor, &args)?;
             // The JDK returns the String itself where a substring is its whole range or nothing is lowered, and
             // the literal "" for any other empty substring: `==` sees which.
-            if let (true, Value::Ref(made)) = (matches!(name, "substring" | "toLowerCase"), value) {
+            if let (true, Value::Ref(made)) = (matches!(name, "substring" | "toLowerCase" | "concat"), value) {
                 let content = match m.heap.get(made) {
                     Object::Native(Native::String(t)) => Some(t.units().to_vec()),
                     _ => None,
@@ -816,6 +911,74 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         Native::List { elements, mutable } => list_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Set { elements, mutable } => set_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Map { entries, mutable } => map_method(m, r, entries, mutable, name, descriptor, &args),
+        Native::ArrayListSubList { root, offset, length, expected_mod_count, .. } => {
+            if (name, descriptor) == ("subList", "(II)Ljava/util/List;") {
+                return array_sublist(m, root, Some(r), offset, length, expected_mod_count, &args).map(Some);
+            }
+            let indexed = matches!((name, descriptor), ("get" | "remove", "(I)Ljava/lang/Object;") | ("set", "(ILjava/lang/Object;)Ljava/lang/Object;"));
+            let mut actual = args;
+            if indexed {
+                let i = actual[0].as_int();
+                if i < 0 || i as usize >= length { return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&index_message(i.into(), length)))); }
+                actual[0] = Value::Int(offset as i32 + i);
+            }
+            if m.array_list_mod_count.get(&root) != Some(&expected_mod_count) { return Err(m.throw("java/util/ConcurrentModificationException", None)); }
+            if indexed {
+                let value = m.call_virtual(Value::Ref(root), "java/util/ArrayList", name, descriptor, actual)?;
+                if name == "remove" {
+                    let mut ancestor = Some(r);
+                    while let Some(a) = ancestor {
+                        if let Object::Native(Native::ArrayListSubList { parent, length, expected_mod_count, .. }) = m.heap.get_mut(a) {
+                            *length -= 1;
+                            *expected_mod_count = m.array_list_mod_count[&root];
+                            ancestor = *parent;
+                        } else { return unsupported("sublist without its parent view"); }
+                    }
+                }
+                return Ok(value);
+            }
+            match (name, descriptor) {
+                ("iterator", "()Ljava/util/Iterator;") => Ok(Some(Value::Ref(m.alloc_native(Native::ArrayListIterator {
+                    list: r, view: true, cursor: 0, last: None, expected_mod_count,
+                })))),
+                ("size", "()I") => Ok(Some(Value::Int(length as i32))),
+                ("isEmpty", "()Z") => Ok(Some(Value::bool(length == 0))),
+                ("toArray", "()[Ljava/lang/Object;" | "([Ljava/lang/Object;)[Ljava/lang/Object;") => {
+                    let elements = collection_elements(m, Value::Ref(r))?;
+                    list_method(m, r, elements, false, name, descriptor, &actual)
+                }
+                _ => unsupported(format!("ArrayList sublist.{name}{descriptor}")),
+            }
+        }
+        Native::ArrayListIterator { list, view, cursor, last, expected_mod_count } => {
+            let (root, offset, length) = match m.heap.get(list) {
+                Object::Native(Native::ArrayListSubList { root, offset, length, .. }) => (*root, *offset, *length),
+                Object::Native(Native::List { elements, .. }) => (list, 0, elements.len()),
+                _ => return unsupported("ArrayList iterator without a list"),
+            };
+            let Some(&current) = m.array_list_mod_count.get(&root) else { return unsupported("ArrayList iterator lost its list"); };
+            let Object::Native(Native::List { elements, .. }) = m.heap.get(root) else { return unsupported("ArrayList iterator without list storage"); };
+            match (name, descriptor) {
+                ("hasNext", "()Z") => Ok(Some(Value::bool(cursor != length))),
+                ("remove", "()V") if last.is_none() => Err(m.throw("java/lang/IllegalStateException", None)),
+                ("next", "()Ljava/lang/Object;") | ("remove", "()V") if current != expected_mod_count =>
+                    Err(m.throw("java/util/ConcurrentModificationException", None)),
+                ("next", "()Ljava/lang/Object;") => {
+                    let Some(&element) = elements.get(offset + cursor).filter(|_| cursor < length) else { return Err(m.throw("java/util/NoSuchElementException", None)); };
+                    m.check_write(r, "an iterator cursor")?;
+                    *m.heap.get_mut(r) = Object::Native(Native::ArrayListIterator { list, view, cursor: cursor + 1, last: Some(cursor), expected_mod_count });
+                    Ok(Some(element))
+                }
+                ("remove", "()V") => {
+                    m.check_write(r, "an iterator cursor")?;
+                    let i = last.expect("remove checked the last returned index");
+                    m.call_virtual(Value::Ref(list), "java/util/List", "remove", "(I)Ljava/lang/Object;", vec![Value::Int(i as i32)])?;
+                    *m.heap.get_mut(r) = Object::Native(Native::ArrayListIterator { list, view, cursor: i, last: None, expected_mod_count: m.array_list_mod_count[&root] });
+                    Ok(None)
+                }
+                _ => unsupported(format!("ArrayList iterator.{name}{descriptor}")),
+            }
+        }
         Native::Iterator { elements, position, immutable: of_immutable } => match name {
             "hasNext" => Ok(Some(Value::bool(position < elements.len()))),
             "next" => {
@@ -840,6 +1003,15 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 Ok(Some(m.new_string(simple)))
             }
             "getCanonicalName" => Ok(Some(m.new_string(t.class_get_name().replace('$', ".")))),
+            "getComponentType" => Ok(Some(match &t { Type::Array(element) => m.class_object(element), _ => Value::Null })),
+            "getClassLoader" if !t.is_reference() => Ok(Some(Value::Null)),
+            "isAssignableFrom" => {
+                let Some(r) = args[0].as_ref() else { return Err(m.npe()) };
+                let Object::Native(Native::Class(sub)) = m.heap.get(r) else { return unsupported("isAssignableFrom needs a Class argument"); };
+                let class_name = |ty: &Type| match ty { Type::Object(name) => name.clone(), _ => ty.descriptor() };
+                let yes = sub == &t || (sub.is_reference() && t.is_reference() && m.cp.is_subtype(&class_name(sub), &class_name(&t)));
+                Ok(Some(Value::bool(yes)))
+            }
             // Null of `Object`, of an interface and of a primitive type, `Object` of an array, as the JVM has it.
             "getSuperclass" => {
                 let above = match &t {
@@ -863,12 +1035,12 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             "isEnum" => Ok(Some(Value::bool(t.class_name().and_then(|n| m.cp.application(n).ok().flatten()).is_some_and(|c| c.is_enum())))),
             "isRecord" => Ok(Some(Value::bool(t.class_name().and_then(|n| m.cp.application(n).ok().flatten()).is_some_and(|c| c.is_record())))),
             "isInterface" => Ok(Some(Value::bool(t.class_name().and_then(|n| m.cp.application(n).ok().flatten()).is_some_and(|c| c.is_interface())))),
-            "isPrimitive" => Ok(Some(Value::bool(t.is_primitive()))),
+            "isPrimitive" => Ok(Some(Value::bool(!t.is_reference()))),
             "isArray" => Ok(Some(Value::bool(matches!(t, Type::Array(_))))),
             "desiredAssertionStatus" => Ok(Some(Value::Int(0))),
             _ => unsupported(format!("Class.{name}: reflection is outside the model")),
         },
-        Native::Throwable { class, message, cause } => match name {
+        Native::Throwable { class, message, cause, .. } => match name {
             "getMessage" | "getLocalizedMessage" => Ok(Some(message.map(Value::Ref).unwrap_or(Value::Null))),
             "getCause" => Ok(Some(cause.map(Value::Ref).unwrap_or(Value::Null))),
             "initCause" => {
@@ -876,11 +1048,11 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 Ok(Some(Value::Ref(r)))
             }
             "fillInStackTrace" => Ok(Some(Value::Ref(r))),
-            "addSuppressed" => Ok(None),
+            "addSuppressed" | "getSuppressed" => invoke_suppression(m, r, name, descriptor, args),
             _ => unsupported(format!("{}.{name}", class.replace('/', "."))),
         },
-        Native::Lambda { sam_name, implementation, captured, instantiated, interface } => {
-            if name == sam_name {
+        Native::Lambda { sam_name, sam_descriptor, implementation, captured, instantiated, interface } => {
+            if name == sam_name && sam_descriptor.as_deref().is_none_or(|d| d == descriptor) {
                 call_lambda(m, &implementation, captured, &instantiated, args)
             } else {
                 unsupported(format!("{}.{name} on a lambda (only its functional method {sam_name} is modelled)", interface.replace('/', ".")))
@@ -1159,6 +1331,16 @@ fn string_builder_method(m: &mut Machine, r: Ref, s: JStr, name: &str, descripto
             text = JStr::from_units(units);
             Some(Value::Ref(r))
         }
+        ("setCharAt", "(IC)V") => {
+            let index = args[0].as_int();
+            if index < 0 || index as usize >= text.len() {
+                return Err(m.throw("java/lang/StringIndexOutOfBoundsException", None));
+            }
+            let mut units = text.into_units();
+            units[index as usize] = args[1].as_int() as u16;
+            text = JStr::from_units(units);
+            None
+        }
         ("setLength", _) => {
             let n = args[0].as_int();
             if n < 0 {
@@ -1269,6 +1451,14 @@ fn compare_values(a: Value, b: Value, t: &Type) -> i32 {
     }
 }
 
+fn array_sublist(m: &mut Machine, root: Ref, parent: Option<Ref>, offset: usize, length: usize, expected_mod_count: i32, args: &[Value]) -> Exec<Value> {
+    let (from, to) = (args[0].as_int(), args[1].as_int());
+    if from < 0 { return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&format!("fromIndex = {from}")))); }
+    if i64::from(to) > length as i64 { return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&format!("toIndex = {to}")))); }
+    if from > to { return Err(m.throw("java/lang/IllegalArgumentException", Some(&format!("fromIndex({from}) > toIndex({to})")))); }
+    Ok(Value::Ref(m.alloc_native(Native::ArrayListSubList { root, parent, offset: offset + from as usize, length: (to - from) as usize, expected_mod_count })))
+}
+
 fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool, name: &str, descriptor: &str, args: &[Value]) -> Exec<Option<Value>> {
     let len = elements.len();
     let made = m.immutable_list_kind(r);
@@ -1282,6 +1472,12 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             return Err(immutable(m));
         }
         m.check_write(r, "a List")
+    };
+    let store = |m: &mut Machine, elements, structural: bool| {
+        if structural {
+            if let Some(count) = m.array_list_mod_count.get_mut(&r) { *count = count.wrapping_add(1); }
+        }
+        *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
     };
     Ok(match (name, descriptor) {
         ("size", _) => Some(Value::Int(len as i32)),
@@ -1324,7 +1520,13 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             }
             Some(Value::Int(result))
         }
-        ("iterator", _) => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0, immutable: !mutable }))),
+        ("iterator", _) => {
+            let iterator = match m.array_list_mod_count.get(&r) {
+                Some(&expected_mod_count) => Native::ArrayListIterator { list: r, view: false, cursor: 0, last: None, expected_mod_count },
+                None => Native::Iterator { elements, position: 0, immutable: !mutable },
+            };
+            Some(Value::Ref(m.alloc_native(iterator)))
+        }
         ("forEach", _) => {
             for e in elements {
                 m.call_virtual(args[0], "java/util/function/Consumer", "accept", "(Ljava/lang/Object;)V", vec![e])?;
@@ -1332,14 +1534,24 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             None
         }
         ("toArray", "()[Ljava/lang/Object;") => Some(m.new_array_of(Type::object("java/lang/Object"), elements)),
-        ("toArray", _) => {
-            let element = match args[0].as_ref().map(|a| m.heap.get(a).clone()) {
-                Some(Object::Array { element, .. }) => element,
-                _ => Type::object("java/lang/Object"),
-            };
-            Some(m.new_array_of(element, elements))
+        ("toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;") => {
+            let Some(target) = args[0].as_ref() else { return Err(m.npe()) };
+            let Object::Array { element, data } = m.heap.get(target) else { return unsupported("List.toArray requires an array") };
+            let capacity = data.len();
+            let destination = if capacity < len { m.new_array(element.clone(), len as i32)? } else { args[0] };
+            let source = m.new_array_of(Type::object("java/lang/Object"), elements);
+            invoke_static_jdk(m, "java/lang/System", "arraycopy", "(Ljava/lang/Object;ILjava/lang/Object;II)V",
+                vec![source, Value::Int(0), destination, Value::Int(0), Value::Int(len as i32)])?;
+            if capacity > len {
+                m.check_write(target, "an array element")?;
+                if let Object::Array { data, .. } = m.heap.get_mut(target) { data[len] = Value::Null; }
+            }
+            Some(destination)
         }
         ("subList", _) => {
+            if let Some(&count) = m.array_list_mod_count.get(&r) {
+                return array_sublist(m, r, None, 0, len, count, args).map(Some);
+            }
             let (from, to) = (args[0].as_int(), args[1].as_int());
             if from < 0 || to as usize > len || from > to {
                 return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&format!("fromIndex: {from}, toIndex: {to}, size: {len}"))));
@@ -1354,7 +1566,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
         ("add", "(Ljava/lang/Object;)Z") => {
             write(m)?;
             elements.push(args[0]);
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, true);
             Some(Value::Int(1))
         }
         ("add", "(ILjava/lang/Object;)V") => {
@@ -1364,7 +1576,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
                 return Err(out_of_bounds(m, i));
             }
             elements.insert(i as usize, args[1]);
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, true);
             None
         }
         ("addAll", "(Ljava/util/Collection;)Z") => {
@@ -1372,7 +1584,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             let others = collection_elements(m, args[0])?;
             let changed = !others.is_empty();
             elements.extend(others);
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, true);
             Some(Value::bool(changed))
         }
         ("set", _) => {
@@ -1383,7 +1595,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             }
             let old = elements[i as usize];
             elements[i as usize] = args[1];
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, false);
             Some(old)
         }
         ("remove", "(I)Ljava/lang/Object;") => {
@@ -1393,7 +1605,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
                 return Err(out_of_bounds(m, i));
             }
             let old = elements.remove(i as usize);
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, true);
             Some(old)
         }
         ("remove", "(Ljava/lang/Object;)Z") => {
@@ -1402,12 +1614,12 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             if i >= 0 {
                 elements.remove(i as usize);
             }
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, i >= 0);
             Some(Value::bool(i >= 0))
         }
         ("clear", _) => {
             write(m)?;
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements: Vec::new(), mutable });
+            store(m, Vec::new(), true);
             None
         }
         _ => return unsupported(format!("List.{name}{descriptor}")),
@@ -1615,10 +1827,17 @@ fn optional_method(m: &mut Machine, value: Option<Value>, name: &str, descriptor
 // Lambdas
 
 fn call_lambda(m: &mut Machine, handle: &MethodHandle, captured: Vec<Value>, instantiated: &str, args: Vec<Value>) -> Exec<Option<Value>> {
-    let mut full = captured;
-    full.extend(args);
     let target = MethodDescriptor::parse(&handle.member.descriptor).map_err(|e| Fault::Unsupported(e.to_string()))?;
     let instantiated = MethodDescriptor::parse(instantiated).map_err(|e| Fault::Unsupported(e.to_string()))?;
+    if args.len() != instantiated.params.len() { return unsupported("a lambda called through an incompatible argument descriptor"); }
+    for (arg, ty) in args.iter().zip(&instantiated.params) {
+        if let (Value::Ref(r), true) = (*arg, ty.is_reference()) {
+            let name = match ty { Type::Object(c) => c.clone(), _ => ty.descriptor() };
+            if !m.is_instance(r, &name) { return Err(m.throw("java/lang/ClassCastException", None)); }
+        }
+    }
+    let mut full = captured;
+    full.extend(args);
     let owner = handle.member.owner.clone();
     let name = handle.member.name.clone();
     let descriptor = handle.member.descriptor.clone();
@@ -1778,7 +1997,11 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
                 _ => implementation.member.descriptor.clone(),
             };
             let interface = descriptor.ret.class_name().unwrap_or("java/lang/Object").to_string();
-            let lambda = Native::Lambda { interface, sam_name: name.to_string(), implementation, captured: args, instantiated };
+            let sam_descriptor = match (method, bootstrap.args.first()) {
+                ("metafactory", Some(BootstrapArg::MethodType(d))) => Some(d.clone()),
+                _ => None,
+            };
+            let lambda = Native::Lambda { interface, sam_name: name.to_string(), sam_descriptor, implementation, captured: args, instantiated };
             Ok(Some(Value::Ref(m.alloc_native(lambda))))
         }
         _ => unsupported(format!("invokedynamic with bootstrap {}.{method}", owner.replace('/', "."))),
@@ -1910,6 +2133,13 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
             ("logicalXor", _) => Value::bool((a[0].as_int() != 0) != (a[1].as_int() != 0)),
             _ => return unsupported(format!("Boolean.{name}{descriptor}")),
         },
+        "java/lang/reflect/Array" if (name, descriptor) == ("getLength", "(Ljava/lang/Object;)I") => {
+            let Some(r) = a[0].as_ref() else { return Err(m.npe()) };
+            match m.heap.get(r) {
+                Object::Array { data, .. } => Value::Int(data.len() as i32),
+                _ => return Err(m.throw("java/lang/IllegalArgumentException", Some("Argument is not an array"))),
+            }
+        }
         "java/lang/Character" => character(m, name, descriptor, a)?,
         "java/lang/Double" | "java/lang/Float" => floating(m, owner, name, descriptor, a)?,
         "java/lang/String" => match (name, descriptor) {
@@ -2136,21 +2366,33 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
             "arraycopy" => {
                 let (Some(src), Some(dst)) = (a[0].as_ref(), a[2].as_ref()) else { return Err(m.npe()) };
                 let (src_pos, dst_pos, length) = (a[1].as_int(), a[3].as_int(), a[4].as_int());
-                let data = match m.heap.get(src) {
-                    Object::Array { data, .. } => data.clone(),
+                let (source_type, source_len) = match m.heap.get(src) {
+                    Object::Array { element, data } => (element.clone(), data.len()),
                     _ => return Err(m.throw("java/lang/ArrayStoreException", Some("arraycopy: source type is not an array"))),
                 };
-                m.check_write(dst, "an array element")?;
-                let dst_len = match m.heap.get(dst) {
-                    Object::Array { data, .. } => data.len() as i32,
+                let (dest_type, dest_len) = match m.heap.get(dst) {
+                    Object::Array { element, data } => (element.clone(), data.len()),
                     _ => return Err(m.throw("java/lang/ArrayStoreException", Some("arraycopy: destination type is not an array"))),
                 };
-                if src_pos < 0 || dst_pos < 0 || length < 0 || src_pos + length > data.len() as i32 || dst_pos + length > dst_len {
+                if source_type != dest_type && !(source_type.is_reference() && dest_type.is_reference()) {
+                    return Err(m.throw("java/lang/ArrayStoreException", None));
+                }
+                if src_pos < 0 || dst_pos < 0 || length < 0 || i64::from(src_pos) + i64::from(length) > source_len as i64
+                    || i64::from(dst_pos) + i64::from(length) > dest_len as i64 {
                     return Err(m.throw("java/lang/ArrayIndexOutOfBoundsException", Some("arraycopy: last source index out of bounds")));
                 }
-                let slice = data[src_pos as usize..(src_pos + length) as usize].to_vec();
+                let Object::Array { data, .. } = m.heap.get(src) else { unreachable!() };
+                let slice = data[src_pos as usize..src_pos as usize + length as usize].to_vec();
+                let dest_class = match &dest_type { Type::Object(name) => name.clone(), other => other.descriptor() };
+                let copied = if source_type == dest_type { slice.len() } else {
+                    slice.iter().position(|v| v.as_ref().is_some_and(|r| !m.is_instance(r, &dest_class))).unwrap_or(slice.len())
+                };
+                if copied != 0 { m.check_write(dst, "an array element")?; }
                 if let Object::Array { data, .. } = m.heap.get_mut(dst) {
-                    data[dst_pos as usize..(dst_pos + length) as usize].copy_from_slice(&slice);
+                    data[dst_pos as usize..dst_pos as usize + copied].copy_from_slice(&slice[..copied]);
+                }
+                if copied != slice.len() {
+                    return Err(m.throw("java/lang/ArrayStoreException", None));
                 }
                 return Ok(None);
             }

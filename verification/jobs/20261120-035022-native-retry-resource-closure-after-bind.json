@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-035022-native-retry-resource-closure-after-bind",
+  "title": "Native retry resource closure after binding the mask argument",
+  "description": "The frozen boolean outcomes and masks stay unchanged. The adapter now exposes the declared code parameter.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "322"
+    ],
+    "jobs": [
+      "20261120-032646-native-322-resource-close-order-and-supp"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T03:50:22+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 322 --tasks primary-original,primary-nested,primary-reversed,suppressed-original,suppressed-nested,suppressed-reversed,close-original,close-nested,close-reversed --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/322-ordered-suppressed-exceptions/receipts/primary-original",
+    "examples/322-ordered-suppressed-exceptions/receipts/primary-nested",
+    "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed",
+    "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original",
+    "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested",
+    "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed",
+    "examples/322-ordered-suppressed-exceptions/receipts/close-original",
+    "examples/322-ordered-suppressed-exceptions/receipts/close-nested",
+    "examples/322-ordered-suppressed-exceptions/receipts/close-reversed"
+  ]
+}

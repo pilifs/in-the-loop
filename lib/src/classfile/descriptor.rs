@@ -22,6 +22,16 @@ pub enum Type {
 }
 
 impl Type {
+    /// The primitive Class object exposed by a wrapper's TYPE field, including Void.TYPE.
+    pub fn for_wrapper(class: &str) -> Option<Self> {
+        Some(match class {
+            "java/lang/Boolean" => Self::Boolean, "java/lang/Byte" => Self::Byte, "java/lang/Character" => Self::Char,
+            "java/lang/Short" => Self::Short, "java/lang/Integer" => Self::Int, "java/lang/Long" => Self::Long,
+            "java/lang/Float" => Self::Float, "java/lang/Double" => Self::Double, "java/lang/Void" => Self::Void,
+            _ => return None,
+        })
+    }
+
     /// Parses one field descriptor, such as `I` or `Ljava/lang/String;` or `[[J`.
     pub fn parse(descriptor: &str) -> Result<Type> {
         let mut chars = descriptor.chars().peekable();

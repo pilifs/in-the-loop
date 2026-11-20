@@ -1,0 +1,154 @@
+{
+  "schema": "example-target-refusal/v1",
+  "task": "populated-lower-fix",
+  "claimKey": "7816e217c49d766a",
+  "revisions": [
+    "fix"
+  ],
+  "refusal": {
+    "stage": "verifier",
+    "text": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getDefault() at org.jfree.data.time.RegularTimePeriod.<clinit>:165). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+  },
+  "observed": {
+    "job": "20261120-103714-check-chart-startup-without-a-captured-c",
+    "result": "verification/results/20261120-103714-check-chart-startup-without-a-captured-c/result.json",
+    "receipt": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T103858Z-db1469a2/result.json",
+    "receiptSha256": "1577df380b23a51691fb2d6285e87ae8313053b9e5d85649c3e67be12e39f6fe",
+    "verifierOutput": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T103858Z-db1469a2/records/verifier.stdout",
+    "verifierOutputSha256": "9633045f8ccc2e3b448fdae65b49dea0f474f055114c46b5eb2ffe64e4fdc4a2",
+    "execution": "20261120T103858Z-db1469a2",
+    "retryOf": null
+  },
+  "verifier": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "3667c01a64afea01c0d12461c7d9a3a67685bea1",
+    "libTree": "29e34d8802decff2c4c91717db160d151b315c9c",
+    "engine": "native",
+    "gaps": "strict",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS"
+  },
+  "command": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/29e34d8802decff2c4c91717db160d151b315c9c/jvmcontract",
+    "prove",
+    "rangegrid.Projection#lower(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/slice/fix.jar",
+    "--classpath",
+    "prepare/fix/lib/org.jfree/jcommon-1.0.17.jar",
+    "--classpath",
+    "prepare/fix/lib/javax.servlet/servlet-api-2.5.jar",
+    "--classpath",
+    "prepare/fix/lib/com.lowagie/itext-2.1.5.jar",
+    "--assume",
+    "code >= 0 && code < 30 && rangegrid.Projection.populated(code)",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "30",
+    "--max-array-length",
+    "12",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "bindingId": "630c269cf53ffdf8a229a8960c8de61689bc752ce03c3120a9f481738d558f57",
+  "entryBindings": {
+    "fix": {
+      "entry": "rangegrid.Projection#lower(I)I",
+      "classSha256": "5877b246e6e32578bae2dcf53a016e0af318936285b021d8fafe03b22b387aee",
+      "loadedFrom": "adapter-fix.jar",
+      "subject": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;",
+      "subjectClassSha256": "1ada38a115775cbffe84d2436a59d291055026a69f199088fb7535b81dca1ad1"
+    }
+  },
+  "budget": {
+    "checkerSeconds": 30
+  },
+  "environment": {
+    "JVMCONTRACT_SOLVER": "bitwuzla-finite"
+  },
+  "artifacts": [
+    {
+      "revision": "fix",
+      "path": "adapter-fix.jar",
+      "sha256": "c705a93a4b9acba9688a88fe0b956d37a3179af6b1259578a936bf653232dd86",
+      "role": "adapter"
+    },
+    {
+      "revision": "fix",
+      "path": "slice/fix.jar",
+      "sha256": "bc479c2ba34855ed44a7071794302932d32669a8f9a33b17515351dd07d414df",
+      "role": "original"
+    },
+    {
+      "revision": "fix",
+      "path": "lib/org.jfree/jcommon-1.0.17.jar",
+      "sha256": "90a5f9ceaed977edfe8f514dcb15ddf5001cf9111a8fcd87b7cd8b0bb6231acc",
+      "role": "dependency"
+    },
+    {
+      "revision": "fix",
+      "path": "lib/javax.servlet/servlet-api-2.5.jar",
+      "sha256": "c658ea360a70faeeadb66fb3c90a702e4142a0ab7768f9ae9828678e0d9ad4dc",
+      "role": "dependency"
+    },
+    {
+      "revision": "fix",
+      "path": "lib/com.lowagie/itext-2.1.5.jar",
+      "sha256": "40bc530593f9173e90aff5cd000c8cb185ebf851f9617b131d43f81989a9ad41",
+      "role": "dependency"
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;@jdk-21.0.13",
+      "kind": "jdk-static-method",
+      "call": "java.util.TimeZone.getDefault()",
+      "sites": [
+        "org.jfree.data.time.RegularTimePeriod.<clinit>:165"
+      ]
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 321 populated-lower-fix",
+    "attempt": "python3 examples/tools/build.py 321 --task populated-lower-fix --checker-seconds 30",
+    "job": "20261120-103714-check-chart-startup-without-a-captured-c",
+    "target": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;",
+    "checkedEntry": "rangegrid.Projection#lower(I)I"
+  },
+  "semantics": "RegularTimePeriod reads the JVM default time zone while initializing its calendar, before the collection with an explicit UTC zone is constructed.",
+  "why": "The original task executes startup from bytecode. The successful companion has separately stated startup evidence and its own claim key.",
+  "module": {
+    "likely": [
+      "lib/src/bmc/calendar.rs",
+      "lib/src/observed.rs"
+    ],
+    "note": "Qualify the ambient zone, calendar factory and their initialization effects while running the original initializer."
+  },
+  "strategies": [
+    {
+      "by": "20261120T103858Z-db1469a2",
+      "outcome": "Original strict check refused the named startup query."
+    },
+    {
+      "by": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix-observed/executions/20261120T102159Z-042126c8/attempt.json",
+      "outcome": "Separate observed-startup claim established on the same binary, ordered jars and input domain."
+    }
+  ],
+  "scopedCompanion": {
+    "task": "populated-lower-fix-observed",
+    "claimKey": "f988bd85db904abb",
+    "receipt": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix-observed/20261120T102159Z-042126c8/result.json",
+    "originalScopeControl": true
+  }
+}

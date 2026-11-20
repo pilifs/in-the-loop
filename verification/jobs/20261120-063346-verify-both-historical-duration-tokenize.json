@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-063346-verify-both-historical-duration-tokenize",
+  "title": "Verify both historical duration tokenizers on their raw patterns",
+  "description": "Run all six independently frozen token, quoting and adjacent-field claims on both Commons Lang revisions. Preserve the 78 duration, pattern and padding inputs per revision. The lexer uses concrete JDK ArrayList storage and typed toArray, then Stream.of and the actual predicate; every negative needs direct JVM qualification.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "326"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T06:33:46+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 326 --tasks separated-parent,separated-fix,quoting-parent,quoting-fix,adjacent-parent,adjacent-fix --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent",
+    "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix",
+    "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent",
+    "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix",
+    "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent",
+    "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix"
+  ]
+}

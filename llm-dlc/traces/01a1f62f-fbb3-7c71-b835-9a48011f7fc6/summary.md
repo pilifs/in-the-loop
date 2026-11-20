@@ -18,38 +18,6 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-### Check ThreeTenBP with a JVM-bound single-threaded chronology registry (verification pending)
-
-change `nwkovvmpuklp` · [log `c4e97c49cb5c`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/c4e97c49cb5c9da18af0021c131c29c843615b0e6172a5ea5ac3ab02b1420f96.jsonl.gz)
-
-Give the native checker a selected String-key ConcurrentHashMap, materialize empty registry objects observed on the pinned JVM, and check enum ordering with the selected JDK bytecode. The interpreter now distinguishes different enum declarations during replay. The public proof recipe binds the initializer class bytes and state separately for each revision and checks structured runtime assumptions. The five new tasks retain the original tick domains, cite their original tasks, and declare an unwind of 32. Tests cover aliasing, key equality, nulls and exceptions, model selection, and rejection of the wrong initializer or state. All 29 changed test groups and the example validator passed.
-
-Verification pending for 20261120-000226-threetenbp-clock-fix-with-observed-chron, 20261120-000226-threetenbp-clock-parent-with-observed-ch, 20261120-000226-threetenbp-reversal-fix-with-observed-ch, 20261120-000227-threetenbp-reversal-parent-with-observed and 20261120-000227-threetenbp-same-day-with-observed-chrono. A capped native probe found a parent counterexample that the JVM reproduced. The original strict receipts remain linked to their original statements.
-
-### Queue each qualified ThreeTenBP obligation at its tested revision (verification pending)
-
-change `qotvktowksop` · [log `a94d7051691c`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/a94d7051691ce2d4c7efd80a39a79f40454097a54ca7153be6ae5700aa7c4502.jsonl.gz)
-
-Five independent jobs pin the tested implementation at 0dc25164 and preserve each receipt separately. The word-level solver receives 600 seconds per obligation. Jobs 20261120-000226-threetenbp-clock-fix-with-observed-chron and 20261120-000226-threetenbp-clock-parent-with-observed-ch check elapsed whole hours. Jobs 20261120-000226-threetenbp-reversal-fix-with-observed-ch and 20261120-000227-threetenbp-reversal-parent-with-observed check sign reversal. Job 20261120-000227-threetenbp-same-day-with-observed-chrono compares the two revisions on same-day intervals. All five definitions passed submission validation.
-
-### Check every sub-hour crossing of midnight on both revisions (verification pending)
-
-change `wuornlumkuus` · [log `4e649c99b0c6`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/4e649c99b0c68fe4e26fbdc6b1dbf713cb0d0588bc7a5121191b0a84beb951f3.jsonl.gz)
-
-The independent JVM driver enumerates the two-date grid and finds twelve signed sub-hour intervals that cross midnight. The production parent returns one hour in magnitude on all twelve and the fix returns zero. Two separately required public tasks freeze these inputs and the sampled chronology binding, with the same compiled subject and adapter as the full-grid tasks. A fixed-clock native probe established agreement with elapsed minutes on this subset. The example validator and all 24 selected test groups passed. Job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t checks both zero-hour claims and publishes their receipts.
-
-### Honor the per-claim checker deadline in public task batches (verification pending)
-
-change `wmzztnsqzqyn` · [log `052ea65a6370`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz)
-
-The sub-hour verification job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t exited during argument parsing before launching either task. Parse the checker deadline once for single and batch execution and pass it to each batch member alongside its retry identity. The public-entry regression tests mixed outcomes, shared preparation and a 120-second budget on both calls. All 27 selected test groups passed. Superseding job 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t runs the same command, budget, claims and expectations.
-
-### Verify supplementary code points and StringBuilder search in native bytecode (verification pending)
-
-change `pkrtqvvpwynv` · [log `052ea65a6370`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz)
-
-Share the UTF-16 encoding of a Java code point between String search, Character.toChars and StringBuilder.appendCodePoint. Invalid input throws before the builder changes. Model the Basic Latin and Combining Diacritical Marks regex blocks used in library initialization. A symbolic test checks the conversion and exception classes, a JVM checks all 65,536 BMP units and supplementary boundary controls, and interpreter replay checks the same units. The strict fixed Commons Lang probe established the original last-match property. The 27 selected test groups passed. Job 20261120-001502-retry-commons-lang-utf-16-search-on-the retries all five original claims with their original execution references, source artifacts and budgets.
-
 ### Record verification results for 1 job(s)
 
 change `zqmtmlosvpxv` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
@@ -91,6 +59,38 @@ Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour
 change `mrswtquknywo` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-001502-retry-commons-lang-utf-16-search-on-the: passed: 1 passed step(s) in 15.0s, peak 319.9 MiB (estimated 1m00s, 3.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×5 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Check ThreeTenBP with a JVM-bound single-threaded chronology registry (verification pending)
+
+change `nwkovvmpuklp` · [log `c4e97c49cb5c`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/c4e97c49cb5c9da18af0021c131c29c843615b0e6172a5ea5ac3ab02b1420f96.jsonl.gz)
+
+Give the native checker a selected String-key ConcurrentHashMap, materialize empty registry objects observed on the pinned JVM, and check enum ordering with the selected JDK bytecode. The interpreter now distinguishes different enum declarations during replay. The public proof recipe binds the initializer class bytes and state separately for each revision and checks structured runtime assumptions. The five new tasks retain the original tick domains, cite their original tasks, and declare an unwind of 32. Tests cover aliasing, key equality, nulls and exceptions, model selection, and rejection of the wrong initializer or state. All 29 changed test groups and the example validator passed.
+
+Verification pending for 20261120-000226-threetenbp-clock-fix-with-observed-chron, 20261120-000226-threetenbp-clock-parent-with-observed-ch, 20261120-000226-threetenbp-reversal-fix-with-observed-ch, 20261120-000227-threetenbp-reversal-parent-with-observed and 20261120-000227-threetenbp-same-day-with-observed-chrono. A capped native probe found a parent counterexample that the JVM reproduced. The original strict receipts remain linked to their original statements.
+
+### Queue each qualified ThreeTenBP obligation at its tested revision (verification pending)
+
+change `qotvktowksop` · [log `a94d7051691c`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/a94d7051691ce2d4c7efd80a39a79f40454097a54ca7153be6ae5700aa7c4502.jsonl.gz)
+
+Five independent jobs pin the tested implementation at 0dc25164 and preserve each receipt separately. The word-level solver receives 600 seconds per obligation. Jobs 20261120-000226-threetenbp-clock-fix-with-observed-chron and 20261120-000226-threetenbp-clock-parent-with-observed-ch check elapsed whole hours. Jobs 20261120-000226-threetenbp-reversal-fix-with-observed-ch and 20261120-000227-threetenbp-reversal-parent-with-observed check sign reversal. Job 20261120-000227-threetenbp-same-day-with-observed-chrono compares the two revisions on same-day intervals. All five definitions passed submission validation.
+
+### Check every sub-hour crossing of midnight on both revisions (verification pending)
+
+change `wuornlumkuus` · [log `4e649c99b0c6`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/4e649c99b0c68fe4e26fbdc6b1dbf713cb0d0588bc7a5121191b0a84beb951f3.jsonl.gz)
+
+The independent JVM driver enumerates the two-date grid and finds twelve signed sub-hour intervals that cross midnight. The production parent returns one hour in magnitude on all twelve and the fix returns zero. Two separately required public tasks freeze these inputs and the sampled chronology binding, with the same compiled subject and adapter as the full-grid tasks. A fixed-clock native probe established agreement with elapsed minutes on this subset. The example validator and all 24 selected test groups passed. Job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t checks both zero-hour claims and publishes their receipts.
+
+### Honor the per-claim checker deadline in public task batches (verification pending)
+
+change `wmzztnsqzqyn` · [log `052ea65a6370`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz)
+
+The sub-hour verification job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t exited during argument parsing before launching either task. Parse the checker deadline once for single and batch execution and pass it to each batch member alongside its retry identity. The public-entry regression tests mixed outcomes, shared preparation and a 120-second budget on both calls. All 27 selected test groups passed. Superseding job 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t runs the same command, budget, claims and expectations.
+
+### Verify supplementary code points and StringBuilder search in native bytecode (verification pending)
+
+change `pkrtqvvpwynv` · [log `052ea65a6370`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz)
+
+Share the UTF-16 encoding of a Java code point between String search, Character.toChars and StringBuilder.appendCodePoint. Invalid input throws before the builder changes. Model the Basic Latin and Combining Diacritical Marks regex blocks used in library initialization. A symbolic test checks the conversion and exception classes, a JVM checks all 65,536 BMP units and supplementary boundary controls, and interpreter replay checks the same units. The strict fixed Commons Lang probe established the original last-match property. The 27 selected test groups passed. Job 20261120-001502-retry-commons-lang-utf-16-search-on-the retries all five original claims with their original execution references, source artifacts and budgets.
 
 ### Integrate the native calendar and UTF-16 results with their qualification evidence
 

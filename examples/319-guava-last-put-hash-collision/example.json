@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "319",
+  "title": "Guava keeps the last put across a key collision",
+  "summary": "Two distinct String keys with equal hashes can displace a bucket entry when a later put repeats a key.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "dropped-case",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Guava",
+    "file": "guava/src/com/google/common/collect/ImmutableMap.java",
+    "symbol": "com.google.common.collect.ImmutableMap$Builder#buildKeepingLast()Lcom/google/common/collect/ImmutableMap;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Two distinct String keys with equal hashes can displace a bucket entry when a later put repeats a key."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 121 inputs on each revision. parent mismatches were 2 for size, 10 for lookup, 2 for entries. fix mismatches were 0 for size, 0 for lookup, 0 for entries.",
+    "The parent first differs at length four for each observer. All 40 shorter put traces passed. At length four two traces change the size and entry set, and ten change lookup. [Minimum traces and ordered classpaths](records/finite-grid.json)",
+    "The strict native checker decided all eight original obligations on the two pinned revisions. Guava computes its table size with integer bit operations, binary64 multiplication and Java narrowing. The duplicate-entry map uses reference equality, and its Boolean markers keep their canonical identities. In the parent, R&D, QED, R&D, QED produced three entries for two keys. X, R&D, QED, R&D preserved size and entries while losing the QED lookup. Both unique-key controls held."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/google/guava",
+    "url": "https://github.com/google/guava/commit/87d550f3fe7dc22540b1b6dba21179a1b2b92658"
+  }
+}

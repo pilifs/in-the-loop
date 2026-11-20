@@ -1,0 +1,201 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "ordered-suppressed-exceptions",
+    "family": "ordered-suppressed-exceptions",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "original": {
+        "fixture": "original"
+      },
+      "nested": {
+        "fixture": "nested"
+      },
+      "reversed": {
+        "fixture": "reversed"
+      }
+    },
+    "pairs": [
+      {
+        "name": "nested",
+        "kind": "positive",
+        "before": "original",
+        "after": "nested"
+      },
+      {
+        "name": "reversed",
+        "kind": "introduction",
+        "before": "original",
+        "after": "reversed"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/paint/Projection.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "nested",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;"
+    },
+    {
+      "id": "replay-reversed",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "reversed",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;"
+    },
+    {
+      "id": "primary-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "claim": "claims/primary.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "original"
+    },
+    {
+      "id": "primary-nested",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "claim": "claims/primary.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "nested"
+    },
+    {
+      "id": "primary-reversed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "claim": "claims/primary.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-reversed"
+      ],
+      "expected": "refuted",
+      "revision": "reversed"
+    },
+    {
+      "id": "suppressed-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "claim": "claims/suppressed.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "original"
+    },
+    {
+      "id": "suppressed-nested",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "claim": "claims/suppressed.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "nested"
+    },
+    {
+      "id": "suppressed-reversed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "claim": "claims/suppressed.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-reversed"
+      ],
+      "expected": "refuted",
+      "revision": "reversed"
+    },
+    {
+      "id": "close-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "claim": "claims/close.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "original"
+    },
+    {
+      "id": "close-nested",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "claim": "claims/close.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "nested"
+    },
+    {
+      "id": "close-reversed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "claim": "claims/close.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-reversed"
+      ],
+      "expected": "refuted",
+      "revision": "reversed"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/paint/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "lookup",
+  "statement": "Every lookup returns the value from the last matching put.",
+  "assume": "code >= 0 && code < 121",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 30,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "mapgrid.Projection#lookup(I)I",
+    "mapping": "A bijective base-three word of up to four String keys QED, R&D and X drives one builder. Each put uses its one-based position. Size, per-key lookup (zero means absent), and unordered entries are independently observed. Entry pairs are sorted by key and value after iteration.",
+    "correspondence": "finite-oracle",
+    "cases": 121
+  }
+}

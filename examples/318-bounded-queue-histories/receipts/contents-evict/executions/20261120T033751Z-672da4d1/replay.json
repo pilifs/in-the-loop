@@ -1,0 +1,67 @@
+{
+  "claimKey": "5f4d3004149c082d",
+  "entry": "queuegrid.Projection#contents(I)I",
+  "inputs": [
+    {
+      "name": "code",
+      "type": "int",
+      "value": 13
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "by": "jvm",
+  "reproduced": false,
+  "sides": {
+    "evict": {
+      "entryClassSha256": "005b41e7f6cf64347bec169ab2f1c31bf3c0e18b291f5e3d22b90c1ad5a6d103",
+      "classpath": [
+        "d4f9033af339c5946c6a10e7f69fe712bc43562f08b9b6448917cf08b4e02d81",
+        "ee824fb508cdab1ea68e99eda2c92a37c8f2f2650d2b29cf2e85872a0913f63f"
+      ],
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 13;\nif (!(code >= 0 && code < 121)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = queuegrid.Projection.contents(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "admitted": true,
+      "values": [
+        1,
+        null
+      ],
+      "satisfies": true
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "reason": "the admitted input satisfies the property or agrees on every selected observation",
+  "finiteObservation": {
+    "id": 13,
+    "input": {
+      "initial": [],
+      "commands": [
+        0,
+        0,
+        0
+      ]
+    },
+    "field": "contents",
+    "direct": {
+      "evict": {
+        "history": [
+          1,
+          1,
+          1
+        ],
+        "contents": [
+          0,
+          0
+        ]
+      }
+    },
+    "tableSha256": "97cbe18cc23b166ddbbf57f75145eb5351bc9b9e573b17fc54334f8bc0980386"
+  }
+}

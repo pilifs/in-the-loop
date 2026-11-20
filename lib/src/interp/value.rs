@@ -83,7 +83,7 @@ pub enum Base {
     /// `text` is the `String` object the constructor was given, which `name()` returns, so that two calls give one
     /// object as on a JVM; `None` before the constructor runs.
     Enum { name: String, ordinal: i32, text: Option<Ref> },
-    Throwable { message: Option<Ref>, cause: Option<Ref> },
+    Throwable { message: Option<Ref>, cause: Option<Ref>, suppressed: Option<Value> },
 }
 
 /// A Java String's contents, as the JVM holds them: UTF-16 code units, every one kept. An isolated surrogate, an
@@ -229,11 +229,14 @@ pub enum Native {
     /// An iterator over a snapshot of a list or set; `immutable` for one of an immutable collection (`List.of`,
     /// `Set.of`), whose `remove` throws `UnsupportedOperationException` as the JDK's does.
     Iterator { elements: Vec<Value>, position: usize, immutable: bool },
+    /// The cursor and last returned index of an iterator into a particular mutable ArrayList.
+    ArrayListIterator { list: Ref, view: bool, cursor: usize, last: Option<usize>, expected_mod_count: i32 },
+    ArrayListSubList { root: Ref, parent: Option<Ref>, offset: usize, length: usize, expected_mod_count: i32 },
     /// An exception of a JDK class: `java.lang.ArithmeticException`, say.
-    Throwable { class: String, message: Option<Ref>, cause: Option<Ref> },
+    Throwable { class: String, message: Option<Ref>, cause: Option<Ref>, suppressed: Option<Value> },
     /// A lambda or method reference: the functional interface and its method, the implementation method and the
     /// captured arguments, and the instantiated method type (for boxing adaptations).
-    Lambda { interface: String, sam_name: String, implementation: crate::classfile::MethodHandle, captured: Vec<Value>, instantiated: String },
+    Lambda { interface: String, sam_name: String, sam_descriptor: Option<String>, implementation: crate::classfile::MethodHandle, captured: Vec<Value>, instantiated: String },
     /// `java.util.Optional`.
     Optional(Option<Value>),
 }
@@ -273,6 +276,9 @@ impl Native {
             Native::Boxed { class, .. } => class,
             Native::Class(_) => "java/lang/Class",
             Native::Iterator { .. } => "java/util/Iterator",
+            Native::ArrayListIterator { view: false, .. } => "java/util/ArrayList$Itr",
+            Native::ArrayListIterator { view: true, .. } => "java/util/ArrayList$SubList$1",
+            Native::ArrayListSubList { .. } => "java/util/ArrayList$SubList",
             Native::Throwable { class, .. } => class,
             Native::Lambda { interface, .. } => interface,
             Native::Optional(_) => "java/util/Optional",

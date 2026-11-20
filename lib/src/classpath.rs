@@ -476,13 +476,16 @@ impl ClassPath {
         class
     }
 
-    /// The class whose bytecode the interpreter runs for a name: an application class, else a model. `None` for
-    /// a JDK class without a model, whose behaviour is the interpreter's natives'.
+    /// Classes the interpreter executes as bytecode: application classes, selected JDK
+    /// collection classes and registered models. Other JDK calls use its natives.
     pub fn bytecode(&self, name: &str) -> Result<Option<Rc<ClassFile>>, Error> {
         if let Some(class) = self.application(name)? {
             return Ok(Some(class));
         }
-        Ok(self.model(name))
+        if name == "java/util/AbstractList" {
+            if let Some(Loaded { class, origin: Origin::Jdk }) = self.load(name)? { return Ok(Some(class)); }
+        }
+        Ok(self.state_image_class(name).or_else(|| self.map_image_class(name)).or_else(|| self.model(name)))
     }
 
     /// Whether [`bytecode`](Self::bytecode) has a class for the name.
@@ -503,12 +506,13 @@ impl ClassPath {
         self.method_in(owner, name, descriptor, &|c| match self.application(c) {
             Ok(Some(class)) => Some(class),
             _ => {
+                if let Some(class) = self.checked_image_class(c) { return Some(class); }
                 let model = self.checker_model(c)?;
                 // Enum's model constructs the JDK's name and ordinal fields. For ordering, execute the
                 // selected image's own comparison, bridge cast and declaring-class check on those fields.
                 if c == "java/lang/Enum" && matches!((name, descriptor),
                     ("compareTo", "(Ljava/lang/Enum;)I" | "(Ljava/lang/Object;)I")
-                    | ("getDeclaringClass", "()Ljava/lang/Class;")) {
+                    | ("hashCode", "()I") | ("getDeclaringClass", "()Ljava/lang/Class;")) {
                     if let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(c) {
                         return Some(class);
                     }
@@ -518,15 +522,14 @@ impl ClassPath {
         })
     }
 
-    /// JDK image bytecode the native checker can enter for BigInteger.valueOf(long) and its allocation.
-    /// The factory decides which inputs use cached objects. A read of JDK cache state still needs its own evidence.
-    pub(crate) fn integer_factory_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+    /// The final suppression methods and the exception handling they reach, from the selected runtime.
+    /// Both engines execute these bodies on the state of a constructor they observed.
+    pub(crate) fn throwable_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !matches!((owner, name, descriptor),
-            ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
-            | ("java/math/BigInteger", "<init>", "(J)V")
-            | ("java/math/BigInteger", "toMagArray", "(J)[I")
-            | ("java/lang/Number", "<init>", "()V"))
-        {
+            ("java/lang/Throwable", "addSuppressed", "(Ljava/lang/Throwable;)V")
+            | ("java/lang/Throwable", "getSuppressed", "()[Ljava/lang/Throwable;")
+            | ("java/lang/NullPointerException", "getMessage", "()Ljava/lang/String;")
+            | ("java/util/Objects", "requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;")) {
             return None;
         }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
@@ -535,11 +538,273 @@ impl ClassPath {
         Some((class, method))
     }
 
+    /// The text of these factories is specified. Its identity is fresh only when every
+    /// normal return in the selected image constructs a String from its encoded bytes.
+    pub(crate) fn fresh_string_factory(&self, owner: &str, name: &str, descriptor: &str) -> bool {
+        use crate::classfile::{Insn, Kind};
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(owner) else { return false };
+        let Some(code) = class.method(name, descriptor).and_then(|m| m.code.as_ref()) else { return false };
+        let Ok(insns) = code.instructions() else { return false };
+        let mut returns = 0;
+        for (i, (_, insn)) in insns.iter().enumerate() {
+            if !matches!(insn, Insn::Return(Some(Kind::Ref))) { continue; }
+            let (start, c, m) = match &insns[..i] {
+                [.., (start, Insn::New(c)), (_, Insn::Dup), (_, Insn::Load(Kind::Ref, _)), (_, Insn::IConst(_)), (_, Insn::InvokeSpecial(m))]
+                    if owner == "java/lang/Long" => (start, c, m),
+                [.., (start, Insn::New(c)), (_, Insn::Dup), (_, Insn::Load(Kind::Int, 0)), (_, Insn::InvokeStatic(bytes)), (_, Insn::IConst(_)), (_, Insn::InvokeSpecial(m))]
+                    if owner == "java/lang/String" && class.pool.member(*bytes).is_ok_and(|b| matches!(b.owner.as_str(), "java/lang/StringLatin1" | "java/lang/StringUTF16")
+                        && b.name == "toBytes" && b.descriptor == "(C)[B") => (start, c, m),
+                _ => return false,
+            };
+            if class.pool.class_name(*c).ok() != Some("java/lang/String")
+                || !class.pool.member(*m).is_ok_and(|m| m.owner == "java/lang/String" && m.name == "<init>" && m.descriptor == "([BB)V") { return false; }
+            // No branch can jump into the construction sequence and return another reference.
+            let end = insns[i].0;
+            if !code.exception_table.is_empty() || insns.iter().any(|(_, op)| matches!(op, Insn::Jsr(_) | Insn::Ret(_))
+                || op.targets().iter().any(|pc| pc > start && *pc <= end)) { return false; }
+            returns += 1;
+        }
+        returns > 0
+    }
+
+    /// Reference-array comparison and hashing call the actual elements' methods.
+    pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
+        matches!((owner, name, descriptor),
+            ("java/util/Arrays", "fill", "([CC)V")
+            | ("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;")
+            | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
+            | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
+            | ("java/util/Objects", "toString", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;")
+            | ("java/util/Objects", "hash", "([Ljava/lang/Object;)I")
+            | ("java/util/Objects", "hashCode", "(Ljava/lang/Object;)I")
+            | ("java/util/Objects", "checkFromIndexSize", "(III)I")
+            | ("jdk/internal/util/Preconditions", "checkFromIndexSize", "(IIILjava/util/function/BiFunction;)I")
+            | ("jdk/internal/util/ArraysSupport", "hashCode", "([Ljava/lang/Object;III)I")
+            | ("java/util/Arrays", "equals", "([Ljava/lang/Object;[Ljava/lang/Object;)Z")
+            | ("java/util/Arrays", "hashCode", "([Ljava/lang/Object;)I"))
+    }
+
+    /// The public empty-list factory and field share the one EmptyList allocated in
+    /// Collections' straight-line initializer. This is also Throwable's suppression sentinel.
+    pub(crate) fn collections_empty_singleton(&self, factory_name: &str) -> bool {
+        use crate::classfile::{Insn, Kind};
+        const C: &str = "java/util/Collections";
+        let (field, desc, class_name) = match factory_name {
+            "emptyList" => ("EMPTY_LIST", "Ljava/util/List;", "java/util/Collections$EmptyList"),
+            "emptySet" => ("EMPTY_SET", "Ljava/util/Set;", "java/util/Collections$EmptySet"),
+            _ => return false,
+        };
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(C) else { return false };
+        let list = |i| class.pool.member(i).is_ok_and(|f| (f.owner.as_str(), f.name.as_str(), f.descriptor.as_str()) == (C, field, desc));
+        let Some(factory) = class.method(factory_name, &format!("(){desc}")).and_then(|m| m.code.as_ref()) else { return false };
+        if !factory.instructions().is_ok_and(|ops| matches!(ops.as_slice(), [(_, Insn::GetStatic(i)), (_, Insn::Return(Some(Kind::Ref)))] if list(*i))) { return false; }
+        let Some(init) = class.method("<clinit>", "()V").and_then(|m| m.code.as_ref()) else { return false };
+        let Ok(ops) = init.instructions() else { return false };
+        if !init.exception_table.is_empty() || ops.iter().any(|(_, i)| !i.targets().is_empty()) { return false; }
+        let writes = ops.iter().filter(|(_, i)| matches!(i, Insn::PutStatic(f) if list(*f))).count();
+        writes == 1 && ops.windows(4).any(|four| matches!(four,
+            [(_, Insn::New(c)), (_, Insn::Dup), (_, Insn::InvokeSpecial(m)), (_, Insn::PutStatic(f))] if list(*f)
+                && class.pool.class_name(*c).ok() == Some(class_name)
+                && class.pool.member(*m).is_ok_and(|ctor| (ctor.owner.as_str(), ctor.name.as_str(), ctor.descriptor.as_str()) == (class_name, "<init>", "()V"))))
+    }
+
+    /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
+    pub(crate) fn library_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
+        if !sublist && !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
+            ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
+            | ("java/util/ArrayList", "<init>", "()V" | "(I)V")
+            | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
+            | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
+            | ("java/util/ArrayList", "clear", "()V")
+            | ("java/util/ArrayList", "iterator", "()Ljava/util/Iterator;")
+            | ("java/util/ArrayList", "subList", "(II)Ljava/util/List;")
+            | ("java/util/AbstractList", "subListRangeCheck", "(III)V")
+            | ("java/util/AbstractList", "clear", "()V")
+            | ("java/util/ArrayList", "removeRange", "(II)V")
+            | ("java/util/ArrayList", "shiftTailOverGap", "([Ljava/lang/Object;II)V")
+            | ("java/util/ArrayList", "remove", "(I)Ljava/lang/Object;" | "(Ljava/lang/Object;)Z")
+            | ("java/util/ArrayList", "fastRemove", "([Ljava/lang/Object;I)V")
+            | ("java/util/ArrayList", "elementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;")
+            | ("java/util/ArrayList$Itr", "<init>", "(Ljava/util/ArrayList;)V")
+            | ("java/util/ArrayList$Itr", "next", "()Ljava/lang/Object;")
+            | ("java/util/ArrayList$Itr", "hasNext", "()Z")
+            | ("java/util/ArrayList$Itr", "remove" | "checkForComodification", "()V")
+            | ("java/util/ArrayList$Itr", "forEachRemaining", "(Ljava/util/function/Consumer;)V")
+            | ("java/util/ArrayList", "set", "(ILjava/lang/Object;)Ljava/lang/Object;")
+            | ("java/util/ArrayList", "contains", "(Ljava/lang/Object;)Z") | ("java/util/ArrayList", "indexOf", "(Ljava/lang/Object;)I")
+            | ("java/util/ArrayList", "indexOfRange", "(Ljava/lang/Object;II)I")
+            | ("java/util/ArrayList", "add", "(Ljava/lang/Object;)Z" | "(Ljava/lang/Object;[Ljava/lang/Object;I)V")
+            | ("java/util/ArrayList", "grow", "()[Ljava/lang/Object;" | "(I)[Ljava/lang/Object;")
+            | ("java/util/ArrayList", "toArray", "()[Ljava/lang/Object;" | "([Ljava/lang/Object;)[Ljava/lang/Object;")
+            | ("java/util/Arrays", "copyOf", "([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;")
+            | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
+            | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")) { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+        if (sublist || owner == "java/util/ArrayList$Itr") && class.method("<clinit>", "()V").is_some() { return None; }
+        let method = class.method(name, descriptor)?.clone();
+        method.code.as_ref()?;
+        Some((class, method))
+    }
+
+    /// Numeric code executed from the selected JDK image. Factories follow their actual
+    /// allocation and cache branches. The hypot implementation includes the FdLibm helpers
+    /// the selected image calls. An additional helper can produce a named refusal.
+    pub(crate) fn numeric_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        if !matches!((owner, name, descriptor),
+            ("java/lang/Math" | "java/lang/StrictMath", "hypot", "(DD)D")
+            | ("java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double",
+               "doubleValue", "()D")
+            | ("java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double",
+               "floatValue", "()F")
+            | ("java/lang/FdLibm$Hypot", "compute", "(DD)D")
+            | ("java/lang/FdLibm", "__HI" | "__LO", "(D)I" | "(DI)D")
+            | ("java/lang/Math", "powerOfTwoD" | "primPowerOfTwoD", "(I)D")
+            | ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
+            | ("java/math/BigInteger", "<init>", "(J)V")
+            | ("java/math/BigInteger", "toMagArray", "(J)[I")
+            | ("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;")
+            | ("java/lang/Short", "valueOf", "(S)Ljava/lang/Short;")
+            | ("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;")
+            | ("java/lang/Character", "<init>", "(C)V")
+            | ("java/lang/Character", "charValue", "()C")
+            | ("java/lang/Character", "toString", "()Ljava/lang/String;" | "(C)Ljava/lang/String;")
+            | ("java/lang/Character", "hashCode", "()I" | "(C)I")
+            | ("java/lang/Boolean", "hashCode", "()I" | "(Z)I")
+            | ("java/lang/Long", "hashCode", "()I" | "(J)I")
+            | ("java/lang/Character", "equals", "(Ljava/lang/Object;)Z")
+            | ("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;")
+            | ("java/lang/Float", "valueOf", "(F)Ljava/lang/Float;")
+            | ("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;")
+            | ("java/lang/Byte", "<init>", "(B)V") | ("java/lang/Short", "<init>", "(S)V")
+            | ("java/lang/Long", "<init>", "(J)V") | ("java/lang/Float", "<init>", "(F)V")
+            | ("java/lang/Double", "<init>", "(D)V") | ("java/lang/Number", "<init>", "()V"))
+        {
+            return None;
+        }
+        let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+        let method = class.method(name, descriptor)?.clone();
+        method.code.as_ref()?;
+        if matches!(owner, "java/lang/Math" | "java/lang/StrictMath" | "java/lang/FdLibm" | "java/lang/FdLibm$Hypot")
+            && method.annotations(&class.pool).ok()?.iter().any(|a| matches!(a.type_name.rsplit('/').next(), Some("IntrinsicCandidate" | "HotSpotIntrinsicCandidate"))) {
+            return None;
+        }
+        Some((class, method))
+    }
+
+    /// The compiler-generated assertion switch read by these image methods. Both possible values
+    /// can be checked without relying on the JVM launcher having enabled or disabled assertions.
+    pub(crate) fn numeric_assertion_flag(&self, owner: &str, name: &str, descriptor: &str) -> bool {
+        if name != "$assertionsDisabled" || descriptor != "Z" || !matches!(owner, "java/lang/Math" | "java/lang/FdLibm$Hypot") {
+            return false;
+        }
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(owner) else { return false };
+        class.field(name).is_some_and(|f| f.descriptor == "Z" && f.is_static() && f.is_final() && f.access & crate::classfile::flags::SYNTHETIC != 0)
+    }
+
     /// Whether the tool's own checker runs the instance methods of the class as bytecode: an application class's,
     /// and those of the models it runs although they are only for JBMC's class path ([`crate::models::CHECKER_RUNS`],
     /// `java.lang.Enum`). The other models it runs for static calls alone.
     pub fn checker_runs(&self, name: &str) -> bool {
-        self.is_application(name) || (self.runs_model(name) && self.checker_model(name).is_some())
+        self.is_application(name) || self.checked_image_class(name).is_some() || (self.runs_model(name) && self.checker_model(name).is_some())
+    }
+
+    /// This class uses ordinary instance and static fields. The selected image supplies its
+    /// initializer, empty singleton, branches, and actual Supplier dispatch.
+    pub(crate) fn checked_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if name != "java/util/Optional" { return self.state_image_class(name); }
+        let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+        Some(class)
+    }
+
+    /// Concrete receivers can inherit these default methods. Resolve the actual target
+    /// first so an application override still supplies all its effects.
+    pub(crate) fn image_default_method(&self, class: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        let interface = match (name, descriptor) {
+            ("putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;") if class == "java/util/EnumMap" => "java/util/Map",
+            ("end", "()V") if class.starts_with("java/util/stream/ReduceOps$") => "java/util/stream/Sink",
+            ("forEachRemaining", "(Ljava/util/function/Consumer;)V") if self.is_application(class) => "java/util/Iterator",
+            ("getExactSizeIfKnown", "()J") | ("hasCharacteristics", "(I)Z") if class == "java/util/Spliterators$IteratorSpliterator" => "java/util/Spliterator",
+            _ => return None,
+        };
+        let (cf, m) = self.find_method(class, name, descriptor)?;
+        (cf.name == interface && cf.is_interface() && m.code.is_some()).then_some((cf, m))
+    }
+
+    /// The JVM's enum universe for these two JDK helpers comes directly from JavaLangAccess.
+    pub(crate) fn enum_universe_lookup(&self, owner: &str, name: &str, descriptor: &str) -> bool {
+        use crate::classfile::{Insn, Kind};
+        if descriptor != "(Ljava/lang/Class;)[Ljava/lang/Enum;" || !matches!((owner, name), ("java/util/EnumMap", "getKeyUniverse") | ("java/util/EnumSet", "getUniverse")) { return false; }
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(owner) else { return false };
+        let Some(code) = class.method(name, descriptor).and_then(|m| m.code.as_ref()) else { return false };
+        let Ok(ops) = code.instructions() else { return false };
+        let [(_, Insn::InvokeStatic(a)), (_, Insn::Load(Kind::Ref, 0)), (_, Insn::InvokeInterface(b)), (_, Insn::Return(Some(Kind::Ref)))] = ops.as_slice() else { return false };
+        code.exception_table.is_empty() && class.pool.member(*a).is_ok_and(|m| (m.owner.as_str(), m.name.as_str(), m.descriptor.as_str()) == ("jdk/internal/access/SharedSecrets", "getJavaLangAccess", "()Ljdk/internal/access/JavaLangAccess;"))
+            && class.pool.member(*b).is_ok_and(|m| (m.owner.as_str(), m.name.as_str(), m.descriptor.as_str()) == ("jdk/internal/access/JavaLangAccess", "getEnumConstantsShared", descriptor))
+    }
+
+    /// Accept the javac values() body only when it clones this enum's own synthetic final
+    /// array. A hand-authored method with different behavior remains observable.
+    pub(crate) fn enum_values_field(&self, name: &str) -> Option<String> {
+        use crate::classfile::{flags, Insn, Kind};
+        let cf = self.checker_class(name)?;
+        if !cf.is_enum() || cf.super_class.as_deref() != Some("java/lang/Enum") { return None; }
+        let array = format!("[L{name};");
+        let m = cf.method("values", &format!("(){array}"))?;
+        let code = m.code.as_ref()?;
+        let ops = code.instructions().ok()?;
+        let [(_, Insn::GetStatic(f)), (_, Insn::InvokeVirtual(copy)), (_, Insn::CheckCast(c)), (_, Insn::Return(Some(Kind::Ref)))] = ops.as_slice() else { return None };
+        let f = cf.pool.member(*f).ok()?;
+        let copy = cf.pool.member(*copy).ok()?;
+        let field = cf.field(&f.name)?;
+        (m.is_public() && m.is_static() && code.exception_table.is_empty() && f.owner == name && f.descriptor == array
+            && field.descriptor == array && field.is_static() && field.is_final() && field.access & flags::SYNTHETIC != 0
+            && copy.owner == array && copy.name == "clone" && copy.descriptor == "()Ljava/lang/Object;" && cf.pool.class_name(*c).ok()? == array).then_some(f.name)
+    }
+
+    /// Ordinary single-threaded JDK objects whose instance and static fields both engines
+    /// execute from the image. Reader$2 is the CharSequence reader used by newer runtimes.
+    pub(crate) fn state_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if name == "java/util/EventObject" {
+            if self.runs_model(name) { return None; }
+            let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+            return Some(class);
+        }
+        if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
+            | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
+            | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
+            | "java/util/Spliterators$EmptySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef" | "java/util/Spliterators$EmptySpliterator$OfInt"
+            | "java/util/Spliterators$EmptySpliterator$OfLong" | "java/util/Spliterators$EmptySpliterator$OfDouble"
+            | "java/util/Collections$EmptySet" | "java/util/Collections$UnmodifiableSet" | "java/util/Collections$UnmodifiableCollection"
+            | "java/util/stream/Collectors" | "java/util/stream/Collectors$CollectorImpl" | "java/util/stream/Collector$Characteristics"
+            | "java/util/stream/ReduceOps" | "java/util/stream/StreamShape"
+            | "java/util/EnumMap" | "java/util/EnumMap$1" | "java/util/EnumSet" | "java/util/RegularEnumSet"
+            | "java/util/stream/StreamSupport" | "java/util/stream/StreamOpFlag" | "java/util/stream/StreamOpFlag$Type" | "java/util/stream/StreamOpFlag$MaskBuilder"
+            | "java/util/stream/PipelineHelper" | "java/util/stream/AbstractPipeline" | "java/util/stream/ReferencePipeline" | "java/util/stream/ReferencePipeline$Head"
+            | "java/nio/file/StandardOpenOption" | "java/nio/file/LinkOption"
+            | "javax/swing/event/EventListenerList" | "java/beans/PropertyChangeSupport" | "java/beans/VetoableChangeSupport"
+            | "java/beans/ChangeListenerMap" | "java/beans/PropertyChangeSupport$PropertyChangeListenerMap" | "java/beans/VetoableChangeSupport$VetoableChangeListenerMap") && !name.starts_with("java/util/stream/ReduceOps$") { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+        Some(class)
+    }
+
+    /// HashMap and the ordinary JDK classes that implement its live entry and key views.
+    /// A future runtime that adds a static initializer needs its state qualified first.
+    pub(crate) fn map_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if !matches!(name, "java/util/HashMap" | "java/util/HashMap$Node" | "java/util/HashMap$EntrySet" | "java/util/HashMap$KeySet"
+            | "java/util/HashMap$HashIterator" | "java/util/HashMap$EntryIterator" | "java/util/HashMap$KeyIterator"
+            | "java/util/AbstractMap" | "java/util/AbstractSet" | "java/util/AbstractCollection") { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+        class.method("<clinit>", "()V").is_none().then_some(class)
+    }
+
+    pub(crate) fn map_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        let (cf, m) = self.method_in(owner, name, descriptor, &|c| self.map_image_class(c))?;
+        (m.code.is_some() && (name != "<init>" || cf.name == owner)).then_some((cf, m))
+    }
+
+    pub(crate) fn is_map_image(&self, cf: &Rc<ClassFile>) -> bool {
+        self.map_image_class(&cf.name).is_some_and(|image| Rc::ptr_eq(cf, &image))
     }
 
     /// The class whose static fields and initializer the tool's own checker holds and runs (JVMS §5.5): an
@@ -547,6 +812,7 @@ impl ClassPath {
     /// whose initializer makes the one empty list and the sentinel of a list of one). Any other JDK class is taken to
     /// be initialized already, and only its constants are read.
     pub fn checker_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if let Some(class) = self.checked_image_class(name) { return Some(class); }
         if self.runs_model(name) {
             return self.checker_model(name);
         }
@@ -726,6 +992,14 @@ impl ClassPath {
         out
     }
 
+    /// Every instance field, including inherited fields, belongs to a class the
+    /// checker executes. A native base such as Throwable may carry additional state.
+    pub(crate) fn application_object(&self, name: &str) -> bool {
+        if !self.is_application(name) { return false; }
+        let chain = self.superclasses(name);
+        chain.split_last().is_some_and(|(base, rest)| base == "java/lang/Object" && rest.iter().all(|c| self.is_application(c)))
+    }
+
     /// Whether `sub` is `sup`, extends it, or implements it (transitively). Arrays are subtypes of `Object`,
     /// `Cloneable` and `Serializable`, and of arrays of their element's supertypes.
     pub fn is_subtype(&self, sub: &str, sup: &str) -> bool {
@@ -737,9 +1011,14 @@ impl ClassPath {
                 return true;
             }
             if let Some(sup_elem) = sup.strip_prefix('[') {
-                return match (sub_elem.strip_prefix('L').and_then(|s| s.strip_suffix(';')), sup_elem.strip_prefix('L').and_then(|s| s.strip_suffix(';'))) {
+                // A component can itself be an array, hence an Object, Cloneable and
+                // Serializable. Primitive components are covariant only with themselves.
+                fn reference_component(desc: &str) -> Option<&str> {
+                    if desc.starts_with('[') { Some(desc) } else { desc.strip_prefix('L')?.strip_suffix(';') }
+                }
+                return match (reference_component(sub_elem), reference_component(sup_elem)) {
                     (Some(a), Some(b)) => self.is_subtype(a, b),
-                    _ => sub_elem == sup_elem || (sub_elem.starts_with('[') && sup_elem.starts_with('[') && self.is_subtype(sub_elem, sup_elem)),
+                    _ => sub_elem == sup_elem,
                 };
             }
             return false;

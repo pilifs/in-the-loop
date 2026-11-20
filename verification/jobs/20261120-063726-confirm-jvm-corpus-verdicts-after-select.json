@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-063726-confirm-jvm-corpus-verdicts-after-select",
+  "title": "Confirm JVM corpus verdicts after selected JDK list checking",
+  "description": "Check automatic confirmation for the same JVM corpus after native ArrayList support. In particular, the original guarded mutable-list copy now has a non-vacuous proof eligible for confirmation.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs"
+    ],
+    "jobs": [
+      "20261120-033516-confirm-jvm-corpus-results-after-fast-fo"
+    ]
+  },
+  "expected": "All auto-confirm checks match each concrete JVM calibration and recorded scope.",
+  "submitted": {
+    "at": "2026-11-20T06:37:26+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "12m",
+    "memoryLimit": "5G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Check the corpus with auto-confirm",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

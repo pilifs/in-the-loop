@@ -549,6 +549,85 @@ fn compile_writers(name: &str, class: &str, source: &str) -> Option<PathBuf> {
     compile(&format!("writers-{name}"), &[file])
 }
 
+#[test]
+fn native_identity_map_and_boxed_booleans_agree_with_the_jvm() {
+    jvmcontract::tool_tier!();
+    let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/identitymap/IdentityKeys.java");
+    let Some(classes) = compile("identity-map", &[source]) else { return };
+    let direct = Command::new("java").arg("-cp").arg(&classes).arg("fixtures.IdentityKeys").output().unwrap();
+    assert!(direct.status.success(), "{}", String::from_utf8_lossy(&direct.stderr));
+    assert_eq!(String::from_utf8_lossy(&direct.stdout).trim(), "2 3");
+    let mut options = property::Options::new(std::slice::from_ref(&classes), "fixtures.IdentityKeys#bindings");
+    options.engine = jvmcontract::Engine::Native;
+    options.assume = Some("n >= 0 && n < 2".into());
+    for (assertion, expected) in [("result == 2 + n", Verdict::Verified), ("result == 2", Verdict::Violation)] {
+        options.assert = Some(assertion.into());
+        let answer = property::run(&options).unwrap();
+        assert_eq!(answer.verdict, expected, "{}", answer.output);
+        if expected == Verdict::Violation { assert!(answer.replay.unwrap().reproduced); }
+    }
+}
+
+#[test]
+fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
+    jvmcontract::tool_tier!();
+    let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/floating/FloatingChecks.java");
+    let Some(classes) = compile("ieee-comparisons", &[source]) else { return };
+    for system_assertions in ["-dsa", "-esa"] {
+        let direct = Command::new("java").arg(system_assertions).arg("-cp").arg(&classes).arg("fixtures.FloatingChecks").output().unwrap();
+        assert!(direct.status.success(), "{}", String::from_utf8_lossy(&direct.stderr));
+        assert_eq!(String::from_utf8_lossy(&direct.stdout).trim(), "1 2 3 1 2");
+    }
+    for (method, guard, assertion, expected) in [
+        ("order", "n >= 0 && n < 81", "result == 1", Verdict::Verified),
+        ("zeroBits", "n >= 0 && n < 2", "result == n + 1", Verdict::Verified),
+        ("zeroBits", "n >= 0 && n < 2", "result == 1", Verdict::Violation),
+        ("length", "n >= 0 && n < 3", "result == (n == 0 ? 3 : n)", Verdict::Verified),
+        ("signaling", "n == 2139095041", "result == n", Verdict::Unverifiable),
+        ("bucket", "n >= 2 && n <= 7", "result == (n < 4 ? 2 : 4)", Verdict::Verified),
+        ("bucket", "n >= 2 && n <= 7", "result == 2", Verdict::Violation),
+        ("zeroAngle", "n >= 0 && n < 2", "result", Verdict::Verified),
+        ("zeroAngle", "n == 2", "result", Verdict::Violation),
+        ("cosineBracket", "n >= 0 && n < 2", "result", Verdict::Verified),
+        ("nanExtrema", "n >= 0 && n < 2", "result", Verdict::Verified),
+        ("rawNaN", "n == 0", "result == 0", Verdict::Unverifiable),
+        ("exactSine", "n == 0", "result", Verdict::Unverifiable),
+        ("exactSine", "n == 1", "result", Verdict::Unverifiable),
+        ("integralPart", "n >= 0 && n < 4", "result", Verdict::Verified),
+        ("axes", "n >= 0 && n < 6", "result", Verdict::Verified),
+        ("diagonalAngle", "n == 1", "result", Verdict::Unverifiable),
+        ("hypot", "n >= 0 && n < 5", "result", Verdict::Verified),
+        ("naiveHypot", "n >= 0 && n < 2", "result", Verdict::Violation),
+        ("root", "n >= 0 && n < 3", "result == 1", Verdict::Verified),
+        ("boundaries", "n >= 0 && n < 4", "result", Verdict::Verified),
+        ("rounded", "n >= 0 && n < 4", "result == 1", Verdict::Verified),
+        ("correlated", "n >= 0 && n < 64", "result == n * (n + 1)", Verdict::Verified),
+        ("correlated", "n >= 0 && n <= 64", "result == n * (n + 1)", Verdict::Unverifiable),
+        ("rotated", "true", "result", Verdict::Verified),
+        ("wideningSign", "true", "result", Verdict::Verified),
+    ] {
+        let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.FloatingChecks#{method}"));
+        options.engine = jvmcontract::Engine::Native;
+        options.assume = Some(guard.into());
+        options.assert = Some(assertion.into());
+        let result = property::run(&options).unwrap();
+        assert_eq!(result.verdict, expected, "{method}: {}", result.output);
+        if method == "zeroAngle" && expected == Verdict::Violation {
+            assert!(result.replay.as_ref().is_some_and(|r| r.reproduced));
+        }
+        if expected == Verdict::Unverifiable {
+            let reason = match method {
+                "exactSine" if guard == "n == 0" => "permitted trigonometric rounding",
+                "exactSine" => "without a certified rounding bracket",
+                "signaling" | "rawNaN" => "signaling NaN",
+                "diagonalAngle" => "outside its exact nonzero-axis cases",
+                _ => "64 reachable operand tuples",
+            };
+            assert!(result.problem.unwrap().contains(reason));
+        }
+    }
+}
+
 fn writers_run(before: &Path, after: &Path, target: &str, before_target: Option<&str>, before_arguments: Option<&str>, name: &str) -> equivalence::Outcome {
     related_run(before, after, target, before_target, before_arguments, None, None, name)
 }
@@ -2154,7 +2233,7 @@ public class Gaps {
     static class A { int x; }
     static class B extends A { int x; }
     static class Table {
-        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { 2.5 };
+        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { Math.pow(2.5, 1.0) };
         static int first() { return 7; }
     }
     record Point(int x, int y) {}
@@ -2269,7 +2348,7 @@ public class Shapes {
 /// switch over an enum (which reads the enum's constants), one that only assigns a literal table, one that throws
 /// through a method it calls, one that reads another class's static field, and one that calls the JDK. Since Phase 5
 /// the engine runs them all ([`jvmcontract::bmc::gaps::runs_initializer`]), the enum and its switch map since its
-/// last step, enums; an enum whose initializer is outside the fragment (a `double` field) stays a gap, its shape named.
+/// last step, enums; an enum whose initializer is outside the fragment (a `Math.pow` call) stays a gap, its shape named.
 #[test]
 fn the_gap_scan_gives_each_class_initializer_a_shape() {
     jvmcontract::tool_tier!();
@@ -2280,7 +2359,7 @@ fn the_gap_scan_gives_each_class_initializer_a_shape() {
     // In a file of its own, as in the apps: javac makes a `$SwitchMap` class for a switch over an enum of another
     // compilation unit.
     std::fs::write(dir.join("Light.java"), "package fixtures;\nenum Light { RED, GREEN }\n").unwrap();
-    std::fs::write(dir.join("Mass.java"), "package fixtures;\nenum Mass { ONE(1.5); final double kg; Mass(double kg) { this.kg = kg; } }\n").unwrap();
+    std::fs::write(dir.join("Mass.java"), "package fixtures;\nenum Mass { ONE(1.5); final double kg; Mass(double kg) { this.kg = Math.pow(kg, 1.0); } }\n").unwrap();
     let Some(classes) = compile("shapes", &[dir.join("Shapes.java"), dir.join("Light.java"), dir.join("Mass.java")]) else { return };
     let cp = jvmcontract::witness::classpath([classes.as_path()]).unwrap().with_models(true);
     let shapes = |method: &str| {
@@ -2866,7 +2945,7 @@ package fixtures;
 
 public class Contracted {
     static class Table {
-        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { 2.5 };
+        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { Math.pow(2.5, 1.0) };
         static int first() { return 7; }
     }
 
@@ -2874,6 +2953,7 @@ public class Contracted {
     public static int firstByte(byte[] out) { if (out.length == 0) return 0; new java.util.Random(1).nextBytes(out); return out[0]; }
     public static int filled(byte[] out) { new java.util.Random(1).nextBytes(out); return out.length; }
     public static boolean chained(int n) { StringBuilder b = new StringBuilder(); return b.append((long) n) == b; }
+    public static boolean chainedBoolean(int n) { StringBuilder b = new StringBuilder(); return b.append(n != 0) == b; }
     public static boolean named(int n) { StringBuilder b = new StringBuilder(); return b.append((CharSequence) "n") == b && n == n; }
     public static boolean spelled(int n) { StringBuilder b = new StringBuilder(); return b.append("n") == b && n == n; }
     public static int initialised(int n) { return Table.first() + n; }
@@ -3057,7 +3137,7 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
     let random = block("jdk-constructor:java.util.Random.<init>(J)V", "  call: java.util.Random.<init>(long seed)\n  modifies: nothing\n");
     let fill = block("jdk-void-method:java.util.Random.nextBytes([B)V", "  call: java.util.Random.nextBytes(byte[] bytes)\n  modifies: this, bytes\n");
     let builder = block("jdk-constructor:java.lang.StringBuilder.<init>()V", "  call: java.lang.StringBuilder.<init>()\n  modifies: nothing\n");
-    let append = |result: &str| block("jdk-reference-method:java.lang.StringBuilder.append(J)Ljava/lang/StringBuilder;", &format!("  call: java.lang.StringBuilder.append(long i) -> java.lang.StringBuilder\n  assert: {result}\n  modifies: this\n"));
+    let append = |result: &str| block("jdk-reference-method:java.lang.StringBuilder.append(Z)Ljava/lang/StringBuilder;", &format!("  call: java.lang.StringBuilder.append(boolean flag) -> java.lang.StringBuilder\n  assert: {result}\n  modifies: this\n"));
     let table = block("class-initializer:fixtures.Contracted$Table.<clinit>()V", "  call: fixtures.Contracted$Table.<clinit>()\n  modifies: nothing\n");
     let prove = |name: &str, method: &str, assert: &str, throws: &[&str], blocks: &[&str], engine: Engine| {
         let file = dir.join(format!("{name}.contracts"));
@@ -3169,14 +3249,14 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         assert!(refused.contains("the JVM's call returns with it false, where the contract says it returns with `assert: (\\forall int i; 0 <= i && i < bytes.length; bytes[i] == 0)` holding"), "{}", o.output);
 
         // A reference result is the object the contract names.
-        let o = prove("chained", "chained", "result", &[], &[&builder, &append("result == this")], engine).unwrap();
+        let o = prove("chained", "chainedBoolean", "result", &[], &[&builder, &append("result == this")], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         // A contract that says otherwise than the JDK's call: 3b found it only because its witness did not
         // reproduce in the interpreter; the JVM refutes it before any solving.
-        let o = prove("chained-fresh", "chained", "result", &[], &[&builder, &append("\\fresh(result)")], engine).unwrap();
+        let o = prove("chained-fresh", "chainedBoolean", "result", &[], &[&builder, &append("\\fresh(result)")], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
         let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
-        assert!(refused.starts_with("a JVM refutes it: on i=0L the JVM's call returns the object it is called on, where the contract says it returns a new object"), "{}", o.output);
+        assert!(refused.starts_with("a JVM refutes it: on flag=false the JVM's call returns the object it is called on, where the contract says it returns a new object"), "{}", o.output);
 
         // An initializer that throws nothing has run.
         let o = prove("table", "initialised", "result == n + 7", &[], &[&table], engine).unwrap();
@@ -3408,7 +3488,7 @@ public class Identity {
         static int value(int n) { return n; }
     }
     static class Names {
-        static final double[] ALL = { 0.5, 1.5 };
+        static final double[] ALL = { 0.5, Math.toRadians(90.0) };
         static int value(int n) { return n; }
     }
 

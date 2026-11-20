@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "history",
+  "statement": "Every operation returns the response of a capacity-two rejecting queue.",
+  "assume": "code >= 0 && code < 121",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 10
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "queuegrid.Projection#history(I)I",
+    "mapping": "Code is the bijective base-three command word read least-significant digit first. Commands 0/1 offer A/B, 2 polls. Responses 0/1 reject/accept and 2/3/4 return A/B/empty. Each word starts with a fresh empty queue.",
+    "correspondence": "finite-oracle",
+    "cases": 121
+  }
+}

@@ -565,7 +565,7 @@ fn the_list_models_throw_refuse_and_share_as_the_jdks_do() {
     let one_class = list_refuted(&cp, "getThrowsOneClass");
     assert!(one_class[0] == 1 || one_class[0] == 2, "a List12: {one_class:?}");
     // The gap scan agrees: the models' methods are walked, as the engine runs them, and none is a gap; an
-    // `ArrayList` still is one.
+    // `ArrayList` remains a possible gap in the static scan until the receiver is known.
     let scan = |target: &str| bmc::gaps::scan(&cp, &bmc::gaps::roots(&cp, &[format!("values.Lists#{target}")]).unwrap()).unwrap();
     for (target, walked) in [("sizeAndIteration", "java.util.ImmutableCollections$ListItr.next"), ("clearRewritten", "java.util.ImmutableCollections$ListN.get"), ("copyOfIsTheList", "java.util.ImmutableCollections.listCopy")] {
         let s = scan(target);
@@ -573,11 +573,8 @@ fn the_list_models_throw_refuse_and_share_as_the_jdks_do() {
         assert!(s.methods.iter().any(|m| m.starts_with(walked)), "{target}: {:?}", s.methods);
     }
     assert!(scan("copyOfAnotherImplementation").gaps.keys().any(|g| g.owner == "java/util/ArrayList"));
-    let out = list_checked(&cp, "copyOfAnotherImplementation", u64::MAX);
-    assert_eq!(out.verdict, Verdict::Unverifiable);
-    let problem = out.problem.unwrap_or_default();
-    // `new ArrayList()` only makes the object (`bmc::runtime`): what the list holds is its methods', each a gap.
-    assert!(problem.contains("java.util.ArrayList.add(Ljava/lang/Object;)Z"), "{problem}");
+    // The concrete constructor and toArray now execute from the selected image.
+    list_verified(&cp, "copyOfAnotherImplementation");
 }
 
 /// The kernels a check of [`adapted_lists`] compares, by name in `values.Lists`, each taking the list.
@@ -852,6 +849,19 @@ const OPERATION_CASES: &[Case] = &[
     case(OPS, "indexOfStringFrom", &[3, C, C, C, 1, C, 0, 3]),
     case(OPS, "indexOfStringFrom", &[1, C, 0, 0, -1, 0, 0, 0]),
     case(OPS, "indexOfStringFrom", &[-1, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "copiedUnits", &[1, HIGH, 1]),
+    case(OPS, "copiedUnits", &[0, 0, 3]),
+    case(OPS, "copiedUnits", &[1, LOW, -1]),
+    case(OPS, "copiedUnits", &[-1, 0, 0]),
+    case(OPS, "separateUnits", &[0, 0]),
+    case(OPS, "separateUnits", &[1, LOW]),
+    case(OPS, "separateUnits", &[-1, 0]),
+    case(OPS, "concatUnits", &[1, HIGH, 1, LOW]),
+    case(OPS, "concatUnits", &[1, C, 0, 0]),
+    case(OPS, "concatUnits", &[0, 0, 1, LOW]),
+    case(OPS, "concatUnits", &[0, 0, 0, 0]),
+    case(OPS, "concatUnits", &[-1, 0, 1, C]),
+    case(OPS, "concatUnits", &[1, C, -1, 0]),
     case(OPS, "substringFrom", &[3, C, HIGH, LOW, 1, 2, HIGH, LOW, 0]),
     case(OPS, "substringFrom", &[3, C, HIGH, LOW, 2, 1, LOW, 0, 0]),
     case(OPS, "substringFrom", &[3, C, HIGH, LOW, 0, 3, C, HIGH, LOW]),
@@ -1273,6 +1283,8 @@ fn an_operation_outside_the_values_models_is_a_named_gap_under_strict() {
     jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     let class = cp.application(OUTSIDE).unwrap().expect("the checks");
+    let mut without_image = ClassPath::new();
+    without_image.add(compiled().unwrap()).unwrap();
     let lines: Vec<String> = OUTSIDE_THE_MODELS
         .iter()
         .map(|(method, _)| {
@@ -1286,7 +1298,13 @@ fn an_operation_outside_the_values_models_is_a_named_gap_under_strict() {
     for ((method, expected), on_jvm) in OUTSIDE_THE_MODELS.iter().zip(&jvm) {
         assert_eq!(on_jvm, "null", "{method}: its claim holds on the JVM");
         for merge_after in [0, u64::MAX] {
-            let out = bmc::check(&cp, OUTSIDE, method, &Options { parameters: bounded(3), merge_after, ..Options::default() }).unwrap();
+            let options = Options { parameters: bounded(3), merge_after, ..Options::default() };
+            let image_map = matches!(*method, "mapRemove" | "mapGetOrDefault");
+            if image_map {
+                let on_image = bmc::check(&cp, OUTSIDE, method, &options).unwrap();
+                assert_eq!(on_image.verdict, Verdict::Verified, "{method}: {:?}", on_image.problem);
+            }
+            let out = bmc::check(if image_map { &without_image } else { &cp }, OUTSIDE, method, &options).unwrap();
             let problem = out.problem.clone().unwrap_or_default();
             let named = if expected.starts_with("outside") { problem.contains(expected) } else { out.gaps.iter().any(|g| g.id.starts_with(&format!("{expected}@")) && g.treatment == Some(bmc::gaps::GapTreatment::Refused)) };
             if out.verdict != Verdict::Unverifiable || !named {

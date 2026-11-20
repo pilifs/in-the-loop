@@ -87,6 +87,7 @@ from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
 
 HERE = Path(__file__).resolve().parent
+GRID_DRIVER = HERE / "java/org/intheloop/controls/Grid.java"
 RECORD = "prepared.json"  # the preparation record a work directory holds; a directory without one is not ours
 COMPILE_TIMEOUT = 300
 
@@ -222,11 +223,13 @@ def _controls_source(folder, entry):
         data = sorted({c["path"] for c in listed if c["kind"] in ORACLE_DATA})
         if data:  # the files the oracle reads (its probes), locked and copied with it
             oracle["data"] = _hashed(folder, [_inside(folder, d, "oracle data") for d in data])
+    driver = (dict(_component(folder, [controls["driver"]["path"]], "driver"), control=controls["driver"]["id"],
+                   main=_main_class(folder, controls["driver"]["path"])) if "driver" in controls else None)
+    if driver and oracle and oracle["path"].endswith(".json"):
+        driver["gridWriterSha256"] = sha256(GRID_DRIVER)
     return {
         "adapter": _component(folder, entry.get("adapters") or [], "adapter") if entry.get("adapters") else None,
-        "driver": dict(_component(folder, [controls["driver"]["path"]], "driver"), control=controls["driver"]["id"],
-                       main=_main_class(folder, controls["driver"]["path"]))
-        if "driver" in controls else None,
+        "driver": driver,
         "oracle": oracle,
         "jdks": list(entry.get("jdks") or []),
     }
@@ -249,6 +252,21 @@ def _lock_fixture(plan, revision, entry, folder):
         **_controls_source(folder, entry),
         "recipe": {"tool": "javac", "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe", **_fixture_recipe()},
     }
+    if entry.get("fixtureClasspath"):
+        dependencies = []
+        for relative in entry["fixtureClasspath"]:
+            root = _inside(folder, relative, "fixture dependency")
+            files = _java_files(folder, root)
+            if not files:
+                raise Refused("lock", f"fixture dependency {relative} holds no Java sources")
+            dependencies.append({"root": root.relative_to(folder).as_posix(), "files": _hashed(folder, files)})
+        if len({d["root"] for d in dependencies}) != len(dependencies):
+            raise Refused("lock", "fixture dependencies include the same source root twice")
+        source["dependencies"] = dependencies
+    if entry.get("orderedClasses"):
+        source["orderedClasses"] = entry["orderedClasses"]
+    if entry.get("fixtureCompiler"):
+        source["fixtureCompiler"] = entry["fixtureCompiler"]
     return f"fixture:{entry['fixture']}", source
 
 
@@ -379,6 +397,7 @@ def _lock_slice(plan, revision, entry, folder):
                       "and a narrower scope than it",
         "history": {"commit": commit, **({"parent": parent} if parent else {})},
         "slice": {"files": list(files), "jdk": jdk, "flags": list(flags), **({"matches": matches} if matches else {}),
+                  **({"companionClasses": recipe["companionClasses"]} if recipe.get("companionClasses") else {}),
                   "scope": SCOPES["extracted-source-slice"]},
         "published": items,
         **_controls_source(folder, entry),
@@ -613,12 +632,13 @@ class _Build:
         if code != 0:
             tail = "\n".join(out.strip().splitlines()[-15:])
             raise Refused("build", f"{step} failed (exit {code}): {' '.join(argv)}\n{tail}", command=" ".join(argv))
+        return out
 
-    def compile(self, step, sources, classpath):
+    def compile(self, step, sources, classpath, compiler=None):
         classes = self.workdir / "classes" / step
         classes.mkdir(parents=True)
-        argv = [str(self.home / "bin/javac"), "--release", self.recipe["release"], "-encoding", "UTF-8",
-                "-implicit:none", *self.recipe.get("flags", ()), "-d", str(classes)]
+        home, flags = compiler or (self.home, ["--release", self.recipe["release"], "-encoding", "UTF-8", *self.recipe.get("flags", ())])
+        argv = [str(home / "bin/javac"), *flags, "-implicit:none", "-d", str(classes)]
         if classpath:
             argv += ["-cp", ":".join(str(self.workdir / c) for c in classpath)]
         self.run(f"javac-{step}", argv + [str(s) for s in sorted(sources)])
@@ -633,11 +653,20 @@ class _Build:
         return name
 
 
-def _check_classpath(plan, workdir, classpath, original, adapter):
+def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_classes=(), dependencies=()):
     """The loaded target's origin, after refusing shadowed classes and a missing target method; and the original
     methods the adapter calls. A replay task's adapter must reference the target. The prepared record carries this
     reference check for the verifier and the JVM controls."""
-    shadowed = runtime_jar.duplicates(classpath, workdir)
+    declared = {runtime_jar.internal(name) for name in ordered_classes}
+    resolution = {}
+    shadowed = []
+    for name, holders in runtime_jar.duplicates(classpath, workdir):
+        if name in declared and all(path in dependencies for path in holders):
+            resolution[name.replace("/", ".")] = [
+                {"path": path, "classSha256": hashlib.sha256(runtime_jar.read_class(workdir / path, name)).hexdigest()}
+                for path in holders]
+        else:
+            shadowed.append((name, holders))
     if shadowed:
         listed = "; ".join(f"{name.replace('/', '.')} in {', '.join(holders)}" for name, holders in shadowed[:10])
         raise Refused("classpath", f"{len(shadowed)} class(es) held by more than one classpath entry, so the class loaded "
@@ -652,6 +681,10 @@ def _check_classpath(plan, workdir, classpath, original, adapter):
         raise Refused("target", f"{cls} in {original} declares no method {method}{descriptor or ''}")
     found = {"class": cls, "method": method, "descriptor": descriptor, "loadedFrom": original,
              "classSha256": hashlib.sha256(data).hexdigest()}
+    if set(ordered_classes) != set(resolution):
+        raise Refused("classpath", "a declared ordered class does not have multiple dependency providers")
+    if resolution:
+        found["orderedClasses"] = resolution
     if adapter:
         originals = set(runtime_jar.classes(workdir / original))
         adapters = set(runtime_jar.classes(workdir / adapter))
@@ -671,6 +704,20 @@ def _check_classpath(plan, workdir, classpath, original, adapter):
                 if o in originals:
                     refs.add((o, n, d))
         calls_target = any(o == name and n == method and (descriptor is None or d == descriptor) for o, n, d in refs)
+        # javac emits an invokeinterface for a generic erased call. On a freshly constructed final
+        # receiver the JVM can dispatch it to a synthetic bridge declared by that class.
+        if (not calls_target and descriptor and runtime_jar.class_flags(data) & 0x0010
+                and (runtime_jar.method_flags(data, method, descriptor) or 0) & 0x0040):
+            declarations = set(runtime_jar.interfaces(data))
+            interfaces = sorted(o for o, n, d in refs if o in declarations and n == method and d == descriptor)
+            constructed = any(o == name and n == "<init>" for o, n, _ in refs)
+            providers = {c for c in holders if interfaces and (loaded := look(c)) is not None
+                         and set(interfaces).intersection(runtime_jar.interfaces(loaded))}
+            if interfaces and constructed and providers == {name}:
+                found["bridgeDispatch"] = {"receiver": cls, "descriptor": descriptor,
+                                           "interfaces": [i.replace("/", ".") for i in interfaces],
+                                           "accessFlags": runtime_jar.method_flags(data, method, descriptor)}
+                calls_target = True
         if not calls_target and plan.kind == "replay":
             raise Refused("adapter", f"the adapter {adapter} never references {plan.target}: it does not call the "
                                      f"selected original method")
@@ -723,7 +770,12 @@ def _add_controls(build, source, folder, workdir, revision, below):
                             f"adapter-{revision}.jar", "adapter", "built from " + ", ".join(source["adapter"]["roots"]))
         classpath.insert(0, adapter)
     if source.get("driver"):
-        driver = build.jar("driver", build.compile("driver", _files(folder, source["driver"]), tuple(classpath)),
+        files = _files(folder, source["driver"])
+        if "gridWriterSha256" in source["driver"]:
+            if sha256(GRID_DRIVER) != source["driver"]["gridWriterSha256"]:
+                raise Refused("lock", "the finite observation writer changed after the source lock")
+            files.append(GRID_DRIVER)
+        driver = build.jar("driver", build.compile("driver", files, tuple(classpath)),
                            "driver.jar", "driver", "built from " + ", ".join(source["driver"]["roots"]))
         classpath.insert(0, driver)
     if source.get("oracle"):
@@ -795,9 +847,36 @@ def _prepare_fixture(plan, revision, locked, workdir):
         how = (f"constructed: {source['fixture']} with the patch {source['mutant']['patch']['path']} (sha256 "
                f"{source['mutant']['patch']['sha256']}) applied, built by the fixture recipe" if "mutant" in source
                else f"built from {source['fixture']} by the fixture recipe")
-        original = build.jar("original", build.compile("original", sources, ()), f"{revision}.jar", "original", how)
-        classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original])
-        source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
+        dependencies = []
+        for i, component in enumerate(source.get("dependencies", [])):
+            jar = f"lib/{component['root']}.jar"
+            (workdir / jar).parent.mkdir(parents=True, exist_ok=True)
+            step = f"dependency-{i}"
+            dep = build.jar(step, build.compile(step, _files(folder, component), dependencies),
+                            jar, "dependency", f"built from {component['root']}")
+            dependencies.append(dep)
+            if _hashed(folder, _java_files(folder, folder / component["root"])) != component["files"]:
+                raise Refused("lock", f"fixture dependency {component['root']} changed during preparation")
+        compiler = None
+        if fixed := source.get("fixtureCompiler"):
+            home = runtime_jdk.home(fixed["jdk"])
+            if home is None:
+                raise Refused("toolchain", f"fixture {revision} needs the compiler of JDK {fixed['jdk']}")
+            compiler = Path(home), fixed["flags"]
+            toolchain["originalCompiler"] = {"jdk": runtime_jdk.identity(home), "flags": fixed["flags"]}
+        original = build.jar("original", build.compile("original", sources, dependencies, compiler), f"{revision}.jar", "original", how)
+        classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *dependencies])
+        source["target"] = _check_classpath(plan, workdir, classpath, original, adapter,
+                                            ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies)
+        if selected := source["target"].get("orderedClasses"):
+            probe = HERE / "java/LoadedClasses.java"
+            stdout = build.run("loaded-classes", [str(build.home / "bin/java"), "-cp",
+                               os.pathsep.join(str(workdir / path) for path in classpath), str(probe),
+                               str(workdir), *sorted(selected)])
+            expected = [f"{name}\t{selected[name][0]['path']}\t{selected[name][0]['classSha256']}" for name in sorted(selected)]
+            if stdout.splitlines() != expected:
+                raise Refused("classpath", "the JVM code source or class digest differs from the first dependency provider")
+            source["target"]["jvmClassOrigins"] = {name: selected[name][0] for name in sorted(selected)}
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
@@ -1105,10 +1184,28 @@ def _prepare_slice(plan, revision, locked, workdir):
             package = PACKAGE.search((dest / f).read_text(errors="replace"))
             tops.append("/".join([*(package.group(1).split(".") if package else []), Path(f).stem]))
         made = {c.relative_to(classes).as_posix()[:-6]: c for c in sorted(classes.rglob("*.class"))}
-        stray = sorted(n for n in made if not any(n == t or n.startswith(t + "$") for t in tops))
+        companions = {runtime_jar.internal(n) for n in recipe.get("companionClasses", [])}
+        origins = {}
+        stray = []
+        for name, path in made.items():
+            if any(name == t or name.startswith(t + "$") for t in tops):
+                continue
+            # A source file can also declare package-private top-level classes.
+            source_name = runtime_jar.source_file(path.read_bytes())
+            package = name.rpartition("/")[0]
+            companion = next((c for c in companions if name == c or name.startswith(c + "$")), None)
+            if (companion not in made or not source_name or Path(source_name).name != source_name
+                    or not source_name.endswith(".java") or runtime_jar.class_flags(made[companion].read_bytes()) & 0x0001
+                    or "/".join(filter(None, [package, Path(source_name).stem])) not in tops):
+                stray.append(name)
+            else:
+                origins[name] = source_name
         if stray:
             raise Refused("build", f"javac wrote {', '.join(stray)}, which no file of the slice declares")
-        missing = sorted(t for t in tops if t not in made)
+        if not companions.issubset(origins):
+            raise Refused("build", "a declared companion class was not emitted from an included source")
+        # javac may emit no class for a package-info.java containing only documentation.
+        missing = sorted(t for t in tops if t not in made and t.rsplit("/", 1)[-1] != "package-info")
         if missing:
             raise Refused("build", f"the slice's files give no class {', '.join(missing)}: a file's name or package "
                                    f"doesn't match the class it declares")
@@ -1124,7 +1221,8 @@ def _prepare_slice(plan, revision, locked, workdir):
         identity = runtime_jdk.identity(jdk)
         toolchain["slice"] = {"jdk": identity, "javac": argv, "flags": list(recipe["flags"]),
                               "classes": {n: sha256(c) for n, c in made.items()}}
-        source["slice"] = {**recipe, "compiled": compiled, "jar": name, **({"matched": matched} if matched else {})}
+        source["slice"] = {**recipe, "compiled": compiled, "jar": name, **({"matched": matched} if matched else {}),
+                           **({"companionSources": origins} if origins else {})}
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *acquired])
         source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
     except Refused as e:
@@ -1241,10 +1339,15 @@ def _oracle_inputs(where, prepared):
     oracle = next((a for a in prepared.artifacts if a.role == "oracle" and (a.origin == origin or origin is None)), None)
     if oracle is None:
         raise Refused("controls", f"revision {prepared.revision}'s preparation has no oracle, so no inputs to run on")
-    spec = importlib.util.spec_from_file_location(f"targets_oracle_{oracle.sha256[:16]}", where / oracle.path)
-    module = importlib.util.module_from_spec(spec)
+    oracle_path = where / oracle.path
     try:
-        spec.loader.exec_module(module)
+        if oracle_path.suffix == ".json":
+            from targets.finite_oracle import Table
+            module = Table(oracle_path)
+        else:
+            spec = importlib.util.spec_from_file_location(f"targets_oracle_{oracle.sha256[:16]}", oracle_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
         if callable(getattr(module, "driver_args", None)):
             args, convention = module.driver_args(), "driver_args"
         else:
@@ -1497,14 +1600,14 @@ def java_target(target):
 
 def _claim_file(plan, part):
     """A claim's referenced file ({path, sha256}), rechecked: a changed file is a different claim."""
-    ref = plan.claim.get(part)
+    ref = plan.checkedLemmas if part == "checkedLemmas" else plan.claim.get(part)
     if not ref:
         return None
     folder = Path(plan.folder).resolve()
     path = _inside(folder, ref.get("path"), f"the claim's {part}")
     if sha256(path) != ref.get("sha256"):
-        raise Refused("claim", f"the claim's {part} {ref.get('path')} is {sha256(path)}, not the frozen "
-                               f"{ref.get('sha256')}: a changed file is a different claim")
+        raise Refused("claim", f"the {part} file {ref.get('path')} has digest {sha256(path)}. "
+                               f"The frozen plan requires {ref.get('sha256')}.")
     return path
 
 
@@ -1694,6 +1797,15 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             raise Refused("claim", recipe.reason)
         invocation = recipe.bind(plan, exe, sides, rel(workdir), timeout)
         argv = invocation.argv
+        if plan.checkedLemmas:
+            source = _claim_file(plan, "checkedLemmas")
+            local_lemmas = workdir / "checked-lemmas.contract"
+            shutil.copyfile(source, local_lemmas)
+            if sha256(local_lemmas) != plan.checkedLemmas["sha256"]:
+                raise Refused("claim", "the checked lemma file changed during preparation")
+            at = argv.index("--lemmas") + 1
+            argv = (*argv[:at], rel(local_lemmas), *argv[at+1:])
+            identities["checkedLemmas"] = dict(plan.checkedLemmas)
         env = _verifier_env(jdk)
         identities.update({
             "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],

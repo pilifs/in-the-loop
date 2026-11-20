@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-092415-recheck-the-two-array-roots-after-geomet",
+  "title": "Recheck the two array roots after geometry support",
+  "description": "Repeat the three native claims and both JVM witnesses over the 71 original heaps, at array length two and unwind eight. This checks array copying and mutation independently of the cube.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:array-alias",
+    "target:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "197"
+    ],
+    "jobs": [
+      "20261120-065325-confirm-shared-array-poststates-after-ch"
+    ]
+  },
+  "expected": "The return-only property is established, the right-root and both-root properties are refuted with qualified JVM witnesses, and every public task exits as expected.",
+  "submitted": {
+    "at": "2026-11-20T09:24:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Check the three original array observations",
+      "run": "python3 examples/tools/build.py 197 --tasks return-only,right-root,both-roots --checker-seconds 600",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/197-shared-int-array-poststates/receipts/return-only",
+    "examples/197-shared-int-array-poststates/receipts/right-root",
+    "examples/197-shared-int-array-poststates/receipts/both-roots"
+  ]
+}

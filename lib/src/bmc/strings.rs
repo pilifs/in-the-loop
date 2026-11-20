@@ -64,7 +64,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("toCharArray", "()[C") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
@@ -78,7 +78,9 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
     owner == BUILDER
         && matches!(
             (name, descriptor),
-            ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;") | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
+            ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("setCharAt", "(IC)V") | ("setLength", "(I)V")
+                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
+                | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
 }
 
@@ -329,9 +331,93 @@ impl Engine<'_> {
         }
     }
 
+    /// A fresh String constructed from a char array snapshots its units, including
+    /// isolated surrogates. Later writes to the array cannot change the String.
+    pub(super) fn initialize_string(&mut self, path: &mut Path, object: usize, source: Option<usize>, descriptor: &str) -> Step {
+        let Some(a) = source else { return self.raise(path, "java/lang/NullPointerException") };
+        self.keeps(path, Some(object), "initializes a pre-existing String")?;
+        let chars = if descriptor == "([C)V" {
+            if self.there_before(path, a) { self.reads(path, || "String(char[]) reads an array that existed before the call".into())?; }
+            path.objects[a].as_array().filter(|a| a.element == Type::Char)
+        } else {
+            path.objects[a].content()
+        };
+        let Some(chars) = chars.cloned() else { return unsupported("String constructor needs known UTF-16 code units"); };
+        path.objects[object].array = Some(chars);
+        self.advance(path);
+        Ok(None)
+    }
+
+    /// String.concat itself runs from the image, so it supplies both its null check and
+    /// its return of the receiver for an empty suffix. Its binary helper makes a fresh
+    /// String from the two immutable UTF-16 inputs.
+    pub(super) fn concat_strings(&mut self, path: &mut Path, m: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
+        if !matches!((m.name.as_str(), m.descriptor.as_str()),
+            ("simpleConcat", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/String;")
+            | ("doConcat", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;")) { return None; }
+        let [Val::R(Some(left)), Val::R(Some(right))] = args else { return None };
+        let a = path.objects[*left].content()?.clone();
+        let b = path.objects[*right].content()?.clone();
+        if a.cells.len().saturating_add(b.cells.len()) > MAX_STRING_CONTENT {
+            return Some(unsupported("String.concat exceeds the checker's UTF-16 content bound"));
+        }
+        let joined = self.joined(&a, &b);
+        let result = self.new_string(path, joined.length, joined.cells, Vec::new());
+        self.push(path, Val::R(Some(result)));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
     /// The String methods of this module on the String `o` of content `s`: see the module's notes.
     pub(super) fn string_method_on_content(&mut self, path: &mut Path, o: usize, s: &Array, name: &str, descriptor: &str, args: &[Val]) -> Step {
         match (name, descriptor, args) {
+            ("toCharArray", "()[C", []) => {
+                let copy = self.alloc(path, "[C");
+                path.objects[copy].array = Some(s.clone());
+                self.push(path, Val::R(Some(copy)));
+                self.advance(path);
+                Ok(None)
+            }
+            ("getChars", "(II[CI)V", [Val::I(begin), Val::I(end), Val::R(destination), Val::I(offset)]) => {
+                // Validate before writing any cells. An invalid range needs its own
+                // image-specific exception class, message and null-check order.
+                let invalid = [self.b.negative(begin), self.b.slt(end, begin), self.b.slt(&s.length, end)];
+                let mut outside = path.cond.clone();
+                outside.push(self.any(&invalid));
+                if self.solve(&outside)? { return unsupported("String.getChars source range is not proven valid"); }
+                let Some(dst) = *destination else { return self.raise(path, "java/lang/NullPointerException") };
+                let Some(mut dest) = path.objects[dst].as_array().filter(|a| a.element == Type::Char).cloned() else {
+                    return unsupported("String.getChars needs a known char array");
+                };
+                let count = self.b.sub(end, begin);
+                let room = self.b.sub(&dest.length, &count);
+                let invalid = [self.b.negative(offset), self.b.slt(&room, offset)];
+                outside.pop();
+                outside.push(self.any(&invalid));
+                if self.solve(&outside)? { return unsupported("String.getChars destination range is not proven valid"); }
+                if self.b.constant_value(&count) != Some(0) {
+                    self.keeps(path, Some(dst), "String.getChars writes a char array")?;
+                    if let (Some(start), Some(n), Some(at)) = (self.b.constant_value(begin), self.b.constant_value(&count), self.b.constant_value(offset)) {
+                        let (start, n, at) = (start as usize, n as usize, at as usize);
+                        dest.cells[at..at + n].clone_from_slice(&s.cells[start..start + n]);
+                    } else {
+                        for (i, cell) in dest.cells.iter_mut().enumerate() {
+                            let relative = self.b.sub(&self.b.constant(i as i64, 32), offset);
+                            let inside = self.b.ult(&relative, &count);
+                            let index = self.b.add(begin, &relative);
+                            let unit = self.unit_at(s, &index);
+                            *cell = self.b.ite_bits(inside, &unit, cell);
+                        }
+                    }
+                    path.objects[dst].array = Some(dest);
+                }
+                self.advance(path);
+                Ok(None)
+            }
+            ("concat", "(Ljava/lang/String;)Ljava/lang/String;", [other]) => {
+                if self.cp.library_image_method(STRING, name, descriptor).is_none() { return unsupported("no selected JDK bytecode for String.concat"); }
+                self.call(path, STRING, name, descriptor, vec![Val::R(Some(o)), other.clone()])
+            }
             ("substring", "(I)Ljava/lang/String;", [Val::I(begin)]) => {
                 let length = s.length.clone();
                 let bad = self.bad_range(begin, &length, &length);
@@ -523,6 +609,53 @@ impl Engine<'_> {
                 let value = self.b.zext(&unit, 32);
                 self.branch_throw(path, -inside, "java/lang/StringIndexOutOfBoundsException", Val::I(value))
             }
+            ("setCharAt", [Val::I(index), Val::I(ch)]) => {
+                let inside = self.b.ult(index, &s.length);
+                let unit = self.b.trunc(ch, 16);
+                self.branch_throw_or(path, -inside, "java/lang/StringIndexOutOfBoundsException", |engine, path| {
+                    let buffer = path.objects[o].array.as_mut().expect("the builder's content");
+                    for (i, cell) in buffer.cells.iter_mut().enumerate() {
+                        let at = engine.b.constant(i as i64, 32);
+                        let selected = engine.b.eq(index, &at);
+                        *cell = engine.b.ite_bits(selected, &unit, cell);
+                    }
+                    engine.advance(path);
+                })
+            }
+            ("setLength", [Val::I(length)]) => {
+                let room = if let Some(n) = self.b.constant_value(length) {
+                    if n < 0 { return Some(self.raise(path, "java/lang/StringIndexOutOfBoundsException")); }
+                    if n > MOST_BUILDER_CONTENT as i64 { return Some(unsupported("StringBuilder.setLength exceeds the bounded content")); }
+                    n as usize
+                } else {
+                    let mut room = None;
+                    for limit in [(self.max_array_length as usize).min(MOST_BUILDER_CONTENT), MOST_BUILDER_CONTENT] {
+                        let mut beyond = path.cond.clone();
+                        beyond.push(self.b.slt(&self.b.constant(limit as i64, 32), length));
+                        match self.solve(&beyond) {
+                            Ok(false) => { room = Some(limit); break; }
+                            Ok(true) => {}
+                            Err(stop) => return Some(Err(stop)),
+                        }
+                    }
+                    let Some(room) = room else { return Some(unsupported("StringBuilder.setLength exceeds the bounded content")) };
+                    room
+                };
+                let negative = self.b.negative(length);
+                self.branch_throw_or(path, negative, "java/lang/StringIndexOutOfBoundsException", |engine, side| {
+                    let zero = engine.b.constant(0, 16);
+                    let mut cells = Vec::with_capacity(room);
+                    for i in 0..room {
+                        let cell = if let Some(old) = s.cells.get(i) {
+                            let kept = engine.b.ult(&engine.b.constant(i as i64, 32), &s.length);
+                            engine.b.ite_bits(kept, old, &zero)
+                        } else { zero.clone() };
+                        cells.push(cell);
+                    }
+                    side.objects[o].array = Some(Array { element: Type::Char, length: length.clone(), cells, refs: Vec::new() });
+                    engine.advance(side);
+                })
+            }
             ("appendCodePoint", [Val::I(ch)]) => {
                 let (valid, units) = self.code_point_units(ch);
                 if valid != FALSE && s.cells.len() + units.cells.len() > MOST_BUILDER_CONTENT {
@@ -538,6 +671,13 @@ impl Engine<'_> {
                 // What is appended: a String's units (`null` for null), a char, or an int's decimal digits.
                 let t = match appended {
                     Val::R(None) => Array { element: Type::Char, length: self.b.constant(4, 32), cells: "null".encode_utf16().map(|u| self.b.constant(i64::from(u), 16)).collect(), refs: Vec::new() },
+                    // These final wrappers render their initialized signed value in decimal.
+                    Val::R(Some(r)) if descriptor.starts_with("(Ljava/lang/Object;)") && matches!(
+                        path.objects[*r].class.as_str(), "java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long") => {
+                        let Some(Val::I(word) | Val::J(word)) = path.objects[*r].fields.get("value") else { return None; };
+                        let (length, cells) = self.decimal(word);
+                        Array { element: Type::Char, length, cells, refs: Vec::new() }
+                    }
                     // `append(Object)` appends `String.valueOf(obj)`: a String's own units, an exception's
                     // `toString()` where the engine has it ([`super::throwables`]), and the JDK call otherwise.
                     Val::R(Some(other)) if descriptor.starts_with("(Ljava/lang/Object;)") && path.objects[*other].class != STRING => match self.throwable_text(path, *other)? {
@@ -550,7 +690,7 @@ impl Engine<'_> {
                         Err(step) => return Some(step),
                     },
                     Val::I(value) if descriptor.starts_with("(C)") => Array { element: Type::Char, length: self.b.constant(1, 32), cells: vec![self.b.trunc(value, 16)], refs: Vec::new() },
-                    Val::I(value) => {
+                    Val::I(value) | Val::J(value) => {
                         let (length, cells) = self.decimal(value);
                         Array { element: Type::Char, length, cells, refs: Vec::new() }
                     }

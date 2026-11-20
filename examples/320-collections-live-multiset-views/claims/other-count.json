@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "other-count",
+  "statement": "The other key keeps its original multiplicity.",
+  "assume": "code >= 0 && code < 18",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 30,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "multigrid.Projection#otherCount(I)I",
+    "mapping": "Code chooses positive A and B multiplicities 1 through 3, then uniqueSet or entrySet iteration. The iterator removes the key it actually returned on the same multiset. The expected result is indexed by that selected key independently for every row.",
+    "correspondence": "finite-oracle",
+    "cases": 18
+  }
+}

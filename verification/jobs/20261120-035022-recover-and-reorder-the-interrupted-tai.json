@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-035022-recover-and-reorder-the-interrupted-tai",
+  "title": "Recover and reorder the interrupted TAI proof batch",
+  "description": "A fresh job reads the preserved completion and two missing stages, retries the same three frozen claim/subject pairs in another order, and rechecks the original completed artifact binding.",
+  "kind": "real-world",
+  "capabilities": [
+    "target:history",
+    "jvm:finite-domain"
+  ],
+  "links": {
+    "examples": [
+      "315"
+    ],
+    "jobs": [
+      "20261120-032650-interrupt-a-reordered-three-claim-tai-ba"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T03:50:22+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "python3 examples/tools/build.py 315 --finite-domain --tasks format-fix,round-trip-fix,parse-fix --retry-of 20261120T034454Z-86f0b844",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/315-tai-signed-fraction/records/finite-proofs"
+  ]
+}

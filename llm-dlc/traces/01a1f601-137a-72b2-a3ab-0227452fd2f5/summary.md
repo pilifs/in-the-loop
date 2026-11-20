@@ -18,6 +18,24 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
+### Record verification results for 1 job(s)
+
+change `utsnpupxotvq` · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a: failed: 4 passed, 1 failed step(s) in 28.1s, peak 233.9 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zpymnulpnmwt` · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a: passed: 5 passed step(s) in 28.9s, peak 210.8 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Applied 89 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Twenty Java verification examples as a fast-follow brief for one agent's run
+
+change `onuzmoonrylt` · [log `a2195785f93e`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/a2195785f93e4270b816a485d7754ab39045bc42395ce08e7db032088832d57e.jsonl.gz)
+
+llm-dlc/loops/twenty-example-fast-follow.md is the user's brief for the run after foundation-and-python-restart: 20 new cases, ten historical upstream repairs (Commons Lang, ThreeTen-Extra, Commons CSV, Guava, Commons Collections, JFreeChart, Joda-Time, Commons Math, Commons Geometry) and ten controlled Java examples, in four waves (artifacts and observations; heaps and sequences; language and library boundaries; transfer and cost), each with a frozen subject, domain, observation, independent oracle and expected discriminator. Copied unchanged.
+
 ### Execute BigInteger factory allocations from the selected JDK
 
 change `nrnxuuxrkwkm` · [log `6d8e8b8fecd6`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/6d8e8b8fecd69fd824b6442c09c186ac81a873bf1f416f61738ce9c0562dbfe1.jsonl.gz)
@@ -58,18 +76,6 @@ A runner polling another workspace picked up a ThreeTenBP job while sync.py was 
 
 The queue regression exercises two simultaneous views of the same job, both revision choices and a commit message with an adjacent metadata line. On the actual recorded history the queue skips 0c74dbf6 and finds a78b7348. All 24 selected test files passed, including the 40 pipeline tests.
 
-### Record verification results for 1 job(s)
-
-change `utsnpupxotvq` · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
-
-Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a: failed: 4 passed, 1 failed step(s) in 28.1s, peak 233.9 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `zpymnulpnmwt` · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a: passed: 5 passed step(s) in 28.9s, peak 210.8 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Applied 89 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
 ### Integrate the clock retries and record all five native blockers
 
 change `ymmomsosuvlp` · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
@@ -83,12 +89,6 @@ The collector’s earlier job remains in history with its factory-only checker a
 change `yymsymovkxsl` · [log `df7cc669cf22`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/df7cc669cf22f4801241a5436605cee81ac5778048d57712fd496017a4c3d6f9.jsonl.gz)
 
 Two archived collector logs contain the same long-token finding. Masked context and an independent digest check identify the value as the ID of the watcher’s recorded continue decision. The allow-list entry remains proposed for a person to review. All 11 test selections for the proposal passed.
-
-### Twenty Java verification examples as a fast-follow brief for one agent's run
-
-change `onuzmoonrylt` · [log `a2195785f93e`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/a2195785f93e4270b816a485d7754ab39045bc42395ce08e7db032088832d57e.jsonl.gz)
-
-llm-dlc/loops/twenty-example-fast-follow.md is the user's brief for the run after foundation-and-python-restart: 20 new cases, ten historical upstream repairs (Commons Lang, ThreeTen-Extra, Commons CSV, Guava, Commons Collections, JFreeChart, Joda-Time, Commons Math, Commons Geometry) and ten controlled Java examples, in four waves (artifacts and observations; heaps and sequences; language and library boundaries; transfer and cost), each with a frozen subject, domain, observation, independent oracle and expected discriminator. Copied unchanged.
 
 ## Conversation
 

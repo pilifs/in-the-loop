@@ -384,8 +384,38 @@ public final class ObservedInitializer {
         System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + ",\"on\":{\"sha256\":" + text(sha256(app, internal))
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
-                + text(display) + "},\"zone\":" + text(zone) + ",\"properties\":[" + properties + "],\"allProperties\":"
+                + text(display) + "},\"zone\":" + text(zone) + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
                 + (recording.whole == null ? "null" : text(recording.whole)) + ",\"changed\":[" + changes + "],\"initialized\":[" + initialized + "]}}");
+    }
+
+    /** A class with calendar state can qualify the factory environment for later calls.
+     * The initialized application's own objects have already been recorded. */
+    private static boolean utcGregorian(Class<?> observed) {
+        try {
+            if (java.util.Arrays.stream(observed.getDeclaredFields()).noneMatch(f -> Modifier.isStatic(f.getModifiers())
+                    && (f.getType() == java.util.Calendar.class || f.getType() == java.util.TimeZone.class))) return false;
+            if (System.getProperty("java.locale.providers") != null || System.getProperty("java.time.zone.DefaultZoneRulesProvider") != null) return false;
+            ClassLoader loader = ClassLoader.getSystemClassLoader();
+            for (String service : new String[]{"sun.util.spi.CalendarProvider", "java.util.spi.CalendarDataProvider", "java.time.zone.ZoneRulesProvider"}) {
+                if (loader.getResources("META-INF/services/" + service).hasMoreElements()) return false;
+            }
+            java.util.TimeZone zone = java.util.TimeZone.getTimeZone("UTC");
+            java.util.TimeZone defaultZone = java.util.TimeZone.getDefault();
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            java.util.Calendar explicit = java.util.Calendar.getInstance(zone);
+            if (zone == java.util.TimeZone.getTimeZone("UTC") || defaultZone == java.util.TimeZone.getDefault()
+                    || calendar == explicit || calendar == java.util.Calendar.getInstance()) return false;
+            for (java.util.Calendar c : new java.util.Calendar[]{calendar, explicit}) {
+                if (c.getClass() != java.util.GregorianCalendar.class || !c.isLenient() || c.get(java.util.Calendar.ERA) != java.util.GregorianCalendar.AD
+                        || ((java.util.GregorianCalendar)c).getGregorianChange().getTime() != -12219292800000L) return false;
+            }
+            for (java.util.TimeZone z : new java.util.TimeZone[]{zone, defaultZone, calendar.getTimeZone(), explicit.getTimeZone()}) {
+                if (!z.getClass().getName().equals("sun.util.calendar.ZoneInfo") || !(z.getID().equals("UTC") || z.getID().equals("Etc/UTC"))
+                        || z.getRawOffset() != 0 || z.useDaylightTime() || !z.toZoneId().getRules().isFixedOffset()) return false;
+            }
+            return true;
+        }
+        catch (java.io.IOException | RuntimeException | LinkageError | java.util.ServiceConfigurationError e) { return false; }
     }
 
     /** The sha256 of the class file the loader reads of the class, or "" where it reads none. */
@@ -501,6 +531,46 @@ public final class ObservedInitializer {
             return "{\"n\":" + ((Number) boxed).longValue() + "}";
         }
 
+        /** A final application value with only final integral and String fields all the
+         * way to Object. Read the complete layout without invoking any application code. */
+        private List<Class<?>> valueHierarchy(Class<?> type) {
+            if (!Modifier.isFinal(type.getModifiers()) || type.isHidden() || type.isArray()) return null;
+            List<Class<?>> hierarchy = new ArrayList<>();
+            boolean hasField = false;
+            for (Class<?> c = type; c != Object.class; c = c.getSuperclass()) {
+                if (c == null || c.getClassLoader() != ClassLoader.getSystemClassLoader()) return null;
+                hierarchy.add(c);
+                for (Field f : c.getDeclaredFields()) {
+                    if (Modifier.isStatic(f.getModifiers())) continue;
+                    Class<?> t = f.getType();
+                    if (!Modifier.isFinal(f.getModifiers()) || (!t.isPrimitive() && t != String.class)
+                            || t == float.class || t == double.class || !f.trySetAccessible()) return null;
+                    hasField = true;
+                }
+            }
+            return hasField ? hierarchy : null;
+        }
+
+        private String frozenValue(List<Class<?>> hierarchy, Object instance) throws Exception {
+            List<String> classes = new ArrayList<>();
+            for (Class<?> c : hierarchy) {
+                String name = c.getName().replace('.', '/');
+                List<String> fields = new ArrayList<>();
+                Field[] declared = c.getDeclaredFields();
+                java.util.Arrays.sort(declared, java.util.Comparator.comparing(Field::getName).thenComparing(f -> f.getType().descriptorString()));
+                for (Field f : declared) {
+                    if (Modifier.isStatic(f.getModifiers())) continue;
+                    f.setAccessible(true);
+                    Object raw = f.get(instance);
+                    String held = f.getType().isPrimitive() ? primitive(f.getType(), raw) : value(raw);
+                    fields.add("{\"name\":" + text(f.getName()) + ",\"type\":" + text(f.getType().descriptorString()) + ",\"value\":" + held + "}");
+                }
+                String digest = sha256(c.getClassLoader(), name);
+                classes.add("{\"name\":" + text(name) + ",\"sha256\":" + text(digest) + ",\"fields\":[" + String.join(",", fields) + "]}");
+            }
+            return "{\"k\":\"value\",\"classes\":[" + String.join(",", classes) + "]}";
+        }
+
         private String value(Object v) {
             if (v == null) {
                 return "null";
@@ -521,6 +591,17 @@ public final class ObservedInitializer {
             }
             if (type.isArray() && (type.getComponentType() == float.class || type.getComponentType() == double.class)) {
                 return unheld("an array of " + type.getComponentType().getName(), v);
+            }
+            List<Class<?>> hierarchy = valueHierarchy(type);
+            if (hierarchy != null) {
+                try {
+                    String held = frozenValue(hierarchy, v);
+                    int id = objects.size();
+                    ids.put(v, id);
+                    objects.add(held);
+                    return "{\"o\":" + id + "}";
+                }
+                catch (Exception e) { return unheld("an unreadable value of " + nameOf(type), v); }
             }
             if (!(v instanceof String) && !(v instanceof Class) && !map && !emptyConcurrentMap && !type.isArray()) {
                 return unheld("an object of " + nameOf(type), v);

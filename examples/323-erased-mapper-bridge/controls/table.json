@@ -1,0 +1,28 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {
+    "value": {
+      "entry": "bridgegrid.Projection#value(I)I",
+      "encoding": "matches"
+    },
+    "exception": {
+      "entry": "bridgegrid.Projection#exception(I)I",
+      "encoding": "matches"
+    },
+    "entries": {
+      "entry": "bridgegrid.Projection#entries(I)I",
+      "encoding": "matches"
+    },
+    "typedAgreement": {
+      "entry": "bridgegrid.Projection#typedAgreement(I)I",
+      "encoding": "integer"
+    }
+  },
+  "cases": [
+    {"id": 0, "input": {"type": "null", "value": null}, "expected": {"value": 99, "exception": null, "entries": 1, "typedAgreement": 1}},
+    {"id": 1, "input": {"type": "java.lang.Integer", "value": -1}, "expected": {"value": 0, "exception": null, "entries": 1, "typedAgreement": 1}},
+    {"id": 2, "input": {"type": "java.lang.Integer", "value": 0}, "expected": {"value": 1, "exception": null, "entries": 1, "typedAgreement": 1}},
+    {"id": 3, "input": {"type": "java.lang.Integer", "value": 1}, "expected": {"value": 2, "exception": null, "entries": 1, "typedAgreement": 1}},
+    {"id": 4, "input": {"type": "java.lang.String", "value": "one"}, "expected": {"value": null, "exception": "java.lang.ClassCastException", "entries": 0, "typedAgreement": -1}}
+  ]
+}

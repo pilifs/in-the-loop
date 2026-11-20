@@ -15,6 +15,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from targets import sidecar
 from targets.interfaces import TaskPlan, WORKFLOW, Unsupported
 
 CLAIM_SCHEMA = Path(__file__).resolve().parents[2] / "schema" / "target-claim.schema.json"
@@ -146,6 +147,27 @@ def artifact_sources(folder, target, revisions):
                 entry["parent"] = revision["parent"]
         else:
             entry["fixture"] = revision["fixture"]
+        for key in ("fixtureClasspath", "orderedClasses"):
+            if key in defined[source]:
+                if route != "fixture":
+                    return f"revision {source}: {key} requires a fixture"
+                entry[key] = list(defined[source][key])
+        if "fixtureCompiler" in defined[source]:
+            compiler = defined[source]["fixtureCompiler"]
+            if route != "fixture" or sidecar.slice_flag_problems(compiler["flags"]):
+                return f"revision {source} has an invalid fixture compiler recipe"
+            entry["fixtureCompiler"] = compiler
+        if entry.get("fixtureClasspath"):
+            trees = []
+            for relative in entry["fixtureClasspath"]:
+                root = (Path(folder) / relative).resolve()
+                if Path(folder).resolve() not in root.parents or not root.is_dir():
+                    return f"revision {source}: fixture dependency {relative} is not a source directory in the example"
+                files = sorted(root.rglob("*.java"))
+                if not files or any(not path.resolve().is_relative_to(root) for path in files):
+                    return f"revision {source}: fixture dependency {relative} has missing or external Java sources"
+                trees.append(canonical_digest([(p.relative_to(root).as_posix(), file_sha256(p)) for p in files]))
+            entry["dependencySourceDigests"] = trees
         if route in ("published-artifact", "source-slice"):
             published = [{k: a[k] for k in ("coordinates", "url", "sha256") if k in a}
                          for a in prep.get("artifacts", []) if a["revision"] == source]
@@ -161,6 +183,8 @@ def artifact_sources(folder, target, revisions):
                 if not files:
                     return f"revision {source}: the source-slice route names no files for it"
                 where["slice"] = {"files": list(files), "jdk": recipe["jdk"], "flags": list(recipe["flags"])}
+                if recipe.get("companionClasses"):
+                    where["slice"]["companionClasses"] = recipe["companionClasses"]
                 matches = (recipe.get("matches") or {}).get(source) if source == name else None
                 if matches:
                     where["slice"]["matches"] = [dict(m) for m in matches]
@@ -308,6 +332,9 @@ def plan_task(folder, example, target, task):
                           f"{' or '.join(missing)}")
     try:
         claim = source_claim(folder, target, t, controls)
+        lemmas = hashed(folder, t["checkedLemmas"]) if t.get("checkedLemmas") else None
+        if lemmas and (t["kind"] != "prove" or t.get("engine") != "native"):
+            return refuse("checked lemmas require a native property task", stage="claim")
     except ClaimError as e:
         return refuse(str(e), stage="claim")
     prep = target["preparation"]
@@ -316,7 +343,7 @@ def plan_task(folder, example, target, task):
         revisions=revisions, claim=claim, prerequisites=tuple(t.get("requires", [])), artifacts=artifacts,
         tools=tools_of(t, prep["route"], prep, controls, artifacts), engine=t.get("engine"), gaps=t.get("gaps"),
         expected=t.get("expected"), outputs={"receipts": f"receipts/{task}"}, folder=str(folder.resolve()),
-        network=prep["route"] in ("published-artifact", "upstream-build", "source-slice"))
+        network=prep["route"] in ("published-artifact", "upstream-build", "source-slice"), checkedLemmas=lemmas)
 
 
 

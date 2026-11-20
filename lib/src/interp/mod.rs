@@ -111,6 +111,8 @@ pub struct Machine<'a> {
     /// The lists `List.of` and `List.copyOf` made, with the JDK class each is: its `get` out of range and its search
     /// for `null` throw as that class does, and `copyOf` hands back only these.
     immutable_lists: HashMap<Ref, ImmutableList>,
+    /// Structural modification counts of exact ArrayLists constructed by this JVM.
+    array_list_mod_count: HashMap<Ref, i32>,
     /// The one empty list `List.of()` returns, the JDK's `ImmutableCollections.EMPTY_LIST`.
     empty_list: Option<Ref>,
 }
@@ -144,6 +146,7 @@ impl<'a> Machine<'a> {
             cost: Cost::default(),
             monitor: true,
             immutable_lists: HashMap::new(),
+            array_list_mod_count: HashMap::new(),
             empty_list: None,
         }
     }
@@ -163,6 +166,7 @@ impl<'a> Machine<'a> {
         if !self.pinned_in_case {
             self.heap.truncate(mark);
             self.immutable_lists.retain(|r, _| (*r as usize) < mark);
+            self.array_list_mod_count.retain(|r, _| (*r as usize) < mark);
         }
     }
 
@@ -263,13 +267,13 @@ impl<'a> Machine<'a> {
     /// Creates a JDK exception object (not thrown).
     pub fn new_throwable(&mut self, class: &str, message: Option<&str>) -> Ref {
         let message = message.map(|m| self.new_string(m).as_ref().unwrap());
-        self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None }))
+        self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None, suppressed: None }))
     }
 
     /// A fault that throws a new JDK exception whose message is the string object `message`, as `new E(message)`
     /// keeps the very String it is given.
     pub fn throw_with(&mut self, class: &str, message: Option<Ref>) -> Fault {
-        Fault::Throw(self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None })))
+        Fault::Throw(self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None, suppressed: None })))
     }
 
     /// A fault that throws a new JDK exception with a message of these code units: one that quotes a String.
@@ -307,7 +311,7 @@ impl<'a> Machine<'a> {
         match self.init.get(class) {
             Some(InitState::Done | InitState::InProgress) => return Ok(()),
             Some(InitState::Erroneous) => {
-                let error = self.alloc(Object::Native(Native::Throwable { class: "java/lang/NoClassDefFoundError".into(), message: None, cause: None }));
+                let error = self.alloc(Object::Native(Native::Throwable { class: "java/lang/NoClassDefFoundError".into(), message: None, cause: None, suppressed: None }));
                 return Err(Fault::Throw(error));
             }
             None => {}
@@ -364,6 +368,7 @@ impl<'a> Machine<'a> {
                         class: "java/lang/ExceptionInInitializerError".into(),
                         message: None,
                         cause: Some(exception),
+                        suppressed: None,
                     }));
                     return Err(Fault::Throw(wrapped));
                 }
@@ -391,6 +396,32 @@ impl<'a> Machine<'a> {
 
     /// Reads a static field: the class that declares it is initialised first, and only that one (JVMS §5.5).
     pub fn get_static(&mut self, class: &str, name: &str) -> Exec<Value> {
+        if class == "java/util/Collections" && name == "EMPTY_SET" && self.cp.collections_empty_singleton("emptySet") {
+            if let Some(v) = self.statics.get(class).and_then(|s| s.get(name)) { return Ok(*v); }
+            let v = self.new_instance("java/util/Collections$EmptySet")?;
+            self.statics.entry(class.into()).or_default().insert(name.into(), v);
+            return Ok(v);
+        }
+        if class == "java/util/Collections" && name == "EMPTY_LIST" && self.cp.collections_empty_singleton("emptyList") {
+            return self.get_static(crate::bmc::throwables::THROWABLE, "SUPPRESSED_SENTINEL");
+        }
+        if class == crate::bmc::throwables::THROWABLE && matches!(name, "SUPPRESSED_SENTINEL" | "EMPTY_THROWABLE_ARRAY") {
+            if let Some(value) = self.statics.get(class).and_then(|fields| fields.get(name)) {
+                return Ok(*value);
+            }
+            // These two objects belong to the JDK class and survive the end of any input case.
+            self.clinit_depth += 1;
+            let value = if name == "EMPTY_THROWABLE_ARRAY" {
+                self.new_array_of(Type::object(class), Vec::new())
+            } else if self.cp.collections_empty_singleton("emptyList") {
+                self.new_instance(crate::bmc::throwables::EMPTY_LIST)?
+            } else {
+                Value::Ref(self.alloc_native(Native::List { elements: Vec::new(), mutable: false }))
+            };
+            self.clinit_depth -= 1;
+            self.statics.entry(class.into()).or_default().insert(name.into(), value);
+            return Ok(value);
+        }
         if let Some(declaring) = self.static_declarer(class, name) {
             self.ensure_initialized(&declaring)?;
             if let Some(v) = self.statics.get(&declaring).and_then(|f| f.get(name)) {
@@ -448,7 +479,7 @@ impl<'a> Machine<'a> {
                     if c == "java/lang/Enum" {
                         base = Base::Enum { name: String::new(), ordinal: 0, text: None };
                     } else if self.cp.is_subtype(&c, "java/lang/Throwable") {
-                        base = Base::Throwable { message: None, cause: None };
+                        base = Base::Throwable { message: None, cause: None, suppressed: None };
                     } else if c != "java/lang/Object" && c != "java/lang/Record" {
                         return Err(Fault::Unsupported(format!("{} extends the JDK class {}, which the interpreter does not model", class.replace('/', "."), c.replace('/', "."))));
                     }
@@ -493,6 +524,9 @@ impl<'a> Machine<'a> {
     /// The key the instance field `owner.name:descriptor` has in `object`: its name, unless a subclass along the
     /// object's class hides it ([`ClassPath::field_key`]).
     fn field_key(&mut self, object: Value, owner: &str, name: &str, descriptor: &str) -> Exec<String> {
+        if owner == crate::bmc::throwables::THROWABLE && name == "suppressedExceptions" && descriptor == "Ljava/util/List;" {
+            return Ok(crate::bmc::throwables::SUPPRESSED.into());
+        }
         let Some(r) = object.as_ref() else { return Ok(name.to_string()) };
         let class = self.class_of(r);
         let hides = match self.hides.get(&class) {
@@ -513,6 +547,8 @@ impl<'a> Machine<'a> {
     pub fn get_field(&mut self, object: Value, name: &str) -> Exec<Value> {
         let Some(r) = object.as_ref() else { return Err(self.npe()) };
         match self.heap.get(r) {
+            Object::Instance { base: Base::Throwable { suppressed, .. }, .. } | Object::Native(Native::Throwable { suppressed, .. })
+                if name == crate::bmc::throwables::SUPPRESSED => suppressed.ok_or_else(|| Fault::Unsupported("suppression state of a throwable whose constructor was not observed".into())),
             Object::Instance { fields, .. } => fields.get(name).copied().ok_or_else(|| Fault::Unsupported(format!("no field {name} on {}", self.class_of(r)))),
             _ => Err(Fault::Unsupported(format!("getfield {name} on a {}", self.class_of(r)))),
         }
@@ -522,6 +558,11 @@ impl<'a> Machine<'a> {
         let Some(r) = object.as_ref() else { return Err(self.npe()) };
         self.check_write(r, &format!("field {name}"))?;
         match self.heap.get_mut(r) {
+            Object::Instance { base: Base::Throwable { suppressed, .. }, .. } | Object::Native(Native::Throwable { suppressed, .. })
+                if name == crate::bmc::throwables::SUPPRESSED => {
+                    *suppressed = Some(value);
+                    Ok(())
+                }
             Object::Instance { fields, .. } => {
                 fields.insert(name.to_string(), value);
                 Ok(())
@@ -555,6 +596,20 @@ impl<'a> Machine<'a> {
     /// Calls a static method of an application class (or a model) by name. The class is initialised first.
     pub fn call_static(&mut self, class: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         self.ensure_initialized(class)?;
+        if self.cp.enum_universe_lookup(class, name, descriptor) {
+            let Some(mirror) = args.first().and_then(|v| v.as_ref()) else { return Err(Fault::Unsupported("enum universe needs a Class literal".into())) };
+            let Object::Native(Native::Class(Type::Object(owner))) = self.heap.get(mirror) else { return Err(Fault::Unsupported("enum universe needs an enum class".into())) };
+            let owner = owner.clone();
+            let field = self.cp.enum_values_field(&owner).ok_or_else(|| Fault::Unsupported(format!("enum universe of {owner} needs a checked values() array clone")))?;
+            self.ensure_initialized(&owner)?;
+            const KEY: &str = "<Class.enumConstantsShared>";
+            if let Some(v) = self.statics.get(&owner).and_then(|m| m.get(KEY)) { return Ok(Some(*v)); }
+            let raw = self.get_static(&owner, &field)?.as_ref().ok_or_else(|| Fault::Unsupported("enum constants have not been initialized".into()))?;
+            let Object::Array { element, data } = self.heap.get(raw) else { return Err(Fault::Unsupported("unknown enum constants array".into())) };
+            let copy = self.new_array_of(element.clone(), data.clone());
+            self.statics.entry(owner).or_default().insert(KEY.into(), copy);
+            return Ok(Some(copy));
+        }
         if self.cp.bytecode(class).map_err(|e| Fault::Unsupported(e.to_string()))?.is_none() {
             return Err(Fault::Unsupported(format!("class not found: {class}")));
         }
@@ -568,6 +623,17 @@ impl<'a> Machine<'a> {
         if let Some((class, method)) = self.model_method(owner, name, descriptor) {
             self.ensure_initialized(owner)?;
             return self.invoke(&class, &method, args);
+        }
+        if (owner, name, descriptor) == ("java/util/Collections", "emptySet", "()Ljava/util/Set;") && self.cp.collections_empty_singleton("emptySet") {
+            return self.get_static(owner, "EMPTY_SET").map(Some);
+        }
+        if (owner, name, descriptor) == ("java/util/Collections", "emptyList", "()Ljava/util/List;") && self.cp.collections_empty_singleton("emptyList") {
+            return self.get_static(owner, "EMPTY_LIST").map(Some);
+        }
+        if self.cp.collection_static(owner, name, descriptor) {
+            if let Some((class, method)) = self.cp.library_image_method(owner, name, descriptor) {
+                return self.invoke(&class, &method, args);
+            }
         }
         natives::invoke_static_jdk(self, owner, name, descriptor, args)
     }
@@ -593,6 +659,11 @@ impl<'a> Machine<'a> {
     pub fn call_virtual(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
         let class = self.class_of(r);
+        if (name, descriptor) == ("equals", "(Ljava/lang/Object;)Z") {
+            if let Some(answer) = natives::array_list_equality(self, r, args[0]) {
+                return answer.map(|equal| Some(Value::bool(equal)));
+            }
+        }
         match self.heap.get(r) {
             Object::Instance { .. } => {
                 // The most specific application (or model) implementation, else the JDK method it inherits.
@@ -624,6 +695,11 @@ impl<'a> Machine<'a> {
                             }
                         }
                     }
+                }
+                if let Some((cf, method)) = self.cp.image_default_method(&class, name, descriptor) {
+                    let mut full = vec![receiver];
+                    full.extend(args);
+                    return self.invoke(&cf, &method, full);
                 }
                 natives::invoke_inherited(self, r, owner, name, descriptor, args)
             }
@@ -1023,7 +1099,7 @@ impl<'a> Machine<'a> {
                     self.statics.retain(|c, _| c == crate::pairing::CLASS);
                     self.init.retain(|c, _| c == crate::pairing::CLASS);
                     None
-                } else if self.cp.is_application(&member.owner) {
+                } else if self.cp.is_application(&member.owner) || self.cp.state_image_class(&member.owner).is_some() || self.cp.map_image_class(&member.owner).is_some() {
                     self.call_static(&member.owner, &member.name, &member.descriptor, args)?
                 } else {
                     self.call_static_jdk(&member.owner, &member.name, &member.descriptor, args)?
@@ -1072,6 +1148,10 @@ impl<'a> Machine<'a> {
                     sizes.push(pop!().as_int());
                 }
                 sizes.reverse();
+                // All supplied dimensions are checked, even those below an empty outer dimension.
+                if let Some(&negative) = sizes.iter().find(|&&size| size < 0) {
+                    return Err(self.throw("java/lang/NegativeArraySizeException", Some(&negative.to_string())));
+                }
                 let v = self.multi_array(&t, &sizes)?;
                 stack.push(v);
             }
@@ -1131,6 +1211,17 @@ impl<'a> Machine<'a> {
     /// `invokespecial`: constructors, private methods and `super.` calls go to the named class, not the receiver's.
     fn call_special(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
+        if (owner, name, descriptor) == ("java/lang/Object", "clone", "()Ljava/lang/Object;") {
+            if let Object::Instance { class, base: Base::Object, .. } = self.heap.get(r) {
+                if self.cp.application_object(class) {
+                    if !self.cp.is_subtype(class, "java/lang/Cloneable") {
+                        return Err(self.throw("java/lang/CloneNotSupportedException", Some(&class.replace('/', "."))));
+                    }
+                    let copy = self.heap.get(r).clone();
+                    return Ok(Some(Value::Ref(self.alloc(copy))));
+                }
+            }
+        }
         if let Ok(Some(_)) = self.cp.bytecode(owner) {
             if let Some((cf, m)) = self.cp.bytecode_method(owner, name, descriptor) {
                 if m.code.is_some() {
@@ -1209,28 +1300,8 @@ impl<'a> Machine<'a> {
                     }
                 })
             }
-            Kind::Float => {
-                let (x, y) = (a.as_float(), b.as_float());
-                Value::Float(match op {
-                    ArithOp::Add => x + y,
-                    ArithOp::Sub => x - y,
-                    ArithOp::Mul => x * y,
-                    ArithOp::Div => x / y,
-                    ArithOp::Rem => x % y,
-                    _ => return Err(Fault::Unsupported("bitwise op on float".into())),
-                })
-            }
-            Kind::Double => {
-                let (x, y) = (a.as_double(), b.as_double());
-                Value::Double(match op {
-                    ArithOp::Add => x + y,
-                    ArithOp::Sub => x - y,
-                    ArithOp::Mul => x * y,
-                    ArithOp::Div => x / y,
-                    ArithOp::Rem => x % y,
-                    _ => return Err(Fault::Unsupported("bitwise op on double".into())),
-                })
-            }
+            Kind::Float => Value::Float(ieee_binary(op, a.as_float(), b.as_float())),
+            Kind::Double => Value::Double(ieee_binary(op, a.as_double(), b.as_double())),
             Kind::Ref => return Err(Fault::Unsupported("arithmetic on references".into())),
         })
     }
@@ -1241,7 +1312,21 @@ enum Flow {
     Return(Option<Value>),
 }
 
-fn convert(v: Value, to: Narrow) -> Value {
+/// The five binary floating-point bytecodes, shared by JVM replay and bounded native evaluation.
+pub(crate) fn ieee_binary<T>(op: ArithOp, x: T, y: T) -> T
+where T: std::ops::Add<Output=T> + std::ops::Sub<Output=T> + std::ops::Mul<Output=T>
+       + std::ops::Div<Output=T> + std::ops::Rem<Output=T> {
+    match op {
+        ArithOp::Add => x + y,
+        ArithOp::Sub => x - y,
+        ArithOp::Mul => x * y,
+        ArithOp::Div => x / y,
+        ArithOp::Rem => x % y,
+        _ => unreachable!("binary float or double opcode"),
+    }
+}
+
+pub(crate) fn convert(v: Value, to: Narrow) -> Value {
     match to {
         Narrow::Byte => Value::Int(v.as_int() as i8 as i32),
         Narrow::Char => Value::Int(v.as_int() as u16 as i32),

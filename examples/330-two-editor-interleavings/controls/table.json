@@ -1,0 +1,17 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {
+    "revision": {
+      "entry": "editgrid.Projection#revision(I)I",
+      "encoding": "matches"
+    }
+  },
+  "cases": [
+    {"id": 0, "input": {"initial": 0, "schedule": ["read A", "write A", "read B", "write B"]}, "expected": {"revision": 2}},
+    {"id": 1, "input": {"initial": 0, "schedule": ["read A", "read B", "write A", "write B"]}, "expected": {"revision": 2}},
+    {"id": 2, "input": {"initial": 0, "schedule": ["read A", "read B", "write B", "write A"]}, "expected": {"revision": 2}},
+    {"id": 3, "input": {"initial": 0, "schedule": ["read B", "read A", "write A", "write B"]}, "expected": {"revision": 2}},
+    {"id": 4, "input": {"initial": 0, "schedule": ["read B", "read A", "write B", "write A"]}, "expected": {"revision": 2}},
+    {"id": 5, "input": {"initial": 0, "schedule": ["read B", "write B", "read A", "write A"]}, "expected": {"revision": 2}}
+  ]
+}

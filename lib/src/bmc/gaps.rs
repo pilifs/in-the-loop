@@ -53,7 +53,7 @@
 //! Nor is an application class's initializer the engine runs, as the JVM does, since Phase 5 of
 //! `llm-dlc/loops/engine-priorities.md`: one whose code, and the application methods it calls, are in the fragment.
 //! The scan counts those it relied on. A construct the engine refuses (floating point, a static field of the JDK
-//! written, a multi-dimensional array, a floating-point or array result of a JDK method, ...) is not a gap either: it ends the proof
+//! written, an unsupported floating-point operation or array result of a JDK method, ...) is not a gap either: it ends the proof
 //! with no verdict, as it should, in either mode. The scan lists those reasons too, since a method that has one is
 //! outside the engine whatever its gaps. `monitorenter` and `monitorexit` are implemented: they throw
 //! `NullPointerException` on null and otherwise do nothing, which is all they do in a run of one thread.
@@ -80,7 +80,7 @@ use std::sync::OnceLock;
 
 use serde::Serialize;
 
-use crate::classfile::{BootstrapArg, Insn, Kind, MemberRef, MethodDescriptor, Type};
+use crate::classfile::{Insn, MemberRef, MethodDescriptor, Type};
 use crate::classpath::ClassPath;
 use crate::Error;
 
@@ -595,7 +595,8 @@ pub fn jdk_static_call(owner: &str, name: &str, descriptor: &str) -> JdkCall {
     let Ok(d) = MethodDescriptor::parse(descriptor) else { return JdkCall::Refused };
     let floating = |t: &Type| matches!(t, Type::Float | Type::Double);
     // A model that makes an array (`Arrays.copyOf`) is one before an array result is refused.
-    if super::bytes::models_static(owner, name, descriptor) || super::strings::models_static(owner, name, descriptor) {
+    if super::bytes::models_static(owner, name, descriptor) || super::strings::models_static(owner, name, descriptor)
+        || super::arraycopy::is_call(owner, name, descriptor) || super::floating::models_static(owner, name, descriptor) {
         return JdkCall::Exact;
     }
     if d.params.iter().any(floating) || matches!(d.ret, Type::Float | Type::Double | Type::Array(_)) {
@@ -610,7 +611,10 @@ pub fn jdk_static_call(owner: &str, name: &str, descriptor: &str) -> JdkCall {
 /// The object arguments a string concatenation by `invokedynamic` would convert with `toString`: every parameter
 /// of its descriptor that is an object other than a `String` (a `string-conversion` gap each).
 pub fn converted_arguments(descriptor: &MethodDescriptor) -> Vec<String> {
-    descriptor.params.iter().filter_map(|p| if let Type::Object(class) = p { Some(class.clone()) } else { None }).filter(|c| c != "java/lang/String").collect()
+    descriptor.params.iter().filter_map(|p| match p {
+        Type::Object(class) if !matches!(class.as_str(), "java/lang/String" | "java/lang/Character") => Some(class.clone()),
+        _ => None,
+    }).collect()
 }
 
 /// The roots a proof of each target starts from: the method, and the constructors of its class when it is an
@@ -696,6 +700,35 @@ pub fn initialization_supers(cp: &ClassPath, class: &str) -> Vec<String> {
         enumerate(cp, i, &mut out, &mut seen);
     }
     out
+}
+
+/// A straight-line initializer that constructs final object or array constants through
+/// application code. Strict checking can execute these assignments and their callees
+/// path by path. A refusal in an untaken constructor branch need not block every use
+/// of the class. This predicate chooses work to attempt; it proves nothing about it.
+pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::ClassFile) -> bool {
+    let Some(code) = cf.method("<clinit>", "()V").and_then(|m| m.code.as_ref()) else { return false };
+    let Ok(insns) = code.instructions() else { return false };
+    let mut writes_constant = false;
+    code.exception_table.is_empty() && insns.iter().all(|(_, insn)| match insn {
+        Insn::Nop | Insn::AConstNull | Insn::IConst(_) | Insn::LConst(_) | Insn::FConst(_) | Insn::DConst(_)
+        | Insn::Ldc(_) | Insn::Dup | Insn::Pop | Insn::NewArray(_) | Insn::ANewArray(_) | Insn::ArrayStore(_) | Insn::Return(None) => true,
+        Insn::GetStatic(i) => cf.pool.member(*i).is_ok_and(|m| m.descriptor.starts_with(['L', '['])
+            && cp.resolve_field(&m.owner, &m.name, &m.descriptor).and_then(|owner| cp.load(&owner).ok().flatten())
+                .is_some_and(|l| l.class.field(&m.name).is_some_and(|f| f.is_static() && f.is_final()))),
+        Insn::New(i) => cf.pool.class_name(*i).is_ok_and(|class| cp.is_application(class)
+            || (class == "java/util/HashMap" && cp.map_image_class(class).is_some())),
+        Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) =>
+            cf.pool.member(*i).is_ok_and(|m| cp.is_application(&m.owner)
+                || (matches!(m.owner.as_str(), "java/util/Map" | "java/util/HashMap")
+                    && cp.map_image_method("java/util/HashMap", &m.name, &m.descriptor).is_some())),
+        Insn::PutStatic(i) => {
+            writes_constant = true;
+            cf.pool.member(*i).is_ok_and(|m| m.owner == cf.name && m.descriptor.starts_with(['L', '['])
+                && cf.field(&m.name).is_some_and(|f| f.is_static() && f.is_final() && f.descriptor == m.descriptor))
+        }
+        _ => false,
+    }) && writes_constant
 }
 
 /// Whether the engine runs `class`'s `<clinit>` when a use initializes the class, rather than meeting a
@@ -1085,6 +1118,9 @@ impl<'a> Walker<'a> {
     /// ([`super::Engine::get_static`]). Initializes the class that declares the field.
     fn static_field(&mut self, owner: &str, name: &str, descriptor: &str, put: bool, site: &Site) {
         let declaring = self.cp.resolve_field(owner, name, descriptor).unwrap_or_else(|| owner.to_string());
+        if !put && (self.cp.numeric_assertion_flag(&declaring, name, descriptor)
+            || (name == "TYPE" && descriptor == "Ljava/lang/Class;" && Type::for_wrapper(&declaring).is_some())
+            || ((declaring.as_str(), name, descriptor) == ("java/util/Collections", "EMPTY_LIST", "Ljava/util/List;") && self.cp.collections_empty_singleton("emptyList"))) { return; }
         let what = format!("{}.{name}", declaring.replace('/', "."));
         let constant = !put && self.constant(&declaring, name);
         if !self.cp.checker_statics(&declaring) {
@@ -1101,7 +1137,8 @@ impl<'a> Walker<'a> {
 
     fn walk(&mut self, owner: &str, name: &str, descriptor: &str) -> Result<(), Error> {
         let Some((cf, m)) = self.cp.checker_method(owner, name, descriptor)
-            .or_else(|| self.cp.integer_factory_method(owner, name, descriptor)) else { return Ok(()) };
+            .or_else(|| self.cp.numeric_image_method(owner, name, descriptor))
+            .or_else(|| self.cp.library_image_method(owner, name, descriptor)) else { return Ok(()) };
         let label = format!("{}.{name}{descriptor}", cf.name.replace('/', "."));
         if !self.scan.methods.insert(label) {
             return Ok(());
@@ -1121,18 +1158,10 @@ impl<'a> Walker<'a> {
                 constant = cf.pool.loadable(index).ok().and_then(|c| c.string_units().map(|units| units.into_owned()));
             }
             match insn {
-                Insn::FConst(_) | Insn::DConst(_) => self.refuse("floating point", "a floating-point constant".into(), &site),
-                Insn::Arith(_, k) | Insn::Return(Some(k)) | Insn::Load(k, _) | Insn::Store(k, _) | Insn::Convert(k, _) if matches!(k, Kind::Float | Kind::Double) => self.refuse("floating point", "floating-point arithmetic".into(), &site),
                 Insn::Jsr(_) | Insn::Ret(_) => self.refuse("jsr/ret", "jsr".into(), &site),
                 Insn::PutStatic(index) | Insn::GetStatic(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     self.static_field(&member.owner, &member.name, &member.descriptor, matches!(insn, Insn::PutStatic(_)), &site);
-                }
-                Insn::MultiANewArray(..) => self.refuse("multi-dimensional arrays", "a new multi-dimensional array".into(), &site),
-                Insn::Ldc(index) => {
-                    if let Ok(BootstrapArg::Float(_) | BootstrapArg::Double(_)) = cf.pool.loadable(index) {
-                        self.refuse("floating point", "a floating-point constant".into(), &site);
-                    }
                 }
                 Insn::New(index) => {
                     let class = cf.pool.class_name(index).map_err(|e| Error::new(e.to_string()))?.to_string();
@@ -1166,13 +1195,17 @@ impl<'a> Walker<'a> {
                 }
                 Insn::InvokeStatic(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
-                    if self.cp.is_application(&member.owner) {
+                    if super::runtime::enum_identity_read(&cf.name, name, &member) {
+                        *self.scan.exact.entry("Enum.hashCode (all stable JVM identity hashes)".into()).or_default() += 1;
+                    } else if self.cp.is_application(&member.owner) || self.cp.checked_image_class(&member.owner).is_some() {
                         let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(c, _)| c.name.clone()).unwrap_or_else(|| member.owner.clone());
                         self.initialise(&declaring, &site);
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
-                    } else if self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                    } else if self.cp.collection_static(&member.owner, &member.name, &member.descriptor) && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                        self.enqueue(&member.owner, &member.name, &member.descriptor);
+                    } else if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         // A class initializer can call the factory on an input for which it reads no cached
                         // object. Execution checks the path it takes. The full scan lists all possible reads.
                         if !self.deciding {
@@ -1202,8 +1235,8 @@ impl<'a> Walker<'a> {
                 Insn::InvokeSpecial(index) | Insn::InvokeVirtual(index) | Insn::InvokeInterface(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     let special = matches!(insn, Insn::InvokeSpecial(_));
-                    if special && cf.name == "java/math/BigInteger" && member.name == "<init>"
-                        && self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                    if special && member.name == "<init>"
+                        && self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                         continue;
                     }
@@ -1276,7 +1309,8 @@ mod tests {
         assert_eq!(jdk_static_call("java/lang/Long", "numberOfLeadingZeros", "(J)I"), JdkCall::Exact);
         assert_eq!(jdk_static_call("java/util/Arrays", "fill", "([II)V"), JdkCall::Gap(GapKind::JdkStaticMethod));
         assert_eq!(jdk_static_call("java/lang/Math", "addExact", "(II)I"), JdkCall::Exact);
-        assert_eq!(jdk_static_call("java/lang/Math", "sqrt", "(D)D"), JdkCall::Refused);
+        assert_eq!(jdk_static_call("java/lang/Math", "sqrt", "(D)D"), JdkCall::Exact);
+        assert_eq!(jdk_static_call("java/lang/Math", "exp", "(D)D"), JdkCall::Refused);
         assert_eq!(jdk_static_call("java/util/Arrays", "copyOfRange", "([III)[I"), JdkCall::Refused);
         assert_eq!(jdk_static_call("java/util/Arrays", "copyOf", "([II)[I"), JdkCall::Exact);
         let cp = ClassPath::new().with_default_jdk();

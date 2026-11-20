@@ -49,6 +49,9 @@
               "commit": { "$ref": "#/$defs/sha1" },
               "route": { "description": "This revision's own route, where it differs from preparation.route: on the source-slice route only, a published release that carries a slice revision's sources (its JAR, then its dependencies, in preparation.artifacts), compared with that slice revision in a `correspondence` pair.", "enum": ["published-artifact"] },
               "fixture": { "description": "For a control only: the revision's sources, a directory in the folder.", "$ref": "#/$defs/file" },
+              "fixtureClasspath": { "description": "Java source roots compiled into distinct dependency JARs and loaded in this exact order after the fixture.", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/file" } },
+              "orderedClasses": { "description": "Dependency classes intentionally provided by multiple fixture JARs. The first provider supplies the class. The preparation records every contender and its class digest.", "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*(\\.[A-Za-z_$][A-Za-z0-9_$]*)*$" } },
+              "fixtureCompiler": { "description": "JDK and compiler flags for this revision's original subject.", "type": "object", "additionalProperties": false, "required": ["jdk","flags"], "properties": {"jdk": {"$ref":"#/$defs/jdk"}, "flags": {"type":"array","items":{"type":"string"}}} },
               "mutant": {
                 "description": "A constructed mutation control (added by the workflow stream, additive): the revision `base` with the patch `patch` applied, its sha256 checked before anything is prepared from it. Its base is a commit or fixture revision of this sidecar, and it appears only as the `after` of a `mutation` pair whose `before` is that base. It has no upstream identity: no parent, tag or release, and no published artifact.",
                 "type": "object",
@@ -149,6 +152,7 @@
               "additionalProperties": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^(?!/)(?!.*(^|/)\\.\\.?(/|$))[A-Za-z0-9_][A-Za-z0-9_./-]*\\.java$", "maxLength": 300 } }
             },
             "jdk": { "description": "The JDK whose javac compiles the slice.", "$ref": "#/$defs/jdk" },
+            "companionClasses": { "description": "Additional package-private top-level classes expected from the listed Java sources. Each class must identify one of those files in its SourceFile attribute.", "type": "array", "uniqueItems": true, "items": {"type":"string","pattern":"^[A-Za-z_$][A-Za-z0-9_$.]*$"} },
             "flags": { "description": "javac's flags, in order, from -g, -g:none, -g:{source,lines,vars}, -parameters, -source N, -target N, --release N and -encoding NAME only (runtime checks them).", "type": "array", "items": { "type": "string", "minLength": 1 } },
             "matches": {
               "description": "Per revision name (one the slice compiles), published classes its compiled slice must reproduce byte for byte: the class, its sha256 as an entry of the published JAR, and that JAR, fetched by its own sha256 when the revision is prepared. A mismatch fails the preparation (a blocker); the slice is never used anyway. A mutant inherits none of its base's.",
@@ -207,6 +211,7 @@
           "parent": { "description": "For a narrower diagnostic or derived claim: the task it is derived from, which stays unresolved.", "$ref": "#/$defs/name" },
           "engine": { "description": "Named explicitly: native strict is the default this wave asks for, and the CLI's default engine is JBMC.", "enum": ["native", "jbmc", "auto"] },
           "gaps": { "enum": ["strict", "assume", "advised"] },
+          "checkedLemmas": { "description": "Local lemma declarations that the native checker must prove at this task's bounds before using them. This selects a proof strategy for the same source claim.", "$ref": "#/$defs/file" },
           "bounds": { "description": "Explicit bounds, by the tool's option names (maxArrayLength, unwind, maxStringLength ...).", "type": "object", "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" }, "additionalProperties": { "type": "integer", "minimum": 0 } },
           "besideRoute": {
             "description": "An answer to this task's claim given beside the route: by a script of the example's own, on the claim file as frozen, run as a verification job, which leaves no receipt. llm-dlc/tools/changes.py counts the claim as decided only while the acceptance check (examples/tools/accept.py) derives this answer from what that job left: its result in the checkout, passed and naming the example (links.examples), and the outcome its step wrote giving this verdict about the claim as frozen, at the claim's bound; a route receipt, once there is one, outranks it. Written once the job is in; the task's `expected` and its claim stay as they were.",

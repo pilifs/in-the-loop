@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-051056-repeat-signed-zero-proofs-on-the-bounded",
+  "title": "Repeat signed-zero proofs on the bounded arithmetic checker",
+  "description": "Check all four previously frozen Commons Lang numeric and raw-bit comparisons on both pinned revisions after adding arithmetic. Bind the full 84-array independent calibration and a separate JVM replay of the original parent violation.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "313"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T05:10:56+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 313 --tasks numeric-parent,numeric-fix,raw-bits-parent,raw-bits-fix --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent",
+    "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix",
+    "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent",
+    "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix"
+  ]
+}

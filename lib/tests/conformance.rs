@@ -169,7 +169,7 @@ fn corpus() -> Vec<Case> {
             .refuted(None, "result >= 1", &[], X),
         Case::new("listCopySame", &[("0", "returns 3"), ("1", "returns 3"), ("2", "returns 3")]).holds(None, "result == 3", &[], U).refuted(None, "result == 1", &[], U),
         Case::new("listCopyMutable", &[("0", "returns 1"), ("1", "returns 10"), ("2", NPE), ("9", NPE)])
-            .holds(Some("n <= 0"), "result == 1", &[], U)
+            .holds(Some("n <= 0"), "result == 1", &[], V)
             .refuted(None, "result <= 10", &[], X),
         Case::new("listGet", &[("0", "returns 1"), ("1", "throws java.lang.IndexOutOfBoundsException"), ("-1", "throws java.lang.IndexOutOfBoundsException"), ("10", "returns 2"), ("12", "returns 1"), ("13", "throws java.lang.ArrayIndexOutOfBoundsException"), ("20", "throws java.lang.ArrayIndexOutOfBoundsException")])
             .holds(Some("n == 0 || n == 12"), "result == 1", &[], V)
@@ -178,7 +178,7 @@ fn corpus() -> Vec<Case> {
             .holds(Some("n == 5"), "result == 90", &[], U)
             .refuted(None, "result < 0", &[], U),
         Case::new("listEquals", &[("2", "returns 11"), ("3", "returns 0")]).holds(Some("n != 2"), "result == 0", &[], U).refuted(None, "result == 0", &[], U),
-        Case::new("listIterate", &[("0", "returns 6"), ("1", "throws java.util.NoSuchElementException")]).holds(Some("n <= 0"), "result == 6", &[], U).refuted(None, "result == 6", &[], U),
+        Case::new("listIterate", &[("0", "returns 6"), ("1", "throws java.util.NoSuchElementException")]).holds(Some("n <= 0"), "result == 6", &[], V).refuted(None, "result == 6", &[], X),
         Case::new("listOfArray", &[("0", "returns 111"), ("9", NPE)]).holds(Some("n != 9"), "result == 111", &[], U).refuted(None, "result == 111", &[], U),
         // Exceptions.
         Case::new("finallyWins", &[("0", "returns 2"), ("1", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
@@ -773,7 +773,11 @@ fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
 /// which the engine prunes. `listChange` under `n == 0 || n == 8` takes the switch's default; its cases 4 and 6
 /// call `remove(Object)` and `addAll`, which no evidence record of `values::OPERATIONS` samples, so the engine meets
 /// them as JDK calls (V3 of `llm-dlc/loops/application-core-values.md`) where an input reaches them.
-const ADVISED_ON_EXCLUDED_PATHS: &[(&str, &str, &[&str])] = &[("listChange", "n == 0 || n == 8", &["jdk-primitive-method:java.util.List.addAll(Ljava/util/Collection;)Z", "jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z"])];
+/// In listCopyMutable, writes to the new ArrayList are also confined to positive inputs.
+const ADVISED_ON_EXCLUDED_PATHS: &[(&str, &str, &[&str])] = &[
+    ("listChange", "n == 0 || n == 8", &["jdk-primitive-method:java.util.List.addAll(Ljava/util/Collection;)Z", "jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z"]),
+    ("listCopyMutable", "n <= 0", &["jdk-primitive-method:java.util.ArrayList.add(Ljava/lang/Object;)Z"]),
+];
 
 /// The cases whose calls go through the models of `lib/models` that only JBMC runs (`Model::jbmc_only`:
 /// `java.lang.Enum`, the factories of `java.util.List` and the immutable lists they return).

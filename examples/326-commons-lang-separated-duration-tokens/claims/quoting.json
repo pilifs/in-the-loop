@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "quoting",
+  "statement": "The returned characters satisfy the quoting hour-token claim.",
+  "assume": "code >= 0 && code < 78 && code % 3 != 2",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 45,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "durationgrid.Projection#quoting(I)I",
+    "mapping": "Code enumerates 0 through 12 whole hours, both padding settings and the three raw patterns HxH, H'x'H and HH. The adapter passes each pattern to the public lexer. Quoting compares the two separated patterns on the same hour and padding.",
+    "correspondence": "finite-oracle",
+    "cases": 78
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-032650-interrupt-a-reordered-three-claim-tai-ba",
+  "title": "Interrupt a reordered three-claim TAI batch",
+  "description": "Start a separate finite JVM execution for the three fixed TAI directions in round-trip, parsing, formatting order. Stop after the first actual completed result, recording all source locks, the completion, and the two missing stages for recovery from a fresh checkout.",
+  "kind": "real-world",
+  "capabilities": [
+    "target:history"
+  ],
+  "links": {
+    "examples": [
+      "315"
+    ]
+  },
+  "expected": "Injected exit 75 with exactly one qualified completion and two pending claim keys.",
+  "submitted": {
+    "at": "2026-11-20T03:26:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 9,
+  "requires": [
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Interrupt after the first qualified claim",
+      "run": "python3 examples/tools/build.py 315 --finite-domain --tasks round-trip-fix,parse-fix,format-fix --stop-after 1",
+      "cwd": ".",
+      "expectExit": 75
+    }
+  ],
+  "outputs": [
+    "examples/315-tai-signed-fraction/records/finite-proofs"
+  ]
+}

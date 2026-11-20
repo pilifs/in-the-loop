@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-025230-check-csv-row-limit-equality-hash-implic",
+  "title": "Check CSV row-limit equality hash implication and reads",
+  "description": "Run the six independent claims on the exact upstream revisions. Nine ordered configurations freeze the equality law, hash implication and both parser row counts.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "316"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T02:52:30+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 316 --tasks equals-parent,equals-fix,hash-contract-parent,hash-contract-fix,rows-parent,rows-fix --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/316-commons-csv-row-limit-equality/receipts/equals-parent",
+    "examples/316-commons-csv-row-limit-equality/receipts/equals-fix",
+    "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent",
+    "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix",
+    "examples/316-commons-csv-row-limit-equality/receipts/rows-parent",
+    "examples/316-commons-csv-row-limit-equality/receipts/rows-fix"
+  ]
+}

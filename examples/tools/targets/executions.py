@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from targets import workflow
+from checker_output import solver_candidate
 from targets.interfaces import RUNTIME, Unsupported
 
 ID = re.compile(r"[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}")
@@ -46,7 +47,7 @@ def completion_problem(directory, journal, verifier):
     if verifier.status == "exited":
         bound = journal.get("checker") or {}
         if journal.get("argv") != list(verifier.argv) or not bound.get("jvmcontract") or any(
-                bound.get(k) != verifier.identities.get(k) for k in ("jvmcontract", "jdkRelease", "classpath", "recipe", "checkedEntry")):
+                bound.get(k) != verifier.identities.get(k) for k in ("jvmcontract", "jdkRelease", "classpath", "recipe", "checkedEntry", "checkedLemmas")):
             return "the delivered verifier or classpath differs from the bound invocation"
     review = directory / "replay.json"
     if review.is_file() and json.loads(review.read_text()) != verifier.identities.get("independentReplay"):
@@ -93,6 +94,8 @@ class Execution:
                  "host": {"machine": platform.machine(), "kernel": platform.release(), "node": platform.node()},
                  "job": os.getenv("VERIFY_JOB_ID"), "sourceCommit": os.getenv("VERIFY_SOURCE_COMMIT"),
                  "cache": "fresh verifier work directory", "stages": [], "status": "running"}
+        if plan.checkedLemmas:
+            state["strategy"]["checkedLemmas"] = dict(plan.checkedLemmas)
         run = cls(directory, state)
         run.stage("planned")
         return run
@@ -108,9 +111,12 @@ class Execution:
             by_path = {a.path: a for a in p.artifacts}
             bindings[rev] = {"revision": p.commit, "target": p.source.get("target"), "jdk": p.toolchain.get("jdk"),
                              "classpath": [asdict(by_path[path]) for path in p.classpath]}
+            if "originalCompiler" in p.toolchain:
+                bindings[rev]["originalCompiler"] = p.toolchain["originalCompiler"]
         identity = [{"revision": name, "commit": item["revision"], "target": item["target"],
                      "jdkRelease": (item["jdk"] or {}).get("release"),
-                     "classpath": [(a["role"], a["sha256"]) for a in item["classpath"]]}
+                     "classpath": [(a["role"], a["sha256"]) for a in item["classpath"]],
+                     **({"originalCompiler": item["originalCompiler"]} if "originalCompiler" in item else {})}
                     for name, item in bindings.items()]
         self.stage("artifacts-ready" if complete else "revision-prepared", bindings=bindings,
                    bindingId=workflow.canonical_digest([self.state["claimKey"], identity]) if complete else None)
@@ -132,7 +138,7 @@ class Execution:
                             stream.seek(0)
                             snapshot[name]["excerpt"] = stream.read(4096).decode(errors="replace")
         save(self.directory / "checker.json", snapshot)
-        candidate = any(o.get("counterexample") for o in outcomes)
+        candidate = any(solver_candidate(o) for o in outcomes)
         exhausted = record.status == "timed-out" or any(
             o.get("verdict") == "unverifiable" and ((o.get("search") or {}).get("runs") or [{}])[-1].get("ending") == "timeout"
             for o in outcomes)

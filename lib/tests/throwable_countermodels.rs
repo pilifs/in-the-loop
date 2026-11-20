@@ -25,7 +25,7 @@ fn classes() -> Option<&'static PathBuf> {
         }
         let source = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/throwable-countermodels/tm/Thrown.java");
         let out = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("throwable-countermodels-classes");
-        let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "--release", "21", "-d"]).arg(&out).arg(source).status().unwrap();
+        let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "--release", "21", "-d"]).arg(&out).arg(&source).arg(source.with_file_name("Suppression.java")).status().unwrap();
         assert!(status.success());
         Some(out)
     }).as_ref()
@@ -61,5 +61,35 @@ fn modeled_exception_details_do_not_establish_the_four_jdk_countermodels() {
         let outcome = property::run(&options).unwrap();
         assert_eq!(outcome.verdict, Verdict::Unverifiable, "{name}: {}", outcome.output);
         assert!(outcome.problem.as_deref().is_some_and(|p| p.contains("exception details supplied by a JDK model")), "{name}: {}", outcome.output);
+    }
+}
+
+/// Both engines run the selected image's suppression methods. Keep references, order,
+/// disabled suppression, exceptional validation and the identity of each returned array.
+#[test]
+fn ordered_suppression_matches_the_jvm_on_aliases_errors_and_snapshots() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(classes).arg("tm.Suppression").output().unwrap();
+    assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
+    let cp = jvmcontract::witness::classpath([classes.as_path()]).unwrap();
+    let mut machine = Machine::new(&cp);
+    for enabled in [0, 1] {
+        let case = machine.begin_case();
+        for swap in [0, 1] {
+            assert_eq!(machine.call_static("tm/Suppression", "ordered", "(ZZ)Z", vec![Value::Int(enabled), Value::Int(swap)]).unwrap(), Some(Value::Int(1)));
+        }
+        assert_eq!(machine.call_static("tm/Suppression", "rejects", "(Z)Z", vec![Value::Int(enabled)]).unwrap(), Some(Value::Int(1)));
+        machine.end_case(case);
+    }
+    assert_eq!(machine.call_static("tm/Suppression", "dropsDuplicate", "()Z", vec![]).unwrap(), Some(Value::Int(0)));
+    for (name, expected) in [("ordered", Verdict::Verified), ("rejects", Verdict::Verified), ("dropsDuplicate", Verdict::Violation)] {
+        let mut options = property::Options::new(std::slice::from_ref(classes), &format!("tm.Suppression#{name}"));
+        options.engine = Engine::Native;
+        options.jbmc = "/nonexistent/jbmc".into();
+        options.assert = Some("result".into());
+        let outcome = property::run(&options).unwrap();
+        assert_eq!(outcome.verdict, expected, "{name}: {}", outcome.output);
     }
 }

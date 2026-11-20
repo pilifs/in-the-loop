@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-075435-check-map-and-wrapper-conformance-under",
+  "title": "Check map and wrapper conformance under JBMC and auto",
+  "description": "Run the cross-engine proof-tier corpus with the revised native map representation and selected JDK interpreter. Compare original JVM observations and retain all named divergences.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs"
+    ],
+    "jobs": [
+      "20261120-063726-compare-bounded-arraylist-claims-across"
+    ]
+  },
+  "expected": "The ignored conformance test passes with every bounded result reconciled against its JVM oracle.",
+  "submitted": {
+    "at": "2026-11-20T07:54:35+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "17m",
+    "memoryLimit": "5G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "the_corpus_agrees_with_the_jvm_under_jbmc_and_auto",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --exact --test-threads=1",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

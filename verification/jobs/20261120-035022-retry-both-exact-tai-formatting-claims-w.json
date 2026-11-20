@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-035022-retry-both-exact-tai-formatting-claims-w",
+  "title": "Retry both exact TAI formatting claims with long decimal text",
+  "description": "Use the original source bindings and budgets to check the two formatter claims. The native StringBuilder handles the complete long range and changes a selected UTF-16 cell with bounds-checked setCharAt.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "315"
+    ],
+    "jobs": [
+      "20261120-023617-check-signed-time-in-each-direction-on-t"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T03:50:22+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 315 --tasks format-parent,format-fix --retry-of 20261120T024332Z-3c504dca,20261120T024335Z-0c07f859 --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/315-tai-signed-fraction/receipts/format-parent",
+    "examples/315-tai-signed-fraction/receipts/format-fix"
+  ]
+}

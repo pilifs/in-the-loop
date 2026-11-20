@@ -202,6 +202,21 @@ def bound_revisions(plan, prepared):
                                                                   if stray else "is empty"))
         if not any(a.role == "original" for a in p.artifacts if a.path in p.classpath):
             raise Refused(f"revision {revision}'s classpath has no original artifact")
+        if expected_compiler := entry.get("fixtureCompiler"):
+            actual = p.toolchain.get("originalCompiler") or {}
+            if (p.source.get("fixtureCompiler") != expected_compiler or actual.get("flags") != expected_compiler["flags"]
+                    or str((actual.get("jdk") or {}).get("feature")) != expected_compiler["jdk"]):
+                raise Refused(f"revision {revision} was prepared with a different fixture compiler")
+        if entry.get("fixtureClasspath"):
+            dependencies = {a.path for a in p.artifacts if a.role == "dependency"}
+            ordered = [path for path in p.classpath if path in dependencies]
+            if ordered != [f"lib/{root}.jar" for root in entry["fixtureClasspath"]]:
+                raise Refused(f"revision {revision} was prepared with a different dependency order")
+            roots = p.source.get("dependencies", [])
+            digests = [workflow.canonical_digest([(Path(f["path"]).relative_to(root["root"]).as_posix(), f["sha256"])
+                                                   for f in root["files"]]) for root in roots]
+            if digests != entry["dependencySourceDigests"]:
+                raise Refused(f"revision {revision} was built from different dependency sources")
         out[revision] = (entry, p, revision_identity(plan, entry))
     return out
 
@@ -365,6 +380,15 @@ def record_problem(record, bound):
 def read_with_oracle(plan, oracle, records):
     """What the oracle's check() says of each record's observations, in order: {"problems": [[input, why]]} or
     {"error": why} (an incomplete replay, or an oracle that failed)."""
+    if oracle["path"].endswith(".json"):
+        from targets.finite_oracle import Table
+        out = []
+        for record in records:
+            try:
+                out.append({"problems": Table(Path(plan.folder) / oracle["path"]).problems(record.observations)})
+            except (OSError, ValueError, TypeError, KeyError) as e:
+                out.append({"error": str(e)})
+        return out
     lines = [[json.dumps(o, ensure_ascii=False) for o in r.observations] for r in records]
     if not lines:
         return []
@@ -535,14 +559,14 @@ def verifier_outcome(plan, bound, records):
                                             **({"throws": lead["throws"]} if lead.get("throws") else {})}})
         else:
             outcome = outcomes[0]
-            witnesses = wire.equivalence_counterexamples(outcome)
+            witnesses = wire.equivalence_counterexamples(outcome, replay=v.identities.get("independentReplay"), revisions=plan.revisions)
             execution, verdict = wire.conclude_outcome(v.exitCode, output, outcome, witnesses, True)
             if verdict is not None:
                 replay = outcome.get("replay")
                 fields.update({"counterexamples": witnesses if verdict == "violation" else [], "domain": outcome.get("domain"),
                                "proof": outcome.get("proof"), "problem": outcome.get("problem"),
                                "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None})
-    if verdict in ("verified", "violation") and (v.identities.get("recipe") or plan.claim.get("boundEnvironment")
+    if verdict in ("verified", "violation") and (v.identities.get("recipe") or plan.checkedLemmas or plan.claim.get("boundEnvironment")
             or any(isinstance(o, dict) for o in plan.claim.get("observations", []))):
         from targets import qualification
         classpaths = {}
@@ -575,13 +599,28 @@ def verifier_outcome(plan, bound, records):
         elif verdict == "verified" and v.directory and (Path(v.directory) / v.stdout).is_file() and (Path(v.directory) / v.stdout).stat().st_size > STREAM_CAP:
             artifact_problem = "the verifier output needed for this establishment exceeds the archived evidence limit"
         entry = v.identities.get("checkedEntry") or plan.target
+        lemmas = v.identities.get("checkedLemmas")
+        if lemmas != plan.checkedLemmas or bool(lemmas) != ("--lemmas" in v.argv):
+            artifact_problem = "the verifier used different checked lemma declarations"
+        elif lemmas:
+            copied = Path(v.record).parent / "checked-lemmas.contract" if v.record else None
+            at = v.argv.index("--lemmas") + 1
+            if (v.argv.count("--lemmas") != 1 or not v.directory or copied is None or copied.is_absolute()
+                    or ".." in copied.parts or list(v.argv[at:at+1]) != [copied.as_posix()]
+                    or not (Path(v.directory) / copied).is_file()
+                    or workflow.file_sha256(Path(v.directory) / copied) != lemmas["sha256"]):
+                artifact_problem = "the invoked helper declarations differ from their prepared digest"
+            for outcome in outcomes:
+                assumptions = (outcome.get("stated") or {}).get("assumptions") or []
+                if not any(a.get("kind") == "summary" and a.get("basis") == "proved" for a in assumptions):
+                    artifact_problem = "the caller result lacks the checked helper proof"
         independent = v.identities.get("independentReplay")
         if verdict == "violation" and v.identities.get("recipe") and independent is None:
             from targets import replay_candidate
             if replay_candidate.supported(entry, plan.claim):
                 artifact_problem = "the candidate lacks independent JVM qualification"
         if independent is not None:
-            candidates = [o["counterexample"] for o in outcomes if o.get("counterexample")]
+            candidates = [candidate for o in outcomes if (candidate := wire.solver_candidate(o))]
             if len(independent) != len(candidates) or not candidates:
                 artifact_problem = "missing independent replay for a candidate"
             else:

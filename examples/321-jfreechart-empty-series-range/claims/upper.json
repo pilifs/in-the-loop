@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "upper",
+  "statement": "The upper endpoint agrees with scanning just the finite series values.",
+  "assume": "code >= 0 && code < 30",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 30,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "rangegrid.Projection#upper(I)I",
+    "mapping": "For the fifteen nonempty pairs of series choices (empty, -1, 0, 1), code chooses the two-key order. Only year 2012 in UTC is populated. The horizontal interval spans the full year and includeInterval is false. An absent result and NaN are distinct from any finite bound.",
+    "correspondence": "finite-oracle",
+    "cases": 30
+  }
+}

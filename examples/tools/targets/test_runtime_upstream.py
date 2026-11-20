@@ -671,6 +671,11 @@ class SliceRouteTest(UpstreamCase):
                                 "after", self.work / "c")
         self.assertEqual(stray.failedStage, "build", stray.diagnostic)
         self.assertIn("fixture/Stray", stray.diagnostic)
+        entry = self.entry(files=(GATE, "gate/src/main/java/fixture/Pair.java"))
+        entry["slice"]["companionClasses"] = ["fixture.Stray"]
+        admitted = runtime.prepare(self.plan_of([entry]), "after", self.work / "declared")
+        self.assertEqual(admitted.stage, "artifacts-ready", admitted.diagnostic)
+        self.assertEqual(admitted.source["slice"]["companionSources"], {"fixture/Stray": "Pair.java"})
 
     def test_a_slice_class_is_checked_byte_for_byte_against_its_published_reference(self):
         """slice.matches (307's check of before against Spring Security 5.2.0.M4, the user's decision of 2026-11-15):

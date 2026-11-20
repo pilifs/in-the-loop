@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-065325-confirm-commons-text-lcs-after-character",
+  "title": "Confirm Commons Text LCS after character-array copying",
+  "description": "Check the original released score at bound four and unwind 18 on the final string implementation. Compare all 225 pairs on release, rebuilt source and shared-row control, and bind the raw checker measurement and original 120-second deadline.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "native:arrays"
+  ],
+  "links": {
+    "examples": [
+      "308"
+    ],
+    "jobs": [
+      "20261120-063347-recheck-the-released-lcs-score-after-typ"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T06:53:25+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" --native-record examples/308-commons-text-longest-common-subsequence/records/padding-checker-native.json > examples/308-commons-text-longest-common-subsequence/records/padding-checker-transfer.json",
+      "cwd": "."
+    },
+    {
+      "name": "Check the verdict, raw bound and all three JVM tables",
+      "run": "python3 -c 'import json,sys,hashlib; from pathlib import Path; r=json.loads(Path(sys.argv[1]).read_text()); assert r[\"native\"][\"verdict\"]==\"verified\" and r[\"native\"][\"bounds\"]=={\"maxArrayLength\":4,\"unwind\":18}; assert r[\"native\"][\"outcomeSha256\"]==hashlib.sha256(Path(sys.argv[2]).read_bytes()).hexdigest(); assert {k:(v[\"pairs\"],v[\"disagreements\"]) for k,v in r[\"artifacts\"].items()}=={\"release\":(225,0),\"rebuilt\":(225,0),\"shared-row\":(225,44)}' examples/308-commons-text-longest-common-subsequence/records/padding-checker-transfer.json examples/308-commons-text-longest-common-subsequence/records/padding-checker-native.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/308-commons-text-longest-common-subsequence/records/padding-checker-native.json",
+    "examples/308-commons-text-longest-common-subsequence/records/padding-checker-transfer.json"
+  ]
+}

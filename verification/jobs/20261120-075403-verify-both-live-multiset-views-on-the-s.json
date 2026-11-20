@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-075403-verify-both-live-multiset-views-on-the-s",
+  "title": "Verify both live multiset views on the selected JDK HashMap",
+  "description": "Use the real pinned Commons Collections parent and fix on all 18 counter and view combinations. On the shared heap, observe the key actually selected by the JDK entry or key iterator and its remove effect. Check multiset size, membership and other-key multiplicity independently with the original oracle and witness qualification.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "320"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T07:54:03+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 320 --tasks total-parent,total-fix,membership-parent,membership-fix,other-count-parent,other-count-fix --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/320-collections-live-multiset-views/receipts/total-parent",
+    "examples/320-collections-live-multiset-views/receipts/total-fix",
+    "examples/320-collections-live-multiset-views/receipts/membership-parent",
+    "examples/320-collections-live-multiset-views/receipts/membership-fix",
+    "examples/320-collections-live-multiset-views/receipts/other-count-parent",
+    "examples/320-collections-live-multiset-views/receipts/other-count-fix"
+  ]
+}

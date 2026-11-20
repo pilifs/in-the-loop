@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "322",
+  "title": "Resource close order and suppressed exceptions",
+  "summary": "Reversing resource acquisition changes the primary or suppressed tags while every tagged failure has the same exception class.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "exceptions",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Resource close order and suppressed exceptions",
+    "file": "original/paint/Paint.java",
+    "symbol": "paint.Paint#run(I)Lpaint/Outcome;"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Reversing resource acquisition changes the primary or suppressed tags while every tagged failure has the same exception class."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 8 inputs on each revision. original mismatches were 0 for primary, 0 for suppressed, 0 for close. nested mismatches were 0 for primary, 0 for suppressed, 0 for close. reversed mismatches were 1 for primary, 2 for suppressed, 8 for close.",
+    "The first batch could not bind the mask argument to the integer named code in the frozen guard. The corrected adapter exposes that name. Both original JVM calibrations, the refused executions and the fresh-classloader results remain separate.",
+    "The final strict checker decided all nine claims on the eight failure masks. Original and nested resource acquisition satisfy all three observers. Reversal changes the primary on one mask, the ordered suppressed sequence on two, and the close order on all eight."
+  ]
+}

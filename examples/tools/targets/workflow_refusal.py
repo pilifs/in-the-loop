@@ -21,8 +21,8 @@ Anything else fails, with what differed: a verdict, another refusal, a crash. Wh
 fails too, which is the point: the task then needs its ordinary attempt, its claim unchanged. The claim's `expected`
 conclusion is never touched, and a refusal is never a verdict.
 
-A resource packet can record the checker deadline and the selected native solver. Its rerun uses that policy and
-checks the new execution journal for the same solver, deadline and exhaustion.
+A verifier refusal can record the checker deadline and native solver. Its rerun checks both in the new journal.
+A resource refusal must exhaust that budget. A semantic refusal must reach the recorded construct within it.
 
 Run as `python3 examples/tools/targets/workflow_refusal.py ID TASK` from the repository root.
 """
@@ -66,7 +66,7 @@ def predictions(folder, target, task_id):
             raise PredictionError(f"{b['packet']}: a predicted refusal names the claim key it was observed under")
         prediction = {"packet": b["packet"], "kind": b["kind"], "finding": b.get("finding"),
                       "stage": refusal["stage"], "text": refusal["text"], "claimKey": document["claimKey"]}
-        if b["kind"] == "resources" and "budget" in document:
+        if "budget" in document and (refusal["stage"] == "verifier" or b["kind"] == "resources"):
             budget, env = document["budget"], document.get("environment", {})
             if not isinstance(budget, dict) or not isinstance(env, dict):
                 raise PredictionError(f"{b['packet']}: invalid recorded checker budget or environment")
@@ -126,8 +126,12 @@ def judge(prediction, plan_key, code, output, receipts):
         return False, f"the receipt {r['path']} concludes {r['status']}, not unresolved: a verdict, not the refusal"
     if r["execution"] != "completed":
         return False, f"the attempt {r['path']} is {r['execution']}, not completed"
-    if "policy" in prediction and (prediction["policy"] != r.get("policy") or r.get("budgetExhausted") is not True):
-        return False, f"{r['path']} did not exhaust the recorded checker deadline with the recorded solver"
+    if "policy" in prediction:
+        exhausted = prediction["kind"] == "resources"
+        if prediction["policy"] != r.get("policy") or r.get("budgetExhausted") is not exhausted:
+            if exhausted:
+                return False, f"{r['path']} did not exhaust the recorded checker deadline with the recorded solver"
+            return False, f"{r['path']} did not reach the semantic refusal within the recorded deadline on the recorded solver"
     if prediction["text"] not in r["problem"]:
         return False, f"another refusal in {r['path']}: {r['problem'] or 'none recorded'}"
     return True, f"unresolved at the recorded refusal, receipt {r['path']}"

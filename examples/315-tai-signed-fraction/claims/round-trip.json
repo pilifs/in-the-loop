@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "round-trip",
+  "statement": "Parsing the object's own text recovers both original fields.",
+  "assume": "code >= 0 && code < 20",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 24,
+    "maxArrayLength": 20
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "taigrid.Projection#roundTrip(I)I",
+    "mapping": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+    "correspondence": "finite-oracle",
+    "cases": 20
+  }
+}

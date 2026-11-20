@@ -29,6 +29,8 @@ RANKED = [
     ("input-construction:receiver-of-several-constructors", 2, 8),
     ("input-construction:string-parameter", 2, 3),
     ("verifier-interface:two-dependency-closures", 2, 3),
+    ("jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;", 1, 10),
+    ("jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;", 1, 8),
     ("jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;", 1, 5),
     ("input-construction:interface-parameter", 1, 4),
     ("jdk-constructor:java.lang.StringBuilder.<init>()V", 1, 1),
@@ -77,7 +79,7 @@ class GapInventoryTest(unittest.TestCase):
         observed = [g for g in self.value["gaps"] if g["observed"]]
         self.assertEqual([(g["gap"], len(g["families"]), g["blockedObligations"]) for g in observed], RANKED)
         self.assertEqual([g["rank"] for g in observed], list(range(1, len(RANKED) + 1)))
-        self.assertEqual(sum(g["blockedObligations"] for g in observed), 24)
+        self.assertEqual(sum(g["blockedObligations"] for g in observed), 42)
         predicted = [g for g in self.value["gaps"] if not g["observed"]]
         self.assertTrue(predicted)
         self.assertTrue(all(g["rank"] > len(RANKED) and g["blockedObligations"] == 0 for g in predicted))

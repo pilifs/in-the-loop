@@ -1,0 +1,64 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-103714-check-partial-dates-without-captured-pro",
+  "title": "Check partial dates without captured provider startup",
+  "description": "Re-run the 10 original 327 tasks on the exact jvmcontract binary that decided their startup-qualified companions. Keep both historical revisions, every original guard, observer, independent JVM grid, bound and deadline. Test that the native checker identifies the first ambient startup query when no initializer observation is supplied.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "327"
+    ],
+    "jobs": [
+      "20261120-100118-verify-all-partial-date-claims-through-b",
+      "20261120-081743-recheck-both-partial-date-revisions-alon"
+    ]
+  },
+  "expected": "Every original task runs to the checker and remains open at java.lang.System.getProperty without an observed initializer or calendar profile. An unexpected decision, different binary, missing task or unrelated refusal fails this negative control. The original unresolved receipts are collected for comparison.",
+  "submitted": {
+    "at": "2026-11-20T10:37:14+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "revision": "a7eecf4f3f39bac5311d4c1403284180cbbac87b",
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Run the original strict claims at their frozen bounds",
+      "cwd": ".",
+      "run": "status=0\nJVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 327 --tasks normal-parent,normal-fix,days-parent,days-fix,reversal-parent,reversal-fix,march-parent,march-fix,reversal-on-returns-parent,reversal-on-returns-fix --checker-seconds 30 || status=$?\ntest \"$status\" -eq 1"
+    },
+    {
+      "name": "Verify every refusal on the same checker and collect the original receipts",
+      "cwd": ".",
+      "run": "python3 -c 'import json, os, sys\nfrom pathlib import Path\nfolder, tasks, method, site, binary, tree = sys.argv[1:]\njob = os.environ['\"'\"'VERIFY_JOB_ID'\"'\"']\nfor task in tasks.split('\"'\"','\"'\"'):\n    runs = []\n    for path in (Path(folder) / '\"'\"'receipts'\"'\"' / task / '\"'\"'executions'\"'\"').glob('\"'\"'*/attempt.json'\"'\"'):\n        attempt = json.loads(path.read_bytes())\n        if attempt.get('\"'\"'job'\"'\"') == job:\n            runs.append((path, attempt))\n    [(path, attempt)] = runs\n    assert attempt['\"'\"'checker'\"'\"']['\"'\"'jvmcontract'\"'\"'] == binary and attempt['\"'\"'checker'\"'\"']['\"'\"'libTree'\"'\"'] == tree\n    assert attempt['\"'\"'lastCompletedStage'\"'\"'] == '\"'\"'receipt-published'\"'\"' and attempt['\"'\"'budget'\"'\"'] == {'\"'\"'checkerSeconds'\"'\"': 30}\n    assert '\"'\"'--observed-initializer'\"'\"' not in attempt['\"'\"'argv'\"'\"'] and '\"'\"'--gaps'\"'\"' in attempt['\"'\"'argv'\"'\"']\n    [outcome] = json.loads((path.parent / '\"'\"'checker.json'\"'\"').read_bytes())['\"'\"'outcomes'\"'\"']\n    assert outcome['\"'\"'verdict'\"'\"'] == '\"'\"'unverifiable'\"'\"' and outcome['\"'\"'stated'\"'\"']['\"'\"'gap_mode'\"'\"'] == '\"'\"'strict'\"'\"'\n    assert method in attempt['\"'\"'firstBlocker'\"'\"'] and site in attempt['\"'\"'firstBlocker'\"'\"'], (task, attempt['\"'\"'firstBlocker'\"'\"'])\n    assert not any(a.get('\"'\"'id'\"'\"', '\"'\"''\"'\"').startswith(('\"'\"'observed-calendar:'\"'\"', '\"'\"'observed-initializer:'\"'\"')) for a in outcome['\"'\"'stated'\"'\"']['\"'\"'assumptions'\"'\"'])\n    receipt = json.loads((Path(folder) / attempt['\"'\"'receipt'\"'\"']).read_bytes())\n    assert receipt['\"'\"'conclusion'\"'\"']['\"'\"'status'\"'\"'] == '\"'\"'unresolved'\"'\"' and receipt['\"'\"'claim'\"'\"']['\"'\"'id'\"'\"'] == attempt['\"'\"'preparedClaim'\"'\"']\n    print(task, '\"'\"'open at'\"'\"', method)\n' examples/327-joda-monthday-distance normal-parent,normal-fix,days-parent,days-fix,reversal-parent,reversal-fix,march-parent,march-fix,reversal-on-returns-parent,reversal-on-returns-fix java.lang.System.getProperty org.joda.time.DateTimeZone.getDefaultProvider fb69b5727f48cf1c165a6874ca7caa5ee300ac28a96693b39df0be59c66dd381 d4ad43334d44e065027ce8a64c6eabcbe6ec8af6"
+    }
+  ],
+  "outputs": [
+    "examples/327-joda-monthday-distance/receipts/normal-parent",
+    "examples/327-joda-monthday-distance/receipts/normal-fix",
+    "examples/327-joda-monthday-distance/receipts/days-parent",
+    "examples/327-joda-monthday-distance/receipts/days-fix",
+    "examples/327-joda-monthday-distance/receipts/reversal-parent",
+    "examples/327-joda-monthday-distance/receipts/reversal-fix",
+    "examples/327-joda-monthday-distance/receipts/march-parent",
+    "examples/327-joda-monthday-distance/receipts/march-fix",
+    "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent",
+    "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix"
+  ]
+}

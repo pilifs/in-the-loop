@@ -1,11 +1,25 @@
 package claims;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.IntPredicate;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 public final class L {
     private L() {}
+
+    private static final class Fallback implements Supplier<Integer> {
+        int calls;
+        public Integer get() { calls++; return 7; }
+    }
+
+    public static boolean optional(boolean present) {
+        Fallback fallback = new Fallback();
+        Optional<Integer> value = present ? Optional.of(2) : Optional.empty();
+        int answer = value.orElseGet(fallback);
+        return answer == (present ? 2 : 7) && fallback.calls == (present ? 0 : 1);
+    }
 
     static boolean any(int[] a, IntPredicate p) {
         for (int x : a) {

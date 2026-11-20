@@ -11,9 +11,11 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 | 1 | `input-construction:receiver-of-several-constructors` | input-construction | 2: bcrypt-input-limit, spring-data-binding | 8 | no | examples/tools/targets/runtime.py (run_verifier passes no --plan) and the claim format; lib/src/construction.rs | VF-027 |
 | 2 | `input-construction:string-parameter` | input-construction | 2: bcrypt-input-limit, spring-data-binding | 3 | no | lib/src/values.rs | VF-027, VF-028 |
 | 3 | `verifier-interface:two-dependency-closures` | verifier-interface | 2: bcrypt-input-limit, spring-data-binding | 3 | yes | examples/tools/targets/runtime.py (the refusal); lib/src/main.rs (equivalence's --classpath) and lib/src/equivalence.rs | VF-027 |
-| 4 | `jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;` | java-semantics | 1: threeten-complete-hours | 5 | no | lib/src/bmc/gaps.rs; lib/src/bmc/runtime.rs |  |
-| 5 | `input-construction:interface-parameter` | input-construction | 1: boot-method-metrics | 4 | no | lib/src/construction.rs; lib/src/environment.rs | VF-027 |
-| 6 | `jdk-constructor:java.lang.StringBuilder.<init>()V` | java-semantics | 1: commons-numbers-pow | 1 | no | lib/src/models.rs | VF-027 |
+| 4 | `jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;` | java-semantics | 1: joda-monthday-distance | 10 | no | lib/src/bmc/runtime.rs; lib/src/observed.rs |  |
+| 5 | `jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;` | java-semantics | 1: jfreechart-empty-series-range | 8 | no | lib/src/bmc/calendar.rs; lib/src/observed.rs |  |
+| 6 | `jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;` | java-semantics | 1: threeten-complete-hours | 5 | no | lib/src/bmc/gaps.rs; lib/src/bmc/runtime.rs |  |
+| 7 | `input-construction:interface-parameter` | input-construction | 1: boot-method-metrics | 4 | no | lib/src/construction.rs; lib/src/environment.rs | VF-027 |
+| 8 | `jdk-constructor:java.lang.StringBuilder.<init>()V` | java-semantics | 1: commons-numbers-pow | 1 | no | lib/src/models.rs | VF-027 |
 
 ### 1. `input-construction:receiver-of-several-constructors`
 
@@ -39,7 +41,23 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 - **Owner modules**: examples/tools/targets/runtime.py (the refusal); lib/src/main.rs (equivalence's --classpath) and lib/src/equivalence.rs.
 - **Closure test** (each obligation's, here the reproducer's): the unchanged claim 93e54e75b16748cd rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
 
-### 4. `jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;`
+### 4. `jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;`
+
+- **Blocks**: [327](327-joda-monthday-distance/README.md) `normal-parent` (d1dec15eb0ac8d00), `normal-fix` (d1dec15eb0ac8d00), `days-parent` (7f0d488df0e1fab5), `days-fix` (7f0d488df0e1fab5), `reversal-parent` (efd0b2df900c4814), `reversal-fix` (efd0b2df900c4814), `march-parent` (2a884fca8116e7a9), `march-fix` (2a884fca8116e7a9), `reversal-on-returns-parent` (62fcdf3eecf21061), `reversal-on-returns-fix` (62fcdf3eecf21061).
+- **Smallest reproducer**: [327](327-joda-monthday-distance/records/refusals/days-fix.json) `days-fix`, observed by job `20261120-103714-check-partial-dates-without-captured-pro`. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 327 days-fix`.
+- **Missing semantics** (from that packet): DateTimeZone reads the JVM system property that selects the zone provider. Both prepared classpaths use the UTC provider fallback when no provider is selected and the zone-data resource is absent.
+- **Owner modules**: lib/src/bmc/runtime.rs; lib/src/observed.rs.
+- **Closure test** (each obligation's, here the reproducer's): the unchanged claim 7f0d488df0e1fab5 rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
+
+### 5. `jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;`
+
+- **Blocks**: [321](321-jfreechart-empty-series-range/README.md) `lower-parent` (d48e5e3b84fe7c77), `lower-fix` (d48e5e3b84fe7c77), `upper-parent` (18e135c5a003610b), `upper-fix` (18e135c5a003610b), `populated-lower-parent` (7816e217c49d766a), `populated-upper-parent` (b45adf73e0f62a63), `populated-lower-fix` (7816e217c49d766a), `populated-upper-fix` (b45adf73e0f62a63).
+- **Smallest reproducer**: [321](321-jfreechart-empty-series-range/records/refusals/lower-fix.json) `lower-fix`, observed by job `20261120-103714-check-chart-startup-without-a-captured-c`. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 321 lower-fix`.
+- **Missing semantics** (from that packet): RegularTimePeriod reads the JVM default time zone while initializing its calendar, before the collection with an explicit UTC zone is constructed.
+- **Owner modules**: lib/src/bmc/calendar.rs; lib/src/observed.rs.
+- **Closure test** (each obligation's, here the reproducer's): the unchanged claim d48e5e3b84fe7c77 rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
+
+### 6. `jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;`
 
 - **Blocks**: [310](310-threeten-complete-hours/README.md) `clock-parent` (0cab770b1b39f331), `clock-fix` (0cab770b1b39f331), `reversal-parent` (198eb98e8893c523), `reversal-fix` (198eb98e8893c523), `same-day` (e5d30978a554dfeb).
 - **Smallest reproducer**: [310](310-threeten-complete-hours/records/refusals/clock-fix.json) `clock-fix`, observed by job `20261119-231539-retry-threetenbp-hours-after-exact-jdk-a`. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 310 clock-fix`.
@@ -47,7 +65,7 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 - **Owner modules**: lib/src/bmc/gaps.rs; lib/src/bmc/runtime.rs.
 - **Closure test** (each obligation's, here the reproducer's): the unchanged claim 0cab770b1b39f331 rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
 
-### 5. `input-construction:interface-parameter`
+### 7. `input-construction:interface-parameter`
 
 - **Blocks**: [305](305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/README.md) `preservation` (98f4a389c1ccd7ff), `finite-outcome-before` (46b0bb5f1f51a112), `finite-outcome-after` (46b0bb5f1f51a112), `mutant-preservation` (98f4a389c1ccd7ff).
 - **Smallest reproducer**: [305](305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/records/refusals/finite-outcome-after.json) `finite-outcome-after`, observed by job `20261114-234213-example-305-finite-outcome-after-phase-5`, 0.2 s. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-after`.
@@ -55,7 +73,7 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 - **Owner modules**: lib/src/construction.rs; lib/src/environment.rs.
 - **Closure test** (each obligation's, here the reproducer's): the unchanged claim 46b0bb5f1f51a112 rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
 
-### 6. `jdk-constructor:java.lang.StringBuilder.<init>()V`
+### 8. `jdk-constructor:java.lang.StringBuilder.<init>()V`
 
 - **Blocks**: [105](105-commons-numbers-223-pow-of-minus-two-to-the-31/README.md) `confined-change` (6bef0dff1140dc6d).
 - **Smallest reproducer**: [105](105-commons-numbers-223-pow-of-minus-two-to-the-31/records/refusals/confined-change.json) `confined-change`, observed by job `20261114-234214-example-105-confined-change-phase-5-step`, 217.6 s. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 105 confined-change`.

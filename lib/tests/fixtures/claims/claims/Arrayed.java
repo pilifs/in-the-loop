@@ -2,8 +2,7 @@ package claims;
 
 /**
  * {@code Class.isArray()}, as Spring's {@code ObjectUtils.isArray} asks it of the class of the value a binding error
- * records (example 286): of class literals, which the engine answers, and of a class it holds no literal of (the
- * class of an array: {@code getClass()} of one is the JDK call), which stays the JDK call. {@code main} prints what a
+ * records (example 286): of class literals, fresh arrays and an opaque JDK receiver. {@code main} prints what a
  * JVM answers.
  */
 public class Arrayed {
@@ -23,7 +22,16 @@ public class Arrayed {
         return c.isAssignableFrom(c);
     }
 
+    public static boolean opaqueIsArray() {
+        return !new Object().getClass().isArray();
+    }
+
+    public static boolean opaqueAssignable() {
+        Class<?> c = new Object().getClass();
+        return c.isAssignableFrom(c);
+    }
+
     public static void main(String[] args) {
-        System.out.println(arrayed("a") + " " + ofAnArray() + " " + assignableOfAnArray());
+        System.out.println(arrayed("a") + " " + ofAnArray() + " " + assignableOfAnArray() + " " + opaqueIsArray() + " " + opaqueAssignable());
     }
 }

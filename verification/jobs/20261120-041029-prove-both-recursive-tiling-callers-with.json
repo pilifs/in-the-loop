@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-041029-prove-both-recursive-tiling-callers-with",
+  "title": "Prove both recursive tiling callers with the checked helper",
+  "description": "Recheck the two original recursive callers using the measured bounded helper declaration. Bind its digest, verify its induction before use and require a proved summary in each public statement. Keep the earlier inline proof and the changed-helper controls.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "331"
+    ],
+    "jobs": [
+      "20261120-032648-native-331-floor-tiling-counts-and-two-d"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T04:10:29+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 331 --tasks exact-recursive,parity-recursive --retry-of 20261120T034901Z-0762e97b,20261120T034940Z-49449625 --checker-seconds 25",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive",
+    "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive"
+  ]
+}

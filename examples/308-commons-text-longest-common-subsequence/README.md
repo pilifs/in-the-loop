@@ -5,6 +5,8 @@ subsequence enumeration on all 225 ordered pairs of strings of length 0–3 over
 source rebuild both reached `algorithmB`. Its bytecode allocates the two score rows with `multianewarray [[I, 2` at
 offset 18. The source JAR and the pinned upstream file have the same Git blob. [Release source](https://github.com/apache/commons-text/blob/a70c34e028ab279bb89565606e1ab09011a41bc2/src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java)
 
+The calendar checker proved the released LCS score at unwind 18 and array bound four in 0.620 s at 78.4 MiB peak process RSS. Release and rebuild agreed on all 225 pairs, and 44 pairs distinguished the shared-row control. [Transfer measurement](../../examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json)
+
 | Artifact | Disagreements | Score for `("ab", "aa")` |
 |---|---:|---:|
 | Published 1.13.1 JAR | 0 / 225 | 1 |
@@ -12,7 +14,7 @@ offset 18. The source JAR and the pinned upstream file have the same Git blob. [
 | Same build with the second row sharing the first | 44 / 225 | 2 |
 
 The native baseline stopped at the multidimensional allocation after 0.446 seconds, at 84.3 MiB peak RSS.
-Its score claim remains open. The bound is four cells per array, unwind 18, with the same two input selectors
+That baseline left the score claim open. The bound is four cells per array, unwind 18, with the same two input selectors
 and Java oracle used for the JVM run. [Measured run](records/690f0383-3b2c-42fd-9dc3-bcf95393f5db/result.json)
 
 `python3 -I pilot.py --java-home "$JDK21_HOME" --artifacts "$ARTIFACT_DIR"` from this folder checks both pinned
@@ -24,3 +26,13 @@ JAR digests, compiles the adapter and the two source variants, disassembles each
 The ordinary replay tasks run the public method on the released and altered artifacts. Their Python oracle checks
 the score for each word pair and rejects duplicated or missing pairs. The immutable receipts and source claim
 are available with `python3 examples/tools/targets/workflow_handoff.py handoff 308` from the repository root.
+
+The original release score claim subsequently passed its strict native check at the original four-cell bound, unwind 18 and 120-second deadline. Bounded multidimensional allocation advanced the first attempt to Integer.valueOf. The next run executed the boxed result and verified the score in 0.726 seconds at 77.8 MiB maximum process RSS. The independent JVM reran all 225 pairs on the release, source rebuild and row-sharing control. [Matrix attempt](records/matrix-transfer.json) · [Boxing transfer](records/boxing-transfer.json)
+
+A second strict release run took 0.997 seconds and 78.7 MiB. The complete checker statement records the guard, asserted score, complete unwind and non-vacuity witness. [Full checker output](records/release-score-native.json) · [Release and independent comparisons](records/release-score-transfer.json)
+
+The numerical checker proved the released score in 0.663 s at 78.1 MiB peak RSS. The release and rebuild agreed on all 225 pairs, and the shared-row control disagreed on 44. [Raw checker output](records/numeric-checker-native.json) · [JVM comparison](records/numeric-checker-transfer.json)
+
+The language and list changes retained the strict release-score proof at unwind 18 and array bound four in 0.639 s with 79.1 MiB peak RSS. The release and rebuild agreed on 225 pairs each and the shared-row control disagreed on 44. [Verification job](../../verification/results/20261120-065325-confirm-commons-text-lcs-after-character/result.json)
+
+The stream checker re-proved the released Commons Text score at array bound 4 and unwind 18 in 0.628 s with 77.6 MiB peak RSS. The release and rebuilt source agreed on all 225 pairs and the shared-row control disagreed on 44. [Checker and transfer measurement](records/stream-checker-transfer.json)

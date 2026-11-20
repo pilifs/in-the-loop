@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "value",
+  "statement": "The selected value is present or is seven for empty.",
+  "assume": "code >= 0 && code < 4",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 10
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "optionalgrid.Projection#value(I)I",
+    "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+    "correspondence": "finite-oracle",
+    "cases": 4
+  }
+}

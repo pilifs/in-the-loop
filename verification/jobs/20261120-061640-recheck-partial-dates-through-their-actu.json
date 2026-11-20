@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-061640-recheck-partial-dates-through-their-actu",
+  "title": "Recheck partial dates through their actual static construction",
+  "description": "Run all ten original MonthDay claims and both historical revisions at their original bounds. Keep leap-year day counts, normal returns, jointly normal reversal and March controls separate on the 25-pair JVM grid. Record the first reached operation if strict checking stops inside a formatter or chronology.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "327"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T06:16:40+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 327 --tasks normal-parent,normal-fix,days-parent,days-fix,reversal-parent,reversal-fix,march-parent,march-fix,reversal-on-returns-parent,reversal-on-returns-fix --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/327-joda-monthday-distance/receipts/normal-parent",
+    "examples/327-joda-monthday-distance/receipts/normal-fix",
+    "examples/327-joda-monthday-distance/receipts/days-parent",
+    "examples/327-joda-monthday-distance/receipts/days-fix",
+    "examples/327-joda-monthday-distance/receipts/reversal-parent",
+    "examples/327-joda-monthday-distance/receipts/reversal-fix",
+    "examples/327-joda-monthday-distance/receipts/march-parent",
+    "examples/327-joda-monthday-distance/receipts/march-fix",
+    "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent",
+    "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "323",
+  "title": "An erased Mapper bridge rejects the wrong runtime type",
+  "summary": "The compiler-generated bridge casts its input before the typed method increments the entry counter.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "compilers",
+    "exceptions",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "An erased Mapper bridge rejects the wrong runtime type",
+    "file": "original/bridgegrid/Plus.java",
+    "symbol": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "The compiler-generated bridge casts its input before the typed method increments the entry counter."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 5 inputs on each revision. original mismatches were 0 for value, 0 for exception, 0 for entries, 0 for typedAgreement. changed mismatches were 1 for value, 0 for exception, 0 for entries, 0 for typedAgreement.",
+    "The emitted erased method has the bridge and synthetic flags. Its checkcast precedes its call to the typed Integer method. The wrong-type input never entered that body. The four admissible inputs also ran through the typed descriptor. See [both class files and their disassembly](records/bytecode.json)."
+  ]
+}

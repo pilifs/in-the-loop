@@ -71,6 +71,8 @@ pub const MODELS: &[Model] = &[
     model!(jbmc "java/lang/Enum", "java/lang/Enum.java", "java/lang/Enum.class", "an enum constant's name and ordinal, set by Enum.<init>(String, int) and read by name, ordinal and toString; equals by identity; JBMC only"),
     model!(jbmc "java/util/HashMap", "java/util/HashMap.java", "java/util/HashMap.class", "a HashMap as its entries in insertion order: HashMap() and HashMap(int), get, containsKey, put, size and isEmpty, a key found by hashCode and equals as the JDK finds one; no iteration, removal or resizing; JBMC only"),
     model!(jbmc "java/util/HashMap$Node", "java/util/HashMap.java", "java/util/HashMap$Node.class", "an entry of the HashMap model: its key, the key's hash and its value; JBMC only"),
+    model!(checker "java/util/IdentityHashMap", "java/util/IdentityHashMap.java", "java/util/IdentityHashMap.class", "IdentityHashMap(), put, get, containsKey and size using reference identity, including null keys and values; the own checker only"),
+    model!(checker "java/util/IdentityHashMap$Binding", "java/util/IdentityHashMap.java", "java/util/IdentityHashMap$Binding.class", "one private binding of the native identity-key map model"),
     model!(checker "java/util/LinkedHashMap", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap.class", "a LinkedHashMap as the HashMap model's entries, iterated in insertion order: LinkedHashMap(), what the HashMap model has, and values() with its size and fail-fast iterator; the own checker only"),
     model!(checker "java/util/LinkedHashMap$LinkedValues", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap$LinkedValues.class", "the values collection of the LinkedHashMap model: size and iterator; the own checker only"),
     model!(checker "java/util/LinkedHashMap$LinkedValueIterator", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap$LinkedValueIterator.class", "the iterator of the LinkedHashMap model's values: hasNext and next, fail-fast; the own checker only"),
@@ -114,6 +116,8 @@ pub const CHECKER_RUNS: &[&str] = &[
     "java/lang/Enum",
     "java/util/HashMap",
     "java/util/HashMap$Node",
+    "java/util/IdentityHashMap",
+    "java/util/IdentityHashMap$Binding",
     "java/util/LinkedHashMap",
     "java/util/LinkedHashMap$LinkedValues",
     "java/util/LinkedHashMap$LinkedValueIterator",
@@ -188,7 +192,8 @@ pub fn requested_assumption(model: &str) -> String {
 /// `(class, name, descriptor)`, called with the call's receiver, if it has one, and its arguments.
 pub fn entry(owner: &str, name: &str, descriptor: &str) -> Option<(&'static str, &'static str, &'static str)> {
     match (owner, name, descriptor) {
-        ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;") => Some(("java/util/stream/SequentialArrayStream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")),
+        ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")
+        | ("java/util/stream/Stream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;") => Some(("java/util/stream/SequentialArrayStream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")),
         ("java/lang/String", "chars", "()Ljava/util/stream/IntStream;") => Some(("java/util/stream/CharsStream", "of", "(Ljava/lang/String;)Ljava/util/stream/IntStream;")),
         ("java/util/stream/IntStream", "range", "(II)Ljava/util/stream/IntStream;") => Some(("java/util/stream/RangeStream", "of", "(II)Ljava/util/stream/IntStream;")),
         ("java/util/Arrays", "stream", "([I)Ljava/util/stream/IntStream;") => Some(("java/util/stream/IntArrayStream", "of", "([I)Ljava/util/stream/IntStream;")),

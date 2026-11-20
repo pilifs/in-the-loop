@@ -14,6 +14,58 @@ from targets import executions, interfaces, qualification, recipes, replay_candi
 
 
 class RecipesTest(unittest.TestCase):
+    def test_finite_observations_require_complete_inputs_and_the_selected_projection(self):
+        from targets.finite_oracle import Table
+        from targets.finite_check import envelope, read_rows
+        self.assertEqual(envelope("n > -3 && (n == 0 || n == 1) && n <= 2", "n"), (-2, 2))
+        self.assertEqual(envelope("n == -7", "n"), (-7, -7))
+        for guard in ("n >= 0 && n < 5 || n == 9", "n >= 0 && (n < 3 || n == 7)", "n <= 2",
+                      "n >= 5 && n < 2", "n >= 0 && n < 5000", "n >= 0 && n < 4 /*x*/"):
+            with self.assertRaises(ValueError):
+                envelope(guard, "n")
+        with self.assertRaises(ValueError):
+            read_rows("case 0\noutside\ncase 0\noutside\n", 0, 1, [], False)
+        table = Table(next(TOOLS.parent.glob("314-*/controls/table.json")))
+        rows = []
+        for case in table.cases.values():
+            state = 0
+            for cell in case["expected"]["state"]:
+                state = state * 3 + ["x", None, "A"].index(cell)
+            rows.append({**case, "direct": case["expected"],
+                         "adapter": {"state": state, "exception": int(case["expected"]["exception"] is not None)}})
+        self.assertFalse(table.problems(rows))
+        rows[11]["adapter"]["state"] += 1
+        self.assertEqual(table.correspondence(rows, "copy.Projection#state(I)I"), {"cases": 40, "disagreements": 1})
+        self.assertEqual(table.correspondence(rows, "copy.Projection#thrown(I)I")["disagreements"], 0)
+        for malformed in (rows[:-1], rows + rows[:1], [{**rows[0], "id": False}, *rows[1:]],
+                          [{**rows[0], "input": {"source": []}}, *rows[1:]]):
+            with self.assertRaises(ValueError):
+                table.problems(malformed)
+        from targets import finite_check
+        plan = self.plan("314", "exceptional-poststate")
+        path = Path(plan.folder) / "records/finite-proofs/20261120T034454Z-9a227db3/exceptional-poststate.json"
+        record = json.loads(path.read_text())
+        finite_check.validate_record(plan, record)
+        record["replay"]["finiteObservation"]["input"] = {"source": []}
+        with self.assertRaisesRegex(ValueError, "semantic input"):
+            finite_check.validate_record(plan, record)
+
+    def test_invoice_preparation_rejects_the_other_order_with_identical_client_bytes(self):
+        from targets import runtime, workflow_ingest
+        plan = self.plan("312", "invoice-values")
+        prepared = {}
+        for rev, entry in zip(plan.revisions, plan.artifacts):
+            lock = runtime.lock(plan, rev)
+            paths = ["client.jar", *[f"lib/{root}.jar" for root in entry["fixtureClasspath"]]]
+            artifacts = tuple(interfaces.Artifact(path, workflow.canonical_digest(path),
+                              "original" if path == "client.jar" else "dependency") for path in paths)
+            prepared[rev] = replace(lock, stage="artifacts-ready", artifacts=artifacts, classpath=tuple(paths))
+        workflow_ingest.bound_revisions(plan, prepared)
+        before, after = plan.revisions
+        prepared[before] = replace(prepared[after], revision=before)
+        with self.assertRaisesRegex(workflow_ingest.Refused, "different dependency order"):
+            workflow_ingest.bound_revisions(plan, prepared)
+
     def plan(self, number, task):
         folder = next(TOOLS.parent.glob(number + "-*"))
         return workflow.plan_task(folder, json.loads((folder / "example.json").read_text()),
@@ -33,6 +85,29 @@ class RecipesTest(unittest.TestCase):
             self.assertIsInstance(failed, interfaces.Unsupported)
             self.assertIn(part, failed.reason)
 
+    def test_checked_lemmas_bind_strategy_bytes_to_the_same_caller_claim(self):
+        from targets import runtime
+        folder = next(TOOLS.parent.glob("331-*"))
+        example = json.loads((folder / "example.json").read_text())
+        target = json.loads((folder / "target.json").read_text())
+        task = next(t for t in target["tasks"] if t["id"] == "exact-recursive")
+        def plan():
+            return workflow.plan_task(folder, example, target, task["id"])
+        checked = plan()
+        path = task.pop("checkedLemmas")
+        inline = plan()
+        self.assertEqual(checked.claim["key"], inline.claim["key"])
+        self.assertEqual(workflow.inputs_key(checked), workflow.inputs_key(inline))
+        self.assertEqual(runtime._claim_file(checked, "checkedLemmas"), folder / path)
+        self.assertEqual([a.value for a in recipes.translate(checked).arguments if a.flag == "--lemmas"], [path])
+        self.assertFalse(any(a.flag == "--lemmas" for a in recipes.translate(inline).arguments))
+        with self.assertRaises(runtime.Refused):
+            runtime._claim_file(replace(checked, checkedLemmas={"path": path, "sha256": "0" * 64}), "checkedLemmas")
+        task["checkedLemmas"] = "claims/missing.contract"
+        self.assertIsInstance(plan(), interfaces.Unsupported)
+        task.update(checkedLemmas=path, engine="jbmc")
+        self.assertIsInstance(plan(), interfaces.Unsupported)
+
     def test_wire_versions_preserve_mixed_outcomes_and_refuse_unknown_formats(self):
         outcomes = [{"output": "a", "verdict": "verified"}, {"wire_version": 1, "output": "b", "verdict": "violation"}]
         self.assertEqual(checker_output.decode(json.dumps(outcomes), "prove"), (tuple(outcomes), None))
@@ -40,6 +115,15 @@ class RecipesTest(unittest.TestCase):
             bad, why = checker_output.decode(json.dumps([{**outcomes[0], "wire_version": value}]), "prove")
             self.assertIsNone(bad)
             self.assertIn("wire version", why)
+        inputs = [{"name": "q", "type": "int", "value": 1}]
+        pair = {"verdict": "violation", "target": "RegressionPair#agree", "assert": "result", "counterexample": {"inputs": inputs}}
+        outcome = {"verdict": "violation", "pair": pair}
+        self.assertEqual(checker_output.solver_candidate(outcome)["inputs"], inputs)
+        self.assertFalse(checker_output.equivalence_counterexamples(outcome))
+        replay = {"inputs": inputs, "reproduced": True, "sides": {"two": {"values": [2, None]}, "three": {"values": [3, None]}}}
+        result = checker_output.equivalence_counterexamples(outcome, replay=[replay], revisions=["two", "three"])
+        self.assertEqual((result[0]["contract"], result[0]["actual"]), ("[2, null]", "[3, null]"))
+        self.assertIsNone(checker_output.solver_candidate({**outcome, "pair": {**pair, "target": "Other#check"}}))
 
     def test_observed_states_bind_each_revision_and_the_executed_model(self):
         plan = self.plan("310", "same-day-observed")

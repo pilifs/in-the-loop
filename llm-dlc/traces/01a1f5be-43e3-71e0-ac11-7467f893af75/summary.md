@@ -18,6 +18,48 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
+### Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps
+
+change `lxnwsprmkwzv` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+
+The ChatGPT account gives every Codex session its apps as deferred tools (codex_apps). On the user's word (2026-11-19), four that no work in this repository has a use for are turned off: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space, Codex Document Control and Plugin Management stay. The loops pass the settings on every turn (CODEX_CONFIG in agent_client.py, as apps.&lt;connector id>.enabled=false), and .codex/config.toml carries the same for a person's own Codex in a trusted checkout. Run 1 of foundation-domain-streams called none of the eight apps. Verified with codex debug prompt-input (CLI 0.170) rendered with CODEX_CONFIG: only the four kept apps' namespaces remain, and CLAUDE.md is still read; the TOML parses; the changed tests pass (8 of 8 files).
+
+### Record verification results for 1 job(s)
+
+change `pzqqompzkvnw` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-214230-gradebook-frozen-claims-on-the-checkpoin: failed: 5 failed step(s) in 22.2s, peak 97.3 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `wmswovokuroq` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `wuttosxkzuyp` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+
+Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-215957-threetenbp-hours-adapter-on-the-qualifie: failed: 1 failed step(s) in 12.0s, peak 220.5 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261119-220147-gradebook-qualified-attempts-and-interru: passed: 2 passed step(s) in 20.0s, peak 227.5 MiB (estimated 2m00s, 3.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×2; example:task-as-expected×3 Applied 84 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `qtnnvmzuwxtr` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261119-215949-math-238-direct-recipe-on-frozen-power-a: passed: 1 passed step(s) in 6m23s, peak 994.5 MiB (estimated 9m00s, 4.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 4 job(s)
+
+change `pqqonrvpsvuo` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+
+Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261119-221145-qualify-heap-merges-initialized-display: passed: 1 passed step(s) in 5.0s, peak 92.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221152-qualify-integrated-jbmc-on-the-distinct: passed: 1 passed step(s) in 3.4s, peak 73.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221200-separate-quote-amount-and-ordered-send-r: failed: 1 failed step(s) in 4.0s, peak 85.2 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed 20261119-222214-check-the-supplementary-character-search: failed: 1 failed step(s) in 15.2s, peak 306.0 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `owxqwqnrkpok` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261119-221555-retain-a-measured-gcd-checker-timeout-an: passed: 1 passed step(s) in 3m26s, peak 951.7 MiB (estimated 5m00s, 3.0 GiB); 29 output file(s) changed Applied 29 output(s). 20261119-222610-recheck-quote-projections-with-compile-s: passed: 1 passed step(s) in 5.4s, peak 85.6 MiB (estimated 1m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
 ### Freeze Gradebook and MATH-238 claims on the checkpoint route (verification pending)
 
 change `oxzsrsuyxpmt` · [log `1eef14f46e48`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/1eef14f46e48e770257b140ae0f6a38d935bff04e7474be8796e1f98dfe24ff5.jsonl.gz)
@@ -83,48 +125,6 @@ A repeated delivery must match the original raw records and prepared binding eve
 change `kwxuypsuymsl` · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
 
 A reviewer can submit typed concrete inputs through build.py --task T --replay-witness FILE. Each review binds the selected artifacts, rechecks adapter correspondence where applicable, runs the frozen domain and observation on the JVM, and journals its evidence. The last-slot Gradebook input reproduced the complete array difference, agreed on the return and was rejected outside the interior domain. The return-only proof remained eligible after its later replay rejection. Ran the three public reviews and the build, route and recipe tests.
-
-### Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps
-
-change `lxnwsprmkwzv` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
-
-The ChatGPT account gives every Codex session its apps as deferred tools (codex_apps). On the user's word (2026-11-19), four that no work in this repository has a use for are turned off: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space, Codex Document Control and Plugin Management stay. The loops pass the settings on every turn (CODEX_CONFIG in agent_client.py, as apps.&lt;connector id>.enabled=false), and .codex/config.toml carries the same for a person's own Codex in a trusted checkout. Run 1 of foundation-domain-streams called none of the eight apps. Verified with codex debug prompt-input (CLI 0.170) rendered with CODEX_CONFIG: only the four kept apps' namespaces remain, and CLAUDE.md is still read; the TOML parses; the changed tests pass (8 of 8 files).
-
-### Record verification results for 1 job(s)
-
-change `pzqqompzkvnw` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
-
-Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-214230-gradebook-frozen-claims-on-the-checkpoin: failed: 5 failed step(s) in 22.2s, peak 97.3 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `wmswovokuroq` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 2 job(s)
-
-change `wuttosxkzuyp` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
-
-Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-215957-threetenbp-hours-adapter-on-the-qualifie: failed: 1 failed step(s) in 12.0s, peak 220.5 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261119-220147-gradebook-qualified-attempts-and-interru: passed: 2 passed step(s) in 20.0s, peak 227.5 MiB (estimated 2m00s, 3.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×2; example:task-as-expected×3 Applied 84 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `qtnnvmzuwxtr` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261119-215949-math-238-direct-recipe-on-frozen-power-a: passed: 1 passed step(s) in 6m23s, peak 994.5 MiB (estimated 9m00s, 4.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 4 job(s)
-
-change `pqqonrvpsvuo` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
-
-Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261119-221145-qualify-heap-merges-initialized-display: passed: 1 passed step(s) in 5.0s, peak 92.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221152-qualify-integrated-jbmc-on-the-distinct: passed: 1 passed step(s) in 3.4s, peak 73.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221200-separate-quote-amount-and-ordered-send-r: failed: 1 failed step(s) in 4.0s, peak 85.2 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed 20261119-222214-check-the-supplementary-character-search: failed: 1 failed step(s) in 15.2s, peak 306.0 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 2 job(s)
-
-change `owxqwqnrkpok` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
-
-Outputs applied for 2 of the 2 job(s). 20261119-221555-retain-a-measured-gcd-checker-timeout-an: passed: 1 passed step(s) in 3m26s, peak 951.7 MiB (estimated 5m00s, 3.0 GiB); 29 output file(s) changed Applied 29 output(s). 20261119-222610-recheck-quote-projections-with-compile-s: passed: 1 passed step(s) in 5.4s, peak 85.6 MiB (estimated 1m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Integrate all restart verification results and publish the claim handoff
 

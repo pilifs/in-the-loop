@@ -211,6 +211,20 @@ fn an_observed_initializer_is_bound_to_what_it_was_observed_on() {
     assert!(crossed_said.contains("initialized oc.B and left it other than it is initialized alone (its field x was 1 after it and is 0 alone)"), "{crossed_said}");
     assert!(lowered.contains("default locale is tr-TR"), "{lowered}");
     assert!(configured.contains("oc.value = \"xyz\""), "{configured}");
+    for (zone, expected) in [("UTC", "true"), ("Asia/Tokyo", "false")] {
+        let direct = Command::new("java").arg(format!("-Duser.timezone={zone}")).args(["-Duser.language=en", "-cp"]).arg(&c.app)
+            .arg("oc.CalendarAmounts").output().unwrap();
+        assert!(direct.status.success(), "{}", String::from_utf8_lossy(&direct.stderr));
+        assert_eq!(String::from_utf8_lossy(&direct.stdout).trim(), expected);
+        let proved = cli(&format!("-Duser.timezone={zone} -Duser.language=en -Duser.country=US"), "oc.CalendarAmounts#canonical", "result", "oc.CalendarAmounts", zone);
+        if zone == "UTC" {
+            assert!(proved.starts_with("✓") && proved.contains("fresh lenient AD Gregorian calendars"), "{proved}");
+        } else {
+            assert!(proved.contains("Calendar.getInstance") && !proved.starts_with("✓"), "{proved}");
+        }
+    }
+    let partial = cli("-Duser.timezone=UTC -Duser.language=en -Duser.country=US", "oc.CalendarAmounts#partial", "result == 0", "oc.CalendarAmounts", "utc-partial");
+    assert!(partial.contains("civil fields that were not all set") && !partial.starts_with("✓"), "{partial}");
 }
 
 /// The challenge stream's `ob` fixtures (`tests/fixtures/rule-countermodels/ob`, from `lqvlvwsm`), compiled: `None`

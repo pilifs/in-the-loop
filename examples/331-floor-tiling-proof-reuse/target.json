@@ -1,0 +1,244 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "floor-tiling-proof-reuse",
+    "family": "floor-tiling-proof-reuse",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "recursive": {
+        "fixture": "recursive"
+      },
+      "iterative": {
+        "fixture": "iterative"
+      },
+      "one-tile": {
+        "fixture": "one-tile"
+      },
+      "base-change": {
+        "fixture": "base-change"
+      }
+    },
+    "pairs": [
+      {
+        "name": "iterative",
+        "kind": "positive",
+        "before": "recursive",
+        "after": "iterative"
+      },
+      {
+        "name": "one-tile",
+        "kind": "introduction",
+        "before": "recursive",
+        "after": "one-tile"
+      },
+      {
+        "name": "base-change",
+        "kind": "introduction",
+        "before": "recursive",
+        "after": "base-change"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "iterative",
+      "target": "tiling.Floor#exact(I)I"
+    },
+    {
+      "id": "replay-one-tile",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "one-tile",
+      "target": "tiling.Floor#exact(I)I"
+    },
+    {
+      "id": "replay-base-change",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "base-change",
+      "target": "tiling.Floor#exact(I)I"
+    },
+    {
+      "id": "exact-recursive",
+      "checkedLemmas": "claims/helper.contract",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#exact(I)I",
+      "claim": "claims/exact.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "recursive"
+    },
+    {
+      "id": "exact-iterative",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#exact(I)I",
+      "claim": "claims/exact.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "iterative"
+    },
+    {
+      "id": "exact-one-tile",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#exact(I)I",
+      "claim": "claims/exact.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-one-tile"
+      ],
+      "expected": "refuted",
+      "revision": "one-tile"
+    },
+    {
+      "id": "exact-base-change",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#exact(I)I",
+      "claim": "claims/exact.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-base-change"
+      ],
+      "expected": "refuted",
+      "revision": "base-change"
+    },
+    {
+      "id": "parity-recursive",
+      "checkedLemmas": "claims/helper.contract",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#parity(I)I",
+      "claim": "claims/parity.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "recursive"
+    },
+    {
+      "id": "parity-iterative",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#parity(I)I",
+      "claim": "claims/parity.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "iterative"
+    },
+    {
+      "id": "parity-one-tile",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#parity(I)I",
+      "claim": "claims/parity.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-one-tile"
+      ],
+      "expected": "refuted",
+      "revision": "one-tile"
+    },
+    {
+      "id": "parity-base-change",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#parity(I)I",
+      "claim": "claims/parity.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-base-change"
+      ],
+      "expected": "refuted",
+      "revision": "base-change"
+    },
+    {
+      "id": "helper-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "tiling.Ways#tiles(I)I",
+      "claim": "claims/helper-preservation.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "pair": "iterative"
+    },
+    {
+      "id": "caller-exact-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "tiling.Floor#exact(I)I",
+      "claim": "claims/caller-exact-preservation.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "pair": "iterative"
+    },
+    {
+      "id": "caller-parity-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "tiling.Floor#parity(I)I",
+      "claim": "claims/caller-parity-preservation.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "pair": "iterative"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/tiling/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

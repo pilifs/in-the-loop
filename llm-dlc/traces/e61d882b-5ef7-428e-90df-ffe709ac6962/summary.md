@@ -2123,6 +2123,12 @@ change `uorwvunulqxv` · [log `77b8388769e4`](https://terminalvalue.net/raw-trac
 
 D002 to D005: continue after cycles 2, 3 and 4 (D004 at medium confidence, flagged), and stop after cycle 5, when every one of the 125 claims had a native result agreeing with the JVM outcomes, 18 of them under recorded JVM startup conditions, which is a question for the user.
 
+### Merge the single-agent run twenty-example-fast-follow into the line
+
+change `szuutkxuoxuo` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+
+The single-agent run twenty-example-fast-follow (session 0cea9d0e-0fe8-427e-8e71-96614b084e11) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz) has every step in between: reasoning, tool calls and their results.

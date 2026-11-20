@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-081743-recheck-ordered-suppression-against-the",
+  "title": "Recheck ordered suppression against the shared JDK empty list",
+  "description": "Verify all nine frozen primary, ordered suppression and closing claims on the eight original masks. The public empty-list singleton now shares the same identity with Throwable in the checker and interpreter; preserve the independent JVM witnesses for reversed acquisition.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "322"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T08:17:43+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "18m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 322 --tasks primary-original,primary-nested,primary-reversed,suppressed-original,suppressed-nested,suppressed-reversed,close-original,close-nested,close-reversed --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/322-ordered-suppressed-exceptions/receipts/primary-original",
+    "examples/322-ordered-suppressed-exceptions/receipts/primary-nested",
+    "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed",
+    "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original",
+    "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested",
+    "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed",
+    "examples/322-ordered-suppressed-exceptions/receipts/close-original",
+    "examples/322-ordered-suppressed-exceptions/receipts/close-nested",
+    "examples/322-ordered-suppressed-exceptions/receipts/close-reversed"
+  ]
+}

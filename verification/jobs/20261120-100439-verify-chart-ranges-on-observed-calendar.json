@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-100439-verify-chart-ranges-on-observed-calendar",
+  "title": "Verify chart ranges on observed calendar startup",
+  "description": "Check all eight chart endpoint and populated-series claims at their original bounds in the independently observed JDK startup environment. Retain the original source tasks and their startup boundary.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "321"
+    ],
+    "jobs": [
+      "20261120-081134-trace-historical-chart-ranges-through-re"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T10:04:39+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 321 --tasks lower-parent-observed,lower-fix-observed,upper-parent-observed,upper-fix-observed,populated-lower-parent-observed,populated-upper-parent-observed,populated-lower-fix-observed,populated-upper-fix-observed --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/321-jfreechart-empty-series-range/receipts/lower-parent-observed",
+    "examples/321-jfreechart-empty-series-range/receipts/lower-fix-observed",
+    "examples/321-jfreechart-empty-series-range/receipts/upper-parent-observed",
+    "examples/321-jfreechart-empty-series-range/receipts/upper-fix-observed",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent-observed",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent-observed",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix-observed",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix-observed"
+  ]
+}

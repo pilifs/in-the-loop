@@ -138,8 +138,8 @@ def super_class(data):
     return _class_name(pool, index) if index else None
 
 
-def methods(data):
-    """{(name, descriptor)} of the methods the class declares."""
+def _declarations(data):
+    """The constant pool, declared method access flags, and offset of the class attributes."""
     pool, offset = _pool(data)
     offset += 6  # access, this, super
     interfaces = struct.unpack_from(">H", data, offset)[0]
@@ -147,15 +147,47 @@ def methods(data):
     for _ in range(2):  # fields, then methods
         count = struct.unpack_from(">H", data, offset)[0]
         offset += 2
-        found = set()
+        found = {}
         for _ in range(count):
-            _, name, desc, attributes = struct.unpack_from(">HHHH", data, offset)
+            access, name, desc, attributes = struct.unpack_from(">HHHH", data, offset)
             offset += 8
             for _ in range(attributes):
                 length = struct.unpack_from(">I", data, offset + 2)[0]
                 offset += 6 + length
-            found.add((_utf8(pool, name), _utf8(pool, desc)))
-    return found
+            found[_utf8(pool, name), _utf8(pool, desc)] = access
+    return pool, found, offset
+
+
+def methods(data):
+    """{(name, descriptor)} of the methods the class declares."""
+    return set(_declarations(data)[1])
+
+
+def method_flags(data, method, descriptor):
+    return _declarations(data)[1].get((method, descriptor))
+
+
+def class_flags(data):
+    _, offset = _pool(data)
+    return struct.unpack_from(">H", data, offset)[0]
+
+
+def interfaces(data):
+    pool, offset = _pool(data)
+    count = struct.unpack_from(">H", data, offset + 6)[0]
+    return [_class_name(pool, struct.unpack_from(">H", data, offset + 8 + 2 * i)[0]) for i in range(count)]
+
+
+def source_file(data):
+    pool, _, offset = _declarations(data)
+    count = struct.unpack_from(">H", data, offset)[0]
+    offset += 2
+    for _ in range(count):
+        name, length = struct.unpack_from(">HI", data, offset)
+        if _utf8(pool, name) == "SourceFile" and length == 2:
+            return _utf8(pool, struct.unpack_from(">H", data, offset + 6)[0])
+        offset += 6 + length
+    return None
 
 
 def _parameter_types(desc):

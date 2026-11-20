@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "revision",
+  "statement": "All six deterministic read-before-write schedules finish at revision two.",
+  "assume": "code >= 0 && code < 6",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 4
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "editgrid.Projection#revision(I)I",
+    "mapping": "Code indexes the six linear extensions of read A before write A and read B before write B. The initial revision is zero. Each read and each write is one explicit transition.",
+    "correspondence": "finite-oracle",
+    "cases": 6
+  }
+}

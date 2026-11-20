@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "point",
+  "statement": "The facet plane meets the line at the first positive rational-box boundary parameter.",
+  "assume": "code >= 0 && code < 6",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 30,
+    "maxArrayLength": 16
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "cubegrid.Projection#point(I)I",
+    "mapping": "Four signed cube diagonals from the upstream repair and two face-center rays, with the unit cube and tolerance 1e-10. Compare the coordinates of the facet-plane intersection by component with absolute tolerance 1e-10. Several different facets may contain the same vertex.",
+    "correspondence": "finite-oracle",
+    "cases": 6
+  }
+}

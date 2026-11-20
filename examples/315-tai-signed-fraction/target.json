@@ -1,0 +1,200 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "tai-signed-fraction",
+    "family": "tai-signed-fraction",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/ThreeTen/threeten-extra",
+    "revisions": {
+      "parent": {
+        "commit": "5361f0d32889e1a5104743429c3716e5de0937ce"
+      },
+      "fix": {
+        "commit": "1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c",
+        "parent": "5361f0d32889e1a5104743429c3716e5de0937ce"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "source-slice",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/taigrid/Projection.java"
+    ],
+    "slice": {
+      "jdk": "21",
+      "flags": [
+        "--release",
+        "21",
+        "-g",
+        "-parameters"
+      ],
+      "files": {
+        "parent": [
+          "src/main/java/org/threeten/extra/scale/SystemUtcRules.java",
+          "src/main/java/org/threeten/extra/scale/TaiInstant.java",
+          "src/main/java/org/threeten/extra/scale/TimeSource.java",
+          "src/main/java/org/threeten/extra/scale/UtcInstant.java",
+          "src/main/java/org/threeten/extra/scale/UtcRules.java",
+          "src/main/java/org/threeten/extra/scale/package-info.java"
+        ],
+        "fix": [
+          "src/main/java/org/threeten/extra/scale/SystemUtcRules.java",
+          "src/main/java/org/threeten/extra/scale/TaiInstant.java",
+          "src/main/java/org/threeten/extra/scale/TimeSource.java",
+          "src/main/java/org/threeten/extra/scale/UtcInstant.java",
+          "src/main/java/org/threeten/extra/scale/UtcRules.java",
+          "src/main/java/org/threeten/extra/scale/package-info.java"
+        ]
+      }
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "coordinates": "org.joda:joda-convert:2.2.4",
+        "url": "https://repo.maven.apache.org/maven2/org/joda/joda-convert/2.2.4/joda-convert-2.2.4.jar",
+        "sha256": "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373"
+      },
+      {
+        "revision": "parent",
+        "coordinates": "org.jspecify:jspecify:1.0.1",
+        "url": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
+        "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66"
+      },
+      {
+        "revision": "fix",
+        "coordinates": "org.joda:joda-convert:2.2.4",
+        "url": "https://repo.maven.apache.org/maven2/org/joda/joda-convert/2.2.4/joda-convert-2.2.4.jar",
+        "sha256": "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373"
+      },
+      {
+        "revision": "fix",
+        "coordinates": "org.jspecify:jspecify:1.0.1",
+        "url": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
+        "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;"
+    },
+    {
+      "id": "format-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;",
+      "claim": "claims/format.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "format-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;",
+      "claim": "claims/format.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "parse-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+      "claim": "claims/parse.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "parse-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+      "claim": "claims/parse.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "round-trip-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;",
+      "claim": "claims/round-trip.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "round-trip-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;",
+      "claim": "claims/round-trip.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/taigrid/TaiCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

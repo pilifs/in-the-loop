@@ -110,16 +110,38 @@ def native(checker, java_home, artifacts, work):
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--java-home", type=Path, required=True)
-    cli.add_argument("--artifacts", type=Path, required=True, help="the two JARs in sources.lock.json")
+    artifacts_from = cli.add_mutually_exclusive_group(required=True)
+    artifacts_from.add_argument("--artifacts", type=Path, help="the two JARs in sources.lock.json")
+    artifacts_from.add_argument("--fetch-locked", action="store_true", help="acquire both Maven JARs by their recorded digests")
     cli.add_argument("--work", type=Path, help="keep the adapter and both source builds for the native check")
     cli.add_argument("--native", type=Path, help="also run this native checker on the release score claim")
+    cli.add_argument("--native-record", type=Path, help="preserve the complete checker JSON from --native")
     args = cli.parse_args()
+    if args.native_record and not args.native:
+        cli.error("--native-record requires --native")
     with tempfile.TemporaryDirectory() as scratch:
-        work = (args.work or Path(scratch)).resolve()
-        java_home, artifacts = args.java_home.resolve(), args.artifacts.resolve()
+        work = (args.work or Path(scratch) / "work").resolve()
+        work.mkdir(parents=True, exist_ok=True)
+        java_home = args.java_home.resolve()
+        if args.fetch_locked:
+            sys.path.insert(0, str(HERE.parent / "tools"))
+            from targets.runtime_maven import acquire
+            lock = json.loads((HERE / "sources.lock.json").read_text())
+            artifacts = Path(scratch) / "artifacts"
+            artifacts.mkdir()
+            for name, sha in lock["files"].items():
+                acquire({"coordinates": "org.apache.commons:commons-text:" + lock["version"], "url": lock["repository"] + name,
+                         "sha256": sha}, artifacts / name)
+        else:
+            artifacts = args.artifacts.resolve()
         result = run(java_home, artifacts, work)
         if args.native:
             result["native"] = native(args.native.resolve(), java_home, artifacts, work)
+            if args.native_record:
+                raw = (work / "native-outcome.json").read_bytes()
+                if digest(raw) != result["native"]["outcomeSha256"]:
+                    raise ValueError("the saved solver output differs from the measured run")
+                args.native_record.write_bytes(raw)
     print(json.dumps(result, indent=2))
 
 

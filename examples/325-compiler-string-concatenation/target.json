@@ -1,0 +1,142 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "compiler-string-concatenation",
+    "family": "compiler-string-concatenation",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "legacy": {
+        "fixture": "legacy",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-g",
+            "-parameters"
+          ]
+        }
+      },
+      "modern": {
+        "fixture": "legacy",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        }
+      },
+      "changed": {
+        "fixture": "changed",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        }
+      }
+    },
+    "pairs": [
+      {
+        "name": "modern",
+        "kind": "positive",
+        "before": "legacy",
+        "after": "modern"
+      },
+      {
+        "name": "changed",
+        "kind": "introduction",
+        "before": "legacy",
+        "after": "changed"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/labelgrid/Projection.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "modern",
+      "target": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;"
+    },
+    {
+      "id": "replay-changed",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "changed",
+      "target": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;"
+    },
+    {
+      "id": "label-legacy",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+      "claim": "claims/label.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "legacy"
+    },
+    {
+      "id": "label-modern",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+      "claim": "claims/label.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "modern"
+    },
+    {
+      "id": "label-changed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+      "claim": "claims/label.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-changed"
+      ],
+      "expected": "refuted",
+      "revision": "changed"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/labelgrid/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

@@ -75,10 +75,8 @@
 //!   value afterwards ([`Engine::formatted`]), since a getter may have written it. Formatting calls the record's getters, a subclass's overrides included, so a record of a
 //!   class that could write elsewhere from one of them stays the JDK call. A level, a handler, a filter or a bundle
 //!   set on a Logger is a call of it no model takes, so a check that sets one stops there.
-//! - `getstatic` of `Boolean.TRUE` or `Boolean.FALSE`: the one object each constant is, distinct from the other and
-//!   from every object the run makes, as on a JVM. The object has no content: every method of it is the JDK call it
-//!   was, as is `Boolean.valueOf`. A library stores one where it records a decision (Spring's
-//!   `PropertyValue.conversionNecessary`).
+//! - `getstatic` of `Boolean.TRUE` or `Boolean.FALSE` and `Boolean.valueOf(boolean)` share two
+//!   canonical objects. `booleanValue()` on either returns the corresponding truth.
 //! - `new ArrayList()`: the JDK's no-argument constructor only sets the list's own fields, so the object is made
 //!   as any object with no content is, its methods the JDK calls they were.
 //! - `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)`: likewise (the JDK allocates the table at the first
@@ -103,8 +101,8 @@ pub const PUBLISHING_ASSUMPTION: &str = "a record given to a logger goes to the 
 pub(super) const BOOLEAN: &str = "java/lang/Boolean";
 
 /// Whether the static field is `Boolean.TRUE` or `Boolean.FALSE`, and which: one object each for a run, as each is
-/// one on a JVM, distinct from each other and from any other object. Nothing of it is read here: a call on it
-/// (`booleanValue`, `equals`, ...) is the JDK call it names, and `Boolean.valueOf`, which returns one of them, is too.
+/// one on a JVM, distinct from each other and from any other object. `valueOf` returns one of these objects
+/// and `booleanValue` reads the corresponding truth.
 pub fn truth_constant(owner: &str, name: &str) -> Option<bool> {
     match (owner, name) {
         (BOOLEAN, "TRUE") => Some(true),
@@ -156,28 +154,51 @@ const CLASS: &str = "java/lang/Class";
 const LOADER: &str = "java/lang/ClassLoader";
 const LOGGER: &str = "java/util/logging/Logger";
 const THREAD: &str = "java/lang/Thread";
+pub(super) const LINE_SEPARATOR: &str = "the contents and external string identity of the JVM's initial line separator are not bound";
+pub(super) fn enum_identity_read(caller: &str, method: &str, m: &crate::classfile::MemberRef) -> bool {
+    (caller, method, m.owner.as_str(), m.name.as_str(), m.descriptor.as_str())
+        == ("java/lang/Enum", "hashCode", "java/lang/System", "identityHashCode", "(Ljava/lang/Object;)I")
+}
 const COLLECTIONS: &str = "java/util/Collections";
 pub(super) const EMPTY_MAP: &str = "java/util/Collections$EmptyMap";
 const FOR_NAME: &str = "(Ljava/lang/String;)Ljava/lang/Class;";
 const PROXY: &str = "java/lang/reflect/Proxy";
 
+/// Integral factories with a mandated cache. Character's cache covers ASCII only.
+pub(super) fn cached_wrapper(owner: &str, name: &str, descriptor: &str) -> Option<&'static str> {
+    match (owner, name, descriptor) {
+        ("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;") => Some("java/lang/Byte"),
+        ("java/lang/Short", "valueOf", "(S)Ljava/lang/Short;") => Some("java/lang/Short"),
+        ("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;") => Some("java/lang/Character"),
+        ("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;") => Some("java/lang/Long"),
+        _ => None,
+    }
+}
+
 /// Whether the engine models the static call here, where its arguments let it.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
+    if (owner, name, descriptor) == ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;") { return true; }
     matches!(
         (owner, name, descriptor),
-        (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
+        ("java/lang/System", "lineSeparator", "()Ljava/lang/String;") | (COLLECTIONS, "emptyList", "()Ljava/util/List;") | (COLLECTIONS, "emptySet", "()Ljava/util/Set;") |
+        (BOOLEAN, "valueOf", "(Z)Ljava/lang/Boolean;") | ("java/lang/reflect/Array", "getLength", "(Ljava/lang/Object;)I") | (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
     )
+}
+
+fn canonical_truth(path: &Path, object: usize) -> Option<bool> {
+    [true, false].into_iter().find(|v| path.literals.get(&Literal::Truth(*v)) == Some(&object))
 }
 
 /// Whether the engine models the instance call here, on a class literal, or `getClass()` on an object it made.
 pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
+    if matches!((owner, name, descriptor), ("java/lang/Integer" | "java/lang/Number", "intValue", "()I")) { return true; }
     matches!(
         (owner, name, descriptor),
-        (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
-            | (CLASS, "isArray", "()Z")
-            | (CLASS, "getSuperclass", "()Ljava/lang/Class;")
+        (BOOLEAN, "booleanValue", "()Z") | (BOOLEAN, "equals", "(Ljava/lang/Object;)Z") | (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
+            | (CLASS, "isArray" | "isPrimitive", "()Z")
+            | (CLASS, "getSuperclass" | "getComponentType", "()Ljava/lang/Class;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
-            | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z")
+            | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z") | (CLASS, "isInstance", "(Ljava/lang/Object;)Z")
             | ("java/lang/Object", "getClass", "()Ljava/lang/Class;")
             | (THREAD, "getContextClassLoader", "()Ljava/lang/ClassLoader;")
     )
@@ -198,8 +219,57 @@ pub fn capacity_constructor(owner: &str, descriptor: &str) -> bool {
 }
 
 impl Engine<'_> {
+    /// Materialize only a range the solver proves contains every possible value on this path.
+    /// Outside the mandatory cache the selected JDK's factory decides what it constructs.
+    pub(super) fn cached_integral(&mut self, path: &mut Path, class: &'static str, word: &Bits) -> Option<Step> {
+        let minimum = if class == "java/lang/Character" { 0 } else { i8::MIN };
+        let boxed = if let Some(n) = self.b.constant_value(word) {
+            let n = i8::try_from(n).ok().filter(|n| *n >= minimum)?;
+            Val::R(Some(self.literal(path, Literal::CachedIntegral(class, n), class)))
+        } else {
+            let mut range = None;
+            for (lo, hi) in [(0, 3), ((-1).max(minimum), 15), (minimum, i8::MAX)] {
+                let below = self.b.slt(word, &self.b.constant(i64::from(lo), word.len()));
+                let above = self.b.slt(&self.b.constant(i64::from(hi), word.len()), word);
+                let mut outside = path.cond.clone();
+                outside.push(self.b.or(below, above));
+                match self.solve(&outside) {
+                    Ok(false) => { range = Some(lo..=hi); break; }
+                    Ok(true) => {}
+                    Err(stop) => return Some(Err(stop)),
+                }
+            }
+            let mut choices = Vec::new();
+            for n in range? {
+                let guard = self.b.eq(word, &self.b.constant(i64::from(n), word.len()));
+                choices.push((guard, Some(self.literal(path, Literal::CachedIntegral(class, n), class))));
+            }
+            choice(&mut self.b, choices)
+        };
+        self.push(path, boxed);
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// Boolean.equals also dispatches here when the invocation names Object.equals.
+    /// Untracked Boolean receivers or arguments still require their own evidence.
+    pub(super) fn boolean_equals(&mut self, path: &mut Path, receiver: usize, args: &[Val]) -> Option<Step> {
+        let truth = canonical_truth(path, receiver)?;
+        let [Val::R(other)] = args else { return None };
+        let equal = match *other {
+            None => false,
+            Some(o) if o == receiver => true,
+            Some(o) if path.objects[o].assumed => return None,
+            Some(o) if path.objects[o].class != BOOLEAN => false,
+            Some(o) => canonical_truth(path, o)? == truth,
+        };
+        self.push(path, Val::I(self.b.constant(i64::from(equal), 32)));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
     /// The class a class literal's object names, by its internal name.
-    fn class_named(&self, path: &Path, o: usize) -> Option<String> {
+    pub(super) fn class_named(&self, path: &Path, o: usize) -> Option<String> {
         path.literals.iter().find_map(|(l, &at)| match l {
             Literal::Class(name) if at == o => Some(name.clone()),
             _ => None,
@@ -217,6 +287,32 @@ impl Engine<'_> {
     /// on the object `o`, and `getClass()` on it: see the module's
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
+        if (owner, name, descriptor) == (BOOLEAN, "booleanValue", "()Z") {
+            let truth = canonical_truth(path, o)?;
+            self.push(path, Val::I(self.b.constant(i64::from(truth), 32)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
+        if matches!((owner, name, descriptor), ("java/lang/Integer" | "java/lang/Number", "intValue", "()I")) {
+            let value = path.literals.iter().find_map(|(literal, &object)| match literal {
+                Literal::CachedIntegral("java/lang/Integer", value) if object == o => Some(*value), _ => None,
+            })?;
+            self.push(path, Val::I(self.b.constant(i64::from(value), 32)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
+        if (owner, name, descriptor) == (CLASS, "desiredAssertionStatus", "()Z") {
+            let class = self.class_named(path, o)?;
+            let frame = path.frames.last()?;
+            if frame.method != "<clinit>" || self.cp.state_image_class(&frame.class.name).is_none() || self.cp.state_image_class(&class).is_none() { return None; }
+            let flag = path.statics.entry((class, "<VM.desiredAssertionStatus>".into())).or_insert_with(|| {
+                let bit = self.b.var(); Val::I(self.b.zext(&vec![bit], 32))
+            }).clone();
+            path.unbound_platform_value = Some("a JVM-chosen assertion setting");
+            self.push(path, flag);
+            self.advance(path);
+            return Some(Ok(None));
+        }
         if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
             let class = path.objects[o].class.clone();
             // An exception the run made (with `new`, or the engine for the JVM or a model of a JDK method), and no JDK
@@ -224,7 +320,9 @@ impl Engine<'_> {
             // ([`super::throwables`]).
             let o_ = &path.objects[o];
             let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
-            if class.starts_with('[') || o_.lambda.is_some() || !(self.cp.is_application(&class) || class == STRING || exception) {
+            let array = o_.is_array() && !o_.assumed && !self.there_before(path, o);
+            let image_object = !o_.assumed && !self.there_before(path, o) && self.cp.state_image_class(&class).is_some();
+            if o_.lambda.is_some() || !(array || image_object || self.cp.is_application(&class) || class == STRING || exception) {
                 return None;
             }
             let literal = self.literal(path, Literal::Class(class), CLASS);
@@ -243,8 +341,21 @@ impl Engine<'_> {
             self.advance(path);
             return Some(Ok(None));
         }
-        if path.objects[o].class != CLASS || !models_instance(owner, name, descriptor) || name == "isAssignableFrom" {
+        if path.objects[o].class != CLASS || !models_instance(owner, name, descriptor) || matches!(name, "isAssignableFrom" | "isInstance") {
             return None;
+        }
+        let primitive = path.literals.iter().any(|(literal, object)| *object == o && matches!(literal, Literal::PrimitiveClass(_)));
+        if name == "isPrimitive" && (primitive || self.class_named(path, o).is_some()) {
+            self.push_truth(path, if primitive { TRUE } else { FALSE });
+            return Some(Ok(None));
+        }
+        if primitive {
+            match name {
+                "isArray" => self.push_truth(path, FALSE),
+                "getSuperclass" | "getComponentType" | "getClassLoader" => { self.push(path, Val::R(None)); self.advance(path); }
+                _ => return None,
+            }
+            return Some(Ok(None));
         }
         let class = self.class_named(path, o)?;
         if name == "isArray" {
@@ -263,6 +374,16 @@ impl Engine<'_> {
                 let units: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
                 self.literal(path, Literal::Str(units), STRING)
             }
+            "getComponentType" => {
+                let Some(desc) = class.strip_prefix('[') else {
+                    self.push(path, Val::R(None));
+                    self.advance(path);
+                    return Some(Ok(None));
+                };
+                let component = Type::parse(desc).ok()?;
+                let key = if holds_references(&component) { Literal::Class(class_of(&component)) } else { Literal::PrimitiveClass(component.descriptor()) };
+                self.literal(path, key, CLASS)
+            }
             "getSuperclass" => {
                 let above = if class.starts_with('[') {
                     Some("java/lang/Object".to_string())
@@ -278,13 +399,14 @@ impl Engine<'_> {
                 self.advance(path);
                 return Some(Ok(None));
             }
-            _ => {
+            "getClassLoader" => {
                 if !self.cp.is_application(&class) {
                     return None;
                 }
                 self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
                 self.literal(path, Literal::Loader, LOADER)
             }
+            _ => return None,
         };
         self.push(path, Val::R(Some(value)));
         self.advance(path);
@@ -294,17 +416,47 @@ impl Engine<'_> {
     /// `Class.isAssignableFrom(other)` on the class literal `o`: see the module's notes. `None` where the call stays
     /// the JDK's.
     pub(super) fn class_relation(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
-        if path.objects[o].class != CLASS || (name, descriptor) != ("isAssignableFrom", "(Ljava/lang/Class;)Z") {
-            return None;
-        }
+        if path.objects[o].class != CLASS { return None; }
         let [Val::R(other)] = args else { return None };
+        let primitive = |at: usize| path.literals.iter().any(|(l, n)| *n == at && matches!(l, Literal::PrimitiveClass(_)));
+        if !primitive(o) && self.class_named(path, o).is_none() { return None; }
+        if primitive(o) || (name == "isAssignableFrom" && other.is_some_and(primitive)) {
+            let truth = match (name, descriptor, other) {
+                ("isInstance", "(Ljava/lang/Object;)Z", _) => FALSE,
+                ("isAssignableFrom", "(Ljava/lang/Class;)Z", None) => return Some(self.raise(path, "java/lang/NullPointerException")),
+                ("isAssignableFrom", "(Ljava/lang/Class;)Z", Some(p)) if primitive(*p) || self.class_named(path, *p).is_some() => if *p == o { TRUE } else { FALSE },
+                _ => return None,
+            };
+            self.push_truth(path, truth);
+            return Some(Ok(None));
+        }
         let above = self.class_named(path, o)?;
-        let Some(other) = *other else { return Some(self.raise(path, "java/lang/NullPointerException")) };
-        let below = self.class_named(path, other)?;
-        // A class or an interface by its internal name, with everything above it at hand: no primitive type
-        // (`int` has no `/`, and neither has a class of the unnamed package, which is left to the JDK with it)
-        // and no array.
-        let known = |cp: &ClassPath, class: &str| class.contains('/') && !class.starts_with('[') && cp.loads(class);
+        let below = match (name, descriptor, other) {
+            ("isInstance", "(Ljava/lang/Object;)Z", None) => {
+                self.push_truth(path, FALSE);
+                return Some(Ok(None));
+            }
+            ("isInstance", "(Ljava/lang/Object;)Z", Some(other)) => {
+                let obj = &path.objects[*other];
+                if obj.assumed || obj.lambda.is_some() { return None; }
+                obj.class.clone()
+            }
+            ("isAssignableFrom", "(Ljava/lang/Class;)Z", None) => return Some(self.raise(path, "java/lang/NullPointerException")),
+            ("isAssignableFrom", "(Ljava/lang/Class;)Z", Some(other)) => self.class_named(path, *other)?,
+            _ => return None,
+        };
+        // Resolve the leaf of an array literal as well. Primitive array descriptors
+        // determine their type without a primitive Class mirror.
+        let known = |cp: &ClassPath, class: &str| {
+            if class.starts_with('[') {
+                let element = class.trim_start_matches('[');
+                return match element.strip_prefix('L').and_then(|s| s.strip_suffix(';')) {
+                    Some(name) => cp.loads(name),
+                    None => matches!(element, "B" | "S" | "C" | "I" | "J" | "F" | "D" | "Z"),
+                };
+            }
+            cp.loads(class)
+        };
         if !known(self.cp, &above) || !known(self.cp, &below) {
             return None;
         }
@@ -477,6 +629,42 @@ impl Engine<'_> {
     /// the call stays the JDK's.
     pub(super) fn runtime_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
+            ("java/lang/System", "lineSeparator", []) => {
+                // Identity across calls is visible in the image: both load the same startup field.
+                let loaded = self.cp.load(owner).ok()??;
+                if loaded.origin != crate::classpath::Origin::Jdk { return None; }
+                let code = loaded.class.method(name, "()Ljava/lang/String;")?.code.as_ref()?;
+                let insns = code.instructions().ok()?;
+                let [(_, Insn::GetStatic(i)), (_, Insn::Return(Some(Kind::Ref)))] = insns.as_slice() else { return None };
+                let f = loaded.class.pool.member(*i).ok()?;
+                if (f.owner.as_str(), f.name.as_str(), f.descriptor.as_str()) != (owner, name, "Ljava/lang/String;") { return None; }
+                let o = self.literal(path, Literal::LineSeparator, STRING);
+                self.push(path, Val::R(Some(o)));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            (BOOLEAN, "valueOf", [Val::I(word)]) => {
+                let zero = self.b.is_zero(word);
+                let yes = self.literal(path, Literal::Truth(true), BOOLEAN);
+                let no = self.literal(path, Literal::Truth(false), BOOLEAN);
+                let result = choice(&mut self.b, vec![(-zero, Some(yes)), (zero, Some(no))]);
+                self.push(path, result);
+                self.advance(path);
+                Some(Ok(None))
+            }
+            ("java/lang/reflect/Array", "getLength", [Val::R(object)]) => {
+                let Some(o) = *object else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+                let obj = &path.objects[o];
+                if !obj.is_array() {
+                    if obj.assumed { return Some(self.of_unknown_class(path, o, "Array.getLength")); }
+                    return Some(self.raise(path, "java/lang/IllegalArgumentException"));
+                }
+                let length = obj.array.as_ref().expect("an array").length.clone();
+                self.push(path, Val::I(length));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            ("java/lang/Integer", "valueOf", [Val::I(bits)]) => self.cached_integral(path, "java/lang/Integer", bits),
             (CLASS, "forName", [Val::R(named), rest @ ..]) => {
                 // With a loader and no initialization, or by the caller's loader and with it.
                 let initializes = match rest {
@@ -537,6 +725,18 @@ impl Engine<'_> {
                 self.class_named(path, class)?;
                 let no = self.b.constant(0, 32);
                 self.push(path, Val::I(no));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            (COLLECTIONS, "emptySet", []) if self.cp.collections_empty_singleton("emptySet") => {
+                let o = self.literal(path, Literal::CollectionsEmptySet, "java/util/Collections$EmptySet");
+                self.push(path, Val::R(Some(o)));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            (COLLECTIONS, "emptyList", []) if self.cp.collections_empty_singleton("emptyList") => {
+                let o = self.literal(path, Literal::CollectionsEmptyList, throwables::EMPTY_LIST);
+                self.push(path, Val::R(Some(o)));
                 self.advance(path);
                 Some(Ok(None))
             }

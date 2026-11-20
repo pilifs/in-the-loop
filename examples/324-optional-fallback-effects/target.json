@@ -1,0 +1,159 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "optional-fallback-effects",
+    "family": "optional-fallback-effects",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "lazy": {
+        "fixture": "lazy"
+      },
+      "branch": {
+        "fixture": "branch"
+      },
+      "eager": {
+        "fixture": "eager"
+      }
+    },
+    "pairs": [
+      {
+        "name": "branch",
+        "kind": "positive",
+        "before": "lazy",
+        "after": "branch"
+      },
+      {
+        "name": "eager",
+        "kind": "introduction",
+        "before": "lazy",
+        "after": "eager"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/optionalgrid/Projection.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "branch",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I"
+    },
+    {
+      "id": "replay-eager",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "eager",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I"
+    },
+    {
+      "id": "value-lazy",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "claim": "claims/value.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "lazy"
+    },
+    {
+      "id": "value-branch",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "claim": "claims/value.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "branch"
+    },
+    {
+      "id": "value-eager",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "claim": "claims/value.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-eager"
+      ],
+      "expected": "established",
+      "revision": "eager"
+    },
+    {
+      "id": "callbacks-lazy",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "claim": "claims/callbacks.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "lazy"
+    },
+    {
+      "id": "callbacks-branch",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "claim": "claims/callbacks.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "branch"
+    },
+    {
+      "id": "callbacks-eager",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "claim": "claims/callbacks.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-eager"
+      ],
+      "expected": "refuted",
+      "revision": "eager"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/optionalgrid/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

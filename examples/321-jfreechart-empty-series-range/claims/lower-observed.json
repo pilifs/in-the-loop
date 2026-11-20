@@ -1,0 +1,40 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "lower",
+  "statement": "The lower endpoint agrees with scanning just the finite series values.",
+  "assume": "code >= 0 && code < 30",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 30,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "rangegrid.Projection#lower(I)I",
+    "mapping": "For the fifteen nonempty pairs of series choices (empty, -1, 0, 1), code chooses the two-key order. Only year 2012 in UTC is populated. The horizontal interval spans the full year and includeInterval is false. An absent result and NaN are distinct from any finite bound.",
+    "correspondence": "finite-oracle",
+    "cases": 30
+  },
+  "observedInitializers": {
+    "org.jfree.data.time.RegularTimePeriod": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13",
+    "assumptions": [
+      {
+        "kind": "library",
+        "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+        "basis": "engine",
+        "id": "observed-calendar:gregorian-utc-ad"
+      }
+    ]
+  },
+  "notes": [
+    "The native search uses the recorded RegularTimePeriod startup state and the two qualified UTC Gregorian calendar factories. Each civil date supplies all seven fields, including milliseconds. The original task retains its independent ambient startup obligation."
+  ]
+}

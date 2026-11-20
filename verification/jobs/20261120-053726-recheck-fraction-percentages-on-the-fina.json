@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-053726-recheck-fraction-percentages-on-the-fina",
+  "title": "Recheck Fraction percentages on the final numeric checker",
+  "description": "Check both historical Fraction revisions on the thirteen exactly representable boundary and control values. Keep each original guard, initialization assessment, exact double observer and 30-second budget.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "328"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T05:37:26+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 328 --tasks bits-parent,bits-fix,normal-parent,normal-fix,small-parent,small-fix --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/328-commons-math-fraction-percentage/receipts/bits-parent",
+    "examples/328-commons-math-fraction-percentage/receipts/bits-fix",
+    "examples/328-commons-math-fraction-percentage/receipts/normal-parent",
+    "examples/328-commons-math-fraction-percentage/receipts/normal-fix",
+    "examples/328-commons-math-fraction-percentage/receipts/small-parent",
+    "examples/328-commons-math-fraction-percentage/receipts/small-fix"
+  ]
+}

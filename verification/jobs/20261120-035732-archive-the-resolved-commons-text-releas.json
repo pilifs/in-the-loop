@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-035732-archive-the-resolved-commons-text-releas",
+  "title": "Archive the resolved Commons Text release score proof",
+  "description": "Run the original 225-input LCS claim again at its original semantics and preserve the complete structured checker output, released byte identity, route adapters and JVM controls. The latest transfer proved the score after matrix allocation and small-integer boxing.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "native:arrays"
+  ],
+  "links": {
+    "examples": [
+      "308",
+      "317"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T03:57:32+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" --native-record examples/308-commons-text-longest-common-subsequence/records/release-score-native.json > examples/308-commons-text-longest-common-subsequence/records/release-score-transfer.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/308-commons-text-longest-common-subsequence/records/release-score-native.json",
+    "examples/308-commons-text-longest-common-subsequence/records/release-score-transfer.json"
+  ]
+}

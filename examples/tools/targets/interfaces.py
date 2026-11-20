@@ -62,9 +62,13 @@ class TaskPlan:
     outputs: Mapping  # where its receipt goes, relative to the example's folder: {"receipts": "receipts/<task>"}
     folder: str  # the example's folder, absolute: every path in the plan is relative to it
     network: bool = False  # whether preparation needs acquisition (planning itself never does)
+    checkedLemmas: Optional[Mapping] = None  # optional proof strategy, with the input file's SHA-256
 
     def as_dict(self):
-        return to_dict(self)
+        values = to_dict(self)
+        if self.checkedLemmas is None:
+            values.pop("checkedLemmas")
+        return values
 
 
 # The keys of one TaskPlan.artifacts entry, one per revision the task prepares, resolved from target.json: `revision`
