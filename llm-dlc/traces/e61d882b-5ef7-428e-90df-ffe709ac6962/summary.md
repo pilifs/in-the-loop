@@ -1851,85 +1851,85 @@ fede9fa3  long-token  Inv…el (200 chars): About 33 CamelCase words run togethe
 
 ### The foundation and Python-architecture restart brief, with its Java starter kit, for one agent's run
 
-change `ovlxrolotlro` · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
+[`589920886687`](https://github.com/pilifs/in-the-loop/commit/589920886687e39a1c64ecd7ab4bd6e7f5c9307c) · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
 
 llm-dlc/loops/foundation-and-python-restart.md is the user's brief for a single Codex run that restarts the foundation work (claim and replay qualification on Gradebook and the two-root array fixture, the history inventory of example 105, Apache Commons Math GCD and ThreeTenBP as upstream cases) and then the Python proof-recipe architecture. It is copied unchanged but for the two links to the starter kit, which now point at java-foundation-starter.zip beside it instead of a web link. The kit holds the JVM reference programs the brief cites: Gradebook's three revisions and checker, the two-root array enumeration, the GCD and ThreeTenBP replay harnesses, and a README with the pinned upstream revisions.
 
 ### VF-045: a second Codex session opened the run-brief skill before working alone
 
-change `pkyzwyvytnmy` · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
+[`2bf509bb2731`](https://github.com/pilifs/in-the-loop/commit/2bf509bb273106c43973bb249fdd1f4a625c87aa) · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
 
 The single-agent run foundation-and-python-restart, a new Codex session given a prompt that calls the work 'written for multiple agents', read .agents/skills/run-brief/SKILL.md in its first minute, then decided the brief was for one agent and worked on it directly, starting nothing. The finding records this second occurrence.
 
 ### Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps
 
-change `lxnwsprmkwzv` · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
+[`08f4c5720557`](https://github.com/pilifs/in-the-loop/commit/08f4c57205574469363f68f72f140600fac7574e) · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
 
 The ChatGPT account gives every Codex session its apps as deferred tools (codex_apps). On the user's word (2026-11-19), four that no work in this repository has a use for are turned off: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space, Codex Document Control and Plugin Management stay. The loops pass the settings on every turn (CODEX_CONFIG in agent_client.py, as apps.&lt;connector id>.enabled=false), and .codex/config.toml carries the same for a person's own Codex in a trusted checkout. Run 1 of foundation-domain-streams called none of the eight apps. Verified with codex debug prompt-input (CLI 0.170) rendered with CODEX_CONFIG: only the four kept apps' namespaces remain, and CLAUDE.md is still read; the TOML parses; the changed tests pass (8 of 8 files).
 
 ### Record verification results for 1 job(s)
 
-change `pzqqompzkvnw` · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
+[`15f8af206822`](https://github.com/pilifs/in-the-loop/commit/15f8af2068229d40ed7c656216790ea93b62fb23) · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-214230-gradebook-frozen-claims-on-the-checkpoin: failed: 5 failed step(s) in 22.2s, peak 97.3 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `wmswovokuroq` · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
+[`5b6c529dc87b`](https://github.com/pilifs/in-the-loop/commit/5b6c529dc87b52d6c5cc81e5cc8c5f125fbb7ebb) · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `wuttosxkzuyp` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`72e02472cdf5`](https://github.com/pilifs/in-the-loop/commit/72e02472cdf5702e5cdd531120ac88ccdd5113ab) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-215957-threetenbp-hours-adapter-on-the-qualifie: failed: 1 failed step(s) in 12.0s, peak 220.5 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261119-220147-gradebook-qualified-attempts-and-interru: passed: 2 passed step(s) in 20.0s, peak 227.5 MiB (estimated 2m00s, 3.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×2; example:task-as-expected×3 Applied 84 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `qtnnvmzuwxtr` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`6ecd07f80ae1`](https://github.com/pilifs/in-the-loop/commit/6ecd07f80ae177eaba7b766cd2ec894027e7750a) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-215949-math-238-direct-recipe-on-frozen-power-a: passed: 1 passed step(s) in 6m23s, peak 994.5 MiB (estimated 9m00s, 4.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `pqqonrvpsvuo` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`cf64c4629d1b`](https://github.com/pilifs/in-the-loop/commit/cf64c4629d1bfb32f9f809781f52045d778bfafe) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261119-221145-qualify-heap-merges-initialized-display: passed: 1 passed step(s) in 5.0s, peak 92.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221152-qualify-integrated-jbmc-on-the-distinct: passed: 1 passed step(s) in 3.4s, peak 73.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221200-separate-quote-amount-and-ordered-send-r: failed: 1 failed step(s) in 4.0s, peak 85.2 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed 20261119-222214-check-the-supplementary-character-search: failed: 1 failed step(s) in 15.2s, peak 306.0 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `owxqwqnrkpok` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`062bbd776512`](https://github.com/pilifs/in-the-loop/commit/062bbd7765129fc16e0687be0b96958152bc80b8) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261119-221555-retain-a-measured-gcd-checker-timeout-an: passed: 1 passed step(s) in 3m26s, peak 951.7 MiB (estimated 5m00s, 3.0 GiB); 29 output file(s) changed Applied 29 output(s). 20261119-222610-recheck-quote-projections-with-compile-s: passed: 1 passed step(s) in 5.4s, peak 85.6 MiB (estimated 1m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `utsnpupxotvq` · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
+[`0c50e18a3386`](https://github.com/pilifs/in-the-loop/commit/0c50e18a338631fe0a78360ae25f8fdbcadfc0ca) · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a: failed: 4 passed, 1 failed step(s) in 28.1s, peak 233.9 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `zpymnulpnmwt` · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
+[`f7bae16bc1b1`](https://github.com/pilifs/in-the-loop/commit/f7bae16bc1b1a4993b9dff1372e115b76b4db036) · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a: passed: 5 passed step(s) in 28.9s, peak 210.8 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Applied 89 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Twenty Java verification examples as a fast-follow brief for one agent's run
 
-change `onuzmoonrylt` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`40f8ab01e540`](https://github.com/pilifs/in-the-loop/commit/40f8ab01e5400f292b44338dbf20307778c4b2b6) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 llm-dlc/loops/twenty-example-fast-follow.md is the user's brief for the run after foundation-and-python-restart: 20 new cases, ten historical upstream repairs (Commons Lang, ThreeTen-Extra, Commons CSV, Guava, Commons Collections, JFreeChart, Joda-Time, Commons Math, Commons Geometry) and ten controlled Java examples, in four waves (artifacts and observations; heaps and sequences; language and library boundaries; transfer and cost), each with a frozen subject, domain, observation, independent oracle and expected discriminator. Copied unchanged.
 
 ### Record verification results for 1 job(s)
 
-change `zqmtmlosvpxv` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`dd0916ea76c6`](https://github.com/pilifs/in-the-loop/commit/dd0916ea76c609a3b2f86874b84d7f243dd1e075) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-000226-threetenbp-clock-parent-with-observed-ch: passed: 1 passed step(s) in 13.0s, peak 154.4 MiB (estimated 1m00s, 2.0 GiB); 16 output file(s) changed; signals: example:task-as-expected×1 Applied 16 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Freeze Gradebook and MATH-238 claims on the checkpoint route (verification pending)
 
-change `oxzsrsuyxpmt` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`342983c8b3d9`](https://github.com/pilifs/in-the-loop/commit/342983c8b3d995c8105dd8f34285287798b721ae) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The read-only history inventory recovers all three before-property executions of example 105, retaining both artifact bindings and the distinction between historical refutations and eligible JVM evidence. Example 198 compares three Gradebook revisions on 306 inputs and finds 78 missing final-slot writes. Example 309 builds each complete upstream MathUtils class and finds 45 of 441 wrong GCDs before the repair and none afterward. The separate zero law passes on all 256 inputs of both revisions.
 
@@ -1937,13 +1937,13 @@ Public planning and artifact-bound JVM replays validated both packets. Jobs 2026
 
 ### Compare binary repository blobs as bytes in the tree lookup test
 
-change `pswlzwuwylul` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`235215c26b28`](https://github.com/pilifs/in-the-loop/commit/235215c26b28bb5f03d44d62a6c5083b244bc103) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The restart kit placed a ZIP under llm-dlc. The reference check tried to decode jj's concatenation of an entire directory as text. Check directory absence directly and compare both the ZIP and the README against raw jj file output. The failing regression passes on the real checkout.
 
 ### Bind direct and adapter proof recipes to recoverable executions (verification pending)
 
-change `mnxuqxvmruzl` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`d17f8c33adf0`](https://github.com/pilifs/in-the-loop/commit/d17f8c33adf006ca4333baacccde164c6af08eb6) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Plan and bind checker arguments from the same typed recipe. Preserve the original claim keys and classpath order, share preparations across tasks, and qualify concrete int and int-array candidates against the frozen domain and observations in fresh JVMs. The paired checker now supports scalar indices beside array roots. Persist the receipt identity, stages, artifact bindings, invocation and raw candidate across interruption and idempotent completion. Handoff lists executions and eligible evidence separately with their qualifications.
 
@@ -1953,7 +1953,7 @@ Jobs 20261119-220147-gradebook-qualified-attempts-and-interru, 20261119-215949-m
 
 ### Qualify independent framework observations and version checker evidence (verification pending)
 
-change `qkulzuuysrsr` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`57ae7d5ce2cd`](https://github.com/pilifs/in-the-loop/commit/57ae7d5ce2cdca7c887c638a0d0be43f1f4ee67e) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The framework effects checker can prove a return or an ordered send trace independently while preserving the complete original trace for JVM replay. Both shop revisions return 90 cents for quantities 99 and 100. Only the revised 100-item handler omits the send. A separate four-heap adapter and predecessor, setting and exception controls expose the exact domains checked. The shared Python decoder accepts historical untagged evidence and the versioned Rust output. Per-execution checker deadlines, CPU time and peak RSS make a repeated GCD obligation measurable.
 
@@ -1961,7 +1961,7 @@ Validated examples 193 and 197, the shop, four-heap and initialization JVM contr
 
 ### Apply the adapter recipe to Commons Lang UTF-16 search (verification pending)
 
-change `wmnqnlrmoqnz` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`b039502134a5`](https://github.com/pilifs/in-the-loop/commit/b039502134a5cfbd64abb1cbdbf5e57c4120bfc8) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 A second adapter instance maps two integers to a real StringBuilder and a code point, then calls the pinned public lastIndexOf overload. The independent token oracle counts UTF-16 offsets. The old library missed 25 of 160 searches and the repair missed none. Both passed all 85 absent-character and 120 single-unit controls, and the direct JVM calls matched the adapter throughout. Validated the packet, ordinary replay and six public task plans.
 
@@ -1969,13 +1969,13 @@ Job 20261119-222214-check-the-supplementary-character-search runs the five separ
 
 ### Separate compile stubs from the shop application artifacts (verification pending)
 
-change `lykzpopwytml` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`d54089fa3510`](https://github.com/pilifs/in-the-loop/commit/d54089fa351099f9f495aeff78d5320f00901556) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The first independent framework checks were refused because their application directories contained the compile-time Kafka stub. Compile the stubs separately, give only application classes to framework discovery, and record both sets of hashes. The independent JVM still observes 90 cents for both orders on both revisions. Only the 100-item send disappears. Job 20261119-222610-recheck-quote-projections-with-compile-s retries the two original claims.
 
 ### Reconcile concrete JVM evidence and freeze Gradebook frame rules (verification pending)
 
-change `kurmqpxlpnmx` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`2410dccd836c`](https://github.com/pilifs/in-the-loop/commit/2410dccd836c297d13788f52006b3d02072a4b62) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Check a replay's domain guard, program, selected values, input, JDK, class digest and ordered classpath against the prepared proof. Record both the checked adapter class and original class identities before launching a verifier. A retry refuses a different recorded artifact binding. Handoff groups historical executions by source and binding, can recover receipts retained by failed jobs, and counts required claim/subject pairs independently of retries.
 
@@ -1983,19 +1983,19 @@ Gradebook now declares the four absolute previous-value, full-state, interior an
 
 ### Keep duplicate completions stable when a sibling claim is added
 
-change `qxmqxnksslls` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`75fb81c2344c`](https://github.com/pilifs/in-the-loop/commit/75fb81c2344cd7979cf91696231be946e44725ab) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 A repeated delivery must match the original raw records and prepared binding even if target.json has since gained an unrelated task. Preserve the receipt's historical sidecar identity and reject conflicting content. The ordinary route now journals an unsupported translation before spending work on preparation. The route and recipe tests pass.
 
 ### Expose claim-specific witness replay and keep late rejections in history
 
-change `kwxuypsuymsl` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`41f03433f8f0`](https://github.com/pilifs/in-the-loop/commit/41f03433f8f022cc6d0ede5f89c65bb001cce79e) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 A reviewer can submit typed concrete inputs through build.py --task T --replay-witness FILE. Each review binds the selected artifacts, rechecks adapter correspondence where applicable, runs the frozen domain and observation on the JVM, and journals its evidence. The last-slot Gradebook input reproduced the complete array difference, agreed on the return and was rejected outside the interior domain. The return-only proof remained eligible after its later replay rejection. Ran the three public reviews and the build, route and recipe tests.
 
 ### Integrate all restart verification results and publish the claim handoff
 
-change `wuqvmopopvzq` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`7f18d80fb05d`](https://github.com/pilifs/in-the-loop/commit/7f18d80fb05d0c62bd09d84ff94535db3cd9b79b) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 All 17 Gradebook and four Apache GCD claim/subject pairs are decided. The independent shop projections establish the returned amount and refute ordered-send preservation. Native covers the 71 two-root heaps and JBMC qualifies its separate four-heap overlap. Checker qualification preserved the branch and initializer differences and classified handled and escaping division. The exception-message, wide JBMC preservation and strict ThreeTenBP and Commons Lang gaps remain discoverable in their original records.
 
@@ -2003,7 +2003,7 @@ The handoff links the three Gradebook proof plans and late witness reviews, conc
 
 ### Execute BigInteger factory allocations from the selected JDK
 
-change `nrnxuuxrkwkm` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`2a56ed9faa15`](https://github.com/pilifs/in-the-loop/commit/2a56ed9faa15f1146ca2a08aa5e0452a8ccc35a5) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 ThreeTenBP initializes a nanoseconds constant with BigInteger.valueOf(long). The native checker now follows the actual factory, constructor and magnitude allocation bytes in the selected JDK image. A path that reads the JDK cache refuses that field. Missing images and unrelated methods retain their existing diagnostics.
 
@@ -2011,7 +2011,7 @@ The changed suite passed all four selections, including 58 Rust binaries. The ne
 
 ### Check ASCII case-insensitive regex classes and alternatives
 
-change `pqplpwpwtlls` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`9d878d108e13`](https://github.com/pilifs/in-the-loop/commit/9d878d108e133f4730ecbfbdc11aefe2e98c3859) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 ThreeTenBP constructs a duration parser using optional groups, digits and punctuation under Pattern.CASE_INSENSITIVE. The native matcher now tests the opposite case of each ASCII letter against a bracket range when that flag is set, and applies negation afterward. This also handles alternatives and symbolic flag selection.
 
@@ -2019,7 +2019,7 @@ The changed suite passed 30 of 30 selections. Tests compare bracket ranges and a
 
 ### Retry archived proof executions in a batch (verification pending)
 
-change `vksqzqsusnpq` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`c00c9ccf72eb`](https://github.com/pilifs/in-the-loop/commit/c00c9ccf72eb4d28779e0dfcc8ee8a5309051f4b) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The public proof command can follow a retry ID into a collected job and recheck its source claim, revisions and prepared byte binding. A batch accepts one ID per task while sharing preparations. Both handoff formats keep the prior executions discoverable. The regression test covers altered archive bytes, a different claim and an invalid batch.
 
@@ -2027,7 +2027,7 @@ Verification job 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a retrie
 
 ### Pin the clock retry to the integrated checker (verification pending)
 
-change `rvuvwnmstvms` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`3be6b78b2aa1`](https://github.com/pilifs/in-the-loop/commit/3be6b78b2aa1cd1fd4a39e27b3299b558fee05bb) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The previous job reached the numeric factory and then the duration regex because its polling runner picked up a temporary file-set-aside commit while a scoped commit was finishing. All original executions survive. Job 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a explicitly selects a78b7348, whose library contains both changes, for the same five strict attempts and three JVM reviews.
 
@@ -2035,7 +2035,7 @@ The probe record preserves the checker outputs for each diagnostic, including tw
 
 ### Keep temporary jj file splits out of the verification queue
 
-change `rrosmsokmqzz` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`30dd2c93a8a2`](https://github.com/pilifs/in-the-loop/commit/30dd2c93a8a2e720a65e0224f95dabd44e9d5aeb) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 A runner polling another workspace picked up a ThreeTenBP job while sync.py was setting aside files outside a scoped commit. The transient tree carried only the first checker change. For a runnable job the queue now checks which commit last touched its file, including jobs with explicit source revisions, and waits while that commit is the temporary set-aside.
 
@@ -2043,7 +2043,7 @@ The queue regression exercises two simultaneous views of the same job, both revi
 
 ### Integrate the clock retries and record all five native blockers
 
-change `ymmomsosuvlp` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`475cc1add425`](https://github.com/pilifs/in-the-loop/commit/475cc1add425e858dc87edd5f0b5e5a7a18bc03f) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The pinned checker on a78b7348 passes Duration initialization on the original ThreeTenBP artifacts and stops at ServiceLoader.load in Chronology initialization for all five strict claims. Each task now has a rerunnable refusal packet in the gap inventory. The public JVM witness refutes the parent clock, satisfies the fixed clock and fails membership for the same-day domain.
 
@@ -2051,13 +2051,13 @@ The collector’s earlier job remains in history with its factory-only checker a
 
 ### Propose the restart watcher decision ID for trace review
 
-change `yymsymovkxsl` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`04446d125475`](https://github.com/pilifs/in-the-loop/commit/04446d12547513d471af14d211aff55ecb701c01) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Two archived collector logs contain the same long-token finding. Masked context and an independent digest check identify the value as the ID of the watcher’s recorded continue decision. The allow-list entry remains proposed for a person to review. All 11 test selections for the proposal passed.
 
 ### Check ThreeTenBP with a JVM-bound single-threaded chronology registry (verification pending)
 
-change `nwkovvmpuklp` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`2fda1f51c503`](https://github.com/pilifs/in-the-loop/commit/2fda1f51c50307d85e4967e9033a0005afed2a57) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Give the native checker a selected String-key ConcurrentHashMap, materialize empty registry objects observed on the pinned JVM, and check enum ordering with the selected JDK bytecode. The interpreter now distinguishes different enum declarations during replay. The public proof recipe binds the initializer class bytes and state separately for each revision and checks structured runtime assumptions. The five new tasks retain the original tick domains, cite their original tasks, and declare an unwind of 32. Tests cover aliasing, key equality, nulls and exceptions, model selection, and rejection of the wrong initializer or state. All 29 changed test groups and the example validator passed.
 
@@ -2065,67 +2065,67 @@ Verification pending for 20261120-000226-threetenbp-clock-fix-with-observed-chro
 
 ### Queue each qualified ThreeTenBP obligation at its tested revision (verification pending)
 
-change `qotvktowksop` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`497309d8b9eb`](https://github.com/pilifs/in-the-loop/commit/497309d8b9eb7841b7b34763ad83ea1fe72a1b99) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Five independent jobs pin the tested implementation at 0dc25164 and preserve each receipt separately. The word-level solver receives 600 seconds per obligation. Jobs 20261120-000226-threetenbp-clock-fix-with-observed-chron and 20261120-000226-threetenbp-clock-parent-with-observed-ch check elapsed whole hours. Jobs 20261120-000226-threetenbp-reversal-fix-with-observed-ch and 20261120-000227-threetenbp-reversal-parent-with-observed check sign reversal. Job 20261120-000227-threetenbp-same-day-with-observed-chrono compares the two revisions on same-day intervals. All five definitions passed submission validation.
 
 ### Check every sub-hour crossing of midnight on both revisions (verification pending)
 
-change `wuornlumkuus` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`386a339a17ef`](https://github.com/pilifs/in-the-loop/commit/386a339a17ef34c21311c8875e488b62451d43cb) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The independent JVM driver enumerates the two-date grid and finds twelve signed sub-hour intervals that cross midnight. The production parent returns one hour in magnitude on all twelve and the fix returns zero. Two separately required public tasks freeze these inputs and the sampled chronology binding, with the same compiled subject and adapter as the full-grid tasks. A fixed-clock native probe established agreement with elapsed minutes on this subset. The example validator and all 24 selected test groups passed. Job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t checks both zero-hour claims and publishes their receipts.
 
 ### Honor the per-claim checker deadline in public task batches (verification pending)
 
-change `wmzztnsqzqyn` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`3434272c550c`](https://github.com/pilifs/in-the-loop/commit/3434272c550cfd93b6ff748a043f6f84c0ff34c3) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The sub-hour verification job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t exited during argument parsing before launching either task. Parse the checker deadline once for single and batch execution and pass it to each batch member alongside its retry identity. The public-entry regression tests mixed outcomes, shared preparation and a 120-second budget on both calls. All 27 selected test groups passed. Superseding job 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t runs the same command, budget, claims and expectations.
 
 ### Verify supplementary code points and StringBuilder search in native bytecode (verification pending)
 
-change `pkrtqvvpwynv` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`0853ec74fbb4`](https://github.com/pilifs/in-the-loop/commit/0853ec74fbb44c64934a70d0abbca0302793fec2) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Share the UTF-16 encoding of a Java code point between String search, Character.toChars and StringBuilder.appendCodePoint. Invalid input throws before the builder changes. Model the Basic Latin and Combining Diacritical Marks regex blocks used in library initialization. A symbolic test checks the conversion and exception classes, a JVM checks all 65,536 BMP units and supplementary boundary controls, and interpreter replay checks the same units. The strict fixed Commons Lang probe established the original last-match property. The 27 selected test groups passed. Job 20261120-001502-retry-commons-lang-utf-16-search-on-the retries all five original claims with their original execution references, source artifacts and budgets.
 
 ### Propose the watcher's two decision ids for the allow list
 
-change `xulyotzsuymv` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`7ba94efd4673`](https://github.com/pilifs/in-the-loop/commit/7ba94efd4673860525836648d3ac3ff4b9fc529e) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The watcher session's logs carry single-foundation-and-python-restart-D001 and -D002, the ids single_run.py gives the watcher's continue answers, which the scan reads as long tokens (10126be8, d5cbb565). Checked masked: each occurs after 'continue recorded as'. Proposed for a person to approve; the run's agent proposed 10126be8 too on its own line. The commit also holds the run's decision record (llm-dlc/decisions/single-foundation-and-python-restart.*).
 
 ### Record verification results for 2 job(s)
 
-change `slvrxzkqtqvz` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`fecf86330f50`](https://github.com/pilifs/in-the-loop/commit/fecf86330f504d4c391756a9cd4e23c4ac4475f9) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 20261120-000227-threetenbp-same-day-with-observed-chrono: passed, its receipt in examples/310-threeten-complete-hours/receipts/same-day-observed. 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t: failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB); its outputs were not produced. Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way. Two collections that ran beside a commit of the watcher's were folded into this one commit.
 
 ### Regenerate the traces README after folding two results commits
 
-change `xymkkkzururw` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`c62d27f1c572`](https://github.com/pilifs/in-the-loop/commit/c62d27f1c5721a0ba70b1f10358a3b94687714c4) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Folding two verification-result commits that had raced a watcher commit left llm-dlc/traces/README.md out of step with the manifests; sync.py regenerate brings it back.
 
 ### Record verification results for 3 job(s)
 
-change `wzovxqwloyok` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`734f042eeaf2`](https://github.com/pilifs/in-the-loop/commit/734f042eeaf2a396dd14d12b1e26fdea1227a0c6) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-000226-threetenbp-clock-fix-with-observed-chron: failed: 1 failed step(s) in 10m09s, peak 1.5 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000226-threetenbp-reversal-fix-with-observed-ch: failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000227-threetenbp-reversal-parent-with-observed: failed: 1 failed step(s) in 10m10s, peak 990.8 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `nkvunvqknrur` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`b5d56a243fb7`](https://github.com/pilifs/in-the-loop/commit/b5d56a243fb75b4275b1326ce15c2fa6bba63d00) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t: passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `mrswtquknywo` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`eaecb9dc32f8`](https://github.com/pilifs/in-the-loop/commit/eaecb9dc32f802e28c7044075aa6227c24d9983d) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-001502-retry-commons-lang-utf-16-search-on-the: passed: 1 passed step(s) in 15.0s, peak 319.9 MiB (estimated 1m00s, 3.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×5 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Integrate the native calendar and UTF-16 results with their qualification evidence
 
-change `syymwsotsnnz` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`c99445fd9fed`](https://github.com/pilifs/in-the-loop/commit/c99445fd9fed2f20246306c29a7cc7ea468625ba) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The five original Commons Lang retries are decided. With the JVM-observed chronology registries, the native checker refuted the parent clock on the full grid, established same-day preservation, refuted the parent on sub-hour crossings and proved the fix on all twelve. Three full-grid temporal searches exhausted their 600-second budgets. Record the original and derived claim scopes, independent witnesses, class and state bindings, and per-task budgets in the handoff. Resource reproductions restore the recorded solver and deadline and check exhaustion in the execution journal. Both packet validators and all 39 selected test groups passed. The eight job manifests account for 187 verified output digests.
 
@@ -2133,13 +2133,13 @@ The collector merge retained all 67 human-approved allow-list entries and both p
 
 ### Propose the restart watcher decision-number placeholder for trace review
 
-change `ynlszrmtssvt` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`99ddee6c58bc`](https://github.com/pilifs/in-the-loop/commit/99ddee6c58bcbec787627a6059795c60d226df02) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The masked collector context describes its 41-character watcher decision template. Recomputing the finding ID from the public decision numbers with their last digit replaced by N identified finding 1bbaf196. The template joins the two individual decision IDs already proposed for human review. The eleven selected tests passed.
 
 ### Qualify both array poststates through throws (verification pending)
 
-change `lmwyrqvpvwsu` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`e78e3b3d0593`](https://github.com/pilifs/in-the-loop/commit/e78e3b3d0593d0374e3142536095491382ab1723) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 When exception class is outside the selected observer, the pair harness records a normal int or an out-of-range long sentinel for a throw and retains the actual final arrays. The unconditional JVM handler also catches exceptions whose JDK inheritance JBMC stubs. Class-sensitive observations keep the original handler.
 
@@ -2147,7 +2147,7 @@ Job 20261120-005556-recheck-jbmc-preservation-on-all-71-null runs both revision 
 
 ### Solve bounded integer domains with word diagrams (verification pending)
 
-change `nzsmlyksrxyu` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`2c44044eba7c`](https://github.com/pilifs/in-the-loop/commit/2c44044eba7c61f592641f0778ccf6dd9e740355) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The native checker can encode high bits fixed by its compiled integer guard and solve arithmetic on reduced ordered decision diagrams. Every term and clause goes to the backing word-level solver, which takes over at an input or node limit. Candidates still require ordinary JVM qualification. The checker records how many queries each solver answered.
 
@@ -2155,7 +2155,7 @@ A full-grid fixed ThreeTenBP probe completed in 4.7 seconds after a 600-second d
 
 ### Qualify VM exception text and calendar service discovery
 
-change `mtzlppvywryz` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`17390e11d910`](https://github.com/pilifs/in-the-loop/commit/17390e11d910f0089bbaab023ca76278c50e3b46) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Four fresh HotSpot processes executed the same Controls class as the frozen foundation check. The initial arithmetic message had the expected text in each. The warmed default process returned a different policy result 37,908 times in 50,000 calls. A separate catch observed null messages. Disabling fast throw and running interpreted preserved the text on every call in those processes.
 
@@ -2163,19 +2163,19 @@ On both frozen ThreeTenBP application classpaths, changing only the thread conte
 
 ### Record verification results for 1 job(s)
 
-change `skzzvykuuoot` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`d97fb0f6e28d`](https://github.com/pilifs/in-the-loop/commit/d97fb0f6e28da58be4d95a636a203ab0d437bb06) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-005556-recheck-jbmc-preservation-on-all-71-null: passed: 2 passed step(s) in 7.2s, peak 74.7 MiB (estimated 20.0s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uotkyzwmrkuz` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`42cb8498d8ba`](https://github.com/pilifs/in-the-loop/commit/42cb8498d8ba328a83d128419aafd9679abcd5fe) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-010828-retry-all-five-full-grid-threetenbp-regi: failed: 4 failed, 1 passed step(s) in 1m44s, peak 848.8 MiB (estimated 1m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-as-expected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Validate finite word counters in receipts (verification pending)
 
-change `qsopuqyvnpzx` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`6f6ef2339859`](https://github.com/pilifs/in-the-loop/commit/6f6ef233985957fc928d73be2bfc8e1aed5ce64a) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The public receipt schema now accepts the checker’s two nonnegative integer query counts and rejects missing or malformed counts. The initial five full-grid runs stopped at receipt publication despite returning four proofs and a reproduced parent counterexample. Their checker outcomes, prepared bindings and replay stages are archived in 20261120-010828-retry-all-five-full-grid-threetenbp-regi.
 
@@ -2183,13 +2183,13 @@ Job 20261120-012520-publish-five-linked-full-grid-threetenbp retries those five 
 
 ### Record verification results for 1 job(s)
 
-change `lyszoznyxlls` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`cb62ff5cf359`](https://github.com/pilifs/in-the-loop/commit/cb62ff5cf359d00eca46529a2ed09f58cac3ebcb) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-012520-publish-five-linked-full-grid-threetenbp: passed: 5 passed step(s) in 1m36s, peak 848.5 MiB (estimated 1m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Close full-grid calendar deadlines (verification pending)
 
-change `tsynttsptnps` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`df2181617440`](https://github.com/pilifs/in-the-loop/commit/df218161744030695825c0042bd0739c7c727629) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 All five full-grid calendar obligations under the captured registry have published receipts on their original subject bindings. The fixed clock and the two reversal checks completed in 5.365, 6.867 and 14.383 checker seconds at their previous 600-second budgets. The parent witness at ticks 2 and 97 returned 24 instead of 23. Resource gap packets now link to their closing receipts. Four property receipts failed schema validation in the previous batch. Its same-day equivalence published successfully, as this audit and the session correction record.
 
@@ -2199,13 +2199,13 @@ Trace review proposal e1eb1bc6 matches the third public restart watcher decision
 
 ### Record verification results for 1 job(s)
 
-change `kpmstovlvzww` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`fdf2f26dd010`](https://github.com/pilifs/in-the-loop/commit/fdf2f26dd01024a3ab9157bb397a1e7632630cc4) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-013844-qualify-shared-and-distinct-right-root-p: passed: 3 passed step(s) in 18.0s, peak 75.0 MiB (estimated 20.0s, 1.0 GiB); 9 output file(s) changed Applied 9 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record shared and distinct right-root proofs on JBMC
 
-change `kxvqvqvszpnk` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`05ea3558ad9d`](https://github.com/pilifs/in-the-loop/commit/05ea3558ad9d468c3f41aa1e6c39f467efe3d2e0) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Job 20261120-013844-qualify-shared-and-distinct-right-root-p produced four complete non-vacuous proofs and two JVM-replayed refutations. On the 71-heap domain the right-root witness uses two references to one [0]. On the nine distinct heaps JBMC proves the right root agrees even when a left write is skipped, while the two-root witness uses two different arrays holding [0]. The equivalent rewrite passes on both profiles.
 
@@ -2213,19 +2213,19 @@ Verified all nine output digests, each raw checker statement, the six qualificat
 
 ### Record the watcher's last two answers on the foundation-and-python-restart run
 
-change `umtznouwluvn` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`7c762cbba5cb`](https://github.com/pilifs/in-the-loop/commit/7c762cbba5cba9e4f99f3ae4dcc6c6b1afe9f97c) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 D003 (continue after cycle 3, at the user's word for more checker depth) and D004 (stop after cycle 4: the restart brief's outcome reached) were in the default workspace's decision record when the run landed by moving forward; they are committed here and the review page regenerated (decisions.py render).
 
 ### Allow the statement's vacuity.outside in the receipt schema
 
-change `nxytvllqoupt` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`de2df2c8898b`](https://github.com/pilifs/in-the-loop/commit/de2df2c8898b946106bcab562e6a33a6cd94a2a6) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The foundation-and-python-restart run added Vacuity.outside to the checker's statement (lib/src/statement.rs, nwkovvmp: the allowed change a regression witness is known to lie outside) and a qualification that requires it, but examples/schema/result.schema.json still forbids extra vacuity fields, so a receipt from a current build fails check_result. The run's own default run did not see it: its workspace has no release build, so test_targets_contract's fixture calibration skipped there; this checkout's release binary predated the change until it was rebuilt. The schema now admits the field. test_targets_contract passes on the rebuilt binary, and test_costs.py run --changed passed 10 of 10.
 
 ### Bind ordered JARs and finite JVM observations (verification pending)
 
-change `pyrvssmmxpll` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`f2f9e89a61ea`](https://github.com/pilifs/in-the-loop/commit/f2f9e89a61ea65d2bc6f972c4380616bf3f927c9) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The public recipe records explicitly selected duplicate dependency classes, confirms their code source and bytes in a fresh JVM, and rejects the opposite dependency order. A typed finite table qualifies each adapter projection independently against every declared direct JVM input. Example 312 changed four invoice amounts on identical client bytes. Example 314 found twelve poststate differences despite identical exception classes. Example 315 found six formatting and six parsing errors on the historical parent yet every round trip held. The three validators, 42 changed test groups, and the reversed-order negative control passed.
 
@@ -2233,13 +2233,13 @@ Jobs 20261120-023617-check-invoice-values-on-swapped-dependen, 20261120-023617-c
 
 ### Record verification results for 3 job(s)
 
-change `vwpmlwpnpxwr` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`5cf3f2c40233`](https://github.com/pilifs/in-the-loop/commit/5cf3f2c402335ba1f3336135a15e67cce5c991a5) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-023617-check-invoice-values-on-swapped-dependen: failed: 1 failed step(s) in 8.8s, peak 167.7 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×1 20261120-023617-check-partial-copy-state-through-arrayst: failed: 1 failed step(s) in 6.6s, peak 145.1 MiB (estimated 2m00s, 2.0 GiB); 51 output file(s) changed; signals: example:task-unexpected×3 20261120-023617-check-signed-time-in-each-direction-on-t: failed: 1 failed step(s) in 11.2s, peak 191.4 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Check bounded matrix allocation on real bytecode (verification pending)
 
-change `kzmsmqomutxs` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`8455248317ef`](https://github.com/pilifs/in-the-loop/commit/8455248317efed48eeb2d1c6c3f8dae9370eeaf1) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The native checker now allocates independent nested arrays, including symbolic row lengths, partial dimensions and Java negative-size behavior. An independently checked finite JVM report shows seven signed-zero errors among 84 Commons Lang arrays, six incorrect CSV equalities among nine pairs, fifteen shared-row errors among eighteen theatre seats, and forty queue histories versus twenty-eight final queues among 121 command words. The public paired route can qualify a generated harness candidate on both original dependency closures. Eight example validators and all 43 changed test groups passed.
 
@@ -2247,13 +2247,13 @@ Jobs 20261120-025230-check-signed-zero-maximum-on-raw-and-num, 20261120-025230-c
 
 ### Record verification results for 6 job(s)
 
-change `kulpoouzrmkw` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`88c128403f36`](https://github.com/pilifs/in-the-loop/commit/88c128403f36a8d78067000837f412abe1a84125) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 4 of the 6 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-025230-check-csv-row-limit-equality-hash-implic: failed: 1 failed step(s) in 21.8s, peak 679.9 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-025230-check-signed-zero-maximum-on-raw-and-num: failed: 1 failed step(s) in 13.1s, peak 298.3 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-025230-replay-the-paired-invoice-witness-on-eac: passed: 1 passed step(s) in 8.8s, peak 122.6 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-025230-verify-bounded-queue-histories-and-final: passed: 1 passed step(s) in 6.2s, peak 132.0 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4 Applied 62 output(s). 20261120-025230-verify-independently-allocated-and-share: passed: 1 passed step(s) in 8.8s, peak 139.6 MiB (estimated 2m00s, 2.0 GiB); 137 output file(s) changed; signals: example:task-as-expected×9 Applied 137 output(s). 20261120-025231-recheck-the-commons-text-lcs-score-after: passed: 1 passed step(s) in 3.8s, peak 93.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Check frozen Java domains on fresh class loaders (verification pending)
 
-change `tykvyrvvpvzs` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`cbcf81936a84`](https://github.com/pilifs/in-the-loop/commit/cbcf81936a84990d16b7432c64d85c9b7db35b58) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The twenty examples now declare 123 separate claim and subject pairs. They include ten historical repairs with parent-checked Git revisions and independent direct JVM calibrations. The public finite-domain strategy exhausts a certified Java integer envelope, runs the complete guard and observer on each revision, records per-input evidence, and separately JVM-replays its first counterexample. Class-loader, bridge, compiler, source-provenance, and concrete operation-history evidence accompanies each relevant packet. Replaying a three-offer queue witness refutes its response history and preserves its final contents.
 
@@ -2263,43 +2263,43 @@ Native and exhaustive verification, the interrupted batch, the like-for-like til
 
 ### Record verification results for 2 job(s)
 
-change `xpmqkupmpqlt` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`6dd99d3f54f4`](https://github.com/pilifs/in-the-loop/commit/6dd99d3f54f463dbf203c521a37a55b31893ad9d) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-032649-exhaustive-jvm-322-resource-close-order: failed: 1 failed step(s) in 10.0s, peak 129.6 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed 20261120-032650-interrupt-a-reordered-three-claim-tai-ba: passed: 1 passed step(s) in 5.6s, peak 144.7 MiB (estimated 1m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 19 job(s)
 
-change `rpnxlsnumnzv` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`8ad0b07caf52`](https://github.com/pilifs/in-the-loop/commit/8ad0b07caf52f11f2fb6acc4ad8422fae561edea) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 18 of the 19 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-032648-exhaustive-jvm-312-one-invoice-class-wit: passed: 1 passed step(s) in 16.6s, peak 125.6 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261120-032648-exhaustive-jvm-313-commons-lang-maximum: passed: 1 passed step(s) in 24.9s, peak 319.5 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261120-032648-exhaustive-jvm-314-array-copy-leaves-a-p: passed: 1 passed step(s) in 13.2s, peak 125.8 MiB (estimated 2m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261120-032648-exhaustive-jvm-315-threeten-extra-format: passed: 1 passed step(s) in 23.3s, peak 158.8 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261120-032648-exhaustive-jvm-316-commons-csv-row-limit: passed: 1 passed step(s) in 41.0s, peak 651.3 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261120-032648-exhaustive-jvm-317-marking-one-seat-in-a: passed: 1 passed step(s) in 19.3s, peak 123.4 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-032648-exhaustive-jvm-318-bounded-queue-respons: passed: 1 passed step(s) in 11.8s, peak 126.6 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261120-032648-exhaustive-jvm-319-guava-keeps-the-last: passed: 1 passed step(s) in 47.2s, peak 570.8 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed Applied 9 output(s). 20261120-032648-exhaustive-jvm-320-commons-collections-v: passed: 1 passed step(s) in 25.9s, peak 284.5 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261120-032649-exhaustive-jvm-321-jfreechart-range-endp: passed: 1 passed step(s) in 34.0s, peak 414.2 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed Applied 9 output(s). 20261120-032649-exhaustive-jvm-323-an-erased-mapper-brid: passed: 1 passed step(s) in 20.5s, peak 124.7 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed Applied 9 output(s). 20261120-032649-exhaustive-jvm-324-lazy-optional-fallbac: passed: 1 passed step(s) in 17.1s, peak 133.0 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261120-032649-exhaustive-jvm-325-one-label-method-comp: passed: 1 passed step(s) in 13.5s, peak 129.3 MiB (estimated 2m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261120-032649-exhaustive-jvm-326-commons-lang-duration: passed: 1 passed step(s) in 25.7s, peak 311.4 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261120-032649-exhaustive-jvm-327-joda-time-distances-b: passed: 1 passed step(s) in 26.0s, peak 228.5 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed Applied 9 output(s). 20261120-032649-exhaustive-jvm-328-commons-math-fraction: failed: 1 failed step(s) in 38.4s, peak 432.6 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed 20261120-032649-exhaustive-jvm-329-commons-geometry-inte: passed: 1 passed step(s) in 16.5s, peak 188.6 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261120-032649-exhaustive-jvm-330-two-editors-increment: passed: 1 passed step(s) in 11.1s, peak 131.9 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261120-032649-exhaustive-jvm-331-floor-tiling-counts-a: passed: 1 passed step(s) in 31.9s, peak 129.8 MiB (estimated 2m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 13 job(s)
 
-change `tprlovpsokmr` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`147776955d64`](https://github.com/pilifs/in-the-loop/commit/147776955d64e43c9d60c4b81ac027bfd0d0b88c) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 5 of the 13 job(s); 8 kept under outputs/, not applied (the job didn't pass). 20261120-032646-native-319-guava-keeps-the-last-put-acro: failed: 1 failed step(s) in 31.3s, peak 541.1 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-032646-native-320-commons-collections-views-upd: failed: 1 failed step(s) in 17.3s, peak 282.3 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-032646-native-321-jfreechart-range-endpoints-wi: failed: 1 failed step(s) in 25.9s, peak 436.7 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-032646-native-322-resource-close-order-and-supp: failed: 1 failed step(s) in 14.4s, peak 139.7 MiB (estimated 2m00s, 2.0 GiB); 135 output file(s) changed; signals: example:task-unexpected×9 20261120-032647-native-323-an-erased-mapper-bridge-rejec: passed: 1 passed step(s) in 13.0s, peak 143.4 MiB (estimated 2m00s, 2.0 GiB); 121 output file(s) changed; signals: example:task-as-expected×8 Applied 121 output(s). 20261120-032647-native-324-lazy-optional-fallback-has-ob: failed: 1 failed step(s) in 9.4s, peak 142.6 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-032647-native-325-one-label-method-compiled-to: passed: 1 passed step(s) in 8.8s, peak 141.4 MiB (estimated 2m00s, 2.0 GiB); 46 output file(s) changed; signals: example:task-as-expected×3 Applied 46 output(s). 20261120-032647-native-326-commons-lang-duration-fields: failed: 1 failed step(s) in 20.5s, peak 300.9 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-032647-native-327-joda-time-distances-between-l: failed: 1 failed step(s) in 16.7s, peak 240.9 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-032647-native-329-commons-geometry-intersects-a: failed: 1 failed step(s) in 10.4s, peak 193.7 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-032647-native-330-two-editors-increment-the-sam: passed: 1 passed step(s) in 8.2s, peak 164.0 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-032650-recheck-the-lcs-matrix-and-its-boxed-res: passed: 1 passed step(s) in 4.2s, peak 87.7 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261120-032650-retry-three-array-copy-claims-with-exact: passed: 1 passed step(s) in 9.4s, peak 173.8 MiB (estimated 2m00s, 2.0 GiB); 52 output file(s) changed; signals: example:task-as-expected×3 Applied 52 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `wxrtssnssmkx` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`fa717c9bac41`](https://github.com/pilifs/in-the-loop/commit/fa717c9bac416684e096d8fc3829ba9c5ee440f1) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-032647-native-328-commons-math-fraction-percent: failed: 1 failed step(s) in 30.7s, peak 470.4 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed; signals: example:not-executed×6 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `qqpmpzkwxzuq` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`9fc66385fc38`](https://github.com/pilifs/in-the-loop/commit/9fc66385fc38b4d907ea71db0bdce30e2e88bd71) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-032648-native-331-floor-tiling-counts-and-two-d: passed: 1 passed step(s) in 2m18s, peak 266.3 MiB (estimated 2m00s, 2.0 GiB); 164 output file(s) changed; signals: example:task-as-expected×11 Applied 164 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `qyrpnwmyqkpu` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`067eac8067b9`](https://github.com/pilifs/in-the-loop/commit/067eac8067b9885818e35159d74a722bac19fcba) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-032650-measure-checked-tiling-summaries-on-iden: passed: 1 passed step(s) in 4m19s, peak 242.3 MiB (estimated 6m00s, 2.0 GiB); 25 output file(s) changed Applied 25 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Verify signed long text and recover bounded batches (verification pending)
 
-change `yqyxonuzltvn` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`20ee4996680b`](https://github.com/pilifs/in-the-loop/commit/20ee4996680b1eed7262849877dcc99889ea5fbb) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The native checker renders long decimal values including both extrema and models bounds-checked StringBuilder.setCharAt. The fixed TAI formatting probe established the original claim. The compiler and public qualifiers now handle the original Fraction sources with explicitly declared secondary classes, and the resource adapter exposes its frozen argument name. All independent JVM observations repeated. A separate pair of MonthDay checks explicitly admits only calls that return in both directions. Archived outputs retain the earlier attempts, the full matrix-score transfer and the original interrupted TAI completion.
 
@@ -2309,37 +2309,37 @@ Jobs 20261120-035022-enumerate-fraction-percentages-with-sour, 20261120-035022-e
 
 ### Record verification results for 1 job(s)
 
-change `mtmnkpqnpklv` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`0a7d634e9e19`](https://github.com/pilifs/in-the-loop/commit/0a7d634e9e19dafc447115dd624df8c9ed261b4f) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-033506-check-the-fast-follow-boxing-change-with: passed: 1 passed step(s) in 15m00s, peak 2.1 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 8 job(s)
 
-change `yzkrqxqltoxn` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`73f82bb9ab59`](https://github.com/pilifs/in-the-loop/commit/73f82bb9ab59bf8e09fa29a309ef04d58b9cdb9a) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 5 of the 8 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-035022-enumerate-resource-closure-after-binding: passed: 1 passed step(s) in 17.8s, peak 128.3 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-035022-native-retry-fraction-percentages-with-s: failed: 1 failed step(s) in 19.4s, peak 319.6 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-035022-native-retry-resource-closure-after-bind: failed: 1 failed step(s) in 13.4s, peak 140.5 MiB (estimated 2m00s, 2.0 GiB); 136 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×8 20261120-035022-recover-and-reorder-the-interrupted-tai: passed: 1 passed step(s) in 11.6s, peak 158.2 MiB (estimated 2m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261120-035022-retry-both-exact-tai-formatting-claims-w: passed: 1 passed step(s) in 12.4s, peak 324.8 MiB (estimated 2m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). 20261120-035732-archive-the-resolved-commons-text-releas: passed: 1 passed step(s) in 5.5s, peak 93.7 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-035732-check-natively-reversal-on-normal-monthd: failed: 1 failed step(s) in 16.6s, peak 288.1 MiB (estimated 2m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-unexpected×2 20261120-035732-enumerate-reversal-on-normal-monthday-ca: passed: 1 passed step(s) in 16.2s, peak 242.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `tnrkqzumxyzs` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`c3dd8aba14ba`](https://github.com/pilifs/in-the-loop/commit/c3dd8aba14babead2a7ec34257c36f9996b14d22) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-035022-enumerate-fraction-percentages-with-sour: passed: 1 passed step(s) in 22.4s, peak 414.4 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `kmnoqpznrvlq` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`d31d574f0461`](https://github.com/pilifs/in-the-loop/commit/d31d574f04612a1031f6325febbb56f3b3cfc991) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-033516-confirm-jvm-corpus-results-after-fast-fo: passed: 1 passed step(s) in 24m29s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `syuprottmwot` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`3ff2f65b1c94`](https://github.com/pilifs/in-the-loop/commit/3ff2f65b1c94544e01a591e0754820929b8c6f82) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-041029-prove-both-recursive-tiling-callers-with: passed: 1 passed step(s) in 6.6s, peak 165.3 MiB (estimated 2m00s, 2.0 GiB); 28 output file(s) changed; signals: example:task-as-expected×2 Applied 28 output(s). 20261120-041029-run-optional-suppliers-through-the-selec: passed: 1 passed step(s) in 7.2s, peak 143.2 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-041223-recheck-both-signed-tai-round-trips-afte: failed: 1 failed step(s) in 7.0s, peak 330.4 MiB (estimated 2m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-unexpected×2 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Check actual Optional callbacks and adopt bounded tiling lemmas (verification pending)
 
-change `xxzwmmztolqy` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`309a38576d84`](https://github.com/pilifs/in-the-loop/commit/309a38576d8441db6a4128b3e14ef4ccba0a4e1e) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The native checker enters Optional from the selected JDK, including its initializer and the application Supplier. The eager callback probe replayed its violation on the original four-input domain. The public property recipe can bind a checked helper by digest and requires a proved summary in its statement. Example 331 uses it for the two recursive callers that benefited in the 24-run comparison. Three sequence fixtures identify shortest distinguishing observations. The TAI recovery record checks the interrupted receipt and its independently reordered retry.
 
@@ -2347,7 +2347,7 @@ The changed-test runner passed 44 of 44 units of work; one JBMC stand-in passed 
 
 ### Report all 125 Java claim dispositions and their independent evidence (verification pending)
 
-change `qtyzvunxmomv` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`6ef544307c84`](https://github.com/pilifs/in-the-loop/commit/6ef544307c846e9f3b8c75f38e8eafbc9eed54bf) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Across examples 312–331, the certified finite JVM route established 92 claim/subject pairs and refuted 33, each on an independent JVM witness. All agreed with the direct input tables. Strict native checking independently decided 55 of the 125 and the report links the other 70 to their actual diagnostics and scopes. It preserves the interrupted ThreeTen batch, controlled tiling measurements, all 60 collected jobs and their original outcomes. The public handoff now shows results across routes, disputes and manifest-checked archived attempts. Four serialized forms of published decision names are proposed for human review.
 
@@ -2355,13 +2355,13 @@ Validated all 20 cases plus regression examples 197 and 308 on a stable tree. Th
 
 ### Record verification results for 1 job(s)
 
-change `oypkvylusrns` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`8c43e0049390`](https://github.com/pilifs/in-the-loop/commit/8c43e0049390b443e0396691b38b6c83d94a3fd0) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-042933-recheck-both-array-roots-after-the-fast: passed: 1 passed step(s) in 7.0s, peak 126.5 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Confirm the original two-root array regression on the finished checker
 
-change `uotvrnxpwvkw` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`fea67b9eeb3d`](https://github.com/pilifs/in-the-loop/commit/fea67b9eeb3daffc56df2147679e86bd30457efd) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Job 20261120-042933-recheck-both-array-roots-after-the-fast reproduced the original native proof of return preservation and both qualified poststate refutations. The JDK, prepared classpaths, unwind eight, array bound two and 600-second checker budget match the original runs. The direct oracle found zero return differences, three right-root differences and 21 two-root differences among 71 heaps. The right-root witness shares a single [0] array and the two-root witness uses distinct [0] arrays.
 
@@ -2369,7 +2369,7 @@ The report and machine-readable register include all 61 collected jobs, the thre
 
 ### Check IEEE comparisons and signed-zero witnesses (verification pending)
 
-change `toxzullsuwsy` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`b744b84d2631`](https://github.com/pilifs/in-the-loop/commit/b744b84d26311e01ed2a48b76c05448b3028556d) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Carry binary32 and binary64 words through locals, fields and arrays. Compare them with JVM NaN bias, preserve signed zeros in extrema, and qualify raw-bit observations. Load numeric factories and constructors from the selected JDK, preserve mandatory cache identities, and handle reflective array length including its exceptional exits.
 
@@ -2379,7 +2379,7 @@ At the original budgets, jobs 20261120-045612-verify-both-signed-zero-maxima-wit
 
 ### Retry the comparison checks under systemd (verification pending)
 
-change `tqnsxtyukynw` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`7f9eaacaface`](https://github.com/pilifs/in-the-loop/commit/7f9eaacaface3fdd0060012a56f6203399fe3ef8) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The first runner selected isolation none inside the sandbox. It was stopped while compiling the checker, before any of the three example checks ran. The pipeline retained the three build error records. The retries use the same comparison commit, original deadlines and domains.
 
@@ -2387,7 +2387,7 @@ Jobs 20261120-050759-recheck-cube-intersections-after-native, 20261120-050759-re
 
 ### Prove coverage of bounded IEEE arithmetic (verification pending)
 
-change `yruukuovwqwz` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`48804d791a2a`](https://github.com/pilifs/in-the-loop/commit/48804d791a2adfcaf07405a72cf4873e6635e436) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Widen every signed int to binary64 with an exact bit-vector circuit. For other numeric conversions and floating arithmetic, enumerate reachable operand tuples under the path condition, preserving their correlations. Each accepted operation ends with an unsatisfiable complement. A 65th tuple or an unspecified NaN payload leaves a named refusal. The profile includes square root, sign-preserving zero arithmetic, Java narrowing and Guava's highest-bit and rotate operations.
 
@@ -2397,7 +2397,7 @@ Original campaigns continue in 20261120-051056-repeat-signed-zero-proofs-on-the-
 
 ### Record all four strict Commons Lang signed-zero verdicts
 
-change `plmlxlkyqyuy` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`227bae9c9bb7`](https://github.com/pilifs/in-the-loop/commit/227bae9c9bb70edc69edadb7cabedb612a10cb8b) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Import the shared systemd collector's six completed records and their applied receipts byte for byte. Its two Commons Lang runs each established numeric agreement on both revisions and raw-bit agreement on the fix. Both refuted the parent's raw bits. The direct JVM grid shows seven discrepancies in 84 arrays and the native witness reproduces independently.
 
@@ -2405,7 +2405,7 @@ Each Guava attempt reached Integer.highestOneBit. Each cube attempt reached doub
 
 ### Check identity-key replacement and boxed booleans (verification pending)
 
-change `uxnkltnolnyt` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`9b488412b005`](https://github.com/pilifs/in-the-loop/commit/9b488412b005a92b8f33a1bf16a8a7a63cc176c1) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Use a native checker model for IdentityHashMap construction, get, put, containsKey and size. It compares references directly, preserves null keys and values and returns the displaced value. Boolean boxing shares the JDK's TRUE and FALSE objects and unboxing reads them. Other identity-map operations keep their prior gaps.
 
@@ -2415,7 +2415,7 @@ Jobs 20261120-052129-prove-guava-duplicate-entry-handling-wit and 20261120-05212
 
 ### Record strict arithmetic results on four historical Java repairs
 
-change `vvqpktvwnpwt` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`337a4550d80b`](https://github.com/pilifs/in-the-loop/commit/337a4550d80b3f31b4f66ce4206c1006c704a59e) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 All four signed-zero claims repeated on the arithmetic checker. Guava's all-unique traces are now proved on both revisions. The other six Guava claims stopped at identity-map construction. Cube construction reached Boolean.booleanValue, and the six Fraction claims still report the class initializer. The mixed Guava job's two non-vacuous proofs remain independently eligible in its archived outputs.
 
@@ -2423,7 +2423,7 @@ Copied the collector's exact reports and applied receipt bytes, validated all jo
 
 ### Record every Guava collision claim on the strict native checker
 
-change `owyvsqpupulu` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`c0818894d66f`](https://github.com/pilifs/in-the-loop/commit/c0818894d66fa0f89c1e1a5f57b47f8fb5706d3e) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The collector proved all four fixed-revision obligations and the parent's unique-key control, and refuted the parent's size, lookup and unordered entry claims. Each witness belonged to the independent 121-trace grid and reproduced on the pinned JVM. The batch finished in 25.3 seconds with a measured peak of 609.6 MiB.
 
@@ -2431,7 +2431,7 @@ The Geometry job reached Math.hypot on both revisions and both observers. Import
 
 ### Execute selected JDK geometry arithmetic (verification pending)
 
-change `xloopkonnywr` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`2f1d5e2bcbaa`](https://github.com/pilifs/in-the-loop/commit/2f1d5e2bcbaafa5466f8c3bffad2c6d452ec8a37) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Run Math.hypot through the selected JDK's StrictMath and FdLibm bytecode, including scaling for huge and subnormal coordinates. Check both states of its synthetic assertion switches. Implement exact nonzero-axis atan2, signed-zero sine and cosine, floor and ceiling, and Boolean.equals on canonical BSP labels through erased Object calls. A nonzero sine or cosine records its reachable raw argument instead of fixing a VM-dependent rounded value.
 
@@ -2441,7 +2441,7 @@ Jobs 20261120-053726-recheck-cube-intersections-with-linked-j, 20261120-053726-c
 
 ### Report 67 native decisions across the Java fast-follow campaign
 
-change `xpmrwztlnnqm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`a6c7cc1623bd`](https://github.com/pilifs/in-the-loop/commit/a6c7cc1623bd7739acb502c596c60e63ae11b041) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Advance strict native coverage from 55 to 67 of the original 125 claim and subject pairs. All four Commons Lang signed-zero claims and all eight Guava collision claims are now decided by the native checker and independently by the JVM. The native totals are 47 established, 20 refuted and 58 open. The exhaustive JVM totals remain 92 established and 33 refuted with no withdrawals or contradictions.
 
@@ -2451,7 +2451,7 @@ Imported the collector's six final systemd jobs and checked every applied byte a
 
 ### Execute ordered Throwable suppression from the selected JDK (verification pending)
 
-change `wkqqtkurmlzw` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`1aa85ee6b68c`](https://github.com/pilifs/in-the-loop/commit/1aa85ee6b68c3bc32dd948330c73d1953b1b53e6) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Run addSuppressed and getSuppressed on the actual exception in both native checking and interpreted replay. The selected image supplies self and null validation, the empty singleton, and the order of appends. The private list retains reference identities and returns detached nonempty arrays. Recognize forwarding four-argument Throwable constructors, keep symbolic suppression flags and distinguish an explicit NullPointerException message from VM-generated stack details.
 
@@ -2459,7 +2459,7 @@ The direct Java fixture and both engines agreed on enabled and disabled suppress
 
 ### Follow reachable constructors of static object constants (verification pending)
 
-change `qswpsvvtlxnm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`c08aca864e63`](https://github.com/pilifs/in-the-loop/commit/c08aca864e63407058f950f6b0703ed30216927c) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Strict checking executes the real bytecode of straight-line initializers that assemble final object or array constants with application methods. The checker follows the constructors at the values actually passed, including reachable exceptions and erroneous-class reuse. An unsupported call reached by a constructor still stops the proof. Existing observed initializers and advised contracts retain their handling.
 
@@ -2467,7 +2467,7 @@ The direct JVM and native controls checked two distinct constants and the first 
 
 ### Prove bounded regex captures and signed-long parsing (verification pending)
 
-change `nvsooltopvpv` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`bc8d650b58a5`](https://github.com/pilifs/in-the-loop/commit/bc8d650b58a57dc1326348ca9efa020d16dd66d0) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Preserve capture numbering, the previous match outcome and the original String on each matcher. A mandatory capture is observed when its UTF-16 endpoints follow from fixed widths on the matched input. Optional, repeated and ambiguous spans retain an explicit refusal. Share one overflow-before-multiply decimal parser between int and long, including their negative minima and signed zero. Non-ASCII digits keep the JDK gap.
 
@@ -2475,7 +2475,7 @@ Native and JVM controls covered nested captures, invalid group numbers before an
 
 ### Record native TAI, resource closure and Fraction results
 
-change `uzwtmtumouyr` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`ba8b13580300`](https://github.com/pilifs/in-the-loop/commit/ba8b1358030067694363f3a3ab002f2ab1fe4520) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The shared runner decided all six ThreeTen claims, all nine resource-observer claims, and all six historical Fraction claims on the frozen domains. Their strict native witnesses replayed on the JDK and matched the independent observation grids. All ten MonthDay claims advanced from class initialization to list use in the formatter and remain open on this checker.
 
@@ -2483,7 +2483,7 @@ The four result trees and every applied receipt were byte-checked against the co
 
 ### Execute bounded ArrayList operations from the runtime image (verification pending)
 
-change `qwovsntvwpzn` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`05ade8c1df32`](https://github.com/pilifs/in-the-loop/commit/05ade8c1df32344bfacc10138cae79c296998c4b) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Use the selected JDK bytecode for a constructed ArrayList's growth, membership, indexed reads and writes, and typed array copies. The checker qualifies the private empty arrays and the actual runtime array class. Copying a typed destination preserves a successful prefix on failure in both engines. Model selection stays explicit. Object arrays can hold array components of other ranks as Java allows. Stream.of(T...) uses the existing sequential array stream and runs the application's predicate. Decimal Long.toString uses the signed conversion path when the image returns fresh Strings.
 
@@ -2493,7 +2493,7 @@ Jobs 20261120-063346-verify-both-historical-duration-tokenize and 20261120-06334
 
 ### Record the duration, partial-date and list regression runs
 
-change `snvmzxnulsvn` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`f54e14f71f11`](https://github.com/pilifs/in-the-loop/commit/f54e14f71f11df2a45d4d781e045fcd973017bdb) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The selected JDK list methods preserved every ThreeTen, resource-closure and Fraction verdict. The duration checker refuted the historical separated-field claim and proved the fixed text and quoting observations. Three original claims stopped at Arrays.fill(char[],char). All ten MonthDay checks reached the ambient time-zone provider property. Keep both failed jobs and their partial results.
 
@@ -2501,7 +2501,7 @@ All seven result trees and their applied receipts matched the collector byte for
 
 ### Check UTF-16 padding through char array fill and String.concat (verification pending)
 
-change `wooykksqoppt` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`da7da2fcfacb`](https://github.com/pilifs/in-the-loop/commit/da7da2fcfacb60a4ba7087e1c6315f8c2741292e) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The three remaining Commons Lang duration observations reached Arrays.fill(char[],char). Execute its selected JDK loop, snapshot the char array in the constructed String, and execute String.concat with its empty-suffix identity and fresh UTF-16 result. The interpreter follows the same fill and preserves the receiver on empty concatenation. The method conformance inventory records normal and null cases.
 
@@ -2509,7 +2509,7 @@ The JVM, native checker and interpreter agree on null arguments, empty arrays, i
 
 ### Record 91 native decisions on the Java fast-follow examples
 
-change `splnksqooywl` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`b3963f1d6b93`](https://github.com/pilifs/in-the-loop/commit/b3963f1d6b93e7d63e8e1dbac8b1ed516e8e9fdf) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The strict native checker now establishes 66 and refutes 25 of the 125 original source claim and subject pairs, with 34 open. This continuation added 19 proofs and five independently replayed refutations. All native observations for ThreeTen signed seconds, resource closure, Commons Lang duration tokens and Commons Math fractions agree with their original JVM grids. The ten Joda-Time native claims reach the JDK property that selects the default zone provider. The complete independent finite register remains 92 established and 33 refuted, with no contradictions or withdrawals.
 
@@ -2519,7 +2519,7 @@ Audited all 125 claim identities and finite hashes, native verdicts and witness 
 
 ### Check boxed characters and object-array equality (verification pending)
 
-change `kqmzlnvkyxrr` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`edc0de311681`](https://github.com/pilifs/in-the-loop/commit/edc0de3116816c46321a6f8707e7d0807de5fd39) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Execute the selected JDK Character constructors, equality and hashes. Its ASCII cache preserves identity on symbolic inputs and its other factory branch follows the image. Inspect String.valueOf(char) allocation before returning a fresh one-unit String. Carry the initial line separator as one opaque reference, refusing its contents or external string identity. Execute the JDK reference-array equality and hashing methods and their element callbacks.
 
@@ -2527,7 +2527,7 @@ The focused JVM, interpreter and native controls passed on Temurin 21 and 25, in
 
 ### Prove hash contracts across JVM identity choices (verification pending)
 
-change `kvntruqvtzox` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`f4761eb9b819`](https://github.com/pilifs/in-the-loop/commit/f4761eb9b819e5798dc025237b70b9dbc83ca4fe) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Keep one unconstrained 32-bit identity hash per enum object while running the selected JDK hashCode cache. Equal objects keep their hash and different objects may collide. A possible assertion failure on a path that used an unspecified hash stays open. Execute Boolean and Long hashes from the image and resolve bounded symbolic integral factories only within their mandated cache.
 
@@ -2535,7 +2535,7 @@ Direct JVM, interpreter and native controls passed on Temurin 21 and 25. The nat
 
 ### Execute live HashMap views on one JDK heap (verification pending)
 
-change `qryxuryrkxnr` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`f0a3f2092947`](https://github.com/pilifs/in-the-loop/commit/f0a3f20929472c8ef5d743b97a189d1bddbf24e8) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Execute fresh default HashMap instances, entry nodes, key and entry views, and iterators from the selected runtime. Each view observes the same backing table and modification count. Keep observed and model-backed maps on their original layout and distinguish both bytecode bodies in cached frames. The interpreter also copies entries through the live iterator when a library method requests another map.
 
@@ -2543,7 +2543,7 @@ Temurin 21 and 25, the interpreter and native checker agreed on real bucket orde
 
 ### Execute JDK reader and listener state (verification pending)
 
-change `rrtlulzoqvnm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`3d42310533a0`](https://github.com/pilifs/in-the-loop/commit/3d42310533a0fdc12ed860c2e660d57a882bd595) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Run StringReader, BufferedReader, Swing listener lists, JavaBeans change support and iterator spliterators on their selected JDK bytecode. Preserve primitive class-mirror identity, instance checks, raw UTF-16 snapshots and proven-range bulk writes. Bind Collections.emptyList and its public field to the suppression sentinel only for the checked JDK initializer. Follow final reference fields across class initialization.
 
@@ -2553,7 +2553,7 @@ Original packet and regression jobs are 20261120-081134-trace-historical-chart-r
 
 ### Execute sequential JDK collectors on real iterators (verification pending)
 
-change `nzolzopqrrzq` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`154555765472`](https://github.com/pilifs/in-the-loop/commit/15455576547227011d827fec20b1698627d20c92) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Run the selected JDK stream flags, reference pipeline, collector and reduction on its actual spliterator and callbacks. EnumSet and EnumMap share the validated values-array snapshot. Void lambda bridges discard a returned value after its effects and check the instantiated argument types before entering the target. A solver failure that depends on a platform setting qualifies only if the failing paths cover all settings for fixed original scalar inputs. Execute ArrayList.clear and bounded StringBuilder truncation and zero-filled growth.
 
@@ -2563,7 +2563,7 @@ Job 20261120-083146-verify-all-csv-equality-hash-and-row-lim runs all six histor
 
 ### Record the real-map results and library boundary diagnostics
 
-change `wqkxtvnzkwyl` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`76ac416d1a14`](https://github.com/pilifs/in-the-loop/commit/76ac416d1a14a5228e00c6e39d2b4b1897d83b1a) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Import eleven canonical systemd results and their applied example evidence from the shared collector. Audited strict receipts decide four original CSV claims and all six Commons Collections multiset claims, including independent replays of both historical defects. The original 321 and 327 jobs locate their two different process-environment reads. Preserve the early mixed CSV jobs so each successful claim and each intermediate refusal remains available.
 
@@ -2571,7 +2571,7 @@ Both cross-engine proof-tier corpora passed. The reader checker requalified both
 
 ### Record 103 native decisions on the Java fast-follow examples
 
-change `uzkuloyyruuz` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`a09b4366bdc6`](https://github.com/pilifs/in-the-loop/commit/a09b4366bdc635b84e7026a36ef1fbfc24acfb64) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Close the original Commons CSV and Commons Collections multiset packets at their frozen guards, ordered classpaths, observers and bounds. On the final checker both have five proofs and one independently replayed historical counterexample. The parent CSV format compares limits 10 and 2 equal while reading three and two records. Removing A from a multiset containing one A and one B leaves the parent total at two although only B remains. Chart startup, Joda provider selection and the geometry sine retain 22 precise native obligations.
 
@@ -2581,7 +2581,7 @@ The final checker reproduced both original 197 poststate witnesses on the 71-hea
 
 ### Certify Java sine and cosine rounding bounds (verification pending)
 
-change `tpxuxtmvttso` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`091fc8f6e090`](https://github.com/pilifs/in-the-loop/commit/091fc8f6e090be27de329c901f71787b61216f6d) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Strict native checks enclose each reachable angle with exact rational Taylor sums and consider both adjacent binary64 values permitted by Java. The host approximation only suggests a bracket. A counterexample must hold across all rounding choices, and arguments without a certificate stay open. This carries the original cube construction beyond the rounded value of negative pi over two.
 
@@ -2589,7 +2589,7 @@ The selected tests passed 17 of 17. Public floating-point controls passed on Tem
 
 ### Follow live ArrayList iterators through BSP nodes (verification pending)
 
-change `uosonqlmlprm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`001e9bc80a1e`](https://github.com/pilifs/in-the-loop/commit/001e9bc80a1ebfbd1aeea4fcc47da94eeca223ac) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Traverse the selected JDK ArrayList and its real cursor on one checker heap, including structural removal and fail-fast checks. The concrete interpreter keeps the backing list, cursor and modification count of an exact ArrayList so set, remove and stale traversal are observable through aliases. Explicitly requested list models retain their own layout.
 
@@ -2597,7 +2597,7 @@ The affected Rust suite passed. Native proofs, interpreter calls and direct JVM 
 
 ### Record the native cube proof and both missing-hit witnesses
 
-change `wmurtpqtpskn` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`8170d1b46912`](https://github.com/pilifs/in-the-loop/commit/8170d1b469128672f94f0efd5b83497f93e55166) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The two fixed Commons Geometry claims hold for the four diagonals and two face controls. The parent misses all four diagonals. Both native counterexamples independently reproduced on code 0, with a missing facet where exact rational intersection gives the origin. The four original geometry decisions bring strict native coverage to 107 of 125. The complete packet took 17.641 seconds, with 152 MiB peak native process RSS. The 197 array roots and published 308 LCS regressions both passed.
 
@@ -2605,7 +2605,7 @@ All 189 stored collector files for the four jobs match the committed results. Th
 
 ### Check Joda-Time against captured UTC startup (verification pending)
 
-change `nmzrxxsorwtw` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`54fc63e3f842`](https://github.com/pilifs/in-the-loop/commit/54fc63e3f842fdc851eb96b74d94f4856f547da8) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The initializer observer now carries immutable application values with all final scalar and String fields, validates the bytes and full layout of every declaring class, and restores aliases, hidden fields and distinct objects. The checker follows the actual JDK string copy, nested ArrayList sublists and historical chronology caches. The concrete interpreter keeps sublists backed by their root array list and detects stale views. Ten additional source claims bind the observed DateTimeZone and DateTimeUtils states while keeping the ten original startup obligations intact.
 
@@ -2613,7 +2613,7 @@ The 25 selected test groups passed. A JBMC process-status stand-in failed once a
 
 ### Check integral objects in exception messages (verification pending)
 
-change `mrktmzqrosok` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`b53619f04373`](https://github.com/pilifs/in-the-loop/commit/b53619f04373a2280551e129d0b01ddb5b444e5a) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 StringBuilder.append(Object) renders the initialized signed value of final Byte, Short, Integer and Long wrappers with the same decimal conversion used for their primitive overloads. This preserves the actual Joda-Time exception construction reached on leap-day inputs.
 
@@ -2621,7 +2621,7 @@ The typed string fixture and direct JVM controls passed, including a negative bo
 
 ### Check chart endpoints under observed UTC calendars (verification pending)
 
-change `nrnvkxrtqrqk` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`3c76f30ceb8a`](https://github.com/pilifs/in-the-loop/commit/3c76f30ceb8a1a114221f10618aaa93adb5d3472) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Check the complete civil fields used by JFreeChart against an independently identified JDK calendar environment. The observer checks the default and explicit UTC factories, their concrete Gregorian calendar and zone types, era, leniency and cutover. Strict checking computes epoch milliseconds for canonical years 1600 through 9999, preserves the Date snapshot, and refuses incomplete dates or a changed locale. Eight companion claims require the observed startup digest and exact calendar assumption, alongside the original unmodified claims.
 
@@ -2631,7 +2631,7 @@ Job 20261120-100439-verify-chart-ranges-on-observed-calendar checks all eight ne
 
 ### Record eighteen native results with their JVM startup conditions
 
-change `pvnwnzxznooq` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`0d343be200f3`](https://github.com/pilifs/in-the-loop/commit/0d343be200f368b9d4d6dfce4fd908c94d4c4918) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The original campaign has 78 native proofs, 29 independently replayed refutations and 18 open startup obligations. The eight chart and ten partial-date companion claims add 14 proofs and four replayed counterexamples on explicitly captured JDK 21 startup states. Together these outcomes agree with all 125 exhaustive JVM dispositions. Keep both scopes in the public register, including each subject, assumption, admitted count, witness, duration and peak process RSS.
 
@@ -2639,7 +2639,7 @@ All six affected examples validated and all 43 selected test groups passed. Each
 
 ### Pair original startup checks with observed runs (verification pending)
 
-change `mkmmssxnmnst` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`dd7b8674c12d`](https://github.com/pilifs/in-the-loop/commit/dd7b8674c12d6167c58515e4ef512061bf58c2f4) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Recheck all eight original chart tasks and all ten original partial-date tasks on exactly the respective binary that decided their observed-startup companions. These negative controls require the original strict query to run, to name the ambient initializer call and to publish an unresolved receipt. They reject an unrelated error, changed binary or hidden observed-initializer assumption.
 
@@ -2647,7 +2647,7 @@ Both job schemas validated and the checks on receipt stage, gap mode and source 
 
 ### Publish matched startup refusals in the local claim handoffs
 
-change `xqvrxtkxlxxt` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`ab6e4b5db19b`](https://github.com/pilifs/in-the-loop/commit/ab6e4b5db19ba037227d550c1952ba1ca2e31731) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Register an open refusal packet for each of the eight original JFreeChart tasks and ten original Joda-Time tasks. Every pair used the same checker SHA, ordered classpath, guard, observer and 30-second budget as its separately qualified result. Without the captured initializer each check stopped at its original time-zone or provider query. The public gap inventory now links every reproducer and closure check. Semantic refusal reruns preserve an explicitly recorded solver and deadline and distinguish reaching the gap from exhausting the budget.
 
@@ -2655,229 +2655,229 @@ Both cross-engine conformance jobs passed, in 877 and 1456 seconds including com
 
 ### Record verification results for 2 job(s)
 
-change `vmztxmzqkspl` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`c07e925f0d9b`](https://github.com/pilifs/in-the-loop/commit/c07e925f0d9b8b3d2290bed62b74d2472d9d29fa) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-045612-recheck-cube-intersections-after-native: failed: 1 failed step(s) in 8.4s, peak 187.0 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-045612-verify-both-signed-zero-maxima-with-ieee: passed: 1 passed step(s) in 13.2s, peak 304.2 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `qpzmrxkzxmlm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`bfffb3914599`](https://github.com/pilifs/in-the-loop/commit/bfffb391459937f3d0f062061657f4403c526f43) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-045612-recheck-guava-map-collisions-after-nativ: failed: 1 failed step(s) in 24.5s, peak 545.5 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `rrqzpktwksus` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`2eed3489105a`](https://github.com/pilifs/in-the-loop/commit/2eed3489105a77075542ef4d50d8b81cba0fd0ad) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 3 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-050759-recheck-cube-intersections-after-native: failed: 1 failed step(s) in 8.6s, peak 194.8 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-050759-recheck-guava-map-collisions-after-nativ: failed: 1 failed step(s) in 28.3s, peak 598.1 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-050800-verify-both-signed-zero-maxima-with-ieee: passed: 1 passed step(s) in 13.4s, peak 293.4 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record the watcher's first answer on the twenty-example-fast-follow run
 
-change `woyqrqrmoxwq` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`c53e6c03af5b`](https://github.com/pilifs/in-the-loop/commit/c53e6c03af5b900f9dc6e92df7558f8d8f0554ae) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 D001: continue after cycle 1, since the strict native checker left 70 of the 125 claims open with named blockers, work the agent can do alone.
 
 ### Record verification results for 4 job(s)
 
-change `txppvxvnnmvs` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`e89eabac4590`](https://github.com/pilifs/in-the-loop/commit/e89eabac45902534644322e4b0648f83d0df09f6) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 1 of the 4 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-051056-repeat-signed-zero-proofs-on-the-bounded: passed: 1 passed step(s) in 13.3s, peak 386.8 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-051056-verify-cube-hits-through-bounded-vector: failed: 1 failed step(s) in 8.6s, peak 188.3 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-051056-verify-guava-collision-traces-through-it: failed: 1 failed step(s) in 24.2s, peak 653.0 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×6 20261120-051057-verify-percentage-overflow-after-bounded: failed: 1 failed step(s) in 14.0s, peak 367.3 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `usoovloorpuw` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`fa37785a889d`](https://github.com/pilifs/in-the-loop/commit/fa37785a889d54724b4474b5222dc11673064e9a) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-052129-check-cube-hits-through-the-boxed-bsp-tr: failed: 1 failed step(s) in 8.2s, peak 192.0 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-052129-prove-guava-duplicate-entry-handling-wit: passed: 1 passed step(s) in 25.3s, peak 609.6 MiB (estimated 2m00s, 2.0 GiB); 123 output file(s) changed; signals: example:task-as-expected×8 Applied 123 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 6 job(s)
 
-change `tzuqppvnsnwp` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`d1bba84434f5`](https://github.com/pilifs/in-the-loop/commit/d1bba84434f536a1f78a5b94d93b90104c598db5) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 4 of the 6 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-053726-confirm-every-guava-collision-verdict-on: passed: 1 passed step(s) in 26.3s, peak 585.8 MiB (estimated 2m00s, 2.0 GiB); 123 output file(s) changed; signals: example:task-as-expected×8 Applied 123 output(s). 20261120-053726-confirm-signed-zero-maxima-on-the-final: passed: 1 passed step(s) in 13.7s, peak 295.5 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-053726-recheck-cube-intersections-with-linked-j: failed: 1 failed step(s) in 8.8s, peak 183.8 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-053726-recheck-fraction-percentages-on-the-fina: failed: 1 failed step(s) in 14.0s, peak 399.9 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-053727-confirm-both-array-roots-after-the-numer: passed: 1 passed step(s) in 8.4s, peak 125.1 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-053735-confirm-the-published-lcs-score-on-the-f: passed: 2 passed step(s) in 3.8s, peak 87.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `mrnlqpqymsym` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`2322ca6648b6`](https://github.com/pilifs/in-the-loop/commit/2322ca6648b6724175a9cc90ee2fc8f9d73e176e) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-061145-verify-ordered-resource-failures-with-th: passed: 1 passed step(s) in 8.4s, peak 146.3 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9 Applied 138 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `xonykmoovmmw` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`9b767ff2a6dd`](https://github.com/pilifs/in-the-loop/commit/9b767ff2a6dd38595d32c26d6322466d0ee1ef6d) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-061640-prove-fraction-percentages-through-the-o: passed: 1 passed step(s) in 15.8s, peak 374.2 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-061640-recheck-partial-dates-through-their-actu: failed: 1 failed step(s) in 16.8s, peak 232.0 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `lmqqyruunzun` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`921a3aaf44b6`](https://github.com/pilifs/in-the-loop/commit/921a3aaf44b6431d5955c10295afeb71c8f9856f) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-062318-verify-canonical-signed-tai-texts-and-in: passed: 1 passed step(s) in 15.6s, peak 502.6 MiB (estimated 2m00s, 2.0 GiB); 92 output file(s) changed; signals: example:task-as-expected×6 Applied 92 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `xlxwnpqooqtm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`dbf330a87a91`](https://github.com/pilifs/in-the-loop/commit/dbf330a87a91f08ccd32041d769873cb3bad5910) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 3 of the 3 job(s). 20261120-063346-recheck-ordered-resource-failures-on-sha: passed: 1 passed step(s) in 10.6s, peak 138.0 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9 Applied 138 output(s). 20261120-063347-recheck-both-array-roots-after-typed-lis: passed: 1 passed step(s) in 9.1s, peak 123.7 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-063347-recheck-the-released-lcs-score-after-typ: passed: 2 passed step(s) in 4.2s, peak 90.7 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `przmnzrnullm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`69931ca9578e`](https://github.com/pilifs/in-the-loop/commit/69931ca9578e39f26314f996e9634a5419f0df75) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-063346-recheck-all-signed-tai-observations-on-t: passed: 1 passed step(s) in 19.2s, peak 500.5 MiB (estimated 2m00s, 2.0 GiB); 92 output file(s) changed; signals: example:task-as-expected×6 Applied 92 output(s). 20261120-063346-verify-both-historical-duration-tokenize: failed: 1 failed step(s) in 35.3s, peak 313.8 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×3 20261120-063346-verify-partial-dates-past-the-shared-lis: failed: 1 failed step(s) in 17.6s, peak 236.9 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 20261120-063347-repeat-fraction-overflow-checks-on-the-s: passed: 1 passed step(s) in 16.6s, peak 354.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `utttqwmpooxl` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`2a34711ab4f6`](https://github.com/pilifs/in-the-loop/commit/2a34711ab4f68f61f5c3cd30e7882829ab8d2ccc) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-063726-compare-bounded-arraylist-claims-across: passed: 1 passed step(s) in 14m29s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `unwwwmrtrnyw` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`48b3df2f6191`](https://github.com/pilifs/in-the-loop/commit/48b3df2f619190663272d83ff417243c461e7592) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 3 of the 3 job(s). 20261120-065325-confirm-commons-text-lcs-after-character: passed: 2 passed step(s) in 3.6s, peak 93.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-065325-confirm-shared-array-poststates-after-ch: passed: 1 passed step(s) in 8.2s, peak 127.0 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-065325-verify-raw-duration-patterns-through-utf: passed: 1 passed step(s) in 36.7s, peak 338.0 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `nwtuyoprummy` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`f84ad2aeb491`](https://github.com/pilifs/in-the-loop/commit/f84ad2aeb49110f7c03755fd9f0258446183b79a) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-063726-confirm-jvm-corpus-verdicts-after-select: passed: 1 passed step(s) in 24m06s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uozxzqnlvuks` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`63458daea441`](https://github.com/pilifs/in-the-loop/commit/63458daea441d9ea3bcfc8ead217c71283dc6380) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-073837-check-immutable-csv-formats-through-boxe: failed: 1 failed step(s) in 28.7s, peak 672.8 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×4 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `klxwpqxurmnt` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`c6024a804aa6`](https://github.com/pilifs/in-the-loop/commit/c6024a804aa68de002665710bc723458467282b4) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-074513-verify-the-csv-equality-and-hash-contrac: failed: 1 failed step(s) in 30.7s, peak 674.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×4; example:task-unexpected×2 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `skoqyrnqxmtx` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`bcfcc37dddeb`](https://github.com/pilifs/in-the-loop/commit/bcfcc37dddebbb5d33bc35e4c065a1c398d111a1) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-075403-verify-both-live-multiset-views-on-the-s: passed: 1 passed step(s) in 13.0s, peak 320.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `pmylxlntzrzk` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`2e2a4c56c229`](https://github.com/pilifs/in-the-loop/commit/2e2a4c56c229a688361871a0deb5dcd177bf778b) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-075435-check-map-and-wrapper-conformance-under: passed: 1 passed step(s) in 14m30s, peak 2.1 GiB (estimated 17m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `uqnlpwmkysty` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`27b5a02c961e`](https://github.com/pilifs/in-the-loop/commit/27b5a02c961ebc44b295881365e13f186755345e) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 3 of the 3 job(s). 20261120-081135-confirm-aliased-array-roots-after-librar: passed: 1 passed step(s) in 8.6s, peak 124.5 MiB (estimated 3m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-081135-confirm-the-released-lcs-after-library-e: passed: 2 passed step(s) in 3.8s, peak 96.7 MiB (estimated 3m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-081743-recheck-ordered-suppression-against-the: passed: 1 passed step(s) in 9.9s, peak 139.0 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9 Applied 138 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `poykvqlrwvnr` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`9c893e3fa903`](https://github.com/pilifs/in-the-loop/commit/9c893e3fa9032b1773da86acbc90b41991a0683d) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 4 job(s); 1 declared or produced none; 3 kept under outputs/, not applied (the job didn't pass). 20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom: passed: 1 passed step(s) in 24m10s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1 20261120-081134-trace-both-csv-limit-readers-from-string: failed: 1 failed step(s) in 24.8s, peak 670.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×4; example:task-unexpected×2 20261120-081134-trace-historical-chart-ranges-through-re: failed: 1 failed step(s) in 20.8s, peak 395.3 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-081743-recheck-both-partial-date-revisions-alon: failed: 1 failed step(s) in 17.2s, peak 248.5 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 5 job(s)
 
-change `wvxqzlrovryp` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`0c8c522564bd`](https://github.com/pilifs/in-the-loop/commit/0c8c522564bdf51bab2ad17cf73cb405b6c5d9e2) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 5 of the 5 job(s). 20261120-083146-recheck-the-two-array-roots-after-sequen: passed: 1 passed step(s) in 8.2s, peak 126.4 MiB (estimated 3m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-083146-repeat-lazy-optional-callback-and-eager: passed: 1 passed step(s) in 7.8s, peak 141.8 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-083146-repeat-live-multiset-iterator-verdicts-o: passed: 1 passed step(s) in 13.8s, peak 287.6 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-083146-verify-all-csv-equality-hash-and-row-lim: passed: 1 passed step(s) in 23.4s, peak 677.4 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-083147-recheck-published-lcs-source-and-release: passed: 2 passed step(s) in 3.6s, peak 91.3 MiB (estimated 3m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `plotpqlplxsu` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`6986d241dbea`](https://github.com/pilifs/in-the-loop/commit/6986d241dbeab1202419242e791cc2de4fc42618) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-083146-repeat-the-real-duration-lexer-and-callb: passed: 1 passed step(s) in 31.5s, peak 354.3 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `pqzmvyvlskvm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`d95349f7c986`](https://github.com/pilifs/in-the-loop/commit/d95349f7c98662272997e5e6c91dd1815b600bec) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-091126-trace-cube-intersections-across-certifie: failed: 1 failed step(s) in 10.4s, peak 194.9 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `wowlxnkptnnm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`3ac2accf1c63`](https://github.com/pilifs/in-the-loop/commit/3ac2accf1c6352705934cf30df5bd5063831ee19) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 3 of the 3 job(s). 20261120-091739-verify-both-original-cube-repairs-throug: passed: 1 passed step(s) in 17.6s, peak 213.3 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4 Applied 62 output(s). 20261120-092415-recheck-released-lcs-after-geometry-supp: passed: 2 passed step(s) in 3.6s, peak 93.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-092415-recheck-the-two-array-roots-after-geomet: passed: 1 passed step(s) in 7.4s, peak 126.8 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `zryrlqymrzxw` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`0f55f43ff00d`](https://github.com/pilifs/in-the-loop/commit/0f55f43ff00df0779b7ff7e224fdee4cae2337ba) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-094050-verify-monthday-distances-on-observed-ut: failed: 1 failed step(s) in 32.9s, peak 290.2 MiB (estimated 2m00s, 2.0 GiB); 151 output file(s) changed; signals: example:task-as-expected×7; example:task-unexpected×3 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `qvyttlxlqolm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`83f180bf280f`](https://github.com/pilifs/in-the-loop/commit/83f180bf280f10cb24223b7bfc36a0e2594821ed) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-100118-verify-all-partial-date-claims-through-b: passed: 1 passed step(s) in 33.3s, peak 249.7 MiB (estimated 2m00s, 2.0 GiB); 152 output file(s) changed; signals: example:task-as-expected×10 Applied 152 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `vwpyrpttktxs` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`9bff1fe2ed88`](https://github.com/pilifs/in-the-loop/commit/9bff1fe2ed883999a0a81a059ad4b8cc0553d05e) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261120-100812-confirm-array-root-observations-on-the-c: passed: 1 passed step(s) in 8.4s, peak 129.3 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-100812-recheck-released-lcs-on-the-calendar-che: passed: 2 passed step(s) in 3.8s, peak 93.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `nnzyqnokyuuz` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`30d0fe518250`](https://github.com/pilifs/in-the-loop/commit/30d0fe518250c487abb3157308b759fc87c25f01) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261120-100439-verify-chart-ranges-on-observed-calendar: passed: 1 passed step(s) in 31.7s, peak 448.9 MiB (estimated 2m00s, 2.0 GiB); 122 output file(s) changed; signals: example:task-as-expected×8 Applied 122 output(s). 20261120-101603-check-earlier-threeten-chronology-bindin: passed: 5 passed step(s) in 1m49s, peak 848.1 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `nnwvvzkqpupm` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`3ae24a4e9a09`](https://github.com/pilifs/in-the-loop/commit/3ae24a4e9a097ba5a05c4ccb04325b7fdb3a7871) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-100759-check-array-view-and-platform-conformanc: passed: 1 passed step(s) in 14m33s, peak 2.2 GiB (estimated 17m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `rxkwlxtuozun` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`b1768af4529e`](https://github.com/pilifs/in-the-loop/commit/b1768af4529eec09e770a3cef10539465d316a33) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261120-103714-check-chart-startup-without-a-captured-c: passed: 2 passed step(s) in 19.9s, peak 466.1 MiB (estimated 1m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 Applied 120 output(s). 20261120-103714-check-partial-dates-without-captured-pro: passed: 2 passed step(s) in 16.4s, peak 256.3 MiB (estimated 1m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 Applied 150 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `ulrrmwowwosn` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`294130ae6671`](https://github.com/pilifs/in-the-loop/commit/294130ae66711bd3b84216f0ab94385a29bbb63d) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-100812-confirm-jvm-corpus-results-on-the-calend: passed: 1 passed step(s) in 24m11s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record the watcher's answers on the twenty-example-fast-follow run
 
-change `uorwvunulqxv` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`12557a6a3c27`](https://github.com/pilifs/in-the-loop/commit/12557a6a3c271d99d5bf694b892d744c38e17be2) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 D002 to D005: continue after cycles 2, 3 and 4 (D004 at medium confidence, flagged), and stop after cycle 5, when every one of the 125 claims had a native result agreeing with the JVM outcomes, 18 of them under recorded JVM startup conditions, which is a question for the user.
 
 ### Merge the single-agent run twenty-example-fast-follow into the line
 
-change `szuutkxuoxuo` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+[`8be7b7c44766`](https://github.com/pilifs/in-the-loop/commit/8be7b7c44766e1a6715656e9aaf898df4efa7219) · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The single-agent run twenty-example-fast-follow (session 0cea9d0e-0fe8-427e-8e71-96614b084e11) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
 
 ### Stop reading decision ids as long tokens
 
-change `nzqqsxtvxszv` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`d4aea637d221`](https://github.com/pilifs/in-the-loop/commit/d4aea637d221123ad99b341de389c9c2053d6ad4) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The long-token review rule flagged every watcher decision id (single-NAME-D001: lower-case words, dashes, then -D and a number) that appears in a session log, so each new decision added a warning and an allow-list proposal: about a hundred warnings after the twenty-example run. The rule now skips a token that is wholly in that shape; a mixed-case key with the same prefix still matches (new unit test in test_review.py). The rules are restamped after a full rescan. Two findings remain open and proposed for the allow list: a placeholder id ending in D00N in a watcher transcript, and the made-up value of the new test as it appears in that transcript. Verified with test_costs.py run --changed (11 of 11).
 
 ### Record the user's review of the restart and fast-follow runs
 
-change `tqmksxuxpwlu` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`8caa52484ac7`](https://github.com/pilifs/in-the-loop/commit/8caa52484ac75159779fcb84de20ccb80461e1f2) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 The user ruled on 2026-11-20 that the eighteen native outcomes decided under recorded JVM startup conditions (JFreeChart 321: the observed UTC default time zone and calendar factories; Joda-Time 327: the DateTimeZone provider and DateTimeUtils startup states) count as decided, reported as qualified by those conditions and not as unconditional proofs; the original obligations without them stay open. The ruling is in both examples' notes. The user also accepted the watcher's answers D001-D004 of both single-agent runs (foundation-and-python-restart and twenty-example-fast-follow), the two medium-confidence ones included; the fast-follow D005 waits for a later review. Verified with validate_example.py 321 and 327.
 
 ### Price Codex auto-review at zero
 
-change `toloxstqkszp` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`9a7e9fa3e10a`](https://github.com/pilifs/in-the-loop/commit/9a7e9fa3e10accb4af85bd38a0f8ab8162890812) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Codex's reviewer of approval requests reports its calls as the model codex-auto-review, which had no row in llm-dlc/pricing.json, so its 337 calls in 14 sessions counted as $0 for want of a price and warned in check. Its checks are free and draw no plan usage (OpenAI's Codex rate card, and the user on 2026-11-20), so the row prices it at zero explicitly, with that note. The session metrics were regenerated with it in the commit before this one; check reports no pricing warnings.
 
 ### Allow list: Filip Stankovic approved 1bbaf196, d9809595
 
-change `qvolnwlvotls` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+[`a375f36a9f13`](https://github.com/pilifs/in-the-loop/commit/a375f36a9f13646fc5e99c292041b72a33e2bd9e) · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
 
 Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -2886,7 +2886,7 @@ d9809595  long-token  sin…x7 (40 chars): A made-up value in a unit test of the
 
 ### List the decision-id review test in the test-cost inventory
 
-change `muttpyrztwmr` · [log `aa378f1fa1dc`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/aa378f1fa1dce62a3afbec3c54386fd0a9a25cb5178c4aca505d86960450e289.jsonl.gz)
+[`1ebd1e47c75f`](https://github.com/pilifs/in-the-loop/commit/1ebd1e47c75f03aee30044ec7645f4f563da034a) · [log `aa378f1fa1dc`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/aa378f1fa1dce62a3afbec3c54386fd0a9a25cb5178c4aca505d86960450e289.jsonl.gz)
 
 The unit test added with the decision-id exemption of the long-token rule (test_review.py) was not in lib/tests/costs.json, so the tier lint failed the default run and held the push. test_costs.py estimate adds it as unit tier (nothing outside the process) and refreshes the inventory's sources from the newer session logs; test_costs.py lint now agrees.
 

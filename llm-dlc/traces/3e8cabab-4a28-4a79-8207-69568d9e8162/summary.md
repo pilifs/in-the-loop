@@ -2702,49 +2702,49 @@ Outputs applied for 3 of the 4 job(s); 1 kept under outputs/, not applied (the j
 
 ### Record verification results for 1 job(s)
 
-change `wmswovokuroq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`5b6c529dc87b`](https://github.com/pilifs/in-the-loop/commit/5b6c529dc87b52d6c5cc81e5cc8c5f125fbb7ebb) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 6 job(s)
 
-change `kulpoouzrmkw` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`88c128403f36`](https://github.com/pilifs/in-the-loop/commit/88c128403f36a8d78067000837f412abe1a84125) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 4 of the 6 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-025230-check-csv-row-limit-equality-hash-implic: failed: 1 failed step(s) in 21.8s, peak 679.9 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-025230-check-signed-zero-maximum-on-raw-and-num: failed: 1 failed step(s) in 13.1s, peak 298.3 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-025230-replay-the-paired-invoice-witness-on-eac: passed: 1 passed step(s) in 8.8s, peak 122.6 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-025230-verify-bounded-queue-histories-and-final: passed: 1 passed step(s) in 6.2s, peak 132.0 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4 Applied 62 output(s). 20261120-025230-verify-independently-allocated-and-share: passed: 1 passed step(s) in 8.8s, peak 139.6 MiB (estimated 2m00s, 2.0 GiB); 137 output file(s) changed; signals: example:task-as-expected×9 Applied 137 output(s). 20261120-025231-recheck-the-commons-text-lcs-score-after: passed: 1 passed step(s) in 3.8s, peak 93.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `qyrpnwmyqkpu` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`067eac8067b9`](https://github.com/pilifs/in-the-loop/commit/067eac8067b9885818e35159d74a722bac19fcba) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-032650-measure-checked-tiling-summaries-on-iden: passed: 1 passed step(s) in 4m19s, peak 242.3 MiB (estimated 6m00s, 2.0 GiB); 25 output file(s) changed Applied 25 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `mtmnkpqnpklv` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`0a7d634e9e19`](https://github.com/pilifs/in-the-loop/commit/0a7d634e9e19dafc447115dd624df8c9ed261b4f) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-033506-check-the-fast-follow-boxing-change-with: passed: 1 passed step(s) in 15m00s, peak 2.1 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `utttqwmpooxl` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`2a34711ab4f6`](https://github.com/pilifs/in-the-loop/commit/2a34711ab4f68f61f5c3cd30e7882829ab8d2ccc) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-063726-compare-bounded-arraylist-claims-across: passed: 1 passed step(s) in 14m29s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `klxwpqxurmnt` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`c6024a804aa6`](https://github.com/pilifs/in-the-loop/commit/c6024a804aa68de002665710bc723458467282b4) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-074513-verify-the-csv-equality-and-hash-contrac: failed: 1 failed step(s) in 30.7s, peak 674.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×4; example:task-unexpected×2 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `skoqyrnqxmtx` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`bcfcc37dddeb`](https://github.com/pilifs/in-the-loop/commit/bcfcc37dddebbb5d33bc35e4c065a1c398d111a1) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-075403-verify-both-live-multiset-views-on-the-s: passed: 1 passed step(s) in 13.0s, peak 320.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `zryrlqymrzxw` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`0f55f43ff00d`](https://github.com/pilifs/in-the-loop/commit/0f55f43ff00df0779b7ff7e224fdee4cae2337ba) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-094050-verify-monthday-distances-on-observed-ut: failed: 1 failed step(s) in 32.9s, peak 290.2 MiB (estimated 2m00s, 2.0 GiB); 151 output file(s) changed; signals: example:task-as-expected×7; example:task-unexpected×3 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
