@@ -1,0 +1,197 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "rangegrid.Projection#upper(int)",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 30 && rangegrid.Projection.populated(code)",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 1.3 s; loops unwound 30 times with unwinding assertions",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"rangegrid\"; the names are code); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ rangegrid.Projection#upper(int) satisfies `result == 1` on every input where code >= 0 && code < 30 && rangegrid.Projection.populated(code) (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 1.3 s; loops unwound 30 times with unwinding assertions)\n  not vacuous: upper(code=16) reaches the calls\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (Bitwuzla)",
+      "seconds": 1.289951058,
+      "properties": 1,
+      "unwind": 30,
+      "max_array_length": 12,
+      "stage": null,
+      "native": {
+        "paths": 6,
+        "merges": 0,
+        "solver_calls": 17,
+        "solving_seconds": 0.026198366,
+        "gates_evaluated": 598,
+        "evaluating_seconds": 0.000319651,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "word_operations": 179,
+        "finite_queries": {
+          "diagrams": 0,
+          "bitwuzla": 17
+        },
+        "variables": 7986,
+        "clauses": 1,
+        "seconds": 0.27646793,
+        "loading_seconds": 0.002632968,
+        "decoding_seconds": 0.000334925,
+        "encoding_seconds": 0.238714011,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+          "the class initializer of org.jfree.data.time.RegularTimePeriod was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 694273cb6b01), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 30.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 28.993,
+          "seconds": 0.276,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.003,
+            "lowering": 0.0,
+            "symbolic": 0.009,
+            "encoding": 0.239,
+            "solving": 0.026,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 7986,
+            "clauses": 1
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 28.71,
+          "seconds": 0.283,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.277,
+            "solving": 0.002,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 199,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 2.129,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.559,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 1.568
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 30 && rangegrid.Projection.populated(code)",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+          "basis": "engine",
+          "id": "observed-calendar:gregorian-utc-ad"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.jfree.data.time.RegularTimePeriod was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 694273cb6b01), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine",
+          "id": "observed-initializer:org.jfree.data.time.RegularTimePeriod:694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe:9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 30,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found upper(code=16).",
+        "witness": "upper(code=16)"
+      }
+    }
+  }
+]

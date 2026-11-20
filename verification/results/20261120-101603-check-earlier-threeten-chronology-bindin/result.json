@@ -1,0 +1,1042 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-101603-check-earlier-threeten-chronology-bindin",
+  "title": "Check earlier ThreeTen chronology bindings on the richer observer",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 1m49s, peak 848.1 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [
+    "step 1 (Check clock-parent-observed) was held back 11.8s by its 1-CPU quota in 12.2s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Check clock-fix-observed) was held back 12.4s by its 1-CPU quota in 14.8s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (Check reversal-parent-observed) was held back 11.5s by its 1-CPU quota in 15.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 5 (Check same-day-observed) was held back 23.8s by its 1-CPU quota in 41.9s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-101603-check-earlier-threeten-chronology-bindin.json",
+    "sha256": "404d8aafdcb0d8cf09f1ae3e3ee6bfe3c7d55af931ff68b5155901709428c6f0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-101603-check-earlier-threeten-chronology-bindin",
+      "title": "Check earlier ThreeTen chronology bindings on the richer observer",
+      "description": "Repeat all five full-grid ThreeTenBP tasks with their original Chronology state digest, both revision classpaths and 36,864 time pairs. This checks that restoring final application values and identifying UTC calendars preserve an earlier public observed-initializer claim.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261120-012520-publish-five-linked-full-grid-threetenbp"
+        ]
+      },
+      "expected": "The parent clock is refuted with an independently reproduced JVM witness. The fixed clock, both reversal properties and relational same-day preservation are non-vacuously established. Solver counts, timings and memory remain attached to each execution.",
+      "submitted": {
+        "at": "2026-11-20T10:16:03+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1,
+        "memory": "2G",
+        "memoryLimit": "4G",
+        "duration": "2m",
+        "timeout": "16m",
+        "notes": "The last five original checks took 96 seconds together after checker compilation. Preserve one CPU and the prior memory and checker limits."
+      },
+      "steps": [
+        {
+          "name": "Check clock-parent-observed",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-parent-observed --checker-seconds 600"
+        },
+        {
+          "name": "Check clock-fix-observed",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-fix-observed --checker-seconds 600"
+        },
+        {
+          "name": "Check reversal-parent-observed",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-parent-observed --checker-seconds 600"
+        },
+        {
+          "name": "Check reversal-fix-observed",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-fix-observed --checker-seconds 600"
+        },
+        {
+          "name": "Check same-day-observed",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task same-day-observed --checker-seconds 600"
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/310-threeten-complete-hours/receipts/clock-parent-observed",
+        "examples/310-threeten-complete-hours/receipts/clock-fix-observed",
+        "examples/310-threeten-complete-hours/receipts/reversal-parent-observed",
+        "examples/310-threeten-complete-hours/receipts/reversal-fix-observed",
+        "examples/310-threeten-complete-hours/receipts/same-day-observed"
+      ]
+    }
+  },
+  "sourceCommit": "3667c01a64afea01c0d12461c7d9a3a67685bea1",
+  "startedAt": "2026-11-20T10:18:29+00:00",
+  "finishedAt": "2026-11-20T10:23:22+00:00",
+  "wallSeconds": 293.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1448217,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": "The last five original checks took 96 seconds together after checker compilation. Preserve one CPU and the prior memory and checker limits."
+  },
+  "usage": {
+    "peakMemoryBytes": 889282560,
+    "wallSeconds": 109.6,
+    "cpuSeconds": 106.5,
+    "memoryOfEstimate": 0.41,
+    "durationOfEstimate": 0.91
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check clock-parent-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-parent-observed --checker-seconds 600",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 12.225,
+      "cpuSeconds": 11.752,
+      "cpuThrottledSeconds": 11.75,
+      "peakMemoryBytes": 302407680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-clock-parent-observed.log",
+        "lines": 2,
+        "bytes": 247,
+        "sha256": "6509162fc545dc9deb19f5aa0202e4d0a6eba4ba571afc4283c39e6abb20ff27",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task clock-parent-observed: refuted (completed; as expected), receipt receipts/clock-parent-observed/20261120T102132Z-a76e3155/result.json",
+          "groups": [
+            "310",
+            "clock-parent-observed",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task clock-parent-observed (target route)",
+        "310-threeten-complete-hours: task clock-parent-observed: refuted (completed; as expected), receipt receipts/clock-parent-observed/20261120T102132Z-a76e3155/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check clock-fix-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-fix-observed --checker-seconds 600",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 14.823,
+      "cpuSeconds": 14.35,
+      "cpuThrottledSeconds": 12.355,
+      "peakMemoryBytes": 751570944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-clock-fix-observed.log",
+        "lines": 2,
+        "bytes": 242,
+        "sha256": "b6af968ebb87093b26525bae4fe16ea2e3f672323f4bf99a4dc343865aaf0606",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task clock-fix-observed: established (completed; as expected), receipt receipts/clock-fix-observed/20261120T102144Z-ca0a6196/result.json",
+          "groups": [
+            "310",
+            "clock-fix-observed",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task clock-fix-observed (target route)",
+        "310-threeten-complete-hours: task clock-fix-observed: established (completed; as expected), receipt receipts/clock-fix-observed/20261120T102144Z-ca0a6196/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check reversal-parent-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-parent-observed --checker-seconds 600",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 15.431,
+      "cpuSeconds": 14.771,
+      "cpuThrottledSeconds": 11.495,
+      "peakMemoryBytes": 505671680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-reversal-parent-observed.log",
+        "lines": 2,
+        "bytes": 260,
+        "sha256": "abf1cafad5dfaffbb5434ab780d598a03b2dc0498a416a92e01182529c93684f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task reversal-parent-observed: established (completed; as expected), receipt receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/result.json",
+          "groups": [
+            "310",
+            "reversal-parent-observed",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task reversal-parent-observed (target route)",
+        "310-threeten-complete-hours: task reversal-parent-observed: established (completed; as expected), receipt receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Check reversal-fix-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-fix-observed --checker-seconds 600",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 25.251,
+      "cpuSeconds": 24.652,
+      "cpuThrottledSeconds": 11.298,
+      "peakMemoryBytes": 889282560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-check-reversal-fix-observed.log",
+        "lines": 2,
+        "bytes": 251,
+        "sha256": "21df3df5b78a07689d8579d6800ea43fa2aa8cbaa589a45e4be6aced207164b5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task reversal-fix-observed: established (completed; as expected), receipt receipts/reversal-fix-observed/20261120T102215Z-15c5653a/result.json",
+          "groups": [
+            "310",
+            "reversal-fix-observed",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task reversal-fix-observed (target route)",
+        "310-threeten-complete-hours: task reversal-fix-observed: established (completed; as expected), receipt receipts/reversal-fix-observed/20261120T102215Z-15c5653a/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Check same-day-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task same-day-observed --checker-seconds 600",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 41.899,
+      "cpuSeconds": 40.984,
+      "cpuThrottledSeconds": 23.784,
+      "peakMemoryBytes": 365518848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-check-same-day-observed.log",
+        "lines": 2,
+        "bytes": 239,
+        "sha256": "6cd30f50b538307f03e81205981a840210205210900444e0dfbcd6025ee20273",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task same-day-observed: established (completed; as expected), receipt receipts/same-day-observed/20261120T102240Z-59a4cc56/result.json",
+          "groups": [
+            "310",
+            "same-day-observed",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task same-day-observed (target route)",
+        "310-threeten-complete-hours: task same-day-observed: established (completed; as expected), receipt receipts/same-day-observed/20261120T102240Z-59a4cc56/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "27ed026354eb236f2cf2dcebf7bc59bd2347d19f8e6b45425673755058a3d508",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/plan.json",
+      "change": "added",
+      "bytes": 20354,
+      "sha256": "0cc093dd7d61d6de6d8d1df11816903f55ff68c3b1cbb282884d8eb06348d834",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 15828,
+      "sha256": "b8a4776a604612bbc47417c80ceac0eba56a5788096bd49b3708e8704e2c7aae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/controls.json",
+      "change": "added",
+      "bytes": 36294,
+      "sha256": "e20d4678595df8228fdd130ca63f13e9e9b73eaef24c46b49aa7ce1a976c17dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/execution.json",
+      "change": "added",
+      "bytes": 71901,
+      "sha256": "9946137a65f02f077299e07223ef0a733f3535539905921317f57fdc2c30f0b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "d36b8ec782417f13fe89595f83cb987bdd7bc5b594b92bcdbbff212614daab0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 686,
+      "sha256": "eff63bf05f5fa72efb3c15f1d3b0c954c23800b08bc8643c2f1fe610aeafd0d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/verifier.json",
+      "change": "added",
+      "bytes": 32933,
+      "sha256": "0d683d884041a87644e8997573e1518c705b5b81df1a8a9b0cd2a5a886941d1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9844,
+      "sha256": "52ed2305e36eea992810c809b380196bc6c2bf1f8c5759182412d7f0298678d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/result.json",
+      "change": "added",
+      "bytes": 25018,
+      "sha256": "3c315d08737a28d9f22d5c6e40983a29277451130355049fd58394b0cdeea878",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T102132Z-a76e3155/attempt.json",
+      "change": "added",
+      "bytes": 29977,
+      "sha256": "f9aa354628d36a36d5cba9bd1abacc00191b943fb47a90e8f84ae8b47f57b861",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T102132Z-a76e3155/checker.json",
+      "change": "added",
+      "bytes": 11488,
+      "sha256": "93d0c821b1ed751508620f26f0c4eb2478735df9e801ba5d0d38b495c108a279",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T102132Z-a76e3155/correspondence.json",
+      "change": "added",
+      "bytes": 1306,
+      "sha256": "f9c9faf75bea6dac3c996b76afd6e98ed5e6ca8cb7c6068db26ac951c64f0a42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T102132Z-a76e3155/replay.json",
+      "change": "added",
+      "bytes": 1767,
+      "sha256": "e0570ecd9b6e6f21007bda4b3d9fa6d1ff8133a9abae269f8889c61bf0cfa7ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4b439d6a0614d4b5a6073ac3860c002f6691e6de8c8c7569861f61f82697998a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/plan.json",
+      "change": "added",
+      "bytes": 20449,
+      "sha256": "7dd44763fd18e6e2efe2755ad845e42defd23261b21e0b73fd8da92939d9c820",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15661,
+      "sha256": "9a41a5fd7b9a5932e6937a5633bacb300e7086c59219381b533c990fa3de4012",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/controls.json",
+      "change": "added",
+      "bytes": 36094,
+      "sha256": "f8cfc5853ef23e4fe6d3a9be759265f999cc21a044c93b3e9144cd6a4cc792bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/execution.json",
+      "change": "added",
+      "bytes": 68548,
+      "sha256": "1cd378f854a40e982245f71442873145f6e56b1c8406a88a55bba452180280e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "27e83396b0b9e5866c44cfbc5672cfb806b175357dfce9925e4141d92bb20fc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 412,
+      "sha256": "2568e289d92559a67086b8110f7b013bc049c59acc29ca9a5cf014d1b28e4d6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/verifier.json",
+      "change": "added",
+      "bytes": 31975,
+      "sha256": "f0e939f1fcdefa9215ef3bbd1c9877e26882282f2969cc63a7d72169e51ed0aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8995,
+      "sha256": "750c3fe2ccae773c5bd2961589d418bae429c4d07eb46a284d3b3206bc23e334",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/result.json",
+      "change": "added",
+      "bytes": 23504,
+      "sha256": "b841fa6dc7aae8ab52f8c919a0e5b4d429ec49943f40a2535957d8f4e6393468",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T102144Z-ca0a6196/attempt.json",
+      "change": "added",
+      "bytes": 29835,
+      "sha256": "85ea52444019dbfebceaf38767d1ff89318be3f91f5a633b41847fb8bfb52b08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T102144Z-ca0a6196/checker.json",
+      "change": "added",
+      "bytes": 10577,
+      "sha256": "b0721867a41b7c712337d1500347149625db097c44c139b7903fdd9d1ac45c6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T102144Z-ca0a6196/correspondence.json",
+      "change": "added",
+      "bytes": 1300,
+      "sha256": "7b4d959c41413173e7183cc5c68e6c695cd73dfd8bb88a73185e4885d0ddfcd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3efe5c4f4195e8e5f76067a1922b9a37ae0593df2c7b8ae3466dedccbc91d712",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/plan.json",
+      "change": "added",
+      "bytes": 20351,
+      "sha256": "69f48b730967e8f049f207d3d053452c4cd570243a5b805427a50edd070501e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 15828,
+      "sha256": "b8a4776a604612bbc47417c80ceac0eba56a5788096bd49b3708e8704e2c7aae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/controls.json",
+      "change": "added",
+      "bytes": 36303,
+      "sha256": "fe280937f09005f9e3e9ac5677003e3774567f2216bf0e43e753703f7e0f267c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/execution.json",
+      "change": "added",
+      "bytes": 69078,
+      "sha256": "a7e3762b8d89faaffb99916a788948fa49b54905bcd4a8d4381ba129c48ae107",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "147ec67909a9abaeb594dce3beaa4d2428f3d8be5140852ba05897ca94944d6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 698,
+      "sha256": "bcfbfe083654923d64ef5a62a0709b9d2d3877dcf92a9f84c39ab55eeb27b581",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/verifier.json",
+      "change": "added",
+      "bytes": 32331,
+      "sha256": "7eaa0d1d52a4282a3d9488a3446333b85b0047f2b5ccbf31fd19dde89dfea0be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9308,
+      "sha256": "fd02bec04073ba8f9b66f1eedfe219f9962545d1c4fa938bc76d79c91d35fc72",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/result.json",
+      "change": "added",
+      "bytes": 23645,
+      "sha256": "d47c594c48476a06180cde1f388fd4c3ab314315e08a764ee4f95fa9536410c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/executions/20261120T102159Z-a3bdfd83/attempt.json",
+      "change": "added",
+      "bytes": 29886,
+      "sha256": "e9f74d7e030d38a20d6833cb8fee0ae616bf3fb902539a2c13c75e54de57debd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/executions/20261120T102159Z-a3bdfd83/checker.json",
+      "change": "added",
+      "bytes": 10914,
+      "sha256": "ed10e5afa5ef4dcc64ab5293ce5af2c725668ce37e0a42a469554bbb9bcd301e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/executions/20261120T102159Z-a3bdfd83/correspondence.json",
+      "change": "added",
+      "bytes": 1306,
+      "sha256": "f9c9faf75bea6dac3c996b76afd6e98ed5e6ca8cb7c6068db26ac951c64f0a42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8104d66773fbf02c4989a0c0b8a83c72cf6188d11fe1d3ab6cbe600b87e60ec5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/plan.json",
+      "change": "added",
+      "bytes": 20442,
+      "sha256": "e8e1ffd6de1466b53d01ee4be336a13d2447ab054f0c2c0eebf8b9c4ae928d5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15661,
+      "sha256": "9a41a5fd7b9a5932e6937a5633bacb300e7086c59219381b533c990fa3de4012",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/controls.json",
+      "change": "added",
+      "bytes": 36103,
+      "sha256": "ed2bd082055b8327bf982bedafbaf24d0522ec3d5931b8c28ce45a0d8e085dbe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/execution.json",
+      "change": "added",
+      "bytes": 68902,
+      "sha256": "4f45c4673a0c3863fc012f8be87d75f2e9ed84c75ea7fb2a2cba8c604bdc535e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "c5fdfd5fcbfa6960bbebf70eff9a766813946e2d1ba8f1ea3b343e30139cb008",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 699,
+      "sha256": "95efbd0031751d9400df9c89e7224ba527aedd4c2c434f2d0e43ed2424d2f780",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/verifier.json",
+      "change": "added",
+      "bytes": 32335,
+      "sha256": "87e8670e9bc745efe0e2487c4b198555b6d645f58120f8bef3e3fa747c2af74d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9318,
+      "sha256": "67c78a7a70600186a6e3ff8fb99b03cf2f6d5a956ae09e23776d0eb3f45cf23b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/result.json",
+      "change": "added",
+      "bytes": 23592,
+      "sha256": "91c6c4d3682d05bdfbe7505418f366a04f62c939c31fe5ec443004573994650a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T102215Z-15c5653a/attempt.json",
+      "change": "added",
+      "bytes": 29868,
+      "sha256": "7a1923bd8968b1c35761b2051f5f9cb51812beafaa3b89333c82cbec417e0c61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T102215Z-15c5653a/checker.json",
+      "change": "added",
+      "bytes": 10914,
+      "sha256": "17ff95a651e2e7c66120e3efa1d6664a7d0bb462fc83400b8a2db9fd7f54d4ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T102215Z-15c5653a/correspondence.json",
+      "change": "added",
+      "bytes": 1300,
+      "sha256": "7b4d959c41413173e7183cc5c68e6c695cd73dfd8bb88a73185e4885d0ddfcd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "156d3610c12a63da82195210a13dd616f292c08f3b1f66504e3057e92edc5cfc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/plan.json",
+      "change": "added",
+      "bytes": 34748,
+      "sha256": "b91dba59ce6c715ad3b6f5532df9936702d42b71c3a2d298d8d66a022ee353a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15661,
+      "sha256": "9a41a5fd7b9a5932e6937a5633bacb300e7086c59219381b533c990fa3de4012",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 15828,
+      "sha256": "b8a4776a604612bbc47417c80ceac0eba56a5788096bd49b3708e8704e2c7aae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/controls.json",
+      "change": "added",
+      "bytes": 72320,
+      "sha256": "9ef4714e54e937bd290d426e9b16a62fc6954945ee15d82e9343b4fff03bfccd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/execution.json",
+      "change": "added",
+      "bytes": 135090,
+      "sha256": "034a2bafa7ea26366035a7d7ba33db6e22f5ca9df697756f6009d7393c75755a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/streams.json",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "3e00d5798885589464e29a687568dfe93135f0f170d88c1d07bf66cfdf7bbb51",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1374,
+      "sha256": "e4cbd74555f4684c82ccde765624452edda6297e90b5e9b79527973c0972837c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/verifier.json",
+      "change": "added",
+      "bytes": 61787,
+      "sha256": "e2c4a1b9fa00a5113995cfafb91831228115cf8ae7631506ec796042c91c81ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/verifier.stdout",
+      "change": "added",
+      "bytes": 21219,
+      "sha256": "783716af6e96095b224887a82d6af627e66eca2272656f7f42a7589aad339a60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/result.json",
+      "change": "added",
+      "bytes": 16403,
+      "sha256": "d898aacbf83efeaea5f7ace09d0153f39a990a64bb691366ab79263d46cd4c4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T102240Z-59a4cc56/attempt.json",
+      "change": "added",
+      "bytes": 52775,
+      "sha256": "1ae165f6851988c07eada68160f1ce5f674952f378e5b7306dfa6d539a324751",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T102240Z-59a4cc56/checker.json",
+      "change": "added",
+      "bytes": 24097,
+      "sha256": "d52276b1eb30e529d9bda50a6090842672a932bc1bc3cffda6328f7cadee7c0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T102240Z-59a4cc56/correspondence.json",
+      "change": "added",
+      "bytes": 2603,
+      "sha256": "8ab8de3c02a569ce12832e8635dbb92c3c20b5b5d2b6b6ab64c3e926b3a31df5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T10:24:53+00:00",
+    "applied": [
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/completion.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/plan.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/control-parent-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/control-parent-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/result.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T102132Z-a76e3155/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T102132Z-a76e3155/checker.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T102132Z-a76e3155/correspondence.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T102132Z-a76e3155/replay.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/completion.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/plan.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/control-fix-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/control-fix-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/result.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T102144Z-ca0a6196/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T102144Z-ca0a6196/checker.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T102144Z-ca0a6196/correspondence.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/completion.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/plan.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/control-parent-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/control-parent-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/result.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/executions/20261120T102159Z-a3bdfd83/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/executions/20261120T102159Z-a3bdfd83/checker.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/executions/20261120T102159Z-a3bdfd83/correspondence.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/completion.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/plan.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/control-fix-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/control-fix-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/result.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T102215Z-15c5653a/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T102215Z-15c5653a/checker.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T102215Z-15c5653a/correspondence.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/completion.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/plan.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/control-fix-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/control-fix-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/control-parent-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/control-parent-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/result.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T102240Z-59a4cc56/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T102240Z-59a4cc56/checker.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T102240Z-59a4cc56/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1517955,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "29e34d8802decff2c4c91717db160d151b315c9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/29e34d8802decff2c4c91717db160d151b315c9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}
