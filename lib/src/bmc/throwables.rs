@@ -48,7 +48,7 @@ const CAUSE: &str = "java/lang/Throwable#cause";
 /// Private JDK fields have a separate key even when an application subclass hides their names.
 pub(crate) const SUPPRESSED: &str = "java/lang/Throwable#suppressedExceptions";
 const ENABLE_SUPPRESSION: &str = "java/lang/Throwable#enableSuppression";
-pub(super) const EMPTY_LIST: &str = "java/util/Collections$EmptyList";
+pub(crate) const EMPTY_LIST: &str = "java/util/Collections$EmptyList";
 pub(super) const THROWABLE_ARRAY: &str = "[Ljava/lang/Throwable;";
 
 /// The calling JDK model chose the constructor arguments. The real JDK can supply different details.
@@ -197,7 +197,7 @@ impl Engine<'_> {
             // Initialize the private field on first use. Its absence on an opaque throwable
             // is never evidence of an empty list: the constructor check above must pass.
             if !path.objects[o].fields.contains_key(SUPPRESSED) {
-                let sentinel = self.literal(path, Literal::SuppressedSentinel, EMPTY_LIST);
+                let sentinel = self.literal(path, Literal::CollectionsEmptyList, EMPTY_LIST);
                 let initial = match path.objects[o].fields.get(ENABLE_SUPPRESSION) {
                     Some(Val::I(flag)) => {
                         let disabled = self.b.is_zero(flag);

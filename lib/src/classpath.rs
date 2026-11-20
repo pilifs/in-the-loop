@@ -482,7 +482,10 @@ impl ClassPath {
         if let Some(class) = self.application(name)? {
             return Ok(Some(class));
         }
-        Ok(self.map_image_class(name).or_else(|| self.model(name)))
+        if name == "java/util/AbstractList" {
+            if let Some(Loaded { class, origin: Origin::Jdk }) = self.load(name)? { return Ok(Some(class)); }
+        }
+        Ok(self.state_image_class(name).or_else(|| self.map_image_class(name)).or_else(|| self.model(name)))
     }
 
     /// Whether [`bytecode`](Self::bytecode) has a class for the name.
@@ -571,9 +574,30 @@ impl ClassPath {
             | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
             | ("java/util/Objects", "hash", "([Ljava/lang/Object;)I")
             | ("java/util/Objects", "hashCode", "(Ljava/lang/Object;)I")
+            | ("java/util/Objects", "checkFromIndexSize", "(III)I")
+            | ("jdk/internal/util/Preconditions", "checkFromIndexSize", "(IIILjava/util/function/BiFunction;)I")
             | ("jdk/internal/util/ArraysSupport", "hashCode", "([Ljava/lang/Object;III)I")
             | ("java/util/Arrays", "equals", "([Ljava/lang/Object;[Ljava/lang/Object;)Z")
             | ("java/util/Arrays", "hashCode", "([Ljava/lang/Object;)I"))
+    }
+
+    /// The public empty-list factory and field share the one EmptyList allocated in
+    /// Collections' straight-line initializer. This is also Throwable's suppression sentinel.
+    pub(crate) fn collections_empty_list(&self) -> bool {
+        use crate::classfile::{Insn, Kind};
+        const C: &str = "java/util/Collections";
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(C) else { return false };
+        let list = |i| class.pool.member(i).is_ok_and(|f| (f.owner.as_str(), f.name.as_str(), f.descriptor.as_str()) == (C, "EMPTY_LIST", "Ljava/util/List;"));
+        let Some(factory) = class.method("emptyList", "()Ljava/util/List;").and_then(|m| m.code.as_ref()) else { return false };
+        if !factory.instructions().is_ok_and(|ops| matches!(ops.as_slice(), [(_, Insn::GetStatic(i)), (_, Insn::Return(Some(Kind::Ref)))] if list(*i))) { return false; }
+        let Some(init) = class.method("<clinit>", "()V").and_then(|m| m.code.as_ref()) else { return false };
+        let Ok(ops) = init.instructions() else { return false };
+        if !init.exception_table.is_empty() || ops.iter().any(|(_, i)| !i.targets().is_empty()) { return false; }
+        let writes = ops.iter().filter(|(_, i)| matches!(i, Insn::PutStatic(f) if list(*f))).count();
+        writes == 1 && ops.windows(4).any(|four| matches!(four,
+            [(_, Insn::New(c)), (_, Insn::Dup), (_, Insn::InvokeSpecial(m)), (_, Insn::PutStatic(f))] if list(*f)
+                && class.pool.class_name(*c).ok() == Some("java/util/Collections$EmptyList")
+                && class.pool.member(*m).is_ok_and(|ctor| (ctor.owner.as_str(), ctor.name.as_str(), ctor.descriptor.as_str()) == ("java/util/Collections$EmptyList", "<init>", "()V"))))
     }
 
     /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
@@ -615,7 +639,7 @@ impl ClassPath {
             | ("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;")
             | ("java/lang/Character", "<init>", "(C)V")
             | ("java/lang/Character", "charValue", "()C")
-            | ("java/lang/Character", "toString", "()Ljava/lang/String;")
+            | ("java/lang/Character", "toString", "()Ljava/lang/String;" | "(C)Ljava/lang/String;")
             | ("java/lang/Character", "hashCode", "()I" | "(C)I")
             | ("java/lang/Boolean", "hashCode", "()I" | "(Z)I")
             | ("java/lang/Long", "hashCode", "()I" | "(J)I")
@@ -659,7 +683,21 @@ impl ClassPath {
     /// This class uses ordinary instance and static fields. The selected image supplies its
     /// initializer, empty singleton, branches, and actual Supplier dispatch.
     pub(crate) fn checked_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
-        if name != "java/util/Optional" { return None; }
+        if name != "java/util/Optional" { return self.state_image_class(name); }
+        let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+        Some(class)
+    }
+
+    /// Ordinary single-threaded JDK objects whose instance and static fields both engines
+    /// execute from the image. Reader$2 is the CharSequence reader used by newer runtimes.
+    pub(crate) fn state_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
+            | "java/util/Collections$EmptyList" | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
+            | "java/util/Spliterators$EmptySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef" | "java/util/Spliterators$EmptySpliterator$OfInt"
+            | "java/util/Spliterators$EmptySpliterator$OfLong" | "java/util/Spliterators$EmptySpliterator$OfDouble"
+            | "java/nio/file/StandardOpenOption" | "java/nio/file/LinkOption"
+            | "javax/swing/event/EventListenerList" | "java/beans/PropertyChangeSupport" | "java/beans/VetoableChangeSupport"
+            | "java/beans/ChangeListenerMap" | "java/beans/PropertyChangeSupport$PropertyChangeListenerMap" | "java/beans/VetoableChangeSupport$VetoableChangeListenerMap") { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
         Some(class)
     }

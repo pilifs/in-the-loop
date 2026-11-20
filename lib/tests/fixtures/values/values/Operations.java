@@ -44,6 +44,22 @@ public final class Operations {
 
     // java.lang.String
 
+    static int copiedUnits(int n, int unit, int offset) {
+        String s = of(n, unit, 0, 0);
+        char[] dst = offset < 0 ? null : new char[] {17, 23, 29};
+        s.getChars(0, n < 0 ? 0 : n, dst, Math.max(offset, 0));
+        return dst[0] + 31 * dst[1] + 961 * dst[2];
+    }
+
+    static int separateUnits(int n, int unit) {
+        String s = of(n, unit, 0, 0);
+        char[] a = s.toCharArray(), b = s.toCharArray();
+        if (a == b || a.length != s.length()) return -1;
+        if (n == 0) return 0;
+        a[0] = 'x';
+        return s.charAt(0) == b[0] ? b[0] : -1;
+    }
+
     static int length(int n, int a, int b, int c) {
         return of(n, a, b, c).length();
     }

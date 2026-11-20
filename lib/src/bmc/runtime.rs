@@ -180,7 +180,7 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     if (owner, name, descriptor) == ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;") { return true; }
     matches!(
         (owner, name, descriptor),
-        ("java/lang/System", "lineSeparator", "()Ljava/lang/String;") |
+        ("java/lang/System", "lineSeparator", "()Ljava/lang/String;") | (COLLECTIONS, "emptyList", "()Ljava/util/List;") |
         (BOOLEAN, "valueOf", "(Z)Ljava/lang/Boolean;") | ("java/lang/reflect/Array", "getLength", "(Ljava/lang/Object;)I") | (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
     )
 }
@@ -195,10 +195,10 @@ pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
         (BOOLEAN, "booleanValue", "()Z") | (BOOLEAN, "equals", "(Ljava/lang/Object;)Z") | (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
-            | (CLASS, "isArray", "()Z")
+            | (CLASS, "isArray" | "isPrimitive", "()Z")
             | (CLASS, "getSuperclass" | "getComponentType", "()Ljava/lang/Class;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
-            | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z")
+            | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z") | (CLASS, "isInstance", "(Ljava/lang/Object;)Z")
             | ("java/lang/Object", "getClass", "()Ljava/lang/Class;")
             | (THREAD, "getContextClassLoader", "()Ljava/lang/ClassLoader;")
     )
@@ -309,7 +309,8 @@ impl Engine<'_> {
             let o_ = &path.objects[o];
             let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
             let array = o_.is_array() && !o_.assumed && !self.there_before(path, o);
-            if o_.lambda.is_some() || !(array || self.cp.is_application(&class) || class == STRING || exception) {
+            let image_object = !o_.assumed && !self.there_before(path, o) && self.cp.state_image_class(&class).is_some();
+            if o_.lambda.is_some() || !(array || image_object || self.cp.is_application(&class) || class == STRING || exception) {
                 return None;
             }
             let literal = self.literal(path, Literal::Class(class), CLASS);
@@ -328,8 +329,21 @@ impl Engine<'_> {
             self.advance(path);
             return Some(Ok(None));
         }
-        if path.objects[o].class != CLASS || !models_instance(owner, name, descriptor) || name == "isAssignableFrom" {
+        if path.objects[o].class != CLASS || !models_instance(owner, name, descriptor) || matches!(name, "isAssignableFrom" | "isInstance") {
             return None;
+        }
+        let primitive = path.literals.iter().any(|(literal, object)| *object == o && matches!(literal, Literal::PrimitiveClass(_)));
+        if name == "isPrimitive" && (primitive || self.class_named(path, o).is_some()) {
+            self.push_truth(path, if primitive { TRUE } else { FALSE });
+            return Some(Ok(None));
+        }
+        if primitive {
+            match name {
+                "isArray" => self.push_truth(path, FALSE),
+                "getSuperclass" | "getComponentType" | "getClassLoader" => { self.push(path, Val::R(None)); self.advance(path); }
+                _ => return None,
+            }
+            return Some(Ok(None));
         }
         let class = self.class_named(path, o)?;
         if name == "isArray" {
@@ -355,8 +369,8 @@ impl Engine<'_> {
                     return Some(Ok(None));
                 };
                 let component = Type::parse(desc).ok()?;
-                if !holds_references(&component) { return Some(unsupported("Class.getComponentType needs a primitive class mirror for this array")); }
-                self.literal(path, Literal::Class(class_of(&component)), CLASS)
+                let key = if holds_references(&component) { Literal::Class(class_of(&component)) } else { Literal::PrimitiveClass(component.descriptor()) };
+                self.literal(path, key, CLASS)
             }
             "getSuperclass" => {
                 let above = if class.starts_with('[') {
@@ -373,13 +387,14 @@ impl Engine<'_> {
                 self.advance(path);
                 return Some(Ok(None));
             }
-            _ => {
+            "getClassLoader" => {
                 if !self.cp.is_application(&class) {
                     return None;
                 }
                 self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
                 self.literal(path, Literal::Loader, LOADER)
             }
+            _ => return None,
         };
         self.push(path, Val::R(Some(value)));
         self.advance(path);
@@ -389,13 +404,35 @@ impl Engine<'_> {
     /// `Class.isAssignableFrom(other)` on the class literal `o`: see the module's notes. `None` where the call stays
     /// the JDK's.
     pub(super) fn class_relation(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
-        if path.objects[o].class != CLASS || (name, descriptor) != ("isAssignableFrom", "(Ljava/lang/Class;)Z") {
-            return None;
-        }
+        if path.objects[o].class != CLASS { return None; }
         let [Val::R(other)] = args else { return None };
+        let primitive = |at: usize| path.literals.iter().any(|(l, n)| *n == at && matches!(l, Literal::PrimitiveClass(_)));
+        if !primitive(o) && self.class_named(path, o).is_none() { return None; }
+        if primitive(o) || (name == "isAssignableFrom" && other.is_some_and(primitive)) {
+            let truth = match (name, descriptor, other) {
+                ("isInstance", "(Ljava/lang/Object;)Z", _) => FALSE,
+                ("isAssignableFrom", "(Ljava/lang/Class;)Z", None) => return Some(self.raise(path, "java/lang/NullPointerException")),
+                ("isAssignableFrom", "(Ljava/lang/Class;)Z", Some(p)) if primitive(*p) || self.class_named(path, *p).is_some() => if *p == o { TRUE } else { FALSE },
+                _ => return None,
+            };
+            self.push_truth(path, truth);
+            return Some(Ok(None));
+        }
         let above = self.class_named(path, o)?;
-        let Some(other) = *other else { return Some(self.raise(path, "java/lang/NullPointerException")) };
-        let below = self.class_named(path, other)?;
+        let below = match (name, descriptor, other) {
+            ("isInstance", "(Ljava/lang/Object;)Z", None) => {
+                self.push_truth(path, FALSE);
+                return Some(Ok(None));
+            }
+            ("isInstance", "(Ljava/lang/Object;)Z", Some(other)) => {
+                let obj = &path.objects[*other];
+                if obj.assumed || obj.lambda.is_some() { return None; }
+                obj.class.clone()
+            }
+            ("isAssignableFrom", "(Ljava/lang/Class;)Z", None) => return Some(self.raise(path, "java/lang/NullPointerException")),
+            ("isAssignableFrom", "(Ljava/lang/Class;)Z", Some(other)) => self.class_named(path, *other)?,
+            _ => return None,
+        };
         // Resolve the leaf of an array literal as well. Primitive array descriptors
         // determine their type without a primitive Class mirror.
         let known = |cp: &ClassPath, class: &str| {
@@ -406,7 +443,7 @@ impl Engine<'_> {
                     None => matches!(element, "B" | "S" | "C" | "I" | "J" | "F" | "D" | "Z"),
                 };
             }
-            class.contains('/') && cp.loads(class)
+            cp.loads(class)
         };
         if !known(self.cp, &above) || !known(self.cp, &below) {
             return None;
@@ -676,6 +713,12 @@ impl Engine<'_> {
                 self.class_named(path, class)?;
                 let no = self.b.constant(0, 32);
                 self.push(path, Val::I(no));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            (COLLECTIONS, "emptyList", []) if self.cp.collections_empty_list() => {
+                let o = self.literal(path, Literal::CollectionsEmptyList, throwables::EMPTY_LIST);
+                self.push(path, Val::R(Some(o)));
                 self.advance(path);
                 Some(Ok(None))
             }

@@ -713,6 +713,9 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
     code.exception_table.is_empty() && insns.iter().all(|(_, insn)| match insn {
         Insn::Nop | Insn::AConstNull | Insn::IConst(_) | Insn::LConst(_) | Insn::FConst(_) | Insn::DConst(_)
         | Insn::Ldc(_) | Insn::Dup | Insn::NewArray(_) | Insn::ANewArray(_) | Insn::ArrayStore(_) | Insn::Return(None) => true,
+        Insn::GetStatic(i) => cf.pool.member(*i).is_ok_and(|m| m.descriptor.starts_with(['L', '['])
+            && cp.resolve_field(&m.owner, &m.name, &m.descriptor).and_then(|owner| cp.load(&owner).ok().flatten())
+                .is_some_and(|l| l.class.field(&m.name).is_some_and(|f| f.is_static() && f.is_final()))),
         Insn::New(i) => cf.pool.class_name(*i).is_ok_and(|class| cp.is_application(class)),
         Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) =>
             cf.pool.member(*i).is_ok_and(|m| cp.is_application(&m.owner)),
@@ -1112,7 +1115,9 @@ impl<'a> Walker<'a> {
     /// ([`super::Engine::get_static`]). Initializes the class that declares the field.
     fn static_field(&mut self, owner: &str, name: &str, descriptor: &str, put: bool, site: &Site) {
         let declaring = self.cp.resolve_field(owner, name, descriptor).unwrap_or_else(|| owner.to_string());
-        if !put && self.cp.numeric_assertion_flag(&declaring, name, descriptor) { return; }
+        if !put && (self.cp.numeric_assertion_flag(&declaring, name, descriptor)
+            || (name == "TYPE" && descriptor == "Ljava/lang/Class;" && Type::for_wrapper(&declaring).is_some())
+            || ((declaring.as_str(), name, descriptor) == ("java/util/Collections", "EMPTY_LIST", "Ljava/util/List;") && self.cp.collections_empty_list())) { return; }
         let what = format!("{}.{name}", declaring.replace('/', "."));
         let constant = !put && self.constant(&declaring, name);
         if !self.cp.checker_statics(&declaring) {

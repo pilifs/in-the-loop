@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-081134-trace-historical-chart-ranges-through-re",
+  "title": "Trace historical chart ranges through real Swing and JavaBeans state",
+  "description": "On both JFreeChart revisions, check the eight unchanged lower and upper endpoint claims on all 30 series/order configurations and the populated companions. Preserve the actual listener lists, JavaBeans serialization metadata and the first environment read reached by Year before its UTC collection.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "321"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T08:11:34+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 321 --tasks lower-parent,lower-fix,upper-parent,upper-fix,populated-lower-parent,populated-upper-parent,populated-lower-fix,populated-upper-fix --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/321-jfreechart-empty-series-range/receipts/lower-parent",
+    "examples/321-jfreechart-empty-series-range/receipts/lower-fix",
+    "examples/321-jfreechart-empty-series-range/receipts/upper-parent",
+    "examples/321-jfreechart-empty-series-range/receipts/upper-fix",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix"
+  ]
+}

@@ -64,7 +64,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("toCharArray", "()[C") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
@@ -368,6 +368,49 @@ impl Engine<'_> {
     /// The String methods of this module on the String `o` of content `s`: see the module's notes.
     pub(super) fn string_method_on_content(&mut self, path: &mut Path, o: usize, s: &Array, name: &str, descriptor: &str, args: &[Val]) -> Step {
         match (name, descriptor, args) {
+            ("toCharArray", "()[C", []) => {
+                let copy = self.alloc(path, "[C");
+                path.objects[copy].array = Some(s.clone());
+                self.push(path, Val::R(Some(copy)));
+                self.advance(path);
+                Ok(None)
+            }
+            ("getChars", "(II[CI)V", [Val::I(begin), Val::I(end), Val::R(destination), Val::I(offset)]) => {
+                // Validate before writing any cells. An invalid range needs its own
+                // image-specific exception class, message and null-check order.
+                let invalid = [self.b.negative(begin), self.b.slt(end, begin), self.b.slt(&s.length, end)];
+                let mut outside = path.cond.clone();
+                outside.push(self.any(&invalid));
+                if self.solve(&outside)? { return unsupported("String.getChars source range is not proven valid"); }
+                let Some(dst) = *destination else { return self.raise(path, "java/lang/NullPointerException") };
+                let Some(mut dest) = path.objects[dst].as_array().filter(|a| a.element == Type::Char).cloned() else {
+                    return unsupported("String.getChars needs a known char array");
+                };
+                let count = self.b.sub(end, begin);
+                let room = self.b.sub(&dest.length, &count);
+                let invalid = [self.b.negative(offset), self.b.slt(&room, offset)];
+                outside.pop();
+                outside.push(self.any(&invalid));
+                if self.solve(&outside)? { return unsupported("String.getChars destination range is not proven valid"); }
+                if self.b.constant_value(&count) != Some(0) {
+                    self.keeps(path, Some(dst), "String.getChars writes a char array")?;
+                    if let (Some(start), Some(n), Some(at)) = (self.b.constant_value(begin), self.b.constant_value(&count), self.b.constant_value(offset)) {
+                        let (start, n, at) = (start as usize, n as usize, at as usize);
+                        dest.cells[at..at + n].clone_from_slice(&s.cells[start..start + n]);
+                    } else {
+                        for (i, cell) in dest.cells.iter_mut().enumerate() {
+                            let relative = self.b.sub(&self.b.constant(i as i64, 32), offset);
+                            let inside = self.b.ult(&relative, &count);
+                            let index = self.b.add(begin, &relative);
+                            let unit = self.unit_at(s, &index);
+                            *cell = self.b.ite_bits(inside, &unit, cell);
+                        }
+                    }
+                    path.objects[dst].array = Some(dest);
+                }
+                self.advance(path);
+                Ok(None)
+            }
             ("concat", "(Ljava/lang/String;)Ljava/lang/String;", [other]) => {
                 if self.cp.library_image_method(STRING, name, descriptor).is_none() { return unsupported("no selected JDK bytecode for String.concat"); }
                 self.call(path, STRING, name, descriptor, vec![Val::R(Some(o)), other.clone()])

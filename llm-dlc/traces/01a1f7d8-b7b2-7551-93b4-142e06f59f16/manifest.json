@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-20T07:25:37.610Z",
-  "ended": "2026-11-20T07:57:12.319Z",
-  "duration_seconds": 1895,
+  "ended": "2026-11-20T08:18:04.799Z",
+  "duration_seconds": 3147,
   "stats": {
-    "turns": 12,
-    "api_calls": 15,
+    "turns": 23,
+    "api_calls": 27,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 111149,
+    "peak_context_tokens": 174516,
     "usage": {
-      "input_tokens": 113717,
-      "output_tokens": 1363,
-      "cache_read_input_tokens": 927232,
+      "input_tokens": 179317,
+      "output_tokens": 2197,
+      "cache_read_input_tokens": 2571392,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-20T07:25:37.610Z",
-      "ended": "2026-11-20T07:57:12.319Z",
-      "turns": 12,
-      "api_calls": 15,
+      "ended": "2026-11-20T08:18:04.799Z",
+      "turns": 23,
+      "api_calls": 27,
       "usage": {
-        "input_tokens": 113717,
-        "output_tokens": 1363,
-        "cache_read_input_tokens": 927232,
+        "input_tokens": 179317,
+        "output_tokens": 2197,
+        "cache_read_input_tokens": 2571392,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 111149
+      "peak_context_tokens": 174516
     }
   ],
   "log": {
-    "sha256": "c93dfb237db3598fc172ab1c08f85a39e3cf976620da18d7757ec647d633d403",
-    "bytes": 1083019,
-    "lines": 187,
-    "gzip_bytes": 322468,
-    "path": "llm-dlc/traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/logs/c93dfb237db3598fc172ab1c08f85a39e3cf976620da18d7757ec647d633d403.jsonl.gz"
+    "sha256": "265a7b8740e908fd2b98c63cf0936e24af829a78ec15a261203114625cfdec34",
+    "bytes": 1694117,
+    "lines": 330,
+    "gzip_bytes": 447170,
+    "path": "llm-dlc/traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/logs/265a7b8740e908fd2b98c63cf0936e24af829a78ec15a261203114625cfdec34.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -72,23 +72,37 @@
       "log_sha256": "cf0738567c45b6355d406681ded4cebee09958b6385f367fd8c2014e5a384d5c"
     },
     {
-      "change_id": "svrovvwpwpkpnrttpsqotzrlwkkmnqut",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "c93dfb237db3598fc172ab1c08f85a39e3cf976620da18d7757ec647d633d403"
-    },
-    {
       "change_id": "qryxuryrkxnrxwzyzvvwwqontorutspy",
       "commit_id": null,
       "immutable": false,
       "summary": "Execute live HashMap views on one JDK heap (verification pending)",
       "body": "Execute fresh default HashMap instances, entry nodes, key and entry views, and iterators from the selected runtime. Each view observes the same backing table and modification count. Keep observed and model-backed maps on their original layout and distinguish both bytecode bodies in cached frames. The interpreter also copies entries through the live iterator when a library method requests another map.\n\nTemurin 21 and 25, the interpreter and native checker agreed on real bucket order opposite to insertion, colliding and null keys, replacement without invalidation, live setValue, remove, exhaustion and fail-fast behavior. A mixed HashMap and LinkedHashMap fixture exercised both representations. Strict probes proved the fixed original total and reproduced the parent defect on the 18-input domain. The changed tier passed 4/4 after one transient stand-in failure passed its automatic retry. Jobs 20261120-075403-verify-both-live-multiset-views-on-the-s, 20261120-075435-check-map-and-wrapper-conformance-under and 20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom run the original packet and two cross-engine corpora.",
       "log_sha256": "c93dfb237db3598fc172ab1c08f85a39e3cf976620da18d7757ec647d633d403"
+    },
+    {
+      "change_id": "lpqrxmyylmvvnlxqzpxmkvxwyqrmkttp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "265a7b8740e908fd2b98c63cf0936e24af829a78ec15a261203114625cfdec34"
+    },
+    {
+      "change_id": "rrtlulzoqvnmwlsqpskumrpklxymvmnu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Execute JDK reader and listener state (verification pending)",
+      "body": "Run StringReader, BufferedReader, Swing listener lists, JavaBeans change support and iterator spliterators on their selected JDK bytecode. Preserve primitive class-mirror identity, instance checks, raw UTF-16 snapshots and proven-range bulk writes. Bind Collections.emptyList and its public field to the suppression sentinel only for the checked JDK initializer. Follow final reference fields across class initialization.\n\nTemurin 21 and 25, the interpreter and native checker agreed on isolated surrogates, EOF, close, mark/reset, offset copies, listener removal, primitive mirrors and cursor effects. The values gate identified the two newly supported String operations and passed after adding their seven independent JVM samples and cache version. The historical CSV probe now reaches StreamSupport.stream. JFreeChart reaches TimeZone.getDefault in RegularTimePeriod before it constructs its explicitly UTC collection.\n\nOriginal packet and regression jobs are 20261120-081134-trace-historical-chart-ranges-through-re, 20261120-081134-trace-both-csv-limit-readers-from-string, 20261120-081135-confirm-aliased-array-roots-after-librar, 20261120-081135-confirm-the-released-lcs-after-library-e, 20261120-081743-recheck-ordered-suppression-against-the and 20261120-081743-recheck-both-partial-date-revisions-alon.",
+      "log_sha256": "265a7b8740e908fd2b98c63cf0936e24af829a78ec15a261203114625cfdec34"
     }
   ],
   "logs": {
+    "265a7b8740e908fd2b98c63cf0936e24af829a78ec15a261203114625cfdec34": {
+      "bytes": 1694117,
+      "lines": 330,
+      "gzip_bytes": 447170,
+      "url": null
+    },
     "3541aca12ccea143c6488013f33e77cab87f73185a7e15ea705908639574787d": {
       "bytes": 570860,
       "lines": 80,

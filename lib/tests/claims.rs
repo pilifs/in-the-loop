@@ -1329,3 +1329,30 @@ fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
     let o = run(&options(classes, "claims.LiveMapViews#insertionOrder", 3, "unordered-hashmap"));
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
 }
+
+#[test]
+fn jdk_readers_and_listener_lists_execute_their_shared_state() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.ReaderAndListeners").status().unwrap().success());
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    for name in ["chars", "listeners"] {
+        proved(classes, &format!("claims.ReaderAndListeners#{name}"), 4);
+        for flag in [0, 1] {
+            assert_eq!(machine.call_static("claims/ReaderAndListeners", name, "(Z)Z", vec![Value::Int(flag)]).unwrap(), Some(Value::Int(1)));
+        }
+    }
+    for name in ["mirrors", "beans", "cursor"] {
+        proved(classes, &format!("claims.ReaderAndListeners#{name}"), 4);
+        assert_eq!(machine.call_static("claims/ReaderAndListeners", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    }
+    proved(classes, "claims.ReaderAndListeners#buffered", 4);
+    assert_eq!(machine.call_static("claims/ReaderAndListeners", "buffered", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    let wrong = run(&options(classes, "claims.ReaderAndListeners#wrong", 4, "wrong-first-character"));
+    assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
+    let bad = run(&options(classes, "claims.ReaderAndListeners#invalidRange", 4, "invalid-char-destination"));
+    assert_eq!(bad.verdict, Verdict::Unverifiable, "{}", bad.output);
+    assert!(bad.output.contains("destination range"), "{}", bad.output);
+}

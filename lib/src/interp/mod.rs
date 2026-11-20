@@ -392,6 +392,9 @@ impl<'a> Machine<'a> {
 
     /// Reads a static field: the class that declares it is initialised first, and only that one (JVMS §5.5).
     pub fn get_static(&mut self, class: &str, name: &str) -> Exec<Value> {
+        if class == "java/util/Collections" && name == "EMPTY_LIST" && self.cp.collections_empty_list() {
+            return self.get_static(crate::bmc::throwables::THROWABLE, "SUPPRESSED_SENTINEL");
+        }
         if class == crate::bmc::throwables::THROWABLE && matches!(name, "SUPPRESSED_SENTINEL" | "EMPTY_THROWABLE_ARRAY") {
             if let Some(value) = self.statics.get(class).and_then(|fields| fields.get(name)) {
                 return Ok(*value);
@@ -400,6 +403,8 @@ impl<'a> Machine<'a> {
             self.clinit_depth += 1;
             let value = if name == "EMPTY_THROWABLE_ARRAY" {
                 self.new_array_of(Type::object(class), Vec::new())
+            } else if self.cp.collections_empty_list() {
+                self.new_instance(crate::bmc::throwables::EMPTY_LIST)?
             } else {
                 Value::Ref(self.alloc_native(Native::List { elements: Vec::new(), mutable: false }))
             };
@@ -594,6 +599,9 @@ impl<'a> Machine<'a> {
         if let Some((class, method)) = self.model_method(owner, name, descriptor) {
             self.ensure_initialized(owner)?;
             return self.invoke(&class, &method, args);
+        }
+        if (owner, name, descriptor) == ("java/util/Collections", "emptyList", "()Ljava/util/List;") && self.cp.collections_empty_list() {
+            return self.get_static(owner, "EMPTY_LIST").map(Some);
         }
         if self.cp.collection_static(owner, name, descriptor) {
             if let Some((class, method)) = self.cp.library_image_method(owner, name, descriptor) {
@@ -1054,7 +1062,7 @@ impl<'a> Machine<'a> {
                     self.statics.retain(|c, _| c == crate::pairing::CLASS);
                     self.init.retain(|c, _| c == crate::pairing::CLASS);
                     None
-                } else if self.cp.is_application(&member.owner) || self.cp.map_image_class(&member.owner).is_some() {
+                } else if self.cp.is_application(&member.owner) || self.cp.state_image_class(&member.owner).is_some() || self.cp.map_image_class(&member.owner).is_some() {
                     self.call_static(&member.owner, &member.name, &member.descriptor, args)?
                 } else {
                     self.call_static_jdk(&member.owner, &member.name, &member.descriptor, args)?

@@ -170,7 +170,7 @@ const LIST: &str = "java/util/List";
 /// no content before (for example 290, whose registrations are named `"servlet" + i`). Model 7 adds `getBytes(String)`
 /// with a constant name the JDK takes for UTF-8 (for example 307, whose previous version converts so), and
 /// `getBytes(US_ASCII)` (307's mutation control).
-pub const STRING_MODEL: &str = "jvmcontract String model 7: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
+pub const STRING_MODEL: &str = "jvmcontract String model 8: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
@@ -192,7 +192,7 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
+            "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
             "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
             "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
@@ -880,6 +880,18 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         level: EvidenceLevel::Tested,
         sampled_by: &["startsWith"],
         calls: &["startsWith(Ljava/lang/String;)Z"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.getChars(II[CI)V", family: Family::String, source: STRINGS_SOURCE,
+        admits: "proven source and destination ranges, copying raw UTF-16 units and preserving every other destination cell",
+        throws: &[NPE], leaves_out: &["a range whose validity depends on the input or is false"], level: EvidenceLevel::Tested,
+        sampled_by: &["copiedUnits"], calls: &["getChars(II[CI)V"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.toCharArray()[C", family: Family::String, source: STRINGS_SOURCE,
+        admits: "a fresh, independently mutable char array of every UTF-16 unit, including the empty string and isolated surrogates",
+        throws: &[NPE], leaves_out: &[], level: EvidenceLevel::Tested,
+        sampled_by: &["separateUnits"], calls: &["toCharArray()[C"],
     },
     OperationEvidence {
         operation: "java.lang.String.endsWith(Ljava/lang/String;)Z",

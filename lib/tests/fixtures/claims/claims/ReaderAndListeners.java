@@ -1,0 +1,93 @@
+package claims;
+
+import java.beans.PropertyChangeSupport;
+import java.beans.VetoableChangeSupport;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.Collections;
+import java.util.EventListener;
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import javax.swing.event.EventListenerList;
+
+public final class ReaderAndListeners {
+    interface Notice extends EventListener { }
+    static final class One implements Notice {
+        public boolean equals(Object other) { return this == other; }
+    }
+
+    public static boolean chars(boolean shifted) throws IOException {
+        String text = "a\ud800b";
+        char[] out = {'x', 'x', 'x', 'x'};
+        int offset = shifted ? 1 : 0;
+        text.getChars(1, 3, out, offset);
+        if (out[offset] != '\ud800' || out[offset + 1] != 'b' || out[3] != 'x') return false;
+        StringReader r = new StringReader(text);
+        if (r.read() != 'a') return false;
+        r.mark(4);
+        if (r.read(out, 1, 3) != 2 || out[1] != '\ud800' || out[2] != 'b' || out[3] != 'x' || r.read() != -1) return false;
+        r.reset();
+        if (r.read() != '\ud800' || r.skip(1) != 1 || r.read(out, 0, 0) != 0) return false;
+        r.close();
+        try { r.read(); return false; } catch (IOException expected) { return true; }
+    }
+
+    public static boolean buffered() throws IOException {
+        try (Reader r = new BufferedReader(new StringReader("a\udfffz"), 2)) {
+            return r.read() == 'a' && r.read() == '\udfff' && r.read() == 'z' && r.read() == -1;
+        }
+    }
+
+    public static boolean listeners(boolean twice) {
+        EventListenerList l = new EventListenerList();
+        One first = new One(), second = new One();
+        if (!Notice.class.isInstance(first) || Notice.class.isInstance(null) || Notice.class.isInstance("x")) return false;
+        l.add(Notice.class, null);
+        l.add(Notice.class, first);
+        Object[] original = l.getListenerList();
+        l.add(Notice.class, twice ? first : second);
+        if (l.getListenerCount(Notice.class) != 2 || original == l.getListenerList()) return false;
+        l.remove(Notice.class, first);
+        Object[] rest = l.getListenerList();
+        return original.length == 2 && original[0] == Notice.class && original[1] == first
+                && rest.length == 2 && rest[0] == Notice.class && rest[1] == (twice ? first : second);
+    }
+
+    public static boolean mirrors() {
+        char[] copy = "xy".toCharArray();
+        copy[0] = 'z';
+        return "xy".charAt(0) == 'x' && copy != "xy".toCharArray()
+                && int.class != Integer.class && int.class == int[].class.getComponentType() && void.class == Void.TYPE
+                && int.class.isPrimitive() && !Integer.class.isPrimitive() && !int.class.isInstance(Integer.valueOf(2))
+                && int.class.isAssignableFrom(int.class) && !int.class.isAssignableFrom(long.class)
+                && !Object.class.isAssignableFrom(int.class) && Boolean.TYPE.getClassLoader() == null;
+    }
+
+    public static boolean beans() {
+        Object source = new Object();
+        if (new PropertyChangeSupport(source).hasListeners("x") || new VetoableChangeSupport(source).hasListeners("x")) return false;
+        try { new PropertyChangeSupport(null); return false; } catch (NullPointerException expected) { return true; }
+    }
+
+    public static boolean cursor() {
+        if (Collections.emptyList() != Collections.EMPTY_LIST || !Collections.emptyList().isEmpty()) return false;
+        Iterator<String> it = new Iterator<String>() {
+            boolean read;
+            public boolean hasNext() { return !read; }
+            public String next() { read = true; return "x"; }
+        };
+        Spliterator<String> split = Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED);
+        String[] seen = new String[1];
+        return split.characteristics() == Spliterator.ORDERED && split.tryAdvance(x -> seen[0] = x)
+                && "x".equals(seen[0]) && !split.tryAdvance(x -> seen[0] = "y") && !it.hasNext();
+    }
+
+    public static boolean wrong() throws IOException { return new StringReader("ab").read() == 'b'; }
+    public static boolean invalidRange() { "ab".getChars(0, 2, new char[1], 0); return true; }
+    public static void main(String[] args) throws IOException {
+        if (!chars(true) || !chars(false) || !buffered() || !listeners(true) || !listeners(false) || !mirrors() || !beans() || !cursor() || wrong()) throw new AssertionError();
+    }
+}

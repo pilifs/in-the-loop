@@ -185,16 +185,7 @@ pub fn unbox(m: &mut Machine, v: Value) -> Exec<Value> {
 }
 
 fn boxed_type(class: &str) -> Type {
-    match class {
-        "java/lang/Boolean" => Type::Boolean,
-        "java/lang/Byte" => Type::Byte,
-        "java/lang/Character" => Type::Char,
-        "java/lang/Short" => Type::Short,
-        "java/lang/Long" => Type::Long,
-        "java/lang/Float" => Type::Float,
-        "java/lang/Double" => Type::Double,
-        _ => Type::Int,
-    }
+    Type::for_wrapper(class).unwrap_or(Type::Int)
 }
 
 // Strings and conversions
@@ -424,6 +415,9 @@ fn native_hash(m: &mut Machine, r: Ref) -> Exec<i32> {
 // Static state of JDK classes
 
 pub fn get_static_jdk(m: &mut Machine, class: &str, name: &str) -> Exec<Value> {
+    if name == "TYPE" {
+        if let Some(ty) = Type::for_wrapper(class) { return Ok(m.class_object(&ty)); }
+    }
     match (class, name) {
         ("java/lang/Boolean", "TRUE") => Ok(box_value(m, "java/lang/Boolean", Value::Int(1))),
         ("java/lang/Boolean", "FALSE") => Ok(box_value(m, "java/lang/Boolean", Value::Int(0))),
@@ -838,6 +832,22 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
     }
     match native {
         Native::String(s) => {
+            if (name, descriptor) == ("getChars", "(II[CI)V") {
+                let (begin, end, offset) = (args[0].as_int(), args[1].as_int(), args[3].as_int());
+                if begin < 0 || end < begin || end as usize > s.units().len() { return unsupported("String.getChars source range is not proven valid"); }
+                let Some(dst) = args[2].as_ref() else { return Err(m.npe()) };
+                let Object::Array { element: Type::Char, data } = m.heap.get(dst) else { return unsupported("String.getChars needs a known char array") };
+                let count = (end - begin) as usize;
+                if offset < 0 || offset as usize + count > data.len() { return unsupported("String.getChars destination range is not proven valid"); }
+                if count > 0 {
+                    m.check_write(dst, "String.getChars writes a char array")?;
+                    let Object::Array { data, .. } = m.heap.get_mut(dst) else { unreachable!() };
+                    for (cell, unit) in data[offset as usize..][..count].iter_mut().zip(&s.units()[begin as usize..end as usize]) {
+                        *cell = Value::Int(i32::from(*unit));
+                    }
+                }
+                return Ok(None);
+            }
             let value = string_method(m, &s, name, descriptor, &args)?;
             // The JDK returns the String itself where a substring is its whole range or nothing is lowered, and
             // the literal "" for any other empty substring: `==` sees which.
@@ -883,6 +893,15 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 Ok(Some(m.new_string(simple)))
             }
             "getCanonicalName" => Ok(Some(m.new_string(t.class_get_name().replace('$', ".")))),
+            "getComponentType" => Ok(Some(match &t { Type::Array(element) => m.class_object(element), _ => Value::Null })),
+            "getClassLoader" if !t.is_reference() => Ok(Some(Value::Null)),
+            "isAssignableFrom" => {
+                let Some(r) = args[0].as_ref() else { return Err(m.npe()) };
+                let Object::Native(Native::Class(sub)) = m.heap.get(r) else { return unsupported("isAssignableFrom needs a Class argument"); };
+                let class_name = |ty: &Type| match ty { Type::Object(name) => name.clone(), _ => ty.descriptor() };
+                let yes = sub == &t || (sub.is_reference() && t.is_reference() && m.cp.is_subtype(&class_name(sub), &class_name(&t)));
+                Ok(Some(Value::bool(yes)))
+            }
             // Null of `Object`, of an interface and of a primitive type, `Object` of an array, as the JVM has it.
             "getSuperclass" => {
                 let above = match &t {
@@ -906,7 +925,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             "isEnum" => Ok(Some(Value::bool(t.class_name().and_then(|n| m.cp.application(n).ok().flatten()).is_some_and(|c| c.is_enum())))),
             "isRecord" => Ok(Some(Value::bool(t.class_name().and_then(|n| m.cp.application(n).ok().flatten()).is_some_and(|c| c.is_record())))),
             "isInterface" => Ok(Some(Value::bool(t.class_name().and_then(|n| m.cp.application(n).ok().flatten()).is_some_and(|c| c.is_interface())))),
-            "isPrimitive" => Ok(Some(Value::bool(t.is_primitive()))),
+            "isPrimitive" => Ok(Some(Value::bool(!t.is_reference()))),
             "isArray" => Ok(Some(Value::bool(matches!(t, Type::Array(_))))),
             "desiredAssertionStatus" => Ok(Some(Value::Int(0))),
             _ => unsupported(format!("Class.{name}: reflection is outside the model")),

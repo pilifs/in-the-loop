@@ -968,6 +968,8 @@ enum ClassState {
 enum Literal {
     Str(Vec<u16>),
     Class(String),
+    /// A primitive mirror belongs to a different namespace from reference classes.
+    PrimitiveClass(String),
     /// The loader of the classes of the check's class path ([`runtime`]).
     Loader,
     /// The `java.util.logging.Logger` of a name ([`runtime`]).
@@ -982,7 +984,7 @@ enum Literal {
     Thread,
     /// The one map `Collections.emptyMap()` returns ([`runtime`]).
     EmptyMap,
-    SuppressedSentinel,
+    CollectionsEmptyList,
     EmptySuppressedArray,
     ListEmptyStorage(bool),
     /// The private Character cache as read by valueOf on its ASCII branch.
@@ -2467,7 +2469,7 @@ impl<'a> Engine<'a> {
                 for literal in &literals {
                     let class = match literal {
                         Literal::Str(_) => STRING,
-                        Literal::Class(_) => "java/lang/Class",
+                        Literal::Class(_) | Literal::PrimitiveClass(_) => "java/lang/Class",
                         Literal::Loader => "java/lang/ClassLoader",
                         Literal::Logger(_) => "java/util/logging/Logger",
                         Literal::Charset(_) => bytes::CHARSET,
@@ -2475,7 +2477,7 @@ impl<'a> Engine<'a> {
                         Literal::Level(_) => runtime::LEVEL,
                         Literal::Thread => "java/lang/Thread",
                         Literal::EmptyMap => runtime::EMPTY_MAP,
-                        Literal::SuppressedSentinel => throwables::EMPTY_LIST,
+                        Literal::CollectionsEmptyList => throwables::EMPTY_LIST,
                         Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
                         Literal::ListEmptyStorage(_) => array_list::OBJECT_ARRAY,
                         Literal::AsciiBoxes => "[Ljava/lang/Character;",
@@ -3463,7 +3465,10 @@ impl<'a> Engine<'a> {
     fn pop_int(&self, path: &mut Path) -> Result<Bits, Stop> {
         match self.pop(path)? {
             Val::I(b) => Ok(b),
-            other => unsupported(format!("expected an int on the stack, found {other:?}")),
+            other => {
+                let f = path.frames.last().expect("a frame");
+                unsupported(format!("expected an int on the stack, found {other:?} at {}.{}{} pc {}", f.class.name, f.method, f.code.descriptor, f.pc()))
+            }
         }
     }
 
@@ -3854,6 +3859,21 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/util/Collections", "EMPTY_LIST", "Ljava/util/List;")
+                    && self.cp.collections_empty_list() {
+                    let o = self.literal(path, Literal::CollectionsEmptyList, throwables::EMPTY_LIST);
+                    self.push(path, Val::R(Some(o)));
+                    self.advance(path);
+                    return Ok(None);
+                }
+                if member.name == "TYPE" && member.descriptor == "Ljava/lang/Class;" {
+                    if let Some(ty) = Type::for_wrapper(&declaring) {
+                        let o = self.literal(path, Literal::PrimitiveClass(ty.descriptor()), "java/lang/Class");
+                        self.push(path, Val::R(Some(o)));
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                }
                 if class.name == "java/lang/Character" && path.frames.last().is_some_and(|f| f.method == "valueOf")
                     && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
                         == ("java/lang/Character$CharacterCache", "cache", "[Ljava/lang/Character;") {
@@ -3879,7 +3899,7 @@ impl<'a> Engine<'a> {
                 }
                 if declaring == throwables::THROWABLE && class.name == throwables::THROWABLE {
                     let constant = match (member.name.as_str(), member.descriptor.as_str()) {
-                        ("SUPPRESSED_SENTINEL", "Ljava/util/List;") => Some((Literal::SuppressedSentinel, throwables::EMPTY_LIST)),
+                        ("SUPPRESSED_SENTINEL", "Ljava/util/List;") => Some((Literal::CollectionsEmptyList, throwables::EMPTY_LIST)),
                         ("EMPTY_THROWABLE_ARRAY", "[Ljava/lang/Throwable;") => Some((Literal::EmptySuppressedArray, throwables::THROWABLE_ARRAY)),
                         _ => None,
                     };
@@ -4561,7 +4581,7 @@ impl<'a> Engine<'a> {
         let runs = match self.runs.get(class) {
             Some(&r) => r,
             None => {
-                let r = (self.gap_mode == GapMode::Strict && gaps::builds_static_objects(self.cp, &cf))
+                let r = (self.gap_mode == GapMode::Strict && (self.cp.state_image_class(class).is_some() || gaps::builds_static_objects(self.cp, &cf)))
                     || gaps::runs_initializer(self.cp, class);
                 self.runs.insert(class.to_string(), r);
                 r
@@ -4633,13 +4653,13 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
-            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap => self.alloc(path, class),
+            Literal::Class(_) | Literal::PrimitiveClass(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap => self.alloc(path, class),
             Literal::Truth(truth) => {
                 let o = self.alloc(path, class);
                 path.objects[o].fields.insert("value".into(), Val::I(self.b.constant(i64::from(*truth), 32)));
                 o
             }
-            Literal::SuppressedSentinel => self.alloc(path, class),
+            Literal::CollectionsEmptyList => self.alloc(path, class),
             Literal::LineSeparator => {
                 let o = self.alloc(path, STRING);
                 path.objects[o].limit = Some(runtime::LINE_SEPARATOR.into());

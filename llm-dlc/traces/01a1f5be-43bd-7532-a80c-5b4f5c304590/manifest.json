@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T07:57:13.489Z",
-  "duration_seconds": 37184,
+  "ended": "2026-11-20T08:18:05.969Z",
+  "duration_seconds": 38436,
   "stats": {
     "turns": 9,
-    "api_calls": 2268,
-    "tool_calls": 5760,
-    "tool_errors": 172,
+    "api_calls": 2337,
+    "tool_calls": 5916,
+    "tool_errors": 183,
     "compactions": 8,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 4319755,
-      "output_tokens": 1097158,
-      "cache_read_input_tokens": 668513920,
+      "input_tokens": 4409979,
+      "output_tokens": 1135450,
+      "cache_read_input_tokens": 692554240,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 3332,
-    "exec": 2172,
-    "apply_patch": 176,
+    "Bash": 3415,
+    "exec": 2241,
+    "apply_patch": 180,
     "wait": 44,
     "sleep": 36
   },
@@ -257,24 +257,24 @@
     {
       "index": 8,
       "started": "2026-11-20T07:25:36.655Z",
-      "ended": "2026-11-20T07:57:13.489Z",
+      "ended": "2026-11-20T08:18:05.969Z",
       "turns": 1,
-      "api_calls": 128,
+      "api_calls": 197,
       "usage": {
-        "input_tokens": 297627,
-        "output_tokens": 56380,
-        "cache_read_input_tokens": 26167424,
+        "input_tokens": 387851,
+        "output_tokens": 94672,
+        "cache_read_input_tokens": 50207744,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 301702
+      "peak_context_tokens": 386603
     }
   ],
   "log": {
-    "sha256": "c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18",
-    "bytes": 53932376,
-    "lines": 17592,
-    "gzip_bytes": 20312072,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18.jsonl.gz"
+    "sha256": "c6aae3036a2f89d869ab7fdaa2858e5ed0d32d278495187036dc2273a5bef217",
+    "bytes": 55376536,
+    "lines": 18115,
+    "gzip_bytes": 20887740,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/c6aae3036a2f89d869ab7fdaa2858e5ed0d32d278495187036dc2273a5bef217.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1031,20 +1031,28 @@
       "log_sha256": "43ac1d1f57a7a5f506e847a0b95a6bb280818495d2c52a66a3f65c4695157b04"
     },
     {
-      "change_id": "svrovvwpwpkpnrttpsqotzrlwkkmnqut",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18"
-    },
-    {
       "change_id": "qryxuryrkxnrxwzyzvvwwqontorutspy",
       "commit_id": null,
       "immutable": false,
       "summary": "Execute live HashMap views on one JDK heap (verification pending)",
       "body": "Execute fresh default HashMap instances, entry nodes, key and entry views, and iterators from the selected runtime. Each view observes the same backing table and modification count. Keep observed and model-backed maps on their original layout and distinguish both bytecode bodies in cached frames. The interpreter also copies entries through the live iterator when a library method requests another map.\n\nTemurin 21 and 25, the interpreter and native checker agreed on real bucket order opposite to insertion, colliding and null keys, replacement without invalidation, live setValue, remove, exhaustion and fail-fast behavior. A mixed HashMap and LinkedHashMap fixture exercised both representations. Strict probes proved the fixed original total and reproduced the parent defect on the 18-input domain. The changed tier passed 4/4 after one transient stand-in failure passed its automatic retry. Jobs 20261120-075403-verify-both-live-multiset-views-on-the-s, 20261120-075435-check-map-and-wrapper-conformance-under and 20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom run the original packet and two cross-engine corpora.",
       "log_sha256": "c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18"
+    },
+    {
+      "change_id": "lpqrxmyylmvvnlxqzpxmkvxwyqrmkttp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "c6aae3036a2f89d869ab7fdaa2858e5ed0d32d278495187036dc2273a5bef217"
+    },
+    {
+      "change_id": "rrtlulzoqvnmwlsqpskumrpklxymvmnu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Execute JDK reader and listener state (verification pending)",
+      "body": "Run StringReader, BufferedReader, Swing listener lists, JavaBeans change support and iterator spliterators on their selected JDK bytecode. Preserve primitive class-mirror identity, instance checks, raw UTF-16 snapshots and proven-range bulk writes. Bind Collections.emptyList and its public field to the suppression sentinel only for the checked JDK initializer. Follow final reference fields across class initialization.\n\nTemurin 21 and 25, the interpreter and native checker agreed on isolated surrogates, EOF, close, mark/reset, offset copies, listener removal, primitive mirrors and cursor effects. The values gate identified the two newly supported String operations and passed after adding their seven independent JVM samples and cache version. The historical CSV probe now reaches StreamSupport.stream. JFreeChart reaches TimeZone.getDefault in RegularTimePeriod before it constructs its explicitly UTC collection.\n\nOriginal packet and regression jobs are 20261120-081134-trace-historical-chart-ranges-through-re, 20261120-081134-trace-both-csv-limit-readers-from-string, 20261120-081135-confirm-aliased-array-roots-after-librar, 20261120-081135-confirm-the-released-lcs-after-library-e, 20261120-081743-recheck-ordered-suppression-against-the and 20261120-081743-recheck-both-partial-date-revisions-alon.",
+      "log_sha256": "c6aae3036a2f89d869ab7fdaa2858e5ed0d32d278495187036dc2273a5bef217"
     }
   ],
   "logs": {
@@ -1316,6 +1324,12 @@
       "bytes": 36270242,
       "lines": 11821,
       "gzip_bytes": 13811245,
+      "url": null
+    },
+    "c6aae3036a2f89d869ab7fdaa2858e5ed0d32d278495187036dc2273a5bef217": {
+      "bytes": 55376536,
+      "lines": 18115,
+      "gzip_bytes": 20887740,
       "url": null
     },
     "c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18": {
