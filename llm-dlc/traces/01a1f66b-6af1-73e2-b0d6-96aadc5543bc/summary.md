@@ -18,33 +18,9 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-### Record verification results for 1 job(s)
-
-change `skzzvykuuoot` · [log `20344848b8dc`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/20344848b8dc976eda9293dc9225cde557d5556c13d7148a13a7879a29b31a63.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261120-005556-recheck-jbmc-preservation-on-all-71-null: passed: 2 passed step(s) in 7.2s, peak 74.7 MiB (estimated 20.0s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `uotkyzwmrkuz` · [log `20344848b8dc`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/20344848b8dc976eda9293dc9225cde557d5556c13d7148a13a7879a29b31a63.jsonl.gz)
-
-Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-010828-retry-all-five-full-grid-threetenbp-regi: failed: 4 failed, 1 passed step(s) in 1m44s, peak 848.8 MiB (estimated 1m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-as-expected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `lyszoznyxlls` · [log `4765e2a6ee08`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/4765e2a6ee089c84b082f87bc36332dce54d3427783f5fb8995adfbea6dca50f.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261120-012520-publish-five-linked-full-grid-threetenbp: passed: 5 passed step(s) in 1m36s, peak 848.5 MiB (estimated 1m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `kpmstovlvzww` · [log `ea97d5d9ac97`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/ea97d5d9ac972bc6760366d7b7660c4374b903f85665d95514e6213296d5f67e.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261120-013844-qualify-shared-and-distinct-right-root-p: passed: 3 passed step(s) in 18.0s, peak 75.0 MiB (estimated 20.0s, 1.0 GiB); 9 output file(s) changed Applied 9 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
 ### Qualify both array poststates through throws (verification pending)
 
-change `lmwyrqvpvwsu` · [log `36a3039967ec`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/36a3039967ec021883005d3d441af59e936f0da11eb5f77ca5a7f92ea6b1add3.jsonl.gz)
+[`e78e3b3d0593`](https://github.com/pilifs/in-the-loop/commit/e78e3b3d0593d0374e3142536095491382ab1723) · [log `36a3039967ec`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/36a3039967ec021883005d3d441af59e936f0da11eb5f77ca5a7f92ea6b1add3.jsonl.gz)
 
 When exception class is outside the selected observer, the pair harness records a normal int or an out-of-range long sentinel for a throw and retains the actual final arrays. The unconditional JVM handler also catches exceptions whose JDK inheritance JBMC stubs. Class-sensitive observations keep the original handler.
 
@@ -52,7 +28,7 @@ Job 20261120-005556-recheck-jbmc-preservation-on-all-71-null runs both revision 
 
 ### Solve bounded integer domains with word diagrams (verification pending)
 
-change `nzsmlyksrxyu` · [log `8b2ebd1cd6fe`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/8b2ebd1cd6fe953a03d749efbd6736f3d95188ece7da05ae486fe18cffcc33a5.jsonl.gz)
+[`2c44044eba7c`](https://github.com/pilifs/in-the-loop/commit/2c44044eba7c61f592641f0778ccf6dd9e740355) · [log `8b2ebd1cd6fe`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/8b2ebd1cd6fe953a03d749efbd6736f3d95188ece7da05ae486fe18cffcc33a5.jsonl.gz)
 
 The native checker can encode high bits fixed by its compiled integer guard and solve arithmetic on reduced ordered decision diagrams. Every term and clause goes to the backing word-level solver, which takes over at an input or node limit. Candidates still require ordinary JVM qualification. The checker records how many queries each solver answered.
 
@@ -60,23 +36,41 @@ A full-grid fixed ThreeTenBP probe completed in 4.7 seconds after a 600-second d
 
 ### Qualify VM exception text and calendar service discovery
 
-change `mtzlppvywryz` · [log `c28218cdc623`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/c28218cdc623581c760e58826c840d83f37710fceaca3fbfb2fd2c273a4bde70.jsonl.gz)
+[`17390e11d910`](https://github.com/pilifs/in-the-loop/commit/17390e11d910f0089bbaab023ca76278c50e3b46) · [log `c28218cdc623`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/c28218cdc623581c760e58826c840d83f37710fceaca3fbfb2fd2c273a4bde70.jsonl.gz)
 
 Four fresh HotSpot processes executed the same Controls class as the frozen foundation check. The initial arithmetic message had the expected text in each. The warmed default process returned a different policy result 37,908 times in 50,000 calls. A separate catch observed null messages. Disabling fast throw and running interpreted preserved the text on every call in those processes.
 
 On both frozen ThreeTenBP application classpaths, changing only the thread context loader from an empty resource directory to one naming a missing provider changed the sample clock call into ServiceConfigurationError. The control checks the original JAR digests and records actual outputs for both revisions. Verified all four loader/subject combinations, all four message policies, the existing cold JVM control, example 310 validation, and the changed Rust suite.
 
+### Record verification results for 1 job(s)
+
+[`d97fb0f6e28d`](https://github.com/pilifs/in-the-loop/commit/d97fb0f6e28da58be4d95a636a203ab0d437bb06) · [log `20344848b8dc`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/20344848b8dc976eda9293dc9225cde557d5556c13d7148a13a7879a29b31a63.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-005556-recheck-jbmc-preservation-on-all-71-null: passed: 2 passed step(s) in 7.2s, peak 74.7 MiB (estimated 20.0s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+[`42cb8498d8ba`](https://github.com/pilifs/in-the-loop/commit/42cb8498d8ba328a83d128419aafd9679abcd5fe) · [log `20344848b8dc`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/20344848b8dc976eda9293dc9225cde557d5556c13d7148a13a7879a29b31a63.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-010828-retry-all-five-full-grid-threetenbp-regi: failed: 4 failed, 1 passed step(s) in 1m44s, peak 848.8 MiB (estimated 1m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-as-expected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
 ### Validate finite word counters in receipts (verification pending)
 
-change `qsopuqyvnpzx` · [log `20344848b8dc`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/20344848b8dc976eda9293dc9225cde557d5556c13d7148a13a7879a29b31a63.jsonl.gz)
+[`6f6ef2339859`](https://github.com/pilifs/in-the-loop/commit/6f6ef233985957fc928d73be2bfc8e1aed5ce64a) · [log `20344848b8dc`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/20344848b8dc976eda9293dc9225cde557d5556c13d7148a13a7879a29b31a63.jsonl.gz)
 
 The public receipt schema now accepts the checker’s two nonnegative integer query counts and rejects missing or malformed counts. The initial five full-grid runs stopped at receipt publication despite returning four proofs and a reproduced parent counterexample. Their checker outcomes, prepared bindings and replay stages are archived in 20261120-010828-retry-all-five-full-grid-threetenbp-regi.
 
 Job 20261120-012520-publish-five-linked-full-grid-threetenbp retries those five archived executions individually at the same 600-second budgets. All five real search records passed the corrected schema. Twelve changed Python test groups passed. This merge also brings in the two qualified wide-array results from 20261120-005556-recheck-jbmc-preservation-on-all-71-null.
 
+### Record verification results for 1 job(s)
+
+[`cb62ff5cf359`](https://github.com/pilifs/in-the-loop/commit/cb62ff5cf359d00eca46529a2ed09f58cac3ebcb) · [log `4765e2a6ee08`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/4765e2a6ee089c84b082f87bc36332dce54d3427783f5fb8995adfbea6dca50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-012520-publish-five-linked-full-grid-threetenbp: passed: 5 passed step(s) in 1m36s, peak 848.5 MiB (estimated 1m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
 ### Close full-grid calendar deadlines (verification pending)
 
-change `tsynttsptnps` · [log `4765e2a6ee08`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/4765e2a6ee089c84b082f87bc36332dce54d3427783f5fb8995adfbea6dca50f.jsonl.gz)
+[`df2181617440`](https://github.com/pilifs/in-the-loop/commit/df218161744030695825c0042bd0739c7c727629) · [log `4765e2a6ee08`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/4765e2a6ee089c84b082f87bc36332dce54d3427783f5fb8995adfbea6dca50f.jsonl.gz)
 
 All five full-grid calendar obligations under the captured registry have published receipts on their original subject bindings. The fixed clock and the two reversal checks completed in 5.365, 6.867 and 14.383 checker seconds at their previous 600-second budgets. The parent witness at ticks 2 and 97 returned 24 instead of 23. Resource gap packets now link to their closing receipts. Four property receipts failed schema validation in the previous batch. Its same-day equivalence published successfully, as this audit and the session correction record.
 
@@ -84,9 +78,15 @@ All 111 outputs from the wide-array and two calendar batches matched their manif
 
 Trace review proposal e1eb1bc6 matches the third public restart watcher decision. All 67 human-approved entries remain identical.
 
+### Record verification results for 1 job(s)
+
+[`fdf2f26dd010`](https://github.com/pilifs/in-the-loop/commit/fdf2f26dd01024a3ab9157bb397a1e7632630cc4) · [log `ea97d5d9ac97`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/ea97d5d9ac972bc6760366d7b7660c4374b903f85665d95514e6213296d5f67e.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-013844-qualify-shared-and-distinct-right-root-p: passed: 3 passed step(s) in 18.0s, peak 75.0 MiB (estimated 20.0s, 1.0 GiB); 9 output file(s) changed Applied 9 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
 ### Record shared and distinct right-root proofs on JBMC
 
-change `kxvqvqvszpnk` · [log `ea97d5d9ac97`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/ea97d5d9ac972bc6760366d7b7660c4374b903f85665d95514e6213296d5f67e.jsonl.gz)
+[`05ea3558ad9d`](https://github.com/pilifs/in-the-loop/commit/05ea3558ad9d468c3f41aa1e6c39f467efe3d2e0) · [log `ea97d5d9ac97`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/ea97d5d9ac972bc6760366d7b7660c4374b903f85665d95514e6213296d5f67e.jsonl.gz)
 
 Job 20261120-013844-qualify-shared-and-distinct-right-root-p produced four complete non-vacuous proofs and two JVM-replayed refutations. On the 71-heap domain the right-root witness uses two references to one [0]. On the nine distinct heaps JBMC proves the right root agrees even when a left write is skipped, while the two-root witness uses two different arrays holding [0]. The equivalent rewrite passes on both profiles.
 
@@ -94,7 +94,7 @@ Verified all nine output digests, each raw checker statement, the six qualificat
 
 ### Record the watcher's last two answers on the foundation-and-python-restart run
 
-change `umtznouwluvn` · [log `8af719490e2e`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/8af719490e2e1020c00ad4c05854b17b84f7a8e29b4d10ebce5f88679c7a9058.jsonl.gz)
+[`7c762cbba5cb`](https://github.com/pilifs/in-the-loop/commit/7c762cbba5cba9e4f99f3ae4dcc6c6b1afe9f97c) · [log `8af719490e2e`](https://terminalvalue.net/raw-traces/01a1f66b-6af1-73e2-b0d6-96aadc5543bc/8af719490e2e1020c00ad4c05854b17b84f7a8e29b4d10ebce5f88679c7a9058.jsonl.gz)
 
 D003 (continue after cycle 3, at the user's word for more checker depth) and D004 (stop after cycle 4: the restart brief's outcome reached) were in the default workspace's decision record when the run landed by moving forward; they are committed here and the review page regenerated (decisions.py render).
 

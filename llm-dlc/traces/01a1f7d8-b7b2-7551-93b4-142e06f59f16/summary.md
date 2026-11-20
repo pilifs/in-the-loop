@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Check boxed characters and object-array equality (verification pending)
 
-change `kqmzlnvkyxrr` · [log `3541aca12cce`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/3541aca12ccea143c6488013f33e77cab87f73185a7e15ea705908639574787d.jsonl.gz)
+[`edc0de311681`](https://github.com/pilifs/in-the-loop/commit/edc0de3116816c46321a6f8707e7d0807de5fd39) · [log `3541aca12cce`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/3541aca12ccea143c6488013f33e77cab87f73185a7e15ea705908639574787d.jsonl.gz)
 
 Execute the selected JDK Character constructors, equality and hashes. Its ASCII cache preserves identity on symbolic inputs and its other factory branch follows the image. Inspect String.valueOf(char) allocation before returning a fresh one-unit String. Carry the initial line separator as one opaque reference, refusing its contents or external string identity. Execute the JDK reference-array equality and hashing methods and their element callbacks.
 
@@ -28,7 +28,7 @@ The focused JVM, interpreter and native controls passed on Temurin 21 and 25, in
 
 ### Prove hash contracts across JVM identity choices (verification pending)
 
-change `kvntruqvtzox` · [log `cf0738567c45`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/cf0738567c45b6355d406681ded4cebee09958b6385f367fd8c2014e5a384d5c.jsonl.gz)
+[`f4761eb9b819`](https://github.com/pilifs/in-the-loop/commit/f4761eb9b819e5798dc025237b70b9dbc83ca4fe) · [log `cf0738567c45`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/cf0738567c45b6355d406681ded4cebee09958b6385f367fd8c2014e5a384d5c.jsonl.gz)
 
 Keep one unconstrained 32-bit identity hash per enum object while running the selected JDK hashCode cache. Equal objects keep their hash and different objects may collide. A possible assertion failure on a path that used an unspecified hash stays open. Execute Boolean and Long hashes from the image and resolve bounded symbolic integral factories only within their mandated cache.
 
@@ -36,7 +36,7 @@ Direct JVM, interpreter and native controls passed on Temurin 21 and 25. The nat
 
 ### Execute live HashMap views on one JDK heap (verification pending)
 
-change `qryxuryrkxnr` · [log `c93dfb237db3`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/c93dfb237db3598fc172ab1c08f85a39e3cf976620da18d7757ec647d633d403.jsonl.gz)
+[`f0a3f2092947`](https://github.com/pilifs/in-the-loop/commit/f0a3f20929472c8ef5d743b97a189d1bddbf24e8) · [log `c93dfb237db3`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/c93dfb237db3598fc172ab1c08f85a39e3cf976620da18d7757ec647d633d403.jsonl.gz)
 
 Execute fresh default HashMap instances, entry nodes, key and entry views, and iterators from the selected runtime. Each view observes the same backing table and modification count. Keep observed and model-backed maps on their original layout and distinguish both bytecode bodies in cached frames. The interpreter also copies entries through the live iterator when a library method requests another map.
 
@@ -44,7 +44,7 @@ Temurin 21 and 25, the interpreter and native checker agreed on real bucket orde
 
 ### Execute JDK reader and listener state (verification pending)
 
-change `rrtlulzoqvnm` · [log `265a7b8740e9`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/265a7b8740e908fd2b98c63cf0936e24af829a78ec15a261203114625cfdec34.jsonl.gz)
+[`3d42310533a0`](https://github.com/pilifs/in-the-loop/commit/3d42310533a0fdc12ed860c2e660d57a882bd595) · [log `265a7b8740e9`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/265a7b8740e908fd2b98c63cf0936e24af829a78ec15a261203114625cfdec34.jsonl.gz)
 
 Run StringReader, BufferedReader, Swing listener lists, JavaBeans change support and iterator spliterators on their selected JDK bytecode. Preserve primitive class-mirror identity, instance checks, raw UTF-16 snapshots and proven-range bulk writes. Bind Collections.emptyList and its public field to the suppression sentinel only for the checked JDK initializer. Follow final reference fields across class initialization.
 
@@ -54,7 +54,7 @@ Original packet and regression jobs are 20261120-081134-trace-historical-chart-r
 
 ### Execute sequential JDK collectors on real iterators (verification pending)
 
-change `nzolzopqrrzq` · [log `6a933595b159`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/6a933595b1594ba29a13ea9a51498a0bf0268020764ce93813e92feac3b7ef51.jsonl.gz)
+[`154555765472`](https://github.com/pilifs/in-the-loop/commit/15455576547227011d827fec20b1698627d20c92) · [log `6a933595b159`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/6a933595b1594ba29a13ea9a51498a0bf0268020764ce93813e92feac3b7ef51.jsonl.gz)
 
 Run the selected JDK stream flags, reference pipeline, collector and reduction on its actual spliterator and callbacks. EnumSet and EnumMap share the validated values-array snapshot. Void lambda bridges discard a returned value after its effects and check the instantiated argument types before entering the target. A solver failure that depends on a platform setting qualifies only if the failing paths cover all settings for fixed original scalar inputs. Execute ArrayList.clear and bounded StringBuilder truncation and zero-filled growth.
 
@@ -64,7 +64,7 @@ Job 20261120-083146-verify-all-csv-equality-hash-and-row-lim runs all six histor
 
 ### Record the real-map results and library boundary diagnostics
 
-change `wqkxtvnzkwyl` · [log `0167016dfebb`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/0167016dfebb47feabb8dc681cda9b8c9a00dfab1f774f782cf3260168b59418.jsonl.gz)
+[`76ac416d1a14`](https://github.com/pilifs/in-the-loop/commit/76ac416d1a14a5228e00c6e39d2b4b1897d83b1a) · [log `0167016dfebb`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/0167016dfebb47feabb8dc681cda9b8c9a00dfab1f774f782cf3260168b59418.jsonl.gz)
 
 Import eleven canonical systemd results and their applied example evidence from the shared collector. Audited strict receipts decide four original CSV claims and all six Commons Collections multiset claims, including independent replays of both historical defects. The original 321 and 327 jobs locate their two different process-environment reads. Preserve the early mixed CSV jobs so each successful claim and each intermediate refusal remains available.
 
@@ -72,7 +72,7 @@ Both cross-engine proof-tier corpora passed. The reader checker requalified both
 
 ### Record 103 native decisions on the Java fast-follow examples
 
-change `uzkuloyyruuz` · [log `c2e9aff9cde2`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/c2e9aff9cde2bc0cfe78cfa6e77fd8ab13015e041da14b57a3c654478bcdc20a.jsonl.gz)
+[`a09b4366bdc6`](https://github.com/pilifs/in-the-loop/commit/a09b4366bdc635b84e7026a36ef1fbfc24acfb64) · [log `c2e9aff9cde2`](https://terminalvalue.net/raw-traces/01a1f7d8-b7b2-7551-93b4-142e06f59f16/c2e9aff9cde2bc0cfe78cfa6e77fd8ab13015e041da14b57a3c654478bcdc20a.jsonl.gz)
 
 Close the original Commons CSV and Commons Collections multiset packets at their frozen guards, ordered classpaths, observers and bounds. On the final checker both have five proofs and one independently replayed historical counterexample. The parent CSV format compares limits 10 and 2 equal while reading three and two records. Removing A from a multiset containing one A and one B leaves the parent total at two although only B remains. Chart startup, Joda provider selection and the geometry sine retain 22 precise native obligations.
 

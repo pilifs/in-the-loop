@@ -20,27 +20,27 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 1 job(s)
 
-change `kmnoqpznrvlq` · [log `8327c83650b4`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/8327c83650b48a15e75529d653138f7827c391304ee0022f09583b439e60e605.jsonl.gz)
+[`d31d574f0461`](https://github.com/pilifs/in-the-loop/commit/d31d574f04612a1031f6325febbb56f3b3cfc991) · [log `8327c83650b4`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/8327c83650b48a15e75529d653138f7827c391304ee0022f09583b439e60e605.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-033516-confirm-jvm-corpus-results-after-fast-fo: passed: 1 passed step(s) in 24m29s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
+### Record verification results for 3 job(s)
+
+[`3ff2f65b1c94`](https://github.com/pilifs/in-the-loop/commit/3ff2f65b1c94544e01a591e0754820929b8c6f82) · [log `359cf94bcb9b`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/359cf94bcb9bdd23775df0cc031a7133d1217917cc5c718bc56db0fabf7242dd.jsonl.gz)
+
+Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-041029-prove-both-recursive-tiling-callers-with: passed: 1 passed step(s) in 6.6s, peak 165.3 MiB (estimated 2m00s, 2.0 GiB); 28 output file(s) changed; signals: example:task-as-expected×2 Applied 28 output(s). 20261120-041029-run-optional-suppliers-through-the-selec: passed: 1 passed step(s) in 7.2s, peak 143.2 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-041223-recheck-both-signed-tai-round-trips-afte: failed: 1 failed step(s) in 7.0s, peak 330.4 MiB (estimated 2m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-unexpected×2 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
+
 ### Check actual Optional callbacks and adopt bounded tiling lemmas (verification pending)
 
-change `xxzwmmztolqy` · [log `8327c83650b4`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/8327c83650b48a15e75529d653138f7827c391304ee0022f09583b439e60e605.jsonl.gz)
+[`309a38576d84`](https://github.com/pilifs/in-the-loop/commit/309a38576d8441db6a4128b3e14ef4ccba0a4e1e) · [log `8327c83650b4`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/8327c83650b48a15e75529d653138f7827c391304ee0022f09583b439e60e605.jsonl.gz)
 
 The native checker enters Optional from the selected JDK, including its initializer and the application Supplier. The eager callback probe replayed its violation on the original four-input domain. The public property recipe can bind a checked helper by digest and requires a proved summary in its statement. Example 331 uses it for the two recursive callers that benefited in the 24-run comparison. Three sequence fixtures identify shortest distinguishing observations. The TAI recovery record checks the interrupted receipt and its independently reordered retry.
 
 The changed-test runner passed 44 of 44 units of work; one JBMC stand-in passed on rerun and also passed alone. The Optional callback regression, the recipe identity tests, example 324/331 validation and the cost lint passed. Jobs 20261120-041029-run-optional-suppliers-through-the-selec and 20261120-041029-prove-both-recursive-tiling-callers-with repeat the original bounded claims with linked native executions. Job 20261120-041223-recheck-both-signed-tai-round-trips-afte records the next native stage after formatting. The public watcher identifier in finding 7fb608b9 is proposed for human review.
 
-### Record verification results for 3 job(s)
-
-change `syuprottmwot` · [log `359cf94bcb9b`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/359cf94bcb9bdd23775df0cc031a7133d1217917cc5c718bc56db0fabf7242dd.jsonl.gz)
-
-Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-041029-prove-both-recursive-tiling-callers-with: passed: 1 passed step(s) in 6.6s, peak 165.3 MiB (estimated 2m00s, 2.0 GiB); 28 output file(s) changed; signals: example:task-as-expected×2 Applied 28 output(s). 20261120-041029-run-optional-suppliers-through-the-selec: passed: 1 passed step(s) in 7.2s, peak 143.2 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-041223-recheck-both-signed-tai-round-trips-afte: failed: 1 failed step(s) in 7.0s, peak 330.4 MiB (estimated 2m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-unexpected×2 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
-
 ### Report all 125 Java claim dispositions and their independent evidence (verification pending)
 
-change `qtyzvunxmomv` · [log `359cf94bcb9b`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/359cf94bcb9bdd23775df0cc031a7133d1217917cc5c718bc56db0fabf7242dd.jsonl.gz)
+[`6ef544307c84`](https://github.com/pilifs/in-the-loop/commit/6ef544307c846e9f3b8c75f38e8eafbc9eed54bf) · [log `359cf94bcb9b`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/359cf94bcb9bdd23775df0cc031a7133d1217917cc5c718bc56db0fabf7242dd.jsonl.gz)
 
 Across examples 312–331, the certified finite JVM route established 92 claim/subject pairs and refuted 33, each on an independent JVM witness. All agreed with the direct input tables. Strict native checking independently decided 55 of the 125 and the report links the other 70 to their actual diagnostics and scopes. It preserves the interrupted ThreeTen batch, controlled tiling measurements, all 60 collected jobs and their original outcomes. The public handoff now shows results across routes, disputes and manifest-checked archived attempts. Four serialized forms of published decision names are proposed for human review.
 
@@ -48,13 +48,13 @@ Validated all 20 cases plus regression examples 197 and 308 on a stable tree. Th
 
 ### Record verification results for 1 job(s)
 
-change `oypkvylusrns` · [log `349be67a5df4`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/349be67a5df4a45c982cd5993f0bcfb4afb55d68f7c4d0715459086b27c4055b.jsonl.gz)
+[`8c43e0049390`](https://github.com/pilifs/in-the-loop/commit/8c43e0049390b443e0396691b38b6c83d94a3fd0) · [log `349be67a5df4`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/349be67a5df4a45c982cd5993f0bcfb4afb55d68f7c4d0715459086b27c4055b.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-042933-recheck-both-array-roots-after-the-fast: passed: 1 passed step(s) in 7.0s, peak 126.5 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ### Confirm the original two-root array regression on the finished checker
 
-change `uotvrnxpwvkw` · [log `349be67a5df4`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/349be67a5df4a45c982cd5993f0bcfb4afb55d68f7c4d0715459086b27c4055b.jsonl.gz)
+[`fea67b9eeb3d`](https://github.com/pilifs/in-the-loop/commit/fea67b9eeb3daffc56df2147679e86bd30457efd) · [log `349be67a5df4`](https://terminalvalue.net/raw-traces/01a1f723-3d97-7661-8f40-a29d17f25055/349be67a5df4a45c982cd5993f0bcfb4afb55d68f7c4d0715459086b27c4055b.jsonl.gz)
 
 Job 20261120-042933-recheck-both-array-roots-after-the-fast reproduced the original native proof of return preservation and both qualified poststate refutations. The JDK, prepared classpaths, unwind eight, array bound two and 600-second checker budget match the original runs. The direct oracle found zero return differences, three right-root differences and 21 two-root differences among 71 heaps. The right-root witness shares a single [0] array and the two-root witness uses distinct [0] arrays.
 

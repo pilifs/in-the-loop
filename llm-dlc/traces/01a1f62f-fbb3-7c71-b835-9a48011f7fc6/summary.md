@@ -20,49 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 1 job(s)
 
-change `zqmtmlosvpxv` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
+[`dd0916ea76c6`](https://github.com/pilifs/in-the-loop/commit/dd0916ea76c609a3b2f86874b84d7f243dd1e075) · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-000226-threetenbp-clock-parent-with-observed-ch: passed: 1 passed step(s) in 13.0s, peak 154.4 MiB (estimated 1m00s, 2.0 GiB); 16 output file(s) changed; signals: example:task-as-expected×1 Applied 16 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
-### Propose the watcher's two decision ids for the allow list
-
-change `xulyotzsuymv` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
-
-The watcher session's logs carry single-foundation-and-python-restart-D001 and -D002, the ids single_run.py gives the watcher's continue answers, which the scan reads as long tokens (10126be8, d5cbb565). Checked masked: each occurs after 'continue recorded as'. Proposed for a person to approve; the run's agent proposed 10126be8 too on its own line. The commit also holds the run's decision record (llm-dlc/decisions/single-foundation-and-python-restart.*).
-
-### Record verification results for 2 job(s)
-
-change `slvrxzkqtqvz` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
-
-20261120-000227-threetenbp-same-day-with-observed-chrono: passed, its receipt in examples/310-threeten-complete-hours/receipts/same-day-observed. 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t: failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB); its outputs were not produced. Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way. Two collections that ran beside a commit of the watcher's were folded into this one commit.
-
-### Regenerate the traces README after folding two results commits
-
-change `xymkkkzururw` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
-
-Folding two verification-result commits that had raced a watcher commit left llm-dlc/traces/README.md out of step with the manifests; sync.py regenerate brings it back.
-
-### Record verification results for 3 job(s)
-
-change `wzovxqwloyok` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
-
-Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-000226-threetenbp-clock-fix-with-observed-chron: failed: 1 failed step(s) in 10m09s, peak 1.5 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000226-threetenbp-reversal-fix-with-observed-ch: failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000227-threetenbp-reversal-parent-with-observed: failed: 1 failed step(s) in 10m10s, peak 990.8 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `nkvunvqknrur` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t: passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `mrswtquknywo` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261120-001502-retry-commons-lang-utf-16-search-on-the: passed: 1 passed step(s) in 15.0s, peak 319.9 MiB (estimated 1m00s, 3.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×5 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
-
 ### Check ThreeTenBP with a JVM-bound single-threaded chronology registry (verification pending)
 
-change `nwkovvmpuklp` · [log `c4e97c49cb5c`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/c4e97c49cb5c9da18af0021c131c29c843615b0e6172a5ea5ac3ab02b1420f96.jsonl.gz)
+[`2fda1f51c503`](https://github.com/pilifs/in-the-loop/commit/2fda1f51c50307d85e4967e9033a0005afed2a57) · [log `c4e97c49cb5c`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/c4e97c49cb5c9da18af0021c131c29c843615b0e6172a5ea5ac3ab02b1420f96.jsonl.gz)
 
 Give the native checker a selected String-key ConcurrentHashMap, materialize empty registry objects observed on the pinned JVM, and check enum ordering with the selected JDK bytecode. The interpreter now distinguishes different enum declarations during replay. The public proof recipe binds the initializer class bytes and state separately for each revision and checks structured runtime assumptions. The five new tasks retain the original tick domains, cite their original tasks, and declare an unwind of 32. Tests cover aliasing, key equality, nulls and exceptions, model selection, and rejection of the wrong initializer or state. All 29 changed test groups and the example validator passed.
 
@@ -70,31 +34,67 @@ Verification pending for 20261120-000226-threetenbp-clock-fix-with-observed-chro
 
 ### Queue each qualified ThreeTenBP obligation at its tested revision (verification pending)
 
-change `qotvktowksop` · [log `a94d7051691c`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/a94d7051691ce2d4c7efd80a39a79f40454097a54ca7153be6ae5700aa7c4502.jsonl.gz)
+[`497309d8b9eb`](https://github.com/pilifs/in-the-loop/commit/497309d8b9eb7841b7b34763ad83ea1fe72a1b99) · [log `a94d7051691c`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/a94d7051691ce2d4c7efd80a39a79f40454097a54ca7153be6ae5700aa7c4502.jsonl.gz)
 
 Five independent jobs pin the tested implementation at 0dc25164 and preserve each receipt separately. The word-level solver receives 600 seconds per obligation. Jobs 20261120-000226-threetenbp-clock-fix-with-observed-chron and 20261120-000226-threetenbp-clock-parent-with-observed-ch check elapsed whole hours. Jobs 20261120-000226-threetenbp-reversal-fix-with-observed-ch and 20261120-000227-threetenbp-reversal-parent-with-observed check sign reversal. Job 20261120-000227-threetenbp-same-day-with-observed-chrono compares the two revisions on same-day intervals. All five definitions passed submission validation.
 
 ### Check every sub-hour crossing of midnight on both revisions (verification pending)
 
-change `wuornlumkuus` · [log `4e649c99b0c6`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/4e649c99b0c68fe4e26fbdc6b1dbf713cb0d0588bc7a5121191b0a84beb951f3.jsonl.gz)
+[`386a339a17ef`](https://github.com/pilifs/in-the-loop/commit/386a339a17ef34c21311c8875e488b62451d43cb) · [log `4e649c99b0c6`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/4e649c99b0c68fe4e26fbdc6b1dbf713cb0d0588bc7a5121191b0a84beb951f3.jsonl.gz)
 
 The independent JVM driver enumerates the two-date grid and finds twelve signed sub-hour intervals that cross midnight. The production parent returns one hour in magnitude on all twelve and the fix returns zero. Two separately required public tasks freeze these inputs and the sampled chronology binding, with the same compiled subject and adapter as the full-grid tasks. A fixed-clock native probe established agreement with elapsed minutes on this subset. The example validator and all 24 selected test groups passed. Job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t checks both zero-hour claims and publishes their receipts.
 
 ### Honor the per-claim checker deadline in public task batches (verification pending)
 
-change `wmzztnsqzqyn` · [log `052ea65a6370`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz)
+[`3434272c550c`](https://github.com/pilifs/in-the-loop/commit/3434272c550cfd93b6ff748a043f6f84c0ff34c3) · [log `052ea65a6370`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz)
 
 The sub-hour verification job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t exited during argument parsing before launching either task. Parse the checker deadline once for single and batch execution and pass it to each batch member alongside its retry identity. The public-entry regression tests mixed outcomes, shared preparation and a 120-second budget on both calls. All 27 selected test groups passed. Superseding job 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t runs the same command, budget, claims and expectations.
 
 ### Verify supplementary code points and StringBuilder search in native bytecode (verification pending)
 
-change `pkrtqvvpwynv` · [log `052ea65a6370`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz)
+[`0853ec74fbb4`](https://github.com/pilifs/in-the-loop/commit/0853ec74fbb44c64934a70d0abbca0302793fec2) · [log `052ea65a6370`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz)
 
 Share the UTF-16 encoding of a Java code point between String search, Character.toChars and StringBuilder.appendCodePoint. Invalid input throws before the builder changes. Model the Basic Latin and Combining Diacritical Marks regex blocks used in library initialization. A symbolic test checks the conversion and exception classes, a JVM checks all 65,536 BMP units and supplementary boundary controls, and interpreter replay checks the same units. The strict fixed Commons Lang probe established the original last-match property. The 27 selected test groups passed. Job 20261120-001502-retry-commons-lang-utf-16-search-on-the retries all five original claims with their original execution references, source artifacts and budgets.
 
+### Propose the watcher's two decision ids for the allow list
+
+[`7ba94efd4673`](https://github.com/pilifs/in-the-loop/commit/7ba94efd4673860525836648d3ac3ff4b9fc529e) · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
+
+The watcher session's logs carry single-foundation-and-python-restart-D001 and -D002, the ids single_run.py gives the watcher's continue answers, which the scan reads as long tokens (10126be8, d5cbb565). Checked masked: each occurs after 'continue recorded as'. Proposed for a person to approve; the run's agent proposed 10126be8 too on its own line. The commit also holds the run's decision record (llm-dlc/decisions/single-foundation-and-python-restart.*).
+
+### Record verification results for 2 job(s)
+
+[`fecf86330f50`](https://github.com/pilifs/in-the-loop/commit/fecf86330f504d4c391756a9cd4e23c4ac4475f9) · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
+
+20261120-000227-threetenbp-same-day-with-observed-chrono: passed, its receipt in examples/310-threeten-complete-hours/receipts/same-day-observed. 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t: failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB); its outputs were not produced. Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way. Two collections that ran beside a commit of the watcher's were folded into this one commit.
+
+### Regenerate the traces README after folding two results commits
+
+[`c62d27f1c572`](https://github.com/pilifs/in-the-loop/commit/c62d27f1c5721a0ba70b1f10358a3b94687714c4) · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
+
+Folding two verification-result commits that had raced a watcher commit left llm-dlc/traces/README.md out of step with the manifests; sync.py regenerate brings it back.
+
+### Record verification results for 3 job(s)
+
+[`734f042eeaf2`](https://github.com/pilifs/in-the-loop/commit/734f042eeaf2a396dd14d12b1e26fdea1227a0c6) · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
+
+Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-000226-threetenbp-clock-fix-with-observed-chron: failed: 1 failed step(s) in 10m09s, peak 1.5 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000226-threetenbp-reversal-fix-with-observed-ch: failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000227-threetenbp-reversal-parent-with-observed: failed: 1 failed step(s) in 10m10s, peak 990.8 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+[`b5d56a243fb7`](https://github.com/pilifs/in-the-loop/commit/b5d56a243fb75b4275b1326ce15c2fa6bba63d00) · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t: passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+[`eaecb9dc32f8`](https://github.com/pilifs/in-the-loop/commit/eaecb9dc32f802e28c7044075aa6227c24d9983d) · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-001502-retry-commons-lang-utf-16-search-on-the: passed: 1 passed step(s) in 15.0s, peak 319.9 MiB (estimated 1m00s, 3.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×5 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
 ### Integrate the native calendar and UTF-16 results with their qualification evidence
 
-change `syymwsotsnnz` · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
+[`c99445fd9fed`](https://github.com/pilifs/in-the-loop/commit/c99445fd9fed2f20246306c29a7cc7ea468625ba) · [log `d33e76fed0aa`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz)
 
 The five original Commons Lang retries are decided. With the JVM-observed chronology registries, the native checker refuted the parent clock on the full grid, established same-day preservation, refuted the parent on sub-hour crossings and proved the fix on all twelve. Three full-grid temporal searches exhausted their 600-second budgets. Record the original and derived claim scopes, independent witnesses, class and state bindings, and per-task budgets in the handoff. Resource reproductions restore the recorded solver and deadline and check exhaustion in the execution journal. Both packet validators and all 39 selected test groups passed. The eight job manifests account for 187 verified output digests.
 
@@ -102,7 +102,7 @@ The collector merge retained all 67 human-approved allow-list entries and both p
 
 ### Propose the restart watcher decision-number placeholder for trace review
 
-change `ynlszrmtssvt` · [log `ae6cc1b49a0d`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/ae6cc1b49a0dc7ac5d98dd3e8377e4b2bd4947a4d7d9025cbdb77f52d85517a0.jsonl.gz)
+[`99ddee6c58bc`](https://github.com/pilifs/in-the-loop/commit/99ddee6c58bcbec787627a6059795c60d226df02) · [log `ae6cc1b49a0d`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/ae6cc1b49a0dc7ac5d98dd3e8377e4b2bd4947a4d7d9025cbdb77f52d85517a0.jsonl.gz)
 
 The masked collector context describes its 41-character watcher decision template. Recomputing the finding ID from the public decision numbers with their last digit replaced by N identified finding 1bbaf196. The template joins the two individual decision IDs already proposed for human review. The eleven selected tests passed.
 

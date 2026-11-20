@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a1f87f-ffb2-7623-91a3-9482bf88a305` (open) |
+| Session | `01a1f87f-ffb2-7623-91a3-9482bf88a305` (ended) |
 | When | 2026-11-20 10:28 UTC to 2026-11-20 10:57 UTC (28 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record eighteen native results with their JVM startup conditions
 
-change `pvnwnzxznooq` · [log `9219504c0b1e`](https://terminalvalue.net/raw-traces/01a1f87f-ffb2-7623-91a3-9482bf88a305/9219504c0b1efa6f069430ea08f93fbc18e7d72b18d1df122b9638381c93083e.jsonl.gz)
+[`0d343be200f3`](https://github.com/pilifs/in-the-loop/commit/0d343be200f368b9d4d6dfce4fd908c94d4c4918) · [log `9219504c0b1e`](https://terminalvalue.net/raw-traces/01a1f87f-ffb2-7623-91a3-9482bf88a305/9219504c0b1efa6f069430ea08f93fbc18e7d72b18d1df122b9638381c93083e.jsonl.gz)
 
 The original campaign has 78 native proofs, 29 independently replayed refutations and 18 open startup obligations. The eight chart and ten partial-date companion claims add 14 proofs and four replayed counterexamples on explicitly captured JDK 21 startup states. Together these outcomes agree with all 125 exhaustive JVM dispositions. Keep both scopes in the public register, including each subject, assumption, admitted count, witness, duration and peak process RSS.
 
@@ -28,7 +28,7 @@ All six affected examples validated and all 43 selected test groups passed. Each
 
 ### Pair original startup checks with observed runs (verification pending)
 
-change `mkmmssxnmnst` · [log `da96a3721bb4`](https://terminalvalue.net/raw-traces/01a1f87f-ffb2-7623-91a3-9482bf88a305/da96a3721bb4b5a9e380eeb9741013c6838384c78b51e6481a593e92955db899.jsonl.gz)
+[`dd7b8674c12d`](https://github.com/pilifs/in-the-loop/commit/dd7b8674c12d6167c58515e4ef512061bf58c2f4) · [log `da96a3721bb4`](https://terminalvalue.net/raw-traces/01a1f87f-ffb2-7623-91a3-9482bf88a305/da96a3721bb4b5a9e380eeb9741013c6838384c78b51e6481a593e92955db899.jsonl.gz)
 
 Recheck all eight original chart tasks and all ten original partial-date tasks on exactly the respective binary that decided their observed-startup companions. These negative controls require the original strict query to run, to name the ambient initializer call and to publish an unresolved receipt. They reject an unrelated error, changed binary or hidden observed-initializer assumption.
 
@@ -36,7 +36,7 @@ Both job schemas validated and the checks on receipt stage, gap mode and source 
 
 ### Publish matched startup refusals in the local claim handoffs
 
-change `xqvrxtkxlxxt` · [log `6b3af0c04339`](https://terminalvalue.net/raw-traces/01a1f87f-ffb2-7623-91a3-9482bf88a305/6b3af0c04339791f16327ca0c0317fae858a65ab14437411d02a93a57481efc3.jsonl.gz)
+[`ab6e4b5db19b`](https://github.com/pilifs/in-the-loop/commit/ab6e4b5db19ba037227d550c1952ba1ca2e31731) · [log `6b3af0c04339`](https://terminalvalue.net/raw-traces/01a1f87f-ffb2-7623-91a3-9482bf88a305/6b3af0c04339791f16327ca0c0317fae858a65ab14437411d02a93a57481efc3.jsonl.gz)
 
 Register an open refusal packet for each of the eight original JFreeChart tasks and ten original Joda-Time tasks. Every pair used the same checker SHA, ordered classpath, guard, observer and 30-second budget as its separately qualified result. Without the captured initializer each check stopped at its original time-zone or provider query. The public gap inventory now links every reproducer and closure check. Semantic refusal reruns preserve an explicitly recorded solver and deadline and distinguish reaching the gap from exhausting the budget.
 

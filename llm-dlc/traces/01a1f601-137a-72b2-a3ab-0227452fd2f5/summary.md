@@ -20,25 +20,25 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 1 job(s)
 
-change `utsnpupxotvq` · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
+[`0c50e18a3386`](https://github.com/pilifs/in-the-loop/commit/0c50e18a338631fe0a78360ae25f8fdbcadfc0ca) · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a: failed: 4 passed, 1 failed step(s) in 28.1s, peak 233.9 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `zpymnulpnmwt` · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
+[`f7bae16bc1b1`](https://github.com/pilifs/in-the-loop/commit/f7bae16bc1b1a4993b9dff1372e115b76b4db036) · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a: passed: 5 passed step(s) in 28.9s, peak 210.8 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Applied 89 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Twenty Java verification examples as a fast-follow brief for one agent's run
 
-change `onuzmoonrylt` · [log `a2195785f93e`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/a2195785f93e4270b816a485d7754ab39045bc42395ce08e7db032088832d57e.jsonl.gz)
+[`40f8ab01e540`](https://github.com/pilifs/in-the-loop/commit/40f8ab01e5400f292b44338dbf20307778c4b2b6) · [log `a2195785f93e`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/a2195785f93e4270b816a485d7754ab39045bc42395ce08e7db032088832d57e.jsonl.gz)
 
 llm-dlc/loops/twenty-example-fast-follow.md is the user's brief for the run after foundation-and-python-restart: 20 new cases, ten historical upstream repairs (Commons Lang, ThreeTen-Extra, Commons CSV, Guava, Commons Collections, JFreeChart, Joda-Time, Commons Math, Commons Geometry) and ten controlled Java examples, in four waves (artifacts and observations; heaps and sequences; language and library boundaries; transfer and cost), each with a frozen subject, domain, observation, independent oracle and expected discriminator. Copied unchanged.
 
 ### Execute BigInteger factory allocations from the selected JDK
 
-change `nrnxuuxrkwkm` · [log `6d8e8b8fecd6`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/6d8e8b8fecd69fd824b6442c09c186ac81a873bf1f416f61738ce9c0562dbfe1.jsonl.gz)
+[`2a56ed9faa15`](https://github.com/pilifs/in-the-loop/commit/2a56ed9faa15f1146ca2a08aa5e0452a8ccc35a5) · [log `6d8e8b8fecd6`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/6d8e8b8fecd69fd824b6442c09c186ac81a873bf1f416f61738ce9c0562dbfe1.jsonl.gz)
 
 ThreeTenBP initializes a nanoseconds constant with BigInteger.valueOf(long). The native checker now follows the actual factory, constructor and magnitude allocation bytes in the selected JDK image. A path that reads the JDK cache refuses that field. Missing images and unrelated methods retain their existing diagnostics.
 
@@ -46,7 +46,7 @@ The changed suite passed all four selections, including 58 Rust binaries. The ne
 
 ### Check ASCII case-insensitive regex classes and alternatives
 
-change `pqplpwpwtlls` · [log `f7ddc0c2362a`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc.jsonl.gz)
+[`9d878d108e13`](https://github.com/pilifs/in-the-loop/commit/9d878d108e133f4730ecbfbdc11aefe2e98c3859) · [log `f7ddc0c2362a`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc.jsonl.gz)
 
 ThreeTenBP constructs a duration parser using optional groups, digits and punctuation under Pattern.CASE_INSENSITIVE. The native matcher now tests the opposite case of each ASCII letter against a bracket range when that flag is set, and applies negation afterward. This also handles alternatives and symbolic flag selection.
 
@@ -54,7 +54,7 @@ The changed suite passed 30 of 30 selections. Tests compare bracket ranges and a
 
 ### Retry archived proof executions in a batch (verification pending)
 
-change `vksqzqsusnpq` · [log `f7ddc0c2362a`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc.jsonl.gz)
+[`c00c9ccf72eb`](https://github.com/pilifs/in-the-loop/commit/c00c9ccf72eb4d28779e0dfcc8ee8a5309051f4b) · [log `f7ddc0c2362a`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc.jsonl.gz)
 
 The public proof command can follow a retry ID into a collected job and recheck its source claim, revisions and prepared byte binding. A batch accepts one ID per task while sharing preparations. Both handoff formats keep the prior executions discoverable. The regression test covers altered archive bytes, a different claim and an invalid batch.
 
@@ -62,7 +62,7 @@ Verification job 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a retrie
 
 ### Pin the clock retry to the integrated checker (verification pending)
 
-change `rvuvwnmstvms` · [log `ffff2e43ec6a`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/ffff2e43ec6a531d4ab53a2a08bf972b0f24bc54a635fcad51d95ca929915fc2.jsonl.gz)
+[`3be6b78b2aa1`](https://github.com/pilifs/in-the-loop/commit/3be6b78b2aa1cd1fd4a39e27b3299b558fee05bb) · [log `ffff2e43ec6a`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/ffff2e43ec6a531d4ab53a2a08bf972b0f24bc54a635fcad51d95ca929915fc2.jsonl.gz)
 
 The previous job reached the numeric factory and then the duration regex because its polling runner picked up a temporary file-set-aside commit while a scoped commit was finishing. All original executions survive. Job 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a explicitly selects a78b7348, whose library contains both changes, for the same five strict attempts and three JVM reviews.
 
@@ -70,7 +70,7 @@ The probe record preserves the checker outputs for each diagnostic, including tw
 
 ### Keep temporary jj file splits out of the verification queue
 
-change `rrosmsokmqzz` · [log `2a6ffbd77941`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/2a6ffbd77941b59d811110c6f012b613a862597191e46597501f4215f56143c2.jsonl.gz)
+[`30dd2c93a8a2`](https://github.com/pilifs/in-the-loop/commit/30dd2c93a8a2e720a65e0224f95dabd44e9d5aeb) · [log `2a6ffbd77941`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/2a6ffbd77941b59d811110c6f012b613a862597191e46597501f4215f56143c2.jsonl.gz)
 
 A runner polling another workspace picked up a ThreeTenBP job while sync.py was setting aside files outside a scoped commit. The transient tree carried only the first checker change. For a runnable job the queue now checks which commit last touched its file, including jobs with explicit source revisions, and waits while that commit is the temporary set-aside.
 
@@ -78,7 +78,7 @@ The queue regression exercises two simultaneous views of the same job, both revi
 
 ### Integrate the clock retries and record all five native blockers
 
-change `ymmomsosuvlp` · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
+[`475cc1add425`](https://github.com/pilifs/in-the-loop/commit/475cc1add425e858dc87edd5f0b5e5a7a18bc03f) · [log `aa64abcbe1d4`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/aa64abcbe1d4bd8194dfe9f40e80d263514e2e70d0287739121cff54794deafc.jsonl.gz)
 
 The pinned checker on a78b7348 passes Duration initialization on the original ThreeTenBP artifacts and stops at ServiceLoader.load in Chronology initialization for all five strict claims. Each task now has a rerunnable refusal packet in the gap inventory. The public JVM witness refutes the parent clock, satisfies the fixed clock and fails membership for the same-day domain.
 
@@ -86,7 +86,7 @@ The collector’s earlier job remains in history with its factory-only checker a
 
 ### Propose the restart watcher decision ID for trace review
 
-change `yymsymovkxsl` · [log `df7cc669cf22`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/df7cc669cf22f4801241a5436605cee81ac5778048d57712fd496017a4c3d6f9.jsonl.gz)
+[`04446d125475`](https://github.com/pilifs/in-the-loop/commit/04446d12547513d471af14d211aff55ecb701c01) · [log `df7cc669cf22`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/df7cc669cf22f4801241a5436605cee81ac5778048d57712fd496017a4c3d6f9.jsonl.gz)
 
 Two archived collector logs contain the same long-token finding. Masked context and an independent digest check identify the value as the ID of the watcher’s recorded continue decision. The allow-list entry remains proposed for a person to review. All 11 test selections for the proposal passed.
 

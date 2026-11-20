@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-180249-build-both-importer-dependency-repairs-a",
+  "title": "Build both importer dependency repairs at their first-parent boundaries",
+  "description": "Package four full upstream Maven projects from the pinned Commons IO and Commons CSV parent and fix commits. Record checkout, first parent, toolchain, all resolved build files, output JAR hashes and the independently resolved runtime dependencies. These JARs feed the unchanged importer and the two producer examples.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source",
+    "targets:upstream-build"
+  ],
+  "links": {
+    "examples": [
+      "338",
+      "339",
+      "345"
+    ]
+  },
+  "expected": "Each production JAR and its dependencies are present by content hash, with each fixed revision checked against its recorded first parent.",
+  "submitted": {
+    "at": "2026-11-20T18:02:49+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "mvn",
+    "git",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "9m",
+    "notes": "Four sequential fresh Apache Maven builds and runtime dependency listings on JDK 21."
+  },
+  "steps": [
+    {
+      "name": "Build Commons IO parent",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json io-parent examples/345-paged-importer-upgrades/records/builds/io-parent.json",
+      "cwd": "."
+    },
+    {
+      "name": "Build Commons IO fix",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json io-fix examples/345-paged-importer-upgrades/records/builds/io-fix.json",
+      "cwd": "."
+    },
+    {
+      "name": "Build Commons CSV parent",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json csv-parent examples/345-paged-importer-upgrades/records/builds/csv-parent.json",
+      "cwd": "."
+    },
+    {
+      "name": "Build Commons CSV fix",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json csv-fix examples/345-paged-importer-upgrades/records/builds/csv-fix.json",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/345-paged-importer-upgrades/records/builds"
+  ]
+}

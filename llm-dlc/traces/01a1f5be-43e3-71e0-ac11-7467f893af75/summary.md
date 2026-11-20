@@ -20,49 +20,49 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps
 
-change `lxnwsprmkwzv` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+[`08f4c5720557`](https://github.com/pilifs/in-the-loop/commit/08f4c57205574469363f68f72f140600fac7574e) · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
 
 The ChatGPT account gives every Codex session its apps as deferred tools (codex_apps). On the user's word (2026-11-19), four that no work in this repository has a use for are turned off: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space, Codex Document Control and Plugin Management stay. The loops pass the settings on every turn (CODEX_CONFIG in agent_client.py, as apps.&lt;connector id>.enabled=false), and .codex/config.toml carries the same for a person's own Codex in a trusted checkout. Run 1 of foundation-domain-streams called none of the eight apps. Verified with codex debug prompt-input (CLI 0.170) rendered with CODEX_CONFIG: only the four kept apps' namespaces remain, and CLAUDE.md is still read; the TOML parses; the changed tests pass (8 of 8 files).
 
 ### Record verification results for 1 job(s)
 
-change `pzqqompzkvnw` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+[`15f8af206822`](https://github.com/pilifs/in-the-loop/commit/15f8af2068229d40ed7c656216790ea93b62fb23) · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-214230-gradebook-frozen-claims-on-the-checkpoin: failed: 5 failed step(s) in 22.2s, peak 97.3 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `wmswovokuroq` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+[`5b6c529dc87b`](https://github.com/pilifs/in-the-loop/commit/5b6c529dc87b52d6c5cc81e5cc8c5f125fbb7ebb) · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `wuttosxkzuyp` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+[`72e02472cdf5`](https://github.com/pilifs/in-the-loop/commit/72e02472cdf5702e5cdd531120ac88ccdd5113ab) · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
 
 Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-215957-threetenbp-hours-adapter-on-the-qualifie: failed: 1 failed step(s) in 12.0s, peak 220.5 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261119-220147-gradebook-qualified-attempts-and-interru: passed: 2 passed step(s) in 20.0s, peak 227.5 MiB (estimated 2m00s, 3.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×2; example:task-as-expected×3 Applied 84 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `qtnnvmzuwxtr` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+[`6ecd07f80ae1`](https://github.com/pilifs/in-the-loop/commit/6ecd07f80ae177eaba7b766cd2ec894027e7750a) · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-215949-math-238-direct-recipe-on-frozen-power-a: passed: 1 passed step(s) in 6m23s, peak 994.5 MiB (estimated 9m00s, 4.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `pqqonrvpsvuo` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+[`cf64c4629d1b`](https://github.com/pilifs/in-the-loop/commit/cf64c4629d1bfb32f9f809781f52045d778bfafe) · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
 
 Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261119-221145-qualify-heap-merges-initialized-display: passed: 1 passed step(s) in 5.0s, peak 92.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221152-qualify-integrated-jbmc-on-the-distinct: passed: 1 passed step(s) in 3.4s, peak 73.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221200-separate-quote-amount-and-ordered-send-r: failed: 1 failed step(s) in 4.0s, peak 85.2 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed 20261119-222214-check-the-supplementary-character-search: failed: 1 failed step(s) in 15.2s, peak 306.0 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `owxqwqnrkpok` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+[`062bbd776512`](https://github.com/pilifs/in-the-loop/commit/062bbd7765129fc16e0687be0b96958152bc80b8) · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261119-221555-retain-a-measured-gcd-checker-timeout-an: passed: 1 passed step(s) in 3m26s, peak 951.7 MiB (estimated 5m00s, 3.0 GiB); 29 output file(s) changed Applied 29 output(s). 20261119-222610-recheck-quote-projections-with-compile-s: passed: 1 passed step(s) in 5.4s, peak 85.6 MiB (estimated 1m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ### Freeze Gradebook and MATH-238 claims on the checkpoint route (verification pending)
 
-change `oxzsrsuyxpmt` · [log `1eef14f46e48`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/1eef14f46e48e770257b140ae0f6a38d935bff04e7474be8796e1f98dfe24ff5.jsonl.gz)
+[`342983c8b3d9`](https://github.com/pilifs/in-the-loop/commit/342983c8b3d995c8105dd8f34285287798b721ae) · [log `1eef14f46e48`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/1eef14f46e48e770257b140ae0f6a38d935bff04e7474be8796e1f98dfe24ff5.jsonl.gz)
 
 The read-only history inventory recovers all three before-property executions of example 105, retaining both artifact bindings and the distinction between historical refutations and eligible JVM evidence. Example 198 compares three Gradebook revisions on 306 inputs and finds 78 missing final-slot writes. Example 309 builds each complete upstream MathUtils class and finds 45 of 441 wrong GCDs before the repair and none afterward. The separate zero law passes on all 256 inputs of both revisions.
 
@@ -70,13 +70,13 @@ Public planning and artifact-bound JVM replays validated both packets. Jobs 2026
 
 ### Compare binary repository blobs as bytes in the tree lookup test
 
-change `pswlzwuwylul` · [log `c915284fac08`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/c915284fac08fc7bae67662b987419620097f3104163b88c3b8aa120d15ee9ff.jsonl.gz)
+[`235215c26b28`](https://github.com/pilifs/in-the-loop/commit/235215c26b28bb5f03d44d62a6c5083b244bc103) · [log `c915284fac08`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/c915284fac08fc7bae67662b987419620097f3104163b88c3b8aa120d15ee9ff.jsonl.gz)
 
 The restart kit placed a ZIP under llm-dlc. The reference check tried to decode jj's concatenation of an entire directory as text. Check directory absence directly and compare both the ZIP and the README against raw jj file output. The failing regression passes on the real checkout.
 
 ### Bind direct and adapter proof recipes to recoverable executions (verification pending)
 
-change `mnxuqxvmruzl` · [log `5a6e1d66d297`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/5a6e1d66d297c73fee4f9b3dfa961355b8a4e8700a892889cc61be554df1aee7.jsonl.gz)
+[`d17f8c33adf0`](https://github.com/pilifs/in-the-loop/commit/d17f8c33adf006ca4333baacccde164c6af08eb6) · [log `5a6e1d66d297`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/5a6e1d66d297c73fee4f9b3dfa961355b8a4e8700a892889cc61be554df1aee7.jsonl.gz)
 
 Plan and bind checker arguments from the same typed recipe. Preserve the original claim keys and classpath order, share preparations across tasks, and qualify concrete int and int-array candidates against the frozen domain and observations in fresh JVMs. The paired checker now supports scalar indices beside array roots. Persist the receipt identity, stages, artifact bindings, invocation and raw candidate across interruption and idempotent completion. Handoff lists executions and eligible evidence separately with their qualifications.
 
@@ -86,7 +86,7 @@ Jobs 20261119-220147-gradebook-qualified-attempts-and-interru, 20261119-215949-m
 
 ### Qualify independent framework observations and version checker evidence (verification pending)
 
-change `qkulzuuysrsr` · [log `91e0f14f2ef4`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/91e0f14f2ef406ce031e5db54dde04faf826571b2e2ed8d8add993d22d1bd751.jsonl.gz)
+[`57ae7d5ce2cd`](https://github.com/pilifs/in-the-loop/commit/57ae7d5ce2cdca7c887c638a0d0be43f1f4ee67e) · [log `91e0f14f2ef4`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/91e0f14f2ef406ce031e5db54dde04faf826571b2e2ed8d8add993d22d1bd751.jsonl.gz)
 
 The framework effects checker can prove a return or an ordered send trace independently while preserving the complete original trace for JVM replay. Both shop revisions return 90 cents for quantities 99 and 100. Only the revised 100-item handler omits the send. A separate four-heap adapter and predecessor, setting and exception controls expose the exact domains checked. The shared Python decoder accepts historical untagged evidence and the versioned Rust output. Per-execution checker deadlines, CPU time and peak RSS make a repeated GCD obligation measurable.
 
@@ -94,7 +94,7 @@ Validated examples 193 and 197, the shop, four-heap and initialization JVM contr
 
 ### Apply the adapter recipe to Commons Lang UTF-16 search (verification pending)
 
-change `wmnqnlrmoqnz` · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
+[`b039502134a5`](https://github.com/pilifs/in-the-loop/commit/b039502134a5cfbd64abb1cbdbf5e57c4120bfc8) · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
 
 A second adapter instance maps two integers to a real StringBuilder and a code point, then calls the pinned public lastIndexOf overload. The independent token oracle counts UTF-16 offsets. The old library missed 25 of 160 searches and the repair missed none. Both passed all 85 absent-character and 120 single-unit controls, and the direct JVM calls matched the adapter throughout. Validated the packet, ordinary replay and six public task plans.
 
@@ -102,13 +102,13 @@ Job 20261119-222214-check-the-supplementary-character-search runs the five separ
 
 ### Separate compile stubs from the shop application artifacts (verification pending)
 
-change `lykzpopwytml` · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
+[`d54089fa3510`](https://github.com/pilifs/in-the-loop/commit/d54089fa351099f9f495aeff78d5320f00901556) · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
 
 The first independent framework checks were refused because their application directories contained the compile-time Kafka stub. Compile the stubs separately, give only application classes to framework discovery, and record both sets of hashes. The independent JVM still observes 90 cents for both orders on both revisions. Only the 100-item send disappears. Job 20261119-222610-recheck-quote-projections-with-compile-s retries the two original claims.
 
 ### Reconcile concrete JVM evidence and freeze Gradebook frame rules (verification pending)
 
-change `kurmqpxlpnmx` · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
+[`2410dccd836c`](https://github.com/pilifs/in-the-loop/commit/2410dccd836c297d13788f52006b3d02072a4b62) · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
 
 Check a replay's domain guard, program, selected values, input, JDK, class digest and ordered classpath against the prepared proof. Record both the checked adapter class and original class identities before launching a verifier. A retry refuses a different recorded artifact binding. Handoff groups historical executions by source and binding, can recover receipts retained by failed jobs, and counts required claim/subject pairs independently of retries.
 
@@ -116,19 +116,19 @@ Gradebook now declares the four absolute previous-value, full-state, interior an
 
 ### Keep duplicate completions stable when a sibling claim is added
 
-change `qxmqxnksslls` · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
+[`75fb81c2344c`](https://github.com/pilifs/in-the-loop/commit/75fb81c2344cd7979cf91696231be946e44725ab) · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
 
 A repeated delivery must match the original raw records and prepared binding even if target.json has since gained an unrelated task. Preserve the receipt's historical sidecar identity and reject conflicting content. The ordinary route now journals an unsupported translation before spending work on preparation. The route and recipe tests pass.
 
 ### Expose claim-specific witness replay and keep late rejections in history
 
-change `kwxuypsuymsl` · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
+[`41f03433f8f0`](https://github.com/pilifs/in-the-loop/commit/41f03433f8f022cc6d0ede5f89c65bb001cce79e) · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
 
 A reviewer can submit typed concrete inputs through build.py --task T --replay-witness FILE. Each review binds the selected artifacts, rechecks adapter correspondence where applicable, runs the frozen domain and observation on the JVM, and journals its evidence. The last-slot Gradebook input reproduced the complete array difference, agreed on the return and was rejected outside the interior domain. The return-only proof remained eligible after its later replay rejection. Ran the three public reviews and the build, route and recipe tests.
 
 ### Integrate all restart verification results and publish the claim handoff
 
-change `wuqvmopopvzq` · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
+[`7f18d80fb05d`](https://github.com/pilifs/in-the-loop/commit/7f18d80fb05d0c62bd09d84ff94535db3cd9b79b) · [log `58d80bd947f0`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)
 
 All 17 Gradebook and four Apache GCD claim/subject pairs are decided. The independent shop projections establish the returned amount and refute ordered-send preservation. Native covers the 71 two-root heaps and JBMC qualifies its separate four-heap overlap. Checker qualification preserved the branch and initializer differences and classified handled and escaping division. The exception-message, wide JBMC preservation and strict ThreeTenBP and Commons Lang gaps remain discoverable in their original records.
 
