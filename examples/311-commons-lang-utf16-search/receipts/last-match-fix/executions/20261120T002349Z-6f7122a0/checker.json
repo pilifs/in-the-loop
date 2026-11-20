@@ -1,0 +1,222 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6a2dd2c671201fd9131738f7befe9a37f3ec01e3/jvmcontract",
+    "prove",
+    "utfgrid.Search#last(int, int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/slice/fix.jar",
+    "--assume",
+    "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+    "--assert",
+    "result == utfgrid.Search.expected(encoding, needle)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "12",
+    "--max-array-length",
+    "6",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 0.658,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "utfgrid.Search#last(int, int)",
+      "domain": "encoding: int × needle: int",
+      "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+      "assert": "result == utfgrid.Search.expected(encoding, needle)",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over encoding: int × needle: int in 0.2 s; loops unwound 12 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [],
+      "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assertion: unknown name \"utfgrid\"; the names are encoding, needle, result); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ utfgrid.Search#last(int, int) satisfies `result == utfgrid.Search.expected(encoding, needle)` on every input where encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 (jvmcontract's own checker (CaDiCaL): 1 properties proved over encoding: int × needle: int in 0.2 s; loops unwound 12 times with unwinding assertions)\n  not vacuous: last(encoding=20, needle=0) reaches the calls\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.199577837,
+        "properties": 1,
+        "unwind": 12,
+        "max_array_length": 6,
+        "stage": null,
+        "native": {
+          "paths": 164,
+          "merges": 0,
+          "solver_calls": 885,
+          "solving_seconds": 0.153443606,
+          "gates_evaluated": 77429,
+          "evaluating_seconds": 0.001993855,
+          "divisions": 3,
+          "divisions_built": 2,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 12215,
+          "clauses": 41849,
+          "seconds": 0.196895852,
+          "loading_seconds": 0.001311689,
+          "decoding_seconds": 0.000109755,
+          "encoding_seconds": 0.016191056,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 600.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 600.0,
+            "seconds": 0.197,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.001,
+              "lowering": 0.0,
+              "symbolic": 0.026,
+              "encoding": 0.016,
+              "solving": 0.153,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 12215,
+              "clauses": 41849
+            }
+          },
+          {
+            "checker": "native",
+            "purpose": "probe",
+            "stage": null,
+            "budget_seconds": 599.796,
+            "seconds": 0.004,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.004,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 366,
+              "clauses": 1023
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.653,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.201,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.45
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "encoding",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "needle",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "encoding: int × needle: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == utfgrid.Search.expected(encoding, needle)",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 12,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+          "classes": 38,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found last(encoding=20, needle=0).",
+          "witness": "last(encoding=20, needle=0)"
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6029,
+    "sha256": "620ec530f87c4e3c9c5056ca0ec5ab311b29e693cb795256c07172d0a73301d1"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

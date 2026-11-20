@@ -1,0 +1,593 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "3ac1e36526372997",
+    "format": 1,
+    "example": "311",
+    "statement": {
+      "approach": "target",
+      "task": "last-match-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "last-match-parent",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+        "file": "claims/last-match.json",
+        "sha256": "eaaa4d3c4d9a371deb3fab3ca1002aaef32b0fe9bcccc84dec04934508a2eaab",
+        "property": "last-match",
+        "claimKind": "property",
+        "statement": "Return the UTF-16 offset of the last matching token or minus one.",
+        "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+        "assert": "result == utfgrid.Search.expected(encoding, needle)",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 12,
+          "maxArrayLength": 6
+        },
+        "explicitBounds": {
+          "unwind": 12,
+          "maxArrayLength": 6
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "search-driver",
+            "kind": "driver",
+            "path": "driver/utfgrid/SearchCases.java",
+            "sha256": "042df6c984374cd3ce02f382a962dc066ae1838323e1639912050b12ee6ba503"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "439dbb62f69aa8b41dd22ff305fc17b821eacd65612ace0f2454c8260de78f26"
+          }
+        ],
+        "adapter": {
+          "entry": "utfgrid.Search#last(II)I",
+          "mapping": "Encoding 0 through 39 enumerates zero to three tokens from a, b and U+2070E in bijective base three, least significant token first. Needle 0, 1, 2 or 3 selects a, b, U+2070E or z. The runtime receiver argument is a StringBuilder.",
+          "correspondence": "finite-oracle",
+          "cases": 160
+        },
+        "key": "4fe4f53da8e3b3a8"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 6
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "last-match-parent",
+      "sidecar": "8038aff1f54c37a243b1ce3c49bdb12f4648028de23e6485f33c9a743394e6c2",
+      "revisions": {
+        "parent": "2d2e68560fb001c7fa8f8d6f7475f3b800acd995"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "f570f62a6703475646e7229e583ccfcbba3ff977eb86ba69e1fc97d4b69588db"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "1a0e7b60e4a5fa25b0f4954702d0525a6d3e60913a3856745aab1f44a0c94a3a"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "b87e5b65fde8fae50cc1e23b73a9d8f0c263db49f78937888bea183ef6d060ef"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/utfgrid/Search.java": "b11c25ac0bfaee78649397b682de6fb5c5a07d91905c1d5cff93dda8633c0d80",
+        "claims/last-match.json": "eaaa4d3c4d9a371deb3fab3ca1002aaef32b0fe9bcccc84dec04934508a2eaab",
+        "controls/oracle.py": "439dbb62f69aa8b41dd22ff305fc17b821eacd65612ace0f2454c8260de78f26",
+        "driver/utfgrid/SearchCases.java": "042df6c984374cd3ce02f382a962dc066ae1838323e1639912050b12ee6ba503"
+      },
+      "claimKey": "4fe4f53da8e3b3a8",
+      "scopes": {
+        "parent": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261120T002343Z-1f7d505f",
+    "claim": "3ac1e36526372997",
+    "startedAt": "2026-11-20T00:23:43+00:00",
+    "seconds": 0.6,
+    "engine": "native",
+    "options": [
+      "prove",
+      "utfgrid.Search#last(int, int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/slice/parent.jar",
+      "--assume",
+      "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+      "--assert",
+      "result == utfgrid.Search.expected(encoding, needle)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "12",
+      "--max-array-length",
+      "6",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "b96d93d918896ce1abbd0ebc22e65f6523ad8184a88d724f5cf152fc24b1fec4"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "8796cc60824364db8b7903282860a873178583130751c43941b3fa71bb3243c1",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-001502-retry-commons-lang-utf-16-search-on-the",
+      "sourceCommit": "20abed834c15ec4d7c613c174a39bb8193cd9721",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-001502-retry-commons-lang-utf-16-search-on-the"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.496,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 12,
+      "maxArrayLength": 6,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "3ac1e36526372997",
+    "attempt": "20261120T002343Z-1f7d505f",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == utfgrid.Search.expected(encoding, needle)",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result == utfgrid.Search.expected(encoding, needle)",
+          "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+          "verdict": "violation",
+          "domain": "encoding: int × needle: int",
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain encoding: int × needle: int",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "last(encoding=3, needle=2)",
+            "contract": "result == utfgrid.Search.expected(encoding, needle)",
+            "actual": "-1",
+            "shrinkRuns": 0,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "encoding",
+                  "type": "int",
+                  "value": 3
+                },
+                {
+                  "name": "needle",
+                  "type": "int",
+                  "value": 2
+                }
+              ],
+              "call": {
+                "class": "utfgrid.Search",
+                "classFile": "utfgrid/Search.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "last",
+                "descriptor": "(II)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "encoding",
+                    "type": "int",
+                    "value": 3,
+                    "from": "encoding"
+                  },
+                  {
+                    "name": "needle",
+                    "type": "int",
+                    "value": 2,
+                    "from": "needle"
+                  }
+                ],
+                "revision": "parent"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.012,
+            "properties": 1,
+            "unwind": 12,
+            "maxArrayLength": 6,
+            "stage": "[0:20]",
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 600.0,
+                "seconds": 0.01,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.005,
+                  "encoding": 0.003,
+                  "solving": 0.001,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 5744,
+                  "clauses": 19652
+                }
+              }
+            ],
+            "native": {
+              "paths": 10,
+              "merges": 0,
+              "solverCalls": 20,
+              "solvingSeconds": 0.001324163,
+              "gatesEvaluated": 1004,
+              "evaluatingSeconds": 3.0888e-05,
+              "divisions": 1,
+              "divisionsBuilt": 1,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 5744,
+              "clauses": 19652,
+              "seconds": 0.010204839,
+              "loadingSeconds": 0.001188846,
+              "decodingSeconds": 7.9998e-05,
+              "encodingSeconds": 0.002997649,
+              "witnessSeconds": 2.3303e-05
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "jvm",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "encoding",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "needle",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "encoding: int × needle: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == utfgrid.Search.expected(encoding, needle)",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 12,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+              "classes": 38,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "last(encoding=3, needle=2)",
+        "contract": "result == utfgrid.Search.expected(encoding, needle)",
+        "actual": "-1",
+        "shrinkRuns": 0,
+        "witness": {
+          "inputs": [
+            {
+              "name": "encoding",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "needle",
+              "type": "int",
+              "value": 2
+            }
+          ],
+          "call": {
+            "class": "utfgrid.Search",
+            "classFile": "utfgrid/Search.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "last",
+            "descriptor": "(II)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "encoding",
+                "type": "int",
+                "value": 3,
+                "from": "encoding"
+              },
+              {
+                "name": "needle",
+                "type": "int",
+                "value": 2,
+                "from": "needle"
+              }
+            ],
+            "revision": "parent"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain encoding: int × needle: int",
+    "problem": null,
+    "domain": "encoding: int × needle: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "result == utfgrid.Search.expected(encoding, needle)",
+      "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "encoding",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "needle",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "encoding: int × needle: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == utfgrid.Search.expected(encoding, needle)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 12,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "bbdf1d37375a86e1aeddc3da4da1458ea192f7e495789c353da21f4e5b9d8954",
+        "bytes": 62191
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "0f962b118c3d529ff525aa5e9b44a215594e99b473f6c1a7144f50661433aa37",
+        "bytes": 927
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "c75a04df6d99d0474e9cdb1db1538b8222f822370571491bf875eeaf1b6a8c26",
+        "bytes": 1971
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "629f8d2530ff869771d0baa088b082ac768d32b07d8c48addd490f5ae3b50964",
+        "bytes": 10345
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "68f8bca0bdf6ef2df052795b72599606588c4fb8804a0db31330ef46dbf08e45",
+        "bytes": 25963
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "b6a33016ff4e9bd12bc96867e4b55903f13754a0d3cff80161bfa5af351887c1",
+        "bytes": 6819
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "fda411b61a35d0031a9800733cabd134a9a0bbf331f7accffa81d0b109f613a0",
+        "bytes": 33918
+      }
+    ]
+  }
+}
