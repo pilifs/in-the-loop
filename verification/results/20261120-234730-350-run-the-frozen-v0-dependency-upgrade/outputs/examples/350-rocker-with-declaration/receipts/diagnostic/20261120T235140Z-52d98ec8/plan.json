@@ -1,0 +1,327 @@
+{
+  "plan": {
+    "example": "350",
+    "task": "diagnostic",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+    "revisions": [
+      "old",
+      "new"
+    ],
+    "claim": {
+      "task": "diagnostic",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+      "file": "claims/diagnostic.json",
+      "sha256": "c12d3637417cbbaffc69db0cb087af08aec242f846629c108f0cc243d9873362",
+      "property": "diagnostic",
+      "claimKind": "preservation",
+      "statement": "With the released Rocker compiler held fixed, does changing ANTLR runtime preserve the diagnostic returned for the trailing comma and the fields of one valid declaration?",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": "false",
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "caller-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "84f7a5aad1e09e3c5b114aaf4eaaba55f7348cafd9901238e0f4c3fa72787d44"
+        },
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/calibration/CaseDriver.java",
+          "sha256": "1f27b9962be44dd448971f7602577949a9323a7e86c67c22867ed8c1872f4cbb"
+        }
+      ],
+      "adapter": {
+        "entry": "calibration.Projection#diagnostic(Z)Ljava/lang/String;",
+        "mapping": "The runtime-only control uses the released old generated parser on both sides. Independent recompilation with both generators and four JVM substitutions distinguish its scope from the whole PR.",
+        "correspondence": "caller-oracle",
+        "cases": 2
+      },
+      "key": "67574f4cda8fee13"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "old",
+        "route": "published-artifact",
+        "repository": "https://github.com/compsuite-team/rocker",
+        "commit": "823d8c375411c26044b21d4a47b3f57ca4c13b9c",
+        "published": [
+          {
+            "coordinates": "com.fizzed:rocker-compiler:1.2.1",
+            "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-compiler/1.2.1/rocker-compiler-1.2.1.jar",
+            "sha256": "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04"
+          },
+          {
+            "coordinates": "com.fizzed:rocker-runtime:1.2.1",
+            "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-runtime/1.2.1/rocker-runtime-1.2.1.jar",
+            "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+          },
+          {
+            "coordinates": "org.antlr:antlr4-runtime:4.5.3",
+            "url": "https://repo.maven.apache.org/maven2/org/antlr/antlr4-runtime/4.5.3/antlr4-runtime-4.5.3.jar",
+            "sha256": "93bca08ec995caeaaf60bdf80035a0be8507fcdabd3c2618fd8c5aab4444a752"
+          },
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.3.2",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar",
+            "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+          },
+          {
+            "coordinates": "org.slf4j:slf4j-api:1.7.7",
+            "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar",
+            "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "new",
+        "route": "published-artifact",
+        "repository": "https://github.com/compsuite-team/rocker",
+        "commit": "1cdb2748723454cde4c4d2366a261ba4a24a23d3",
+        "parent": "823d8c375411c26044b21d4a47b3f57ca4c13b9c",
+        "published": [
+          {
+            "coordinates": "com.fizzed:rocker-compiler:1.2.1",
+            "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-compiler/1.2.1/rocker-compiler-1.2.1.jar",
+            "sha256": "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04"
+          },
+          {
+            "coordinates": "com.fizzed:rocker-runtime:1.2.1",
+            "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-runtime/1.2.1/rocker-runtime-1.2.1.jar",
+            "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+          },
+          {
+            "coordinates": "org.antlr:antlr4-runtime:4.7.2",
+            "url": "https://repo.maven.apache.org/maven2/org/antlr/antlr4-runtime/4.7.2/antlr4-runtime-4.7.2.jar",
+            "sha256": "4c518b87d4bdff8b44cd8cbc1af816e944b62a3fe5b80b781501cf1f4759bbc4"
+          },
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.3.2",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar",
+            "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+          },
+          {
+            "coordinates": "org.slf4j:slf4j-api:1.7.7",
+            "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar",
+            "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/diagnostic"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-350-run-the-frozen-v0-dependency-upgrade/examples/350-rocker-with-declaration",
+    "network": true
+  },
+  "inputs": {
+    "example": "350",
+    "task": "diagnostic",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+    "revisions": [
+      "old",
+      "new"
+    ],
+    "claim": {
+      "task": "diagnostic",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+      "file": "claims/diagnostic.json",
+      "sha256": "c12d3637417cbbaffc69db0cb087af08aec242f846629c108f0cc243d9873362",
+      "property": "diagnostic",
+      "claimKind": "preservation",
+      "statement": "With the released Rocker compiler held fixed, does changing ANTLR runtime preserve the diagnostic returned for the trailing comma and the fields of one valid declaration?",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": "false",
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "caller-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "84f7a5aad1e09e3c5b114aaf4eaaba55f7348cafd9901238e0f4c3fa72787d44"
+        },
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/calibration/CaseDriver.java",
+          "sha256": "1f27b9962be44dd448971f7602577949a9323a7e86c67c22867ed8c1872f4cbb"
+        }
+      ],
+      "adapter": {
+        "entry": "calibration.Projection#diagnostic(Z)Ljava/lang/String;",
+        "mapping": "The runtime-only control uses the released old generated parser on both sides. Independent recompilation with both generators and four JVM substitutions distinguish its scope from the whole PR.",
+        "correspondence": "caller-oracle",
+        "cases": 2
+      },
+      "key": "67574f4cda8fee13"
+    },
+    "artifacts": [
+      {
+        "revision": "old",
+        "route": "published-artifact",
+        "repository": "https://github.com/compsuite-team/rocker",
+        "commit": "823d8c375411c26044b21d4a47b3f57ca4c13b9c",
+        "published": [
+          {
+            "coordinates": "com.fizzed:rocker-compiler:1.2.1",
+            "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-compiler/1.2.1/rocker-compiler-1.2.1.jar",
+            "sha256": "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04"
+          },
+          {
+            "coordinates": "com.fizzed:rocker-runtime:1.2.1",
+            "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-runtime/1.2.1/rocker-runtime-1.2.1.jar",
+            "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+          },
+          {
+            "coordinates": "org.antlr:antlr4-runtime:4.5.3",
+            "url": "https://repo.maven.apache.org/maven2/org/antlr/antlr4-runtime/4.5.3/antlr4-runtime-4.5.3.jar",
+            "sha256": "93bca08ec995caeaaf60bdf80035a0be8507fcdabd3c2618fd8c5aab4444a752"
+          },
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.3.2",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar",
+            "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+          },
+          {
+            "coordinates": "org.slf4j:slf4j-api:1.7.7",
+            "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar",
+            "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "new",
+        "route": "published-artifact",
+        "repository": "https://github.com/compsuite-team/rocker",
+        "commit": "1cdb2748723454cde4c4d2366a261ba4a24a23d3",
+        "parent": "823d8c375411c26044b21d4a47b3f57ca4c13b9c",
+        "published": [
+          {
+            "coordinates": "com.fizzed:rocker-compiler:1.2.1",
+            "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-compiler/1.2.1/rocker-compiler-1.2.1.jar",
+            "sha256": "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04"
+          },
+          {
+            "coordinates": "com.fizzed:rocker-runtime:1.2.1",
+            "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-runtime/1.2.1/rocker-runtime-1.2.1.jar",
+            "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+          },
+          {
+            "coordinates": "org.antlr:antlr4-runtime:4.7.2",
+            "url": "https://repo.maven.apache.org/maven2/org/antlr/antlr4-runtime/4.7.2/antlr4-runtime-4.7.2.jar",
+            "sha256": "4c518b87d4bdff8b44cd8cbc1af816e944b62a3fe5b80b781501cf1f4759bbc4"
+          },
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.3.2",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar",
+            "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+          },
+          {
+            "coordinates": "org.slf4j:slf4j-api:1.7.7",
+            "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar",
+            "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/calibration/Projection.java",
+        "sha256": "e31158265bbf5cdd22fd10fc2fd6b6b131550bac9de3c4a1d678c1b65a30a0a9"
+      }
+    ]
+  },
+  "key": "f9981bdadf8c49353f1617572b692a8eb61c38fbe0add34057aed05450f86800"
+}

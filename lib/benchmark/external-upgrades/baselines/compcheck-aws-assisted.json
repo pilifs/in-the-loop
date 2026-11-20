@@ -1,0 +1,151 @@
+{
+  "case": "open-aws-issue-233",
+  "toolRevision": "937d1d1495c4ff5449443183b70f465d1fe0b4d0",
+  "sourceArchiveSha256": "bf657aa970fbd87ac98f086aea7628492f0d6b84a17c694ef4a5176b4a3871f8",
+  "subjectRevision": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+  "subjectJdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenVersion": "3.6.3",
+  "searchBudgetSeconds": 60,
+  "strategy": "relax_prim_poly",
+  "threshold": 0.7,
+  "clientInputs": "Stock registry c15-2; cached upstream AWS Git source, original unmodified published analyzer and per-treatment cold Maven repository with both real Joda-Time JARs. Maven works offline. All user files except named run inputs are outside the sandbox.",
+  "route": "assisted original bytecode",
+  "treatments": [
+    {
+      "startedUtc": "2026-11-20T23:51:40.010+00:00",
+      "elapsedSecondsIncludingSetup": 11.655,
+      "toolStartedUtc": "2026-11-20T23:51:46.752+00:00",
+      "toolSeconds": 4.913,
+      "exit": 0,
+      "treatment": "normal",
+      "knowledge": {
+        "before": 24,
+        "after": 24,
+        "bytes": 29727,
+        "sha256": "81b2f6d2327df2cbac7c59de66842f682892b74bc0f4f9e7f12e74dc33674240",
+        "applicableApiRecords": 1
+      },
+      "site": {
+        "id": "c15-2",
+        "API": "org.joda.time.format.DateTimeFormatter.parseMillis(Ljava/lang/String;)J",
+        "lib": "joda-time:joda-time",
+        "version": "2.8.1",
+        "client": "aws-sdk-java",
+        "sha": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "url": "https://github.com/aws/aws-sdk-java",
+        "submodule": "aws-java-sdk-core",
+        "caller": "com.amazonaws.util.DateUtils.doParseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+        "line": "104"
+      },
+      "clientTree": "618fcf904d287008d94ed503f8188ea0cb3fe4b5",
+      "sourceLine": "final long milliLess365Days = iso8601DateFormat.parseMillis(temp);",
+      "argv": [
+        "python3",
+        "main.py",
+        "--check",
+        "--id",
+        "c15-2"
+      ],
+      "stages": [
+        "Extracting Call Site Context",
+        "Call site found",
+        "Processing CFG file",
+        "API CALL SITE MATCH!",
+        "Running incompatibility revealing"
+      ],
+      "mavenBuildFailed": true,
+      "mavenDiagnostics": [
+        "[ERROR] Plugin org.apache.maven.plugins:maven-resources-plugin:2.6 or one of its dependencies could not be resolved: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.apache.maven.plugins:maven-resources-plugin:jar:2.6 has not been downloaded from it before. -> [Help 1]",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
+      ],
+      "mavenLogSha256": "0d96787df98af44e15ea76193ba3506ff3e474d2cf46dbb2d5bac2505e5f569e",
+      "staticContextGenerated": true,
+      "match": true,
+      "generatedJUnitLogFiles": 0,
+      "toolStdoutSha256": "ccfe70904fddfe4196117846b1747d6c512fe9c8355c7039d3c14039c6633281",
+      "toolStderrSha256": "310a0fab1fdf8ffd24ad0a1c61569ae327e4f0070e95746d342409a0a300b642",
+      "contextSha256": "ce49afbc2e0723bd01f850e5cdbd2ec02f4d04eaab842727e6c139cbe916e041",
+      "contextCount": 1,
+      "terminalPythonError": null,
+      "generatedTestRuns": {},
+      "caseSpecificPreparation": {
+        "sourceSha256": "b9818ec907d5f0cb2b3918b16b6de28f67b07ede9b2d9c7b92baa6edfce12336",
+        "classSha256": "31ba90a7565da9195a4b60905c60f2e538605b8d35ed23b1582ac61fdd05ecab",
+        "dependencyJars": {
+          "aws-java-sdk-core-1.11.664.jar": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5",
+          "jackson-core-2.6.7.jar": "918c04b9f9043d51dead2192b5d94d9f065870c9f26c8defbe9c6dbc951f304f",
+          "junit-4.12.jar": "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a",
+          "hamcrest-core-1.3.jar": "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
+        },
+        "method": "Recompiled original DateUtils.java; published AWS core supplies sibling types. No test or call-context fixture supplied."
+      }
+    },
+    {
+      "startedUtc": "2026-11-20T23:51:51.666+00:00",
+      "elapsedSecondsIncludingSetup": 10.858,
+      "toolStartedUtc": "2026-11-20T23:51:58.724+00:00",
+      "toolSeconds": 3.799,
+      "exit": 1,
+      "treatment": "leave-issue-233-out",
+      "knowledge": {
+        "before": 24,
+        "after": 22,
+        "bytes": 27783,
+        "sha256": "6fa3a92bc3d13069a7c3cb7fc1cfc78a77eb44dac3a859ad8c10d45f8655b3bc",
+        "applicableApiRecords": 0
+      },
+      "site": {
+        "id": "c15-2",
+        "API": "org.joda.time.format.DateTimeFormatter.parseMillis(Ljava/lang/String;)J",
+        "lib": "joda-time:joda-time",
+        "version": "2.8.1",
+        "client": "aws-sdk-java",
+        "sha": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "url": "https://github.com/aws/aws-sdk-java",
+        "submodule": "aws-java-sdk-core",
+        "caller": "com.amazonaws.util.DateUtils.doParseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+        "line": "104"
+      },
+      "clientTree": "618fcf904d287008d94ed503f8188ea0cb3fe4b5",
+      "sourceLine": "final long milliLess365Days = iso8601DateFormat.parseMillis(temp);",
+      "argv": [
+        "python3",
+        "main.py",
+        "--check",
+        "--id",
+        "c15-2"
+      ],
+      "stages": [
+        "Extracting Call Site Context",
+        "Call site found",
+        "Processing CFG file"
+      ],
+      "mavenBuildFailed": true,
+      "mavenDiagnostics": [
+        "[ERROR] Plugin org.apache.maven.plugins:maven-resources-plugin:2.6 or one of its dependencies could not be resolved: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.apache.maven.plugins:maven-resources-plugin:jar:2.6 has not been downloaded from it before. -> [Help 1]",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
+      ],
+      "mavenLogSha256": "f28feac0243c6595ae263dafc89647df36a0ed2ed859b8d4b3d25afb6d944baf",
+      "staticContextGenerated": true,
+      "match": null,
+      "generatedJUnitLogFiles": 0,
+      "toolStdoutSha256": "2e0be55c0c6c6a52a28fa1f3c0dccaa397ddb5ceb36ac02beb9be25eea60a67a",
+      "toolStderrSha256": "e8dbfefde0769076e7b9f7fd7fe7b168b715b2fc71839243a46512edcce1fb20",
+      "contextSha256": "ce49afbc2e0723bd01f850e5cdbd2ec02f4d04eaab842727e6c139cbe916e041",
+      "contextCount": 1,
+      "terminalPythonError": "TypeError: 'NoneType' object is not subscriptable",
+      "generatedTestRuns": {},
+      "caseSpecificPreparation": {
+        "sourceSha256": "b9818ec907d5f0cb2b3918b16b6de28f67b07ede9b2d9c7b92baa6edfce12336",
+        "classSha256": "31ba90a7565da9195a4b60905c60f2e538605b8d35ed23b1582ac61fdd05ecab",
+        "dependencyJars": {
+          "aws-java-sdk-core-1.11.664.jar": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5",
+          "jackson-core-2.6.7.jar": "918c04b9f9043d51dead2192b5d94d9f065870c9f26c8defbe9c6dbc951f304f",
+          "junit-4.12.jar": "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a",
+          "hamcrest-core-1.3.jar": "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
+        },
+        "method": "Recompiled original DateUtils.java; published AWS core supplies sibling types. No test or call-context fixture supplied."
+      }
+    }
+  ]
+}

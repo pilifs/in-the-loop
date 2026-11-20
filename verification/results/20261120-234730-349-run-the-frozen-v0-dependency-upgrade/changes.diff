@@ -1,0 +1,102 @@
+--- /dev/null
++++ b/examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation/invocation.json
+@@ -0,0 +1,26 @@
++{
++  "schema": "external-upgrade-pinned-task/v1",
++  "example": "349",
++  "task": "preservation",
++  "productRevision": "e7cdfb6a6edea96c8653ee87a7c1e2ef3f602665",
++  "productLockSha256": "30fe7ff15836e09c071a09483661817b3103e2b4f11c55596f2d3ba6546357de",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sourceFilesBefore": 459,
++  "sourceFilesAfter": 459,
++  "nativeSolver": "bitwuzla-words",
++  "solverSha256": "eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99",
++  "verifierJdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "argv": [
++    "python3",
++    "examples/tools/build.py",
++    "349",
++    "--task",
++    "preservation"
++  ],
++  "startedUtc": "2026-11-20T23:51:40.129+00:00",
++  "finishedUtc": "2026-11-20T23:51:42.721+00:00",
++  "remainingSecondsAtStart": 7200,
++  "elapsedSeconds": 2.269,
++  "workflowExit": 1,
++  "logSha256": "9493b0ea95628b9985a632c4f3540d22006e775b926e41b302e39f4416da1987"
++}
+--- /dev/null
++++ b/examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation/workflow.log
+@@ -0,0 +1,31 @@
++349-commons-text-csv-upgrade: running task preservation (target route)
++Traceback (most recent call last):
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/build.py", line 4474, in <module>
++    sys.exit(main(sys.argv[1:]))
++             ~~~~^^^^^^^^^^^^^^
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/build.py", line 289, in main
++    return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan", retry_of=retry_of, interrupt=interrupt, checker_seconds=checker_seconds, witness=witness)
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/build.py", line 440, in run_task
++    receipt = target_route.run(folder, example, target, task, scratch() / "targets" / folder.name[:3] / task, **policy)
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/targets/route.py", line 116, in run
++    r = prepare_revision(p, revision, workdir / "prepare" / revision, shared)
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/targets/route.py", line 77, in prepare_revision
++    return runtime.prepare(plan, revision, directory)
++           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/targets/runtime.py", line 1336, in prepare
++    prepared = PREPARES[locked.source["route"]](plan, revision, locked, workdir)
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/targets/runtime.py", line 1266, in _prepare_slice
++    source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
++                       ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/targets/runtime.py", line 684, in _check_classpath
++    declared = runtime_jar.methods(data)
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/targets/runtime_jar.py", line 170, in methods
++    return set(_declarations(data)[1])
++               ~~~~~~~~~~~~~^^^^^^
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/targets/runtime_jar.py", line 143, in _declarations
++    pool, offset = _pool(data)
++                   ~~~~~^^^^^^
++  File "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/examples/tools/targets/runtime_jar.py", line 107, in _pool
++    pool[i] = (1, data[offset + 2: offset + 2 + length].decode("utf-8", "surrogatepass"))
++                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
++UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position 0: invalid start byte
+--- /dev/null
++++ b/examples/349-commons-text-csv-upgrade/receipts/preservation/executions/20261120T235140Z-5606429b/attempt.json
+@@ -0,0 +1,36 @@
++{
++  "schema": "target-execution/v1",
++  "id": "20261120T235140Z-5606429b",
++  "task": "preservation",
++  "claimKey": "b1da2b80a378e67c",
++  "revisions": [
++    "old",
++    "new"
++  ],
++  "startedAt": "2026-11-20T23:51:40.352356+00:00",
++  "retryOf": null,
++  "retryBinding": null,
++  "budget": {
++    "checkerSeconds": 600
++  },
++  "strategy": {
++    "engine": "native",
++    "gaps": "strict"
++  },
++  "host": {
++    "machine": "x86_64",
++    "kernel": "7.0.0-43-generic",
++    "node": "claude-vm"
++  },
++  "job": "20261120-234730-349-run-the-frozen-v0-dependency-upgrade",
++  "sourceCommit": "6e92aaddc7b1c22a69296ef7b8244cd762342f05",
++  "cache": "fresh verifier work directory",
++  "stages": [
++    {
++      "stage": "planned",
++      "elapsedSeconds": 0.0
++    }
++  ],
++  "status": "running",
++  "lastCompletedStage": "planned"
++}

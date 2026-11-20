@@ -12,32 +12,32 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T23:49:09.127Z",
-  "duration_seconds": 94299,
+  "ended": "2026-11-21T00:10:02.126Z",
+  "duration_seconds": 95552,
   "stats": {
     "turns": 15,
-    "api_calls": 3946,
-    "tool_calls": 10307,
-    "tool_errors": 326,
+    "api_calls": 4029,
+    "tool_calls": 10506,
+    "tool_errors": 332,
     "compactions": 13,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 7042497,
-      "output_tokens": 2024725,
-      "cache_read_input_tokens": 1215279360,
+      "input_tokens": 7127666,
+      "output_tokens": 2073046,
+      "cache_read_input_tokens": 1247844736,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 6002,
-    "exec": 3755,
-    "apply_patch": 418,
+    "Bash": 6116,
+    "exec": 3814,
+    "apply_patch": 432,
     "wait": 53,
     "sleep": 43,
-    "send_message": 30,
+    "send_message": 40,
     "spawn_agent": 3,
-    "followup_task": 1,
-    "request_user_input_async": 1,
+    "followup_task": 2,
+    "request_user_input_async": 2,
     "send_message_to_user_async": 1
   },
   "files_touched": [
@@ -128,10 +128,14 @@
     "examples/tools/targets/workflow_refusal.py",
     "examples/tools/test_build.py",
     "lib/Cargo.toml",
+    "lib/benchmark/external-upgrades/README.md",
+    "lib/benchmark/external-upgrades/baselines/jbmc_pair.py",
     "lib/benchmark/external-upgrades/pin.py",
     "lib/benchmark/external-upgrades/pinned_task.py",
     "lib/benchmark/external-upgrades/protocol.md",
     "lib/benchmark/external-upgrades/replay_open.py",
+    "lib/benchmark/external-upgrades/scorecard.py",
+    "lib/benchmark/external-upgrades/test_scorecard.py",
     "lib/models/README.md",
     "lib/models/build.sh",
     "lib/models/java/util/IdentityHashMap.java",
@@ -192,6 +196,7 @@
     "lib/tests/observed_countermodels.rs",
     "lib/tests/paired_array_roots.rs",
     "lib/tests/values.rs",
+    "llm-dlc/loops/external-upgrade-evaluation-results.md",
     "llm-dlc/loops/foundation-and-python-results.md",
     "llm-dlc/session-notes/01a1f5be-43bd-7532-a80c-5b4f5c304590.md",
     "llm-dlc/tools/test_performance.py",
@@ -462,24 +467,24 @@
     {
       "index": 13,
       "started": "2026-11-20T22:47:51.080Z",
-      "ended": "2026-11-20T23:49:09.127Z",
+      "ended": "2026-11-21T00:10:02.126Z",
       "turns": 2,
-      "api_calls": 220,
+      "api_calls": 303,
       "usage": {
-        "input_tokens": 438243,
-        "output_tokens": 117895,
-        "cache_read_input_tokens": 48687488,
+        "input_tokens": 523412,
+        "output_tokens": 166216,
+        "cache_read_input_tokens": 81252864,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 351276
+      "peak_context_tokens": 430847
     }
   ],
   "log": {
-    "sha256": "72cb1a7e87d5e77ef8292c76d69f4bf132a98dbd354ea87972a96f1ab0b34757",
-    "bytes": 92210561,
-    "lines": 31224,
-    "gzip_bytes": 35643808,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/72cb1a7e87d5e77ef8292c76d69f4bf132a98dbd354ea87972a96f1ab0b34757.jsonl.gz"
+    "sha256": "2b74ccd0896e706b0e6b806c635e8b18ecd249faa4c2dda036303e65618d8586",
+    "bytes": 93799135,
+    "lines": 31904,
+    "gzip_bytes": 36310355,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/2b74ccd0896e706b0e6b806c635e8b18ecd249faa4c2dda036303e65618d8586.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1780,20 +1785,20 @@
       "log_sha256": "6c8a7d31bf582e59c3b18479fc348a0581900501baf480021183aed845ddcc75"
     },
     {
-      "change_id": "ovrqonkwpzxytkrltqzouskytyxyokmn",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "72cb1a7e87d5e77ef8292c76d69f4bf132a98dbd354ea87972a96f1ab0b34757"
-    },
-    {
       "change_id": "xvnxswnqoosrlnsxxzqyxznsrnqkumms",
       "commit_id": null,
       "immutable": false,
       "summary": "Reproduce three more external caller upgrades and run the exact V0 product (verification pending)",
       "body": "Rocker rejects the same malformed input at line 1 column 18 on both ANTLR versions, with a different diagnostic. A runtime-only substitution reproduces that difference. The invalid converse substitution fails during parser initialization. AWS public ISO parsing round-trips Long.MAX_VALUE on both dependencies, while the protected Joda formatter newly accepts it. Cucumber prints all 18 deserialized durations with truncated milliseconds on both revisions. Six reached consumer classes in both AWS and Cucumber match the published bytes. Rebuilt from the frozen trees, checked loaded class origins and original Surefire outcomes, ran all three public replay tasks and retained offline lifecycle failures and effective POMs.\n\nAll five public native plans are executable. Verify the exact V0 binary, solver, JDK and all 459 protected product files at both ends of each calibration. Retain the first rxjava receipt and failing control without changing any bytes; the semantic expectation is a refutation. The first stock CompCheck runs found no extracted callsite because the context file was empty. Its assisted comparison supplies a byte-identical client class and no call context. Queue validation passed and the 348 evidence matched all 20 recorded hashes.\n\nVerification jobs: 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc, 20261120-233743-run-assisted-compcheck-on-original-aws-d, 20261120-234730-348-run-the-frozen-v0-dependency-upgrade, 20261120-234730-349-run-the-frozen-v0-dependency-upgrade, 20261120-234730-350-run-the-frozen-v0-dependency-upgrade, 20261120-234731-351-run-the-frozen-v0-dependency-upgrade and 20261120-234731-352-run-the-frozen-v0-dependency-upgrade.",
       "log_sha256": "72cb1a7e87d5e77ef8292c76d69f4bf132a98dbd354ea87972a96f1ab0b34757"
+    },
+    {
+      "change_id": "prllusvynovwyznulqnxpqlntosxsyln",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal the external upgrade scorecard and report five pinned product outcomes (verification pending)",
+      "body": "All five disclosed V0 jobs verified the exact executable, word-level solver, JDK and 459 product files on both ends. The product left the claims open at JDBC connection setup, modified UTF-8 class intake, ANTLR WeakHashMap initialization, the Date constructor and a multi-release Jackson class. Independent JVM replays explain the actual changes and preservations. Keep every failed original attempt with its first blocker. The blind operator environment proved a synthetic control and excluded private content, while the normal client's additional native tools still need an isolated runner.\n\nThe scorecard seals immutable first reports and evidence and enforces all 24 original reports or all 16 paired transfer reports before reading signed grades. It checks scope, replay, non-vacuity, reviewer disagreement, costs, retrospective gates and matched transfer conditions. The four unit controls, digest audit, prepared target validation with original JVM replays for 348, 350, 351 and 352, and all 62 default test groups passed. The full run's tree changed during execution, so its pass was not recorded as a push gate. The Commons Text V0 intake failure remains a calibration result.\n\nPinned native and JBMC invocations were compared before solver launch on identical artifact, observer and bounds. Verification jobs 20261121-000827-348-compare-jbmc-on-the-matched-external and 20261121-000827-351-compare-jbmc-on-the-matched-external run that actual engine comparison. Verification jobs 20261121-000727-replay-fscrawler-ordinary-docx-across-th and 20261121-000727-replay-bump-assertj-guava-enforcer-on-bo rerun the two disclosed BUMP classifications using their content-addressed images. The independent signed reference under curation is excluded from all public calibration counts.",
+      "log_sha256": "2b74ccd0896e706b0e6b806c635e8b18ecd249faa4c2dda036303e65618d8586"
     }
   ],
   "logs": {
@@ -1940,6 +1945,12 @@
       "lines": 4817,
       "gzip_bytes": 5731519,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/27f3e2c8cff696523eea71114d5387429ade654e0a7dd67468c3d9a7511c2622.jsonl.gz"
+    },
+    "2b74ccd0896e706b0e6b806c635e8b18ecd249faa4c2dda036303e65618d8586": {
+      "bytes": 93799135,
+      "lines": 31904,
+      "gzip_bytes": 36310355,
+      "url": null
     },
     "2d1a5591fe6eb2970137df4277cbd8b292513fcad5ddf3b2a75a7a0f5ea3950b": {
       "bytes": 16985387,

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-000727-replay-bump-assertj-guava-enforcer-on-bo",
+  "title": "Replay BUMP AssertJ Guava Enforcer on both dependency revisions",
+  "description": "Run each original AssertJ Guava checkout with its own original OCI image dependency cache, original Alpine OpenJDK 11.0.19+7 and Maven 3.9.2, offline and unprivileged. Repeat clean test on the historical two revisions, distinguishing the old 355 test execution from the breaking BannedDependencies rejection of Byte Buddy 1.12.10 and any new local reproduction failure.",
+  "kind": "real-world",
+  "capabilities": [
+    "baseline:bump"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/external-upgrades/baselines/bump/replay.py"
+    ]
+  },
+  "expected": "Two records distinguish actual Surefire execution and the exact pre-test Enforcer rule, including any earlier local setup failure.",
+  "submitted": {
+    "at": "2026-11-21T00:07:27+00:00",
+    "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+  },
+  "requires": [
+    "bwrap",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m",
+    "notes": "Both original historical runs used a modest single Maven module. The pre image includes 355 Java tests. Input hash checks and rebuilding the stripped runtime take seconds."
+  },
+  "steps": [
+    {
+      "name": "Run both original AssertJ Guava Maven lifecycles",
+      "run": "python3 -I lib/benchmark/external-upgrades/baselines/bump/replay.py assertj --output lib/benchmark/external-upgrades/baselines/bump/assertj-replay.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/external-upgrades/baselines/bump/assertj-replay.json"
+  ]
+}

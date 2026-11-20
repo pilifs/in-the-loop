@@ -1,0 +1,188 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-234730-349-run-the-frozen-v0-dependency-upgrade",
+  "title": "349 run the frozen V0 dependency upgrade check",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.1s, peak 156.6 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (Run the exact V0 public task) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-234730-349-run-the-frozen-v0-dependency-upgrade.json",
+    "sha256": "a27213dae7a01aed9853205b4cf9592ff13d8fbd302f9fd4243a7d8bb6edd0cc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-234730-349-run-the-frozen-v0-dependency-upgrade",
+      "title": "349 run the frozen V0 dependency upgrade check",
+      "description": "Invoke the unchanged public workflow on the exact CSV field on 156 strings with the pinned V0 executable, Temurin 21 and Bitwuzla word solver. Verify all 459 protected workflow and verifier source files before and after, bind the original output to its digest and retain the workflow exit. This is a disclosed calibration.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "examples": [
+          "349"
+        ]
+      },
+      "expected": "The product meets the original semantic expectation. An intake failure or unresolved property remains a failure of this route and its evidence is archived.",
+      "submitted": {
+        "at": "2026-11-20T23:47:30+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "python3",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "16G",
+        "timeout": "2h",
+        "notes": "Opening calibrations took seconds and under 2 GiB. The per-case limit is 4 CPUs, 16 GiB and two hours."
+      },
+      "steps": [
+        {
+          "name": "Run the exact V0 public task",
+          "run": "python3 lib/benchmark/external-upgrades/pinned_task.py 349 preservation --output examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation",
+        "examples/349-commons-text-csv-upgrade/receipts/preservation"
+      ]
+    }
+  },
+  "sourceCommit": "6e92aaddc7b1c22a69296ef7b8244cd762342f05",
+  "startedAt": "2026-11-20T23:51:33+00:00",
+  "finishedAt": "2026-11-20T23:51:42+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3705952,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 17179869184,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": "Opening calibrations took seconds and under 2 GiB. The per-case limit is 4 CPUs, 16 GiB and two hours."
+  },
+  "usage": {
+    "peakMemoryBytes": 164216832,
+    "wallSeconds": 3.1,
+    "cpuSeconds": 4.7,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the exact V0 public task",
+      "run": "python3 lib/benchmark/external-upgrades/pinned_task.py 349 preservation --output examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.053,
+      "cpuSeconds": 4.711,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 164216832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-exact-v0-public-task.log",
+        "lines": 1,
+        "bytes": 63,
+        "sha256": "bef9bdc09d007db3dfb17419c3c6c9948514a0562508f42ec733fa02f6d23211",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "349 preservation: workflow exit 1 after 2.269s on e7cdfb6a6ede"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation/invocation.json",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "0d7134383e4c45e6d77da50f202505ec460e8138136927a162fbbef5b233dae5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation/workflow.log",
+      "change": "added",
+      "bytes": 3309,
+      "sha256": "9493b0ea95628b9985a632c4f3540d22006e775b926e41b302e39f4416da1987",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/preservation/executions/20261120T235140Z-5606429b/attempt.json",
+      "change": "added",
+      "bytes": 801,
+      "sha256": "06adfdb550687ba691d5b315cb0d1e70affc10327e7a8d654a84d823a192776a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T23:52:12+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation/invocation.json",
+      "examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation/workflow.log",
+      "examples/349-commons-text-csv-upgrade/receipts/preservation/executions/20261120T235140Z-5606429b/attempt.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-349-run-the-frozen-v0-dependency-upgrade"
+}

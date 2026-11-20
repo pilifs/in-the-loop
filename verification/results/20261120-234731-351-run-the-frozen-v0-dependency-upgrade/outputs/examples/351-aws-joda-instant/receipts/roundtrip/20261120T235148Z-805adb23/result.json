@@ -1,0 +1,350 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "75b040f08b042e23",
+    "format": 1,
+    "example": "351",
+    "statement": {
+      "approach": "target",
+      "task": "roundtrip",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+      "revisions": [
+        "old",
+        "new"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "roundtrip",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+        "file": "claims/roundtrip.json",
+        "sha256": "6da683401562349d225c185da82348ef6509e544f1133dcc428dd0271981c64d",
+        "property": "roundtrip",
+        "claimKind": "preservation",
+        "statement": "Both SDK revisions return the original milliseconds through their public ISO formatter and parser for Long.MAX_VALUE and 2000-01-01T00:00:00.123Z.",
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": "false",
+        "bounds": {
+          "unwind": 32,
+          "maxArrayLength": 96
+        },
+        "explicitBounds": {
+          "unwind": 32,
+          "maxArrayLength": 96
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "caller-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "759dd5c10ef97976dd59420a460758c0711ba576d9de6b5fa08459ff9130074f"
+          },
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/calibration/CaseDriver.java",
+            "sha256": "666dcb74003a773402e43604312e2f0f7818fffc10dc6d848637c49643830546"
+          }
+        ],
+        "adapter": {
+          "entry": "calibration.Projection#roundtrip(Z)J",
+          "mapping": "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception.",
+          "correspondence": "caller-oracle",
+          "cases": 2
+        },
+        "key": "636fd8e9f73b016f"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 96,
+      "intendedInputs": "false"
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "roundtrip",
+      "sidecar": "bceaaf7a8de219306fd1e2998b12ef863e50c5249766bf8ba1b2850e842b5af6",
+      "revisions": {
+        "old": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "new": "985a81b554e02742036fd158e6494c61a367f980"
+      },
+      "dependencies": [
+        {
+          "revision": "old",
+          "position": 0,
+          "role": "driver",
+          "sha256": "c992d9b40f9c5d78430148e317bb2f756be186dc775f5fc2ac35f238df2d6850"
+        },
+        {
+          "revision": "old",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "a6b4c604f41bc5dcda6273d51c6882badf5d85b9b8c9f32a355fbc2d6c28a496"
+        },
+        {
+          "revision": "old",
+          "position": 2,
+          "role": "original",
+          "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5",
+          "coordinates": "com.amazonaws:aws-java-sdk-core:1.11.664"
+        },
+        {
+          "revision": "old",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "b4670b95f75957c974284c5f3ada966040be2578f643c5c6083d262162061fa2",
+          "coordinates": "joda-time:joda-time:2.8.1"
+        },
+        {
+          "revision": "new",
+          "position": 0,
+          "role": "driver",
+          "sha256": "c992d9b40f9c5d78430148e317bb2f756be186dc775f5fc2ac35f238df2d6850"
+        },
+        {
+          "revision": "new",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "a6b4c604f41bc5dcda6273d51c6882badf5d85b9b8c9f32a355fbc2d6c28a496"
+        },
+        {
+          "revision": "new",
+          "position": 2,
+          "role": "original",
+          "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5",
+          "coordinates": "com.amazonaws:aws-java-sdk-core:1.11.664"
+        },
+        {
+          "revision": "new",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "4ee73e7ff8e2df0d4e3408cf1a1527a59f265dd9fb43fb9b2eb818d87f93759e",
+          "coordinates": "joda-time:joda-time:2.10.5"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/calibration/Projection.java": "db7e1ab52f68c631b103e6b1f52f72aceb76899e2269c28313814d7e62030421",
+        "claims/roundtrip.json": "6da683401562349d225c185da82348ef6509e544f1133dcc428dd0271981c64d",
+        "controls/oracle.py": "759dd5c10ef97976dd59420a460758c0711ba576d9de6b5fa08459ff9130074f",
+        "driver/calibration/CaseDriver.java": "666dcb74003a773402e43604312e2f0f7818fffc10dc6d848637c49643830546"
+      },
+      "claimKey": "636fd8e9f73b016f"
+    }
+  },
+  "attempt": {
+    "id": "20261120T235148Z-805adb23",
+    "claim": "75b040f08b042e23",
+    "startedAt": "2026-11-20T23:51:48+00:00",
+    "seconds": 0.3,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/old",
+      "--after",
+      "verifier/classes/new",
+      "--target",
+      "calibration.Projection#roundtrip(boolean)",
+      "--classpath",
+      "prepare/new/lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
+      "--classpath",
+      "prepare/new/lib/joda-time/joda-time-2.10.5.jar",
+      "--before-classpath",
+      "prepare/old/lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
+      "--before-classpath",
+      "prepare/old/lib/joda-time/joda-time-2.8.1.jar",
+      "--unchanged-unless",
+      "false",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "32",
+      "--max-array-length",
+      "96",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jvmcontract": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "86e0812ca7b620db08f4287a1de602f28d5fc7572eed6bf58122fb5358ab5991",
+        "files": 1
+      },
+      "after": {
+        "sha256": "86e0812ca7b620db08f4287a1de602f28d5fc7572eed6bf58122fb5358ab5991",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-234731-351-run-the-frozen-v0-dependency-upgrade",
+      "sourceCommit": "6e92aaddc7b1c22a69296ef7b8244cd762342f05",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-234731-351-run-the-frozen-v0-dependency-upgrade"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control old on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-old-jdk21.stdout",
+        "stderr": "records/control-old-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control new on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-new-jdk21.stdout",
+        "stderr": "records/control-new-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.083,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 32,
+      "maxArrayLength": 96,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "75b040f08b042e23",
+    "attempt": "20261120T235148Z-805adb23",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"old\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"new\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.Date.<init>(J)V@jdk-21.0.13 (java.util.Date.<init>(long) at before.calibration.Projection.roundtrip:9). With --gaps assume it assumes instead that java.util.Date.<init>(long) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "domain": "ordinary: boolean",
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "de55da1797d132023bfeb97a137aae1c95a31f74783c97ab5ddd03f01d305db5",
+        "bytes": 136683
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "475913e9facd13a21fec34cbc6116f03554367dd5abb29257ea16e1f09f7b773",
+        "bytes": 520
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "ee95a278df5dad52cd6dbcf37e75ec1ec7ab560d223faa10b52691aa9d06b41a",
+        "bytes": 2619
+      },
+      {
+        "path": "records/control-old-jdk21.stdout",
+        "sha256": "549efad9f600d1e02752c0334e349272fbe07c00ec97d41dd9eafe5032243650",
+        "bytes": 160
+      },
+      {
+        "path": "records/control-old-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "7de16fb5e8d6d2fb5071c112f20eed45a8d5fae8edc7cf83f088810990832a46",
+        "bytes": 7279
+      },
+      {
+        "path": "records/control-new-jdk21.stdout",
+        "sha256": "549efad9f600d1e02752c0334e349272fbe07c00ec97d41dd9eafe5032243650",
+        "bytes": 160
+      },
+      {
+        "path": "records/control-new-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "b129c73bf70ceeb7c27e4399f79f069db466e068bbccca3b6453ac1da003855c",
+        "bytes": 6482
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "d016f3435c4b9d27beffefb586254fad0511d3af60e9bbc954f484190f0019b3",
+        "bytes": 125386
+      }
+    ]
+  }
+}

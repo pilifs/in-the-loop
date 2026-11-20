@@ -1,0 +1,316 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-234730-350-run-the-frozen-v0-dependency-upgrade",
+  "title": "350 run the frozen V0 dependency upgrade check",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4.6s, peak 136.4 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed",
+  "attention": [
+    "step 1 (Run the exact V0 public task) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-234730-350-run-the-frozen-v0-dependency-upgrade.json",
+    "sha256": "e1f7cfd34afdcda47ae5a2227696cc1bb258bf9b2dac8c55039b6de9545e5c6c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-234730-350-run-the-frozen-v0-dependency-upgrade",
+      "title": "350 run the frozen V0 dependency upgrade check",
+      "description": "Invoke the unchanged public workflow on the rendered parser diagnostic and valid variable under runtime-only substitution with the pinned V0 executable, Temurin 21 and Bitwuzla word solver. Verify all 459 protected workflow and verifier source files before and after, bind the original output to its digest and retain the workflow exit. This is a disclosed calibration.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "examples": [
+          "350"
+        ]
+      },
+      "expected": "The product meets the original semantic expectation. An intake failure or unresolved property remains a failure of this route and its evidence is archived.",
+      "submitted": {
+        "at": "2026-11-20T23:47:30+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "python3",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "16G",
+        "timeout": "2h",
+        "notes": "Opening calibrations took seconds and under 2 GiB. The per-case limit is 4 CPUs, 16 GiB and two hours."
+      },
+      "steps": [
+        {
+          "name": "Run the exact V0 public task",
+          "run": "python3 lib/benchmark/external-upgrades/pinned_task.py 350 diagnostic --output examples/350-rocker-with-declaration/records/frozen-v0/diagnostic",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/350-rocker-with-declaration/records/frozen-v0/diagnostic",
+        "examples/350-rocker-with-declaration/receipts/diagnostic"
+      ]
+    }
+  },
+  "sourceCommit": "6e92aaddc7b1c22a69296ef7b8244cd762342f05",
+  "startedAt": "2026-11-20T23:51:33+00:00",
+  "finishedAt": "2026-11-20T23:51:44+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3705952,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 17179869184,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": "Opening calibrations took seconds and under 2 GiB. The per-case limit is 4 CPUs, 16 GiB and two hours."
+  },
+  "usage": {
+    "peakMemoryBytes": 143011840,
+    "wallSeconds": 4.6,
+    "cpuSeconds": 7.7,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the exact V0 public task",
+      "run": "python3 lib/benchmark/external-upgrades/pinned_task.py 350 diagnostic --output examples/350-rocker-with-declaration/records/frozen-v0/diagnostic",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.61,
+      "cpuSeconds": 7.734,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 143011840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-exact-v0-public-task.log",
+        "lines": 1,
+        "bytes": 61,
+        "sha256": "92d9d91ca2cdda9da61b9881f93bc97cdde17ee30c86d9e42a3b72d558bb6ae3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "350 diagnostic: workflow exit 1 after 3.974s on e7cdfb6a6ede"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/350-rocker-with-declaration/records/frozen-v0/diagnostic/invocation.json",
+      "change": "added",
+      "bytes": 982,
+      "sha256": "ea5521470f8eaebb29ddd4ba46b9fe8a7d64da87b80bfe912eb63440073b4153",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/records/frozen-v0/diagnostic/workflow.log",
+      "change": "added",
+      "bytes": 231,
+      "sha256": "4f7ef6d3b676c3615ad89459ca9950e625af83099366dd5e956a2efb739abec6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7d229c034fb102c4193335dea8ceef6dcf6bc3ebbd3c0f596ccb0e99a18a59f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/plan.json",
+      "change": "added",
+      "bytes": 12961,
+      "sha256": "ee5f4cc18d014f1abc68def1f9b837481f88bfcf02e74a041c7cf8b2ecc37c93",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/control-new-jdk21.stderr",
+      "change": "added",
+      "bytes": 614,
+      "sha256": "cb373afef3435594a1d23c471c1599631950273eaff9177eb043c02938320396",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/control-new-jdk21.stdout",
+      "change": "added",
+      "bytes": 336,
+      "sha256": "7d815e3dae6ee52ad3a25e648120bf59e18355fc10c81d59e187bd1e94550bde",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/control-old-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/control-old-jdk21.stdout",
+      "change": "added",
+      "bytes": 240,
+      "sha256": "d0badc13c73f2d709d5d810d8e935c1a8d486c624156b60dcf7f4aa5ffe8d81a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/controls.json",
+      "change": "added",
+      "bytes": 9036,
+      "sha256": "cadd7d13cd237de2602c485609b5405664d910711646fb3a36b25f58d1876e4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/execution.json",
+      "change": "added",
+      "bytes": 92620,
+      "sha256": "30b93cc0f527293f7a86fef29bd5ae81cd4e607e77d16528a0969cbd376ad053",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/streams.json",
+      "change": "added",
+      "bytes": 2625,
+      "sha256": "7981e37c1cde5d39a35099741812e93052db51e1c3b34458832c6a16350f4584",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 542,
+      "sha256": "dfdf59223450ae575868a25242af634b0fb41faeab5a5f691be394d2f6c391c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/verifier.json",
+      "change": "added",
+      "bytes": 81163,
+      "sha256": "c79c17b6d056486b52c8fe93177711f76d66ec578e8ee1f164ae1b9ac8300084",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6559,
+      "sha256": "daa7ddef8455f08d22180e6b258286ac629b487aa5f44ad6d7c583706a1c0ddf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/result.json",
+      "change": "added",
+      "bytes": 13510,
+      "sha256": "4af930d120e4c504635645216db54de48f5807e9d489fd8b6d148c30732d6b7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/executions/20261120T235140Z-52d98ec8/attempt.json",
+      "change": "added",
+      "bytes": 80206,
+      "sha256": "10811b962925a40ad8e6a7ef2c20d9cf93fff99181bdd33b38b087d20d1bfa44",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/executions/20261120T235140Z-52d98ec8/checker.json",
+      "change": "added",
+      "bytes": 8972,
+      "sha256": "760f9c91871998d8fe2a4ccb8197daa0b26cad7cadf45c2757b930807a5a1d11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/350-rocker-with-declaration/receipts/diagnostic/executions/20261120T235140Z-52d98ec8/correspondence.json",
+      "change": "added",
+      "bytes": 3557,
+      "sha256": "995cfacad336e97eb77c2ac1c6405a5df5408fdfea36e2865be013c9d45c08c0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T23:52:12+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/350-rocker-with-declaration/records/frozen-v0/diagnostic/invocation.json",
+      "examples/350-rocker-with-declaration/records/frozen-v0/diagnostic/workflow.log",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/completion.json",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/plan.json",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/control-new-jdk21.stderr",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/control-new-jdk21.stdout",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/control-old-jdk21.stderr",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/control-old-jdk21.stdout",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/controls.json",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/execution.json",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/streams.json",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/verifier-output.txt",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/verifier.json",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/verifier.stderr",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/records/verifier.stdout",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/20261120T235140Z-52d98ec8/result.json",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/executions/20261120T235140Z-52d98ec8/attempt.json",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/executions/20261120T235140Z-52d98ec8/checker.json",
+      "examples/350-rocker-with-declaration/receipts/diagnostic/executions/20261120T235140Z-52d98ec8/correspondence.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-350-run-the-frozen-v0-dependency-upgrade"
+}

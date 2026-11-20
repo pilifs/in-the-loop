@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import signal
 import stat
 import subprocess
 import sys
@@ -68,37 +69,58 @@ def main():
     cache = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "in-the-loop/external-upgrades"
     checker = (args.checker or cache / lock["sha256"]["jvmcontract"] / "jvmcontract").resolve()
     jdk, solver = args.jdk.resolve(), args.solver.resolve()
-    before = check_files(lock)
-    tools(lock, checker, jdk, solver)
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
+    started = now()
+    start = time.monotonic()
+    try:
+        before = check_files(lock)
+        tools(lock, checker, jdk, solver)
+    except (OSError, ValueError) as exc:
+        receipt = {"schema": "external-upgrade-pinned-task/v1", "example": args.example, "task": args.task,
+                   "productRevision": lock["revision"], "productLockSha256": digest(lockfile),
+                   "startedUtc": started, "finishedUtc": now(), "workflowLaunched": False,
+                   "firstBlocker": str(exc), "elapsedSeconds": round(time.monotonic() - start, 3)}
+        (out / "invocation.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        print(receipt["firstBlocker"], file=sys.stderr)
+        return 2
     env = dict(os.environ, JVMCONTRACT=str(checker), JVMCONTRACT_BITWUZLA=str(solver / "libbitwuzla.so.0"),
                JVMCONTRACT_SOLVER=lock["native"]["solver"], JAVA_HOME=str(jdk),
                PATH=str(jdk / "bin") + os.pathsep + os.environ["PATH"], TZ="UTC", LANG="C.UTF-8", LC_ALL="C.UTF-8")
     # The queue's build ID belongs to its separate release executable.
     env.pop("JVMCONTRACT_LIB_TREE", None)
     argv = [sys.executable, "examples/tools/build.py", args.example, "--task", args.task]
-    started = now()
-    start = time.monotonic()
     with (out / "workflow.log").open("wb") as log:
+        remaining = max(0, args.seconds - (time.monotonic() - start))
+        process = subprocess.Popen(argv, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
         try:
-            run = subprocess.run(argv, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=args.seconds)
-            status = run.returncode
+            status = process.wait(timeout=remaining)
         except subprocess.TimeoutExpired:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.wait()
             status = 124
+    after = None
+    integrity_error = None
+    try:
+        after = check_files(lock)
+        tools(lock, checker, jdk, solver)
+    except (OSError, ValueError) as exc:
+        integrity_error = str(exc)
     elapsed = round(time.monotonic() - start, 3)
-    after = check_files(lock)
-    tools(lock, checker, jdk, solver)
     receipt = {"schema": "external-upgrade-pinned-task/v1", "example": args.example, "task": args.task,
                "productRevision": lock["revision"], "productLockSha256": digest(lockfile),
-               "checkerSha256": digest(checker), "sourceFilesBefore": before, "sourceFilesAfter": after,
-               "nativeSolver": env["JVMCONTRACT_SOLVER"], "solverSha256": digest(solver / "libbitwuzla.so.0"),
-               "verifierJdkModulesSha256": digest(jdk / "lib/modules"), "argv": ["python3", *argv[1:]],
+               "checkerSha256": lock["sha256"]["jvmcontract"], "sourceFilesBefore": before, "sourceFilesAfter": after,
+               "nativeSolver": env["JVMCONTRACT_SOLVER"], "solverSha256": lock["sha256"]["libbitwuzla.so.0"],
+               "verifierJdkModulesSha256": lock["sha256"]["lib/modules"], "argv": ["python3", *argv[1:]],
                "startedUtc": started, "finishedUtc": now(), "remainingSecondsAtStart": args.seconds,
-               "elapsedSeconds": elapsed, "workflowExit": status, "logSha256": digest(out / "workflow.log")}
+               "elapsedSeconds": elapsed, "workflowLaunched": True, "workflowExit": status,
+               "integrityError": integrity_error, "logSha256": digest(out / "workflow.log")}
     (out / "invocation.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(f"{args.example} {args.task}: workflow exit {status} after {elapsed}s on {lock['revision'][:12]}")
-    return status
+    return 2 if integrity_error else status
 
 
 if __name__ == "__main__":

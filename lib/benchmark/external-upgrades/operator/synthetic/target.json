@@ -1,0 +1,67 @@
+{
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "neutral-counter",
+    "family": "neutral-counter",
+    "role": "control"
+  },
+  "history": {
+    "repository": "https://github.com/example/neutral",
+    "revisions": {
+      "old": {
+        "fixture": "old"
+      },
+      "new": {
+        "fixture": "new"
+      }
+    },
+    "pairs": [
+      {
+        "name": "pair",
+        "kind": "positive",
+        "before": "old",
+        "after": "new",
+        "selected": true
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "pair": "pair",
+      "relation": "calibration",
+      "target": "neutral.Counter#increment(I)I"
+    },
+    {
+      "id": "preserve",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "pair",
+      "target": "neutral.Counter#increment(I)I",
+      "claim": "claims/preserve.json",
+      "allowedChange": "false",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/Read.java"
+    },
+    {
+      "id": "oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ]
+}
