@@ -1,0 +1,61 @@
+[
+  {
+    "claimKey": "3b9b86b092028e0b",
+    "entry": "editgrid.Projection#revision(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 1
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "saved": {
+        "entryClassSha256": "8cd4eacc50d68cf1b674a24c27ce3267772940a498379d70c47a43e0e4b60856",
+        "classpath": [
+          "9f4eaad50961e4b1e8a9d456a3d9c41fe2ea6692bad1c8bd06278312980c3680",
+          "640cd7cbdd55632595801f94673ea6f9d459293bd5535376ca8a5919f2101fa7"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 1;\nif (!(code >= 0 && code < 6)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = editgrid.Projection.revision(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 1,
+      "input": {
+        "initial": 0,
+        "schedule": [
+          "read A",
+          "read B",
+          "write A",
+          "write B"
+        ]
+      },
+      "field": "revision",
+      "direct": {
+        "saved": {
+          "revision": 1
+        }
+      },
+      "tableSha256": "ac742fe138094a02035dad36876738c66c825770f2b8c465b62367eec8236e29"
+    }
+  }
+]

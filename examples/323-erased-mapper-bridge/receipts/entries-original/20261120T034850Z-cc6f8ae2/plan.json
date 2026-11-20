@@ -1,0 +1,190 @@
+{
+  "plan": {
+    "example": "323",
+    "task": "entries-original",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+    "revisions": [
+      "original"
+    ],
+    "claim": {
+      "task": "entries-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+      "file": "claims/entries.json",
+      "sha256": "fe11f8434a866a4b3366d5dcb459bb5e373844167f7e06ad191cdafc61a06dc8",
+      "property": "entries",
+      "claimKind": "property",
+      "statement": "The bridge enters the typed body exactly on the four admissible values.",
+      "assume": "code >= 0 && code < 5",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/bridgegrid/Cases.java",
+          "sha256": "84409552acc3167ea26b639afa94917c610ea89e6259a8cf660a4b35d6f04b2e"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "8af08deb5e68e5cab5d53c2140d4d17842a3e08b06721cb45b0bddcc5306f378"
+        }
+      ],
+      "adapter": {
+        "entry": "bridgegrid.Projection#entries(I)I",
+        "mapping": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+        "correspondence": "finite-oracle",
+        "cases": 5
+      },
+      "key": "60476b93a0e580d0"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "original",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "original",
+        "adapters": [
+          "adapter/bridgegrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/entries-original"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032647-native-323-an-erased-mapper-bridge-rejec/examples/323-erased-mapper-bridge",
+    "network": false
+  },
+  "inputs": {
+    "example": "323",
+    "task": "entries-original",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+    "revisions": [
+      "original"
+    ],
+    "claim": {
+      "task": "entries-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+      "file": "claims/entries.json",
+      "sha256": "fe11f8434a866a4b3366d5dcb459bb5e373844167f7e06ad191cdafc61a06dc8",
+      "property": "entries",
+      "claimKind": "property",
+      "statement": "The bridge enters the typed body exactly on the four admissible values.",
+      "assume": "code >= 0 && code < 5",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/bridgegrid/Cases.java",
+          "sha256": "84409552acc3167ea26b639afa94917c610ea89e6259a8cf660a4b35d6f04b2e"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "8af08deb5e68e5cab5d53c2140d4d17842a3e08b06721cb45b0bddcc5306f378"
+        }
+      ],
+      "adapter": {
+        "entry": "bridgegrid.Projection#entries(I)I",
+        "mapping": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+        "correspondence": "finite-oracle",
+        "cases": 5
+      },
+      "key": "60476b93a0e580d0"
+    },
+    "artifacts": [
+      {
+        "revision": "original",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "original",
+        "adapters": [
+          "adapter/bridgegrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/bridgegrid/Projection.java",
+        "sha256": "3c041d0f522e37b5a07b2b3a8e3188688c9e7028610f554af1ad275b2cbdd612"
+      }
+    ]
+  },
+  "key": "a00f0df82b6dc3fb69d9dff41ab44b55ffa856c27b5c4a08b1c761677d981675"
+}

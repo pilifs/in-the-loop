@@ -1,0 +1,984 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032646-native-320-commons-collections-views-upd",
+  "title": "Native 320 Commons Collections views update multiset size",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 17.3s, peak 282.3 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6",
+  "attention": [
+    "step 1 (Check the frozen obligations on their prepared bytes) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-032646-native-320-commons-collections-views-upd.json",
+    "sha256": "261178445f2c2e5efe1f32d13488848429c1d8bb793ac5432ec12b5166866d77",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032646-native-320-commons-collections-views-upd",
+      "title": "Native 320 Commons Collections views update multiset size",
+      "description": "Removing a key through a live iterator can remove its membership while leaving aggregate size stale. Run each original claim on its declared subject, preserve all stages and require the independently calibrated observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "320"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T03:26:46+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 320 --tasks total-parent,total-fix,membership-parent,membership-fix,other-count-parent,other-count-fix --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/320-collections-live-multiset-views/receipts/total-parent",
+        "examples/320-collections-live-multiset-views/receipts/total-fix",
+        "examples/320-collections-live-multiset-views/receipts/membership-parent",
+        "examples/320-collections-live-multiset-views/receipts/membership-fix",
+        "examples/320-collections-live-multiset-views/receipts/other-count-parent",
+        "examples/320-collections-live-multiset-views/receipts/other-count-fix"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:29+00:00",
+  "finishedAt": "2026-11-20T03:49:01+00:00",
+  "wallSeconds": 212.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 295964672,
+    "wallSeconds": 17.3,
+    "cpuSeconds": 27.9,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.14
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 320 --tasks total-parent,total-fix,membership-parent,membership-fix,other-count-parent,other-count-fix --checker-seconds 30",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 17.283,
+      "cpuSeconds": 27.905,
+      "cpuThrottledSeconds": 4.108,
+      "peakMemoryBytes": 295964672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 12,
+        "bytes": 1577,
+        "sha256": "e2e5f1baf4c6ef068b77264cdcef7d86be8794b951e3a8577cc9877edc92c093",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "320-collections-live-multiset-views: task total-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/total-parent/20261120T034844Z-73eea1bf/result.json",
+          "groups": [
+            "320",
+            "total-parent",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "320-collections-live-multiset-views: task total-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/total-fix/20261120T034852Z-1258abf4/result.json",
+          "groups": [
+            "320",
+            "total-fix",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "320-collections-live-multiset-views: task membership-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/membership-parent/20261120T034859Z-7d9d294b/result.json",
+          "groups": [
+            "320",
+            "membership-parent",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "320-collections-live-multiset-views: task membership-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/membership-fix/20261120T034859Z-d695cb6d/result.json",
+          "groups": [
+            "320",
+            "membership-fix",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "320-collections-live-multiset-views: task other-count-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/other-count-parent/20261120T034900Z-4ef3f8d7/result.json",
+          "groups": [
+            "320",
+            "other-count-parent",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "320-collections-live-multiset-views: task other-count-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/other-count-fix/20261120T034900Z-bdca62ed/result.json",
+          "groups": [
+            "320",
+            "other-count-fix",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "320-collections-live-multiset-views: running task total-parent (target route)",
+        "320-collections-live-multiset-views: task total-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/total-parent/20261120T034844Z-73eea1bf/result.json",
+        "320-collections-live-multiset-views: running task total-fix (target route)",
+        "320-collections-live-multiset-views: task total-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/total-fix/20261120T034852Z-1258abf4/result.json",
+        "320-collections-live-multiset-views: running task membership-parent (target route)",
+        "320-collections-live-multiset-views: task membership-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/membership-parent/20261120T034859Z-7d9d294b/result.json",
+        "320-collections-live-multiset-views: running task membership-fix (target route)",
+        "320-collections-live-multiset-views: task membership-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/membership-fix/20261120T034859Z-d695cb6d/result.json",
+        "320-collections-live-multiset-views: running task other-count-parent (target route)",
+        "320-collections-live-multiset-views: task other-count-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/other-count-parent/20261120T034900Z-4ef3f8d7/result.json",
+        "320-collections-live-multiset-views: running task other-count-fix (target route)",
+        "320-collections-live-multiset-views: task other-count-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/other-count-fix/20261120T034900Z-bdca62ed/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0b9a895b32366739f9e802094d5d0a0576a5759f8b0aeda6bd97eb6feb9986f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/plan.json",
+      "change": "added",
+      "bytes": 71155,
+      "sha256": "63dd04e3fc5e246e2f485fb8ca8a23231de1b6845f738dbd854470f1f977de92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 3149,
+      "sha256": "3c09af7e846b552acca5bcde2c2a75804fdd2eb56241d61a3526f87e00301564",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/controls.json",
+      "change": "added",
+      "bytes": 11329,
+      "sha256": "1e5ec8faa854f873236b8cabd79ca352a19bb643d40333c0ce2d96ac95e4c760",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/execution.json",
+      "change": "added",
+      "bytes": 62199,
+      "sha256": "79fd9ed6d888707ac51fd2272f688d1698b1d125b43ac7445ad8aa8bafa10782",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "90c053480c866451d82d85bf561b2dbeb8864ea5e27840576d948bafc42c8990",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 670,
+      "sha256": "90e6fd4953ac8d430b7efdbc3251bb3a611a7dc691a91f8ec1220af6bf53c2e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/verifier.json",
+      "change": "added",
+      "bytes": 50538,
+      "sha256": "ac1a985cb85f2672f8af4d56a2fa9a000c2ccc939964d69e3f26200046448b22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7781,
+      "sha256": "bd385a4f764cf72e5e4321b2b706fdc0d829c168f69f0e9c075cb483af84a72b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/result.json",
+      "change": "added",
+      "bytes": 16346,
+      "sha256": "b1376c8ad0b71c06c93f31e564a967e251b8885fa40161f7eeaf536183b3c85e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/executions/20261120T034844Z-73eea1bf/attempt.json",
+      "change": "added",
+      "bytes": 73084,
+      "sha256": "c88e5254864ed7bbdbadb0e92b52747b5286ad5540fcdc0c3a096ebc2b2ae4f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/executions/20261120T034844Z-73eea1bf/checker.json",
+      "change": "added",
+      "bytes": 9117,
+      "sha256": "c922cda756f01c087ec7e154fe7941bc2f817ba61c191004f4e5e153c372b8f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-parent/executions/20261120T034844Z-73eea1bf/correspondence.json",
+      "change": "added",
+      "bytes": 1883,
+      "sha256": "d73e4eccd53e5fde43e6f4271fe4159c0f505a072ef7f0ac383afead8ac86021",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "1b00c7f1b68f0366e56aaad09b850796c377308744d0a75cde2483daad39f5a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/plan.json",
+      "change": "added",
+      "bytes": 71256,
+      "sha256": "d83685951aa16146cae27b50f650ea69b4c90a08fbcaef01b801806203eccf8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3149,
+      "sha256": "0c0dd287e71bc526a3bce88849bca9f1e5547a7838905e8d4b73479cfce00f9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/controls.json",
+      "change": "added",
+      "bytes": 11296,
+      "sha256": "7c1c5b79fd10f849d9e8e1beb1c788ef06f8373b49ed26e223fdb34dc1288a26",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/execution.json",
+      "change": "added",
+      "bytes": 61712,
+      "sha256": "6a312c43ad04f52d153d2fbb45d0fc59aa1e10f21a9a379923ebc7ca4d0164d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "d7f7d386ed8f2545e8411306098ab030ca2572dfa27fcfedaf0f97e7de7a3fae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 670,
+      "sha256": "4cf6462c04f471437cb67fd74978ad092d09613e7974754ca2499b01ae0918a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/verifier.json",
+      "change": "added",
+      "bytes": 50082,
+      "sha256": "79d889f64887f4a23c5e74e862d544311dfbcfa3e85a3ba9ececc352281151e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7779,
+      "sha256": "bf6e0d2de3d90f39e8b15787498ae83544fd5890b2c8c695b2b0da1e303cbe31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/result.json",
+      "change": "added",
+      "bytes": 16288,
+      "sha256": "93cb966476fbaa09bd6d808242007b8be41876289beceae32ea935173e01c060",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/executions/20261120T034852Z-1258abf4/attempt.json",
+      "change": "added",
+      "bytes": 72640,
+      "sha256": "f41c639f7be3273db6528f6fc8fff26ae89710ac326f849ce7d77aabacd110c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/executions/20261120T034852Z-1258abf4/checker.json",
+      "change": "added",
+      "bytes": 9103,
+      "sha256": "72efba5fe929732b5531e29c033d25e96d9490e6d2bfd1591c28828a20adb5a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/total-fix/executions/20261120T034852Z-1258abf4/correspondence.json",
+      "change": "added",
+      "bytes": 1877,
+      "sha256": "93461a267ed32eca7994ca26a97768ae264e36d365f546d97922e6eddde661fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5ad011a5281ab6cf049714d10b9820e5bae5da06de2a586d242d6c1256b46ec8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/plan.json",
+      "change": "added",
+      "bytes": 71188,
+      "sha256": "ecd08812d12fa8891f0aed5d1413d81e95d5f8f913220c0bdbfb688d56e75234",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 3149,
+      "sha256": "3c09af7e846b552acca5bcde2c2a75804fdd2eb56241d61a3526f87e00301564",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/controls.json",
+      "change": "added",
+      "bytes": 11339,
+      "sha256": "5967977688e2c743f534e75e23bc5b648cae5a44f5449aee70dc2703a6da4bfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/execution.json",
+      "change": "added",
+      "bytes": 62253,
+      "sha256": "1f8faa6077cd231945776228259e1eb7b0a531369da5a510ef341a8c417b33f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "af869e8d4e64fbbfe2d512048e58de9af203c9441cdebe657172bcd07e8e0001",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 675,
+      "sha256": "9449c25daa6193bdd05e5ed1d6636d08bce1112230d5d67bfb9712e2a202d149",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/verifier.json",
+      "change": "added",
+      "bytes": 50602,
+      "sha256": "7620b66c66d1fb48457be33ca244fdcef85a58a149f6831933b9f5f5a1f07942",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7795,
+      "sha256": "40a8fd2db53c6fd008f1ca80cf9b0b7f64deefcd98b9ce1b8aec397c7c321e97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/result.json",
+      "change": "added",
+      "bytes": 16377,
+      "sha256": "74d7e19189bfeb918545e07936675b8531d3cb3598c4ac928ea2c8122e7ba204",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/executions/20261120T034859Z-7d9d294b/attempt.json",
+      "change": "added",
+      "bytes": 73130,
+      "sha256": "57484c5b74ed673f490f1fbef935f26ea485d786dd9760de9fccc38933e78b4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/executions/20261120T034859Z-7d9d294b/checker.json",
+      "change": "added",
+      "bytes": 9136,
+      "sha256": "cd142f85a6ba59e6fc9342847e1d66d20eb1299b4f8af899a5eb8ebc2939f098",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-parent/executions/20261120T034859Z-7d9d294b/correspondence.json",
+      "change": "added",
+      "bytes": 1888,
+      "sha256": "9cb124e2dcfefe9d91305974d9b27f69dc54b4294ef0fc185c906595d2fe13b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a2bf74e692f9a0fd0e77d223f528f9f089f537345123f79bcbc9be735643fb0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/plan.json",
+      "change": "added",
+      "bytes": 71285,
+      "sha256": "b64bc2de05c2f7e6cbdac0c926a0572399fd50196aa1ef85e62ad4271ad37041",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3149,
+      "sha256": "0c0dd287e71bc526a3bce88849bca9f1e5547a7838905e8d4b73479cfce00f9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/controls.json",
+      "change": "added",
+      "bytes": 11306,
+      "sha256": "5bf59c82d1a3ce5b277ac4c247a9edfdb69de09306cf4ad7fc0852478ee64c74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/execution.json",
+      "change": "added",
+      "bytes": 61766,
+      "sha256": "1a636ddf0a6000dd88677de4f7eaa4a840e108ec8b4ae77af63b0ce3c7ded968",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "e69a9f1ba4036d8b2501109cf7c833fdbeaf84030499a558e5b0ad40fb0ca4ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 675,
+      "sha256": "1d0d7ee5d0dc89b2a64820b4c4a68f606994bf1a9f22d9ce84d407acd667eff8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/verifier.json",
+      "change": "added",
+      "bytes": 50146,
+      "sha256": "205f4df505551a270f66b7fed29821826eeb2f7a426a342e414c33e25d6487bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7793,
+      "sha256": "246aa4cf3dce6bff76c367017e08d7c203aaf643176fc7a946e1b9b070c5948d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/result.json",
+      "change": "added",
+      "bytes": 16314,
+      "sha256": "f5cf34b1a566f6c9374d38de7370b303d064e5f8c533bd9e3e57a094ae6ed922",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/executions/20261120T034859Z-d695cb6d/attempt.json",
+      "change": "added",
+      "bytes": 72685,
+      "sha256": "4d3524e3f98676d6a377b41760088bba66ed318b0f68f5c4ef1aac7ea76920e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/executions/20261120T034859Z-d695cb6d/checker.json",
+      "change": "added",
+      "bytes": 9122,
+      "sha256": "8eed2b8e38b9feeb34c993426a278dc7c63e71108cb5016e040bc43a283849a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/membership-fix/executions/20261120T034859Z-d695cb6d/correspondence.json",
+      "change": "added",
+      "bytes": 1882,
+      "sha256": "d7b54cd516580c3b3b4e8c816f8ef062241ea2708efbd39a19ecdf040d727283",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "671d88132ed66ec270506c2930e706d5c04d25410a3d81527b471bbab555077e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/plan.json",
+      "change": "added",
+      "bytes": 71185,
+      "sha256": "7cbf1fad1f7cd2e72e80a57e016952a7c105f0eff625975c7f0ae7e0b7c0661e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 3149,
+      "sha256": "3c09af7e846b552acca5bcde2c2a75804fdd2eb56241d61a3526f87e00301564",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/controls.json",
+      "change": "added",
+      "bytes": 11341,
+      "sha256": "2ed2042bf860a65c665cbce7b075bc451db91748a256ab072bfccbde473b481e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/execution.json",
+      "change": "added",
+      "bytes": 62253,
+      "sha256": "92481f4191e9f3189fbf6cb09ffb1481f72136203f5a88b831c786867eeb2ba8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "6c1319605b0316a63feb2821187605172939ad2472109544e5e6a6307234a8ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 675,
+      "sha256": "91acd9afc498be2fa4618c3d2d7caa7ab454366a6f1fc5509eca5558039d32a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/verifier.json",
+      "change": "added",
+      "bytes": 50604,
+      "sha256": "7e26a486f14676998ce5598d00095d78d19133a7ae7a98bb7cd4194742bec95c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7794,
+      "sha256": "275a55a2dc0b339edaa57c1202e4f371b6bc026b8ce2e83487a8ad9f19ef83eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/result.json",
+      "change": "added",
+      "bytes": 16376,
+      "sha256": "3efea4438e916568e7a69a685f4bae811bbc8cecf0beb640fc623e44483a1e88",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/executions/20261120T034900Z-4ef3f8d7/attempt.json",
+      "change": "added",
+      "bytes": 73134,
+      "sha256": "49dc550dc26f7d4e171151c0464fb5a6f99e809060a6b352e845a1d46e16f570",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/executions/20261120T034900Z-4ef3f8d7/checker.json",
+      "change": "added",
+      "bytes": 9135,
+      "sha256": "eabf771508a96eb57dd88aa7834cfb1491cfca07fa177d337f2f134ba7b1b09a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-parent/executions/20261120T034900Z-4ef3f8d7/correspondence.json",
+      "change": "added",
+      "bytes": 1888,
+      "sha256": "28246ee0715b069e265f86ef2362f9fe7cb3e8dc70ee948f8b6007d5ad0856f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f761a6e0c49ce56a365aad908aab8eae8db026dace1c6a2393867ea71923b213",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/plan.json",
+      "change": "added",
+      "bytes": 71282,
+      "sha256": "d0b3d288b820aadeed2df3dd2974797ed1918689834f07645615e8f856418260",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3149,
+      "sha256": "0c0dd287e71bc526a3bce88849bca9f1e5547a7838905e8d4b73479cfce00f9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/controls.json",
+      "change": "added",
+      "bytes": 11308,
+      "sha256": "18b65fcee70b17b5a5709c8829f5cb32a0f750ab5597266150c2261804a348ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/execution.json",
+      "change": "added",
+      "bytes": 61771,
+      "sha256": "6793de455e8a908fb4e11b0b16fe350f11b323df0ab5abfc85d643c399dd75ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "5ade762e705afe485e94ce1b75e07a6d71b4ad2823e9b26bdea9d5bf76c406df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 675,
+      "sha256": "a0f41bca11bbdea51684624742cee3e12a3f207a4b60db2148e3732e1c3e43a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/verifier.json",
+      "change": "added",
+      "bytes": 50153,
+      "sha256": "2643384b11aa8c717909fa66411d953b52fd188ef489bfdb377e140e99ca35df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7797,
+      "sha256": "9626789f43df326e3b250ffc73a430f329dfdeceaa1be741a1ffa9a110d647dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/result.json",
+      "change": "added",
+      "bytes": 16318,
+      "sha256": "9d46e6ea52ca1b3017fb8e4ab1059b8a38a2a5841234a2e5e216e0f162dd6dab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/executions/20261120T034900Z-bdca62ed/attempt.json",
+      "change": "added",
+      "bytes": 72688,
+      "sha256": "743f74ffb7198cb17a6ba4422d26de89942146995a8a2cbc6c9ce367db347c41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/executions/20261120T034900Z-bdca62ed/checker.json",
+      "change": "added",
+      "bytes": 9126,
+      "sha256": "68cafabb2c6905c32de7cb24ecb04e2da7de0859247eb636f5c15d9bb7a54e1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/320-collections-live-multiset-views/receipts/other-count-fix/executions/20261120T034900Z-bdca62ed/correspondence.json",
+      "change": "added",
+      "bytes": 1882,
+      "sha256": "1ae56705133dc74020bb21808698c8f7051915aa790e5fa6613b00227fada742",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:49:23+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/completion.json",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/plan.json",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/control-parent-jdk21.stderr",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/control-parent-jdk21.stdout",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/controls.json",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/execution.json",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/streams.json",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/verifier-output.txt",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/verifier.json",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/verifier.stderr",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/records/verifier.stdout",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/20261120T034844Z-73eea1bf/result.json",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/executions/20261120T034844Z-73eea1bf/attempt.json",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/executions/20261120T034844Z-73eea1bf/checker.json",
+      "examples/320-collections-live-multiset-views/receipts/total-parent/executions/20261120T034844Z-73eea1bf/correspondence.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/completion.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/plan.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/control-fix-jdk21.stderr",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/control-fix-jdk21.stdout",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/controls.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/execution.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/streams.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/verifier-output.txt",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/verifier.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/verifier.stderr",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/records/verifier.stdout",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/20261120T034852Z-1258abf4/result.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/executions/20261120T034852Z-1258abf4/attempt.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/executions/20261120T034852Z-1258abf4/checker.json",
+      "examples/320-collections-live-multiset-views/receipts/total-fix/executions/20261120T034852Z-1258abf4/correspondence.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/completion.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/plan.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/control-parent-jdk21.stderr",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/control-parent-jdk21.stdout",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/controls.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/execution.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/streams.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/verifier-output.txt",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/verifier.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/verifier.stderr",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/records/verifier.stdout",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/20261120T034859Z-7d9d294b/result.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/executions/20261120T034859Z-7d9d294b/attempt.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/executions/20261120T034859Z-7d9d294b/checker.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-parent/executions/20261120T034859Z-7d9d294b/correspondence.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/completion.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/plan.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/control-fix-jdk21.stderr",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/control-fix-jdk21.stdout",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/controls.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/execution.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/streams.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/verifier-output.txt",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/verifier.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/verifier.stderr",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/records/verifier.stdout",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/20261120T034859Z-d695cb6d/result.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/executions/20261120T034859Z-d695cb6d/attempt.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/executions/20261120T034859Z-d695cb6d/checker.json",
+      "examples/320-collections-live-multiset-views/receipts/membership-fix/executions/20261120T034859Z-d695cb6d/correspondence.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/completion.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/plan.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/control-parent-jdk21.stderr",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/control-parent-jdk21.stdout",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/controls.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/execution.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/streams.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/verifier-output.txt",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/verifier.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/verifier.stderr",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/records/verifier.stdout",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/20261120T034900Z-4ef3f8d7/result.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/executions/20261120T034900Z-4ef3f8d7/attempt.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/executions/20261120T034900Z-4ef3f8d7/checker.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-parent/executions/20261120T034900Z-4ef3f8d7/correspondence.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/completion.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/plan.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/control-fix-jdk21.stderr",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/control-fix-jdk21.stdout",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/controls.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/execution.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/streams.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/verifier-output.txt",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/verifier.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/verifier.stderr",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/records/verifier.stdout",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/20261120T034900Z-bdca62ed/result.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/executions/20261120T034900Z-bdca62ed/attempt.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/executions/20261120T034900Z-bdca62ed/checker.json",
+      "examples/320-collections-live-multiset-views/receipts/other-count-fix/executions/20261120T034900Z-bdca62ed/correspondence.json"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 1891322,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032646-native-320-commons-collections-views-upd"
+}

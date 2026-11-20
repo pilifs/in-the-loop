@@ -1,0 +1,979 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032647-native-324-lazy-optional-fallback-has-ob",
+  "title": "Native 324 Lazy Optional fallback has observable calls",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 9.4s, peak 142.6 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6",
+  "attention": [
+    "step 1 (Check the frozen obligations on their prepared bytes) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-032647-native-324-lazy-optional-fallback-has-ob.json",
+    "sha256": "ac31c82687357093b8815f01b85cc010c8a988c3f0ba30d911fff1db103defb5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032647-native-324-lazy-optional-fallback-has-ob",
+      "title": "Native 324 Lazy Optional fallback has observable calls",
+      "description": "Calling the supplier eagerly preserves all returned integers and invokes the supplier on present values. Run each original claim on its declared subject, preserve all stages and require the independently calibrated observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "324"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T03:26:47+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 324 --tasks value-lazy,value-branch,value-eager,callbacks-lazy,callbacks-branch,callbacks-eager --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/324-optional-fallback-effects/receipts/value-lazy",
+        "examples/324-optional-fallback-effects/receipts/value-branch",
+        "examples/324-optional-fallback-effects/receipts/value-eager",
+        "examples/324-optional-fallback-effects/receipts/callbacks-lazy",
+        "examples/324-optional-fallback-effects/receipts/callbacks-branch",
+        "examples/324-optional-fallback-effects/receipts/callbacks-eager"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:37+00:00",
+  "finishedAt": "2026-11-20T03:48:53+00:00",
+  "wallSeconds": 196.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 149553152,
+    "wallSeconds": 9.4,
+    "cpuSeconds": 14.7,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 324 --tasks value-lazy,value-branch,value-eager,callbacks-lazy,callbacks-branch,callbacks-eager --checker-seconds 30",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 9.424,
+      "cpuSeconds": 14.74,
+      "cpuThrottledSeconds": 0.555,
+      "peakMemoryBytes": 149553152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 12,
+        "bytes": 1484,
+        "sha256": "f5c49d0118d2a9fd0216905aa5a557b6c0a8e38af2655dfcd813967a0f6bafea",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "324-optional-fallback-effects: task value-lazy: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/value-lazy/20261120T034844Z-56737d8a/result.json",
+          "groups": [
+            "324",
+            "value-lazy",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "324-optional-fallback-effects: task value-branch: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/value-branch/20261120T034846Z-e538579f/result.json",
+          "groups": [
+            "324",
+            "value-branch",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "324-optional-fallback-effects: task value-eager: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/value-eager/20261120T034849Z-8dc84324/result.json",
+          "groups": [
+            "324",
+            "value-eager",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "324-optional-fallback-effects: task callbacks-lazy: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/callbacks-lazy/20261120T034852Z-313615f3/result.json",
+          "groups": [
+            "324",
+            "callbacks-lazy",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "324-optional-fallback-effects: task callbacks-branch: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/callbacks-branch/20261120T034852Z-85cfaa08/result.json",
+          "groups": [
+            "324",
+            "callbacks-branch",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "324-optional-fallback-effects: task callbacks-eager: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/callbacks-eager/20261120T034852Z-de8d42d1/result.json",
+          "groups": [
+            "324",
+            "callbacks-eager",
+            "unresolved",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "324-optional-fallback-effects: running task value-lazy (target route)",
+        "324-optional-fallback-effects: task value-lazy: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/value-lazy/20261120T034844Z-56737d8a/result.json",
+        "324-optional-fallback-effects: running task value-branch (target route)",
+        "324-optional-fallback-effects: task value-branch: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/value-branch/20261120T034846Z-e538579f/result.json",
+        "324-optional-fallback-effects: running task value-eager (target route)",
+        "324-optional-fallback-effects: task value-eager: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/value-eager/20261120T034849Z-8dc84324/result.json",
+        "324-optional-fallback-effects: running task callbacks-lazy (target route)",
+        "324-optional-fallback-effects: task callbacks-lazy: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/callbacks-lazy/20261120T034852Z-313615f3/result.json",
+        "324-optional-fallback-effects: running task callbacks-branch (target route)",
+        "324-optional-fallback-effects: task callbacks-branch: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/callbacks-branch/20261120T034852Z-85cfaa08/result.json",
+        "324-optional-fallback-effects: running task callbacks-eager (target route)",
+        "324-optional-fallback-effects: task callbacks-eager: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/callbacks-eager/20261120T034852Z-de8d42d1/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "fef7e5005d2f6c5f49b59db16e5f05f1da610547f559b5dbbf85c21a5a572632",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/plan.json",
+      "change": "added",
+      "bytes": 5538,
+      "sha256": "6e1aba051b9d384bd98684d9d2c4e1129f6daa0391ecd03003570f63e5a7d085",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/control-lazy-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/control-lazy-jdk21.stdout",
+      "change": "added",
+      "bytes": 425,
+      "sha256": "11044d752fa6cb904a4887907c9c65a53c13ea96b10bcd781fa0ba80155b46e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/controls.json",
+      "change": "added",
+      "bytes": 4177,
+      "sha256": "c8626f5bac686526e07173a6cdb04635f5a1fcfd7606785d6f23a4b4738b7443",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/execution.json",
+      "change": "added",
+      "bytes": 21368,
+      "sha256": "c3329cf1ce3a8a54a639dc476d4fa864ec2d14d0b717bba8b44e11abacfb038c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/streams.json",
+      "change": "added",
+      "bytes": 1949,
+      "sha256": "0f4b910514a6a7a92a221cfb547916590debc431be84fb78e2c9711b813c14be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 624,
+      "sha256": "b32dcc62a70edd5d8b89f757947bbbe634e71efd7bfe465026ef40d6cff73f49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/verifier.json",
+      "change": "added",
+      "bytes": 17039,
+      "sha256": "3215a21e29ea0bcb88f2fb05746e43bef961d8c61d478945c584b04c57212bdd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7639,
+      "sha256": "b6fb989176ff05f7ca3ecd7a4b905f7ee9b82f17cec81d14e6b2c701a7de2a10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/result.json",
+      "change": "added",
+      "bytes": 16166,
+      "sha256": "66fe3a2ace10f82f280af2868c673eac23d9b149e66b3fd2935654aa6a173cda",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/executions/20261120T034844Z-56737d8a/attempt.json",
+      "change": "added",
+      "bytes": 11712,
+      "sha256": "11975cc4215e005ca244f6ad4ba57fe957e7fc6ab20d47768fdba4e3ea3559c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/executions/20261120T034844Z-56737d8a/checker.json",
+      "change": "added",
+      "bytes": 8964,
+      "sha256": "a86831239235761d5f194e687b6676ade19f93591ce9690aaab51e9f3e698f03",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-lazy/executions/20261120T034844Z-56737d8a/correspondence.json",
+      "change": "added",
+      "bytes": 1179,
+      "sha256": "5045783e0b6d660af279a5a3dc8efa800ed448bf2906eea3b4ae8ead0bf17e88",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "acbaab18c10a663f42a16104a2111f04e6363bca0c8ebdb7f3b4d23b2316195e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/plan.json",
+      "change": "added",
+      "bytes": 5560,
+      "sha256": "046f9c1d55dd6bd9f620083c49abff9fd9d703b119dee523eecf9b20d09a4e97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/control-branch-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/control-branch-jdk21.stdout",
+      "change": "added",
+      "bytes": 425,
+      "sha256": "11044d752fa6cb904a4887907c9c65a53c13ea96b10bcd781fa0ba80155b46e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/controls.json",
+      "change": "added",
+      "bytes": 4201,
+      "sha256": "fe3f6bb56f54221968cd3f52049af7f787f5e39103d264937f8139de392fbf87",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/execution.json",
+      "change": "added",
+      "bytes": 21688,
+      "sha256": "a19e4039a2e3e17a647e31f71cdba67864d6cf221948d5635669ad195e83a0eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "d606e7813da5d54fe0267ef0fa97df0f5258d1c70640f2495b15759095696c63",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 624,
+      "sha256": "b32dcc62a70edd5d8b89f757947bbbe634e71efd7bfe465026ef40d6cff73f49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/verifier.json",
+      "change": "added",
+      "bytes": 17331,
+      "sha256": "10155da60b5f5cbcc95813dbb1f154508730a1147662210a7c947567e292346b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7640,
+      "sha256": "0fe76d5e6adddbbd035c60cdbcf520843d88bda37dfaa7dbab9f1c1853bc949f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/result.json",
+      "change": "added",
+      "bytes": 16204,
+      "sha256": "06ea7c1c0edbf939d141d6f1577f485f59442c987deca5c792627b2825617d8e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/executions/20261120T034846Z-e538579f/attempt.json",
+      "change": "added",
+      "bytes": 11994,
+      "sha256": "d44f6fba843f165f8d1aecde212bdd022ef092967b001b3aba3e8397d62546ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/executions/20261120T034846Z-e538579f/checker.json",
+      "change": "added",
+      "bytes": 8973,
+      "sha256": "b7cddf05082617b4dbcb441b351751395c5510c5003bf42d35f128ee71aaa85a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-branch/executions/20261120T034846Z-e538579f/correspondence.json",
+      "change": "added",
+      "bytes": 1183,
+      "sha256": "f3d744f5099fdba5afcc47fd8d606ab53f102d0486fa963ecdd1248cad136bc6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9980c13ab45b519b5b46bf6b86ec34cad722f372406a25d11117e8980978830c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/plan.json",
+      "change": "added",
+      "bytes": 5555,
+      "sha256": "eb68968c9de21c32d55322ea346d34270ba448d18d0e5b6ce2019d208ee76790",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/control-eager-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/control-eager-jdk21.stdout",
+      "change": "added",
+      "bytes": 455,
+      "sha256": "622e24c24b8e9950cdf8985ccf234e75baa6272b1ba5001b09f29f74cc1a6e3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/controls.json",
+      "change": "added",
+      "bytes": 4303,
+      "sha256": "31483269b814728402325b95549a050f7c9368636bee898228299c8fa4d129f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/execution.json",
+      "change": "added",
+      "bytes": 21485,
+      "sha256": "1e3566850ce90e988497e185f1d4e38559eaf8b76e882790d66a85ce90bd6544",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "8a5c0b8cd94a6127b6669d808675eb1a7f321fdddc0e44af0c74af807723232e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 624,
+      "sha256": "b32dcc62a70edd5d8b89f757947bbbe634e71efd7bfe465026ef40d6cff73f49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/verifier.json",
+      "change": "added",
+      "bytes": 17036,
+      "sha256": "91ef6dbd6ed40633cdf0750927a5027d9d2df25483c8255e380055a9f729e9b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7636,
+      "sha256": "24b32b51e8f9242887754e77582030616afc93acec2e616a9b9defbc59c500f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/result.json",
+      "change": "added",
+      "bytes": 16182,
+      "sha256": "c41caa3d0bf94591501eeaea8afa78547aeb7ddd24ab64d795500f02d73ada71",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/executions/20261120T034849Z-8dc84324/attempt.json",
+      "change": "added",
+      "bytes": 11715,
+      "sha256": "3a30b1c66cb8d64fca000ea6b34ce622436b2e065750ba5856f899bbcdfd4976",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/executions/20261120T034849Z-8dc84324/checker.json",
+      "change": "added",
+      "bytes": 8967,
+      "sha256": "2aed87a25862099a5a58e8b1a162513aeba385f2851dbcd13ed7f516dd520b35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/value-eager/executions/20261120T034849Z-8dc84324/correspondence.json",
+      "change": "added",
+      "bytes": 1181,
+      "sha256": "23ae1e1dc896390505367e53734067b4ba8ebd3fed51a32e041983bc60a262fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0f1750274509ef7107358c40ddb252b6dc09474a56a98e0085dfee7ca9931b9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/plan.json",
+      "change": "added",
+      "bytes": 5632,
+      "sha256": "abfbaabc983db400d9f16fea916af0a853844fee82bee864ca163c9ecdd534d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/control-lazy-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/control-lazy-jdk21.stdout",
+      "change": "added",
+      "bytes": 425,
+      "sha256": "11044d752fa6cb904a4887907c9c65a53c13ea96b10bcd781fa0ba80155b46e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/controls.json",
+      "change": "added",
+      "bytes": 4185,
+      "sha256": "1eea315592e2377e1e9a7fe65e6bbc8e7511f1b9c73a306618b3e837c01ce0f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/execution.json",
+      "change": "added",
+      "bytes": 21413,
+      "sha256": "d6885456cb6b77f22ae68b4ecbce33cc623ae54744463a7b628e1fe747bb8f52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/streams.json",
+      "change": "added",
+      "bytes": 1949,
+      "sha256": "48519d427ff40a48eeb9dbc90df33bc0417f416e6e70055ae903a6f4ac9bd0ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 628,
+      "sha256": "02cedd13d60ed02663247b07ec4ccc63dec362c75cf72565db069dcf29fa64ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/verifier.json",
+      "change": "added",
+      "bytes": 17092,
+      "sha256": "411736a1188e99557bcb14fa1c8bdf01bc9209f1c9e2e6f358c4167942afb53c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7652,
+      "sha256": "ce5b0e16416449677465293991febb0bef89eca4d5d759b4c87a1bc46f71f11a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/result.json",
+      "change": "added",
+      "bytes": 16222,
+      "sha256": "3bc842f9e630721b3e0686cad83d8585a8ba9442efce0248e74e62d7681bb530",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/executions/20261120T034852Z-313615f3/attempt.json",
+      "change": "added",
+      "bytes": 11747,
+      "sha256": "65c86c47689fd17b15e3713632de4e4bb6ad8f43b518263f24069af62f3c2ff1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/executions/20261120T034852Z-313615f3/checker.json",
+      "change": "added",
+      "bytes": 8981,
+      "sha256": "eb87b6eca6452a1ea93ca7c15f207009567a6fea5564027609d5b52ba5a989f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-lazy/executions/20261120T034852Z-313615f3/correspondence.json",
+      "change": "added",
+      "bytes": 1183,
+      "sha256": "3d355a836856c26815d8b25800ad25c2cde7d288beb29fa83f3e3e69827c15cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8ca69e5528046c3ee77ae590bf17bdc2d4da4b4737c6f96e401dd0368b3555f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/plan.json",
+      "change": "added",
+      "bytes": 5654,
+      "sha256": "1d677a76adf2d23c8cf9207b911afe05db9c24d4db1506bb5fdd47f9643286f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/control-branch-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/control-branch-jdk21.stdout",
+      "change": "added",
+      "bytes": 425,
+      "sha256": "11044d752fa6cb904a4887907c9c65a53c13ea96b10bcd781fa0ba80155b46e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/controls.json",
+      "change": "added",
+      "bytes": 4209,
+      "sha256": "26155efd502ef50485aebc47ab683d252e327ce931205833dad0b13fc4322b33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/execution.json",
+      "change": "added",
+      "bytes": 21730,
+      "sha256": "da46ea4c34ee4310bf8156e111f3f3db21094d7b22b28b8418d3443581217a9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "f589a97f7876fb1f91883fbfbac2160e6029346f866c1ee10bf31d3de216b4f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 628,
+      "sha256": "02cedd13d60ed02663247b07ec4ccc63dec362c75cf72565db069dcf29fa64ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/verifier.json",
+      "change": "added",
+      "bytes": 17381,
+      "sha256": "335e95bf42f2b30df16a77ec719bbb75f5efc186f2899167f40089d540ea38e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7650,
+      "sha256": "7832e7d37e096e9d6421cde04a63563eb93b34ab668ede36288d8f3210cc7b8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/result.json",
+      "change": "added",
+      "bytes": 16259,
+      "sha256": "198aae9a425a828f668b86139dd1ae8f6661b38b3e23a0d802f9d144849d7678",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/executions/20261120T034852Z-85cfaa08/attempt.json",
+      "change": "added",
+      "bytes": 12033,
+      "sha256": "a4580e2a5b32747d9c496c2d23688c569c86a99d2caedd84fb52f14cb71ebf0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/executions/20261120T034852Z-85cfaa08/checker.json",
+      "change": "added",
+      "bytes": 8987,
+      "sha256": "323ed80245a494dcf9e1bbc8da814dce5592797deb84dc6090de03b2fbbf524a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-branch/executions/20261120T034852Z-85cfaa08/correspondence.json",
+      "change": "added",
+      "bytes": 1187,
+      "sha256": "5cb55eec914021910cb4a70306724218c2ef72d4cbe89c24b98fae78a449a247",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e9792d00c7355f27ab375cc93423c3bf3493a8ece578185d9d2df0d9a6ebf24b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/plan.json",
+      "change": "added",
+      "bytes": 5645,
+      "sha256": "c2b8e400044e5aa7bc46ee6a2651c4fd49e26366c79f9eede2adb8a998d4187e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/control-eager-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/control-eager-jdk21.stdout",
+      "change": "added",
+      "bytes": 455,
+      "sha256": "622e24c24b8e9950cdf8985ccf234e75baa6272b1ba5001b09f29f74cc1a6e3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/controls.json",
+      "change": "added",
+      "bytes": 4311,
+      "sha256": "9a085426c53a1eb48fe388466c87c634a423653517d237b744aab0d2e53641bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/execution.json",
+      "change": "added",
+      "bytes": 21531,
+      "sha256": "320f8336b7e61890de5e1eec9320ae47369fac7b62796f7ee1f9ebad9528e3f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "ccaa0ec21d121eb58ef645f125d22dd992cbf1a687732380a8f9dbb11b3e4266",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 628,
+      "sha256": "02cedd13d60ed02663247b07ec4ccc63dec362c75cf72565db069dcf29fa64ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/verifier.json",
+      "change": "added",
+      "bytes": 17090,
+      "sha256": "bf39eb3f5cacde689db26a34ad624dc0937c694dad00c3d6b8df6649dde859bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7652,
+      "sha256": "f22408a705ea07123c9a1955145af2360c7b4530f5f30ed0349008154260939f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/result.json",
+      "change": "added",
+      "bytes": 16237,
+      "sha256": "4e5cb27d91d6b82265b972a1f2c613316e672ad000bb748f1d7041a1165a3c7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/executions/20261120T034852Z-de8d42d1/attempt.json",
+      "change": "added",
+      "bytes": 11751,
+      "sha256": "e1f394549414a563e7f27899c9a45366f4cedb92bcb9e8da7d58cfa33c02cb73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/executions/20261120T034852Z-de8d42d1/checker.json",
+      "change": "added",
+      "bytes": 8985,
+      "sha256": "86dc9614db6d8db0c6d0c4dbcdfdcf0eb1c50819867e36e471a19e0241a8657c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/receipts/callbacks-eager/executions/20261120T034852Z-de8d42d1/correspondence.json",
+      "change": "added",
+      "bytes": 1185,
+      "sha256": "67a6a0cfeb3a53a33c4511e3b2627cf4f751df60545dd1d96f9a9faadf486279",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:49:24+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/completion.json",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/plan.json",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/control-lazy-jdk21.stderr",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/control-lazy-jdk21.stdout",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/controls.json",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/execution.json",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/streams.json",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/verifier-output.txt",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/verifier.json",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/verifier.stderr",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/records/verifier.stdout",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/20261120T034844Z-56737d8a/result.json",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/executions/20261120T034844Z-56737d8a/attempt.json",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/executions/20261120T034844Z-56737d8a/checker.json",
+      "examples/324-optional-fallback-effects/receipts/value-lazy/executions/20261120T034844Z-56737d8a/correspondence.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/completion.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/plan.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/control-branch-jdk21.stderr",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/control-branch-jdk21.stdout",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/controls.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/execution.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/streams.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/verifier-output.txt",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/verifier.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/verifier.stderr",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/records/verifier.stdout",
+      "examples/324-optional-fallback-effects/receipts/value-branch/20261120T034846Z-e538579f/result.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/executions/20261120T034846Z-e538579f/attempt.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/executions/20261120T034846Z-e538579f/checker.json",
+      "examples/324-optional-fallback-effects/receipts/value-branch/executions/20261120T034846Z-e538579f/correspondence.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/completion.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/plan.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/control-eager-jdk21.stderr",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/control-eager-jdk21.stdout",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/controls.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/execution.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/streams.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/verifier-output.txt",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/verifier.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/verifier.stderr",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/records/verifier.stdout",
+      "examples/324-optional-fallback-effects/receipts/value-eager/20261120T034849Z-8dc84324/result.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/executions/20261120T034849Z-8dc84324/attempt.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/executions/20261120T034849Z-8dc84324/checker.json",
+      "examples/324-optional-fallback-effects/receipts/value-eager/executions/20261120T034849Z-8dc84324/correspondence.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/completion.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/plan.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/control-lazy-jdk21.stderr",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/control-lazy-jdk21.stdout",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/controls.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/execution.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/streams.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/verifier-output.txt",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/verifier.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/verifier.stderr",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/records/verifier.stdout",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/20261120T034852Z-313615f3/result.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/executions/20261120T034852Z-313615f3/attempt.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/executions/20261120T034852Z-313615f3/checker.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-lazy/executions/20261120T034852Z-313615f3/correspondence.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/completion.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/plan.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/control-branch-jdk21.stderr",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/control-branch-jdk21.stdout",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/controls.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/execution.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/streams.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/verifier-output.txt",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/verifier.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/verifier.stderr",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/records/verifier.stdout",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/20261120T034852Z-85cfaa08/result.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/executions/20261120T034852Z-85cfaa08/attempt.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/executions/20261120T034852Z-85cfaa08/checker.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-branch/executions/20261120T034852Z-85cfaa08/correspondence.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/completion.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/plan.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/control-eager-jdk21.stderr",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/control-eager-jdk21.stdout",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/controls.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/execution.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/streams.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/verifier-output.txt",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/verifier.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/verifier.stderr",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/records/verifier.stdout",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/20261120T034852Z-de8d42d1/result.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/executions/20261120T034852Z-de8d42d1/attempt.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/executions/20261120T034852Z-de8d42d1/checker.json",
+      "examples/324-optional-fallback-effects/receipts/callbacks-eager/executions/20261120T034852Z-de8d42d1/correspondence.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032647-native-324-lazy-optional-fallback-has-ob"
+}

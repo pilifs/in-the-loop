@@ -1,0 +1,312 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "3ce8f56a0111f889",
+    "format": 1,
+    "example": "322",
+    "statement": {
+      "approach": "target",
+      "task": "suppressed-nested",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "revisions": [
+        "nested"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "suppressed-nested",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "paint.Paint#run(I)Lpaint/Outcome;",
+        "file": "claims/suppressed.json",
+        "sha256": "4a8cd50e9599dda18fb0bf594808e0bfdc93b529de8d85e1f1800e00715ad22d",
+        "property": "suppressed",
+        "claimKind": "property",
+        "statement": "The suppressed tags follow the actual closing order after the primary.",
+        "assume": "code >= 0 && code < 8",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 10
+        },
+        "explicitBounds": {
+          "unwind": 16,
+          "maxArrayLength": 10
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/paint/Cases.java",
+            "sha256": "0f24398b5f8260d88ed3056c5958668fccf72c9fa979e6077709f6281e1f6de6"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "be125f3b4a6d5503e9e9ba4b8b627c73885eb77673f7f4a14848a937a5265a36"
+          }
+        ],
+        "adapter": {
+          "entry": "paint.Projection#suppressed(I)I",
+          "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+          "correspondence": "finite-oracle",
+          "cases": 8
+        },
+        "key": "c16432554ab2233a"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 10
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "ec6fa18d3199b76be32682b8d6804837a44ed5720176d4c0f11f37cdd8f6b2c3",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "suppressed-nested",
+      "sidecar": "42f9a0e8e8b213d0ea6e4825b4fd4065c302b3ed947734e3176a736f722d8847",
+      "revisions": {
+        "nested": "7fa0e75aee072fba4c9a8e536717065cfe7024b9"
+      },
+      "dependencies": [
+        {
+          "revision": "nested",
+          "position": 0,
+          "role": "driver",
+          "sha256": "a807f3569f867b84654b5a309197f135666199eb467598bf24aee951dd78c356"
+        },
+        {
+          "revision": "nested",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "b4405ae9c9a13a608340a9323f61d493699ebcd5389587303ee2e7dfa8b9a899"
+        },
+        {
+          "revision": "nested",
+          "position": 2,
+          "role": "original",
+          "sha256": "cff7a4657f1229e0a2fe978edd1611ef7dbb62318eb6b330e546c831763b6af3"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/paint/Projection.java": "138ada4ace3bc1a5609f983b033a7cafddc1e8934a160f00157d3ef59ccf912b",
+        "claims/suppressed.json": "4a8cd50e9599dda18fb0bf594808e0bfdc93b529de8d85e1f1800e00715ad22d",
+        "controls/table.json": "be125f3b4a6d5503e9e9ba4b8b627c73885eb77673f7f4a14848a937a5265a36",
+        "driver/paint/Cases.java": "0f24398b5f8260d88ed3056c5958668fccf72c9fa979e6077709f6281e1f6de6"
+      },
+      "claimKey": "c16432554ab2233a"
+    }
+  },
+  "attempt": {
+    "id": "20261120T034854Z-928b54a9",
+    "claim": "3ce8f56a0111f889",
+    "startedAt": "2026-11-20T03:48:54+00:00",
+    "seconds": 0.5,
+    "engine": "native",
+    "options": [
+      "prove",
+      "paint.Projection#suppressed(int)",
+      "--classes",
+      "prepare/nested/adapter-nested.jar",
+      "--classpath",
+      "prepare/nested/nested.jar",
+      "--assume",
+      "code >= 0 && code < 8",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "10",
+      "--timeout",
+      "30",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "a990d43a599efa7a1b4984bf3be06662596e8c592473bd2ae8c2e19b5082b706"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "87e5acac4e59b5f400714571d05bde23cc71c8bc9fdb40276c5a21af76315b9f",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-032646-native-322-resource-close-order-and-supp",
+      "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032646-native-322-resource-close-order-and-supp"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control nested on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-nested-jdk21.stdout",
+        "stderr": "records/control-nested-jdk21.stderr"
+      },
+      {
+        "name": "verifier nested on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.48,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": null,
+      "maxArrayLength": null,
+      "complete": null
+    }
+  },
+  "conclusion": {
+    "claim": "3ce8f56a0111f889",
+    "attempt": "20261120T034854Z-928b54a9",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 8",
+          "verdict": "unverifiable",
+          "domain": null,
+          "proof": null,
+          "problem": "the property is not well-formed: in the assumption: unknown name \"code\"; the names are mask; and javac does not take the expressions as Java either: cannot find symbol",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": null,
+          "replay": null
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"nested\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the property is not well-formed: in the assumption: unknown name \"code\"; the names are mask; and javac does not take the expressions as Java either: cannot find symbol",
+    "domain": null,
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 8"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "0ec9a3e12eedf3a43f59cedc78c3100cecb5c441f786bcc68fd87c5623873e2f",
+        "bytes": 15537
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "8b0c7776a396691dc4c330768c69a7cd6373d624041926945d195e587de889f1",
+        "bytes": 225
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "a9a8820670b1cb4e38d5fae4bdc8acc1191d7ee98da1de1bcf660a415f4d55c7",
+        "bytes": 1965
+      },
+      {
+        "path": "records/control-nested-jdk21.stdout",
+        "sha256": "f2cb15d270b8889e0c4d14b075b6cc59d1b89ae3738b04d7e2babf8ae3432730",
+        "bytes": 1341
+      },
+      {
+        "path": "records/control-nested-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "eb20be7b05eccb5375a8ae87a5bddb53ab24d05c0300b49da9c5d86dfab5f76a",
+        "bytes": 6682
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "07c6cf7a3c7b5b3e5e25eeca5a67888c98111a6427729bdbdd3008696e4a4c1c",
+        "bytes": 1141
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "92c873fe87f1ee8764191066d5a358ebf360702833923ea5eb0b432035f12c4f",
+        "bytes": 9083
+      }
+    ]
+  }
+}

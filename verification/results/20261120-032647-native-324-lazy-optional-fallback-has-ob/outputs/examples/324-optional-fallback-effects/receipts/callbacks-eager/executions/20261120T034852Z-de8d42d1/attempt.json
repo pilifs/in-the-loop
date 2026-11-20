@@ -1,0 +1,359 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T034852Z-de8d42d1",
+  "task": "callbacks-eager",
+  "claimKey": "fd17da09f7be85db",
+  "revisions": [
+    "eager"
+  ],
+  "startedAt": "2026-11-20T03:48:52.911572+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 30
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-032647-native-324-lazy-optional-fallback-has-ob",
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0023
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.1187
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.1201
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.1626
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 0.2259
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.3346
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "eager": {
+      "revision": "fixture:eager",
+      "target": {
+        "class": "optionalgrid.Choice",
+        "method": "choose",
+        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+        "loadedFrom": "eager.jar",
+        "classSha256": "0f365c993353f1b907bd498dd607378c555c88946e5a19e04c9a0a7ecd576f7c",
+        "adapterCalls": [
+          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+          "optionalgrid.Fallback#<init>()V"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "d6a74ecc3c0ae0d3cbecdd1f3b8c1879da33b8c9542bc7844f18c97d8c3f6bbc",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-eager.jar",
+          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "eager.jar",
+          "sha256": "4f2d25c1a3ad66d16a75489f0af4e47f0742b6a263c021c94bb153ce9d671a12",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from eager by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "8d295e580bc81c91f1b4b9f6337a8935174820b319eb1b04a6ba8b5acc3097ed",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "prove",
+    "optionalgrid.Projection#callbacks(int)",
+    "--classes",
+    "prepare/eager/adapter-eager.jar",
+    "--classpath",
+    "prepare/eager/eager.jar",
+    "--assume",
+    "code >= 0 && code < 4",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "10",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "a990d43a599efa7a1b4984bf3be06662596e8c592473bd2ae8c2e19b5082b706",
+    "commit": "a10ab079076ec30343c3ee666712cea363b4e119",
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 10
+    },
+    "timeout": 30,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+      "method": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "revisions": {
+        "eager": {
+          "commit": "fixture:eager",
+          "loadedFrom": "eager.jar",
+          "classSha256": "0f365c993353f1b907bd498dd607378c555c88946e5a19e04c9a0a7ecd576f7c",
+          "origin": "built from eager by the fixture recipe",
+          "parameters": {
+            "names": [
+              "value",
+              "fallback"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "optionalgrid.Projection#callbacks(I)I",
+        "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "eager": [
+        {
+          "path": "adapter-eager.jar",
+          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+          "role": "adapter"
+        },
+        {
+          "path": "eager.jar",
+          "sha256": "4f2d25c1a3ad66d16a75489f0af4e47f0742b6a263c021c94bb153ce9d671a12",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "optionalgrid.Projection#callbacks(I)I",
+    "entryBindings": {
+      "eager": {
+        "entry": "optionalgrid.Projection#callbacks(I)I",
+        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
+        "loadedFrom": "adapter-eager.jar",
+        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+        "subjectClassSha256": "0f365c993353f1b907bd498dd607378c555c88946e5a19e04c9a0a7ecd576f7c"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "checkedEntry": "optionalgrid.Projection#callbacks(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 4"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "10"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "optionalgrid.Projection#callbacks(I)I",
+        "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      }
+    },
+    "commits": {
+      "eager": "fixture:eager"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "eager": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+          "gaps",
+          "--target",
+          "optionalgrid.Projection#callbacks(int)",
+          "--classes",
+          "prepare/eager/adapter-eager.jar",
+          "--classpath",
+          "prepare/eager/eager.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-eager.stdout",
+        "stderr": "verifier/probe-eager.stderr",
+        "gaps": [
+          {
+            "id": "jdk-reference-method:java.util.Optional.orElse(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.Optional.orElse(java.lang.Object)",
+            "sites": [
+              "optionalgrid.Choice.choose:7"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Optional.empty()Ljava/util/Optional;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Optional.empty()",
+            "sites": [
+              "optionalgrid.Projection.check:7"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Optional.of(Ljava/lang/Object;)Ljava/util/Optional;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Optional.of(java.lang.Object)",
+            "sites": [
+              "optionalgrid.Projection.check:7"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0514,
+      "peakRssBytes": 79347712,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0514,
+    "peakRssBytes": 79347712,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.061,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/callbacks-eager/20261120T034852Z-de8d42d1/result.json",
+  "preparedClaim": "6b36d7f54c87947c",
+  "firstBlocker": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-static-method:java.util.Optional.empty()Ljava/util/Optional;@jdk-21.0.13 (java.util.Optional.empty() at optionalgrid.Projection.check:7); jdk-static-method:java.util.Optional.of(Ljava/lang/Object;)Ljava/util/Optional;@jdk-21.0.13 (java.util.Optional.of(java.lang.Object) at optionalgrid.Projection.check:7). They have no approximation under --gaps assume, since their values could only be made up: only contracts close them (--gaps advised)",
+  "endedAt": "2026-11-20T03:48:53.246259+00:00"
+}

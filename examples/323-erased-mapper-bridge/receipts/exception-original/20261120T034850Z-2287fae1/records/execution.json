@@ -1,0 +1,583 @@
+{
+  "task": "exception-original",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "original",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:adapter-original.jar:original.jar",
+        "bridgegrid.Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.114,
+      "stdout": "controls/control-original-jdk21.stdout",
+      "stderr": "controls/control-original-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:original",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "6f75aeb0e7f687983cdbee8dd7fa83b560f637d3aabbb4a3dc2ec6db586a5445",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-original.jar",
+            "sha256": "525196bb1cd947b5cc918cf13799d5d32f2830e5f6491a19d63166d4e9a9f9d5",
+            "role": "adapter"
+          },
+          {
+            "path": "original.jar",
+            "sha256": "a2014102444bc56500c3caa8c50f8525d44f21d62778daa1d76e599f20d64401",
+            "role": "original"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "bridgegrid.Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/table.json",
+          "oracleSha256": "8af08deb5e68e5cab5d53c2140d4d17842a3e08b06721cb45b0bddcc5306f378"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm",
+        "executionId": "20261120T034850Z-2287fae1",
+        "startedAt": "2026-11-20T03:48:50.141439+00:00"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "type": "null",
+            "value": null
+          },
+          "direct": {
+            "value": 99,
+            "exception": null,
+            "entries": 1,
+            "typedAgreement": 1
+          },
+          "adapter": {
+            "value": 1,
+            "exception": 1,
+            "entries": 1,
+            "typedAgreement": 1
+          }
+        },
+        {
+          "id": 1,
+          "input": {
+            "type": "java.lang.Integer",
+            "value": -1
+          },
+          "direct": {
+            "value": 0,
+            "exception": null,
+            "entries": 1,
+            "typedAgreement": 1
+          },
+          "adapter": {
+            "value": 1,
+            "exception": 1,
+            "entries": 1,
+            "typedAgreement": 1
+          }
+        },
+        {
+          "id": 2,
+          "input": {
+            "type": "java.lang.Integer",
+            "value": 0
+          },
+          "direct": {
+            "value": 1,
+            "exception": null,
+            "entries": 1,
+            "typedAgreement": 1
+          },
+          "adapter": {
+            "value": 1,
+            "exception": 1,
+            "entries": 1,
+            "typedAgreement": 1
+          }
+        },
+        {
+          "id": 3,
+          "input": {
+            "type": "java.lang.Integer",
+            "value": 1
+          },
+          "direct": {
+            "value": 2,
+            "exception": null,
+            "entries": 1,
+            "typedAgreement": 1
+          },
+          "adapter": {
+            "value": 1,
+            "exception": 1,
+            "entries": 1,
+            "typedAgreement": 1
+          }
+        },
+        {
+          "id": 4,
+          "input": {
+            "type": "java.lang.String",
+            "value": "one"
+          },
+          "direct": {
+            "value": null,
+            "exception": "java.lang.ClassCastException",
+            "entries": 0,
+            "typedAgreement": -1
+          },
+          "adapter": {
+            "value": 1,
+            "exception": 1,
+            "entries": 1,
+            "typedAgreement": -1
+          }
+        }
+      ],
+      "control": "driver",
+      "record": "controls/controls.json",
+      "reason": null
+    },
+    {
+      "kind": "verifier",
+      "revision": "original",
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+        "prove",
+        "bridgegrid.Projection#exception(int)",
+        "--classes",
+        "prepare/original/adapter-original.jar",
+        "--classpath",
+        "prepare/original/original.jar",
+        "--assume",
+        "code >= 0 && code < 5",
+        "--assert",
+        "result == 1",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "10",
+        "--timeout",
+        "30",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.062,
+      "stdout": "verifier/verifier.stdout",
+      "stderr": "verifier/verifier.stderr",
+      "identities": {
+        "jvmcontract": "a990d43a599efa7a1b4984bf3be06662596e8c592473bd2ae8c2e19b5082b706",
+        "commit": "a10ab079076ec30343c3ee666712cea363b4e119",
+        "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+        "command": "prove",
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "engine": "native",
+        "gaps": "strict",
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 10
+        },
+        "timeout": 30,
+        "scope": {
+          "label": "adapter",
+          "meaning": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+          "method": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+          "revisions": {
+            "original": {
+              "commit": "fixture:original",
+              "loadedFrom": "original.jar",
+              "classSha256": "79f8ff5aad49bf23643457a83787b88ddefba4218962e93e7366510647beecc3",
+              "origin": "built from original by the fixture recipe",
+              "parameters": {
+                "names": [
+                  "n"
+                ],
+                "recordedIn": "MethodParameters"
+              }
+            }
+          },
+          "adapter": {
+            "entry": "bridgegrid.Projection#exception(I)I",
+            "mapping": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+            "correspondence": "finite-oracle",
+            "cases": 5
+          },
+          "models": [],
+          "assumptions": []
+        },
+        "classpath": {
+          "original": [
+            {
+              "path": "adapter-original.jar",
+              "sha256": "525196bb1cd947b5cc918cf13799d5d32f2830e5f6491a19d63166d4e9a9f9d5",
+              "role": "adapter"
+            },
+            {
+              "path": "original.jar",
+              "sha256": "a2014102444bc56500c3caa8c50f8525d44f21d62778daa1d76e599f20d64401",
+              "role": "original"
+            }
+          ]
+        },
+        "checkedEntry": "bridgegrid.Projection#exception(I)I",
+        "entryBindings": {
+          "original": {
+            "entry": "bridgegrid.Projection#exception(I)I",
+            "classSha256": "abf4a8d9446d213304116c73ab4ce36898cde2a5bd0f6ed10e51a15ccebf7942",
+            "loadedFrom": "adapter-original.jar",
+            "subject": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+            "subjectClassSha256": "79f8ff5aad49bf23643457a83787b88ddefba4218962e93e7366510647beecc3"
+          }
+        },
+        "recipe": {
+          "kind": "adapter",
+          "command": "prove",
+          "subject": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+          "checkedEntry": "bridgegrid.Projection#exception(I)I",
+          "arguments": [
+            {
+              "field": "assume",
+              "flag": "--assume",
+              "value": "code >= 0 && code < 5"
+            },
+            {
+              "field": "assert",
+              "flag": "--assert",
+              "value": "result == 1"
+            },
+            {
+              "field": "engine",
+              "flag": "--engine",
+              "value": "native"
+            },
+            {
+              "field": "gaps",
+              "flag": "--gaps",
+              "value": "strict"
+            },
+            {
+              "field": "bounds.unwind",
+              "flag": "--unwind",
+              "value": "16"
+            },
+            {
+              "field": "bounds.maxArrayLength",
+              "flag": "--max-array-length",
+              "value": "10"
+            }
+          ],
+          "checkerDefaults": {
+            "observations": {
+              "values": [
+                "result",
+                "exception"
+              ],
+              "evidence": "stated.observations"
+            },
+            "nullable": {
+              "values": [],
+              "evidence": "stated.domain"
+            },
+            "mayAlias": {
+              "values": [],
+              "evidence": "stated.domain"
+            }
+          },
+          "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+          "correspondence": {
+            "entry": "bridgegrid.Projection#exception(I)I",
+            "mapping": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+            "correspondence": "finite-oracle",
+            "cases": 5
+          }
+        },
+        "commits": {
+          "original": "fixture:original"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC",
+          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+          "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+          "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+          "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+        },
+        "cwd": "the attempt directory",
+        "probe": {
+          "original": {
+            "argv": [
+              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+              "gaps",
+              "--target",
+              "bridgegrid.Projection#exception(int)",
+              "--classes",
+              "prepare/original/adapter-original.jar",
+              "--classpath",
+              "prepare/original/original.jar",
+              "--json"
+            ],
+            "status": "exited",
+            "exitCode": 0,
+            "seconds": 0.033,
+            "stdout": "verifier/probe-original.stdout",
+            "stderr": "verifier/probe-original.stderr",
+            "gaps": []
+          }
+        },
+        "usage": {
+          "cpuSeconds": 0.0557,
+          "peakRssBytes": 79785984,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        "executionId": "20261120T034850Z-2287fae1",
+        "startedAt": "2026-11-20T03:48:50.141439+00:00"
+      },
+      "observations": [
+        {
+          "wire_version": 1,
+          "verdict": "verified",
+          "target": "bridgegrid.Projection#exception(int)",
+          "domain": "code: int",
+          "assume": "code >= 0 && code < 5",
+          "assert": "result == 1",
+          "throws": [],
+          "throws_checked": [],
+          "counterexample": null,
+          "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+          "problem": null,
+          "statement": "verifier/work/harness/PropertyHarness.java",
+          "findings": [],
+          "output": "✓ bridgegrid.Projection#exception(int) satisfies `result == 1` on every input where code >= 0 && code < 5 (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: exception(code=0) reaches the calls\n",
+          "work": "verifier/work",
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 0.01010521,
+            "properties": 1,
+            "unwind": 16,
+            "max_array_length": 10,
+            "stage": null,
+            "native": {
+              "paths": 6,
+              "merges": 0,
+              "solver_calls": 11,
+              "solving_seconds": 2.84e-05,
+              "gates_evaluated": 14,
+              "evaluating_seconds": 4.049e-06,
+              "divisions": 0,
+              "divisions_built": 0,
+              "multiplications": 0,
+              "multiplications_built": 0,
+              "word_operations": 7,
+              "finite_queries": {
+                "diagrams": 11,
+                "bitwuzla": 0
+              },
+              "variables": 11,
+              "clauses": 1,
+              "seconds": 0.009097111,
+              "loading_seconds": 0.000498847,
+              "decoding_seconds": 7.7295e-05,
+              "encoding_seconds": 8.9436e-05,
+              "witness_seconds": 0.0
+            },
+            "gap_mode": "strict",
+            "deadline_seconds": 30.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budget_seconds": 30.0,
+                "seconds": 0.009,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.008,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 11,
+                  "clauses": 1
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budget_seconds": 29.99,
+                "seconds": 0.007,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.007,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 8,
+                  "clauses": 1
+                }
+              }
+            ],
+            "phases": {
+              "seconds": 0.051,
+              "setup": 0.001,
+              "harness": 0.0,
+              "gaps": 0.0,
+              "contracts": 0.0,
+              "runs": 0.016,
+              "replay": 0.0,
+              "jvm": 0.0,
+              "other": 0.033
+            }
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 5",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "max_array_length": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+              "classes": 38,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found exception(code=0).",
+              "witness": "exception(code=0)"
+            }
+          }
+        }
+      ],
+      "control": null,
+      "record": "verifier/verifier.json",
+      "reason": null
+    }
+  ]
+}

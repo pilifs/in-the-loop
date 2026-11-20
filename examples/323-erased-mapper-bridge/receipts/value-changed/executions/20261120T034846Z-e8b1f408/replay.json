@@ -1,0 +1,59 @@
+[
+  {
+    "claimKey": "ab11d483b6e51946",
+    "entry": "bridgegrid.Projection#value(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 2
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "changed": {
+        "entryClassSha256": "abf4a8d9446d213304116c73ab4ce36898cde2a5bd0f6ed10e51a15ccebf7942",
+        "classpath": [
+          "525196bb1cd947b5cc918cf13799d5d32f2830e5f6491a19d63166d4e9a9f9d5",
+          "2409d202ca6b43fa7273adf14fa5cf9be7f308b709f4034d39d09d4254992131"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 2;\nif (!(code >= 0 && code < 5)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = bridgegrid.Projection.value(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 2,
+      "input": {
+        "type": "java.lang.Integer",
+        "value": 0
+      },
+      "field": "value",
+      "direct": {
+        "changed": {
+          "value": 2,
+          "exception": null,
+          "entries": 1,
+          "typedAgreement": 1
+        }
+      },
+      "tableSha256": "8af08deb5e68e5cab5d53c2140d4d17842a3e08b06721cb45b0bddcc5306f378"
+    }
+  }
+]

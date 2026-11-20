@@ -1,0 +1,353 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T034844Z-6267baa9",
+  "task": "label-legacy",
+  "claimKey": "fa6d8638769a3bdd",
+  "revisions": [
+    "legacy"
+  ],
+  "startedAt": "2026-11-20T03:48:44.403067+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 30
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-032647-native-325-one-label-method-compiled-to",
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 2.1196
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.1878
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 2.19
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.2439
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.3203
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.5539
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "legacy": {
+      "revision": "fixture:legacy",
+      "target": {
+        "class": "labelgrid.Label",
+        "method": "label",
+        "descriptor": "(ILjava/lang/String;)Ljava/lang/String;",
+        "loadedFrom": "legacy.jar",
+        "classSha256": "5ab0eb4c2150c75593a54cda1439dc5114dab60fa91b9b186ba61e18af4ebb76",
+        "adapterCalls": [
+          "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "15969146dd6449cd3a697219fbbe4e997ceb5ab589adbf2072b49490d084af95",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-legacy.jar",
+          "sha256": "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "legacy.jar",
+          "sha256": "a662fff12195aca0b49e5fc7a579b2ed99d90c0cd3b75d0b4ac3fefe6dace075",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from legacy by the fixture recipe"
+        }
+      ],
+      "originalCompiler": {
+        "jdk": {
+          "feature": "21",
+          "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+          "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "release": {
+            "JAVA_VERSION": "21.0.13",
+            "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+            "OS_ARCH": "x86_64"
+          }
+        },
+        "flags": [
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g",
+          "-parameters"
+        ]
+      }
+    }
+  },
+  "bindingId": "a87ea80d8b7253d583ad96bdbbd063828f4973f6890e37ffe0691cc201cfb8c5",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "prove",
+    "labelgrid.Projection#label(int)",
+    "--classes",
+    "prepare/legacy/adapter-legacy.jar",
+    "--classpath",
+    "prepare/legacy/legacy.jar",
+    "--assume",
+    "code >= 0 && code < 9",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "10",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "a990d43a599efa7a1b4984bf3be06662596e8c592473bd2ae8c2e19b5082b706",
+    "commit": "a10ab079076ec30343c3ee666712cea363b4e119",
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 10
+    },
+    "timeout": 30,
+    "scope": {
+      "label": "adapter",
+      "meaning": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
+      "method": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+      "revisions": {
+        "legacy": {
+          "commit": "fixture:legacy",
+          "loadedFrom": "legacy.jar",
+          "classSha256": "5ab0eb4c2150c75593a54cda1439dc5114dab60fa91b9b186ba61e18af4ebb76",
+          "origin": "built from legacy by the fixture recipe",
+          "parameters": {
+            "names": [
+              "n",
+              "s"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "labelgrid.Projection#label(I)I",
+        "mapping": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "legacy": [
+        {
+          "path": "adapter-legacy.jar",
+          "sha256": "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
+          "role": "adapter"
+        },
+        {
+          "path": "legacy.jar",
+          "sha256": "a662fff12195aca0b49e5fc7a579b2ed99d90c0cd3b75d0b4ac3fefe6dace075",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "labelgrid.Projection#label(I)I",
+    "entryBindings": {
+      "legacy": {
+        "entry": "labelgrid.Projection#label(I)I",
+        "classSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
+        "loadedFrom": "adapter-legacy.jar",
+        "subject": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+        "subjectClassSha256": "5ab0eb4c2150c75593a54cda1439dc5114dab60fa91b9b186ba61e18af4ebb76"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+      "checkedEntry": "labelgrid.Projection#label(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 9"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "10"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "labelgrid.Projection#label(I)I",
+        "mapping": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      }
+    },
+    "commits": {
+      "legacy": "fixture:legacy"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "legacy": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+          "gaps",
+          "--target",
+          "labelgrid.Projection#label(int)",
+          "--classes",
+          "prepare/legacy/adapter-legacy.jar",
+          "--classpath",
+          "prepare/legacy/legacy.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-legacy.stdout",
+        "stderr": "verifier/probe-legacy.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0628,
+      "peakRssBytes": 64299008,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0628,
+    "peakRssBytes": 64299008,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.073,
+  "missing": [],
+  "receipt": "receipts/label-legacy/20261120T034844Z-6267baa9/result.json",
+  "preparedClaim": "3f493a10af99e1f9",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T03:48:46.957136+00:00"
+}

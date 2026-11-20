@@ -1,0 +1,190 @@
+{
+  "plan": {
+    "example": "330",
+    "task": "serial-current",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "editgrid.Editor#execute([I)I",
+    "revisions": [
+      "current"
+    ],
+    "claim": {
+      "task": "serial-current",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "editgrid.Editor#execute([I)I",
+      "file": "claims/serial.json",
+      "sha256": "3a65bb6b87bddd8406717bce1ff9e388ed5f3669055ee980eb213b7289b27f4f",
+      "property": "serial",
+      "claimKind": "property",
+      "statement": "Both valid serial schedules finish at revision two.",
+      "assume": "code >= 0 && code < 6 && (code == 0 || code == 5)",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/editgrid/Cases.java",
+          "sha256": "d6f1de0270d43f7c855a9e7751d3cb2cb90b39c43b7f2bac9e5b9bb1c2f25a78"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "ac742fe138094a02035dad36876738c66c825770f2b8c465b62367eec8236e29"
+        }
+      ],
+      "adapter": {
+        "entry": "editgrid.Projection#revision(I)I",
+        "mapping": "Code indexes the six linear extensions of read A before write A and read B before write B. The initial revision is zero. Each read and each write is one explicit transition.",
+        "correspondence": "finite-oracle",
+        "cases": 6
+      },
+      "key": "8488739123d714ad"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "current",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "current",
+        "adapters": [
+          "adapter/editgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/serial-current"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032647-native-330-two-editors-increment-the-sam/examples/330-two-editor-interleavings",
+    "network": false
+  },
+  "inputs": {
+    "example": "330",
+    "task": "serial-current",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "editgrid.Editor#execute([I)I",
+    "revisions": [
+      "current"
+    ],
+    "claim": {
+      "task": "serial-current",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "editgrid.Editor#execute([I)I",
+      "file": "claims/serial.json",
+      "sha256": "3a65bb6b87bddd8406717bce1ff9e388ed5f3669055ee980eb213b7289b27f4f",
+      "property": "serial",
+      "claimKind": "property",
+      "statement": "Both valid serial schedules finish at revision two.",
+      "assume": "code >= 0 && code < 6 && (code == 0 || code == 5)",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/editgrid/Cases.java",
+          "sha256": "d6f1de0270d43f7c855a9e7751d3cb2cb90b39c43b7f2bac9e5b9bb1c2f25a78"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "ac742fe138094a02035dad36876738c66c825770f2b8c465b62367eec8236e29"
+        }
+      ],
+      "adapter": {
+        "entry": "editgrid.Projection#revision(I)I",
+        "mapping": "Code indexes the six linear extensions of read A before write A and read B before write B. The initial revision is zero. Each read and each write is one explicit transition.",
+        "correspondence": "finite-oracle",
+        "cases": 6
+      },
+      "key": "8488739123d714ad"
+    },
+    "artifacts": [
+      {
+        "revision": "current",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "current",
+        "adapters": [
+          "adapter/editgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/editgrid/Projection.java",
+        "sha256": "9532d1562a5ab14004ca2039159e3da985c25fc5c9a56fce4c54d3cd0418e70b"
+      }
+    ]
+  },
+  "key": "427afc016161d435ea78a2f0ee3186e3b3fe259a7d0fe7d8572a961eac3e4bee"
+}

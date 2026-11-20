@@ -1,0 +1,405 @@
+{
+  "task": "label-legacy",
+  "record": {
+    "kind": "verifier",
+    "revision": "legacy",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+      "prove",
+      "labelgrid.Projection#label(int)",
+      "--classes",
+      "prepare/legacy/adapter-legacy.jar",
+      "--classpath",
+      "prepare/legacy/legacy.jar",
+      "--assume",
+      "code >= 0 && code < 9",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "10",
+      "--timeout",
+      "30",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.073,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "a990d43a599efa7a1b4984bf3be06662596e8c592473bd2ae8c2e19b5082b706",
+      "commit": "a10ab079076ec30343c3ee666712cea363b4e119",
+      "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "timeout": 30,
+      "scope": {
+        "label": "adapter",
+        "meaning": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
+        "method": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+        "revisions": {
+          "legacy": {
+            "commit": "fixture:legacy",
+            "loadedFrom": "legacy.jar",
+            "classSha256": "5ab0eb4c2150c75593a54cda1439dc5114dab60fa91b9b186ba61e18af4ebb76",
+            "origin": "built from legacy by the fixture recipe",
+            "parameters": {
+              "names": [
+                "n",
+                "s"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "labelgrid.Projection#label(I)I",
+          "mapping": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
+          "correspondence": "finite-oracle",
+          "cases": 9
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "legacy": [
+          {
+            "path": "adapter-legacy.jar",
+            "sha256": "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
+            "role": "adapter"
+          },
+          {
+            "path": "legacy.jar",
+            "sha256": "a662fff12195aca0b49e5fc7a579b2ed99d90c0cd3b75d0b4ac3fefe6dace075",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "labelgrid.Projection#label(I)I",
+      "entryBindings": {
+        "legacy": {
+          "entry": "labelgrid.Projection#label(I)I",
+          "classSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
+          "loadedFrom": "adapter-legacy.jar",
+          "subject": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+          "subjectClassSha256": "5ab0eb4c2150c75593a54cda1439dc5114dab60fa91b9b186ba61e18af4ebb76"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+        "checkedEntry": "labelgrid.Projection#label(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 9"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "16"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "10"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "labelgrid.Projection#label(I)I",
+          "mapping": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
+          "correspondence": "finite-oracle",
+          "cases": 9
+        }
+      },
+      "commits": {
+        "legacy": "fixture:legacy"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "legacy": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+            "gaps",
+            "--target",
+            "labelgrid.Projection#label(int)",
+            "--classes",
+            "prepare/legacy/adapter-legacy.jar",
+            "--classpath",
+            "prepare/legacy/legacy.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-legacy.stdout",
+          "stderr": "verifier/probe-legacy.stderr",
+          "gaps": []
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0628,
+        "peakRssBytes": 64299008,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "labelgrid.Projection#label(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 9",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ labelgrid.Projection#label(int) satisfies `result == 1` on every input where code >= 0 && code < 9 (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: label(code=0) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 0.014533435,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 10,
+          "stage": null,
+          "native": {
+            "paths": 10,
+            "merges": 0,
+            "solver_calls": 63,
+            "solving_seconds": 0.000131669,
+            "gates_evaluated": 73,
+            "evaluating_seconds": 3.1946e-05,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 18,
+            "finite_queries": {
+              "diagrams": 63,
+              "bitwuzla": 0
+            },
+            "variables": 85,
+            "clauses": 1,
+            "seconds": 0.013305985,
+            "loading_seconds": 0.000533649,
+            "decoding_seconds": 5.5654e-05,
+            "encoding_seconds": 0.002345936,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 30.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 30.0,
+              "seconds": 0.013,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.01,
+                "encoding": 0.002,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 85,
+                "clauses": 1
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 29.985,
+              "seconds": 0.007,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 9,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.058,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.02,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.037
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 9",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+            "classes": 38,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found label(code=0).",
+            "witness": "label(code=0)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032647-native-325-one-label-method-compiled-to/.build-py/examples-c28sez03/targets/325/label-legacy/20261120T034844Z-6267baa9",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032647-native-325-one-label-method-compiled-to/.build-py/examples-c28sez03/targets/325/label-legacy/20261120T034844Z-6267baa9"
+  }
+}
