@@ -1,0 +1,390 @@
+{
+  "task": "units-separate",
+  "record": {
+    "kind": "verifier",
+    "revision": "separate",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+      "prove",
+      "chunks.Inputs#units(int)",
+      "--classes",
+      "prepare/separate/separate.jar",
+      "--assume",
+      "code >= 0 && code < 5578",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "160",
+      "--max-array-length",
+      "48",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.051,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+      "commit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+      "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "timeout": 120,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "chunks.Inputs#units(I)I",
+        "revisions": {
+          "separate": {
+            "commit": "fixture:separate",
+            "loadedFrom": "separate.jar",
+            "classSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f",
+            "origin": "built from separate by the fixture recipe",
+            "parameters": {
+              "names": [
+                "code"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "separate": [
+          {
+            "path": "separate.jar",
+            "sha256": "b537544cdd230b309de2ba2ab224306c3e45453c1d9e6cba4c73a3e1ff3f584d",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "chunks.Inputs#units(I)I",
+      "entryBindings": {
+        "separate": {
+          "entry": "chunks.Inputs#units(I)I",
+          "classSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f",
+          "loadedFrom": "separate.jar",
+          "subject": "chunks.Inputs#units(I)I",
+          "subjectClassSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f"
+        }
+      },
+      "recipe": {
+        "kind": "direct-method",
+        "command": "prove",
+        "subject": "chunks.Inputs#units(I)I",
+        "checkedEntry": "chunks.Inputs#units(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 5578"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "160"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "48"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+      },
+      "commits": {
+        "separate": "fixture:separate"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "separate": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+            "gaps",
+            "--target",
+            "chunks.Inputs#units(int)",
+            "--classes",
+            "prepare/separate/separate.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-separate.stdout",
+          "stderr": "verifier/probe-separate.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.InputStream.<init>()",
+              "sites": [
+                "chunks.ChunkInput.<init>:10"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.String.<init>([BIILjava/nio/charset/Charset;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.String.<init>(byte[], int, int, java.nio.charset.Charset)",
+              "sites": [
+                "chunks.Decoder.decode:9"
+              ]
+            },
+            {
+              "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+              "sites": [
+                "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0494,
+        "peakRssBytes": 82509824,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "chunks.Inputs#units(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 5578",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13 (java.io.InputStream.<init>() at chunks.ChunkInput.<init>:10). With --gaps assume it assumes instead that java.io.InputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "chunks.Inputs#units(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13 (java.io.InputStream.<init>() at chunks.ChunkInput.<init>:10). With --gaps assume it assumes instead that java.io.InputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "uri": null,
+            "line": 38
+          }
+        ],
+        "output": "✗ chunks.Inputs#units(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13 (java.io.InputStream.<init>() at chunks.ChunkInput.<init>:10). With --gaps assume it assumes instead that java.io.InputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.034331391,
+          "properties": 1,
+          "unwind": 160,
+          "max_array_length": 48,
+          "stage": null,
+          "native": {
+            "paths": 42,
+            "merges": 0,
+            "solver_calls": 42,
+            "solving_seconds": 0.015664971,
+            "gates_evaluated": 63511,
+            "evaluating_seconds": 0.000731382,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 3238,
+            "clauses": 10687,
+            "seconds": 0.033204337,
+            "loading_seconds": 0.000461126,
+            "decoding_seconds": 8.3157e-05,
+            "encoding_seconds": 0.007352015,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.InputStream.<init>()",
+              "sites": [
+                "chunks.ChunkInput.<init>:10"
+              ],
+              "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.033,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.01,
+                "encoding": 0.007,
+                "solving": 0.016,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 3238,
+                "clauses": 10687
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.046,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.033,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.011
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 5578",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 160,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-341-check-streaming-utf-8-partitions-fro/.build-py/examples-xkjzfyym/targets/341/units-separate/20261120T193858Z-89398ae0",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-341-check-streaming-utf-8-partitions-fro/.build-py/examples-xkjzfyym/targets/341/units-separate/20261120T193858Z-89398ae0"
+  }
+}

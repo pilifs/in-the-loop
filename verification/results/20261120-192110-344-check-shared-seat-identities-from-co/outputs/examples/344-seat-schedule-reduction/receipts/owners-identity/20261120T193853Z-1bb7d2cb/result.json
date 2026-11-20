@@ -1,0 +1,423 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "37d031be5fdbd806",
+    "format": 1,
+    "example": "344",
+    "statement": {
+      "approach": "target",
+      "task": "owners-identity",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Reservations#singleOwner(I)I",
+      "revisions": [
+        "identity"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "owners-identity",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "seats.Reservations#singleOwner(I)I",
+        "file": "claims/owners.json",
+        "sha256": "49889f2f421d82966d48f18f1a7f5fcd9ca0a743e48f57faa5fdc497f151d0dd",
+        "property": "owners",
+        "claimKind": "property",
+        "statement": "The two handles report the same owner when they designate the same seat. Distinct seats record their own worker.",
+        "assume": "code >= 0 && code < 36",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 32,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 32,
+          "maxArrayLength": 8
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/seats/SeatCases.java",
+            "sha256": "dd0f1d352c223bd00cd26aabc36e5448342d43368103f99bce4cbe361a660442"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "0ce9aa744587d3466f120f9466fdc75f5dd91f40494a50f4a077f149cda22746"
+          }
+        ],
+        "key": "2d70922c5336fb65"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "e8b8f77774b5462eb849ebbd5bc6283ae5af664c3310057c3a42ab9c7ca2028f",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "owners-identity",
+      "sidecar": "28794afc1a615925f6f76c69994b4a6db4932745867a65555c952bbf02269ebf",
+      "revisions": {
+        "identity": "e3fdfdda1295bd5364fd61f4e3f7a2bbe541cd57"
+      },
+      "dependencies": [
+        {
+          "revision": "identity",
+          "position": 0,
+          "role": "driver",
+          "sha256": "943751e9092daa3a68f2a25ff96e0fe5605a3af7adeac3a2081284139b7d4752"
+        },
+        {
+          "revision": "identity",
+          "position": 1,
+          "role": "original",
+          "sha256": "2e289f59bf2b414e4e48d573b42f926b91366ed645728b34ed2417353ec0cbe8"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/owners.json": "49889f2f421d82966d48f18f1a7f5fcd9ca0a743e48f57faa5fdc497f151d0dd",
+        "controls/oracle.py": "0ce9aa744587d3466f120f9466fdc75f5dd91f40494a50f4a077f149cda22746",
+        "driver/seats/SeatCases.java": "dd0f1d352c223bd00cd26aabc36e5448342d43368103f99bce4cbe361a660442"
+      },
+      "claimKey": "2d70922c5336fb65"
+    }
+  },
+  "attempt": {
+    "id": "20261120T193853Z-1bb7d2cb",
+    "claim": "37d031be5fdbd806",
+    "startedAt": "2026-11-20T19:38:53+00:00",
+    "seconds": 0.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "seats.Reservations#singleOwner(int)",
+      "--classes",
+      "prepare/identity/identity.jar",
+      "--assume",
+      "code >= 0 && code < 36",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "32",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "1db5f387dc7de87678b4b044031bda61ce2c702a981f8f5ee2716d0e10968db2",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-192110-344-check-shared-seat-identities-from-co",
+      "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192110-344-check-shared-seat-identities-from-co"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control identity on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.166,
+        "stdout": "records/control-identity-jdk21.stdout",
+        "stderr": "records/control-identity-jdk21.stderr"
+      },
+      {
+        "name": "verifier identity on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.043,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 32,
+      "maxArrayLength": 8,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "37d031be5fdbd806",
+    "attempt": "20261120T193853Z-1bb7d2cb",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 36",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>(Ljava/lang/Runnable;)V@jdk-21.0.13 (java.lang.Thread.<init>(java.lang.Runnable) at seats.Reservations.execute:27). With --gaps assume it assumes instead that java.lang.Thread.<init>(java.lang.Runnable) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.021,
+            "properties": 1,
+            "unwind": 32,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 0.019,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.006,
+                  "encoding": 0.008,
+                  "solving": 0.004,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 8953,
+                  "clauses": 29934
+                }
+              }
+            ],
+            "native": {
+              "paths": 5,
+              "merges": 0,
+              "solverCalls": 6,
+              "solvingSeconds": 0.003559023,
+              "gatesEvaluated": 183,
+              "evaluatingSeconds": 1.4366e-05,
+              "divisions": 5,
+              "divisionsBuilt": 1,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 8953,
+              "clauses": 29934,
+              "seconds": 0.018597109,
+              "loadingSeconds": 0.000503816,
+              "decodingSeconds": 0.000130073,
+              "encodingSeconds": 0.00815434,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.lang.Thread.<init>(Ljava/lang/Runnable;)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.Thread.<init>(java.lang.Runnable)",
+                "sites": [
+                  "seats.Reservations.execute:27"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 36",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 32,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"identity\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>(Ljava/lang/Runnable;)V@jdk-21.0.13 (java.lang.Thread.<init>(java.lang.Runnable) at seats.Reservations.execute:27). With --gaps assume it assumes instead that java.lang.Thread.<init>(java.lang.Runnable) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 36"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "48ead17a186c8e3bb639e094fce1cb6d6880bc6e5d67c978b75407087554a69e",
+        "bytes": 43949
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "afffa636a580361069aef6b69f431eed2fb545b89ad3c46e38c998603f0f6165",
+        "bytes": 555
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "e4c5faad737fadff7a3862d20c01186efe640e0509bf631ebdd2af4535b07836",
+        "bytes": 1985
+      },
+      {
+        "path": "records/control-identity-jdk21.stdout",
+        "sha256": "4ca91e0ea9bf44dca904d60474fadb5e895601000919fd8eef7672196e79c4d1",
+        "bytes": 4706
+      },
+      {
+        "path": "records/control-identity-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "08c05c0dab07507d573a2d793a744e168088c30729009b12168e615138e75f3b",
+        "bytes": 29410
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "27653b245b9b907024809ff988b36d749fc0d93d70d556619844b210e7506f5d",
+        "bytes": 6256
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "d9fd095d638abd73143f1c9aee602260eeb8fff6f90b5276f046cc7ae7f8b40e",
+        "bytes": 14492
+      }
+    ]
+  }
+}

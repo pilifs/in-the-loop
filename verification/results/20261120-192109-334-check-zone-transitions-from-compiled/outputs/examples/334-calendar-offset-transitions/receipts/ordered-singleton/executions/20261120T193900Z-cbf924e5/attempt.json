@@ -1,0 +1,352 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T193900Z-cbf924e5",
+  "task": "ordered-singleton",
+  "claimKey": "03978d64a5e1ea6d",
+  "revisions": [
+    "singleton"
+  ],
+  "startedAt": "2026-11-20T19:39:00.835474+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-192109-334-check-zone-transitions-from-compiled",
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.7163
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.8334
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.8785
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 1.912
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.0587
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "singleton": {
+      "revision": "fixture:singleton",
+      "target": {
+        "class": "zones.Appointment",
+        "method": "ordered",
+        "descriptor": "(I)I",
+        "loadedFrom": "singleton.jar",
+        "classSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "4a868d564bc8f4f2415928dc090fb33fbe36f621ad468384656c3ebc6b4ad2eb",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "singleton.jar",
+          "sha256": "7c7473f76b0256f4d3d50e79d1ed02aa9c2f0d818010ce53778df8c66224670a",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from singleton by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "267f7b2507a71c0e2b9b9f02f7442dd912cffcecc483267c6eb428d9af903151",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "zones.Appointment#ordered(int)",
+    "--classes",
+    "prepare/singleton/singleton.jar",
+    "--assume",
+    "code >= 0 && code < 24",
+    "--assert",
+    "result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "32",
+    "--max-array-length",
+    "24",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 32,
+      "maxArrayLength": 24
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "zones.Appointment#ordered(I)I",
+      "revisions": {
+        "singleton": {
+          "commit": "fixture:singleton",
+          "loadedFrom": "singleton.jar",
+          "classSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
+          "origin": "built from singleton by the fixture recipe",
+          "parameters": {
+            "names": [
+              "code"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "singleton": [
+        {
+          "path": "singleton.jar",
+          "sha256": "7c7473f76b0256f4d3d50e79d1ed02aa9c2f0d818010ce53778df8c66224670a",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "zones.Appointment#ordered(I)I",
+    "entryBindings": {
+      "singleton": {
+        "entry": "zones.Appointment#ordered(I)I",
+        "classSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
+        "loadedFrom": "singleton.jar",
+        "subject": "zones.Appointment#ordered(I)I",
+        "subjectClassSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "zones.Appointment#ordered(I)I",
+      "checkedEntry": "zones.Appointment#ordered(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 24"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "32"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "24"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "singleton": "fixture:singleton"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "singleton": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+          "gaps",
+          "--target",
+          "zones.Appointment#ordered(int)",
+          "--classes",
+          "prepare/singleton/singleton.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.033,
+        "stdout": "verifier/probe-singleton.stdout",
+        "stderr": "verifier/probe-singleton.stderr",
+        "gaps": [
+          {
+            "id": "jdk-reference-method:java.time.ZoneId.getRules()Ljava/time/zone/ZoneRules;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.time.ZoneId.getRules()",
+            "sites": [
+              "zones.Offsets.offsets:11"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.time.zone.ZoneRules.getOffset(Ljava/time/LocalDateTime;)Ljava/time/ZoneOffset;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.time.zone.ZoneRules.getOffset(java.time.LocalDateTime)",
+            "sites": [
+              "zones.Offsets.offsets:12"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.time.ZoneOffset.getTotalSeconds()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.time.ZoneOffset.getTotalSeconds()",
+            "sites": [
+              "zones.Appointment.ordered:24"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.time.LocalDateTime.of(IIIII)Ljava/time/LocalDateTime;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.time.LocalDateTime.of(int, int, int, int, int)",
+            "sites": [
+              "zones.Appointment.read:14",
+              "zones.Appointment.read:15"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.time.ZoneId.of(Ljava/lang/String;)Ljava/time/ZoneId;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.time.ZoneId.of(java.lang.String)",
+            "sites": [
+              "zones.Appointment.read:13"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.TimeZone.getTimeZone(java.lang.String)",
+            "sites": [
+              "zones.Appointment.read:12"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.TimeZone.setDefault(Ljava/util/TimeZone;)V@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.TimeZone.setDefault(java.util.TimeZone)",
+            "sites": [
+              "zones.Appointment.read:12"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.022,
+      "peakRssBytes": 80916480,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.022,
+    "peakRssBytes": 80916480,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.031,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/ordered-singleton/20261120T193900Z-cbf924e5/result.json",
+  "preparedClaim": "5e418aeff74edc46",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at zones.Appointment.read:12). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "endedAt": "2026-11-20T19:39:02.894197+00:00"
+}

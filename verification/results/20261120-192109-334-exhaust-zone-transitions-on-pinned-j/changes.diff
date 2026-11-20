@@ -1,0 +1,1887 @@
+--- /dev/null
++++ b/examples/334-calendar-offset-transitions/records/finite-proofs/20261120T193852Z-4acaac37/batch.json
+@@ -0,0 +1,118 @@
++{
++  "schema": "finite-jvm-batch/v1",
++  "id": "20261120T193852Z-4acaac37",
++  "retryOf": null,
++  "order": [
++    "count-valid",
++    "ordered-valid",
++    "ordinary-valid",
++    "count-singleton",
++    "ordered-singleton",
++    "ordinary-singleton"
++  ],
++  "claims": {
++    "count-valid": {
++      "sourceClaim": "060e3f293b34aea6",
++      "inputsKey": "0db0b986576b9420664db575cae2d6a3d381c174b583758e4372c536a5f31759",
++      "revisions": [
++        "valid"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "valid": "81cb056f563f24c2a40e9dcabc97191c22e52dc09fe487c0fc2f9767420e545d"
++      }
++    },
++    "ordered-valid": {
++      "sourceClaim": "03978d64a5e1ea6d",
++      "inputsKey": "55a12930f81a9e5463520c55946f1f2a481d5cee8a7c62b38102933a979698f4",
++      "revisions": [
++        "valid"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "valid": "81cb056f563f24c2a40e9dcabc97191c22e52dc09fe487c0fc2f9767420e545d"
++      }
++    },
++    "ordinary-valid": {
++      "sourceClaim": "bbb9aee507d2375a",
++      "inputsKey": "134f8f55f1989d0e33860b8790dab9a60e19101c4252cb989081302adbc95442",
++      "revisions": [
++        "valid"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "valid": "81cb056f563f24c2a40e9dcabc97191c22e52dc09fe487c0fc2f9767420e545d"
++      }
++    },
++    "count-singleton": {
++      "sourceClaim": "060e3f293b34aea6",
++      "inputsKey": "3308d5184839d2045143afcafe713b93f2255916f833011729943d3f7a2f46ae",
++      "revisions": [
++        "singleton"
++      ],
++      "expected": "refuted",
++      "sourceLocks": {
++        "singleton": "00bde04821019b37f677d8010204e874b53308e499f130161b7b3d641f3df54c"
++      }
++    },
++    "ordered-singleton": {
++      "sourceClaim": "03978d64a5e1ea6d",
++      "inputsKey": "5e3c7946aa7b71c5274545a8b75b1ce99aab16daf50dd3963fed2cc3316ce551",
++      "revisions": [
++        "singleton"
++      ],
++      "expected": "refuted",
++      "sourceLocks": {
++        "singleton": "00bde04821019b37f677d8010204e874b53308e499f130161b7b3d641f3df54c"
++      }
++    },
++    "ordinary-singleton": {
++      "sourceClaim": "bbb9aee507d2375a",
++      "inputsKey": "ec48d479d0a37052676165d9e4b13aa1cb27f368b893842e8dba6c53297e9244",
++      "revisions": [
++        "singleton"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "singleton": "00bde04821019b37f677d8010204e874b53308e499f130161b7b3d641f3df54c"
++      }
++    }
++  },
++  "status": "completed",
++  "completed": [
++    {
++      "task": "count-valid",
++      "status": "established",
++      "sha256": "5c1f09bcc60506a05b91576ddd686b4d97996b9c3485a3ce5addca08e7961c21"
++    },
++    {
++      "task": "ordered-valid",
++      "status": "established",
++      "sha256": "199ebb3aa54ea8bc279e2c9574445474d0b2ab112c3861824833b814d8f96dad"
++    },
++    {
++      "task": "ordinary-valid",
++      "status": "established",
++      "sha256": "a44fac38b543cc62f70969ea9dc96c5aa385f020b5a75e4febff8d0d83757673"
++    },
++    {
++      "task": "count-singleton",
++      "status": "refuted",
++      "sha256": "4509c3be153b72323b63a79a3e882322d8ec815a826821c15242faa55dcb6aac"
++    },
++    {
++      "task": "ordered-singleton",
++      "status": "refuted",
++      "sha256": "251b88458f2eb61f430c86123484159cc31d0ef7decc13540881bb9d30584904"
++    },
++    {
++      "task": "ordinary-singleton",
++      "status": "established",
++      "sha256": "bb92425d6bdd8de731da41d32f45c96bebce4b6cbcab6b5693a4ab0c1969e6f6"
++    }
++  ],
++  "missing": [],
++  "secondsPerJvm": 120,
++  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
++  "scope": "Each integer starts with a fresh application class loader on the pinned runtime and classpath. Intervals above 4096 use consecutive JVM batches on one total deadline."
++}
+--- /dev/null
++++ b/examples/334-calendar-offset-transitions/records/finite-proofs/20261120T193852Z-4acaac37/count-singleton.json
+@@ -0,0 +1,324 @@
++{
++  "status": "refuted",
++  "entry": "zones.Appointment#count(I)I",
++  "inputs": 24,
++  "differences": 4,
++  "sides": {
++    "singleton": {
++      "commit": "fixture:singleton",
++      "entry": {
++        "entry": "zones.Appointment#count(I)I",
++        "classSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
++        "loadedFrom": "singleton.jar",
++        "subject": "zones.Appointment#count(I)I",
++        "subjectClassSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706"
++      },
++      "classpath": [
++        {
++          "path": "singleton.jar",
++          "sha256": "7c7473f76b0256f4d3d50e79d1ed02aa9c2f0d818010ce53778df8c66224670a",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 24)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = zones.Appointment.count(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 2 : 1)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "0e3004b59b996ca08a0ef2765b291b7fc5d558786f4f20a6050ac43ee9050250",
++      "stdoutSha256": "84a2b80ee50e89f0720a17ea84f5902376b5fa8561e656d9cdbf4081f08dd91e",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        23
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 13,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 14,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 15,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 16,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 17,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 18,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 19,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 20,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 21,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 22,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 23,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.147,
++      "cpuSeconds": 0.1858,
++      "peakRssBytes": 61898752,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 1.7055,
++  "controlSeconds": 0.117,
++  "replay": {
++    "claimKey": "060e3f293b34aea6",
++    "entry": "zones.Appointment#count(I)I",
++    "inputs": [
++      {
++        "name": "code",
++        "type": "int",
++        "value": 14
++      }
++    ],
++    "observations": [
++      "result",
++      "exception"
++    ],
++    "by": "jvm",
++    "reproduced": true,
++    "sides": {
++      "singleton": {
++        "entryClassSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
++        "classpath": [
++          "7c7473f76b0256f4d3d50e79d1ed02aa9c2f0d818010ce53778df8c66224670a"
++        ],
++        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 14;\nif (!(code >= 0 && code < 24)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = zones.Appointment.count(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 2 : 1)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++        "admitted": true,
++        "values": [
++          1,
++          null
++        ],
++        "satisfies": false
++      }
++    },
++    "jdkRelease": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    }
++  },
++  "wallSeconds": 3.1286,
++  "task": "count-singleton",
++  "sourceClaim": "060e3f293b34aea6",
++  "inputsKey": "3308d5184839d2045143afcafe713b93f2255916f833011729943d3f7a2f46ae",
++  "revisions": [
++    "singleton"
++  ],
++  "expected": "refuted",
++  "sourceLocks": {
++    "singleton": "00bde04821019b37f677d8010204e874b53308e499f130161b7b3d641f3df54c"
++  }
++}
+--- /dev/null
++++ b/examples/334-calendar-offset-transitions/records/finite-proofs/20261120T193852Z-4acaac37/count-valid.json
+@@ -0,0 +1,285 @@
++{
++  "status": "established",
++  "entry": "zones.Appointment#count(I)I",
++  "inputs": 24,
++  "differences": 0,
++  "sides": {
++    "valid": {
++      "commit": "fixture:valid",
++      "entry": {
++        "entry": "zones.Appointment#count(I)I",
++        "classSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
++        "loadedFrom": "valid.jar",
++        "subject": "zones.Appointment#count(I)I",
++        "subjectClassSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706"
++      },
++      "classpath": [
++        {
++          "path": "valid.jar",
++          "sha256": "e1a15728f1163c7e7be73d7d866071186c9187456613496a3eb5c0584f99d1aa",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 24)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = zones.Appointment.count(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 2 : 1)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "0e3004b59b996ca08a0ef2765b291b7fc5d558786f4f20a6050ac43ee9050250",
++      "stdoutSha256": "5773b69244f1e35e8ef2309497a0ac1e5c17909084b90d4e1814a60adeb7e059",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        23
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 13,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 14,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 15,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 16,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 17,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 18,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 19,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 20,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 21,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 22,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 23,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.139,
++      "cpuSeconds": 0.1946,
++      "peakRssBytes": 61898752,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 2.2465,
++  "controlSeconds": 0.1744,
++  "wallSeconds": 3.2431,
++  "task": "count-valid",
++  "sourceClaim": "060e3f293b34aea6",
++  "inputsKey": "0db0b986576b9420664db575cae2d6a3d381c174b583758e4372c536a5f31759",
++  "revisions": [
++    "valid"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "valid": "81cb056f563f24c2a40e9dcabc97191c22e52dc09fe487c0fc2f9767420e545d"
++  }
++}
+--- /dev/null
++++ b/examples/334-calendar-offset-transitions/records/finite-proofs/20261120T193852Z-4acaac37/ordered-singleton.json
+@@ -0,0 +1,324 @@
++{
++  "status": "refuted",
++  "entry": "zones.Appointment#ordered(I)I",
++  "inputs": 24,
++  "differences": 4,
++  "sides": {
++    "singleton": {
++      "commit": "fixture:singleton",
++      "entry": {
++        "entry": "zones.Appointment#ordered(I)I",
++        "classSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
++        "loadedFrom": "singleton.jar",
++        "subject": "zones.Appointment#ordered(I)I",
++        "subjectClassSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706"
++      },
++      "classpath": [
++        {
++          "path": "singleton.jar",
++          "sha256": "7c7473f76b0256f4d3d50e79d1ed02aa9c2f0d818010ce53778df8c66224670a",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 24)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = zones.Appointment.ordered(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "8a6000b63e19b832c14673fc0f36081a005ccb09156da3802dc8918d3bbe348c",
++      "stdoutSha256": "ef6af0cd560d8091c4dbbe32f7594112aca6d605a7fa5ebe80f2830d17eacfea",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        23
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 13,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 14,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 15,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 16,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 17,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 18,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 19,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 20,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 21,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 22,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 23,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.112,
++      "cpuSeconds": 0.173,
++      "peakRssBytes": 61898752,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 1.6009,
++  "controlSeconds": 0.0001,
++  "replay": {
++    "claimKey": "03978d64a5e1ea6d",
++    "entry": "zones.Appointment#ordered(I)I",
++    "inputs": [
++      {
++        "name": "code",
++        "type": "int",
++        "value": 14
++      }
++    ],
++    "observations": [
++      "result",
++      "exception"
++    ],
++    "by": "jvm",
++    "reproduced": true,
++    "sides": {
++      "singleton": {
++        "entryClassSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
++        "classpath": [
++          "7c7473f76b0256f4d3d50e79d1ed02aa9c2f0d818010ce53778df8c66224670a"
++        ],
++        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 14;\nif (!(code >= 0 && code < 24)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = zones.Appointment.ordered(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++        "admitted": true,
++        "values": [
++          3,
++          null
++        ],
++        "satisfies": false
++      }
++    },
++    "jdkRelease": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    }
++  },
++  "wallSeconds": 2.7277,
++  "task": "ordered-singleton",
++  "sourceClaim": "03978d64a5e1ea6d",
++  "inputsKey": "5e3c7946aa7b71c5274545a8b75b1ce99aab16daf50dd3963fed2cc3316ce551",
++  "revisions": [
++    "singleton"
++  ],
++  "expected": "refuted",
++  "sourceLocks": {
++    "singleton": "00bde04821019b37f677d8010204e874b53308e499f130161b7b3d641f3df54c"
++  }
++}
+--- /dev/null
++++ b/examples/334-calendar-offset-transitions/records/finite-proofs/20261120T193852Z-4acaac37/ordered-valid.json
+@@ -0,0 +1,285 @@
++{
++  "status": "established",
++  "entry": "zones.Appointment#ordered(I)I",
++  "inputs": 24,
++  "differences": 0,
++  "sides": {
++    "valid": {
++      "commit": "fixture:valid",
++      "entry": {
++        "entry": "zones.Appointment#ordered(I)I",
++        "classSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
++        "loadedFrom": "valid.jar",
++        "subject": "zones.Appointment#ordered(I)I",
++        "subjectClassSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706"
++      },
++      "classpath": [
++        {
++          "path": "valid.jar",
++          "sha256": "e1a15728f1163c7e7be73d7d866071186c9187456613496a3eb5c0584f99d1aa",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 24)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = zones.Appointment.ordered(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "8a6000b63e19b832c14673fc0f36081a005ccb09156da3802dc8918d3bbe348c",
++      "stdoutSha256": "403f75d11ef6c0d07e52380ebc3c7c02c4042397d541a01d396b8f42db6032b4",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        23
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 13,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 14,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 15,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 16,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 17,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 18,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 19,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 20,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            4,
++            null
++          ]
++        },
++        {
++          "value": 21,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            4,
++            null
++          ]
++        },
++        {
++          "value": 22,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 23,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.135,
++      "cpuSeconds": 0.1928,
++      "peakRssBytes": 61898752,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 2.041,
++  "controlSeconds": 0.0002,
++  "wallSeconds": 2.8513,
++  "task": "ordered-valid",
++  "sourceClaim": "03978d64a5e1ea6d",
++  "inputsKey": "55a12930f81a9e5463520c55946f1f2a481d5cee8a7c62b38102933a979698f4",
++  "revisions": [
++    "valid"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "valid": "81cb056f563f24c2a40e9dcabc97191c22e52dc09fe487c0fc2f9767420e545d"
++  }
++}
+--- /dev/null
++++ b/examples/334-calendar-offset-transitions/records/finite-proofs/20261120T193852Z-4acaac37/ordinary-singleton.json
+@@ -0,0 +1,265 @@
++{
++  "status": "established",
++  "entry": "zones.Appointment#ordered(I)I",
++  "inputs": 20,
++  "differences": 0,
++  "sides": {
++    "singleton": {
++      "commit": "fixture:singleton",
++      "entry": {
++        "entry": "zones.Appointment#ordered(I)I",
++        "classSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
++        "loadedFrom": "singleton.jar",
++        "subject": "zones.Appointment#ordered(I)I",
++        "subjectClassSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706"
++      },
++      "classpath": [
++        {
++          "path": "singleton.jar",
++          "sha256": "7c7473f76b0256f4d3d50e79d1ed02aa9c2f0d818010ce53778df8c66224670a",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 24 && (code < 12 || (((code / 2) % 6) != 1 && ((code / 2) % 6) != 4)))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = zones.Appointment.ordered(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code < 12 ? 1 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "49456ccdece05781f38144b56b543d890ad992fdf43a3abcab8d92370c936aa3",
++      "stdoutSha256": "4f574525e49fbf6cb881f18cd15a4183eaf6f356412a9bc559ecc87393a2d5d1",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        23
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 13,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 14,
++          "admitted": false
++        },
++        {
++          "value": 15,
++          "admitted": false
++        },
++        {
++          "value": 16,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 17,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 18,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 19,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 20,
++          "admitted": false
++        },
++        {
++          "value": 21,
++          "admitted": false
++        },
++        {
++          "value": 22,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 23,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.113,
++      "cpuSeconds": 0.1783,
++      "peakRssBytes": 61898752,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 0.0017,
++  "controlSeconds": 0.0001,
++  "wallSeconds": 0.6229,
++  "task": "ordinary-singleton",
++  "sourceClaim": "bbb9aee507d2375a",
++  "inputsKey": "ec48d479d0a37052676165d9e4b13aa1cb27f368b893842e8dba6c53297e9244",
++  "revisions": [
++    "singleton"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "singleton": "00bde04821019b37f677d8010204e874b53308e499f130161b7b3d641f3df54c"
++  }
++}
+--- /dev/null
++++ b/examples/334-calendar-offset-transitions/records/finite-proofs/20261120T193852Z-4acaac37/ordinary-valid.json
+@@ -0,0 +1,265 @@
++{
++  "status": "established",
++  "entry": "zones.Appointment#ordered(I)I",
++  "inputs": 20,
++  "differences": 0,
++  "sides": {
++    "valid": {
++      "commit": "fixture:valid",
++      "entry": {
++        "entry": "zones.Appointment#ordered(I)I",
++        "classSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706",
++        "loadedFrom": "valid.jar",
++        "subject": "zones.Appointment#ordered(I)I",
++        "subjectClassSha256": "568341ba72910b4050e3d6de8a89f6f3febc1016bb7f1235e653a1a96e704706"
++      },
++      "classpath": [
++        {
++          "path": "valid.jar",
++          "sha256": "e1a15728f1163c7e7be73d7d866071186c9187456613496a3eb5c0584f99d1aa",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 24 && (code < 12 || (((code / 2) % 6) != 1 && ((code / 2) % 6) != 4)))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = zones.Appointment.ordered(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code < 12 ? 1 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "49456ccdece05781f38144b56b543d890ad992fdf43a3abcab8d92370c936aa3",
++      "stdoutSha256": "4f574525e49fbf6cb881f18cd15a4183eaf6f356412a9bc559ecc87393a2d5d1",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        23
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 13,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 14,
++          "admitted": false
++        },
++        {
++          "value": 15,
++          "admitted": false
++        },
++        {
++          "value": 16,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 17,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 18,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 19,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 20,
++          "admitted": false
++        },
++        {
++          "value": 21,
++          "admitted": false
++        },
++        {
++          "value": 22,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 23,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.184,
++      "cpuSeconds": 0.2114,
++      "peakRssBytes": 61898752,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 0.0304,
++  "controlSeconds": 0.0002,
++  "wallSeconds": 0.8818,
++  "task": "ordinary-valid",
++  "sourceClaim": "bbb9aee507d2375a",
++  "inputsKey": "134f8f55f1989d0e33860b8790dab9a60e19101c4252cb989081302adbc95442",
++  "revisions": [
++    "valid"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "valid": "81cb056f563f24c2a40e9dcabc97191c22e52dc09fe487c0fc2f9767420e545d"
++  }
++}

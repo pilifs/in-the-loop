@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "341",
+    "task": "eof-separate",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "chunks.Inputs#eof(I)I",
+    "revisions": [
+      "separate"
+    ],
+    "claim": {
+      "task": "eof-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "file": "claims/eof.json",
+      "sha256": "968a4b4d0fbbe332f782a8bd8f8870e8d450c9e9417d85590045df961475630c",
+      "property": "eof",
+      "claimKind": "property",
+      "statement": "The reader returns EOF again after all code units have been consumed.",
+      "assume": "code >= 0 && code < 5578",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "explicitBounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/chunks/DecodeCases.java",
+          "sha256": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987"
+        }
+      ],
+      "key": "d8e48b42f9e862f0"
+    },
+    "prerequisites": [
+      "replay-separate"
+    ],
+    "artifacts": [
+      {
+        "revision": "separate",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "separate",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/eof-separate"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-341-check-streaming-utf-8-partitions-fro/examples/341-utf8-chunk-boundaries",
+    "network": false
+  },
+  "inputs": {
+    "example": "341",
+    "task": "eof-separate",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "chunks.Inputs#eof(I)I",
+    "revisions": [
+      "separate"
+    ],
+    "claim": {
+      "task": "eof-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "file": "claims/eof.json",
+      "sha256": "968a4b4d0fbbe332f782a8bd8f8870e8d450c9e9417d85590045df961475630c",
+      "property": "eof",
+      "claimKind": "property",
+      "statement": "The reader returns EOF again after all code units have been consumed.",
+      "assume": "code >= 0 && code < 5578",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "explicitBounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/chunks/DecodeCases.java",
+          "sha256": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987"
+        }
+      ],
+      "key": "d8e48b42f9e862f0"
+    },
+    "artifacts": [
+      {
+        "revision": "separate",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "separate",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "7dfd3064a8c12b28794d927c353ff010b318ba59c560cdf00bed3af6ef37750b"
+}

@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "343",
+    "task": "distinct-whole",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "reservations.Booking#history(I)I",
+    "revisions": [
+      "whole"
+    ],
+    "claim": {
+      "task": "distinct-whole",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#history(I)I",
+      "file": "claims/distinct.json",
+      "sha256": "74e7cf2a18213128cb9dd6997554251042787681f5bab0566ede626452f2e9c2",
+      "property": "distinct",
+      "claimKind": "property",
+      "statement": "Both reservations succeed and store their respective owner on distinct slots.",
+      "assume": "code >= 3 && code < 6",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/reservations/BookingCases.java",
+          "sha256": "9a571b2c1559a2d2b6e87ace750cc44831094419435a036c16be55055cbf4591"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "259b35a3be1fcd161070da72caf0f37c5ab69724407f67e8c7acb776bd3d60eb"
+        }
+      ],
+      "key": "a1b7d5630e307872"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "whole",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "whole",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/distinct-whole"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-343-check-real-synchronized-reservations/examples/343-synchronized-map-reservations",
+    "network": false
+  },
+  "inputs": {
+    "example": "343",
+    "task": "distinct-whole",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "reservations.Booking#history(I)I",
+    "revisions": [
+      "whole"
+    ],
+    "claim": {
+      "task": "distinct-whole",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#history(I)I",
+      "file": "claims/distinct.json",
+      "sha256": "74e7cf2a18213128cb9dd6997554251042787681f5bab0566ede626452f2e9c2",
+      "property": "distinct",
+      "claimKind": "property",
+      "statement": "Both reservations succeed and store their respective owner on distinct slots.",
+      "assume": "code >= 3 && code < 6",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/reservations/BookingCases.java",
+          "sha256": "9a571b2c1559a2d2b6e87ace750cc44831094419435a036c16be55055cbf4591"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "259b35a3be1fcd161070da72caf0f37c5ab69724407f67e8c7acb776bd3d60eb"
+        }
+      ],
+      "key": "a1b7d5630e307872"
+    },
+    "artifacts": [
+      {
+        "revision": "whole",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "whole",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "f3fcf479c446af03114b27e293285922c614ada67a05bd04f4de7aac9b58f834"
+}

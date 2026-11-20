@@ -1,0 +1,1312 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-192109-333-check-context-service-providers-from",
+  "title": "333 check context service providers from compiled Java",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 19.7s, peak 261.6 MiB (estimated 4m00s, 2.0 GiB); 126 output file(s) changed; signals: example:task-unexpected×9",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-192109-333-check-context-service-providers-from.json",
+    "sha256": "8408ef060c8796331808d31d0c00d2d1ec6e56af592042482d51e13e281c2758",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-192109-333-check-context-service-providers-from",
+      "title": "333 check context service providers from compiled Java",
+      "description": "Run every frozen context service providers property and its preserving or distinguishing controls. On a strict refusal keep the first unsupported operation. Counterexamples require an independent original JVM observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "333"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:21:09+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 333 --tasks orders-default,selection-default,lazy-default,orders-explicit,selection-explicit,lazy-explicit,orders-app,selection-app,lazy-app --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/333-service-context-loader/receipts/orders-default",
+        "examples/333-service-context-loader/receipts/selection-default",
+        "examples/333-service-context-loader/receipts/lazy-default",
+        "examples/333-service-context-loader/receipts/orders-explicit",
+        "examples/333-service-context-loader/receipts/selection-explicit",
+        "examples/333-service-context-loader/receipts/lazy-explicit",
+        "examples/333-service-context-loader/receipts/orders-app",
+        "examples/333-service-context-loader/receipts/selection-app",
+        "examples/333-service-context-loader/receipts/lazy-app"
+      ]
+    }
+  },
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "startedAt": "2026-11-20T19:38:03+00:00",
+  "finishedAt": "2026-11-20T19:39:04+00:00",
+  "wallSeconds": 61.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1016104,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 274337792,
+    "wallSeconds": 19.7,
+    "cpuSeconds": 31.3,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 333 --tasks orders-default,selection-default,lazy-default,orders-explicit,selection-explicit,lazy-explicit,orders-app,selection-app,lazy-app --checker-seconds 120",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 19.68,
+      "cpuSeconds": 31.314,
+      "cpuThrottledSeconds": 1.576,
+      "peakMemoryBytes": 274337792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 18,
+        "bytes": 2179,
+        "sha256": "a68108d2877172f748b1ad67def5b1964401c641d303901f5f350b82a7af9426",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 9
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "333-service-context-loader: task orders-default: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/orders-default/20261120T193844Z-b0b9b6a7/result.json",
+          "groups": [
+            "333",
+            "orders-default",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "333-service-context-loader: task selection-default: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/selection-default/20261120T193846Z-967498b8/result.json",
+          "groups": [
+            "333",
+            "selection-default",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "333-service-context-loader: task lazy-default: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/lazy-default/20261120T193848Z-ae4050e9/result.json",
+          "groups": [
+            "333",
+            "lazy-default",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "333-service-context-loader: task orders-explicit: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/orders-explicit/20261120T193850Z-acde5809/result.json",
+          "groups": [
+            "333",
+            "orders-explicit",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "333-service-context-loader: task selection-explicit: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/selection-explicit/20261120T193852Z-68560e00/result.json",
+          "groups": [
+            "333",
+            "selection-explicit",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "333-service-context-loader: task lazy-explicit: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/lazy-explicit/20261120T193854Z-ccf272b1/result.json",
+          "groups": [
+            "333",
+            "lazy-explicit",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 14,
+          "text": "333-service-context-loader: task orders-app: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/orders-app/20261120T193857Z-5ac30450/result.json",
+          "groups": [
+            "333",
+            "orders-app",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 16,
+          "text": "333-service-context-loader: task selection-app: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/selection-app/20261120T193859Z-9e3c7ef0/result.json",
+          "groups": [
+            "333",
+            "selection-app",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 18,
+          "text": "333-service-context-loader: task lazy-app: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/lazy-app/20261120T193901Z-c3ba1647/result.json",
+          "groups": [
+            "333",
+            "lazy-app",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "333-service-context-loader: running task orders-default (target route)",
+        "333-service-context-loader: task orders-default: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/orders-default/20261120T193844Z-b0b9b6a7/result.json",
+        "333-service-context-loader: running task selection-default (target route)",
+        "333-service-context-loader: task selection-default: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/selection-default/20261120T193846Z-967498b8/result.json",
+        "333-service-context-loader: running task lazy-default (target route)",
+        "333-service-context-loader: task lazy-default: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/lazy-default/20261120T193848Z-ae4050e9/result.json",
+        "333-service-context-loader: running task orders-explicit (target route)",
+        "333-service-context-loader: task orders-explicit: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/orders-explicit/20261120T193850Z-acde5809/result.json",
+        "333-service-context-loader: running task selection-explicit (target route)",
+        "333-service-context-loader: task selection-explicit: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/selection-explicit/20261120T193852Z-68560e00/result.json",
+        "333-service-context-loader: running task lazy-explicit (target route)",
+        "333-service-context-loader: task lazy-explicit: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/lazy-explicit/20261120T193854Z-ccf272b1/result.json",
+        "333-service-context-loader: running task orders-app (target route)",
+        "333-service-context-loader: task orders-app: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/orders-app/20261120T193857Z-5ac30450/result.json",
+        "333-service-context-loader: running task selection-app (target route)",
+        "333-service-context-loader: task selection-app: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/selection-app/20261120T193859Z-9e3c7ef0/result.json",
+        "333-service-context-loader: running task lazy-app (target route)",
+        "333-service-context-loader: task lazy-app: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/lazy-app/20261120T193901Z-c3ba1647/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "aef4d38e514e1c0f23d590497234aebef295c749f1f2f1e09865214c1a47bc03",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/plan.json",
+      "change": "added",
+      "bytes": 4542,
+      "sha256": "a0ce399fd8af911a29c3f971960bb667714ce480dad5a5682cec9e318f3a48c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/control-default-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/control-default-jdk21.stdout",
+      "change": "added",
+      "bytes": 1078,
+      "sha256": "5e84f72adc609d04d7ce6ef65db2eaa30aefdeaef844c4d83a81536c8cb11531",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/controls.json",
+      "change": "added",
+      "bytes": 8524,
+      "sha256": "3b894cde95e76cf9d54eebb8942ef3f9cc6461af7d7410fbabd3bb64d9dd5ec9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/execution.json",
+      "change": "added",
+      "bytes": 27072,
+      "sha256": "e92881bb7680bd95e19d34c7cc53c05a035b23191d0155bec24063053fa9c9bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "e73bc5516008d9179089f7b2e7afaa471622f1773dc55b7f1c10ceea2d60fd4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 471,
+      "sha256": "60a7c06ec35164698ae07c1b16e8fe121d02d29334febf38667532bbcfabef8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/verifier.json",
+      "change": "added",
+      "bytes": 18339,
+      "sha256": "ed9701f1305cfeb5d3210c7ac99173b10efb3621604c283176cb344ef6ca7180",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7165,
+      "sha256": "68d1f054262cc29dbf70dd150a6de0b4ae3e88b3c16a6dc926fad610921d10b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/result.json",
+      "change": "added",
+      "bytes": 15127,
+      "sha256": "d15cd82fb22f74aa099916f53bf19baff49f39c0310efea77fda2d1226fc699b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/executions/20261120T193844Z-b0b9b6a7/attempt.json",
+      "change": "added",
+      "bytes": 12648,
+      "sha256": "0eaaf05e4aa66e1f95a3870e30cd81751f66b1830d08ca3955910910c68c8606",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-default/executions/20261120T193844Z-b0b9b6a7/checker.json",
+      "change": "added",
+      "bytes": 8426,
+      "sha256": "b5812bf6d88532520d0c0fd9df5eb48caa48cb93c49527c6144084aaac2450ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9de65a23fb5f33e077d3daff333e47cd7e0ec867176ad760c5caa77bb508443a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/plan.json",
+      "change": "added",
+      "bytes": 4779,
+      "sha256": "5d7bbb2e0425434dde4be9867bd6bead9b109d6f4e665093ef92c377544c997b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/control-default-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/control-default-jdk21.stdout",
+      "change": "added",
+      "bytes": 1078,
+      "sha256": "5e84f72adc609d04d7ce6ef65db2eaa30aefdeaef844c4d83a81536c8cb11531",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/controls.json",
+      "change": "added",
+      "bytes": 8533,
+      "sha256": "f1722ee6ac811074f03605bf7b5592ad81875e53c572561f2562ecd8de24c93e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/execution.json",
+      "change": "added",
+      "bytes": 27496,
+      "sha256": "de5d82195a685af1888dd012438d8e0b1c0d95c3ae063e63665f8f20c6309d8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "daa3c482f2853ed2f29931d3a5be846840b1d5c2ef314835119517f2a7cb8f64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 474,
+      "sha256": "c3dc4ef4d44f6012be9f4ec4b8bbd4600ff325a4fbd0ddb593d9a0cca675a245",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/verifier.json",
+      "change": "added",
+      "bytes": 18769,
+      "sha256": "8ba260d67a97391828d7a64adc4c02b959691e4d5031161ddb81658a3f6e967b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7368,
+      "sha256": "c4da7476ddd9977df2764ff04c99c71269b3b20c8df9bee1718c07945217deb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/result.json",
+      "change": "added",
+      "bytes": 15738,
+      "sha256": "f00f09326da07b186a0835b21a3ff53c6e2f88ae75906462cdd1d0e87e263e6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/executions/20261120T193846Z-967498b8/attempt.json",
+      "change": "added",
+      "bytes": 12873,
+      "sha256": "1aadd9495893758ebf6439f02e39efc3982dc51ab3a9346f396ff1b451cf26f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-default/executions/20261120T193846Z-967498b8/checker.json",
+      "change": "added",
+      "bytes": 8729,
+      "sha256": "fdd259111da60c4d41cb9a8acd645ad373bdc29669a480c8ee16f1e857abc921",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f8abcb87fc56af38574927e3b63a4693a70837b985c8b8436a76bef823109e91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/plan.json",
+      "change": "added",
+      "bytes": 4642,
+      "sha256": "0d63c423e91c3dc7e726342768715846f236b086d65b193237599a588530cf8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/control-default-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/control-default-jdk21.stdout",
+      "change": "added",
+      "bytes": 1078,
+      "sha256": "5e84f72adc609d04d7ce6ef65db2eaa30aefdeaef844c4d83a81536c8cb11531",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/controls.json",
+      "change": "added",
+      "bytes": 8518,
+      "sha256": "7ee14e42caf50f5595aba34a57c1c6e1c3ca015c4de20b7c3ae9921b07ca76b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/execution.json",
+      "change": "added",
+      "bytes": 27035,
+      "sha256": "1d93df3a5f47e1001070076894af1ae6e87494e86e796bd83e42fbadc124496a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "3eb574693aaf5c44beaa8f5aa35929f08c0e4647c12ef458ca5509c14175488d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 469,
+      "sha256": "872617bb7e98b507b80e6c9d1a31c6508134c2ae56690396d02d428a91319d02",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/verifier.json",
+      "change": "added",
+      "bytes": 18298,
+      "sha256": "caf335b8caf69de38aba8b88a4adb751b81a91c19c9daf5b1a3e2e7733ace1b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7152,
+      "sha256": "4e006b7ef3405e193e4ae5efd94516efc6e0d66c0fe637d8c2abc465215dd8f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/result.json",
+      "change": "added",
+      "bytes": 15155,
+      "sha256": "ff72263c3793361fb5384d133a31d927c2fdec49a693a543e5dbd688029169c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/executions/20261120T193848Z-ae4050e9/attempt.json",
+      "change": "added",
+      "bytes": 12620,
+      "sha256": "cecd75c8e8c5cf7f20cb9d8acfdce25483c965d7654826bba94a1868dad4c578",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-default/executions/20261120T193848Z-ae4050e9/checker.json",
+      "change": "added",
+      "bytes": 8408,
+      "sha256": "fd4b9a638bd89d9c9cc6eba92f7a0e96ea715957d3691fa438ab495b5a8f1b98",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "08fdf8e42f9a9959a75fe3a3969e946e51f4b23c8ccf52127dda1fa76a8b24e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/plan.json",
+      "change": "added",
+      "bytes": 4553,
+      "sha256": "9d61bd9a62259e40da356a39b0c81cdf247133e68514c777b37c495ec4807adb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/control-explicit-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/control-explicit-jdk21.stdout",
+      "change": "added",
+      "bytes": 1078,
+      "sha256": "5e84f72adc609d04d7ce6ef65db2eaa30aefdeaef844c4d83a81536c8cb11531",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/controls.json",
+      "change": "added",
+      "bytes": 8534,
+      "sha256": "f15fd0aa0b78e405bb66e118d32d8016b1d4ce6d6b87b31e84049db76d8fcdbd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/execution.json",
+      "change": "added",
+      "bytes": 27097,
+      "sha256": "269328145f3e4812466b738fdf458d4a19d32e1cf38fc9452603b594e12349f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "f9e64651a926cff9383d72118048121e0d1091bc282f2d9515123f0e34248526",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 471,
+      "sha256": "60a7c06ec35164698ae07c1b16e8fe121d02d29334febf38667532bbcfabef8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/verifier.json",
+      "change": "added",
+      "bytes": 18360,
+      "sha256": "c2dc7359dacd440e6966ddc9bc96b6f102602fbeadf50fa73b27f36ddea7333a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7165,
+      "sha256": "c3933924f5c97f94c0837777402f669510d2e1a7f916b2d3f6d52bc8ec306d05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/result.json",
+      "change": "added",
+      "bytes": 15142,
+      "sha256": "b63a2086bfcb0ddcd815767704bf19246f683a94d2e1eb66bc201d3e33fdd9ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/executions/20261120T193850Z-acde5809/attempt.json",
+      "change": "added",
+      "bytes": 12671,
+      "sha256": "3eff8a5db1f8eeb25d87faa4a87dc14f6d3c57f6fe284fb1fd7f60cdbdb8cdab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-explicit/executions/20261120T193850Z-acde5809/checker.json",
+      "change": "added",
+      "bytes": 8428,
+      "sha256": "e475d24e0a2dda10094e5640b01f15cdaab2c8f8888a5bc1c94d7e91ed001b8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b90aac7e2995430022986121cc5048f251de9f9f4d18052cba389dd6e1709cc6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/plan.json",
+      "change": "added",
+      "bytes": 4790,
+      "sha256": "6744081a78668ad3fbee836fcfe441027462f2a8e9e61ea831c529e36d91bfe1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/control-explicit-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/control-explicit-jdk21.stdout",
+      "change": "added",
+      "bytes": 1078,
+      "sha256": "5e84f72adc609d04d7ce6ef65db2eaa30aefdeaef844c4d83a81536c8cb11531",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/controls.json",
+      "change": "added",
+      "bytes": 8543,
+      "sha256": "9183aa15437cae4267d00980a4226ce603dae9f4aa41d41503d87da7edb91eb2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/execution.json",
+      "change": "added",
+      "bytes": 27523,
+      "sha256": "a904fa8521f6d5800441e1a32298ad29a3b740ed1efe7b4171a8b0b0ba7eb26d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "0d87c2864d0489b3031916e484555ef7fb430507fab9242d3fb5746ea9c2091a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 474,
+      "sha256": "c3dc4ef4d44f6012be9f4ec4b8bbd4600ff325a4fbd0ddb593d9a0cca675a245",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/verifier.json",
+      "change": "added",
+      "bytes": 18792,
+      "sha256": "98d2e90e45facb6897217f27bfdd43b3ae76763cd0c9cefe0931b63c6ffaf5c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7369,
+      "sha256": "a02780bfcca8e200bb4cd0cb16d6a23f0b2c4032cd44cfe5adb8076df1988a66",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/result.json",
+      "change": "added",
+      "bytes": 15755,
+      "sha256": "cdab0d3e73b3c28f40c2e5bf5f32a3af2785c1667799ae048fca3d9e89f16d43",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/executions/20261120T193852Z-68560e00/attempt.json",
+      "change": "added",
+      "bytes": 12899,
+      "sha256": "856b03e2d427b1332d51b8b536a3165a2ae1da8e1f0c15f2654807e007e84ac4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-explicit/executions/20261120T193852Z-68560e00/checker.json",
+      "change": "added",
+      "bytes": 8733,
+      "sha256": "23bd09047949d631551ab27676985de250ea125434384f06091fddb3deb5d460",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0cff86c70bf6a62de362620f8cee7b0b9b580f8125d0aef1249c319366b78c64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/plan.json",
+      "change": "added",
+      "bytes": 4653,
+      "sha256": "26bdbb107230cc5461a572abc40227ee2c6e9d8098dbdb637db71e65ec71eefc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/control-explicit-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/control-explicit-jdk21.stdout",
+      "change": "added",
+      "bytes": 1078,
+      "sha256": "5e84f72adc609d04d7ce6ef65db2eaa30aefdeaef844c4d83a81536c8cb11531",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/controls.json",
+      "change": "added",
+      "bytes": 8528,
+      "sha256": "f21490e5aed9b29b17b292b019c4280538e679db55a7b68583427ce4ec8558f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/execution.json",
+      "change": "added",
+      "bytes": 27061,
+      "sha256": "81ea7b697bf854ce4e8766c20039fbecbcf6b9f6ab489dc43a29a9f6b80015c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "136f18a8ed5996468aff2fa598c2ad619a65b377db319011881ce7ef3fe7bd03",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 469,
+      "sha256": "872617bb7e98b507b80e6c9d1a31c6508134c2ae56690396d02d428a91319d02",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/verifier.json",
+      "change": "added",
+      "bytes": 18320,
+      "sha256": "354b532173de1cd8451d5f35833a70f24a14b3cf99a235d262dcc62fc76d067c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7153,
+      "sha256": "d3684968e0883b37d1c39e415b85ecc13c76068e0c07b13431907301653ddd3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/result.json",
+      "change": "added",
+      "bytes": 15172,
+      "sha256": "27e61b785935d65131cf6151fb78e0793ee8465ef87171207e71deca9a731341",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/executions/20261120T193854Z-ccf272b1/attempt.json",
+      "change": "added",
+      "bytes": 12644,
+      "sha256": "43565ec7a54f1efafb334bfbb9c245b40c89f5c0857bae7d65680924e9904ef9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-explicit/executions/20261120T193854Z-ccf272b1/checker.json",
+      "change": "added",
+      "bytes": 8411,
+      "sha256": "ba17416b97dc6495681ad305e6c0aa85a5fed22061a6edc219cf80965cc1b51e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e9c25e0d2fe9b5ea873ab2c8448dd28926da217897569fc5025f4fa1e969f41c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/plan.json",
+      "change": "added",
+      "bytes": 4500,
+      "sha256": "acb9f8835ae610cac233ffa8838d03076252f4f5f1266f25b66ec79ba66f98c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/control-app-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/control-app-jdk21.stdout",
+      "change": "added",
+      "bytes": 1078,
+      "sha256": "908552e4a457cb0352b34a4d7414f68763e1f19a5e6aa6a69c3fce34b57f9c99",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/controls.json",
+      "change": "added",
+      "bytes": 8484,
+      "sha256": "7dc85498d56fcf19e9435e14f02bd0a01422a967024aa552c38a7725e0391c40",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/execution.json",
+      "change": "added",
+      "bytes": 26971,
+      "sha256": "569f9856876fc8aa720a0189ebcea68034c0491a7079410755dc41c3457ae42d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "2caed1947934b8ab7c0e00be5fea3582aa5a077e63b087258b63a7a5f3fa431f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 471,
+      "sha256": "60a7c06ec35164698ae07c1b16e8fe121d02d29334febf38667532bbcfabef8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/verifier.json",
+      "change": "added",
+      "bytes": 18254,
+      "sha256": "5a6020863275bbff395e150949fa9ff67165caeaa6443a7eb8956900036777cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7165,
+      "sha256": "108f68f133a15854c5ad3d2acdfada09b2d87cfdff33cb1ee5d0bd871dcf6347",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/result.json",
+      "change": "added",
+      "bytes": 15059,
+      "sha256": "5e7a85f87d05bcceda8c21ed4b5a81eb7b8aec97bcc5ae7ce22db0949d149891",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/executions/20261120T193857Z-5ac30450/attempt.json",
+      "change": "added",
+      "bytes": 12546,
+      "sha256": "277c5f2696e7d33d13bfa52df0871aecfd19fbc89d4b025a7854d8df12e66163",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/orders-app/executions/20261120T193857Z-5ac30450/checker.json",
+      "change": "added",
+      "bytes": 8418,
+      "sha256": "2a566316eb72554b3a6f55980ab601cb1977c339d2bfae488539bc7a2a5dbdfd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "112b385eda2f967f354ffb88e489abc3e6dab28b44aa8b00fe6a411532d3cd19",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/plan.json",
+      "change": "added",
+      "bytes": 4737,
+      "sha256": "255d763c5a58f7820db50c2db4600bc6025be6c7d6b34adc50bb291c55c9fae3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/control-app-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/control-app-jdk21.stdout",
+      "change": "added",
+      "bytes": 1078,
+      "sha256": "908552e4a457cb0352b34a4d7414f68763e1f19a5e6aa6a69c3fce34b57f9c99",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/controls.json",
+      "change": "added",
+      "bytes": 8493,
+      "sha256": "673c4445ef0ad4a682e318b658f2fc8d7248f08eb7fa2526f00737e5c58591ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/execution.json",
+      "change": "added",
+      "bytes": 27397,
+      "sha256": "026e3ae177c4b0c0d0cc4e15c09be9fdd0e258bd169d01ab59731c71575abb5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "93200c414a946cbd3872649ae02cba0a244ccd0b739879f9abf11e9e5f4c44c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 474,
+      "sha256": "c3dc4ef4d44f6012be9f4ec4b8bbd4600ff325a4fbd0ddb593d9a0cca675a245",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/verifier.json",
+      "change": "added",
+      "bytes": 18686,
+      "sha256": "e83dbffccf105da8e7c3d0f95bcaf0f21e9d151de470417ec63226692eecada4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7368,
+      "sha256": "1d5eee0ed6f9d40d1b00613541c7d089379ecd5a58d4464fd9964bab54ac1e8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/result.json",
+      "change": "added",
+      "bytes": 15670,
+      "sha256": "c175647533fd5b00195d61832526ac1570cff243cbe5cc498faeec85d3005503",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/executions/20261120T193859Z-9e3c7ef0/attempt.json",
+      "change": "added",
+      "bytes": 12774,
+      "sha256": "3e66f3a091a35a1a93cd8ecc1e1824942058f188c677cd2dd9efea275334fa37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/selection-app/executions/20261120T193859Z-9e3c7ef0/checker.json",
+      "change": "added",
+      "bytes": 8722,
+      "sha256": "86d07f28aa203c17210e1e05c91878926a374647a880761699279bc2737e3bab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "625d21fd848807d3961f1d64d5533d1808d2a21b022679e4c6ad305e5d148969",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/plan.json",
+      "change": "added",
+      "bytes": 4604,
+      "sha256": "35a9e08e4b246a07975dba26041c09036a95de976be339405da2d93ad91433d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/control-app-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/control-app-jdk21.stdout",
+      "change": "added",
+      "bytes": 1078,
+      "sha256": "908552e4a457cb0352b34a4d7414f68763e1f19a5e6aa6a69c3fce34b57f9c99",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/controls.json",
+      "change": "added",
+      "bytes": 8478,
+      "sha256": "8e68c94a18e859ad57afba60b881b39fc2973e2250f763ecd228d9386923c5ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/execution.json",
+      "change": "added",
+      "bytes": 26937,
+      "sha256": "d739b65e7b0d94c6adbda304932472eb525579d491ad50a8eae3b6d6a3b0cab2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "1cb315cce102b2b933d7de6dc60e84fb66dd9e71dbfff4747e4fc660435531a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 469,
+      "sha256": "872617bb7e98b507b80e6c9d1a31c6508134c2ae56690396d02d428a91319d02",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/verifier.json",
+      "change": "added",
+      "bytes": 18216,
+      "sha256": "a465b2dc44404f1a0d09869ab05857db1a26b4dbb3bdf5d0f4534984fb2ad048",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7154,
+      "sha256": "a60d420f4270a326e4ae27d31e95d21b6c160831cd1109d0f91c3c14c5aac119",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/result.json",
+      "change": "added",
+      "bytes": 15093,
+      "sha256": "ada670c4b10e8c0c1bfd98fb882ccfa6ef87bfd3d1e5056b1a12e0b2844df737",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/executions/20261120T193901Z-c3ba1647/attempt.json",
+      "change": "added",
+      "bytes": 12519,
+      "sha256": "82d75d6f4eba1c0f81f67115a5563a736bb92c1cb5866fb2dfb47cdb858bca35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/receipts/lazy-app/executions/20261120T193901Z-c3ba1647/checker.json",
+      "change": "added",
+      "bytes": 8402,
+      "sha256": "a57ab40672fbcca5ec5ac6ab2c3e288216901566b8e2a3ed5fa9ad7925bc58d7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:39:12+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/completion.json",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/plan.json",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/control-default-jdk21.stderr",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/control-default-jdk21.stdout",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/controls.json",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/execution.json",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/streams.json",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/verifier-output.txt",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/verifier.json",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/verifier.stderr",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/records/verifier.stdout",
+      "examples/333-service-context-loader/receipts/orders-default/20261120T193844Z-b0b9b6a7/result.json",
+      "examples/333-service-context-loader/receipts/orders-default/executions/20261120T193844Z-b0b9b6a7/attempt.json",
+      "examples/333-service-context-loader/receipts/orders-default/executions/20261120T193844Z-b0b9b6a7/checker.json",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/completion.json",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/plan.json",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/control-default-jdk21.stderr",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/control-default-jdk21.stdout",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/controls.json",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/execution.json",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/streams.json",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/verifier-output.txt",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/verifier.json",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/verifier.stderr",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/records/verifier.stdout",
+      "examples/333-service-context-loader/receipts/selection-default/20261120T193846Z-967498b8/result.json",
+      "examples/333-service-context-loader/receipts/selection-default/executions/20261120T193846Z-967498b8/attempt.json",
+      "examples/333-service-context-loader/receipts/selection-default/executions/20261120T193846Z-967498b8/checker.json",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/completion.json",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/plan.json",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/control-default-jdk21.stderr",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/control-default-jdk21.stdout",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/controls.json",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/execution.json",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/streams.json",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/verifier-output.txt",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/verifier.json",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/verifier.stderr",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/records/verifier.stdout",
+      "examples/333-service-context-loader/receipts/lazy-default/20261120T193848Z-ae4050e9/result.json",
+      "examples/333-service-context-loader/receipts/lazy-default/executions/20261120T193848Z-ae4050e9/attempt.json",
+      "examples/333-service-context-loader/receipts/lazy-default/executions/20261120T193848Z-ae4050e9/checker.json",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/completion.json",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/plan.json",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/control-explicit-jdk21.stderr",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/control-explicit-jdk21.stdout",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/controls.json",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/execution.json",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/streams.json",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/verifier-output.txt",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/verifier.json",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/verifier.stderr",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/records/verifier.stdout",
+      "examples/333-service-context-loader/receipts/orders-explicit/20261120T193850Z-acde5809/result.json",
+      "examples/333-service-context-loader/receipts/orders-explicit/executions/20261120T193850Z-acde5809/attempt.json",
+      "examples/333-service-context-loader/receipts/orders-explicit/executions/20261120T193850Z-acde5809/checker.json",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/completion.json",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/plan.json",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/control-explicit-jdk21.stderr",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/control-explicit-jdk21.stdout",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/controls.json",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/execution.json",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/streams.json",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/verifier-output.txt",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/verifier.json",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/verifier.stderr",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/records/verifier.stdout",
+      "examples/333-service-context-loader/receipts/selection-explicit/20261120T193852Z-68560e00/result.json",
+      "examples/333-service-context-loader/receipts/selection-explicit/executions/20261120T193852Z-68560e00/attempt.json",
+      "examples/333-service-context-loader/receipts/selection-explicit/executions/20261120T193852Z-68560e00/checker.json",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/completion.json",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/plan.json",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/control-explicit-jdk21.stderr",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/control-explicit-jdk21.stdout",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/controls.json",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/execution.json",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/streams.json",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/verifier-output.txt",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/verifier.json",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/verifier.stderr",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/records/verifier.stdout",
+      "examples/333-service-context-loader/receipts/lazy-explicit/20261120T193854Z-ccf272b1/result.json",
+      "examples/333-service-context-loader/receipts/lazy-explicit/executions/20261120T193854Z-ccf272b1/attempt.json",
+      "examples/333-service-context-loader/receipts/lazy-explicit/executions/20261120T193854Z-ccf272b1/checker.json",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/completion.json",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/plan.json",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/control-app-jdk21.stderr",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/control-app-jdk21.stdout",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/controls.json",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/execution.json",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/streams.json",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/verifier-output.txt",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/verifier.json",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/verifier.stderr",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/records/verifier.stdout",
+      "examples/333-service-context-loader/receipts/orders-app/20261120T193857Z-5ac30450/result.json",
+      "examples/333-service-context-loader/receipts/orders-app/executions/20261120T193857Z-5ac30450/attempt.json",
+      "examples/333-service-context-loader/receipts/orders-app/executions/20261120T193857Z-5ac30450/checker.json",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/completion.json",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/plan.json",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/control-app-jdk21.stderr",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/control-app-jdk21.stdout",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/controls.json",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/execution.json",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/streams.json",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/verifier-output.txt",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/verifier.json",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/verifier.stderr",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/records/verifier.stdout",
+      "examples/333-service-context-loader/receipts/selection-app/20261120T193859Z-9e3c7ef0/result.json",
+      "examples/333-service-context-loader/receipts/selection-app/executions/20261120T193859Z-9e3c7ef0/attempt.json",
+      "examples/333-service-context-loader/receipts/selection-app/executions/20261120T193859Z-9e3c7ef0/checker.json",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/completion.json",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/plan.json",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/control-app-jdk21.stderr",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/control-app-jdk21.stdout",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/controls.json",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/execution.json",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/streams.json",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/verifier-output.txt",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/verifier.json",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/verifier.stderr",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/records/verifier.stdout",
+      "examples/333-service-context-loader/receipts/lazy-app/20261120T193901Z-c3ba1647/result.json",
+      "examples/333-service-context-loader/receipts/lazy-app/executions/20261120T193901Z-c3ba1647/attempt.json",
+      "examples/333-service-context-loader/receipts/lazy-app/executions/20261120T193901Z-c3ba1647/checker.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-333-check-context-service-providers-from"
+}

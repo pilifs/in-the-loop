@@ -1,0 +1,423 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "5e418aeff74edc46",
+    "format": 1,
+    "example": "334",
+    "statement": {
+      "approach": "target",
+      "task": "ordered-singleton",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "zones.Appointment#ordered(I)I",
+      "revisions": [
+        "singleton"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "ordered-singleton",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "zones.Appointment#ordered(I)I",
+        "file": "claims/ordered.json",
+        "sha256": "ee3e835aabfd7956bf0780227cf3c00b98d4014e83e4fda7f3581434f1777248",
+        "property": "ordered",
+        "claimKind": "property",
+        "statement": "Ordered offsets equal the independently derived Canadian transition table under both process defaults.",
+        "assume": "code >= 0 && code < 24",
+        "assert": "result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 32,
+          "maxArrayLength": 24
+        },
+        "explicitBounds": {
+          "unwind": 32,
+          "maxArrayLength": 24
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/zones/ZoneCases.java",
+            "sha256": "b0ec1a8a91326e34ccb4bb1dba0963cf5ed190da1142c8bed414a3350f5cc3c6"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "53cfddc194632fde2cc8348baf9dc110393c21b6dcfecabc66f429eda03c1922"
+          }
+        ],
+        "key": "03978d64a5e1ea6d"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 24
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "1f61d62710da986b1ed69d03c4d132830b88deb11f0076341415316ceb8978f2",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "ordered-singleton",
+      "sidecar": "3d2cc33ce6e87b98864633777e81ca4d68e88d934f10696e7e8a01bb319d6e3c",
+      "revisions": {
+        "singleton": "68e3dd84d5c94e5d2354e80c9214afb6d8d3d3cb"
+      },
+      "dependencies": [
+        {
+          "revision": "singleton",
+          "position": 0,
+          "role": "driver",
+          "sha256": "4a868d564bc8f4f2415928dc090fb33fbe36f621ad468384656c3ebc6b4ad2eb"
+        },
+        {
+          "revision": "singleton",
+          "position": 1,
+          "role": "original",
+          "sha256": "7c7473f76b0256f4d3d50e79d1ed02aa9c2f0d818010ce53778df8c66224670a"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/ordered.json": "ee3e835aabfd7956bf0780227cf3c00b98d4014e83e4fda7f3581434f1777248",
+        "controls/table.json": "53cfddc194632fde2cc8348baf9dc110393c21b6dcfecabc66f429eda03c1922",
+        "driver/zones/ZoneCases.java": "b0ec1a8a91326e34ccb4bb1dba0963cf5ed190da1142c8bed414a3350f5cc3c6"
+      },
+      "claimKey": "03978d64a5e1ea6d"
+    }
+  },
+  "attempt": {
+    "id": "20261120T193900Z-cbf924e5",
+    "claim": "5e418aeff74edc46",
+    "startedAt": "2026-11-20T19:39:00+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "zones.Appointment#ordered(int)",
+      "--classes",
+      "prepare/singleton/singleton.jar",
+      "--assume",
+      "code >= 0 && code < 24",
+      "--assert",
+      "result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "32",
+      "--max-array-length",
+      "24",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "122d4b83150b026e060d41473fe3cd13034555aaafab5d17333b6f79e1ff5fd6",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-192109-334-check-zone-transitions-from-compiled",
+      "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-334-check-zone-transitions-from-compiled"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control singleton on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-singleton-jdk21.stdout",
+        "stderr": "records/control-singleton-jdk21.stderr"
+      },
+      {
+        "name": "verifier singleton on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.031,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 32,
+      "maxArrayLength": 24,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "5e418aeff74edc46",
+    "attempt": "20261120T193900Z-cbf924e5",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)",
+          "assume": "code >= 0 && code < 24",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at zones.Appointment.read:12). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.008,
+            "properties": 1,
+            "unwind": 32,
+            "maxArrayLength": 24,
+            "stage": null,
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 0.007,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.005,
+                  "encoding": 0.001,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 2273,
+                  "clauses": 7259
+                }
+              }
+            ],
+            "native": {
+              "paths": 4,
+              "merges": 0,
+              "solverCalls": 3,
+              "solvingSeconds": 0.000149079,
+              "gatesEvaluated": 84,
+              "evaluatingSeconds": 4.098e-06,
+              "divisions": 2,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 2273,
+              "clauses": 7259,
+              "seconds": 0.006584476,
+              "loadingSeconds": 0.000115156,
+              "decodingSeconds": 7.3106e-05,
+              "encodingSeconds": 0.000984909,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.TimeZone.getTimeZone(java.lang.String)",
+                "sites": [
+                  "zones.Appointment.read:12"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 24",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 32,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"singleton\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at zones.Appointment.read:12). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)",
+      "assume": "code >= 0 && code < 24"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "1d850f5a9a93b56c8caf1062bd5cec0fbcee3c4d8691d0862299803b05c1a013",
+        "bytes": 28390
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "a52d7afd0fd42f6d2da20ea2db3f19b982c0990e44a7932842ffdf422f59bae9",
+        "bytes": 481
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "d98ac248a6b1d80ed911e531c7734c62af6972fac9f3b8521b7ba2f3845282d1",
+        "bytes": 1995
+      },
+      {
+        "path": "records/control-singleton-jdk21.stdout",
+        "sha256": "76fa2d36f0c265a2febe4f0339b9ab4f60b7d0a3305a4a0dfaeeb895fc3486d7",
+        "bytes": 3758
+      },
+      {
+        "path": "records/control-singleton-jdk21.stderr",
+        "sha256": "0eaeecc8f9ecba71ec228a8366b7a7d2af85bf4f84934001c119d170ce3f80a3",
+        "bytes": 11
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "cf7c7b7f414d83ea044c843df7944402c7d86ed94d9f9a35330647991fa1d627",
+        "bytes": 12054
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "3823215b655d47c1d0e0d13a586e86ca9b010ea9384158fc07b353d1b46d602e",
+        "bytes": 6358
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "87f9c7b06d02b4285ffe59c423d299f00567c0e406f6919259e25eac391df043",
+        "bytes": 16240
+      }
+    ]
+  }
+}

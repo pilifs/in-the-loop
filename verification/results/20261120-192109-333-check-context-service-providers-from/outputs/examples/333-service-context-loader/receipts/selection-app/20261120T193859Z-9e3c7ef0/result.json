@@ -1,0 +1,437 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "b036c8702f152b52",
+    "format": 1,
+    "example": "333",
+    "statement": {
+      "approach": "target",
+      "task": "selection-app",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#selection(I)I",
+      "revisions": [
+        "app"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "selection-app",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "styles.World#selection(I)I",
+        "file": "claims/selection.json",
+        "sha256": "e3815561a03a6c3db221a15b2503e5797f422f8d7bfa963d2be7b05cd691d926",
+        "property": "selection",
+        "claimKind": "property",
+        "statement": "The first selected implementation matches the first provider visible on each context lookup.",
+        "assume": "code >= 0 && code < 16",
+        "assert": "result == 3 * ((code / 4) == 0 ? 0 : (code / 4) == 3 ? 2 : 1) + ((code % 4) == 0 ? 0 : (code % 4) == 3 ? 2 : 1)",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 32,
+          "maxArrayLength": 16
+        },
+        "explicitBounds": {
+          "unwind": 32,
+          "maxArrayLength": 16
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/styles/LoaderCases.java",
+            "sha256": "210af68654d8cb05059e29f0ef2ffea83956f20587bb3a3ea4b83f372c5fe636"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "54461048d5955ba99842201e1d829db253a0aebc6342db4daf1f9647a1364951"
+          }
+        ],
+        "key": "ce32ce97759cfc9d"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "67df9504b3ce20d48ffa0727b92c4cb4aac9c1654834f87f4a05c611d44c9184",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "selection-app",
+      "sidecar": "c3dfc6075b2aabc87268abf94c8c3bfc3986870cc8614f0b7a52498cd7d9502b",
+      "revisions": {
+        "app": "69f8c77e947e627d2e35e7e1c72cb28fd2755d4e"
+      },
+      "dependencies": [
+        {
+          "revision": "app",
+          "position": 0,
+          "role": "driver",
+          "sha256": "a962c13d713bfc836e14a470fc684196f6cba5e00b976e15fca7a1c779f8fb1c"
+        },
+        {
+          "revision": "app",
+          "position": 1,
+          "role": "original",
+          "sha256": "f455fcdc50a86a3da014260a12acd248fad8def6e275285dd40c3f46980ef04a"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/selection.json": "e3815561a03a6c3db221a15b2503e5797f422f8d7bfa963d2be7b05cd691d926",
+        "controls/oracle.py": "54461048d5955ba99842201e1d829db253a0aebc6342db4daf1f9647a1364951",
+        "driver/styles/LoaderCases.java": "210af68654d8cb05059e29f0ef2ffea83956f20587bb3a3ea4b83f372c5fe636"
+      },
+      "claimKey": "ce32ce97759cfc9d"
+    }
+  },
+  "attempt": {
+    "id": "20261120T193859Z-9e3c7ef0",
+    "claim": "b036c8702f152b52",
+    "startedAt": "2026-11-20T19:38:59+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "styles.World#selection(int)",
+      "--classes",
+      "prepare/app/app.jar",
+      "--assume",
+      "code >= 0 && code < 16",
+      "--assert",
+      "result == 3 * ((code / 4) == 0 ? 0 : (code / 4) == 3 ? 2 : 1) + ((code % 4) == 0 ? 0 : (code % 4) == 3 ? 2 : 1)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "32",
+      "--max-array-length",
+      "16",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "bc6f92ae28e2e2debe60441b083d9c4718b73d4a7af0305c0e2af701b2950287",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-192109-333-check-context-service-providers-from",
+      "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-333-check-context-service-providers-from"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control app on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-app-jdk21.stdout",
+        "stderr": "records/control-app-jdk21.stderr"
+      },
+      {
+        "name": "verifier app on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.024,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 32,
+      "maxArrayLength": 16,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "b036c8702f152b52",
+    "attempt": "20261120T193859Z-9e3c7ef0",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 3 * ((code / 4) == 0 ? 0 : (code / 4) == 3 ? 2 : 1) + ((code % 4) == 0 ? 0 : (code % 4) == 3 ? 2 : 1)",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 3 * ((code / 4) == 0 ? 0 : (code / 4) == 3 ? 2 : 1) + ((code % 4) == 0 ? 0 : (code % 4) == 3 ? 2 : 1)",
+          "assume": "code >= 0 && code < 16",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13 (java.lang.ClassLoader.getPlatformClassLoader() at styles.World.sequence:65). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.007,
+            "properties": 1,
+            "unwind": 32,
+            "maxArrayLength": 16,
+            "stage": null,
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 0.007,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.006,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 113,
+                  "clauses": 268
+                }
+              }
+            ],
+            "native": {
+              "paths": 3,
+              "merges": 0,
+              "solverCalls": 2,
+              "solvingSeconds": 2.9767e-05,
+              "gatesEvaluated": 81,
+              "evaluatingSeconds": 4.289e-06,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 113,
+              "clauses": 268,
+              "seconds": 0.006671589,
+              "loadingSeconds": 0.000390792,
+              "decodingSeconds": 0.00012229,
+              "encodingSeconds": 7.1133e-05,
+              "witnessSeconds": 0.0
+            },
+            "modelsAssume": [
+              "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+              "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+            ],
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.ClassLoader.getPlatformClassLoader()",
+                "sites": [
+                  "styles.World.sequence:65"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 16",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 3 * ((code / 4) == 0 ? 0 : (code / 4) == 3 ? 2 : 1) + ((code % 4) == 0 ? 0 : (code % 4) == 3 ? 2 : 1)",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 32,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 19,
+      "code": "\"app\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13 (java.lang.ClassLoader.getPlatformClassLoader() at styles.World.sequence:65). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 3 * ((code / 4) == 0 ? 0 : (code / 4) == 3 ? 2 : 1) + ((code % 4) == 0 ? 0 : (code % 4) == 3 ? 2 : 1)",
+      "assume": "code >= 0 && code < 16"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "026e3ae177c4b0c0d0cc4e15c09be9fdd0e258bd169d01ab59731c71575abb5e",
+        "bytes": 27397
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "c3dc4ef4d44f6012be9f4ec4b8bbd4600ff325a4fbd0ddb593d9a0cca675a245",
+        "bytes": 474
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "93200c414a946cbd3872649ae02cba0a244ccd0b739879f9abf11e9e5f4c44c4",
+        "bytes": 1943
+      },
+      {
+        "path": "records/control-app-jdk21.stdout",
+        "sha256": "908552e4a457cb0352b34a4d7414f68763e1f19a5e6aa6a69c3fce34b57f9c99",
+        "bytes": 1078
+      },
+      {
+        "path": "records/control-app-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "673c4445ef0ad4a682e318b658f2fc8d7248f08eb7fa2526f00737e5c58591ea",
+        "bytes": 8493
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "1d5eee0ed6f9d40d1b00613541c7d089379ecd5a58d4464fd9964bab54ac1e8f",
+        "bytes": 7368
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "e83dbffccf105da8e7c3d0f95bcaf0f21e9d151de470417ec63226692eecada4",
+        "bytes": 18686
+      }
+    ]
+  }
+}

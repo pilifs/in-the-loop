@@ -1,0 +1,931 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-192109-334-check-zone-transitions-from-compiled",
+  "title": "334 check zone transitions from compiled Java",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 10.6s, peak 152.4 MiB (estimated 4m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-192109-334-check-zone-transitions-from-compiled.json",
+    "sha256": "580ee57bb2fb00289df68f13306b7ef5ca009c096ec26cadfdbb8f7cc1bdc9c3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-192109-334-check-zone-transitions-from-compiled",
+      "title": "334 check zone transitions from compiled Java",
+      "description": "Run every frozen zone transitions property and its preserving or distinguishing controls. On a strict refusal keep the first unsupported operation. Counterexamples require an independent original JVM observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "334"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:21:09+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 334 --tasks count-valid,ordered-valid,ordinary-valid,count-singleton,ordered-singleton,ordinary-singleton --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/334-calendar-offset-transitions/receipts/count-valid",
+        "examples/334-calendar-offset-transitions/receipts/ordered-valid",
+        "examples/334-calendar-offset-transitions/receipts/ordinary-valid",
+        "examples/334-calendar-offset-transitions/receipts/count-singleton",
+        "examples/334-calendar-offset-transitions/receipts/ordered-singleton",
+        "examples/334-calendar-offset-transitions/receipts/ordinary-singleton"
+      ]
+    }
+  },
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "startedAt": "2026-11-20T19:38:03+00:00",
+  "finishedAt": "2026-11-20T19:39:03+00:00",
+  "wallSeconds": 60.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1016104,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 159801344,
+    "wallSeconds": 10.6,
+    "cpuSeconds": 16.0,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 334 --tasks count-valid,ordered-valid,ordinary-valid,count-singleton,ordered-singleton,ordinary-singleton --checker-seconds 120",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 10.629,
+      "cpuSeconds": 16.019,
+      "cpuThrottledSeconds": 0.437,
+      "peakMemoryBytes": 159801344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 12,
+        "bytes": 1534,
+        "sha256": "c30d77a3726edaaae5878b9f0584ee2f8d1ee1cb352ba76c6cbe672c07050a98",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "334-calendar-offset-transitions: task count-valid: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/count-valid/20261120T193853Z-340d4903/result.json",
+          "groups": [
+            "334",
+            "count-valid",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "334-calendar-offset-transitions: task ordered-valid: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/ordered-valid/20261120T193855Z-c4ab7699/result.json",
+          "groups": [
+            "334",
+            "ordered-valid",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "334-calendar-offset-transitions: task ordinary-valid: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/ordinary-valid/20261120T193858Z-3da15223/result.json",
+          "groups": [
+            "334",
+            "ordinary-valid",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "334-calendar-offset-transitions: task count-singleton: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/count-singleton/20261120T193858Z-a325ad91/result.json",
+          "groups": [
+            "334",
+            "count-singleton",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "334-calendar-offset-transitions: task ordered-singleton: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/ordered-singleton/20261120T193900Z-cbf924e5/result.json",
+          "groups": [
+            "334",
+            "ordered-singleton",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "334-calendar-offset-transitions: task ordinary-singleton: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/ordinary-singleton/20261120T193902Z-e014ebf9/result.json",
+          "groups": [
+            "334",
+            "ordinary-singleton",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "334-calendar-offset-transitions: running task count-valid (target route)",
+        "334-calendar-offset-transitions: task count-valid: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/count-valid/20261120T193853Z-340d4903/result.json",
+        "334-calendar-offset-transitions: running task ordered-valid (target route)",
+        "334-calendar-offset-transitions: task ordered-valid: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/ordered-valid/20261120T193855Z-c4ab7699/result.json",
+        "334-calendar-offset-transitions: running task ordinary-valid (target route)",
+        "334-calendar-offset-transitions: task ordinary-valid: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/ordinary-valid/20261120T193858Z-3da15223/result.json",
+        "334-calendar-offset-transitions: running task count-singleton (target route)",
+        "334-calendar-offset-transitions: task count-singleton: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/count-singleton/20261120T193858Z-a325ad91/result.json",
+        "334-calendar-offset-transitions: running task ordered-singleton (target route)",
+        "334-calendar-offset-transitions: task ordered-singleton: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/ordered-singleton/20261120T193900Z-cbf924e5/result.json",
+        "334-calendar-offset-transitions: running task ordinary-singleton (target route)",
+        "334-calendar-offset-transitions: task ordinary-singleton: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/ordinary-singleton/20261120T193902Z-e014ebf9/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b72c0be8328bd6935e49dcd435abfd48851add7c132e2354ff6e1ec54c3f04fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/plan.json",
+      "change": "added",
+      "bytes": 4641,
+      "sha256": "695c5e95419718bb19fbd3853e96e66eae53f47c683208c796f8c57ec52f5430",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/control-valid-jdk21.stderr",
+      "change": "added",
+      "bytes": 11,
+      "sha256": "0eaeecc8f9ecba71ec228a8366b7a7d2af85bf4f84934001c119d170ce3f80a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/control-valid-jdk21.stdout",
+      "change": "added",
+      "bytes": 3760,
+      "sha256": "34e5a2622ef7a14623178c3e7ad51ca48de219857a0d55360ff41011a86de600",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/controls.json",
+      "change": "added",
+      "bytes": 11984,
+      "sha256": "3cb9123e5091ac2c1589d8be23b85739a0a02928ac778c2bb696d9fef56b93ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/execution.json",
+      "change": "added",
+      "bytes": 27992,
+      "sha256": "23cc2e4c33f27143a2368b11b7b9d1389c6666123d1c5a226a58d16448b77b55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/streams.json",
+      "change": "added",
+      "bytes": 1963,
+      "sha256": "c6245ffa4b0e0cf4c05df233b984cce68c2392c483d856914eea98fec8d8d192",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 479,
+      "sha256": "d646b635a8147b255792547aae5a3b58ad4bcf3f050da1a2fee2de2813caee65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/verifier.json",
+      "change": "added",
+      "bytes": 15878,
+      "sha256": "ed1a6779b3e1bb26eb5ddf33bfb54f3e3f101aca66c93a26b6d1ea4349fa1b3d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6241,
+      "sha256": "2d75ceb903378c611da72186b9b724a8e5d50cd82997bbf785eaef5f6b088d5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/result.json",
+      "change": "added",
+      "bytes": 14359,
+      "sha256": "371b1a799c5cd96ce142dee02dd755528c552bcbf7365b322aa387f02e953532",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/executions/20261120T193853Z-340d4903/attempt.json",
+      "change": "added",
+      "bytes": 11234,
+      "sha256": "e5ecdb6d652a8f5e4306277053c3dac59498b46175a65837a8dffcb2c073efe2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-valid/executions/20261120T193853Z-340d4903/checker.json",
+      "change": "added",
+      "bytes": 7547,
+      "sha256": "56f216de5a72ad43b09bb4a866af5417b1280f9777efe635c81d2d63a6d0e325",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e336b827693d4c624df21252b079d057e7d8a6dc8915d869e1bfba8a0c5e1aa5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/plan.json",
+      "change": "added",
+      "bytes": 4811,
+      "sha256": "34364dd64d907dc0bf167b8c6a72de3825f3ce6facd9a08e4ef4d273d6aaf06b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/control-valid-jdk21.stderr",
+      "change": "added",
+      "bytes": 11,
+      "sha256": "0eaeecc8f9ecba71ec228a8366b7a7d2af85bf4f84934001c119d170ce3f80a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/control-valid-jdk21.stdout",
+      "change": "added",
+      "bytes": 3760,
+      "sha256": "34e5a2622ef7a14623178c3e7ad51ca48de219857a0d55360ff41011a86de600",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/controls.json",
+      "change": "added",
+      "bytes": 11990,
+      "sha256": "74c89437ad17369b2c4a69c4722c2fc6975fcba759490a283f80833773ef0c7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/execution.json",
+      "change": "added",
+      "bytes": 29255,
+      "sha256": "131de3742cad16407ce452b83186689ccac3d4aa499e40482db994b549f629f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/streams.json",
+      "change": "added",
+      "bytes": 1963,
+      "sha256": "fb6f7c80c34079eab565715c08f09ee99e9d847e317ab72990e30f45cc54c1f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 481,
+      "sha256": "a52d7afd0fd42f6d2da20ea2db3f19b982c0990e44a7932842ffdf422f59bae9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/verifier.json",
+      "change": "added",
+      "bytes": 17097,
+      "sha256": "e8591c2e374038a19f6b88b62720da1251cda134b29d997d64064c6b8f79835e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6358,
+      "sha256": "1400fe422bc2ea0ac933300fa692ce6ad14e7914c70b9868aa5071d0ff166d4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/result.json",
+      "change": "added",
+      "bytes": 14725,
+      "sha256": "1342b76e1278e8debd297a7e3554ffaf40c027caa62eca25d6b57b0853d5f991",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/executions/20261120T193855Z-c4ab7699/attempt.json",
+      "change": "added",
+      "bytes": 12286,
+      "sha256": "2cc7f03cc622230af5b9bded780cb8865789eab13d9ddd0d5e7445e41a24e7ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-valid/executions/20261120T193855Z-c4ab7699/checker.json",
+      "change": "added",
+      "bytes": 7722,
+      "sha256": "6c0b883a121032f1eb4dce6336e9bdea8f7a8e9be4036fb6ad65d3b67d8eac36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "30311b2724fa50ab0103f1a0b9e55852200171240d83ec5e9adb3af294ba7dee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/plan.json",
+      "change": "added",
+      "bytes": 4844,
+      "sha256": "6a6b50cbf4476f15ffdb17dffd87b2778b464113860f5d9810ecc8bd72f81727",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/control-valid-jdk21.stderr",
+      "change": "added",
+      "bytes": 11,
+      "sha256": "0eaeecc8f9ecba71ec228a8366b7a7d2af85bf4f84934001c119d170ce3f80a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/control-valid-jdk21.stdout",
+      "change": "added",
+      "bytes": 3760,
+      "sha256": "34e5a2622ef7a14623178c3e7ad51ca48de219857a0d55360ff41011a86de600",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/controls.json",
+      "change": "added",
+      "bytes": 11992,
+      "sha256": "2a5820cb3312dfb8b8345e4688d8ba450a1d75618b9c241681c63a654a53ab7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/execution.json",
+      "change": "added",
+      "bytes": 29302,
+      "sha256": "ed264ae4ef7b47cf15a96df637c560cd6c4b10123adfe3e6960d546b2e610d7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/streams.json",
+      "change": "added",
+      "bytes": 1963,
+      "sha256": "5e5c4592045d1c13a3ccf4b44f6613faee8228a496df8c0da9cbecad8bc0e956",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 481,
+      "sha256": "a52d7afd0fd42f6d2da20ea2db3f19b982c0990e44a7932842ffdf422f59bae9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/verifier.json",
+      "change": "added",
+      "bytes": 17146,
+      "sha256": "a2e66aee24068397ad563af48540794ed728c11aa75d4ef165f94df2015b0adc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6385,
+      "sha256": "ba792ff10696c5749e2751119676e779c9f154560791a95b02adccb98a67033e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/result.json",
+      "change": "added",
+      "bytes": 14734,
+      "sha256": "9b15b02b1073a4a03a1ba8b32882c392b8a5914ec3e535303054ae812b6f50d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/executions/20261120T193858Z-3da15223/attempt.json",
+      "change": "added",
+      "bytes": 12311,
+      "sha256": "d13c6d74927896a1f58c0ffc2d839b4bcd5189bf4a08bc2e0ccc4b296c215046",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-valid/executions/20261120T193858Z-3da15223/checker.json",
+      "change": "added",
+      "bytes": 7757,
+      "sha256": "638ecd559bb683117441a241b8acea8822266325bc1a0b232d9d09f7ae3c1b2d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "346a9160a0e469e75ce8532b31607d0f43a64c04d4dacd64ef42804498fbccaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/plan.json",
+      "change": "added",
+      "bytes": 4681,
+      "sha256": "c6148c3b0ae2fe078a27a0d29c781a691eaae944cece2c31c4ea74c8ccde3b93",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/control-singleton-jdk21.stderr",
+      "change": "added",
+      "bytes": 11,
+      "sha256": "0eaeecc8f9ecba71ec228a8366b7a7d2af85bf4f84934001c119d170ce3f80a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/control-singleton-jdk21.stdout",
+      "change": "added",
+      "bytes": 3758,
+      "sha256": "76fa2d36f0c265a2febe4f0339b9ab4f60b7d0a3305a4a0dfaeeb895fc3486d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/controls.json",
+      "change": "added",
+      "bytes": 12048,
+      "sha256": "60402bc7e83d296e53aa0cf42a0e3490cc5c9598f14ddf32ea5bd244414fd135",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/execution.json",
+      "change": "added",
+      "bytes": 27807,
+      "sha256": "174faaa83fd66377c5596d0b0200ff9721cd16d0ec26b4329737dd02333acdc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/streams.json",
+      "change": "added",
+      "bytes": 1995,
+      "sha256": "cf5a0734f221c709a6bdf655550bda5ff920d52cbc9563b13b4da0cc5c23e867",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 479,
+      "sha256": "d646b635a8147b255792547aae5a3b58ad4bcf3f050da1a2fee2de2813caee65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/verifier.json",
+      "change": "added",
+      "bytes": 15669,
+      "sha256": "547d28baf477fc66a55a2719412808b83fcc96f70053cc28af383742eadcdf50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6242,
+      "sha256": "07af02b12839b759c020aabe2dcf6cb4ce3cfabafc493669dd4b8b81863075db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/result.json",
+      "change": "added",
+      "bytes": 14419,
+      "sha256": "90e3631bed5c1e859de4d9c5c9a81f862dd8df3b6f206b05faab524430f3450c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/executions/20261120T193858Z-a325ad91/attempt.json",
+      "change": "added",
+      "bytes": 11057,
+      "sha256": "c8bf393bcb0e9148e1233821cfa1b9861429e944ee651d66ce34f468939f7f9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/count-singleton/executions/20261120T193858Z-a325ad91/checker.json",
+      "change": "added",
+      "bytes": 7555,
+      "sha256": "2b23abcadf099e0f090ad2f4ad6091b6efa83a4ec924eeb8766d644f6084ed4e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c04aa695c441b6e0f5ed05066c5f9adf738c2231201b243f95a5ee75f0be662d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/plan.json",
+      "change": "added",
+      "bytes": 4851,
+      "sha256": "1f0b6cbbd695d4f000ec3c9078ec83290c301139877c5cfd57aed8a0df075045",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/control-singleton-jdk21.stderr",
+      "change": "added",
+      "bytes": 11,
+      "sha256": "0eaeecc8f9ecba71ec228a8366b7a7d2af85bf4f84934001c119d170ce3f80a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/control-singleton-jdk21.stdout",
+      "change": "added",
+      "bytes": 3758,
+      "sha256": "76fa2d36f0c265a2febe4f0339b9ab4f60b7d0a3305a4a0dfaeeb895fc3486d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/controls.json",
+      "change": "added",
+      "bytes": 12054,
+      "sha256": "cf7c7b7f414d83ea044c843df7944402c7d86ed94d9f9a35330647991fa1d627",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/execution.json",
+      "change": "added",
+      "bytes": 28390,
+      "sha256": "1d850f5a9a93b56c8caf1062bd5cec0fbcee3c4d8691d0862299803b05c1a013",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/streams.json",
+      "change": "added",
+      "bytes": 1995,
+      "sha256": "d98ac248a6b1d80ed911e531c7734c62af6972fac9f3b8521b7ba2f3845282d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 481,
+      "sha256": "a52d7afd0fd42f6d2da20ea2db3f19b982c0990e44a7932842ffdf422f59bae9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/verifier.json",
+      "change": "added",
+      "bytes": 16240,
+      "sha256": "87f9c7b06d02b4285ffe59c423d299f00567c0e406f6919259e25eac391df043",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6358,
+      "sha256": "3823215b655d47c1d0e0d13a586e86ca9b010ea9384158fc07b353d1b46d602e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/result.json",
+      "change": "added",
+      "bytes": 14785,
+      "sha256": "513b8f010ed6985a38487e6c567c64a6687c44ea54978123b362a0a0084782a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/executions/20261120T193900Z-cbf924e5/attempt.json",
+      "change": "added",
+      "bytes": 11493,
+      "sha256": "c536786e1402782e06054a788f67b5e75c36e77ea7f07c2175e4186dad070650",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordered-singleton/executions/20261120T193900Z-cbf924e5/checker.json",
+      "change": "added",
+      "bytes": 7729,
+      "sha256": "00b9c1122f598478701bfe73c8749af23e6a32d33d429ed33981135ec79cffe5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5e5249e082fb29a6197a854c3ae74de6490bc05879a8ec6a7dde9a6f2ec221a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/plan.json",
+      "change": "added",
+      "bytes": 4888,
+      "sha256": "c36b5097fae467a26b06ab37555d91017b59d971343d94c673ccc0afde350bf5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/control-singleton-jdk21.stderr",
+      "change": "added",
+      "bytes": 11,
+      "sha256": "0eaeecc8f9ecba71ec228a8366b7a7d2af85bf4f84934001c119d170ce3f80a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/control-singleton-jdk21.stdout",
+      "change": "added",
+      "bytes": 3758,
+      "sha256": "76fa2d36f0c265a2febe4f0339b9ab4f60b7d0a3305a4a0dfaeeb895fc3486d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/controls.json",
+      "change": "added",
+      "bytes": 12056,
+      "sha256": "b9cd4a72068b111753ed13172d9e1727aab46f29d5d2843c12651454b9612830",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/execution.json",
+      "change": "added",
+      "bytes": 28442,
+      "sha256": "43f8bbb6c68582a12d2db1395758d48945e5c62efd8cb281b188d9aee904bfe7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/streams.json",
+      "change": "added",
+      "bytes": 1995,
+      "sha256": "a23b78afd6eb23d50984c5c444a5457fdc315204879185731f32582d04a3dd82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 481,
+      "sha256": "a52d7afd0fd42f6d2da20ea2db3f19b982c0990e44a7932842ffdf422f59bae9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/verifier.json",
+      "change": "added",
+      "bytes": 16294,
+      "sha256": "235744243783800e13f76864c40f3211040cd5c40da3fdc08688950b0e4971e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6387,
+      "sha256": "a158b9c23edec3989a5c47896b5972f10cefe9dfadb32936ca6ea9103314acaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/result.json",
+      "change": "added",
+      "bytes": 14800,
+      "sha256": "5e6152205a5e1ba009cf4286176264ca978c27ef95b7876f0a2b3587616ad676",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/executions/20261120T193902Z-e014ebf9/attempt.json",
+      "change": "added",
+      "bytes": 11519,
+      "sha256": "cda5a6db37a684ede6ea356bae4e19e60128a4c25395eb36fc9a0ecccfff8e8e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/executions/20261120T193902Z-e014ebf9/checker.json",
+      "change": "added",
+      "bytes": 7768,
+      "sha256": "f07d57e99431d2fd144a1a96960c39a21e928518dedf5e88435dacbc603be1b4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:39:12+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/completion.json",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/plan.json",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/control-valid-jdk21.stderr",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/control-valid-jdk21.stdout",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/controls.json",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/execution.json",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/streams.json",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/verifier-output.txt",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/verifier.json",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/verifier.stderr",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/records/verifier.stdout",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/20261120T193853Z-340d4903/result.json",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/executions/20261120T193853Z-340d4903/attempt.json",
+      "examples/334-calendar-offset-transitions/receipts/count-valid/executions/20261120T193853Z-340d4903/checker.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/completion.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/plan.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/control-valid-jdk21.stderr",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/control-valid-jdk21.stdout",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/controls.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/execution.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/streams.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/verifier-output.txt",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/verifier.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/verifier.stderr",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/records/verifier.stdout",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/20261120T193855Z-c4ab7699/result.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/executions/20261120T193855Z-c4ab7699/attempt.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-valid/executions/20261120T193855Z-c4ab7699/checker.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/completion.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/plan.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/control-valid-jdk21.stderr",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/control-valid-jdk21.stdout",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/controls.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/execution.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/streams.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/verifier-output.txt",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/verifier.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/verifier.stderr",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/records/verifier.stdout",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/20261120T193858Z-3da15223/result.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/executions/20261120T193858Z-3da15223/attempt.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-valid/executions/20261120T193858Z-3da15223/checker.json",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/completion.json",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/plan.json",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/control-singleton-jdk21.stderr",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/control-singleton-jdk21.stdout",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/controls.json",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/execution.json",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/streams.json",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/verifier-output.txt",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/verifier.json",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/verifier.stderr",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/records/verifier.stdout",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/20261120T193858Z-a325ad91/result.json",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/executions/20261120T193858Z-a325ad91/attempt.json",
+      "examples/334-calendar-offset-transitions/receipts/count-singleton/executions/20261120T193858Z-a325ad91/checker.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/completion.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/plan.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/control-singleton-jdk21.stderr",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/control-singleton-jdk21.stdout",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/controls.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/execution.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/streams.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/verifier-output.txt",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/verifier.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/verifier.stderr",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/records/verifier.stdout",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/20261120T193900Z-cbf924e5/result.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/executions/20261120T193900Z-cbf924e5/attempt.json",
+      "examples/334-calendar-offset-transitions/receipts/ordered-singleton/executions/20261120T193900Z-cbf924e5/checker.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/completion.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/plan.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/control-singleton-jdk21.stderr",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/control-singleton-jdk21.stdout",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/controls.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/execution.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/streams.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/verifier-output.txt",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/verifier.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/verifier.stderr",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/records/verifier.stdout",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/20261120T193902Z-e014ebf9/result.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/executions/20261120T193902Z-e014ebf9/attempt.json",
+      "examples/334-calendar-offset-transitions/receipts/ordinary-singleton/executions/20261120T193902Z-e014ebf9/checker.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-334-check-zone-transitions-from-compiled"
+}

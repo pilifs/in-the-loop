@@ -1,0 +1,169 @@
+{
+  "plan": {
+    "example": "334",
+    "task": "ordinary-valid",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "zones.Appointment#ordered(I)I",
+    "revisions": [
+      "valid"
+    ],
+    "claim": {
+      "task": "ordinary-valid",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "zones.Appointment#ordered(I)I",
+      "file": "claims/ordinary.json",
+      "sha256": "c85e1808c946cf80fcba19bf43555ce3ba46f7e97d26602239a6150ec0aa0107",
+      "property": "ordinary",
+      "claimKind": "property",
+      "statement": "The fixed UTC zone and ordinary Toronto hours preserve their unique offset under both process defaults.",
+      "assume": "code >= 0 && code < 24 && (code < 12 || (((code / 2) % 6) != 1 && ((code / 2) % 6) != 4))",
+      "assert": "result == (code < 12 ? 1 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 24
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 24
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/zones/ZoneCases.java",
+          "sha256": "b0ec1a8a91326e34ccb4bb1dba0963cf5ed190da1142c8bed414a3350f5cc3c6"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "53cfddc194632fde2cc8348baf9dc110393c21b6dcfecabc66f429eda03c1922"
+        }
+      ],
+      "key": "bbb9aee507d2375a"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "valid",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "valid",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/ordinary-valid"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-334-check-zone-transitions-from-compiled/examples/334-calendar-offset-transitions",
+    "network": false
+  },
+  "inputs": {
+    "example": "334",
+    "task": "ordinary-valid",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "zones.Appointment#ordered(I)I",
+    "revisions": [
+      "valid"
+    ],
+    "claim": {
+      "task": "ordinary-valid",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "zones.Appointment#ordered(I)I",
+      "file": "claims/ordinary.json",
+      "sha256": "c85e1808c946cf80fcba19bf43555ce3ba46f7e97d26602239a6150ec0aa0107",
+      "property": "ordinary",
+      "claimKind": "property",
+      "statement": "The fixed UTC zone and ordinary Toronto hours preserve their unique offset under both process defaults.",
+      "assume": "code >= 0 && code < 24 && (code < 12 || (((code / 2) % 6) != 1 && ((code / 2) % 6) != 4))",
+      "assert": "result == (code < 12 ? 1 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 24
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 24
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/zones/ZoneCases.java",
+          "sha256": "b0ec1a8a91326e34ccb4bb1dba0963cf5ed190da1142c8bed414a3350f5cc3c6"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "53cfddc194632fde2cc8348baf9dc110393c21b6dcfecabc66f429eda03c1922"
+        }
+      ],
+      "key": "bbb9aee507d2375a"
+    },
+    "artifacts": [
+      {
+        "revision": "valid",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "valid",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "134f8f55f1989d0e33860b8790dab9a60e19101c4252cb989081302adbc95442"
+}

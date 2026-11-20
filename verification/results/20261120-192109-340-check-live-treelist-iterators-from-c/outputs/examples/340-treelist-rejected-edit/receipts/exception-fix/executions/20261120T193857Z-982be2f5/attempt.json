@@ -1,0 +1,370 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T193857Z-982be2f5",
+  "task": "exception-fix",
+  "claimKey": "c260369b8f09c8d7",
+  "revisions": [
+    "fix"
+  ],
+  "startedAt": "2026-11-20T19:38:57.623294+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-192109-340-check-live-treelist-iterators-from-c",
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 2.059
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.2076
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 2.2128
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.2628
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.2968
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.4337
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "fix": {
+      "revision": "fe8eb4989392cb436438978b151aa800b70195b9",
+      "target": {
+        "class": "org.apache.commons.collections4.list.TreeList",
+        "method": "add",
+        "descriptor": "(ILjava/lang/Object;)V",
+        "loadedFrom": "built/commons-collections4-4.6.0-SNAPSHOT.jar",
+        "classSha256": "e2bef8b5752fe8efce23b5f39cf89a0527811c5fd4181e6c4e8459e26065cbbd",
+        "adapterCalls": [
+          "org.apache.commons.collections4.list.TreeList#<init>()V",
+          "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+          "org.apache.commons.collections4.list.TreeList#add(Ljava/lang/Object;)Z",
+          "org.apache.commons.collections4.list.TreeList#get(I)Ljava/lang/Object;",
+          "org.apache.commons.collections4.list.TreeList#iterator()Ljava/util/Iterator;",
+          "org.apache.commons.collections4.list.TreeList#remove(I)Ljava/lang/Object;",
+          "org.apache.commons.collections4.list.TreeList#size()I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "43157420d029603f9f22d29377508e542700fd78eca6f2e6788a78a9b7804a88",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "3bb5e7b53ad9a747451fa0955f1c88f9e2618127bb0846fae84004a5afec4b87",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/commons-collections4-4.6.0-SNAPSHOT.jar",
+          "sha256": "392cb273d3dd5d13b39f65c38f0cc3bbee1a37e97f9a3f973a03e53c09f26d89",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/apache/commons-collections at fe8eb4989392cb436438978b151aa800b70195b9: target/commons-collections4-4.6.0-SNAPSHOT.jar"
+        },
+        {
+          "path": "lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+          "role": "dependency",
+          "coordinates": "commons-codec:commons-codec:1.22.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        }
+      ]
+    }
+  },
+  "bindingId": "f6c4484a21ba7d953adc2f5528b33d8b41bec37be34d5f1acec9503fc2217389",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "trees.Projection#exception(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/built/commons-collections4-4.6.0-SNAPSHOT.jar",
+    "--classpath",
+    "prepare/fix/lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+    "--assume",
+    "code >= 0 && code < 112",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "48",
+    "--max-array-length",
+    "16",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 48,
+      "maxArrayLength": 16
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "adapter",
+      "meaning": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit.",
+      "method": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "revisions": {
+        "fix": {
+          "commit": "fe8eb4989392cb436438978b151aa800b70195b9",
+          "loadedFrom": "built/commons-collections4-4.6.0-SNAPSHOT.jar",
+          "classSha256": "e2bef8b5752fe8efce23b5f39cf89a0527811c5fd4181e6c4e8459e26065cbbd",
+          "origin": "built by maven from https://github.com/apache/commons-collections at fe8eb4989392cb436438978b151aa800b70195b9: target/commons-collections4-4.6.0-SNAPSHOT.jar",
+          "parameters": {
+            "names": [
+              "index",
+              "obj"
+            ],
+            "recordedIn": "LocalVariableTable"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "trees.Projection#exception(I)I",
+        "cases": 112,
+        "correspondence": "finite-oracle",
+        "mapping": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit."
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "fix": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "3bb5e7b53ad9a747451fa0955f1c88f9e2618127bb0846fae84004a5afec4b87",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-collections4-4.6.0-SNAPSHOT.jar",
+          "sha256": "392cb273d3dd5d13b39f65c38f0cc3bbee1a37e97f9a3f973a03e53c09f26d89",
+          "role": "original"
+        },
+        {
+          "path": "lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "trees.Projection#exception(I)I",
+    "entryBindings": {
+      "fix": {
+        "entry": "trees.Projection#exception(I)I",
+        "classSha256": "6bfaf9e70316d95014935457a731daa61138630ac37f3b109c53abe072b6d5d8",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+        "subjectClassSha256": "e2bef8b5752fe8efce23b5f39cf89a0527811c5fd4181e6c4e8459e26065cbbd"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "checkedEntry": "trees.Projection#exception(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 112"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "48"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "16"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "trees.Projection#exception(I)I",
+        "cases": 112,
+        "correspondence": "finite-oracle",
+        "mapping": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit."
+      }
+    },
+    "commits": {
+      "fix": "fe8eb4989392cb436438978b151aa800b70195b9"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "fix": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+          "gaps",
+          "--target",
+          "trees.Projection#exception(int)",
+          "--classes",
+          "prepare/fix/adapter-fix.jar",
+          "--classpath",
+          "prepare/fix/built/commons-collections4-4.6.0-SNAPSHOT.jar",
+          "--classpath",
+          "prepare/fix/lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.034,
+        "stdout": "verifier/probe-fix.stdout",
+        "stderr": "verifier/probe-fix.stderr",
+        "gaps": [
+          {
+            "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.Iterator.next()",
+            "sites": [
+              "trees.Projection.inspect:32"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:org.apache.commons.collections4.list.TreeList.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "org.apache.commons.collections4.list.TreeList.add(java.lang.Object)",
+            "sites": [
+              "trees.Projection.inspect:13"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0305,
+      "peakRssBytes": 80924672,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0305,
+    "peakRssBytes": 80924672,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.032,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/exception-fix/20261120T193857Z-982be2f5/result.json",
+  "preparedClaim": "b22a1b1c7f285260",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:org.apache.commons.collections4.list.TreeList.add(Ljava/lang/Object;)Z@jdk-21.0.13 (org.apache.commons.collections4.list.TreeList.add(java.lang.Object) at trees.Projection.inspect:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "endedAt": "2026-11-20T19:39:00.057108+00:00"
+}

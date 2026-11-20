@@ -1,0 +1,118 @@
+{
+  "schema": "finite-jvm-batch/v1",
+  "id": "20261120T193852Z-cc06a958",
+  "retryOf": null,
+  "order": [
+    "second-cached",
+    "init-count-cached",
+    "second-helper",
+    "init-count-helper",
+    "second-live",
+    "init-count-live"
+  ],
+  "claims": {
+    "second-cached": {
+      "sourceClaim": "fec4de52f7b18f7b",
+      "inputsKey": "9a5a94dbd8db4379f2ba39bc560cac2ad3fedb55d192a24f222e4bee4703ce52",
+      "revisions": [
+        "cached"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "cached": "873cce9769a912ae75cf57ffc992b3697d294a5ab3ed89f6bc7c3b4684f52524"
+      }
+    },
+    "init-count-cached": {
+      "sourceClaim": "3ef63deb082003f6",
+      "inputsKey": "4d56aab9b4e02ffb0cbc4ac01f556b70c9ed1e50d7a5293591e47b1018ff1837",
+      "revisions": [
+        "cached"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "cached": "873cce9769a912ae75cf57ffc992b3697d294a5ab3ed89f6bc7c3b4684f52524"
+      }
+    },
+    "second-helper": {
+      "sourceClaim": "fec4de52f7b18f7b",
+      "inputsKey": "2a9953f787fa6199072b5bbe42a8d175593aad8c70e73bc7531703ce0a512628",
+      "revisions": [
+        "helper"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "helper": "ff735b2c852f73a8c267b8a8aa8bdc2ce2329cbfba7112934f6b2345362bf7f3"
+      }
+    },
+    "init-count-helper": {
+      "sourceClaim": "3ef63deb082003f6",
+      "inputsKey": "9c234504a7d88d3d5dc447b78cfcee7c5f455ec8c72c86c691a69ff610f718da",
+      "revisions": [
+        "helper"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "helper": "ff735b2c852f73a8c267b8a8aa8bdc2ce2329cbfba7112934f6b2345362bf7f3"
+      }
+    },
+    "second-live": {
+      "sourceClaim": "fec4de52f7b18f7b",
+      "inputsKey": "f062c69cead6d986ad8d0bac79b2870b16e6bb0685d2883204ac54d27549edb3",
+      "revisions": [
+        "live"
+      ],
+      "expected": "refuted",
+      "sourceLocks": {
+        "live": "6dbace1e28fd7531fb35f0ba7a9268001e4b8f99e77d0f17d6691d35747fe65c"
+      }
+    },
+    "init-count-live": {
+      "sourceClaim": "3ef63deb082003f6",
+      "inputsKey": "071320ebfe8dad4106f8e0660e3fad3e967ab232f3ebd3b62eb8aabe7365d0ec",
+      "revisions": [
+        "live"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "live": "6dbace1e28fd7531fb35f0ba7a9268001e4b8f99e77d0f17d6691d35747fe65c"
+      }
+    }
+  },
+  "status": "completed",
+  "completed": [
+    {
+      "task": "second-cached",
+      "status": "established",
+      "sha256": "223a6bc4bf87d3c26bb14c946de498ae86803e669f5fcba228fecc9198cc1dee"
+    },
+    {
+      "task": "init-count-cached",
+      "status": "established",
+      "sha256": "606628564898a84944be578e2f0f90eb161126f942e109c78e24d00e0831ff2e"
+    },
+    {
+      "task": "second-helper",
+      "status": "established",
+      "sha256": "355ea1f6ff63a7f42f91f0d5c7f7e35484579c2096c1effe44e145ae453720e6"
+    },
+    {
+      "task": "init-count-helper",
+      "status": "established",
+      "sha256": "4765bbea04b3329f5391f74af390feb5178e06e399c9b7eca954b1e4b812fc4c"
+    },
+    {
+      "task": "second-live",
+      "status": "refuted",
+      "sha256": "19c2bc158f56a1957d1f95727f5fd844c329e1e0784b58ed3edf2837799eb84d"
+    },
+    {
+      "task": "init-count-live",
+      "status": "established",
+      "sha256": "03f99f495607fd4b222531e0a27af30abdf83b25899e9da3b09a3cd4bbc6487a"
+    }
+  ],
+  "missing": [],
+  "secondsPerJvm": 120,
+  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
+  "scope": "Each integer starts with a fresh application class loader on the pinned runtime and classpath. Intervals above 4096 use consecutive JVM batches on one total deadline."
+}

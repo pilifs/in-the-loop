@@ -1,0 +1,319 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T193900Z-cd237821",
+  "task": "eof-separate",
+  "claimKey": "d8e48b42f9e862f0",
+  "revisions": [
+    "separate"
+  ],
+  "startedAt": "2026-11-20T19:39:00.840247+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-192109-341-check-streaming-utf-8-partitions-fro",
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.6648
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.8978
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.9407
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.0054
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.1586
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "separate": {
+      "revision": "fixture:separate",
+      "target": {
+        "class": "chunks.Inputs",
+        "method": "eof",
+        "descriptor": "(I)I",
+        "loadedFrom": "separate.jar",
+        "classSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "02818b97eef048130069f81534c81d1c03ae4a5dae46645799d101c822831013",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "separate.jar",
+          "sha256": "b537544cdd230b309de2ba2ab224306c3e45453c1d9e6cba4c73a3e1ff3f584d",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from separate by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "3c9782be2951ca98fe757d5868ab6ead4fafc6ac9b84209079fbb0951e05f787",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "chunks.Inputs#eof(int)",
+    "--classes",
+    "prepare/separate/separate.jar",
+    "--assume",
+    "code >= 0 && code < 5578",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "160",
+    "--max-array-length",
+    "48",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 160,
+      "maxArrayLength": 48
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "chunks.Inputs#eof(I)I",
+      "revisions": {
+        "separate": {
+          "commit": "fixture:separate",
+          "loadedFrom": "separate.jar",
+          "classSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f",
+          "origin": "built from separate by the fixture recipe",
+          "parameters": {
+            "names": [
+              "code"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "separate": [
+        {
+          "path": "separate.jar",
+          "sha256": "b537544cdd230b309de2ba2ab224306c3e45453c1d9e6cba4c73a3e1ff3f584d",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "chunks.Inputs#eof(I)I",
+    "entryBindings": {
+      "separate": {
+        "entry": "chunks.Inputs#eof(I)I",
+        "classSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f",
+        "loadedFrom": "separate.jar",
+        "subject": "chunks.Inputs#eof(I)I",
+        "subjectClassSha256": "159762d13271302fd6427706886b8c7eabe49e44e3816936a0a6d36286588f7f"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "chunks.Inputs#eof(I)I",
+      "checkedEntry": "chunks.Inputs#eof(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 5578"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "160"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "48"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "separate": "fixture:separate"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "separate": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+          "gaps",
+          "--target",
+          "chunks.Inputs#eof(int)",
+          "--classes",
+          "prepare/separate/separate.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-separate.stdout",
+        "stderr": "verifier/probe-separate.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.io.InputStream.<init>()",
+            "sites": [
+              "chunks.ChunkInput.<init>:10"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.lang.String.<init>([BIILjava/nio/charset/Charset;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.String.<init>(byte[], int, int, java.nio.charset.Charset)",
+            "sites": [
+              "chunks.Decoder.decode:9"
+            ]
+          },
+          {
+            "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+            "sites": [
+              "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0592,
+      "peakRssBytes": 82509824,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0592,
+    "peakRssBytes": 82509824,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.063,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/eof-separate/20261120T193900Z-cd237821/result.json",
+  "preparedClaim": "8474c0e0a12ef8a4",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13 (java.io.InputStream.<init>() at chunks.ChunkInput.<init>:10). With --gaps assume it assumes instead that java.io.InputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+  "endedAt": "2026-11-20T19:39:02.998896+00:00"
+}

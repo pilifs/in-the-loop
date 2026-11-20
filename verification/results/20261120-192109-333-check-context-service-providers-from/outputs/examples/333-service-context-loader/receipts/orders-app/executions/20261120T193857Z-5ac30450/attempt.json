@@ -1,0 +1,386 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T193857Z-5ac30450",
+  "task": "orders-app",
+  "claimKey": "68c4dfac1f86658d",
+  "revisions": [
+    "app"
+  ],
+  "startedAt": "2026-11-20T19:38:57.371760+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-192109-333-check-context-service-providers-from",
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.8327
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.0016
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.0447
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.0778
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.2474
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "app": {
+      "revision": "fixture:app",
+      "target": {
+        "class": "styles.World",
+        "method": "orders",
+        "descriptor": "(I)I",
+        "loadedFrom": "app.jar",
+        "classSha256": "46c34afbd7f17b41871aa6dd15f273d2aef4fe2b889d9bcf32d159d2bb19a040"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "a962c13d713bfc836e14a470fc684196f6cba5e00b976e15fca7a1c779f8fb1c",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "app.jar",
+          "sha256": "f455fcdc50a86a3da014260a12acd248fad8def6e275285dd40c3f46980ef04a",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from app by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "b3442665e3c2346c3e4499492d86c3563d52f5cd34108023d6ba8326b33935c8",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "styles.World#orders(int)",
+    "--classes",
+    "prepare/app/app.jar",
+    "--assume",
+    "code >= 0 && code < 16",
+    "--assert",
+    "result == code",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "32",
+    "--max-array-length",
+    "16",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 32,
+      "maxArrayLength": 16
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "styles.World#orders(I)I",
+      "revisions": {
+        "app": {
+          "commit": "fixture:app",
+          "loadedFrom": "app.jar",
+          "classSha256": "46c34afbd7f17b41871aa6dd15f273d2aef4fe2b889d9bcf32d159d2bb19a040",
+          "origin": "built from app by the fixture recipe",
+          "parameters": {
+            "names": [
+              "code"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "app": [
+        {
+          "path": "app.jar",
+          "sha256": "f455fcdc50a86a3da014260a12acd248fad8def6e275285dd40c3f46980ef04a",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "styles.World#orders(I)I",
+    "entryBindings": {
+      "app": {
+        "entry": "styles.World#orders(I)I",
+        "classSha256": "46c34afbd7f17b41871aa6dd15f273d2aef4fe2b889d9bcf32d159d2bb19a040",
+        "loadedFrom": "app.jar",
+        "subject": "styles.World#orders(I)I",
+        "subjectClassSha256": "46c34afbd7f17b41871aa6dd15f273d2aef4fe2b889d9bcf32d159d2bb19a040"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "styles.World#orders(I)I",
+      "checkedEntry": "styles.World#orders(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 16"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == code"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "32"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "16"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "app": "fixture:app"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "app": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+          "gaps",
+          "--target",
+          "styles.World#orders(int)",
+          "--classes",
+          "prepare/app/app.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-app.stdout",
+        "stderr": "verifier/probe-app.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.lang.ClassLoader.<init>(Ljava/lang/String;Ljava/lang/ClassLoader;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.ClassLoader.<init>(java.lang.String, java.lang.ClassLoader)",
+            "sites": [
+              "styles.World$Layer.<init>:24"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.net.URL.<init>(Ljava/net/URL;Ljava/lang/String;Ljava/net/URLStreamHandler;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.net.URL.<init>(java.net.URL, java.lang.String, java.net.URLStreamHandler)",
+            "sites": [
+              "styles.World$Layer.<init>:30"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.net.URLStreamHandler.<init>()V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.net.URLStreamHandler.<init>()",
+            "sites": [
+              "styles.World$Layer$1.<init>:30"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.lang.Thread.setContextClassLoader(Ljava/lang/ClassLoader;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.Thread.setContextClassLoader(java.lang.ClassLoader)",
+            "sites": [
+              "styles.World.sequence:74",
+              "styles.World.sequence:78"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.Class.getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.Class.getMethod(java.lang.String, java.lang.Class[])",
+            "sites": [
+              "styles.World.sequence:75"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.reflect.Method.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])",
+            "sites": [
+              "styles.World.sequence:75"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:styles.World$Layer.loadClass(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "styles.World$Layer.loadClass(java.lang.String)",
+            "sites": [
+              "styles.World.sequence:68"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.ClassLoader.getPlatformClassLoader()",
+            "sites": [
+              "styles.World.sequence:65"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Set.of()Ljava/util/Set;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Set.of()",
+            "sites": [
+              "styles.World.visible:60"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Set.of(Ljava/lang/Object;)Ljava/util/Set;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Set.of(java.lang.Object)",
+            "sites": [
+              "styles.World.visible:60"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Set.of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Set.of(java.lang.Object, java.lang.Object)",
+            "sites": [
+              "styles.World.sequence:66",
+              "styles.World.sequence:67",
+              "styles.World.visible:60"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.022,
+      "peakRssBytes": 80019456,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.022,
+    "peakRssBytes": 80019456,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.031,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/orders-app/20261120T193857Z-5ac30450/result.json",
+  "preparedClaim": "63ddb95ea522e8dc",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13 (java.lang.ClassLoader.getPlatformClassLoader() at styles.World.sequence:65). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "endedAt": "2026-11-20T19:38:59.619287+00:00"
+}

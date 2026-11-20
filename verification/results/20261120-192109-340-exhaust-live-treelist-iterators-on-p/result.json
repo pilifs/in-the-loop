@@ -1,0 +1,238 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-192109-340-exhaust-live-treelist-iterators-on-p",
+  "title": "340 exhaust live TreeList iterators on pinned JVMs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 15.1s, peak 135.6 MiB (estimated 3m00s, 2.0 GiB); 9 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-192109-340-exhaust-live-treelist-iterators-on-p.json",
+    "sha256": "7b2b5264f2154aafb5c85ab880547affcd4bcd0ff2f2543f2e31b69142bc3feb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-192109-340-exhaust-live-treelist-iterators-on-p",
+      "title": "340 exhaust live TreeList iterators on pinned JVMs",
+      "description": "Execute the entire frozen selector domain for live TreeList iterators on the actual original classes, checking guard, typed assertion and every obtained counterexample. The separate direct oracle reconstructs its admitted inputs and observations.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "340"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:21:09+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Prove each finite selector claim",
+          "run": "python3 examples/tools/build.py 340 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/340-treelist-rejected-edit/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "startedAt": "2026-11-20T19:38:03+00:00",
+  "finishedAt": "2026-11-20T19:39:07+00:00",
+  "wallSeconds": 64.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1016104,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 142229504,
+    "wallSeconds": 15.1,
+    "cpuSeconds": 25.1,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove each finite selector claim",
+      "run": "python3 examples/tools/build.py 340 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 15.093,
+      "cpuSeconds": 25.132,
+      "cpuThrottledSeconds": 1.245,
+      "peakMemoryBytes": 142229504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-each-finite-selector-cla.log",
+        "lines": 8,
+        "bytes": 348,
+        "sha256": "e5e8720206cd18cbb140a59a8424690b23df065a6f6eacc3571d0343533f3437",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "340 exception-parent established 112 admitted ",
+        "340 contents-parent established 112 admitted ",
+        "340 existing-parent refuted 112 admitted ",
+        "340 fresh-parent established 112 admitted ",
+        "340 exception-fix established 112 admitted ",
+        "340 contents-fix established 112 admitted ",
+        "340 existing-fix established 112 admitted ",
+        "340 fresh-fix established 112 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/batch.json",
+      "change": "added",
+      "bytes": 4717,
+      "sha256": "969c6de4fe3563a2d2044c7e67e7341d7a14f6347d661466ee01aa5d53b2f88b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/contents-fix.json",
+      "change": "added",
+      "bytes": 24282,
+      "sha256": "8dd4e09609453b9fa2177971cbc714ec2103b99f6c7f6b145a2c3af077627b87",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/contents-parent.json",
+      "change": "added",
+      "bytes": 24302,
+      "sha256": "c28e978135243240e608252a653db3556b3d2aeb5d734de20e4e0c3ba62a97ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/exception-fix.json",
+      "change": "added",
+      "bytes": 24287,
+      "sha256": "c0b065e521e4a623ea17b868714bca1a16466af533a9a5ca9f3ffd2802b24086",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/exception-parent.json",
+      "change": "added",
+      "bytes": 24308,
+      "sha256": "bf1066d0b9a936348d1f6425fccc05d4a43f41be04d84c331f66a68ea17995c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/existing-fix.json",
+      "change": "added",
+      "bytes": 24282,
+      "sha256": "40d2e78904b3e8357570d32b4ee5edb16f0c2d9d6dd61e2a7e7396a42442ae33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/existing-parent.json",
+      "change": "added",
+      "bytes": 26592,
+      "sha256": "5f679fb55e9af8069b406074f2875ba36927b20a00e30e04bbed7c1340a3a5f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/fresh-fix.json",
+      "change": "added",
+      "bytes": 24267,
+      "sha256": "a93fd9d114a9b94a68654f3a15a86410230b0fb57caf4386b1c9266900ab41fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/fresh-parent.json",
+      "change": "added",
+      "bytes": 24288,
+      "sha256": "79f6cf582f0585d5d0c3c32d251c3a24a7666f8c5e4e428d80f6f41e5caf403e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:39:12+00:00",
+    "applied": [
+      "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/batch.json",
+      "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/contents-fix.json",
+      "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/contents-parent.json",
+      "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/exception-fix.json",
+      "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/exception-parent.json",
+      "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/existing-fix.json",
+      "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/existing-parent.json",
+      "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/fresh-fix.json",
+      "examples/340-treelist-rejected-edit/records/finite-proofs/20261120T193852Z-5b16f838/fresh-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

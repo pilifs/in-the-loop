@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-192109-332-exhaust-paper-startup-on-pinned-jvms",
+  "title": "332 exhaust paper startup on pinned JVMs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.2s, peak 126.4 MiB (estimated 3m00s, 2.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-192109-332-exhaust-paper-startup-on-pinned-jvms.json",
+    "sha256": "f7be3fa3bcd3596acc598b376075adfb4879bd701dd4a33942cbfaaa7c11ab59",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-192109-332-exhaust-paper-startup-on-pinned-jvms",
+      "title": "332 exhaust paper startup on pinned JVMs",
+      "description": "Execute the entire frozen selector domain for paper startup on the actual original classes, checking guard, typed assertion and every obtained counterexample. The separate direct oracle reconstructs its admitted inputs and observations.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "332"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:21:09+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Prove each finite selector claim",
+          "run": "python3 examples/tools/build.py 332 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/332-paper-initialization/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "startedAt": "2026-11-20T19:38:03+00:00",
+  "finishedAt": "2026-11-20T19:39:09+00:00",
+  "wallSeconds": 66.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1016104,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 132526080,
+    "wallSeconds": 17.2,
+    "cpuSeconds": 28.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove each finite selector claim",
+      "run": "python3 examples/tools/build.py 332 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 17.187,
+      "cpuSeconds": 28.581,
+      "cpuThrottledSeconds": 1.393,
+      "peakMemoryBytes": 132526080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-each-finite-selector-cla.log",
+        "lines": 6,
+        "bytes": 256,
+        "sha256": "0d8ebf31a0280f1c166384a2b68d88aa237f77631fc82e0daf6ba768b2f70bd1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "332 second-cached established 9 admitted ",
+        "332 init-count-cached established 9 admitted ",
+        "332 second-helper established 9 admitted ",
+        "332 init-count-helper established 9 admitted ",
+        "332 second-live refuted 9 admitted ",
+        "332 init-count-live established 9 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/batch.json",
+      "change": "added",
+      "bytes": 3691,
+      "sha256": "55c7ac184a2e132e7ffff871afdc8607e3a56817db0567c09503d90196f44fa1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/init-count-cached.json",
+      "change": "added",
+      "bytes": 4205,
+      "sha256": "606628564898a84944be578e2f0f90eb161126f942e109c78e24d00e0831ff2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/init-count-helper.json",
+      "change": "added",
+      "bytes": 4205,
+      "sha256": "4765bbea04b3329f5391f74af390feb5178e06e399c9b7eca954b1e4b812fc4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/init-count-live.json",
+      "change": "added",
+      "bytes": 4192,
+      "sha256": "03f99f495607fd4b222531e0a27af30abdf83b25899e9da3b09a3cd4bbc6487a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/second-cached.json",
+      "change": "added",
+      "bytes": 4222,
+      "sha256": "223a6bc4bf87d3c26bb14c946de498ae86803e669f5fcba228fecc9198cc1dee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/second-helper.json",
+      "change": "added",
+      "bytes": 4223,
+      "sha256": "355ea1f6ff63a7f42f91f0d5c7f7e35484579c2096c1effe44e145ae453720e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/second-live.json",
+      "change": "added",
+      "bytes": 5700,
+      "sha256": "19c2bc158f56a1957d1f95727f5fd844c329e1e0784b58ed3edf2837799eb84d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:39:11+00:00",
+    "applied": [
+      "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/batch.json",
+      "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/init-count-cached.json",
+      "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/init-count-helper.json",
+      "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/init-count-live.json",
+      "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/second-cached.json",
+      "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/second-helper.json",
+      "examples/332-paper-initialization/records/finite-proofs/20261120T193852Z-cc06a958/second-live.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

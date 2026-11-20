@@ -1,0 +1,322 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T193855Z-c3b591ea",
+  "task": "owners-named",
+  "claimKey": "2d70922c5336fb65",
+  "revisions": [
+    "named"
+  ],
+  "startedAt": "2026-11-20T19:38:55.801625+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-192110-344-check-shared-seat-identities-from-co",
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.9178
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.0409
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.1223
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.1791
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.3531
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "named": {
+      "revision": "fixture:named",
+      "target": {
+        "class": "seats.Reservations",
+        "method": "singleOwner",
+        "descriptor": "(I)I",
+        "loadedFrom": "named.jar",
+        "classSha256": "4f022101e24f11ed67ed84e627caf8e575d653c644aa7dc7b6120e57de5320ca"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "943751e9092daa3a68f2a25ff96e0fe5605a3af7adeac3a2081284139b7d4752",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "named.jar",
+          "sha256": "01f8680a12d62e8e35fb8e5644a67d82ab27c3775cee0f57d0ba13d170fa042e",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from named by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "da1d20c9e0d9cdb19232a3fa6ee272bbd3e44cc2fd28b11785f1d004c1152df4",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "seats.Reservations#singleOwner(int)",
+    "--classes",
+    "prepare/named/named.jar",
+    "--assume",
+    "code >= 0 && code < 36",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "32",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 32,
+      "maxArrayLength": 8
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "seats.Reservations#singleOwner(I)I",
+      "revisions": {
+        "named": {
+          "commit": "fixture:named",
+          "loadedFrom": "named.jar",
+          "classSha256": "4f022101e24f11ed67ed84e627caf8e575d653c644aa7dc7b6120e57de5320ca",
+          "origin": "built from named by the fixture recipe",
+          "parameters": {
+            "names": [
+              "code"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "named": [
+        {
+          "path": "named.jar",
+          "sha256": "01f8680a12d62e8e35fb8e5644a67d82ab27c3775cee0f57d0ba13d170fa042e",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "seats.Reservations#singleOwner(I)I",
+    "entryBindings": {
+      "named": {
+        "entry": "seats.Reservations#singleOwner(I)I",
+        "classSha256": "4f022101e24f11ed67ed84e627caf8e575d653c644aa7dc7b6120e57de5320ca",
+        "loadedFrom": "named.jar",
+        "subject": "seats.Reservations#singleOwner(I)I",
+        "subjectClassSha256": "4f022101e24f11ed67ed84e627caf8e575d653c644aa7dc7b6120e57de5320ca"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "seats.Reservations#singleOwner(I)I",
+      "checkedEntry": "seats.Reservations#singleOwner(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 36"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "32"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "named": "fixture:named"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "named": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+          "gaps",
+          "--target",
+          "seats.Reservations#singleOwner(int)",
+          "--classes",
+          "prepare/named/named.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.065,
+        "stdout": "verifier/probe-named.stdout",
+        "stderr": "verifier/probe-named.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.lang.Thread.<init>(Ljava/lang/Runnable;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.Thread.<init>(java.lang.Runnable)",
+            "sites": [
+              "seats.Reservations.execute:27"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.lang.Thread.join()V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.Thread.join()",
+            "sites": [
+              "seats.Reservations.execute:37",
+              "seats.Reservations.execute:39",
+              "seats.Reservations.execute:40"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.lang.Thread.start()V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.Thread.start()",
+            "sites": [
+              "seats.Reservations.execute:36",
+              "seats.Reservations.execute:38"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0443,
+      "peakRssBytes": 80916480,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0443,
+    "peakRssBytes": 80916480,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.054,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/owners-named/20261120T193855Z-c3b591ea/result.json",
+  "preparedClaim": "be30a56b3a0b59e9",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>(Ljava/lang/Runnable;)V@jdk-21.0.13 (java.lang.Thread.<init>(java.lang.Runnable) at seats.Reservations.execute:27). With --gaps assume it assumes instead that java.lang.Thread.<init>(java.lang.Runnable) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+  "endedAt": "2026-11-20T19:38:58.154823+00:00"
+}

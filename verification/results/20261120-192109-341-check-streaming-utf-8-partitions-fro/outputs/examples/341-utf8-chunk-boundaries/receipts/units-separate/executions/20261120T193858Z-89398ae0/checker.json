@@ -1,0 +1,205 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "chunks.Inputs#units(int)",
+    "--classes",
+    "prepare/separate/separate.jar",
+    "--assume",
+    "code >= 0 && code < 5578",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "160",
+    "--max-array-length",
+    "48",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.051,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "chunks.Inputs#units(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 5578",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13 (java.io.InputStream.<init>() at chunks.ChunkInput.<init>:10). With --gaps assume it assumes instead that java.io.InputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "chunks.Inputs#units(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13 (java.io.InputStream.<init>() at chunks.ChunkInput.<init>:10). With --gaps assume it assumes instead that java.io.InputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "uri": null,
+          "line": 38
+        }
+      ],
+      "output": "✗ chunks.Inputs#units(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13 (java.io.InputStream.<init>() at chunks.ChunkInput.<init>:10). With --gaps assume it assumes instead that java.io.InputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.034331391,
+        "properties": 1,
+        "unwind": 160,
+        "max_array_length": 48,
+        "stage": null,
+        "native": {
+          "paths": 42,
+          "merges": 0,
+          "solver_calls": 42,
+          "solving_seconds": 0.015664971,
+          "gates_evaluated": 63511,
+          "evaluating_seconds": 0.000731382,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 3238,
+          "clauses": 10687,
+          "seconds": 0.033204337,
+          "loading_seconds": 0.000461126,
+          "decoding_seconds": 8.3157e-05,
+          "encoding_seconds": 0.007352015,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.io.InputStream.<init>()V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.io.InputStream.<init>()",
+            "sites": [
+              "chunks.ChunkInput.<init>:10"
+            ],
+            "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 120.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 120.0,
+            "seconds": 0.033,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.01,
+              "encoding": 0.007,
+              "solving": 0.016,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 3238,
+              "clauses": 10687
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.046,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.033,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.011
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 5578",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 160,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6051,
+    "sha256": "3912edbf066c44c6b5fe7d62c053bf624e34a3a0f0c3811b4de4cd7bf157cd1a"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}
