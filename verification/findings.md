@@ -18,6 +18,28 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-048: the VM lacks the disk for BUMP's 150 GB packaged archive, which the external-upgrade-evaluation brief draws on
+
+- **Status**: open (the user, 2026-11-20: the VM is to be restarted with more storage, which can't happen while the
+  run is under way).
+- **Raised**: 2026-11-20 by the watcher of the single-agent run `external-upgrade-evaluation` (Codex, `gpt-6.2-astra`
+  at max effort, session `0cea9d0e-0fe8-427e-8e71-96614b084e11`, workspace `foundation-domain-streams`), from a
+  question the agent asked in cycle 1.
+- **Found**: the first blinded builds of the brief `llm-dlc/loops/external-upgrade-evaluation.md` are missing
+  historical Maven plugins. The brief uses BUMP's 571 reproducible Maven breakages as its secondary source after
+  CompSuite. BUMP's packaged archive is about 150 GB. The agent saw 48 GB free from where it works; `df` on the VM showed
+  114 GB free on `/` at 23:40 UTC. Either way it doesn't fit beside the checkouts, the workspaces and the verification
+  results. The agent also asked whether the normal Maven resolver may fetch the public dependencies it needs one at a
+  time into a shared cache, since the operating notes (`llm-dlc/operating-notes.md`, "Few") allow a few dozen web
+  requests per task. Or is there a populated offline Maven repository it should use? The user has not answered that
+  yet.
+- **Needs**: the user to restart the VM (Incus guest `claude-vm` on `mega`) with more storage, once no run is under
+  way. Then the BUMP cases the run recorded as blocked on the archive can be taken up. The user also needs to answer
+  the agent's Maven-resolver question.
+- **Tracked in**: the run's continue message (a note set by the user on 2026-11-20) and its final accounting.
+- **Closes when**: the VM has room for the archive and the blocked BUMP cases have been run, or the user drops BUMP
+  from the brief.
+
 ### VF-047: a single-agent run that a client's 5xx error stopped waits for the user, though the user lets the watcher restart it
 
 - **Status**: open (the user chose on 2026-11-20 to keep the rule in the Claude Code watcher's memory for now and
