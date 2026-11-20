@@ -1,0 +1,173 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "civil.Hours#completeHours(int, int)",
+    "domain": "startTick: int × endTick: int",
+    "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+    "assert": "result == -civil.Hours.completeHours(endTick, startTick)",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "uri": null,
+        "line": 13
+      }
+    ],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assertion: unknown name \"civil\"; the names are startTick, endTick, result); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (Bitwuzla)",
+      "seconds": 0.015290902,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 3,
+        "merges": 0,
+        "solver_calls": 4,
+        "solving_seconds": 0.000326741,
+        "gates_evaluated": 20,
+        "evaluating_seconds": 4.318e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "word_operations": 12,
+        "variables": 277,
+        "clauses": 1,
+        "seconds": 0.013492041,
+        "loading_seconds": 0.003052375,
+        "decoding_seconds": 0.000400553,
+        "encoding_seconds": 0.000328175,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+          "kind": "jdk-static-method",
+          "call": "java.util.ServiceLoader.load(java.lang.Class)",
+          "sites": [
+            "org.threeten.bp.chrono.Chronology.<clinit>:148"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.013,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.003,
+            "lowering": 0.0,
+            "symbolic": 0.009,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 277,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.681,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.013,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.666
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "startTick",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "endTick",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "startTick: int × endTick: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == -civil.Hours.completeHours(endTick, startTick)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

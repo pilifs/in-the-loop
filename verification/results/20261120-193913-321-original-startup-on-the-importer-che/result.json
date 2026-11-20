@@ -1,0 +1,1254 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-193913-321-original-startup-on-the-importer-che",
+  "title": "321 original startup on the importer checker",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 26.2s, peak 488.8 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8",
+  "attention": [
+    "step 1 (Run the frozen obligations) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-193913-321-original-startup-on-the-importer-che.json",
+    "sha256": "41e7523c038949c3712d5ee1efb5b703748b93e494b471e9ccfea52ce052f78d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-193913-321-original-startup-on-the-importer-che",
+      "title": "321 original startup on the importer checker",
+      "description": "Rerun lower-parent, lower-fix, upper-parent, upper-fix, populated-lower-parent, populated-upper-parent, populated-lower-fix, populated-upper-fix on the frozen source identities, bindings, observers, Java image and bounds. Preserve every original native verdict or first blocker, along with the separate observed-startup results and witness material.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:history"
+      ],
+      "links": {
+        "examples": [
+          "321"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:39:13+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Run the frozen obligations",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 321 --tasks lower-parent,lower-fix,upper-parent,upper-fix,populated-lower-parent,populated-upper-parent,populated-lower-fix,populated-upper-fix --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/321-jfreechart-empty-series-range/receipts/lower-parent",
+        "examples/321-jfreechart-empty-series-range/receipts/lower-fix",
+        "examples/321-jfreechart-empty-series-range/receipts/upper-parent",
+        "examples/321-jfreechart-empty-series-range/receipts/upper-fix",
+        "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent",
+        "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent",
+        "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix",
+        "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix"
+      ]
+    }
+  },
+  "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+  "startedAt": "2026-11-20T19:46:55+00:00",
+  "finishedAt": "2026-11-20T19:50:37+00:00",
+  "wallSeconds": 222.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1224582,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 512552960,
+    "wallSeconds": 26.2,
+    "cpuSeconds": 40.1,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the frozen obligations",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 321 --tasks lower-parent,lower-fix,upper-parent,upper-fix,populated-lower-parent,populated-upper-parent,populated-lower-fix,populated-upper-fix --checker-seconds 30",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 26.211,
+      "cpuSeconds": 40.06,
+      "cpuThrottledSeconds": 3.951,
+      "peakMemoryBytes": 512552960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-frozen-obligations.log",
+        "lines": 16,
+        "bytes": 2100,
+        "sha256": "adcadf4ada386a5723e6bdb060b5a6f1e9e200a777ae6381a1899fa60fb7099a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 8
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "321-jfreechart-empty-series-range: task lower-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/lower-parent/20261120T195010Z-cad3da30/result.json",
+          "groups": [
+            "321",
+            "lower-parent",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "321-jfreechart-empty-series-range: task lower-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/lower-fix/20261120T195020Z-345a168d/result.json",
+          "groups": [
+            "321",
+            "lower-fix",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "321-jfreechart-empty-series-range: task upper-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/upper-parent/20261120T195029Z-85813b31/result.json",
+          "groups": [
+            "321",
+            "upper-parent",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "321-jfreechart-empty-series-range: task upper-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/upper-fix/20261120T195030Z-29c585d8/result.json",
+          "groups": [
+            "321",
+            "upper-fix",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "321-jfreechart-empty-series-range: task populated-lower-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/populated-lower-parent/20261120T195030Z-a1754b41/result.json",
+          "groups": [
+            "321",
+            "populated-lower-parent",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "321-jfreechart-empty-series-range: task populated-upper-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/populated-upper-parent/20261120T195032Z-1c0693cd/result.json",
+          "groups": [
+            "321",
+            "populated-upper-parent",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 14,
+          "text": "321-jfreechart-empty-series-range: task populated-lower-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/populated-lower-fix/20261120T195033Z-7d445aa9/result.json",
+          "groups": [
+            "321",
+            "populated-lower-fix",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 16,
+          "text": "321-jfreechart-empty-series-range: task populated-upper-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/result.json",
+          "groups": [
+            "321",
+            "populated-upper-fix",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "321-jfreechart-empty-series-range: running task lower-parent (target route)",
+        "321-jfreechart-empty-series-range: task lower-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/lower-parent/20261120T195010Z-cad3da30/result.json",
+        "321-jfreechart-empty-series-range: running task lower-fix (target route)",
+        "321-jfreechart-empty-series-range: task lower-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/lower-fix/20261120T195020Z-345a168d/result.json",
+        "321-jfreechart-empty-series-range: running task upper-parent (target route)",
+        "321-jfreechart-empty-series-range: task upper-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/upper-parent/20261120T195029Z-85813b31/result.json",
+        "321-jfreechart-empty-series-range: running task upper-fix (target route)",
+        "321-jfreechart-empty-series-range: task upper-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/upper-fix/20261120T195030Z-29c585d8/result.json",
+        "321-jfreechart-empty-series-range: running task populated-lower-parent (target route)",
+        "321-jfreechart-empty-series-range: task populated-lower-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/populated-lower-parent/20261120T195030Z-a1754b41/result.json",
+        "321-jfreechart-empty-series-range: running task populated-upper-parent (target route)",
+        "321-jfreechart-empty-series-range: task populated-upper-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/populated-upper-parent/20261120T195032Z-1c0693cd/result.json",
+        "321-jfreechart-empty-series-range: running task populated-lower-fix (target route)",
+        "321-jfreechart-empty-series-range: task populated-lower-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/populated-lower-fix/20261120T195033Z-7d445aa9/result.json",
+        "321-jfreechart-empty-series-range: running task populated-upper-fix (target route)",
+        "321-jfreechart-empty-series-range: task populated-upper-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2a019dd2161a1364c971aa2457ede8b51b461380ec4eeeea9260527ec88d0cba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/plan.json",
+      "change": "added",
+      "bytes": 88635,
+      "sha256": "922b0ce1151ae08c23756d53f54480ddbb9d7961948e31e973a14c29b417f36a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5004,
+      "sha256": "df447b9fa4b505db74bfd9d0aaf1ea8fcb66fb6d96e80bb1310cf8c254172057",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/controls.json",
+      "change": "added",
+      "bytes": 15997,
+      "sha256": "522dd40eee25064edc9a8cf47837de9942ae6f6f26f445948cf5b7131ee31edc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/execution.json",
+      "change": "added",
+      "bytes": 76435,
+      "sha256": "67920f3b8054864ad4bfc1305b778493e0ad07153295e7a133dc5ea096a9ef53",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "403751af010c7a9c82772d8e298bf34677554ebd3396370567e9be5600e000b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 471,
+      "sha256": "0f2e7bfb63105f91ab508b4923f77e9635b1bdc92964943e92f8f9850d9a9a94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/verifier.json",
+      "change": "added",
+      "bytes": 59816,
+      "sha256": "03419c95ebc15892bdcb64777ecded4e6457fededa73b64335cee424d582aab5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6696,
+      "sha256": "a1c6e6fff98ec337884255e0ffa642fcbc16747577902550e3ee4e5d2386d5d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/result.json",
+      "change": "added",
+      "bytes": 16520,
+      "sha256": "a1cfc86a56eae0637e557c9bd2276519e3ad6525fad41068f642d09a164910d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/executions/20261120T195010Z-cad3da30/attempt.json",
+      "change": "added",
+      "bytes": 88310,
+      "sha256": "27a126ec979786cd6936ffb150b08a45083553ce575da209245d025b546998eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/executions/20261120T195010Z-cad3da30/checker.json",
+      "change": "added",
+      "bytes": 8239,
+      "sha256": "a781597417ae5379203d15879d3db3e8dd45f2f2faf4807ce8f2a89a19e11757",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-parent/executions/20261120T195010Z-cad3da30/correspondence.json",
+      "change": "added",
+      "bytes": 1873,
+      "sha256": "e5f5213383fd61f94b8c9d5a3d5157e67e389491a58c4da7d48be7020ba6c557",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "dd6a418499e7d193a447f9e7920a7ea677de3dee8183897d5f19e830d16ddab2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/plan.json",
+      "change": "added",
+      "bytes": 88736,
+      "sha256": "20d47257e6a3eadd3ff6e100265d684175d2ff9a467978bd64ddc14af972913e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 5012,
+      "sha256": "3649c3f9da1035bf2cab90e3875607fe1e11ef06ac7da48e979e018a2e5fdcfd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/controls.json",
+      "change": "added",
+      "bytes": 15972,
+      "sha256": "dbae333ccba1306ad28672ed46afd4f3de25cf58c39b898a8818d149d2cb81b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/execution.json",
+      "change": "added",
+      "bytes": 76339,
+      "sha256": "c3e57c250ed1435f06c7a303c9900d366b43265676af2feb3400548323a9a194",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "fea68202c49d3da6482df19a6c26be00eeb97c972d7edc60288a3cac2b3eec76",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 471,
+      "sha256": "0f2e7bfb63105f91ab508b4923f77e9635b1bdc92964943e92f8f9850d9a9a94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/verifier.json",
+      "change": "added",
+      "bytes": 59727,
+      "sha256": "77837007d1e367cd07f5dadebbd554f7dac0774df2656c671521c74ea6002f00",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6693,
+      "sha256": "c4521d8b24b7dbabeb99e3ee723886debfaf9652038689c3634c47d2a4c5d1d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/result.json",
+      "change": "added",
+      "bytes": 16445,
+      "sha256": "2d9173a71338e6335354f5aaade651cfee7d9b03eadd9501c248ac81083a82af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/executions/20261120T195020Z-345a168d/attempt.json",
+      "change": "added",
+      "bytes": 88214,
+      "sha256": "c40b67a8e7a98206e1b4917bf3f3d1119000cd7e3c7212a40e086a2213a65095",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/executions/20261120T195020Z-345a168d/checker.json",
+      "change": "added",
+      "bytes": 8216,
+      "sha256": "cd83b4cdb74433e1f2229ac7d2f608832cbd6fe99e8e0c4d0205abf92a2920a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/lower-fix/executions/20261120T195020Z-345a168d/correspondence.json",
+      "change": "added",
+      "bytes": 1867,
+      "sha256": "48ab7d0f5192deb009389cbc3883eb6a1e39322490c9e5fdfde9c95264e2c6ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "dfbf9085e36329f86c01320fc0a1271c1859ea6472f07cae4411245916219af5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/plan.json",
+      "change": "added",
+      "bytes": 88635,
+      "sha256": "2ab4a8dae17a10bfd3b30cf76f32dd13e02e9057c71503e0d8235285ebf07e5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5004,
+      "sha256": "df447b9fa4b505db74bfd9d0aaf1ea8fcb66fb6d96e80bb1310cf8c254172057",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/controls.json",
+      "change": "added",
+      "bytes": 15997,
+      "sha256": "c3c27a3eea55e7d33108cb3731f21d7cad947a4568a95822dddcc0e2c80107f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/execution.json",
+      "change": "added",
+      "bytes": 76435,
+      "sha256": "2f2f15828ba19edf347a8096001303d41b24e9623a0055d28f018ee081673ea9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "a3235b6485c34386147a1763c32fa327f5dae5d65977751274e44d304ead69c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 471,
+      "sha256": "2df5137393e2febe837fed6be98587945ed77c4a7ac3428a690ec16104d1111c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/verifier.json",
+      "change": "added",
+      "bytes": 59816,
+      "sha256": "78b9af63e362b4f20890c5767e2a1be8666efb705e5dfa30f2fcac43970cf36a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6695,
+      "sha256": "79118b33b463882d1106b996977675fe406430be03e46f9d882aab48ced3c34a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/result.json",
+      "change": "added",
+      "bytes": 16521,
+      "sha256": "961d286dc1dfe7dc0ab68440be63ee96e3c0a013069b6f77858837ce78719d0f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/executions/20261120T195029Z-85813b31/attempt.json",
+      "change": "added",
+      "bytes": 88310,
+      "sha256": "eb0ed0d2f551743b47b54b4cd704fb02a6d275347a07845ff11729ca718c989a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/executions/20261120T195029Z-85813b31/checker.json",
+      "change": "added",
+      "bytes": 8239,
+      "sha256": "2c915649b598e85efe6da44e89265d5f8ac39f1992b99a8fb9d09dcb211f67dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/executions/20261120T195029Z-85813b31/correspondence.json",
+      "change": "added",
+      "bytes": 1873,
+      "sha256": "7cbd5b9beb40a4da75afe173af8aee69bdb0ddd3d2699551f4b6d51e5e135ff9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3c0b0a6c70c0455f5aeefc15fa8e8755b55a16df177f7880f25b7929171ea652",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/plan.json",
+      "change": "added",
+      "bytes": 88736,
+      "sha256": "78a254d200031345f6bbc11a9c62ef508c26858ac370089153c7ad20bbd4070d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 5012,
+      "sha256": "3649c3f9da1035bf2cab90e3875607fe1e11ef06ac7da48e979e018a2e5fdcfd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/controls.json",
+      "change": "added",
+      "bytes": 15972,
+      "sha256": "e4a359f1157712951ed64bbd8750bd9a4945791fc3f876f3c7ef3ba4add90481",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/execution.json",
+      "change": "added",
+      "bytes": 76339,
+      "sha256": "06073a7d14311bf3eed6bdbaf393fa2c8f79e0410f76ca2e35fffb21d7832319",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "12fa93064dd6c0fbb50f39968832ec8c506f38d4996c6acbf1b5c70041c9cbc2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 471,
+      "sha256": "2df5137393e2febe837fed6be98587945ed77c4a7ac3428a690ec16104d1111c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/verifier.json",
+      "change": "added",
+      "bytes": 59727,
+      "sha256": "817ecf8f54d72036fffbf6160a36476c13eb101381e2a5cb5550af04e9bb5fe6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6693,
+      "sha256": "c56c2cf6ea99068432ab7f47e0a42cc6210194d675e8f3c58386b082eaad6278",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/result.json",
+      "change": "added",
+      "bytes": 16445,
+      "sha256": "675b7bf1d20a2b3c39393578899c6caf95aa0057955cc9870cfa918ed0c91f02",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/executions/20261120T195030Z-29c585d8/attempt.json",
+      "change": "added",
+      "bytes": 88214,
+      "sha256": "09a3f04e6b6adc5bc9de140f3c647f1026aa3b963c7d3eef7de12e0b1247f7c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/executions/20261120T195030Z-29c585d8/checker.json",
+      "change": "added",
+      "bytes": 8216,
+      "sha256": "af4fb1eadbfb037b9c440799b46cee6581ed72bcc2a360d5da9f4920ee47c64f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/upper-fix/executions/20261120T195030Z-29c585d8/correspondence.json",
+      "change": "added",
+      "bytes": 1867,
+      "sha256": "fb99419f14eb65ce37776a6aa5819040b7b3a6db143ef75db74fb389d7397971",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9542f2a5dbbefee59320c58c22a78155e327c323239a9a8c3a6a0f4386c43e54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/plan.json",
+      "change": "added",
+      "bytes": 88793,
+      "sha256": "49fe6eaf7e85fd9d656a387c047408d1a04a1cd7471279b4117ff5e7db25d43d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5004,
+      "sha256": "df447b9fa4b505db74bfd9d0aaf1ea8fcb66fb6d96e80bb1310cf8c254172057",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/controls.json",
+      "change": "added",
+      "bytes": 16017,
+      "sha256": "8d074990e31b2a5bbc992304e8317c720f053cf2765c31dfb0169ae7f73e5174",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/execution.json",
+      "change": "added",
+      "bytes": 76869,
+      "sha256": "e2cb6c7f8d9c3d18b212d5d34355448c9a6c3cc8913cc4c7d5d83ac8403d1e1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "293bc5448e596f8f88a5ae72bd882a6e98de202e43c915793047740189d836b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 727,
+      "sha256": "fb1c441cc4887aa6f5dc255a600aa27bf501f34725ab5b3424ea1ad9f8006388",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/verifier.json",
+      "change": "added",
+      "bytes": 60270,
+      "sha256": "2ead233010589ebfbd9f469be3218ce54e685187fef5da0ca4ad8941a702f33c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7040,
+      "sha256": "4100c487106a530aadc583603ff351a54f61fd7d040059c1aed565dc706eb816",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/result.json",
+      "change": "added",
+      "bytes": 16781,
+      "sha256": "a37e1fbf3c1ffbb00bf0315006b62d66b520ff795d1cb17e4efadd697d7eca4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/executions/20261120T195030Z-a1754b41/attempt.json",
+      "change": "added",
+      "bytes": 88410,
+      "sha256": "dbee1ba61e2a6c395d7955ac6bd34b99c082776dd67418e11f420e1f069ecdc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/executions/20261120T195030Z-a1754b41/checker.json",
+      "change": "added",
+      "bytes": 8623,
+      "sha256": "c014fc88731f041e9033ddf6a0736bbbce9a1016d801d6d3297d9f85bffe81b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/executions/20261120T195030Z-a1754b41/correspondence.json",
+      "change": "added",
+      "bytes": 1873,
+      "sha256": "e5f5213383fd61f94b8c9d5a3d5157e67e389491a58c4da7d48be7020ba6c557",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0dc4d835c8cbe61e5b25f7971a7eeb281055f1fb3d968dec4ed0a05821b375d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/plan.json",
+      "change": "added",
+      "bytes": 88793,
+      "sha256": "4b6a6ced9c44f114af7936a9216ed77f3512f9aae50e2b5bfecadee25c205fe2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5004,
+      "sha256": "df447b9fa4b505db74bfd9d0aaf1ea8fcb66fb6d96e80bb1310cf8c254172057",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/controls.json",
+      "change": "added",
+      "bytes": 16017,
+      "sha256": "34fa2f77a3d010e3157559a03cca949efac3232fd460537bd38f677f45013488",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/execution.json",
+      "change": "added",
+      "bytes": 76869,
+      "sha256": "e33e7c79e0901e6c83f7a0fcab638214bb572bc52be2f84bd50d22c408f3eed1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "806cff90dea1b2f5beff0a87a87f17c2224f5fa45be5842780184d526569d0df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 727,
+      "sha256": "9475c230c4b6d07d420a02777c32b534fa8d9c3152178d7390cf95bef2650ba6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/verifier.json",
+      "change": "added",
+      "bytes": 60270,
+      "sha256": "8603bfc3a39612e87ede9378bb1552cca0447a8ebf44f068b19501f056dd45ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7038,
+      "sha256": "28f85d7adbccd456dd1b24bde7fc561f867a2a92361b643a848fc301911fbe02",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/result.json",
+      "change": "added",
+      "bytes": 16781,
+      "sha256": "dc800c59afaa04b6090f80be0b040fdec1151401fdcc8ed01f5a7c09c387fafa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/executions/20261120T195032Z-1c0693cd/attempt.json",
+      "change": "added",
+      "bytes": 88409,
+      "sha256": "a61abc97c59fec77b6abea5564030c938a8210f4b6fcfa959c71c3a6feb03818",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/executions/20261120T195032Z-1c0693cd/checker.json",
+      "change": "added",
+      "bytes": 8623,
+      "sha256": "997bfbda74303ad34746111edc130c39d3f72d2054e183b0c7def722f5d872c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/executions/20261120T195032Z-1c0693cd/correspondence.json",
+      "change": "added",
+      "bytes": 1873,
+      "sha256": "7cbd5b9beb40a4da75afe173af8aee69bdb0ddd3d2699551f4b6d51e5e135ff9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6d016ba5ea9bee4773360ff029bc2a02da709ecfdb2a938d19ef45ad7683b60b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/plan.json",
+      "change": "added",
+      "bytes": 88890,
+      "sha256": "88e4894e2ae6f766c7eaae1a16850caadb6657a476480d846e0d37b4683e0151",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 5012,
+      "sha256": "3649c3f9da1035bf2cab90e3875607fe1e11ef06ac7da48e979e018a2e5fdcfd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/controls.json",
+      "change": "added",
+      "bytes": 15992,
+      "sha256": "6a1b3dba7c19bf8a3a173644d683af41186078f9b15d266088ca97700d344a37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/execution.json",
+      "change": "added",
+      "bytes": 76776,
+      "sha256": "73fcefe7c2d57ac5d6fa3ad1000d41798f27b2f29c13cc4d570bbebe4ce6695a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "ac97df39305dcaf3c34bd4343fa8b0ce76a6c276ad5a2b8f1746eeacff24f5e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 727,
+      "sha256": "fb1c441cc4887aa6f5dc255a600aa27bf501f34725ab5b3424ea1ad9f8006388",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/verifier.json",
+      "change": "added",
+      "bytes": 60184,
+      "sha256": "aefc6d3af44d82169fb68cddd4157c9553c2d3946a8faa414787b517a304d9d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7041,
+      "sha256": "d0993a0ed385bc7aab4c0f2bfa1cdeb9662d60019864c5f739891b7e118466c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/result.json",
+      "change": "added",
+      "bytes": 16704,
+      "sha256": "38e2858c430cb2c85873a6ebbe06ab7e65b6594bbd86cfaded74cb5c78d80f73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/executions/20261120T195033Z-7d445aa9/attempt.json",
+      "change": "added",
+      "bytes": 88314,
+      "sha256": "dad27fd9f24dbd6eaeb2a77b551d54b597142b240e3827c87aa0ddb575600b77",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/executions/20261120T195033Z-7d445aa9/checker.json",
+      "change": "added",
+      "bytes": 8603,
+      "sha256": "ea066ea07c22d459b29325c5bd706b49ef2a5968d7f3e41de74fc10d1befd7ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/executions/20261120T195033Z-7d445aa9/correspondence.json",
+      "change": "added",
+      "bytes": 1867,
+      "sha256": "48ab7d0f5192deb009389cbc3883eb6a1e39322490c9e5fdfde9c95264e2c6ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e8c55fc5ab301b4dd631d85deb9a93515a24b75e094d81991d9ce8b96913e008",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/plan.json",
+      "change": "added",
+      "bytes": 88890,
+      "sha256": "01ae32e47795302c062caf034ab9885e559b6612e9110c9d918ca972f10891ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 5012,
+      "sha256": "3649c3f9da1035bf2cab90e3875607fe1e11ef06ac7da48e979e018a2e5fdcfd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/controls.json",
+      "change": "added",
+      "bytes": 15992,
+      "sha256": "c230f9bb4436e2cc07497286bf93a5c0c303d94d7064c2d3f51ccac889b1d3ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/execution.json",
+      "change": "added",
+      "bytes": 76774,
+      "sha256": "cf76de3012887ddc282de58dcb4beb876b51ab43fffc90d81578568ab38ca0d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "a277fa1bbbb6fd7a7316cbd7c2a2985c37a5e32d8d3522a05e0e9769e4dd8782",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 727,
+      "sha256": "9475c230c4b6d07d420a02777c32b534fa8d9c3152178d7390cf95bef2650ba6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/verifier.json",
+      "change": "added",
+      "bytes": 60182,
+      "sha256": "b3ad2ab5ea1bd9d2baae80486474e8531ebc464b6e3f5d4cc7309379e53d5d8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7039,
+      "sha256": "54c9a43c92483074ce85d93563c7c243e86eef26bbc935885a97bc8dfb5190f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/result.json",
+      "change": "added",
+      "bytes": 16702,
+      "sha256": "4593ee517ee8dfa4dfce946294d9d596ba62a6f0cd33386f9d7fe31e8a08a40d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/executions/20261120T195034Z-f2cd9e9f/attempt.json",
+      "change": "added",
+      "bytes": 88314,
+      "sha256": "9ef95c31c8d5ec9acdf641f34b894bb433cbb6266ddea1d559b68f101142d45e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/executions/20261120T195034Z-f2cd9e9f/checker.json",
+      "change": "added",
+      "bytes": 8601,
+      "sha256": "71e053b5a07210f2480001954a6e155acc1fa498284c9275404ffd891b97e7ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/executions/20261120T195034Z-f2cd9e9f/correspondence.json",
+      "change": "added",
+      "bytes": 1867,
+      "sha256": "fb99419f14eb65ce37776a6aa5819040b7b3a6db143ef75db74fb389d7397971",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:50:51+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/completion.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/plan.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/control-parent-jdk21.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/control-parent-jdk21.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/controls.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/execution.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/streams.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/verifier-output.txt",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/verifier.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/verifier.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/records/verifier.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/20261120T195010Z-cad3da30/result.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/executions/20261120T195010Z-cad3da30/attempt.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/executions/20261120T195010Z-cad3da30/checker.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-parent/executions/20261120T195010Z-cad3da30/correspondence.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/completion.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/plan.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/control-fix-jdk21.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/control-fix-jdk21.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/controls.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/execution.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/streams.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/verifier-output.txt",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/verifier.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/verifier.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/records/verifier.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/20261120T195020Z-345a168d/result.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/executions/20261120T195020Z-345a168d/attempt.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/executions/20261120T195020Z-345a168d/checker.json",
+      "examples/321-jfreechart-empty-series-range/receipts/lower-fix/executions/20261120T195020Z-345a168d/correspondence.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/completion.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/plan.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/control-parent-jdk21.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/control-parent-jdk21.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/controls.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/execution.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/streams.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/verifier-output.txt",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/verifier.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/verifier.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/records/verifier.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T195029Z-85813b31/result.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/executions/20261120T195029Z-85813b31/attempt.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/executions/20261120T195029Z-85813b31/checker.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-parent/executions/20261120T195029Z-85813b31/correspondence.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/completion.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/plan.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/control-fix-jdk21.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/control-fix-jdk21.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/controls.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/execution.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/streams.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/verifier-output.txt",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/verifier.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/verifier.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/records/verifier.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/20261120T195030Z-29c585d8/result.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/executions/20261120T195030Z-29c585d8/attempt.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/executions/20261120T195030Z-29c585d8/checker.json",
+      "examples/321-jfreechart-empty-series-range/receipts/upper-fix/executions/20261120T195030Z-29c585d8/correspondence.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/completion.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/plan.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/control-parent-jdk21.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/control-parent-jdk21.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/controls.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/execution.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/streams.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/verifier-output.txt",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/verifier.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/verifier.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/records/verifier.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/20261120T195030Z-a1754b41/result.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/executions/20261120T195030Z-a1754b41/attempt.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/executions/20261120T195030Z-a1754b41/checker.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent/executions/20261120T195030Z-a1754b41/correspondence.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/completion.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/plan.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/control-parent-jdk21.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/control-parent-jdk21.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/controls.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/execution.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/streams.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/verifier-output.txt",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/verifier.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/verifier.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/records/verifier.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/20261120T195032Z-1c0693cd/result.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/executions/20261120T195032Z-1c0693cd/attempt.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/executions/20261120T195032Z-1c0693cd/checker.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent/executions/20261120T195032Z-1c0693cd/correspondence.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/completion.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/plan.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/control-fix-jdk21.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/control-fix-jdk21.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/controls.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/execution.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/streams.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/verifier-output.txt",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/verifier.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/verifier.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/records/verifier.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/20261120T195033Z-7d445aa9/result.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/executions/20261120T195033Z-7d445aa9/attempt.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/executions/20261120T195033Z-7d445aa9/checker.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix/executions/20261120T195033Z-7d445aa9/correspondence.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/completion.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/plan.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/control-fix-jdk21.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/control-fix-jdk21.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/controls.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/execution.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/streams.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/verifier-output.txt",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/verifier.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/verifier.stderr",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/records/verifier.stdout",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/20261120T195034Z-f2cd9e9f/result.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/executions/20261120T195034Z-f2cd9e9f/attempt.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/executions/20261120T195034Z-f2cd9e9f/checker.json",
+      "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix/executions/20261120T195034Z-f2cd9e9f/correspondence.json"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 3031337,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193913-321-original-startup-on-the-importer-che"
+}
