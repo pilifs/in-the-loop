@@ -3885,11 +3885,14 @@ def conflicted_paths() -> list[str]:
 
 
 def workspace_roots() -> list[Path]:
-    """The folders of this repository's other jj workspaces."""
-    listed = jj("workspace", "list", "-T", 'name ++ "\\n"')
+    """The folders of this repository's other jj workspaces. Read without a snapshot: a snapshot writes the
+    repository's shared store, which a Codex worker's sandbox in a side workspace cannot, so `jj workspace list`
+    failed there and adopt-logs found no workspace to take a log from (2026-11-20: the worker then asked to leave
+    the sandbox, and the automatic reviewer refused)."""
+    listed = jj("--ignore-working-copy", "workspace", "list", "-T", 'name ++ "\\n"')
     out = []
     for name in (listed.stdout.split() if listed.returncode == 0 else []):
-        r = jj("workspace", "root", "--name", name)
+        r = jj("--ignore-working-copy", "workspace", "root", "--name", name)
         if r.returncode == 0 and r.stdout.strip() and Path(r.stdout.strip()).resolve() != REPO.resolve():
             out.append(Path(r.stdout.strip()))
     return out

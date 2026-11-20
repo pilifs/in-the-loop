@@ -130,7 +130,9 @@ user had already settled the matter (VF-036, "nothing to change now").
   @-` makes a conflicted merge: base the workspace on the line's single commit.
 - `python3 llm-dlc/tools/sync.py adopt-logs` brings in the logs of the sessions whose commits the workspace
   holds. Without them `check` reports "log … is neither stored locally nor uploaded" for other sessions' logs;
-  those clear at the merge, and are not this workspace's errors. Never copy another workspace's `logs` folders
+  those clear at the merge, and are not this workspace's errors. Any agent may run it without asking, the user
+  said on 2026-11-20, and it needs no escalation in Codex's sandbox: it reads the workspaces without a snapshot.
+  Never copy another workspace's `logs` folders
   into `llm-dlc/traces/` itself: on 2026-11-16 that put 660 logs where they are not ignored, and the next commit
   took them in. Look at `jj diff --stat -r @-` after a commit from a side workspace.
 
