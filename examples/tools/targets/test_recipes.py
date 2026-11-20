@@ -97,6 +97,14 @@ class RecipesTest(unittest.TestCase):
 
             ids = [first.state["id"], retry.state["id"]]
             self.assertEqual(route.batch_tasks(["198", "--tasks", "a,b", "--retry-of", ",".join(ids)]), list(zip(["a", "b"], ids)))
+            from unittest.mock import patch
+            import build
+            with patch.object(build, "run_task", side_effect=[0, 1]) as run:
+                self.assertEqual(build.main(["198", "--tasks", "return-only,full-state", "--checker-seconds", "120",
+                                             "--retry-of", ",".join(ids)]), 1)
+            self.assertEqual([(c.kwargs["retry_of"], c.kwargs["checker_seconds"]) for c in run.call_args_list],
+                             [(execution_id, 120) for execution_id in ids])
+            self.assertIs(run.call_args_list[0].kwargs["shared"], run.call_args_list[1].kwargs["shared"])
             for invalid in [ids[0], ids[0] + ",bad"]:
                 with self.assertRaises(ValueError):
                     route.batch_tasks(["198", "--tasks", "a,b", "--retry-of", invalid])

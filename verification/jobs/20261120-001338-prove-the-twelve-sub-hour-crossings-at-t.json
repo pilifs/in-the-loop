@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-001338-prove-the-twelve-sub-hour-crossings-at-t",
+  "title": "Prove the twelve sub-hour crossings at the ThreeTenBP repair",
+  "description": "Check the two pinned libraries on every interval of less than an hour that crosses midnight in the original quarter-hour grid, in both directions. The independent direct JVM control enumerated twelve cases, each wrong by one hour on the parent and correct on the fix. Both public tasks must retain their observed chronology state, registry model, bounds and distinct receipt.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "310"
+    ],
+    "jobs": [
+      "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+    ]
+  },
+  "expected": "The parent clock is refuted with an independently replayed witness. The fixed clock is established non-vacuously on all 12 crossings.",
+  "submitted": {
+    "at": "2026-11-20T00:13:38+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1,
+    "memory": "2G",
+    "memoryLimit": "4G",
+    "duration": "1m",
+    "timeout": "5m",
+    "notes": "The 12-input fixed-clock diagnostic proved the elapsed-minute expression within two seconds. Both tasks run independently on the same pair of pins."
+  },
+  "steps": [
+    {
+      "name": "Check introduction of the corrected handling on the two original artifacts",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --tasks clock-parent-short-crossings,clock-fix-short-crossings --checker-seconds 120"
+    }
+  ],
+  "outputs": [
+    "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings",
+    "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings"
+  ],
+  "supersedes": "20261120-000646-prove-the-twelve-sub-hour-crossings-at-t"
+}

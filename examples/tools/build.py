@@ -210,6 +210,15 @@ def stages(out):
 
 def main(argv):
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
+    checker_seconds = None
+    if ("--task" in argv or "--tasks" in argv) and "--checker-seconds" in argv:
+        i = argv.index("--checker-seconds")
+        if (argv.count("--checker-seconds") != 1 or i + 1 == len(argv)
+                or not argv[i + 1].isascii() or not argv[i + 1].isdigit() or int(argv[i + 1]) < 1):
+            print("--checker-seconds takes a positive integer", file=sys.stderr)
+            return 2
+        checker_seconds = int(argv[i + 1])
+        argv = argv[:i] + argv[i + 2:]
     if "--tasks" in argv:
         try:
             tasks = target_route.batch_tasks(argv)
@@ -227,7 +236,7 @@ def main(argv):
                 print(problem, file=sys.stderr)
                 return 2
         shared = {}
-        results = [run_task(folder, name, shared=shared, retry_of=retry) for name, retry in tasks]
+        results = [run_task(folder, name, shared=shared, retry_of=retry, checker_seconds=checker_seconds) for name, retry in tasks]
         return max(results)
     argv, task = task_argument(argv)
     witness = None
@@ -237,14 +246,6 @@ def main(argv):
             print("--replay-witness takes a JSON file containing typed inputs", file=sys.stderr)
             return 2
         witness = argv[i + 1]
-        argv = argv[:i] + argv[i + 2:]
-    checker_seconds = None
-    if task and "--checker-seconds" in argv:
-        i = argv.index("--checker-seconds")
-        if i + 1 == len(argv) or not argv[i + 1].isascii() or not argv[i + 1].isdigit() or int(argv[i + 1]) < 1:
-            print("--checker-seconds takes a positive integer", file=sys.stderr)
-            return 2
-        checker_seconds = int(argv[i + 1])
         argv = argv[:i] + argv[i + 2:]
     retry_of = None
     interrupt = task and "--interrupt-after-candidate" in argv

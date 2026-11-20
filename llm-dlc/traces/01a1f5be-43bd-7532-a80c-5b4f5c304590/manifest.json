@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T00:10:37.688Z",
-  "duration_seconds": 9188,
+  "ended": "2026-11-20T00:18:15.517Z",
+  "duration_seconds": 9646,
   "stats": {
     "turns": 3,
-    "api_calls": 632,
-    "tool_calls": 1732,
+    "api_calls": 659,
+    "tool_calls": 1803,
     "tool_errors": 65,
     "compactions": 2,
     "peak_context_tokens": 410632,
     "usage": {
-      "input_tokens": 1133239,
-      "output_tokens": 303741,
-      "cache_read_input_tokens": 171272064,
+      "input_tokens": 1172185,
+      "output_tokens": 319220,
+      "cache_read_input_tokens": 181244416,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1072,
-    "exec": 608,
-    "apply_patch": 33,
+    "Bash": 1111,
+    "exec": 636,
+    "apply_patch": 37,
     "wait": 19
   },
   "files_touched": [
@@ -60,6 +60,7 @@
     "lib/src/bmc/observed.rs",
     "lib/src/bmc/regex.rs",
     "lib/src/bmc/runtime.rs",
+    "lib/src/bmc/strings.rs",
     "lib/src/classpath.rs",
     "lib/src/interp/natives.rs",
     "lib/src/models.rs",
@@ -71,6 +72,7 @@
     "lib/tests/fixtures/claims/claims/R.java",
     "lib/tests/fixtures/claims/claims/Registries.java",
     "lib/tests/fixtures/claims/claims/Samples.java",
+    "lib/tests/fixtures/claims/claims/UnicodePoints.java",
     "llm-dlc/tools/test_performance.py",
     "verification/README.md",
     "verification/pipeline.py",
@@ -108,24 +110,24 @@
     {
       "index": 2,
       "started": "2026-11-19T23:41:41.585Z",
-      "ended": "2026-11-20T00:10:37.688Z",
+      "ended": "2026-11-20T00:18:15.517Z",
       "turns": 1,
-      "api_calls": 119,
+      "api_calls": 146,
       "usage": {
-        "input_tokens": 337005,
-        "output_tokens": 59643,
-        "cache_read_input_tokens": 27792000,
+        "input_tokens": 375951,
+        "output_tokens": 75122,
+        "cache_read_input_tokens": 37764352,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 342337
+      "peak_context_tokens": 379078
     }
   ],
   "log": {
-    "sha256": "d2d1e15888046da0e5dad33d3a0e92a08f96621346ba9af2ca203dac4a462b51",
-    "bytes": 16357999,
-    "lines": 5057,
-    "gzip_bytes": 5986504,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/d2d1e15888046da0e5dad33d3a0e92a08f96621346ba9af2ca203dac4a462b51.jsonl.gz"
+    "sha256": "2d1a5591fe6eb2970137df4277cbd8b292513fcad5ddf3b2a75a7a0f5ea3950b",
+    "bytes": 16985387,
+    "lines": 5282,
+    "gzip_bytes": 6256232,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/2d1a5591fe6eb2970137df4277cbd8b292513fcad5ddf3b2a75a7a0f5ea3950b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -368,6 +370,22 @@
       "summary": "Check every sub-hour crossing of midnight on both revisions (verification pending)",
       "body": "The independent JVM driver enumerates the two-date grid and finds twelve signed sub-hour intervals that cross midnight. The production parent returns one hour in magnitude on all twelve and the fix returns zero. Two separately required public tasks freeze these inputs and the sampled chronology binding, with the same compiled subject and adapter as the full-grid tasks. A fixed-clock native probe established agreement with elapsed minutes on this subset. The example validator and all 24 selected test groups passed. Job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t checks both zero-hour claims and publishes their receipts.",
       "log_sha256": "d2d1e15888046da0e5dad33d3a0e92a08f96621346ba9af2ca203dac4a462b51"
+    },
+    {
+      "change_id": "tlukxzwvvywkzqnyrqtzmrqlzmmtuklu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "2d1a5591fe6eb2970137df4277cbd8b292513fcad5ddf3b2a75a7a0f5ea3950b"
+    },
+    {
+      "change_id": "wmzztnsqzqynlvtqqzmvxxluwtmuksqu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Honor the per-claim checker deadline in public task batches (verification pending)",
+      "body": "The sub-hour verification job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t exited during argument parsing before launching either task. Parse the checker deadline once for single and batch execution and pass it to each batch member alongside its retry identity. The public-entry regression tests mixed outcomes, shared preparation and a 120-second budget on both calls. All 27 selected test groups passed. Superseding job 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t runs the same command, budget, claims and expectations.",
+      "log_sha256": "2d1a5591fe6eb2970137df4277cbd8b292513fcad5ddf3b2a75a7a0f5ea3950b"
     }
   ],
   "logs": {
@@ -393,6 +411,12 @@
       "bytes": 15699510,
       "lines": 4817,
       "gzip_bytes": 5731519,
+      "url": null
+    },
+    "2d1a5591fe6eb2970137df4277cbd8b292513fcad5ddf3b2a75a7a0f5ea3950b": {
+      "bytes": 16985387,
+      "lines": 5282,
+      "gzip_bytes": 6256232,
       "url": null
     },
     "494d38906766c5a7b4028b30b9b64e7116bc803dfa0b2f2c1de6d366c00549df": {
