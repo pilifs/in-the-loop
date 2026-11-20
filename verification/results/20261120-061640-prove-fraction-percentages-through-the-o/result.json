@@ -1,0 +1,1017 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-061640-prove-fraction-percentages-through-the-o",
+  "title": "Prove Fraction percentages through the original static constants",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 15.8s, peak 374.2 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-061640-prove-fraction-percentages-through-the-o.json",
+    "sha256": "3c55024cb37efc1b478645a5993e9210997826d4489c9ad50db43bd1cc18138c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-061640-prove-fraction-percentages-through-the-o",
+      "title": "Prove Fraction percentages through the original static constants",
+      "description": "Run all six original raw-bit, normal-exit and small-control claims across the 13 numerator inputs and both denominator-one historical revisions. Execute the actual Fraction initializers, constructors and arithmetic along each reachable path and qualify any counterexample on the direct JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "328"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T06:16:40+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 328 --tasks bits-parent,bits-fix,normal-parent,normal-fix,small-parent,small-fix --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/328-commons-math-fraction-percentage/receipts/bits-parent",
+        "examples/328-commons-math-fraction-percentage/receipts/bits-fix",
+        "examples/328-commons-math-fraction-percentage/receipts/normal-parent",
+        "examples/328-commons-math-fraction-percentage/receipts/normal-fix",
+        "examples/328-commons-math-fraction-percentage/receipts/small-parent",
+        "examples/328-commons-math-fraction-percentage/receipts/small-fix"
+      ]
+    }
+  },
+  "sourceCommit": "4725a61e046ac4e54f1dd352defac72d62d8c62b",
+  "startedAt": "2026-11-20T06:21:45+00:00",
+  "finishedAt": "2026-11-20T06:24:56+00:00",
+  "wallSeconds": 191.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2812610,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 392425472,
+    "wallSeconds": 15.8,
+    "cpuSeconds": 24.3,
+    "memoryOfEstimate": 0.18,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 172.406,
+      "cpuSeconds": 172.592,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2095869952,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "be63eac252cad66f7375faa33e872c3978e35c8c1c847702eee67d7b851b2d60",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-061640-prove-fraction-percentages-through-the-o/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 52s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 328 --tasks bits-parent,bits-fix,normal-parent,normal-fix,small-parent,small-fix --checker-seconds 30",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 15.839,
+      "cpuSeconds": 24.281,
+      "cpuThrottledSeconds": 3.654,
+      "peakMemoryBytes": 392425472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 12,
+        "bytes": 1421,
+        "sha256": "87c49a884561f5ee8d2f69c78823181bf7db263b9c45922ca328c515c25768ae",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "328-commons-math-fraction-percentage: task bits-parent: refuted (completed; as expected), receipt receipts/bits-parent/20261120T062440Z-5707bdc4/result.json",
+          "groups": [
+            "328",
+            "bits-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "328-commons-math-fraction-percentage: task bits-fix: established (completed; as expected), receipt receipts/bits-fix/20261120T062447Z-5fa64757/result.json",
+          "groups": [
+            "328",
+            "bits-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "328-commons-math-fraction-percentage: task normal-parent: established (completed; as expected), receipt receipts/normal-parent/20261120T062454Z-2ac34b97/result.json",
+          "groups": [
+            "328",
+            "normal-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "328-commons-math-fraction-percentage: task normal-fix: established (completed; as expected), receipt receipts/normal-fix/20261120T062454Z-a61e8b4b/result.json",
+          "groups": [
+            "328",
+            "normal-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 10,
+          "text": "328-commons-math-fraction-percentage: task small-parent: established (completed; as expected), receipt receipts/small-parent/20261120T062455Z-183a60d0/result.json",
+          "groups": [
+            "328",
+            "small-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "328-commons-math-fraction-percentage: task small-fix: established (completed; as expected), receipt receipts/small-fix/20261120T062455Z-6619a4d9/result.json",
+          "groups": [
+            "328",
+            "small-fix",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "328-commons-math-fraction-percentage: running task bits-parent (target route)",
+        "328-commons-math-fraction-percentage: task bits-parent: refuted (completed; as expected), receipt receipts/bits-parent/20261120T062440Z-5707bdc4/result.json",
+        "328-commons-math-fraction-percentage: running task bits-fix (target route)",
+        "328-commons-math-fraction-percentage: task bits-fix: established (completed; as expected), receipt receipts/bits-fix/20261120T062447Z-5fa64757/result.json",
+        "328-commons-math-fraction-percentage: running task normal-parent (target route)",
+        "328-commons-math-fraction-percentage: task normal-parent: established (completed; as expected), receipt receipts/normal-parent/20261120T062454Z-2ac34b97/result.json",
+        "328-commons-math-fraction-percentage: running task normal-fix (target route)",
+        "328-commons-math-fraction-percentage: task normal-fix: established (completed; as expected), receipt receipts/normal-fix/20261120T062454Z-a61e8b4b/result.json",
+        "328-commons-math-fraction-percentage: running task small-parent (target route)",
+        "328-commons-math-fraction-percentage: task small-parent: established (completed; as expected), receipt receipts/small-parent/20261120T062455Z-183a60d0/result.json",
+        "328-commons-math-fraction-percentage: running task small-fix (target route)",
+        "328-commons-math-fraction-percentage: task small-fix: established (completed; as expected), receipt receipts/small-fix/20261120T062455Z-6619a4d9/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7c198ab6af886b02f53578c0d504a2daf75500c3f24dd1d3a24dacbf971af01f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/plan.json",
+      "change": "added",
+      "bytes": 122426,
+      "sha256": "dbcdf5992d46a951321361b76ee1961a3a7d03eccfd555e6fa9881b15f80f144",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1691,
+      "sha256": "90370b0eafb8af5f609a5fd1a0cff931c6352b424a8bd575e1b6c2d72fd908d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/controls.json",
+      "change": "added",
+      "bytes": 7177,
+      "sha256": "bc38cd089d4d6b4ae539c72cc81ac0ffe16dd79b1e7a3760fe0e0ce1f91891fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/execution.json",
+      "change": "added",
+      "bytes": 74764,
+      "sha256": "b02e5e921fae24481b61ac3015be5b385d737cab6bf893014a6b139875b28c21",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "9fa0f8599627206be25208d7b27619f1a95d7af1ad4e029bbccaf62ea5e4d755",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 548,
+      "sha256": "33a4c1db67c80a13bd04f19b9d61e4c04f9f7bbd960d9405c0f19ea224403cb2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/verifier.json",
+      "change": "added",
+      "bytes": 65039,
+      "sha256": "67123a7125cf0a4e0d590f37a2e423b8dcc1cb779235e51d7f8445862e25d817",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6387,
+      "sha256": "e8b118b87ead38313cc2e0cd48c263f0fcebc4803e9b038143dbccdca324ccf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/result.json",
+      "change": "added",
+      "bytes": 18625,
+      "sha256": "a2f041e698e34cefde410529a477adf1cc4c48799e8580618171ce792baface7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T062440Z-5707bdc4/attempt.json",
+      "change": "added",
+      "bytes": 109608,
+      "sha256": "7c5e554a729af396f09b75f93275fef2671e56f0cda7a57dca9df247b4c9df3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T062440Z-5707bdc4/checker.json",
+      "change": "added",
+      "bytes": 7751,
+      "sha256": "1059609c577ebbfc245f223dfc0637e9a68256b4309bca5b82b6def669b8a325",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T062440Z-5707bdc4/correspondence.json",
+      "change": "added",
+      "bytes": 1247,
+      "sha256": "df3d93c512de9723345595e1927ac29e252ee01479f57058168031c0dbe3b550",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T062440Z-5707bdc4/replay.json",
+      "change": "added",
+      "bytes": 1917,
+      "sha256": "ec6fd297e0535b8ccbd6e161e2fe055ad096073356dc450a7d10349ab6794d26",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e4bcbdfb5a9d51ed159d8ae160e89d11b7afbab4050bc1680e25945e6ac56159",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/plan.json",
+      "change": "added",
+      "bytes": 122527,
+      "sha256": "67fc1c08855b4b12bb30a7934fffc3c420839906187576401c7f6c08a9960599",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1691,
+      "sha256": "71be0a04cb4556f720e70dd4989be878c4fa7a1e7e09031efc261d8268d7f269",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/controls.json",
+      "change": "added",
+      "bytes": 7144,
+      "sha256": "ccaf9608327f48c334d4e5466a5b432ef98f5820bb5f0701db2119fa71e21f81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/execution.json",
+      "change": "added",
+      "bytes": 71719,
+      "sha256": "f48a4d1ac0bfd82a1d67d06e9f4b235c76d6d8cdc1d60e311b4afa299a85afd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "7a49f3b0d0edadfa2170674e4687369eadd5e73aa82d966cb93477ba103ac3e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 286,
+      "sha256": "6e0463c04fd029f5678a5ac700534d38a10e0caef49ae149b5dcbd3efe0b039b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/verifier.json",
+      "change": "added",
+      "bytes": 64430,
+      "sha256": "648bcbe3a9b046296a44fa2cdcd405d056207388eda0ec093e89faaa13f63c1f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5899,
+      "sha256": "154410cef66d4167bca7b8fe5f257ba4bf8a979ae92e1dfa16c8a8743e015987",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/result.json",
+      "change": "added",
+      "bytes": 17762,
+      "sha256": "1c90aa10c5330936680afff8b2253d041b47346da7b2e5b8febcfd565aa192b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/executions/20261120T062447Z-5fa64757/attempt.json",
+      "change": "added",
+      "bytes": 109409,
+      "sha256": "eaedc029655331c45795457bbf8a5aec3487dd472bf2fe7e766139b4ea26917f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/executions/20261120T062447Z-5fa64757/checker.json",
+      "change": "added",
+      "bytes": 7225,
+      "sha256": "27cc1b25d16a164a3591cf96794110bedc422b7fc830fd4b7acefe8bbac806bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/executions/20261120T062447Z-5fa64757/correspondence.json",
+      "change": "added",
+      "bytes": 1241,
+      "sha256": "535782ed3556a715a45238b0ecd60d3f5e249d68f0c7644c3afec5e31cf1bf79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cfcbb1f32b2f133bdf4fa146ad50b07e25d11b5ed097251e0560045acc5dd124",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/plan.json",
+      "change": "added",
+      "bytes": 122398,
+      "sha256": "8a0bf533ef29a8b5c6c381a68556951899b6cdeaeff001507c1691fed1b7226a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1691,
+      "sha256": "90370b0eafb8af5f609a5fd1a0cff931c6352b424a8bd575e1b6c2d72fd908d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/controls.json",
+      "change": "added",
+      "bytes": 7181,
+      "sha256": "3dcca619794e24285ad03f7cfea94c71510391115003fe84610e5b5ed4ee368b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/execution.json",
+      "change": "added",
+      "bytes": 71831,
+      "sha256": "d8a241817303cbe3b02ceaca646c0d08632f2c613ee70c3f9b7e42003b4d2564",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "a2eeac25550b8847199e730cec730cc1b0b0af60fc815c9a5141f68318a71f65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "55f3a9f6e7b062cb7d6bbdcd4a71a6506af142998fc33b3f15227a8f6f601fae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/verifier.json",
+      "change": "added",
+      "bytes": 64531,
+      "sha256": "909b2136d61f006c2978d5a8f7d908575cbcbcbd596a71f3fe1c94ab0957b2f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5909,
+      "sha256": "c08ff91777fb1a6f8ddc90596a6873184cf6aadec717f9482a84848e4923e6bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/result.json",
+      "change": "added",
+      "bytes": 17818,
+      "sha256": "6a4c12926a69e38ecf7dbaa5e5b38cc28195b4533b394f9dac2b5831218deb57",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/executions/20261120T062454Z-2ac34b97/attempt.json",
+      "change": "added",
+      "bytes": 109507,
+      "sha256": "0e9aa158aa659cd81cee2f500a3909be385aa1b80556f13d16347bb2adb297f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/executions/20261120T062454Z-2ac34b97/checker.json",
+      "change": "added",
+      "bytes": 7249,
+      "sha256": "13e4d3595423833e44ac5593c4deee2ee213f8b183b4782b9bfb32912b2eb17f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/executions/20261120T062454Z-2ac34b97/correspondence.json",
+      "change": "added",
+      "bytes": 1249,
+      "sha256": "c31ba05dae751783cfeb66ca1d605fccfdac78cf8c351677901998f991656f78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "34b99bb3abb35d3bc1a9a4672a42ea499addc061f2bdbfb6da6da625ed7a0488",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/plan.json",
+      "change": "added",
+      "bytes": 122495,
+      "sha256": "a4e3b4c2c29dd56a16cbd25c896e48e50260b9e1139eb9f3b20d2a75e9a8a3b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1691,
+      "sha256": "71be0a04cb4556f720e70dd4989be878c4fa7a1e7e09031efc261d8268d7f269",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/controls.json",
+      "change": "added",
+      "bytes": 7148,
+      "sha256": "e84a4e2e2aec39e0cdcb1a20bbaca7bc77192b7c2c992d48c5a704969d076583",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/execution.json",
+      "change": "added",
+      "bytes": 71749,
+      "sha256": "db3e8962325be1e7cc33f99923e065de6fd9cf8256f57e34579082917044d307",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "c73e3bb4d4203bea309fcc87deccb3749e56afe60b3d768f401396d9e4d2e5ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "55f3a9f6e7b062cb7d6bbdcd4a71a6506af142998fc33b3f15227a8f6f601fae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/verifier.json",
+      "change": "added",
+      "bytes": 64464,
+      "sha256": "106232eda5f072d76288e186059ca25ed4b2d5189e6d386c5668cd70548ca47f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5910,
+      "sha256": "d9e808e52270fda032b97b1ed5e2d521cd95403decaf1cd0b6f62f6a8737bfe5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/result.json",
+      "change": "added",
+      "bytes": 17758,
+      "sha256": "22cf60db2e1d2c402ea6b556aff711c90f5f44e34badf4795327df85b2916af8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/executions/20261120T062454Z-a61e8b4b/attempt.json",
+      "change": "added",
+      "bytes": 109430,
+      "sha256": "1650253b9bb11852d353a712b2f9def8083a0a967f2dbe37f1b2e247ccf540c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/executions/20261120T062454Z-a61e8b4b/checker.json",
+      "change": "added",
+      "bytes": 7238,
+      "sha256": "9a93232805ea1a780a91b6f630c8b46617eb6ab3b7659a49698858eeee54be04",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/executions/20261120T062454Z-a61e8b4b/correspondence.json",
+      "change": "added",
+      "bytes": 1243,
+      "sha256": "a5becc86176fc5edc88b6d0a5abf6af1773762e7dfd4ac9d3d0496b4c142bc0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5f6ca0f22bc3f6fb698c19675a8254ae467db94ed42005a0a57f3e7c26429dc2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/plan.json",
+      "change": "added",
+      "bytes": 122447,
+      "sha256": "1cf12c55e739ba4e564b3a4110633a122453d129b899b6ec3e18be3182c00a10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1691,
+      "sha256": "90370b0eafb8af5f609a5fd1a0cff931c6352b424a8bd575e1b6c2d72fd908d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/controls.json",
+      "change": "added",
+      "bytes": 7179,
+      "sha256": "a9a998a1292bd1f7d4754c4a9e4a4b3b86f9b6ac00d2835d624a5bd9d419a5ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/execution.json",
+      "change": "added",
+      "bytes": 71802,
+      "sha256": "e2c22fb157e7827323fd253f10198f948d038fbb999bf925dc5517803fa48112",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "1142283f479ee5a6c03568cddc6a2f3bdec0bbff06a8072677a99280211de7a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "434c96ca7732f052c9ea44f0f0749d4beee2a9772740167e000f571040f4c8a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/verifier.json",
+      "change": "added",
+      "bytes": 64500,
+      "sha256": "09de069e830e5d7b87a4d9e1798c612ecfda6d1ede4ed6908de79c605840105a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5895,
+      "sha256": "9cc0952c75a6c42f42de02778a6629281ccb3bf3632b3be707681e6e5a0cbc46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/result.json",
+      "change": "added",
+      "bytes": 17829,
+      "sha256": "90386a7efa29920c7fea18d1c0a97ec5ae38f21123e98d2bd74b319c718d4a0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/executions/20261120T062455Z-183a60d0/attempt.json",
+      "change": "added",
+      "bytes": 109491,
+      "sha256": "bcb3a33d678a55a249e412b517a2ebedbe747d2fac1ee9205362f041ce861cb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/executions/20261120T062455Z-183a60d0/checker.json",
+      "change": "added",
+      "bytes": 7234,
+      "sha256": "1938c1a6fc04555929cdac55320c90fa1c840cf43807e598ea09598e48b7ca2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/executions/20261120T062455Z-183a60d0/correspondence.json",
+      "change": "added",
+      "bytes": 1247,
+      "sha256": "df3d93c512de9723345595e1927ac29e252ee01479f57058168031c0dbe3b550",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c3a7248fe0ad77f19648d1020d722f19b9734c891ff644552d149e2e5a3164f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/plan.json",
+      "change": "added",
+      "bytes": 122544,
+      "sha256": "a059129bb44660e6d8efc14ba5ba88a0952c23009bdba49a64d4567b4ba5bcd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1691,
+      "sha256": "71be0a04cb4556f720e70dd4989be878c4fa7a1e7e09031efc261d8268d7f269",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/controls.json",
+      "change": "added",
+      "bytes": 7146,
+      "sha256": "bb5c56c6104237132e3ed28251f5c3e48968638141b48a12c175bd98b171ee99",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/execution.json",
+      "change": "added",
+      "bytes": 71714,
+      "sha256": "c9cb8b3d232f4c321a27b4aeb3579aa977214cf3c343b52ab5d9ae390ed0f988",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "6fb8bc38334b2f05397ed7d7410971e45f21632e3fc5fadbac9e4e1bd869dd8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "434c96ca7732f052c9ea44f0f0749d4beee2a9772740167e000f571040f4c8a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/verifier.json",
+      "change": "added",
+      "bytes": 64427,
+      "sha256": "43d4900e3db66820eab8ca0b50d4328ae6dfcb6fdeca85c5083f65895c494114",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5893,
+      "sha256": "f8ed0df5df7ee516b51206af6f18a21d8d0a1c14574dc13b592ddc5331005d3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/result.json",
+      "change": "added",
+      "bytes": 17765,
+      "sha256": "ec5282eec7ae15d366c7cc54ea06f71c816db0eadd6177fc025073501783a90c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/executions/20261120T062455Z-6619a4d9/attempt.json",
+      "change": "added",
+      "bytes": 109413,
+      "sha256": "e73f7c5ba381534d1f2335af943e982c7b3a884699564549f6332542f1291d9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/executions/20261120T062455Z-6619a4d9/checker.json",
+      "change": "added",
+      "bytes": 7218,
+      "sha256": "8deca4ea21f60fa8918646fc49e8a1195b078c56b43dc25fb96851c9890d362c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/executions/20261120T062455Z-6619a4d9/correspondence.json",
+      "change": "added",
+      "bytes": 1241,
+      "sha256": "535782ed3556a715a45238b0ecd60d3f5e249d68f0c7644c3afec5e31cf1bf79",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T06:25:27+00:00",
+    "applied": [
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/completion.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/plan.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/control-parent-jdk21.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/control-parent-jdk21.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/controls.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/execution.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/streams.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/verifier-output.txt",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/verifier.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/verifier.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/records/verifier.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/20261120T062440Z-5707bdc4/result.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T062440Z-5707bdc4/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T062440Z-5707bdc4/checker.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T062440Z-5707bdc4/correspondence.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T062440Z-5707bdc4/replay.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/completion.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/plan.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/control-fix-jdk21.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/control-fix-jdk21.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/controls.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/execution.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/streams.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/verifier-output.txt",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/verifier.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/verifier.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/records/verifier.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/20261120T062447Z-5fa64757/result.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/executions/20261120T062447Z-5fa64757/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/executions/20261120T062447Z-5fa64757/checker.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/executions/20261120T062447Z-5fa64757/correspondence.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/completion.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/plan.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/control-parent-jdk21.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/control-parent-jdk21.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/controls.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/execution.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/streams.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/verifier-output.txt",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/verifier.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/verifier.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/records/verifier.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/20261120T062454Z-2ac34b97/result.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/executions/20261120T062454Z-2ac34b97/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/executions/20261120T062454Z-2ac34b97/checker.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/executions/20261120T062454Z-2ac34b97/correspondence.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/completion.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/plan.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/control-fix-jdk21.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/control-fix-jdk21.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/controls.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/execution.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/streams.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/verifier-output.txt",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/verifier.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/verifier.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/records/verifier.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/20261120T062454Z-a61e8b4b/result.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/executions/20261120T062454Z-a61e8b4b/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/executions/20261120T062454Z-a61e8b4b/checker.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/executions/20261120T062454Z-a61e8b4b/correspondence.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/completion.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/plan.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/control-parent-jdk21.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/control-parent-jdk21.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/controls.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/execution.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/streams.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/verifier-output.txt",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/verifier.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/verifier.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/records/verifier.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/20261120T062455Z-183a60d0/result.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/executions/20261120T062455Z-183a60d0/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/executions/20261120T062455Z-183a60d0/checker.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/executions/20261120T062455Z-183a60d0/correspondence.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/completion.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/plan.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/control-fix-jdk21.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/control-fix-jdk21.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/controls.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/execution.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/streams.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/verifier-output.txt",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/verifier.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/verifier.stderr",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/records/verifier.stdout",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/20261120T062455Z-6619a4d9/result.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/executions/20261120T062455Z-6619a4d9/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/executions/20261120T062455Z-6619a4d9/checker.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/executions/20261120T062455Z-6619a4d9/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2515028,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "f4e249cbceb1200a2678283994b408f92abe0711",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f4e249cbceb1200a2678283994b408f92abe0711/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}

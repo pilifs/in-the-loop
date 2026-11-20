@@ -1,0 +1,57 @@
+[
+  {
+    "claimKey": "b8b7a0c7bf39b0a8",
+    "entry": "fractiongrid.Projection#bits(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 8
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
+        "classpath": [
+          "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
+          "c13cc69d5031e8497a65dfba8bf99e63b7af66c6be0be23691743b1442cfb215"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 8;\nif (!(code >= 0 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = fractiongrid.Projection.bits(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 8,
+      "input": {
+        "n": -21474837,
+        "denominator": 1
+      },
+      "field": "bits",
+      "direct": {
+        "parent": {
+          "bits": "41dffffff3000000",
+          "normal": null
+        }
+      },
+      "tableSha256": "058257ce18dbf4de81d9b80fecdaf974aeb5a2b7452fe6bf818d60baa2085d4a"
+    }
+  }
+]
