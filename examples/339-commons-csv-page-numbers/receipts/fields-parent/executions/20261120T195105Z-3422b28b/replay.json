@@ -1,0 +1,62 @@
+[
+  {
+    "claimKey": "bb75b6937a8a45bd",
+    "entry": "pagination.Projection#fields(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 20
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "989ff60b5d8ac1ebce2f791eb0b92d4bc690643d7c5dd678b1a3474b6bf8b8d0",
+        "classpath": [
+          "60d40d3fe5c92474164b2e10fe1677708930e1b456f9152a5ef1734b4e94b093",
+          "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+          "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+          "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 20;\nif (!(code >= 0 && code < 24)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = pagination.Projection.fields(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 20,
+      "input": {
+        "rows": 3,
+        "start": 2,
+        "cap": 1,
+        "twice": false
+      },
+      "field": "fields",
+      "direct": {
+        "parent": {
+          "count": 0,
+          "labels": [],
+          "fields": []
+        }
+      },
+      "tableSha256": "8c62b967dfab8c5f9dd6c08f0e3352e0463e84415d7488b00bf1bf6d1601f9e4"
+    }
+  }
+]

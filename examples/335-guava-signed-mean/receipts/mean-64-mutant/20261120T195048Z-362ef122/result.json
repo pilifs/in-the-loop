@@ -1,0 +1,608 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "603f5b1c66e5b281",
+    "format": 1,
+    "example": "335",
+    "statement": {
+      "approach": "target",
+      "task": "mean-64-mutant",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.math.LongMath#mean(JJ)J",
+      "revisions": [
+        "mutant"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "mean-64-mutant",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "com.google.common.math.LongMath#mean(JJ)J",
+        "file": "claims/mean-64.json",
+        "sha256": "9addee08974da3d1ff8199f5cf2b5fca8e8b27a3e8f5d9701147dbd4fa631de7",
+        "property": "mean-64",
+        "claimKind": "property",
+        "statement": "For all ordered pairs of signed 64-bit values the sign-extended result is the arithmetic half of their exact signed sum at width 65.",
+        "assume": "true",
+        "assert": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 16,
+          "maxArrayLength": 8
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/mean/MeanCases.java",
+            "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+          },
+          {
+            "id": "altered-implementation",
+            "kind": "mutation",
+            "path": "controls/overflow.patch",
+            "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+          }
+        ],
+        "key": "a1a38ec51be2119d"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "mean-64-mutant",
+      "sidecar": "12445110f14fd798723b4325c36f5e79f1bdb768111f0d2e8bf54556fdf8a2d6",
+      "revisions": {
+        "mutant": "f06690fa3e874f65515e8fd338a74d636e2c792f"
+      },
+      "dependencies": [
+        {
+          "revision": "mutant",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ccde79b194e7dc4c2708415ed128e7e19481b96b359c6fa2ba3fb90db72acacf"
+        },
+        {
+          "revision": "mutant",
+          "position": 1,
+          "role": "original",
+          "sha256": "d895693b47636f7c6a2992fd37e7bb80b0aeb40891991ae5836bae45e2330c64"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/mean-64.json": "9addee08974da3d1ff8199f5cf2b5fca8e8b27a3e8f5d9701147dbd4fa631de7",
+        "controls/oracle.py": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1",
+        "controls/overflow.patch": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8",
+        "driver/mean/MeanCases.java": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+      },
+      "claimKey": "a1a38ec51be2119d"
+    }
+  },
+  "attempt": {
+    "id": "20261120T195048Z-362ef122",
+    "claim": "603f5b1c66e5b281",
+    "startedAt": "2026-11-20T19:50:48+00:00",
+    "seconds": 0.7,
+    "engine": "native",
+    "options": [
+      "prove",
+      "com.google.common.math.LongMath#mean(long, long)",
+      "--classes",
+      "prepare/mutant/mutant/guava-33.4.8-jre.jar",
+      "--assume",
+      "true",
+      "--assert",
+      "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "90",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "ca1de9c61c175ad0c51d511441a6e9d8b91dc694a525c9d392542ae55f7a1f67",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-193914-335-recheck-both-full-width-signed-means",
+      "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193914-335-recheck-both-full-width-signed-means"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control mutant on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-mutant-jdk21.stdout",
+        "stderr": "records/control-mutant-jdk21.stderr"
+      },
+      {
+        "name": "verifier mutant on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.548,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "603f5b1c66e5b281",
+    "attempt": "20261120T195048Z-362ef122",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+          "assume": "true",
+          "verdict": "violation",
+          "domain": "x: long × y: long",
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.5 s searching inputs in [-100000:100000] as mean(x=-31095, y=-31072), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain x: long × y: long",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "mean(x=-1, y=0)",
+            "contract": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+            "actual": "0",
+            "found": "mean(x=-31095, y=-31072)",
+            "shrinkRuns": 23,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "x",
+                  "type": "long",
+                  "value": "-1"
+                },
+                {
+                  "name": "y",
+                  "type": "long",
+                  "value": "0"
+                }
+              ],
+              "foundInputs": [
+                {
+                  "name": "x",
+                  "type": "long",
+                  "value": "-31095"
+                },
+                {
+                  "name": "y",
+                  "type": "long",
+                  "value": "-31072"
+                }
+              ],
+              "call": {
+                "class": "com.google.common.math.LongMath",
+                "classFile": "com/google/common/math/LongMath.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "mean",
+                "descriptor": "(JJ)J",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "x",
+                    "type": "long",
+                    "value": "-1",
+                    "from": "x"
+                  },
+                  {
+                    "name": "y",
+                    "type": "long",
+                    "value": "0",
+                    "from": "y"
+                  }
+                ],
+                "revision": "mutant"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.501,
+            "properties": 1,
+            "unwind": 16,
+            "maxArrayLength": 8,
+            "stage": "[-100000:100000]",
+            "deadlineSeconds": 90.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 90.0,
+                "seconds": 0.495,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.011,
+                  "encoding": 0.017,
+                  "solving": 0.466,
+                  "trace": 0.001,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 20257,
+                  "clauses": 69968
+                }
+              }
+            ],
+            "native": {
+              "paths": 13,
+              "merges": 0,
+              "solverCalls": 45,
+              "solvingSeconds": 0.465882259,
+              "gatesEvaluated": 7399,
+              "evaluatingSeconds": 0.00013922,
+              "divisions": 1,
+              "divisionsBuilt": 1,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 20257,
+              "clauses": 69968,
+              "seconds": 0.495338582,
+              "loadingSeconds": 0.000284492,
+              "decodingSeconds": 0.00024537,
+              "encodingSeconds": 0.017046809,
+              "witnessSeconds": 0.001157809
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "x",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "y",
+                  "type": "long",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "x: long × y: long"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "true",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against (result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 18,
+      "code": "\"mutant\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "mean(x=-1, y=0)",
+        "contract": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+        "actual": "0",
+        "found": "mean(x=-31095, y=-31072)",
+        "shrinkRuns": 23,
+        "witness": {
+          "inputs": [
+            {
+              "name": "x",
+              "type": "long",
+              "value": "-1"
+            },
+            {
+              "name": "y",
+              "type": "long",
+              "value": "0"
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "x",
+              "type": "long",
+              "value": "-31095"
+            },
+            {
+              "name": "y",
+              "type": "long",
+              "value": "-31072"
+            }
+          ],
+          "call": {
+            "class": "com.google.common.math.LongMath",
+            "classFile": "com/google/common/math/LongMath.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "mean",
+            "descriptor": "(JJ)J",
+            "static": true,
+            "arguments": [
+              {
+                "name": "x",
+                "type": "long",
+                "value": "-1",
+                "from": "x"
+              },
+              {
+                "name": "y",
+                "type": "long",
+                "value": "0",
+                "from": "y"
+              }
+            ],
+            "revision": "mutant"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.5 s searching inputs in [-100000:100000] as mean(x=-31095, y=-31072), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain x: long × y: long",
+    "problem": null,
+    "domain": "x: long × y: long",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+      "assume": "true"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "x",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "y",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "x: long × y: long"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "true",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against (result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "75f244e0d4f2c1b16a64a276d7808d1ea66671cf5aec94b1d8a3b46fcbb87334",
+        "bytes": 59847
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "b63dc623a1f500362a37c784248d9f46669bf6a7d610c2b396df06da98078190",
+        "bytes": 847
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "bc3a76cf7ab19b54da7599315b8fc8dfdea3ad6ea4033867a705e4c0f13f7e2c",
+        "bytes": 1971
+      },
+      {
+        "path": "records/control-mutant-jdk21.stdout",
+        "sha256": "f0e7805ea077066300da6ff26b87dac122dc617517534ee4ffcdafe6f6793b27",
+        "bytes": 19018
+      },
+      {
+        "path": "records/control-mutant-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "b6dc62339fbdacce18bbdf96b8c68a35111bce1f86ce65332d767676b844f948",
+        "bytes": 40898
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "3a87485596889b7d851d0f91cbdcda1464bde3eca379f5b8b8384e77f158d1a0",
+        "bytes": 7494
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "0cdbafebd4c455af2eadf380a587673ee41f0d30116e7b1f1121d7caa26e60d5",
+        "bytes": 16608
+      }
+    ]
+  }
+}

@@ -1,0 +1,548 @@
+{
+  "task": "bytes-fix",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+      "prove",
+      "bom.Projection#bytes(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/commons-io-2.23.0-SNAPSHOT.jar",
+      "--assume",
+      "code >= 0 && code < 36",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "96",
+      "--timeout",
+      "90",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 3.159,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147",
+      "commit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+      "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "timeout": 90,
+      "scope": {
+        "label": "adapter",
+        "meaning": "Index the ordered product of payload, BOM, inclusion and reset mode. Open distinct wrapper and delegate objects. Read the remaining bytes and then read at EOF.",
+        "method": "org.apache.commons.io.input.BOMInputStream#reset()V",
+        "revisions": {
+          "fix": {
+            "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+            "loadedFrom": "built/commons-io-2.23.0-SNAPSHOT.jar",
+            "classSha256": "459eaf58be414a167496841cad51ff0059ecc24d6b95720bea958b5dc0319425",
+            "origin": "built by maven from https://github.com/apache/commons-io at 4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce: target/commons-io-2.23.0-SNAPSHOT.jar",
+            "parameters": {
+              "names": [],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "bom.Projection#bytes(I)I",
+          "mapping": "Index the ordered product of payload, BOM, inclusion and reset mode. Open distinct wrapper and delegate objects. Read the remaining bytes and then read at EOF.",
+          "cases": 36,
+          "correspondence": "finite-oracle"
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix": [
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "4735ed92ede27c466ee819e78dc68dca3f17540021d30139bddb84d614f30f49",
+            "role": "adapter"
+          },
+          {
+            "path": "built/commons-io-2.23.0-SNAPSHOT.jar",
+            "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "bom.Projection#bytes(I)I",
+      "entryBindings": {
+        "fix": {
+          "entry": "bom.Projection#bytes(I)I",
+          "classSha256": "0ae4740086bdf4d93c8bf09796b107cd7124e6c8d84fcbca92b6a4ee5ad53f71",
+          "loadedFrom": "adapter-fix.jar",
+          "subject": "org.apache.commons.io.input.BOMInputStream#reset()V",
+          "subjectClassSha256": "459eaf58be414a167496841cad51ff0059ecc24d6b95720bea958b5dc0319425"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.commons.io.input.BOMInputStream#reset()V",
+        "checkedEntry": "bom.Projection#bytes(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 36"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "96"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "96"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "bom.Projection#bytes(I)I",
+          "mapping": "Index the ordered product of payload, BOM, inclusion and reset mode. Open distinct wrapper and delegate objects. Read the remaining bytes and then read at EOF.",
+          "cases": 36,
+          "correspondence": "finite-oracle"
+        }
+      },
+      "commits": {
+        "fix": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+            "gaps",
+            "--target",
+            "bom.Projection#bytes(int)",
+            "--classes",
+            "prepare/fix/adapter-fix.jar",
+            "--classpath",
+            "prepare/fix/built/commons-io-2.23.0-SNAPSHOT.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.065,
+          "stdout": "verifier/probe-fix.stdout",
+          "stderr": "verifier/probe-fix.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.IOException.<init>(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.IOException.<init>(java.lang.Throwable)",
+              "sites": [
+                "org.apache.commons.io.IOUtils.close:752"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.Closeable.close()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.Closeable.close()",
+              "sites": [
+                "org.apache.commons.io.IOUtils.close:748"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+              "sites": [
+                "bom.Projection.bytes:41"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.List.sort(Ljava/util/Comparator;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.List.sort(java.util.Comparator)",
+              "sites": [
+                "org.apache.commons.io.input.BOMInputStream.<init>:260"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getSimpleName()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getSimpleName()",
+              "sites": [
+                "org.apache.commons.io.build.AbstractOrigin.getSimpleClassName:1354",
+                "org.apache.commons.io.build.AbstractOrigin.unsupportedOperation:1398"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.Charset.name()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.Charset.name()",
+              "sites": [
+                "org.apache.commons.io.ByteOrderMark.<clinit>:60",
+                "org.apache.commons.io.ByteOrderMark.<clinit>:71",
+                "org.apache.commons.io.ByteOrderMark.<clinit>:82"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.stream()Ljava/util/stream/Stream;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.stream()",
+              "sites": [
+                "org.apache.commons.io.input.BOMInputStream.find:332"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Stream.filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Stream.filter(java.util.function.Predicate)",
+              "sites": [
+                "org.apache.commons.io.input.BOMInputStream.find:332"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Stream.findFirst()Ljava/util/Optional;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Stream.findFirst()",
+              "sites": [
+                "org.apache.commons.io.input.BOMInputStream.find:332"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.desiredAssertionStatus()",
+              "sites": [
+                "java.io.ByteArrayInputStream.<clinit>:46",
+                "java.util.Collections$ReverseComparator2.<clinit>:5620",
+                "java.util.ComparableTimSort.<clinit>:42",
+                "java.util.TimSort.<clinit>:62"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Comparable.compareTo(java.lang.Object)",
+              "sites": [
+                "java.util.Arrays.mergeSort:1145",
+                "java.util.Arrays.mergeSort:1161",
+                "java.util.Arrays.mergeSort:1168",
+                "java.util.Collections$ReverseComparator.compare:5565",
+                "java.util.ComparableTimSort.binarySort:262",
+                "java.util.ComparableTimSort.countRunAndMakeAscending:320",
+                "java.util.ComparableTimSort.countRunAndMakeAscending:321",
+                "java.util.ComparableTimSort.countRunAndMakeAscending:325",
+                "java.util.ComparableTimSort.gallopLeft:513",
+                "java.util.ComparableTimSort.gallopLeft:516",
+                "java.util.ComparableTimSort.gallopLeft:531",
+                "java.util.ComparableTimSort.gallopLeft:556",
+                "java.util.ComparableTimSort.gallopRight:583",
+                "java.util.ComparableTimSort.gallopRight:586",
+                "java.util.ComparableTimSort.gallopRight:602",
+                "java.util.ComparableTimSort.gallopRight:626",
+                "java.util.ComparableTimSort.mergeHi:808",
+                "java.util.ComparableTimSort.mergeLo:688",
+                "java.util.Comparators$NaturalOrderComparator.compare:52"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+              "sites": [
+                "org.apache.commons.io.build.AbstractOrigin.unsupportedOperation:1396",
+                "org.apache.commons.io.build.AbstractStreamBuilder.throwIae:426"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.reflect.Array.newInstance(Ljava/lang/Class;I)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.reflect.Array.newInstance(java.lang.Class, int)",
+              "sites": [
+                "java.util.TimSort.<init>:157",
+                "java.util.TimSort.ensureCapacity:933"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.nio.file.Files.newInputStream(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/InputStream;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.nio.file.Files.newInputStream(java.nio.file.Path, java.nio.file.OpenOption[])",
+              "sites": [
+                "org.apache.commons.io.build.AbstractOrigin.getInputStream:1299"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.swap([Ljava/lang/Object;II)V@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.swap(java.lang.Object[], int, int)",
+              "sites": [
+                "java.util.Arrays.mergeSort:1146",
+                "java.util.Arrays.mergeSort:1341"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Collections.reverseOrder()Ljava/util/Comparator;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Collections.reverseOrder()",
+              "sites": [
+                "java.util.Comparator.reverseOrder:343"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 3.1543,
+        "peakRssBytes": 68386816,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "bom.Projection#bytes(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 36",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 3.1 s; loops unwound 96 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ bom.Projection#bytes(int) satisfies `result == 1` on every input where code >= 0 && code < 36 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 3.1 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=20) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 3.12754521,
+          "properties": 1,
+          "unwind": 96,
+          "max_array_length": 96,
+          "stage": null,
+          "native": {
+            "paths": 686,
+            "merges": 119,
+            "solver_calls": 1140,
+            "solving_seconds": 2.092820717,
+            "gates_evaluated": 26909,
+            "evaluating_seconds": 0.003031279,
+            "divisions": 5,
+            "divisions_built": 5,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 24628,
+            "clauses": 83705,
+            "seconds": 3.115739037,
+            "loading_seconds": 0.004274278,
+            "decoding_seconds": 0.000805021,
+            "encoding_seconds": 0.082039622,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 90.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 90.0,
+              "seconds": 3.116,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.004,
+                "lowering": 0.001,
+                "symbolic": 0.936,
+                "encoding": 0.082,
+                "solving": 2.093,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 24628,
+                "clauses": 83705
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 86.872,
+              "seconds": 0.006,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 184,
+                "clauses": 514
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 3.148,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 3.122,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.024
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 36",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 96,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=20).",
+            "witness": "bytes(code=20)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193915-338-fix-verify-original-stream-and-page/.build-py/examples-53wdxntc/targets/338/bytes-fix/20261120T195057Z-abe53116",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193915-338-fix-verify-original-stream-and-page/.build-py/examples-53wdxntc/targets/338/bytes-fix/20261120T195057Z-abe53116"
+  }
+}

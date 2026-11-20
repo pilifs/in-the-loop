@@ -1,0 +1,64 @@
+[
+  {
+    "claimKey": "5008426585e68000",
+    "entry": "bom.Projection#bytes(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 13
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "0ae4740086bdf4d93c8bf09796b107cd7124e6c8d84fcbca92b6a4ee5ad53f71",
+        "classpath": [
+          "4735ed92ede27c466ee819e78dc68dca3f17540021d30139bddb84d614f30f49",
+          "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 13;\nif (!(code >= 0 && code < 36)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = bom.Projection.bytes(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 13,
+      "input": {
+        "payload": [
+          65
+        ],
+        "bom": false,
+        "include": false,
+        "mode": "implicit"
+      },
+      "field": "bytes",
+      "direct": {
+        "parent": {
+          "bytes": [
+            65,
+            65
+          ],
+          "eof": -1
+        }
+      },
+      "tableSha256": "05d1d044deaa06657d4aa15c6aaf9352c5bf59316b3db72c945908dc8ae907f8"
+    }
+  }
+]

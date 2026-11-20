@@ -1,0 +1,213 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "prove",
+    "importer.Projection#page(int)",
+    "--classes",
+    "prepare/fix-fix/adapter-fix-fix.jar",
+    "--classpath",
+    "prepare/fix-fix/fix-fix.jar",
+    "--classpath",
+    "prepare/fix-fix/libraries/io-fix.jar",
+    "--classpath",
+    "prepare/fix-fix/libraries/csv-fix.jar",
+    "--classpath",
+    "prepare/fix-fix/libraries/codec.jar",
+    "--assume",
+    "code >= 0 && code < 96 && (code & 6) == 0",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "96",
+    "--max-array-length",
+    "96",
+    "--timeout",
+    "90",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.632,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "importer.Projection#page(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 96 && (code & 6) == 0",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStreamReader.<init>(Ljava/io/InputStream;Ljava/nio/charset/Charset;)V@jdk-21.0.13 (java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) at importer.PageImporter.page:46). With --gaps assume it assumes instead that java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "importer.Projection#page(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStreamReader.<init>(Ljava/io/InputStream;Ljava/nio/charset/Charset;)V@jdk-21.0.13 (java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) at importer.PageImporter.page:46). With --gaps assume it assumes instead that java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "uri": null,
+          "line": 48
+        }
+      ],
+      "output": "✗ importer.Projection#page(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStreamReader.<init>(Ljava/io/InputStream;Ljava/nio/charset/Charset;)V@jdk-21.0.13 (java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) at importer.PageImporter.page:46). With --gaps assume it assumes instead that java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.605468466,
+        "properties": 1,
+        "unwind": 96,
+        "max_array_length": 96,
+        "stage": null,
+        "native": {
+          "paths": 291,
+          "merges": 0,
+          "solver_calls": 374,
+          "solving_seconds": 0.009483197,
+          "gates_evaluated": 410,
+          "evaluating_seconds": 9.0847e-05,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 822,
+          "clauses": 414,
+          "seconds": 0.60080661,
+          "loading_seconds": 0.007278405,
+          "decoding_seconds": 0.001395623,
+          "encoding_seconds": 0.031797185,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.io.InputStreamReader.<init>(Ljava/io/InputStream;Ljava/nio/charset/Charset;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset)",
+            "sites": [
+              "importer.PageImporter.page:46"
+            ],
+            "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 90.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 90.0,
+            "seconds": 0.601,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.007,
+              "lowering": 0.001,
+              "symbolic": 0.551,
+              "encoding": 0.032,
+              "solving": 0.009,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 822,
+              "clauses": 414
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.623,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.601,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.02
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 96 && (code & 6) == 0",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 96,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6670,
+    "sha256": "389386b7567aa03f284e207947c0d592170d7e9de71a48620000c9b5fa4b5e16"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

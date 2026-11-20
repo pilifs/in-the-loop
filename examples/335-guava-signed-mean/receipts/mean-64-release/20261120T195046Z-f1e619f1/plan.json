@@ -1,0 +1,186 @@
+{
+  "plan": {
+    "example": "335",
+    "task": "mean-64-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.math.LongMath#mean(JJ)J",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "mean-64-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.math.LongMath#mean(JJ)J",
+      "file": "claims/mean-64.json",
+      "sha256": "9addee08974da3d1ff8199f5cf2b5fca8e8b27a3e8f5d9701147dbd4fa631de7",
+      "property": "mean-64",
+      "claimKind": "property",
+      "statement": "For all ordered pairs of signed 64-bit values the sign-extended result is the arithmetic half of their exact signed sum at width 65.",
+      "assume": "true",
+      "assert": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/mean/MeanCases.java",
+          "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+        }
+      ],
+      "key": "a1a38ec51be2119d"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          }
+        ],
+        "coordinates": "com.google.guava:guava:33.4.8-jre",
+        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/mean-64-release"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193914-335-recheck-both-full-width-signed-means/examples/335-guava-signed-mean",
+    "network": true
+  },
+  "inputs": {
+    "example": "335",
+    "task": "mean-64-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.math.LongMath#mean(JJ)J",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "mean-64-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.math.LongMath#mean(JJ)J",
+      "file": "claims/mean-64.json",
+      "sha256": "9addee08974da3d1ff8199f5cf2b5fca8e8b27a3e8f5d9701147dbd4fa631de7",
+      "property": "mean-64",
+      "claimKind": "property",
+      "statement": "For all ordered pairs of signed 64-bit values the sign-extended result is the arithmetic half of their exact signed sum at width 65.",
+      "assume": "true",
+      "assert": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/mean/MeanCases.java",
+          "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+        }
+      ],
+      "key": "a1a38ec51be2119d"
+    },
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          }
+        ],
+        "coordinates": "com.google.guava:guava:33.4.8-jre",
+        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "3f4fce0de99ba9e0d7292a559177672418b34a134f1c9a31898b60ef7ea2ae6b"
+}

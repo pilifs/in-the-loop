@@ -1,0 +1,641 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "f662b66d2a2bff7c",
+    "format": 1,
+    "example": "321",
+    "statement": {
+      "approach": "target",
+      "task": "lower-parent-observed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "lower-parent-observed",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;",
+        "file": "claims/lower-observed.json",
+        "sha256": "564338f264abf7aece5b68b95595a9b701801336dff8c97b92672b7e6383a6f3",
+        "property": "lower",
+        "claimKind": "property",
+        "statement": "The lower endpoint agrees with scanning just the finite series values.",
+        "assume": "code >= 0 && code < 30",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 30,
+          "maxArrayLength": 12
+        },
+        "explicitBounds": {
+          "unwind": 30,
+          "maxArrayLength": 12
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/rangegrid/Cases.java",
+            "sha256": "86a51a5a266e5b50d90758e4d2253c9fa132c4e587f7827e463ed376e6c00682"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "ff3a79972d079aa578365ead2582ec5e9996fc3933cbcdc4fda80246460218f7"
+          }
+        ],
+        "boundEnvironment": {
+          "jdk": "21.0.13",
+          "assumptions": [
+            {
+              "kind": "library",
+              "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+              "basis": "engine",
+              "id": "observed-calendar:gregorian-utc-ad"
+            }
+          ]
+        },
+        "adapter": {
+          "entry": "rangegrid.Projection#lower(I)I",
+          "mapping": "For the fifteen nonempty pairs of series choices (empty, -1, 0, 1), code chooses the two-key order. Only year 2012 in UTC is populated. The horizontal interval spans the full year and includeInterval is false. An absent result and NaN are distinct from any finite bound.",
+          "correspondence": "finite-oracle",
+          "cases": 30
+        },
+        "observedInitializers": {
+          "org.jfree.data.time.RegularTimePeriod": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+        },
+        "key": "574238e4b5051ea6"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 12
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "lower-parent-observed",
+      "sidecar": "e4eef4ab6438cad33027e1e38710c9d838a1a71a9a22aaaa26b9185f0db61f4e",
+      "revisions": {
+        "parent": "f210e33d06f03354fb49b98d2b2282f8c9a89303"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "49ddf216f1842f78b28b53d30141ec1391c6c276e5e336826f96369ce794d4dd"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "c705a93a4b9acba9688a88fe0b956d37a3179af6b1259578a936bf653232dd86"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "3fe30a535cc14d3c1d7667e36b7deb0a6753d72ebedd9dc670ead2f0d7d9ed9c"
+        },
+        {
+          "revision": "parent",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "90a5f9ceaed977edfe8f514dcb15ddf5001cf9111a8fcd87b7cd8b0bb6231acc",
+          "coordinates": "org.jfree:jcommon:1.0.17"
+        },
+        {
+          "revision": "parent",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "c658ea360a70faeeadb66fb3c90a702e4142a0ab7768f9ae9828678e0d9ad4dc",
+          "coordinates": "javax.servlet:servlet-api:2.5"
+        },
+        {
+          "revision": "parent",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "40bc530593f9173e90aff5cd000c8cb185ebf851f9617b131d43f81989a9ad41",
+          "coordinates": "com.lowagie:itext:2.1.5"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/rangegrid/Projection.java": "0479f7e1c5bc61a4fdc0db631d5fd984a85f863f995d646ce3d87746638aaf3f",
+        "claims/lower-observed.json": "564338f264abf7aece5b68b95595a9b701801336dff8c97b92672b7e6383a6f3",
+        "controls/table.json": "ff3a79972d079aa578365ead2582ec5e9996fc3933cbcdc4fda80246460218f7",
+        "driver/rangegrid/Cases.java": "86a51a5a266e5b50d90758e4d2253c9fa132c4e587f7827e463ed376e6c00682"
+      },
+      "claimKey": "574238e4b5051ea6",
+      "scopes": {
+        "parent": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261120T195011Z-068f3103",
+    "claim": "f662b66d2a2bff7c",
+    "startedAt": "2026-11-20T19:50:11+00:00",
+    "seconds": 1.6,
+    "engine": "native",
+    "options": [
+      "prove",
+      "rangegrid.Projection#lower(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/slice/parent.jar",
+      "--classpath",
+      "prepare/parent/lib/org.jfree/jcommon-1.0.17.jar",
+      "--classpath",
+      "prepare/parent/lib/javax.servlet/servlet-api-2.5.jar",
+      "--classpath",
+      "prepare/parent/lib/com.lowagie/itext-2.1.5.jar",
+      "--assume",
+      "code >= 0 && code < 30",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--observed-initializer",
+      "org.jfree.data.time.RegularTimePeriod",
+      "--unwind",
+      "30",
+      "--max-array-length",
+      "12",
+      "--timeout",
+      "30",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "fe130cb2bc7da664c7ed1da7b8bb4497282853f4336510009dc29d08f9bd8d69",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-193913-321-observed-startup-on-the-importer-che",
+      "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193913-321-observed-startup-on-the-importer-che"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 1.509,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 30,
+      "maxArrayLength": 12,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "f662b66d2a2bff7c",
+    "attempt": "20261120T195011Z-068f3103",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 30",
+          "verdict": "violation",
+          "domain": "code: int",
+          "proof": "found by jvmcontract's own checker (Bitwuzla) in 1.3 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "lower(code=5)",
+            "contract": "result == 1",
+            "actual": "0",
+            "shrinkRuns": 0,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "value": 5
+                }
+              ],
+              "call": {
+                "class": "rangegrid.Projection",
+                "classFile": "rangegrid/Projection.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "lower",
+                "descriptor": "(I)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "code",
+                    "type": "int",
+                    "value": 5,
+                    "from": "code"
+                  }
+                ],
+                "revision": "parent"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 1.285,
+            "properties": 1,
+            "unwind": 30,
+            "maxArrayLength": 12,
+            "stage": "[0:20]",
+            "deadlineSeconds": 30.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 28.746,
+                "seconds": 0.027,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.003,
+                  "lowering": 0.0,
+                  "symbolic": 0.009,
+                  "encoding": 0.007,
+                  "solving": 0.008,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 2823,
+                  "clauses": 1
+                }
+              }
+            ],
+            "native": {
+              "paths": 1,
+              "merges": 0,
+              "solverCalls": 11,
+              "solvingSeconds": 0.008001141,
+              "gatesEvaluated": 188,
+              "evaluatingSeconds": 6.2657e-05,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "wordOperations": 72,
+              "finiteQueries": {
+                "diagrams": 6,
+                "bitwuzla": 5
+              },
+              "variables": 2823,
+              "clauses": 1,
+              "seconds": 0.026756426,
+              "loadingSeconds": 0.002758255,
+              "decodingSeconds": 0.000334692,
+              "encodingSeconds": 0.0066014,
+              "witnessSeconds": 0.000358453
+            },
+            "modelsAssume": [
+              "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+              "the class initializer of org.jfree.data.time.RegularTimePeriod was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 694273cb6b01), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+            ],
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "jvm",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 30",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              },
+              {
+                "kind": "library",
+                "text": "the class initializer of org.jfree.data.time.RegularTimePeriod was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 694273cb6b01), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                "basis": "engine",
+                "id": "observed-initializer:org.jfree.data.time.RegularTimePeriod:694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe:9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 30,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "lower(code=5)",
+        "contract": "result == 1",
+        "actual": "0",
+        "shrinkRuns": 0,
+        "witness": {
+          "inputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 5
+            }
+          ],
+          "call": {
+            "class": "rangegrid.Projection",
+            "classFile": "rangegrid/Projection.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "lower",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 5,
+                "from": "code"
+              }
+            ],
+            "revision": "parent"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (Bitwuzla) in 1.3 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
+    "problem": null,
+    "domain": "code: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 30"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 30",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+          "basis": "engine",
+          "id": "observed-calendar:gregorian-utc-ad"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.jfree.data.time.RegularTimePeriod was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 694273cb6b01), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine",
+          "id": "observed-initializer:org.jfree.data.time.RegularTimePeriod:694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe:9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 30,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "a3932a2bdd112c0ba4545df218354a52973f349db25f7438843b35de56e14a2f",
+        "bytes": 82256
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "5b3123b3d2b72f0e807be1b7797ef1daf7aaf3204d9c8830578acd01f76fc37b",
+        "bytes": 547
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "27e563724fc5c41a1e706985c7c41e4f8ae43fa123d24f5309b5b7f3076a37b6",
+        "bytes": 1969
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "df447b9fa4b505db74bfd9d0aaf1ea8fcb66fb6d96e80bb1310cf8c254172057",
+        "bytes": 5004
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "7af318b6ad5c74a242cbeb25988fbc09b785ddfa7ae4cd91125bceeaddbe8958",
+        "bytes": 16024
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "58e3d7bb33f85e45c307490e1fed4798211cd2cf727c13d15ebb3297c35034ab",
+        "bytes": 8386
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "37c65b41824bf4a0726fb844bf6c0a2872e5f1d514ff6960be87f185c160291e",
+        "bytes": 62774
+      }
+    ]
+  }
+}

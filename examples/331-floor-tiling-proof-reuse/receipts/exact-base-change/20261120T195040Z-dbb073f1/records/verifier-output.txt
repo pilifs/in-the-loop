@@ -1,0 +1,7 @@
+note: the expressions are Java beyond the tool's own expression compiler (in the assertion: unknown name "tiling"; the names are n, result); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target
+✗ Property of tiling.Floor#exact(int) violated: `result == tiling.Oracle.exact(n)` where n >= 0 && n <= 18:
+  exact(n=0)
+    outcome: 0
+  (found by jvmcontract's own checker (Bitwuzla) in 15.7 s searching inputs in [0:20] as exact(n=18), shrunk to the input above in 1 interpreter runs, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain n: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

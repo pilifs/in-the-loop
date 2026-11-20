@@ -1,0 +1,386 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "equivalence",
+    "--before",
+    "verifier/classes/recursive",
+    "--after",
+    "verifier/classes/iterative",
+    "--target",
+    "tiling.Floor#exact(int)",
+    "--assume",
+    "n >= 0 && n <= 18",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "24",
+    "--max-array-length",
+    "0",
+    "--timeout",
+    "25",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 21.008,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "tiling.Floor#exact(int)",
+      "domain": "n: int",
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 20.5 s; loops unwound 24 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/pair/RegressionPair.java",
+      "findings": [],
+      "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verifier/work/pair/RegressionPair.java) calls the previous version's tiling.Floor#exact(int), relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✓ tiling.Floor#exact(int): the two versions agree on every input where n >= 0 && n <= 18 (the pair's property, below)\n✓ RegressionPair#agree satisfies `result` on every input where n >= 0 && n <= 18 (jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 20.5 s; loops unwound 24 times with unwinding assertions)\n  not vacuous: agree(n=0) reaches the calls\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (Bitwuzla)",
+        "seconds": 20.477938328,
+        "properties": 1,
+        "unwind": 24,
+        "max_array_length": 0,
+        "stage": null,
+        "native": {
+          "paths": 20,
+          "merges": 0,
+          "solver_calls": 39428,
+          "solving_seconds": 18.748961487,
+          "gates_evaluated": 61270,
+          "evaluating_seconds": 0.055036306,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "word_operations": 23505,
+          "finite_queries": {
+            "diagrams": 39428,
+            "bitwuzla": 0
+          },
+          "variables": 282671,
+          "clauses": 1,
+          "seconds": 20.249374886,
+          "loading_seconds": 0.00051757,
+          "decoding_seconds": 4.5776e-05,
+          "encoding_seconds": 0.960541535,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 25.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 25.0,
+            "seconds": 20.249,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.001,
+              "lowering": 0.0,
+              "symbolic": 0.539,
+              "encoding": 0.961,
+              "solving": 18.749,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 282671,
+              "clauses": 1
+            }
+          },
+          {
+            "checker": "native",
+            "purpose": "probe",
+            "stage": null,
+            "budget_seconds": 4.522,
+            "seconds": 0.007,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.006,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 10,
+              "clauses": 1
+            }
+          }
+        ]
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "n",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "n: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "n >= 0 && n <= 18",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 24,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (Bitwuzla)",
+          "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+          "fallback": null,
+          "sat": {
+            "solver": "Bitwuzla",
+            "version": "0.8.2",
+            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+            "configuration": [
+              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+              "sat-solver cadical",
+              "produce-models",
+              "otherwise Bitwuzla's default options",
+              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+              "the run's deadline through Bitwuzla's termination callback",
+              "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found agree(n=0).",
+          "witness": "agree(n=0)"
+        }
+      },
+      "pair": {
+        "verdict": "verified",
+        "target": "RegressionPair#agree",
+        "domain": "n: int",
+        "assume": "n >= 0 && n <= 18",
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 20.5 s; loops unwound 24 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ RegressionPair#agree satisfies `result` on every input where n >= 0 && n <= 18 (jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 20.5 s; loops unwound 24 times with unwinding assertions)\n  not vacuous: agree(n=0) reaches the calls\n",
+        "work": "verifier/work/pair-work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 20.477938328,
+          "properties": 1,
+          "unwind": 24,
+          "max_array_length": 0,
+          "stage": null,
+          "native": {
+            "paths": 20,
+            "merges": 0,
+            "solver_calls": 39428,
+            "solving_seconds": 18.748961487,
+            "gates_evaluated": 61270,
+            "evaluating_seconds": 0.055036306,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 23505,
+            "finite_queries": {
+              "diagrams": 39428,
+              "bitwuzla": 0
+            },
+            "variables": 282671,
+            "clauses": 1,
+            "seconds": 20.249374886,
+            "loading_seconds": 0.00051757,
+            "decoding_seconds": 4.5776e-05,
+            "encoding_seconds": 0.960541535,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 25.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 25.0,
+              "seconds": 20.249,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.539,
+                "encoding": 0.961,
+                "solving": 18.749,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 282671,
+                "clauses": 1
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 4.522,
+              "seconds": 0.007,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 10,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 20.519,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 20.256,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.262
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "n",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "n: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "n >= 0 && n <= 18",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 24,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found agree(n=0).",
+            "witness": "agree(n=0)"
+          }
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 11847,
+    "sha256": "42aa5364d0ed429c82d985b575607171fb2492291eb192eeda918d868579d68a"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

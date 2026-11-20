@@ -1,0 +1,246 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "prove",
+    "jodagrid.Projection#reversal(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/slice/parent.jar",
+    "--classpath",
+    "prepare/parent/lib/org.joda/joda-convert-1.2.jar",
+    "--assume",
+    "code >= 0 && code < 25",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--observed-initializer",
+    "org.joda.time.DateTimeUtils",
+    "--observed-initializer",
+    "org.joda.time.DateTimeZone",
+    "--unwind",
+    "30",
+    "--max-array-length",
+    "12",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 2.175,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "jodagrid.Projection#reversal(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 25",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 2.1 s; loops unwound 30 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [],
+      "output": "✓ jodagrid.Projection#reversal(int) satisfies `result == 1` on every input where code >= 0 && code < 25 (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 2.1 s; loops unwound 30 times with unwinding assertions)\n  not vacuous: reversal(code=0) reaches the calls\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (Bitwuzla)",
+        "seconds": 2.121601196,
+        "properties": 1,
+        "unwind": 30,
+        "max_array_length": 12,
+        "stage": null,
+        "native": {
+          "paths": 17,
+          "merges": 0,
+          "solver_calls": 860,
+          "solving_seconds": 0.00671276,
+          "gates_evaluated": 1380,
+          "evaluating_seconds": 0.001224697,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "word_operations": 915,
+          "finite_queries": {
+            "diagrams": 860,
+            "bitwuzla": 0
+          },
+          "variables": 8218,
+          "clauses": 1,
+          "seconds": 0.129798318,
+          "loading_seconds": 0.005347839,
+          "decoding_seconds": 0.001769326,
+          "encoding_seconds": 0.037061191,
+          "witness_seconds": 0.0,
+          "assumed": [
+            "the class initializer of org.joda.time.DateTimeUtils was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 db553a737602), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.DateTimeUtils$SystemMillisProvider, org.joda.time.DateTimeZone, org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+            "the class initializer of org.joda.time.DateTimeZone was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 900b54692c17), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+          ]
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 30.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 28.02,
+            "seconds": 0.13,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.005,
+              "lowering": 0.002,
+              "symbolic": 0.079,
+              "encoding": 0.037,
+              "solving": 0.007,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 8218,
+              "clauses": 1
+            }
+          },
+          {
+            "checker": "native",
+            "purpose": "probe",
+            "stage": null,
+            "budget_seconds": 27.878,
+            "seconds": 0.007,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.007,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 10,
+              "clauses": 1
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 2.163,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.137,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 2.025
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 25",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "the class initializer of org.joda.time.DateTimeUtils was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 db553a737602), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.DateTimeUtils$SystemMillisProvider, org.joda.time.DateTimeZone, org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+            "basis": "engine",
+            "id": "observed-initializer:org.joda.time.DateTimeUtils:db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b:2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+          },
+          {
+            "kind": "library",
+            "text": "the class initializer of org.joda.time.DateTimeZone was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 900b54692c17), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+            "basis": "engine",
+            "id": "observed-initializer:org.joda.time.DateTimeZone:900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d:6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 30,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (Bitwuzla)",
+          "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+          "fallback": null,
+          "sat": {
+            "solver": "Bitwuzla",
+            "version": "0.8.2",
+            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+            "configuration": [
+              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+              "sat-solver cadical",
+              "produce-models",
+              "otherwise Bitwuzla's default options",
+              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+              "the run's deadline through Bitwuzla's termination callback",
+              "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found reversal(code=0).",
+          "witness": "reversal(code=0)"
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 11124,
+    "sha256": "d7ee887a341a416282000b04a738875fcb48fef9f44c4d82147391147439c943"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

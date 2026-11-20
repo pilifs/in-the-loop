@@ -1,0 +1,310 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T195041Z-c32b933e",
+  "task": "mean-32-mutant",
+  "claimKey": "225347f592b923ea",
+  "revisions": [
+    "mutant"
+  ],
+  "startedAt": "2026-11-20T19:50:41.799417+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 90
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-193914-335-recheck-both-full-width-signed-means",
+  "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 4.2007
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 4.3596
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 4.3948
+    },
+    {
+      "stage": "candidate-recorded",
+      "elapsedSeconds": 4.4684
+    },
+    {
+      "stage": "witness-qualification",
+      "elapsedSeconds": 5.07
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 5.1742
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "mutant": {
+      "revision": "mutant:f06690fa3e874f65515e8fd338a74d636e2c792f+103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8",
+      "target": {
+        "class": "com.google.common.math.IntMath",
+        "method": "mean",
+        "descriptor": "(II)I",
+        "loadedFrom": "mutant/guava-33.4.8-jre.jar",
+        "classSha256": "5a04ab58d6f2472b51f376201ea071e4b8751a382b2df930a19be40c8a9783ed"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "ccde79b194e7dc4c2708415ed128e7e19481b96b359c6fa2ba3fb90db72acacf",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "mutant/guava-33.4.8-jre.jar",
+          "sha256": "d895693b47636f7c6a2992fd37e7bb80b0aeb40891991ae5836bae45e2330c64",
+          "role": "original",
+          "coordinates": null,
+          "origin": "constructed: lib/com.google.guava/guava-33.4.8-jre.jar with 7 class(es) recompiled from guava/src/com/google/common/math/IntMath.java, guava/src/com/google/common/math/LongMath.java at f06690fa3e874f65515e8fd338a74d636e2c792f, after the patch controls/overflow.patch (sha256 103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8)"
+        }
+      ]
+    }
+  },
+  "bindingId": "fcd070c6142ed0783f939430df7fb52221fa7835e60a7045f9dbdc3221ac90b3",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "prove",
+    "com.google.common.math.IntMath#mean(int, int)",
+    "--classes",
+    "prepare/mutant/mutant/guava-33.4.8-jre.jar",
+    "--assume",
+    "true",
+    "--assert",
+    "((long) result) == ((((long) x) + ((long) y)) >> 1)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "90",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147",
+    "commit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+    "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 8
+    },
+    "timeout": 90,
+    "scope": {
+      "label": "constructed-mutation",
+      "meaning": "a constructed mutation of a base revision: sensitivity evidence, never an upstream result",
+      "method": "com.google.common.math.IntMath#mean(II)I",
+      "revisions": {
+        "mutant": {
+          "commit": "mutant:f06690fa3e874f65515e8fd338a74d636e2c792f+103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8",
+          "loadedFrom": "mutant/guava-33.4.8-jre.jar",
+          "classSha256": "5a04ab58d6f2472b51f376201ea071e4b8751a382b2df930a19be40c8a9783ed",
+          "origin": "constructed: lib/com.google.guava/guava-33.4.8-jre.jar with 7 class(es) recompiled from guava/src/com/google/common/math/IntMath.java, guava/src/com/google/common/math/LongMath.java at f06690fa3e874f65515e8fd338a74d636e2c792f, after the patch controls/overflow.patch (sha256 103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8)",
+          "parameters": {
+            "names": [
+              "x",
+              "y"
+            ],
+            "recordedIn": "MethodParameters"
+          },
+          "mutant": {
+            "base": {
+              "revision": "release",
+              "identity": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+              "provenance": "published JARs, each by its recorded sha256: the bytes are the identity, the URL only where they are fetched from"
+            },
+            "patch": {
+              "path": "controls/overflow.patch",
+              "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+            },
+            "description": "Replace both released mean implementations with same-width addition and division by two."
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "mutant": [
+        {
+          "path": "mutant/guava-33.4.8-jre.jar",
+          "sha256": "d895693b47636f7c6a2992fd37e7bb80b0aeb40891991ae5836bae45e2330c64",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "com.google.common.math.IntMath#mean(II)I",
+    "entryBindings": {
+      "mutant": {
+        "entry": "com.google.common.math.IntMath#mean(II)I",
+        "classSha256": "5a04ab58d6f2472b51f376201ea071e4b8751a382b2df930a19be40c8a9783ed",
+        "loadedFrom": "mutant/guava-33.4.8-jre.jar",
+        "subject": "com.google.common.math.IntMath#mean(II)I",
+        "subjectClassSha256": "5a04ab58d6f2472b51f376201ea071e4b8751a382b2df930a19be40c8a9783ed"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "com.google.common.math.IntMath#mean(II)I",
+      "checkedEntry": "com.google.common.math.IntMath#mean(II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "true"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "((long) result) == ((((long) x) + ((long) y)) >> 1)"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "mutant": "mutant:f06690fa3e874f65515e8fd338a74d636e2c792f+103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "mutant": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+          "gaps",
+          "--target",
+          "com.google.common.math.IntMath#mean(int, int)",
+          "--classes",
+          "prepare/mutant/mutant/guava-33.4.8-jre.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-mutant.stdout",
+        "stderr": "verifier/probe-mutant.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0674,
+      "peakRssBytes": 81014784,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0674,
+    "peakRssBytes": 81014784,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.072,
+  "missing": [],
+  "replayEvidence": "replay.json",
+  "receipt": "receipts/mean-32-mutant/20261120T195041Z-c32b933e/result.json",
+  "preparedClaim": "0a842346635835e0",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T19:50:46.973712+00:00"
+}

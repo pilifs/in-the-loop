@@ -1,0 +1,576 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-193914-338-parent-verify-original-stream-and-pa",
+  "title": "338 parent verify original stream and page bytecode",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 12.5s, peak 119.6 MiB (estimated 8m00s, 2.0 GiB); 46 output file(s) changed; signals: example:task-as-expected×3",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-193914-338-parent-verify-original-stream-and-pa.json",
+    "sha256": "029b39ba3ac028239306ed4ab38ad69b1f3a46aaeacad5a1b69e497e716fb0d9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-193914-338-parent-verify-original-stream-and-pa",
+      "title": "338 parent verify original stream and page bytecode",
+      "description": "Run the strict native checker on the actual pinned application and runtime dependencies after extending Java initialization, sorting, streams and bounded byte operations. Preserve every raw outcome and independently qualify a concrete failure on the JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "338"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:39:14+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "8m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 338 --tasks bytes-parent,eof-parent,explicit-mark-parent --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/338-commons-io-bom-reset/receipts/bytes-parent",
+        "examples/338-commons-io-bom-reset/receipts/eof-parent",
+        "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent"
+      ]
+    }
+  },
+  "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+  "startedAt": "2026-11-20T19:50:47+00:00",
+  "finishedAt": "2026-11-20T19:51:03+00:00",
+  "wallSeconds": 16.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1224582,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 125411328,
+    "wallSeconds": 12.5,
+    "cpuSeconds": 14.3,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 338 --tasks bytes-parent,eof-parent,explicit-mark-parent --checker-seconds 90",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 12.452,
+      "cpuSeconds": 14.267,
+      "cpuThrottledSeconds": 0.24,
+      "peakMemoryBytes": 125411328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 6,
+        "bytes": 668,
+        "sha256": "f7c37d8ef0ad43e6b78db16a3135d05e57a7f10bdeb3353879c4f30c70cc47c9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 3
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "338-commons-io-bom-reset: task bytes-parent: refuted (completed; as expected), receipt receipts/bytes-parent/20261120T195050Z-e78d3bc3/result.json",
+          "groups": [
+            "338",
+            "bytes-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "338-commons-io-bom-reset: task eof-parent: established (completed; as expected), receipt receipts/eof-parent/20261120T195055Z-7a1660c7/result.json",
+          "groups": [
+            "338",
+            "eof-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "338-commons-io-bom-reset: task explicit-mark-parent: established (completed; as expected), receipt receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/result.json",
+          "groups": [
+            "338",
+            "explicit-mark-parent",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "338-commons-io-bom-reset: running task bytes-parent (target route)",
+        "338-commons-io-bom-reset: task bytes-parent: refuted (completed; as expected), receipt receipts/bytes-parent/20261120T195050Z-e78d3bc3/result.json",
+        "338-commons-io-bom-reset: running task eof-parent (target route)",
+        "338-commons-io-bom-reset: task eof-parent: established (completed; as expected), receipt receipts/eof-parent/20261120T195055Z-7a1660c7/result.json",
+        "338-commons-io-bom-reset: running task explicit-mark-parent (target route)",
+        "338-commons-io-bom-reset: task explicit-mark-parent: established (completed; as expected), receipt receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "74c95920914426c5a9f96b86560c9c0d4efb9f38d03f2b1d855b3c842d25b651",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/plan.json",
+      "change": "added",
+      "bytes": 6707,
+      "sha256": "c7fece6db60f1b9024d02c32ea2712bd8e0fad202bab0fc9dac67f0e87f12c19",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5770,
+      "sha256": "c1cf602ad5f58ad69fdebb64b9bd3aa222a187101f8b60d0a34723f54a5b8cdf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/controls.json",
+      "change": "added",
+      "bytes": 21215,
+      "sha256": "605619f6c2ad406ac415f5635843769e2503083fd4a415c490b189a2fe945bb5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/execution.json",
+      "change": "added",
+      "bytes": 45763,
+      "sha256": "8f219414df443ccc829b7664209398d30e41326ef61737dbcc348969b53b13ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "734c871e19871a4d3c931c824425191657f636b6c66372a2cedf271316486260",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 541,
+      "sha256": "c811f992dd822656eac325094a62e12bbc50259ede4d2612d402c935a67b6f28",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/verifier.json",
+      "change": "added",
+      "bytes": 21616,
+      "sha256": "16d99cb5c3bb1ca9f4460209f8f80e48a66531054b0305eca445f50b8744f58a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5726,
+      "sha256": "2111956b7772906ecc847b14e02a2061531a67184d336039eaac728758cbb1c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/result.json",
+      "change": "added",
+      "bytes": 17240,
+      "sha256": "15c591de33775b592342b67279cf60c44793ce7b53110271551db5255fe272ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/executions/20261120T195050Z-e78d3bc3/attempt.json",
+      "change": "added",
+      "bytes": 18448,
+      "sha256": "eb7708e62439ae8701d1a166dfe50cd1187ff1e4d27f6d67e2ee16ef45e5bef7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/executions/20261120T195050Z-e78d3bc3/checker.json",
+      "change": "added",
+      "bytes": 7086,
+      "sha256": "41d3045fa3387b2cdccbb536c2abf723c425db098232e6645e28485e3f126bf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/executions/20261120T195050Z-e78d3bc3/correspondence.json",
+      "change": "added",
+      "bytes": 1979,
+      "sha256": "51bdfd384f818c5e4b68012eca60b8f67981582a159b7d30d21c5635359f87bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/bytes-parent/executions/20261120T195050Z-e78d3bc3/replay.json",
+      "change": "added",
+      "bytes": 1998,
+      "sha256": "df46ceff7c599eb842edaec7e44efef5b6543934b9bd9d9ca2bebdf0e6b1a8d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "191a0c16412a5410c6da40740b3c4a9abe03ff66bb69c78075e40d5a368d8601",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/plan.json",
+      "change": "added",
+      "bytes": 6621,
+      "sha256": "d239561aec9a0043aa58e4f111f196c9f4eb81584c6b1de27113bdd3f920fde7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5770,
+      "sha256": "c1cf602ad5f58ad69fdebb64b9bd3aa222a187101f8b60d0a34723f54a5b8cdf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/controls.json",
+      "change": "added",
+      "bytes": 21211,
+      "sha256": "0711ee4177b8d8e4d1f1e995e2a9f3af1b5421a9c01b2f92f277e35da604cdf0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/execution.json",
+      "change": "added",
+      "bytes": 42658,
+      "sha256": "69f6abf8774f13c0905201c13ed03ac837ee5ecfcdb5f8afcc91bafe2888824b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "9c1bfd1e24410a3288ee7db7b5291816ad3e35ce962353281f3664d504da4486",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 275,
+      "sha256": "83a9d611fc002e8a39ee18188b9489b899116d8095e743f4c2b2c55ae1e07d1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/verifier.json",
+      "change": "added",
+      "bytes": 21065,
+      "sha256": "dbc4969de4e75414a137d28ff883cb648f90ad3ab56f0b7a57cd122e2207a11d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5250,
+      "sha256": "c58ae7bb414e76aa45b38a570155aa70bb4a26475070fc095866cd743f848589",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/result.json",
+      "change": "added",
+      "bytes": 16414,
+      "sha256": "64481528b857d4c5b65951b0b5946d3bc99033262e2b2a6f365f4417e7fc2aa9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/executions/20261120T195055Z-7a1660c7/attempt.json",
+      "change": "added",
+      "bytes": 18304,
+      "sha256": "5d7c5b41386901f2b9347bfd0609dea3c7234d00861563a8487bc37d8fe8d683",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/executions/20261120T195055Z-7a1660c7/checker.json",
+      "change": "added",
+      "bytes": 6582,
+      "sha256": "b011d5753a051234b088c073f46e7176f6a0aa22618d5e556c61fc8c9ecc22f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/eof-parent/executions/20261120T195055Z-7a1660c7/correspondence.json",
+      "change": "added",
+      "bytes": 1977,
+      "sha256": "8fbfdca2f61eb3e29e63ae9c0e04fe9c7169969e05f7158fca2c90f6f02b83f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "45c4b1dc0a0fce98ff9826f6a4def0dede5a85fcb4dd73b34a8f8670201ee8e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/plan.json",
+      "change": "added",
+      "bytes": 6821,
+      "sha256": "d13f0d8bdc11fd9a00dcb7a91699f8c5a695697fe6299b7f42d8319f974f9481",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5770,
+      "sha256": "c1cf602ad5f58ad69fdebb64b9bd3aa222a187101f8b60d0a34723f54a5b8cdf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/controls.json",
+      "change": "added",
+      "bytes": 21231,
+      "sha256": "72ddd226fd034b4149b747369bd44ce1ff4eb3b5afee916ca5f4ae29c4038291",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/execution.json",
+      "change": "added",
+      "bytes": 42781,
+      "sha256": "3f0ada7c2d87d334e71c7c0c1c18153c89665fd19a58158e8a952fd620d80f5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "022c0bbecc06c65aea2a6866b71b67554058c6c50e45883178e520f531844e34",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 296,
+      "sha256": "ca43c96367bae1a7b86c3fc4c4561eb9824afec46fff5e4d6268ab1b9fa20508",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/verifier.json",
+      "change": "added",
+      "bytes": 21208,
+      "sha256": "f0b99cabebce074692c3deab72c19df0ef05d0067786357df8d8bfa88a745f3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5312,
+      "sha256": "d5a94597904fab024ae5b2b1d043266b535dceb508542a0eb4f46980d8585bd2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/result.json",
+      "change": "added",
+      "bytes": 16624,
+      "sha256": "57016e096da054f1262da213b7219d339399969aafe7c6b2871174bfd3c767cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/executions/20261120T195058Z-9cbb5e62/attempt.json",
+      "change": "added",
+      "bytes": 18376,
+      "sha256": "512c6ec69a18484ded16603567a36dd3f8230ac21eab11edf1ce3026bbad9d6d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/executions/20261120T195058Z-9cbb5e62/checker.json",
+      "change": "added",
+      "bytes": 6663,
+      "sha256": "f5ba6ceada2130d0facbb4ee7071f8ce7a3360ec726294ea1820c539a4f1337b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/executions/20261120T195058Z-9cbb5e62/correspondence.json",
+      "change": "added",
+      "bytes": 1979,
+      "sha256": "51bdfd384f818c5e4b68012eca60b8f67981582a159b7d30d21c5635359f87bc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:55:01+00:00",
+    "applied": [
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/completion.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/plan.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/control-parent-jdk21.stderr",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/control-parent-jdk21.stdout",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/controls.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/execution.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/streams.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/verifier-output.txt",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/verifier.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/verifier.stderr",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/records/verifier.stdout",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/20261120T195050Z-e78d3bc3/result.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/executions/20261120T195050Z-e78d3bc3/attempt.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/executions/20261120T195050Z-e78d3bc3/checker.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/executions/20261120T195050Z-e78d3bc3/correspondence.json",
+      "examples/338-commons-io-bom-reset/receipts/bytes-parent/executions/20261120T195050Z-e78d3bc3/replay.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/completion.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/plan.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/control-parent-jdk21.stderr",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/control-parent-jdk21.stdout",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/controls.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/execution.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/streams.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/verifier-output.txt",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/verifier.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/verifier.stderr",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/records/verifier.stdout",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/20261120T195055Z-7a1660c7/result.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/executions/20261120T195055Z-7a1660c7/attempt.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/executions/20261120T195055Z-7a1660c7/checker.json",
+      "examples/338-commons-io-bom-reset/receipts/eof-parent/executions/20261120T195055Z-7a1660c7/correspondence.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/completion.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/plan.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/control-parent-jdk21.stderr",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/control-parent-jdk21.stdout",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/controls.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/execution.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/streams.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/verifier-output.txt",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/verifier.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/verifier.stderr",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/records/verifier.stdout",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/result.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/executions/20261120T195058Z-9cbb5e62/attempt.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/executions/20261120T195058Z-9cbb5e62/checker.json",
+      "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent/executions/20261120T195058Z-9cbb5e62/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

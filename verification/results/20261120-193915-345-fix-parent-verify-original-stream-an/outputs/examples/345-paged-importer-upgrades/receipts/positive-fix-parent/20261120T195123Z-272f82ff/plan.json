@@ -1,0 +1,380 @@
+{
+  "plan": {
+    "example": "345",
+    "task": "positive-fix-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+    "revisions": [
+      "fix-parent"
+    ],
+    "claim": {
+      "task": "positive-fix-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "file": "claims/positive.json",
+      "sha256": "1bbc0dc0a8b8c152c813db4f9c96f4f000d3480f509609b2bc142509b41f6a66",
+      "property": "positive",
+      "claimKind": "property",
+      "statement": "Without preview and with start one, the complete numbered page is correct.",
+      "assume": "code >= 0 && code < 96 && (code & 6) == 0",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/importer/ImportCases.java",
+          "sha256": "2043f0f8fe6c4eaf0530c4e61daff47e1a3fb9d75cd7f1828f5eccb2c1009a18"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "adb9160876b33fc23376fe4c171e138c5ef8a9c90b335c9cab559d325ba248e0"
+        }
+      ],
+      "adapter": {
+        "entry": "importer.Projection#page(I)I",
+        "mapping": "Bits 4 through 0 select BOM, one-byte reads, preview/reset, start minus one and cap minus one. The high bits select one of three literal documents. A fresh input stream is used for each observer.",
+        "cases": 96,
+        "correspondence": "finite-oracle"
+      },
+      "key": "02d73a91c1961a1f"
+    },
+    "prerequisites": [
+      "replay-csv"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix-parent",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-fix",
+          "csv-parent",
+          "codec"
+        ],
+        "libraries": {
+          "csv-fix": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+            "parent": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701"
+          },
+          "io-api": {
+            "coordinates": "commons-io:commons-io:2.22.0",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+          },
+          "codec": {
+            "coordinates": "commons-codec:commons-codec:1.22.0",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+          },
+          "io-fix": {
+            "repository": "https://github.com/apache/commons-io",
+            "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+            "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+            "class": "org.apache.commons.io.input.BOMInputStream",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
+          },
+          "csv-parent": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe"
+          }
+        },
+        "adapters": [
+          "adapter/importer/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/positive-fix-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193915-345-fix-parent-verify-original-stream-an/examples/345-paged-importer-upgrades",
+    "network": true
+  },
+  "inputs": {
+    "example": "345",
+    "task": "positive-fix-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+    "revisions": [
+      "fix-parent"
+    ],
+    "claim": {
+      "task": "positive-fix-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "file": "claims/positive.json",
+      "sha256": "1bbc0dc0a8b8c152c813db4f9c96f4f000d3480f509609b2bc142509b41f6a66",
+      "property": "positive",
+      "claimKind": "property",
+      "statement": "Without preview and with start one, the complete numbered page is correct.",
+      "assume": "code >= 0 && code < 96 && (code & 6) == 0",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/importer/ImportCases.java",
+          "sha256": "2043f0f8fe6c4eaf0530c4e61daff47e1a3fb9d75cd7f1828f5eccb2c1009a18"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "adb9160876b33fc23376fe4c171e138c5ef8a9c90b335c9cab559d325ba248e0"
+        }
+      ],
+      "adapter": {
+        "entry": "importer.Projection#page(I)I",
+        "mapping": "Bits 4 through 0 select BOM, one-byte reads, preview/reset, start minus one and cap minus one. The high bits select one of three literal documents. A fresh input stream is used for each observer.",
+        "cases": 96,
+        "correspondence": "finite-oracle"
+      },
+      "key": "02d73a91c1961a1f"
+    },
+    "artifacts": [
+      {
+        "revision": "fix-parent",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-fix",
+          "csv-parent",
+          "codec"
+        ],
+        "libraries": {
+          "csv-fix": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+            "parent": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701"
+          },
+          "io-api": {
+            "coordinates": "commons-io:commons-io:2.22.0",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+          },
+          "codec": {
+            "coordinates": "commons-codec:commons-codec:1.22.0",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+          },
+          "io-fix": {
+            "repository": "https://github.com/apache/commons-io",
+            "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+            "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+            "class": "org.apache.commons.io.input.BOMInputStream",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
+          },
+          "csv-parent": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe"
+          }
+        },
+        "adapters": [
+          "adapter/importer/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/importer/Projection.java",
+        "sha256": "c269a10eb814e3c14a72e28de2d2ff18bfb5e6cde8c81912cf578cb54744a7c0"
+      }
+    ]
+  },
+  "key": "142a8928a4685d8399cbc1801758f003ba2ba43cd64ff3040d95dfde071ef4cb"
+}

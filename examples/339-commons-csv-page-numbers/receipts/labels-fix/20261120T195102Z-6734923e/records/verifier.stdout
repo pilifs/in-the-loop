@@ -1,0 +1,173 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "pagination.Projection#labels(int)",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 24",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 96 times with unwinding assertions",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ pagination.Projection#labels(int) satisfies `result == 1` on every input where code >= 0 && code < 24 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: labels(code=20) reaches the calls\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.126393202,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 96,
+      "stage": null,
+      "native": {
+        "paths": 14,
+        "merges": 0,
+        "solver_calls": 35,
+        "solving_seconds": 0.008015595,
+        "gates_evaluated": 2475,
+        "evaluating_seconds": 0.000091932,
+        "divisions": 1,
+        "divisions_built": 1,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 4948,
+        "clauses": 17028,
+        "seconds": 0.119612595,
+        "loading_seconds": 0.004373241,
+        "decoding_seconds": 0.000760705,
+        "encoding_seconds": 0.047460875,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 90.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 90.0,
+          "seconds": 0.12,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.004,
+            "lowering": 0.001,
+            "symbolic": 0.059,
+            "encoding": 0.047,
+            "solving": 0.008,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 4948,
+            "clauses": 17028
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 89.874,
+          "seconds": 0.013,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.012,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 181,
+            "clauses": 504
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.153,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.133,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.019
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 24",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found labels(code=20).",
+        "witness": "labels(code=20)"
+      }
+    }
+  }
+]

@@ -1,0 +1,41 @@
+[
+  {
+    "claimKey": "4502d9700b57c016",
+    "entry": "tiling.Floor#exact(I)I",
+    "inputs": [
+      {
+        "name": "n",
+        "type": "int",
+        "value": 2
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "one-tile": {
+        "entryClassSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee",
+        "classpath": [
+          "e6abf080d17ede29468a0761c32972e02a6aeebe8e8f42815495d092ec7ed960"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint n = 2;\nif (!(n >= 0 && n <= 18)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = tiling.Floor.exact(n); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == tiling.Oracle.exact(n)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          1,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

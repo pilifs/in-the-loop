@@ -1,0 +1,714 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-193915-345-fix-parent-verify-original-stream-an",
+  "title": "345 fix-parent verify original stream and page bytecode",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 16.9s, peak 145.5 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-193915-345-fix-parent-verify-original-stream-an.json",
+    "sha256": "312a5e70ba38164040d4fe260112664fd0e09a57be2ee97e27172b087fc27782",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-193915-345-fix-parent-verify-original-stream-an",
+      "title": "345 fix-parent verify original stream and page bytecode",
+      "description": "Run the strict native checker on the actual pinned application and runtime dependencies after extending Java initialization, sorting, streams and bounded byte operations. Preserve every raw outcome and independently qualify a concrete failure on the JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "345"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:39:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "8m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 345 --tasks bytes-fix-parent,count-fix-parent,page-fix-parent,positive-fix-parent --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent",
+        "examples/345-paged-importer-upgrades/receipts/count-fix-parent",
+        "examples/345-paged-importer-upgrades/receipts/page-fix-parent",
+        "examples/345-paged-importer-upgrades/receipts/positive-fix-parent"
+      ]
+    }
+  },
+  "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+  "startedAt": "2026-11-20T19:51:03+00:00",
+  "finishedAt": "2026-11-20T19:51:24+00:00",
+  "wallSeconds": 21.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1224582,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 152596480,
+    "wallSeconds": 16.9,
+    "cpuSeconds": 21.8,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 345 --tasks bytes-fix-parent,count-fix-parent,page-fix-parent,positive-fix-parent --checker-seconds 90",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 16.935,
+      "cpuSeconds": 21.751,
+      "cpuThrottledSeconds": 0.84,
+      "peakMemoryBytes": 152596480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 8,
+        "bytes": 993,
+        "sha256": "953555cc3c41674eaa2072fd00561455bc7e0812378b6d8e4f5fe74bc8f164dd",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1,
+        "example:task-unexpected": 3
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "345-paged-importer-upgrades: task bytes-fix-parent: established (completed; as expected), receipt receipts/bytes-fix-parent/20261120T195107Z-e89ed940/result.json",
+          "groups": [
+            "345",
+            "bytes-fix-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "345-paged-importer-upgrades: task count-fix-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/count-fix-parent/20261120T195116Z-db0be248/result.json",
+          "groups": [
+            "345",
+            "count-fix-parent",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "345-paged-importer-upgrades: task page-fix-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/page-fix-parent/20261120T195121Z-58d9ecaf/result.json",
+          "groups": [
+            "345",
+            "page-fix-parent",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "345-paged-importer-upgrades: task positive-fix-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/positive-fix-parent/20261120T195123Z-272f82ff/result.json",
+          "groups": [
+            "345",
+            "positive-fix-parent",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "345-paged-importer-upgrades: running task bytes-fix-parent (target route)",
+        "345-paged-importer-upgrades: task bytes-fix-parent: established (completed; as expected), receipt receipts/bytes-fix-parent/20261120T195107Z-e89ed940/result.json",
+        "345-paged-importer-upgrades: running task count-fix-parent (target route)",
+        "345-paged-importer-upgrades: task count-fix-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/count-fix-parent/20261120T195116Z-db0be248/result.json",
+        "345-paged-importer-upgrades: running task page-fix-parent (target route)",
+        "345-paged-importer-upgrades: task page-fix-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/page-fix-parent/20261120T195121Z-58d9ecaf/result.json",
+        "345-paged-importer-upgrades: running task positive-fix-parent (target route)",
+        "345-paged-importer-upgrades: task positive-fix-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/positive-fix-parent/20261120T195123Z-272f82ff/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d11de30a752dd2ca69302c3b7b4b151ea532d3c55f7add9128d503464ffbc761",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/plan.json",
+      "change": "added",
+      "bytes": 12151,
+      "sha256": "8e0540bbc6061dd3c11937bf3887bb80e06e43fe08228b372698a4a7a482bef1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/control-fix-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/control-fix-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 21838,
+      "sha256": "46c2df2dc941b84e7968701776f45cdf1f85e3a3d9b2225b0092010e08eb62ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/controls.json",
+      "change": "added",
+      "bytes": 74643,
+      "sha256": "8b990afa45a7c7dd2a8641e3e53689237579ee3529022bfcc8a951361bb91117",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/execution.json",
+      "change": "added",
+      "bytes": 99169,
+      "sha256": "8bab191f8c8a409047f8d9bdc964791c1a290840e946b19cf24ce89514e573fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/streams.json",
+      "change": "added",
+      "bytes": 2003,
+      "sha256": "eed890abe0ac02c28a1fceea65824405900b1e1625c9d12d922488ca7dbbf98d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "9b5ac856d3ae9773a7841e3f9bf808975ac162ba604d8fa47cafbe765f48d1d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/verifier.json",
+      "change": "added",
+      "bytes": 24032,
+      "sha256": "596bf674a2fe32ff5adc2c136c3fc93cdf968337361ed54882781a43b2782f01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5265,
+      "sha256": "f44080562abe89aa01a576b72fe86eef2258d03e5d3cb1b73f9fc9cd5f34720e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/result.json",
+      "change": "added",
+      "bytes": 17563,
+      "sha256": "caba206b793fa94e589ad6eb2869050dab4301edcb445afb31aba59831934e36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/executions/20261120T195107Z-e89ed940/attempt.json",
+      "change": "added",
+      "bytes": 21876,
+      "sha256": "8a9fddc4c23c8e1a69f7aab73f542d0835c82dedc1550ffbef6655ecf286dbc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/executions/20261120T195107Z-e89ed940/checker.json",
+      "change": "added",
+      "bytes": 6795,
+      "sha256": "b8949f900b4aac5e4cc5663fb4db3ad4e2b427426a2180d71b5911e91779a6f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/executions/20261120T195107Z-e89ed940/correspondence.json",
+      "change": "added",
+      "bytes": 1281,
+      "sha256": "538da4018b805020abb711fafea540af767ec82fcc0ae2a6cbec72fae5fcb7de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c8bbfc01721692dd494e88a77fb438a33e9fbba8cf3b8d19d0949bf3384a808c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/plan.json",
+      "change": "added",
+      "bytes": 12125,
+      "sha256": "de16fa8b83c7177e0f4fffe0773be106090f296250cd4f6643007b4e01893340",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/control-fix-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/control-fix-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 21838,
+      "sha256": "46c2df2dc941b84e7968701776f45cdf1f85e3a3d9b2225b0092010e08eb62ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/controls.json",
+      "change": "added",
+      "bytes": 74643,
+      "sha256": "03082c7715112202b835056a69a83083f18c437b1f4b18e08faf0135e2389501",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/execution.json",
+      "change": "added",
+      "bytes": 123981,
+      "sha256": "e78112b095a78dbc8bd25c8a225ac09cd7e48f808e854e20fc3e315d16ce2fd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/streams.json",
+      "change": "added",
+      "bytes": 2003,
+      "sha256": "c02cfe107a86aba579aba426131ec730e305cc49f8c0fd6d8e591b3d89deaf1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 658,
+      "sha256": "0a4e6550d339b0e16808044b1c17b7c0ea3b7abbfe2157fbf8aff8b2b273c855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/verifier.json",
+      "change": "added",
+      "bytes": 47904,
+      "sha256": "20407b915df20b585655b9145e6879d8e1d244b9fd2434042795bb34a677983c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6640,
+      "sha256": "e225235a02855f69ba7ab49157b135e42a53c56c50f232d58c696e8edc35bc17",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/result.json",
+      "change": "added",
+      "bytes": 16013,
+      "sha256": "bed889957ad2a8e399195f8c16fc4aa6cc91664d5388ae593d40901308b913f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/executions/20261120T195116Z-db0be248/attempt.json",
+      "change": "added",
+      "bytes": 44091,
+      "sha256": "a66f4f2577f3384895abac4dede714dfed55064e6031092c5bee1f0f3ea63aa6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/executions/20261120T195116Z-db0be248/checker.json",
+      "change": "added",
+      "bytes": 8152,
+      "sha256": "b598530d3a31e67f5a067c77a124ba9b6255bd4dd6e8adf760f1fff7ced06baa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/count-fix-parent/executions/20261120T195116Z-db0be248/correspondence.json",
+      "change": "added",
+      "bytes": 1292,
+      "sha256": "3c723f8f726e19a7d28d64166cc6e114b9366d97bf34a7af9cddc86782403018",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "14104a60feeb7b4bbc79f89e7eb698c04c2f63904914278be0d2af2a70b0ebba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/plan.json",
+      "change": "added",
+      "bytes": 12176,
+      "sha256": "7759aad60a7f3d24824f468c41fd0b03fbc99633e96846a7a691e2ed9852fb1d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/control-fix-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/control-fix-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 21838,
+      "sha256": "46c2df2dc941b84e7968701776f45cdf1f85e3a3d9b2225b0092010e08eb62ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/controls.json",
+      "change": "added",
+      "bytes": 74641,
+      "sha256": "038d2ca7caced54a9c0bbe611bba4449e8dacd77ed9d3f5b5568293b012b7164",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/execution.json",
+      "change": "added",
+      "bytes": 124064,
+      "sha256": "a3ff9bd9ec8c0fb707dcffca0a0711ff972c89ed6d8377b2a4065823e46e5afa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/streams.json",
+      "change": "added",
+      "bytes": 2003,
+      "sha256": "bbcffb9274a2971f54bbd133df554cf55c5ec69775945d9faf4e9954f2d8c8d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 657,
+      "sha256": "bd6b0f629f6095ab2acfcb899509ff5de5028746d7274b837804699349cc598f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/verifier.json",
+      "change": "added",
+      "bytes": 47981,
+      "sha256": "16d73c3d11388ea0fe313a9016e26999cc3f46bf29451c50fb0bb9e38e9378f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6635,
+      "sha256": "8ad251eaba5e99fcfb27828017c37fb31241f0d1102e82ae4b0f5d64d7ffc671",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/result.json",
+      "change": "added",
+      "bytes": 16034,
+      "sha256": "5cdc28be9214729b3a3df55b77c51920d9184882b517736707bbbb3072fe6828",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/executions/20261120T195121Z-58d9ecaf/attempt.json",
+      "change": "added",
+      "bytes": 44170,
+      "sha256": "c539b315a703b49b793d5e7e8adf2a90762f3e739f03127ccb6ec8cf2ba0ddf6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/executions/20261120T195121Z-58d9ecaf/checker.json",
+      "change": "added",
+      "bytes": 8145,
+      "sha256": "45031f5a59c46c161dabdd24c85b5f8aaf6e21e3c2f078c02b7c479795b0b108",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/page-fix-parent/executions/20261120T195121Z-58d9ecaf/correspondence.json",
+      "change": "added",
+      "bytes": 1291,
+      "sha256": "357b99754052fbf540dc667e435dcc324a2e94a26fe900f1cf7b8ec12f343c2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2a16587e37b48235783e719c5e3266f881cb7bfca00d13f7bb7788c395226dfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/plan.json",
+      "change": "added",
+      "bytes": 12232,
+      "sha256": "124c8326d3dab0c75db46174c8ea0e27123ad89a9532a65d8a39887cf94b6dfa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/control-fix-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/control-fix-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 21838,
+      "sha256": "46c2df2dc941b84e7968701776f45cdf1f85e3a3d9b2225b0092010e08eb62ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/controls.json",
+      "change": "added",
+      "bytes": 74649,
+      "sha256": "6a7860b2d483abe18f4fabab640b5b767801a6639078f9a3963a9cb2d6c3f9ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/execution.json",
+      "change": "added",
+      "bytes": 124143,
+      "sha256": "a76f1c1c0bb1abd891610d352eba96ae2f53c41ce640399e2e590f1f7ed0f406",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/streams.json",
+      "change": "added",
+      "bytes": 2003,
+      "sha256": "621fc0bbfe1a69cc6a368837ccd9727bdd2860177f7fa56fc9692c8cda0b8427",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 657,
+      "sha256": "bd6b0f629f6095ab2acfcb899509ff5de5028746d7274b837804699349cc598f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/verifier.json",
+      "change": "added",
+      "bytes": 48068,
+      "sha256": "6ca3fb12aa627b708be3704e4c67681fb9e7618b0ee752525356d9b61201c214",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6671,
+      "sha256": "ba80f45a4b3bd05ceaddffb41529c38810b6e95257408bc75fdfb78234a94ed1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/result.json",
+      "change": "added",
+      "bytes": 16144,
+      "sha256": "97137912ab5ecc172e358eae1c4a1f594010e3f4b14d9b644785310e36711650",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/executions/20261120T195123Z-272f82ff/attempt.json",
+      "change": "added",
+      "bytes": 44217,
+      "sha256": "c4908955487fed684acc805ac6865f2b65fbdab0366b4d3bd6d26ba0d2a96c48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/executions/20261120T195123Z-272f82ff/checker.json",
+      "change": "added",
+      "bytes": 8201,
+      "sha256": "e6eeaa1673e6d241ff44ef3f9beb5d80826f2865b6cc1e9bd480e843b30660f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/executions/20261120T195123Z-272f82ff/correspondence.json",
+      "change": "added",
+      "bytes": 1291,
+      "sha256": "357b99754052fbf540dc667e435dcc324a2e94a26fe900f1cf7b8ec12f343c2f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:55:01+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/completion.json",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/plan.json",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/control-fix-parent-jdk21.stderr",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/control-fix-parent-jdk21.stdout",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/controls.json",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/execution.json",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/streams.json",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/verifier-output.txt",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/verifier.json",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/verifier.stderr",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/records/verifier.stdout",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/20261120T195107Z-e89ed940/result.json",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/executions/20261120T195107Z-e89ed940/attempt.json",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/executions/20261120T195107Z-e89ed940/checker.json",
+      "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent/executions/20261120T195107Z-e89ed940/correspondence.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/completion.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/plan.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/control-fix-parent-jdk21.stderr",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/control-fix-parent-jdk21.stdout",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/controls.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/execution.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/streams.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/verifier-output.txt",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/verifier.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/verifier.stderr",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/records/verifier.stdout",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/20261120T195116Z-db0be248/result.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/executions/20261120T195116Z-db0be248/attempt.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/executions/20261120T195116Z-db0be248/checker.json",
+      "examples/345-paged-importer-upgrades/receipts/count-fix-parent/executions/20261120T195116Z-db0be248/correspondence.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/completion.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/plan.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/control-fix-parent-jdk21.stderr",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/control-fix-parent-jdk21.stdout",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/controls.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/execution.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/streams.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/verifier-output.txt",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/verifier.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/verifier.stderr",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/records/verifier.stdout",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/20261120T195121Z-58d9ecaf/result.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/executions/20261120T195121Z-58d9ecaf/attempt.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/executions/20261120T195121Z-58d9ecaf/checker.json",
+      "examples/345-paged-importer-upgrades/receipts/page-fix-parent/executions/20261120T195121Z-58d9ecaf/correspondence.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/completion.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/plan.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/control-fix-parent-jdk21.stderr",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/control-fix-parent-jdk21.stdout",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/controls.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/execution.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/streams.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/verifier-output.txt",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/verifier.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/verifier.stderr",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/records/verifier.stdout",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/20261120T195123Z-272f82ff/result.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/executions/20261120T195123Z-272f82ff/attempt.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/executions/20261120T195123Z-272f82ff/checker.json",
+      "examples/345-paged-importer-upgrades/receipts/positive-fix-parent/executions/20261120T195123Z-272f82ff/correspondence.json"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 1421024,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193915-345-fix-parent-verify-original-stream-an"
+}

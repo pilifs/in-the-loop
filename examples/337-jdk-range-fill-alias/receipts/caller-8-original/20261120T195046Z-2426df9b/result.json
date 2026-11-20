@@ -1,0 +1,586 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "dd3bc8876d3ac7dd",
+    "format": 1,
+    "example": "337",
+    "statement": {
+      "approach": "target",
+      "task": "caller-8-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#observe([I[IIIII)I",
+      "revisions": [
+        "original"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "caller-8-original",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "fill.Range#observe([I[IIIII)I",
+        "file": "claims/caller-8.json",
+        "sha256": "97dcf97f8fc68a2be602041148de6b82b446ae18eb61eb384fb63a27dbcab26e",
+        "property": "caller-8",
+        "claimKind": "property",
+        "statement": "The caller reads the entry value of its second root except for cells selected by an aliased write range.",
+        "assume": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+        "assert": "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [
+          "a,other"
+        ],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 11,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 11,
+          "maxArrayLength": 8
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/fill/FillCases.java",
+            "sha256": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653"
+          }
+        ],
+        "key": "fe9eb08c6e619671"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "954c92b4e21841b84c91dbbba67ff4a1d214d83c143812b073e35db83ff281ed",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "caller-8-original",
+      "sidecar": "3c3994cb95291b7ae6f80aa84b34f87e63258ef696ea2d2244fb9eb450a4c4fb",
+      "revisions": {
+        "original": "91df891d2521ea99c64503fd9449f4daf520da53"
+      },
+      "dependencies": [
+        {
+          "revision": "original",
+          "position": 0,
+          "role": "driver",
+          "sha256": "614c229ff9f20e7fbe91ff17fec6bab2fed8679e01607385e2febb639e45eba5"
+        },
+        {
+          "revision": "original",
+          "position": 1,
+          "role": "original",
+          "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/caller-8.json": "97dcf97f8fc68a2be602041148de6b82b446ae18eb61eb384fb63a27dbcab26e",
+        "controls/oracle.py": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653",
+        "driver/fill/FillCases.java": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+      },
+      "claimKey": "fe9eb08c6e619671"
+    }
+  },
+  "attempt": {
+    "id": "20261120T195046Z-2426df9b",
+    "claim": "dd3bc8876d3ac7dd",
+    "startedAt": "2026-11-20T19:50:46+00:00",
+    "seconds": 1.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "fill.Range#observe(int[], int[], int, int, int, int)",
+      "--classes",
+      "prepare/original/original.jar",
+      "--assume",
+      "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+      "--assert",
+      "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+      "--may-alias",
+      "a,other",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "11",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "f0b437da04b1b10096c166912f6cbe7e275b89cc4629107f3546da72aefbb449",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-193914-337-range-fill-after-linking-arrays-at-8",
+      "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193914-337-range-fill-after-linking-arrays-at-8"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control original on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-original-jdk21.stdout",
+        "stderr": "records/control-original-jdk21.stderr"
+      },
+      {
+        "name": "verifier original on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.095,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 11,
+      "maxArrayLength": 8,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "dd3bc8876d3ac7dd",
+    "attempt": "20261120T195046Z-2426df9b",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+          "assume": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+          "verdict": "verified",
+          "domain": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int × k: int; a and other may be the same array",
+          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int × k: int; a and other may be the same array in 1.1 s; loops unwound 11 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 1.063,
+            "properties": 1,
+            "unwind": 11,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 1.06,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.043,
+                  "encoding": 0.052,
+                  "solving": 0.964,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 17321,
+                  "clauses": 59730
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 118.937,
+                "seconds": 0.007,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.005,
+                  "encoding": 0.001,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 3128,
+                  "clauses": 8370
+                }
+              }
+            ],
+            "native": {
+              "paths": 186,
+              "merges": 0,
+              "solverCalls": 814,
+              "solvingSeconds": 0.964238791,
+              "gatesEvaluated": 153259,
+              "evaluatingSeconds": 0.004930956,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 17321,
+              "clauses": 59730,
+              "seconds": 1.059817664,
+              "loadingSeconds": 0.000383869,
+              "decodingSeconds": 0.000159307,
+              "encodingSeconds": 0.052405913,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "a",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 8
+                },
+                {
+                  "name": "other",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 8
+                },
+                {
+                  "name": "from",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "to",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "value",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "k",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": true,
+              "mayAlias": [
+                [
+                  "a",
+                  "other"
+                ]
+              ],
+              "text": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int × k: int; a and other may be the same array"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 11,
+              "maxArrayLength": 8,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found observe(a=[20, 20, 20, 20, 20, 20, 20, 20], other=[20], from=4, to=4, value=20, k=0).",
+              "witness": "observe(a=[20, 20, 20, 20, 20, 20, 20, 20], other=[20], from=4, to=4, value=20, k=0)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"original\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int × k: int; a and other may be the same array in 1.1 s; loops unwound 11 times with unwinding assertions",
+    "problem": null,
+    "domain": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int × k: int; a and other may be the same array",
+    "replay": null,
+    "property": {
+      "assert": "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+      "assume": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "a",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "maxLength": 8
+          },
+          {
+            "name": "other",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "maxLength": 8
+          },
+          {
+            "name": "from",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "to",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "value",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "k",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": true,
+        "mayAlias": [
+          [
+            "a",
+            "other"
+          ]
+        ],
+        "text": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int × k: int; a and other may be the same array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 11,
+        "maxArrayLength": 8,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found observe(a=[20, 20, 20, 20, 20, 20, 20, 20], other=[20], from=4, to=4, value=20, k=0).",
+        "witness": "observe(a=[20, 20, 20, 20, 20, 20, 20, 20], other=[20], from=4, to=4, value=20, k=0)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "32a753f8220a31d46366077f98a4b3fa40a842bcc96889be8b0d61dd32b7c726",
+        "bytes": 59337
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "2a4300f4485a26673ae8a88a55335f71eaca6a9b6e440a365531e011ad23f739",
+        "bytes": 634
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "75cb6fdd34a00cc28da9528a3e8411fc4b0641feda015c8554cf64211a570df7",
+        "bytes": 1987
+      },
+      {
+        "path": "records/control-original-jdk21.stdout",
+        "sha256": "f0532337fe3b43758e9a746a13ddcf6b19b82717735cbac46797f9e407de9f01",
+        "bytes": 12008
+      },
+      {
+        "path": "records/control-original-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "cac0a28143f3b86f41d4e478b945641321e63c3d406292193dad398fca3fe35c",
+        "bytes": 43769
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "461db85e9667af47d8324ef3c2e388b61cb00af63403cab476f49eaaa5a31ff8",
+        "bytes": 7281
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "3dbc8c0243554b4f9e561cd10fb4224540aff3b8e1ca1fe7ebb8f1db564cef0e",
+        "bytes": 15457
+      }
+    ]
+  }
+}

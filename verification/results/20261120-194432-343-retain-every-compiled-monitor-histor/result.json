@@ -1,0 +1,217 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-194432-343-retain-every-compiled-monitor-histor",
+  "title": "343 retain every compiled monitor history",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 7.2s, peak 120.4 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-194432-343-retain-every-compiled-monitor-histor.json",
+    "sha256": "92cd41348fed094d79bf5388ec05d3c06574b8762e5421a64d48f4d65417a99c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-194432-343-retain-every-compiled-monitor-histor",
+      "title": "343 retain every compiled monitor history",
+      "description": "Enumerate the serial and overlapping compiled method executions, then require real JVM replays consistent with each round. Preserve individual runs, the winning caller and the final state.",
+      "kind": "real-world",
+      "capabilities": [
+        "native:monitor-histories",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "343"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:44:32+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "reservations-whole",
+          "run": "python3 examples/tools/build.py 343 --monitor-histories reservations-whole",
+          "cwd": "."
+        },
+        {
+          "name": "reservations-split",
+          "run": "python3 examples/tools/build.py 343 --monitor-histories reservations-split",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/343-synchronized-map-reservations/records/monitor-histories/reservations-whole",
+        "examples/343-synchronized-map-reservations/records/monitor-histories/reservations-split"
+      ]
+    }
+  },
+  "sourceCommit": "c122a440b61a332db9bcc4512f938fb2c2792fd4",
+  "startedAt": "2026-11-20T19:51:19+00:00",
+  "finishedAt": "2026-11-20T19:51:29+00:00",
+  "wallSeconds": 10.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1224582,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 126201856,
+    "wallSeconds": 7.2,
+    "cpuSeconds": 12.0,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "reservations-whole",
+      "run": "python3 examples/tools/build.py 343 --monitor-histories reservations-whole",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 3.812,
+      "cpuSeconds": 6.298,
+      "cpuThrottledSeconds": 0.46,
+      "peakMemoryBytes": 126201856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-reservations-whole.log",
+        "lines": 1,
+        "bytes": 206,
+        "sha256": "94264cb13e36a654bb780c43f046cfe53133093bf696832896787e6fe9848b75",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "reservations-whole established {'same-ab': (55, 54, 1), 'same-ba': (55, 54, 1), 'same-overlap': (949, 1644, 10), 'distinct-ab': (65, 64, 1), 'distinct-ba': (65, 64, 1), 'distinct-overlap': (1087, 1884, 6)}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "reservations-split",
+      "run": "python3 examples/tools/build.py 343 --monitor-histories reservations-split",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 3.413,
+      "cpuSeconds": 5.682,
+      "cpuThrottledSeconds": 0.397,
+      "peakMemoryBytes": 110542848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-reservations-split.log",
+        "lines": 1,
+        "bytes": 203,
+        "sha256": "dc37c148937c59db1edd02ab178bea94bfea092645441ee3527ae1d10eef002c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "reservations-split refuted {'same-ab': (43, 42, 1), 'same-ba': (43, 42, 1), 'same-overlap': (1673, 3058, 18), 'distinct-ab': (55, 54, 1), 'distinct-ba': (55, 54, 1), 'distinct-overlap': (1433, 2662, 6)}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/343-synchronized-map-reservations/records/monitor-histories/reservations-whole/7c675918ecb52966ea2b/result.json",
+      "change": "added",
+      "bytes": 142349,
+      "sha256": "6a67af8bce97fe4b21b2f928262555fb0f0596e4a69be5ccc5f0b4a09709c643",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/records/monitor-histories/reservations-split/6c37fb0a9c044bfcfb0e/result.json",
+      "change": "added",
+      "bytes": 161784,
+      "sha256": "70501898e0e01ce8ef5a336234800b6133c4345e00855c8e8d7552f91c40fb12",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:55:02+00:00",
+    "applied": [
+      "examples/343-synchronized-map-reservations/records/monitor-histories/reservations-whole/7c675918ecb52966ea2b/result.json",
+      "examples/343-synchronized-map-reservations/records/monitor-histories/reservations-split/6c37fb0a9c044bfcfb0e/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
