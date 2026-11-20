@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-050800-verify-both-signed-zero-maxima-with-ieee",
+  "title": "Verify both signed-zero maxima with IEEE comparison bytecode",
+  "description": "Recheck all four original obligations on the two pinned Commons Lang revisions. The numeric and raw observers cover 84 arrays each. Compare strict native outcomes and JVM witnesses against the original grid, including both orders of the two zeroes.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "313"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T05:08:00+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 313 --tasks numeric-parent,numeric-fix,raw-bits-parent,raw-bits-fix --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent",
+    "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix",
+    "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent",
+    "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix"
+  ],
+  "supersedes": "20261120-045612-verify-both-signed-zero-maxima-with-ieee",
+  "revision": "2ecee6290420e22b859b04c4323a20264570e2d0"
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-050759-recheck-cube-intersections-after-native",
+  "title": "Recheck cube intersections after native IEEE comparisons",
+  "description": "Check the four original geometry hit and coordinate claims on both historical revisions at the original tolerance and 30-second budget. Retain any remaining arithmetic or object-graph refusal against the complete six-ray JVM grid.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "329"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T05:07:59+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 329 --tasks presence-parent,presence-fix,point-parent,point-fix --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/329-commons-geometry-cube-vertex/receipts/presence-parent",
+    "examples/329-commons-geometry-cube-vertex/receipts/presence-fix",
+    "examples/329-commons-geometry-cube-vertex/receipts/point-parent",
+    "examples/329-commons-geometry-cube-vertex/receipts/point-fix"
+  ],
+  "supersedes": "20261120-045612-recheck-cube-intersections-after-native",
+  "revision": "2ecee6290420e22b859b04c4323a20264570e2d0"
+}

@@ -1,0 +1,199 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-045612-verify-both-signed-zero-maxima-with-ieee",
+  "title": "Verify both signed-zero maxima with IEEE comparison bytecode",
+  "status": "error",
+  "summary": "error: ",
+  "attention": [
+    "jvmcontract did not build at this commit; see the build step's log"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-045612-verify-both-signed-zero-maxima-with-ieee.json",
+    "sha256": "02ccb4f781897874d22098d0fdab95c19f7bd87d04f5e886125f82f5762bdb81",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-045612-verify-both-signed-zero-maxima-with-ieee",
+      "title": "Verify both signed-zero maxima with IEEE comparison bytecode",
+      "description": "Recheck all four original obligations on the two pinned Commons Lang revisions. The numeric and raw observers cover 84 arrays each. Compare strict native outcomes and JVM witnesses against the original grid, including both orders of the two zeroes.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "313"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T04:56:12+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 313 --tasks numeric-parent,numeric-fix,raw-bits-parent,raw-bits-fix --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent",
+        "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix",
+        "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent",
+        "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix"
+      ]
+    }
+  },
+  "sourceCommit": "2ecee6290420e22b859b04c4323a20264570e2d0",
+  "startedAt": "2026-11-20T05:03:14+00:00",
+  "finishedAt": "2026-11-20T05:04:18+00:00",
+  "wallSeconds": 64.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "none",
+    "host": "vm-1",
+    "pid": 3,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": null,
+    "wallSeconds": 0,
+    "cpuSeconds": 0,
+    "memoryOfEstimate": null,
+    "durationOfEstimate": null
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": null,
+      "signal": "SIGTERM",
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": true,
+      "wallSeconds": 61.481,
+      "cpuSeconds": 0.002,
+      "cpuThrottledSeconds": null,
+      "peakMemoryBytes": 1483440128,
+      "peakMemoryMeasure": "largest process's peak RSS",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 45,
+        "bytes": 1507,
+        "sha256": "74274881cba80d581be5c0b1002dcd307ea0592f254779e94e1335c6448ab462",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling quote v1.0.47",
+        "   Compiling unicode-ident v1.0.27",
+        "   Compiling memchr v2.8.3",
+        "   Compiling serde_core v1.0.229",
+        "   Compiling utf8parse v0.2.2",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling crc32fast v1.5.3",
+        "   Compiling zmij v1.0.23",
+        "   Compiling cfg-if v1.0.5",
+        "   Compiling colorchoice v1.0.5",
+        "   Compiling anstyle-query v1.1.5",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling heck v0.5.0",
+        "   Compiling serde v1.0.229",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling itoa v1.0.18",
+        "   Compiling anstyle-parse v1.0.0",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling anstream v1.0.0",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling syn v3.0.9",
+        "   Compiling jobserver v0.1.35",
+        "   Compiling cc v1.10.0",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling stacker v0.1.25",
+        "   Compiling cadical v0.1.16",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling ar_archive_writer v0.5.3",
+        "   Compiling regex v1.13.1",
+        "   Compiling psm v0.1.32",
+        "   Compiling clap v4.6.7",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop-foundation-domain-streams/verification/.state/work/20261120-045612-verify-both-signed-zero-maxima-with-ieee/lib)"
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-20T05:07:37+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job error"
+  },
+  "workdir": "/home/filip/code/in-the-loop-foundation-domain-streams/verification/.state/work/20261120-045612-verify-both-signed-zero-maxima-with-ieee"
+}

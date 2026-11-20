@@ -1,0 +1,160 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-045612-recheck-cube-intersections-after-native",
+  "title": "Recheck cube intersections after native IEEE comparisons",
+  "status": "error",
+  "summary": "error: ",
+  "attention": [
+    "jvmcontract did not build at this commit; see the build step's log"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-045612-recheck-cube-intersections-after-native.json",
+    "sha256": "04d90e64a15b1bfd8d670cc3ffff1a8e0f0312c13ce85b7676c880da0b7a43eb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-045612-recheck-cube-intersections-after-native",
+      "title": "Recheck cube intersections after native IEEE comparisons",
+      "description": "Check the four original geometry hit and coordinate claims on both historical revisions at the original tolerance and 30-second budget. Retain any remaining arithmetic or object-graph refusal against the complete six-ray JVM grid.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "329"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T04:56:12+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 329 --tasks presence-parent,presence-fix,point-parent,point-fix --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/329-commons-geometry-cube-vertex/receipts/presence-parent",
+        "examples/329-commons-geometry-cube-vertex/receipts/presence-fix",
+        "examples/329-commons-geometry-cube-vertex/receipts/point-parent",
+        "examples/329-commons-geometry-cube-vertex/receipts/point-fix"
+      ]
+    }
+  },
+  "sourceCommit": "2ecee6290420e22b859b04c4323a20264570e2d0",
+  "startedAt": "2026-11-20T05:03:14+00:00",
+  "finishedAt": "2026-11-20T05:06:53+00:00",
+  "wallSeconds": 219.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "none",
+    "host": "vm-1",
+    "pid": 3,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": null,
+    "wallSeconds": 0,
+    "cpuSeconds": 0,
+    "memoryOfEstimate": null,
+    "durationOfEstimate": null
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": null,
+      "signal": "SIGTERM",
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": true,
+      "wallSeconds": 155.194,
+      "cpuSeconds": 0.002,
+      "cpuThrottledSeconds": null,
+      "peakMemoryBytes": 1483440128,
+      "peakMemoryMeasure": "largest process's peak RSS",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 174,
+        "sha256": "3752a6ef88130e8c6887b0253863c4e02beb38ebe9255458d2759becfb8af8ee",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop-foundation-domain-streams/verification/.state/work/20261120-045612-recheck-cube-intersections-after-native/lib)"
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-20T05:07:37+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job error"
+  },
+  "workdir": "/home/filip/code/in-the-loop-foundation-domain-streams/verification/.state/work/20261120-045612-recheck-cube-intersections-after-native"
+}
