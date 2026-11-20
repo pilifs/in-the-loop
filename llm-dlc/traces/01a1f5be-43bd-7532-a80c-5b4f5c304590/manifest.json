@@ -12,32 +12,33 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T01:14:11.539Z",
-  "duration_seconds": 13002,
+  "ended": "2026-11-20T01:23:58.358Z",
+  "duration_seconds": 13588,
   "stats": {
     "turns": 4,
-    "api_calls": 868,
-    "tool_calls": 2283,
-    "tool_errors": 77,
+    "api_calls": 920,
+    "tool_calls": 2390,
+    "tool_errors": 79,
     "compactions": 3,
     "peak_context_tokens": 478319,
     "usage": {
-      "input_tokens": 1496415,
-      "output_tokens": 423987,
-      "cache_read_input_tokens": 243937536,
+      "input_tokens": 1535661,
+      "output_tokens": 441802,
+      "cache_read_input_tokens": 256442624,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1361,
-    "exec": 830,
-    "apply_patch": 60,
+    "Bash": 1409,
+    "exec": 882,
+    "apply_patch": 67,
     "wait": 32
   },
   "files_touched": [
     "examples/197-shared-int-array-poststates/proofs/overlap.py",
     "examples/310-threeten-complete-hours/README.md",
     "examples/310-threeten-complete-hours/controls/ShortCrossings.java",
+    "examples/310-threeten-complete-hours/controls/check_correspondence.py",
     "examples/310-threeten-complete-hours/controls/check_retries.py",
     "examples/310-threeten-complete-hours/records/midnight-witness.json",
     "examples/311-commons-lang-utf16-search/README.md",
@@ -56,6 +57,7 @@
     "examples/tools/targets/workflow.py",
     "examples/tools/targets/workflow_ingest.py",
     "examples/tools/targets/workflow_refusal.py",
+    "examples/tools/test_build.py",
     "lib/models/README.md",
     "lib/models/build.sh",
     "lib/models/java/util/concurrent/ConcurrentHashMap.java",
@@ -86,6 +88,7 @@
     "lib/tests/fixtures/claims/claims/UnicodePoints.java",
     "lib/tests/fixtures/restart-qualification/check.py",
     "lib/tests/paired_array_roots.rs",
+    "llm-dlc/loops/foundation-and-python-results.md",
     "llm-dlc/tools/test_performance.py",
     "verification/README.md",
     "verification/pipeline.py",
@@ -137,24 +140,24 @@
     {
       "index": 3,
       "started": "2026-11-20T00:46:36.703Z",
-      "ended": "2026-11-20T01:14:11.539Z",
+      "ended": "2026-11-20T01:23:58.358Z",
       "turns": 1,
-      "api_calls": 106,
+      "api_calls": 158,
       "usage": {
-        "input_tokens": 218007,
-        "output_tokens": 53634,
-        "cache_read_input_tokens": 17442432,
+        "input_tokens": 257253,
+        "output_tokens": 71449,
+        "cache_read_input_tokens": 29947520,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 223670
+      "peak_context_tokens": 259258
     }
   ],
   "log": {
-    "sha256": "b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b",
-    "bytes": 21911173,
-    "lines": 6875,
-    "gzip_bytes": 8288248,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b.jsonl.gz"
+    "sha256": "6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852",
+    "bytes": 22693886,
+    "lines": 7230,
+    "gzip_bytes": 8583867,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -503,20 +506,28 @@
       "log_sha256": "0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce"
     },
     {
-      "change_id": "nlnqooprtytxttyuwoxmsnkwttrryqwo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b"
-    },
-    {
       "change_id": "nzsmlyksrxyuvkkqqzmymzmmlttpklqx",
       "commit_id": null,
       "immutable": false,
       "summary": "Solve bounded integer domains with word diagrams (verification pending)",
       "body": "The native checker can encode high bits fixed by its compiled integer guard and solve arithmetic on reduced ordered decision diagrams. Every term and clause goes to the backing word-level solver, which takes over at an input or node limit. Candidates still require ordinary JVM qualification. The checker records how many queries each solver answered.\n\nA full-grid fixed ThreeTenBP probe completed in 4.7 seconds after a 600-second deadline on the same artifacts. Job 20261120-010828-retry-all-five-full-grid-threetenbp-regi links all five original observed-registry executions and preserves their bounds and 600-second budgets. All changed tests passed, including every three-bit input for all word operations, real fallback queries, signed long limits, vacuous and unsupported interval guards. The default CaDiCaL engine uses full-width inputs.",
       "log_sha256": "b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b"
+    },
+    {
+      "change_id": "tplonmnqqltylqooolunzntvrpxswzml",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852"
+    },
+    {
+      "change_id": "mtzlppvywryzzoxvwmkurmokrnkrmmkr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify VM exception text and calendar service discovery",
+      "body": "Four fresh HotSpot processes executed the same Controls class as the frozen foundation check. The initial arithmetic message had the expected text in each. The warmed default process returned a different policy result 37,908 times in 50,000 calls. A separate catch observed null messages. Disabling fast throw and running interpreted preserved the text on every call in those processes.\n\nOn both frozen ThreeTenBP application classpaths, changing only the thread context loader from an empty resource directory to one naming a missing provider changed the sample clock call into ServiceConfigurationError. The control checks the original JAR digests and records actual outputs for both revisions. Verified all four loader/subject combinations, all four message policies, the existing cold JVM control, example 310 validation, and the changed Rust suite.",
+      "log_sha256": "6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852"
     }
   ],
   "logs": {
@@ -572,6 +583,12 @@
       "bytes": 5759696,
       "lines": 1625,
       "gzip_bytes": 2092336,
+      "url": null
+    },
+    "6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852": {
+      "bytes": 22693886,
+      "lines": 7230,
+      "gzip_bytes": 8583867,
       "url": null
     },
     "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209": {

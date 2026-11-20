@@ -14,6 +14,8 @@ Each refusal packet records its claim key, revision, invocation, class digests a
 
 ## Native checks with observed chronology
 
+Four fresh JVMs compared service discovery on the same prepared adapter and upstream JARs. With an empty context resource directory, 23:30 to 00:15 returned one hour on the parent and zero on the fix. A constructed context descriptor naming an unavailable provider caused both calls to throw `java.util.ServiceConfigurationError`. The application class loader saw zero provider descriptors throughout. Reproduce the control with `python3 -I examples/310-threeten-complete-hours/controls/check_correspondence.py --context-only`. [Service context evidence](records/service-context.json)
+
 The prepared adapter and upstream source-slice JARs contain no service descriptor for Chronology. On that classpath, Temurin 21.0.13+9 initialized two distinct empty registries. The qualified claims bind their contents and identities, the initializer class bytes on each revision, and the single-threaded String-key ConcurrentHashMap model. They use unwind 32 to cover the 24 cached hours in LocalTime. At unwind 16 the checker stopped at that table. [JVM state, checker digests and capped probes](records/registry-probes.json)
 
 | Obligation | Native result |

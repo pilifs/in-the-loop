@@ -1,0 +1,111 @@
+{
+  "jdk": {
+    "feature": "21",
+    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "classes": {
+    "Controls$Day.class": "a9d272dd4f2d35c324953da027771a0c638438c06d52f199b5da8e69f230a1c5",
+    "Controls$Format.class": "f8576de7a94988deb4763e2e54c70d4561517fc3e808399166a330498d018e40",
+    "Controls.class": "af8f536a6a638887527f88fd90961289916c27c9746c0fea27e3c3381722847e",
+    "MessagePolicy.class": "7257f7773eecd9acd54132bac36b423156e991f20568fc70f4468d461e18cae9"
+  },
+  "checkedEntry": "Controls.message(I)I",
+  "input": 0,
+  "expectedMessage": "/ by zero",
+  "independentEntry": "Controls.divide(I)I",
+  "profiles": {
+    "default": {
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-cp",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/tmp0q0efqqh",
+        "MessagePolicy",
+        "50000"
+      ],
+      "stdout": "true 1 37908 6596 611 49389 0",
+      "omitStackTraceInFastThrow": true,
+      "callsAfterFirst": 50000,
+      "firstPolicyResult": 1,
+      "policyRejections": 37908,
+      "firstRejectionIndex": 6596,
+      "independentDivideMessages": {
+        "exact": 611,
+        "null": 49389,
+        "other": 0
+      }
+    },
+    "fastThrow": {
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xbatch",
+        "-XX:+OmitStackTraceInFastThrow",
+        "-cp",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/tmp0q0efqqh",
+        "MessagePolicy",
+        "50000"
+      ],
+      "stdout": "true 1 44625 5375 512 49488 0",
+      "omitStackTraceInFastThrow": true,
+      "callsAfterFirst": 50000,
+      "firstPolicyResult": 1,
+      "policyRejections": 44625,
+      "firstRejectionIndex": 5375,
+      "independentDivideMessages": {
+        "exact": 512,
+        "null": 49488,
+        "other": 0
+      }
+    },
+    "fullExceptions": {
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xbatch",
+        "-XX:-OmitStackTraceInFastThrow",
+        "-cp",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/tmp0q0efqqh",
+        "MessagePolicy",
+        "50000"
+      ],
+      "stdout": "false 1 0 -1 50000 0 0",
+      "omitStackTraceInFastThrow": false,
+      "callsAfterFirst": 50000,
+      "firstPolicyResult": 1,
+      "policyRejections": 0,
+      "firstRejectionIndex": null,
+      "independentDivideMessages": {
+        "exact": 50000,
+        "null": 0,
+        "other": 0
+      }
+    },
+    "interpreter": {
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xint",
+        "-cp",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/tmp0q0efqqh",
+        "MessagePolicy",
+        "50000"
+      ],
+      "stdout": "true 1 0 -1 50000 0 0",
+      "omitStackTraceInFastThrow": true,
+      "callsAfterFirst": 50000,
+      "firstPolicyResult": 1,
+      "policyRejections": 0,
+      "firstRejectionIndex": null,
+      "independentDivideMessages": {
+        "exact": 50000,
+        "null": 0,
+        "other": 0
+      }
+    }
+  }
+}

@@ -16,12 +16,43 @@ sys.path.insert(0, str(ROOT / "examples/tools"))
 from targets import runtime_jdk
 
 
-def run(work, only_jvm):
+def message_policy(jdk, work):
+    calls = 50000
+    env = {k: v for k, v in os.environ.items() if k not in ("JAVA_TOOL_OPTIONS", "JDK_JAVA_OPTIONS", "_JAVA_OPTIONS")}
+    profiles = {"default": [], "fastThrow": ["-Xbatch", "-XX:+OmitStackTraceInFastThrow"],
+                "fullExceptions": ["-Xbatch", "-XX:-OmitStackTraceInFastThrow"], "interpreter": ["-Xint"]}
+    rows = {}
+    for name, flags in profiles.items():
+        argv = [str(jdk / "bin/java"), *flags, "-cp", str(work), "MessagePolicy", str(calls)]
+        stdout = subprocess.check_output(argv, env=env, text=True).strip()
+        enabled, *numbers = stdout.split()
+        first, rejected, index, exact, missing, other = map(int, numbers)
+        if (enabled not in ("true", "false") or first != 1 or exact + missing + other != calls
+                or not ((rejected == 0 and index == -1) or (0 < rejected <= calls and 0 <= index < calls))):
+            raise ValueError(f"{name}: incomplete exception observations: {stdout}")
+        if name in ("interpreter", "fullExceptions") and (rejected or exact != calls):
+            raise ValueError(f"{name}: expected the text on every call: {stdout}")
+        if name == "fastThrow" and (enabled != "true" or not rejected or not missing):
+            raise ValueError(f"{name}: the warmed JVM did not reproduce the omitted message: {stdout}")
+        rows[name] = {"argv": argv, "stdout": stdout, "omitStackTraceInFastThrow": enabled == "true",
+                      "callsAfterFirst": calls, "firstPolicyResult": first, "policyRejections": rejected,
+                      "firstRejectionIndex": index if rejected else None,
+                      "independentDivideMessages": {"exact": exact, "null": missing, "other": other}}
+    return {"checkedEntry": "Controls.message(I)I", "input": 0, "expectedMessage": "/ by zero",
+            "independentEntry": "Controls.divide(I)I", "profiles": rows}
+
+
+def run(work, only_jvm, only_messages=False):
     jdk = Path(runtime_jdk.home("21"))
     subprocess.run([jdk / "bin/javac", "-proc:none", "-parameters", "--release", "21", "-d", work,
                     HERE / "Controls.java"], check=True)
     report = {"jdk": runtime_jdk.identity(jdk), "classes": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
               for p in sorted(work.glob("*.class"))}, "jvm": {}, "checks": []}
+    if only_messages:
+        subprocess.run([jdk / "bin/javac", "-proc:none", "-parameters", "--release", "21", "-cp", work,
+                        "-d", work, HERE / "MessagePolicy.java"], check=True)
+        report["classes"]["MessagePolicy.class"] = hashlib.sha256((work / "MessagePolicy.class").read_bytes()).hexdigest()
+        return {"jdk": report["jdk"], "classes": report["classes"], **message_policy(jdk, work)}, True
     for setting, width in (("short", 2), ("long", 4)):
         lines = subprocess.check_output([jdk / "bin/java", "-Dfoundation.display=" + setting, "-cp", work, "Controls"],
                                         text=True).splitlines()
@@ -89,11 +120,13 @@ def run(work, only_jvm):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--jvm-only", action="store_true")
+    profiles = parser.add_mutually_exclusive_group()
+    profiles.add_argument("--jvm-only", action="store_true")
+    profiles.add_argument("--message-policy", action="store_true", help="compare cold and warmed division messages in four fresh JVMs")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as directory:
-        report, passed = run(Path(directory), args.jvm_only)
+        report, passed = run(Path(directory), args.jvm_only, args.message_policy)
     if args.output:
         args.output.write_text(json.dumps(report, indent=2) + "\n")
     else:
