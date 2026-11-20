@@ -1,0 +1,231 @@
+{
+  "plan": {
+    "example": "346",
+    "task": "first-64-last",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+    "revisions": [
+      "mutant"
+    ],
+    "claim": {
+      "task": "first-64-last",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "file": "claims/first-64.json",
+      "sha256": "2585624942f92672cf79587dc6ff7d0002974eb490b668bde7908f66e3537577",
+      "property": "first-64",
+      "claimKind": "property",
+      "statement": "The result identifies the first matching 64-bit cell or proves none exists.",
+      "assume": "true",
+      "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 66,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 66,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/search/SearchCases.java",
+          "sha256": "64c17385031ce98cbd40b8199a2cdd9eb86aec27ec69ab5b973514bde679a525"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c54cca578a9f2c07b963252441475fb6f8ac69721ec38f85ad4ce9da2fa09500"
+        },
+        {
+          "id": "altered-implementation",
+          "kind": "mutation",
+          "path": "controls/last-match.patch",
+          "sha256": "ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+        }
+      ],
+      "key": "9fd66f937ad92c51"
+    },
+    "prerequisites": [
+      "mutant-replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "mutant": {
+          "base": {
+            "revision": "release",
+            "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+            "published": [
+              {
+                "coordinates": "com.google.guava:guava:33.4.8-jre",
+                "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+              },
+              {
+                "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+                "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+              },
+              {
+                "coordinates": "org.jspecify:jspecify:1.0.0",
+                "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/last-match.patch",
+            "sha256": "ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+          },
+          "description": "Search the same admitted slice backwards, returning the last occurrence."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/first-64-last"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-221141-346-bound-64-transfer-first-match-and-fr/examples/346-guava-long-array-holdout",
+    "network": true
+  },
+  "inputs": {
+    "example": "346",
+    "task": "first-64-last",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+    "revisions": [
+      "mutant"
+    ],
+    "claim": {
+      "task": "first-64-last",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "file": "claims/first-64.json",
+      "sha256": "2585624942f92672cf79587dc6ff7d0002974eb490b668bde7908f66e3537577",
+      "property": "first-64",
+      "claimKind": "property",
+      "statement": "The result identifies the first matching 64-bit cell or proves none exists.",
+      "assume": "true",
+      "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 66,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 66,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/search/SearchCases.java",
+          "sha256": "64c17385031ce98cbd40b8199a2cdd9eb86aec27ec69ab5b973514bde679a525"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c54cca578a9f2c07b963252441475fb6f8ac69721ec38f85ad4ce9da2fa09500"
+        },
+        {
+          "id": "altered-implementation",
+          "kind": "mutation",
+          "path": "controls/last-match.patch",
+          "sha256": "ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+        }
+      ],
+      "key": "9fd66f937ad92c51"
+    },
+    "artifacts": [
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "mutant": {
+          "base": {
+            "revision": "release",
+            "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+            "published": [
+              {
+                "coordinates": "com.google.guava:guava:33.4.8-jre",
+                "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+              },
+              {
+                "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+                "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+              },
+              {
+                "coordinates": "org.jspecify:jspecify:1.0.0",
+                "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/last-match.patch",
+            "sha256": "ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+          },
+          "description": "Search the same admitted slice backwards, returning the last occurrence."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "d697dca50afe620855dfc3ac247f34d3c49875ace38f028fc540df3e53b05389"
+}

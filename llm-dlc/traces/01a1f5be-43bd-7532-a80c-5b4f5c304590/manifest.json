@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T22:18:49.138Z",
-  "duration_seconds": 88879,
+  "ended": "2026-11-20T22:39:21.137Z",
+  "duration_seconds": 90111,
   "stats": {
     "turns": 13,
-    "api_calls": 3624,
-    "tool_calls": 9416,
-    "tool_errors": 278,
-    "compactions": 11,
+    "api_calls": 3702,
+    "tool_calls": 9656,
+    "tool_errors": 286,
+    "compactions": 12,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 6450621,
-      "output_tokens": 1851135,
-      "cache_read_input_tokens": 1148934912,
+      "input_tokens": 6592882,
+      "output_tokens": 1897577,
+      "cache_read_input_tokens": 1163403392,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5414,
-    "exec": 3504,
-    "apply_patch": 401,
+    "Bash": 5570,
+    "exec": 3581,
+    "apply_patch": 408,
     "wait": 53,
     "sleep": 43,
     "send_message_to_user_async": 1
@@ -74,7 +74,11 @@
     "examples/345-paged-importer-upgrades/controls/composition/measure/Inline.java",
     "examples/345-paged-importer-upgrades/controls/native_preview.py",
     "examples/345-paged-importer-upgrades/driver/importer/ImportCases.java",
+    "examples/346-guava-long-array-holdout/README.md",
+    "examples/346-guava-long-array-holdout/example.json",
+    "examples/347-importer-four-byte-field/README.md",
     "examples/347-importer-four-byte-field/controls/calibrate.py",
+    "examples/347-importer-four-byte-field/example.json",
     "examples/approaches.md",
     "examples/schema/result.schema.json",
     "examples/schema/target-claim.schema.json",
@@ -419,24 +423,38 @@
     {
       "index": 11,
       "started": "2026-11-20T19:35:54.934Z",
-      "ended": "2026-11-20T22:18:49.138Z",
+      "ended": "2026-11-20T22:27:04.091Z",
       "turns": 1,
-      "api_calls": 339,
+      "api_calls": 355,
       "usage": {
-        "input_tokens": 534078,
-        "output_tokens": 184059,
-        "cache_read_input_tokens": 108366976,
+        "input_tokens": 556044,
+        "output_tokens": 205466,
+        "cache_read_input_tokens": 117024256,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 529407
+      "peak_context_tokens": 550016
+    },
+    {
+      "index": 12,
+      "started": "2026-11-20T22:27:04.099Z",
+      "ended": "2026-11-20T22:39:21.137Z",
+      "turns": 0,
+      "api_calls": 62,
+      "usage": {
+        "input_tokens": 120295,
+        "output_tokens": 25035,
+        "cache_read_input_tokens": 5811200,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 128718
     }
   ],
   "log": {
-    "sha256": "202d1130fc4f185eb8c3c8a53332e996b65f8264d99acb806f77b69a040bf70b",
-    "bytes": 84318400,
-    "lines": 28518,
-    "gzip_bytes": 32598300,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/202d1130fc4f185eb8c3c8a53332e996b65f8264d99acb806f77b69a040bf70b.jsonl.gz"
+    "sha256": "a25b02e9e72ab42c5ad05b2d558d2c94cac2098d33e3345da30f861a580c4efa",
+    "bytes": 86507259,
+    "lines": 29162,
+    "gzip_bytes": 33474203,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/a25b02e9e72ab42c5ad05b2d558d2c94cac2098d33e3345da30f861a580c4efa.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1407,6 +1425,14 @@
       "summary": "Verify all twelve importer claims and transfer to two holdouts (verification pending)",
       "body": "The 99 frozen claim/subject pairs yield 70 establishments and 29 refutations with no disagreement. The original importer now has five native establishments and seven JVM-replayed native refutations across the twelve primary claims and four established positive controls. All six isolated IO and eight CSV producer checks passed. The IO-only byte client reused its complete native proof after a CSV-only or unrelated change, agreeing with a separately measured clean recomputation. The campaign ledger retains the different JVM, ordinary native, native case-analysis and bounded scheduling scopes, including all 23 prior startup obligations.\n\nThe original public array rule initially refused Guava Longs.indexOf on its descriptor. It now interprets the actual lload/laload/lcmp bytecode, using 64-bit cells and signed 32-bit cursor arithmetic. A capped probe passed eleven obligations, including unequal long values with identical low 32 bits, and a reversed search refuted the original assertion on the JVM. The four-byte-field holdout keeps every PageImporter class and dependency hash and forces read boundaries inside U+1F600. Its 32-input JVM matrix matched all four expected configurations, its fixed native witness passed, and its transfer links four checked decoder producer receipts. Preserve original int-array and changed-range checks. All 43 changed test groups and both packet/replay validations passed.\n\nVerification jobs: 20261120-221141-346-bound-64-transfer-first-match-and-fr, 20261120-221141-346-bound-8-transfer-first-match-and-fra, 20261120-221142-336-retain-the-original-int-array-proofs, 20261120-221142-337-retain-the-original-int-array-proofs, 20261120-221142-346-certify-the-released-guava-long-trav, 20261120-221142-347-fix-fix-check-multibyte-csv-fields-w, 20261120-221142-347-fix-parent-check-multibyte-csv-field, 20261120-221142-347-independently-exhaust-the-four-unico, 20261120-221142-347-monolithic-strict-native-unicode-pag, 20261120-221142-347-parent-fix-check-multibyte-csv-field, 20261120-221142-347-parent-parent-check-multibyte-csv-fi, 20261120-221803-331-rerun-the-remaining-helper-check-at. The regression retry runs the one remaining tiling helper at the same 25-second budget.",
       "log_sha256": "202d1130fc4f185eb8c3c8a53332e996b65f8264d99acb806f77b69a040bf70b"
+    },
+    {
+      "change_id": "nmttmskrvkxpvolployzxrmkonuyqrlk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the completed Java proof campaign and both holdouts",
+      "body": "Across 14 examples, 70 of 99 frozen claim and subject pairs were established and 29 refuted. All 12 primary importer obligations and four controls have strict native decisions on unchanged client bytecode. Both Guava array widths have arbitrary-length certificates. Five previously conditional startup witnesses reproduce at original scope, and the compiled ticket and synchronized-map histories explain both split-lock failures.\n\nAll eight long-array and 16 Unicode-importer holdout obligations met expectation. Collected all 110 campaign jobs, including the failed monolithic searches. The public receipt reader now checks the compiled guard source, non-vacuity, retained assumptions and the original JVM witness program. Rechecked 436 recorded file hashes, reran the public holdout JVM controls and passed all 61 default test groups. The encoding time estimate test passed on its automatic retry.",
+      "log_sha256": "a25b02e9e72ab42c5ad05b2d558d2c94cac2098d33e3345da30f861a580c4efa"
     }
   ],
   "logs": {
@@ -1745,6 +1771,12 @@
       "lines": 14933,
       "gzip_bytes": 17503036,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/a1aeb7fce7561b2a18705696d2cb2e2486525e0ccc8e7969ec331cd798736000.jsonl.gz"
+    },
+    "a25b02e9e72ab42c5ad05b2d558d2c94cac2098d33e3345da30f861a580c4efa": {
+      "bytes": 86507259,
+      "lines": 29162,
+      "gzip_bytes": 33474203,
+      "url": null
     },
     "a7404eb085f9c2ae8bfcf8d516d2fdd299307eae6d7d052c575ba62a9db81f37": {
       "bytes": 34755646,

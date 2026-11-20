@@ -1,0 +1,51 @@
+[
+  {
+    "claimKey": "bd424e7093149d5d",
+    "entry": "com.google.common.primitives.Longs#indexOf([JJ)I",
+    "inputs": [
+      {
+        "name": "array",
+        "type": "long[]",
+        "value": [
+          "0",
+          "0"
+        ]
+      },
+      {
+        "name": "target",
+        "type": "long",
+        "value": "0"
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "mutant": {
+        "entryClassSha256": "89a15ca87175263764a4d726d20e3f962bcc3512f0eb508ffa61a1b2fb5ced39",
+        "classpath": [
+          "624d70009284f77deb83a482c125d639e7a76be6c5efc7571f54edb70f21c92e",
+          "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+          "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nlong[] array = new long[]{0L,0L};\nlong target = 0L;\nif (!(true)) { System.out.println(\"outside\"); return; }\nint returnedValue = 0;\nThrowable failure = null;\ntry { returnedValue = com.google.common.primitives.Longs.indexOf(array, target); } catch (Throwable t) { failure = t; }\nfinal int result = returnedValue;\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && ((result == -1 && ((java.util.function.BooleanSupplier) () -> { for (int i = 0; i < array.length; i++) { if (!( array[i] != target)) return false; } return true; }).getAsBoolean()) || (result >= 0 && result < array.length && array[result] == target && ((java.util.function.BooleanSupplier) () -> { for (int i = 0; i < result; i++) { if (!( array[i] != target)) return false; } return true; }).getAsBoolean())));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          1,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

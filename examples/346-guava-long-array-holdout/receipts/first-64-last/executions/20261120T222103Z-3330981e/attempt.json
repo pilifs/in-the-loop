@@ -1,0 +1,342 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T222103Z-3330981e",
+  "task": "first-64-last",
+  "claimKey": "9fd66f937ad92c51",
+  "revisions": [
+    "mutant"
+  ],
+  "startedAt": "2026-11-20T22:21:03.209673+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-221141-346-bound-64-transfer-first-match-and-fr",
+  "sourceCommit": "aa042b39d8ccdaadc1e69f953d3899acd1b11250",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 3.6552
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 3.8231
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 3.8741
+    },
+    {
+      "stage": "candidate-recorded",
+      "elapsedSeconds": 95.8071
+    },
+    {
+      "stage": "witness-qualification",
+      "elapsedSeconds": 96.3917
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 96.4935
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "mutant": {
+      "revision": "mutant:f06690fa3e874f65515e8fd338a74d636e2c792f+ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb",
+      "target": {
+        "class": "com.google.common.primitives.Longs",
+        "method": "indexOf",
+        "descriptor": "([JJ)I",
+        "loadedFrom": "mutant/guava-33.4.8-jre.jar",
+        "classSha256": "89a15ca87175263764a4d726d20e3f962bcc3512f0eb508ffa61a1b2fb5ced39"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "c5b3d17d99bd01481c35cf4ba511fd9b1560f431df0203b183e6022a397525d3",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "mutant/guava-33.4.8-jre.jar",
+          "sha256": "624d70009284f77deb83a482c125d639e7a76be6c5efc7571f54edb70f21c92e",
+          "role": "original",
+          "coordinates": null,
+          "origin": "constructed: lib/com.google.guava/guava-33.4.8-jre.jar with 5 class(es) recompiled from guava/src/com/google/common/primitives/Longs.java at f06690fa3e874f65515e8fd338a74d636e2c792f, after the patch controls/last-match.patch (sha256 ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb)"
+        },
+        {
+          "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+          "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+          "role": "dependency",
+          "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+          "origin": "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.jar"
+        },
+        {
+          "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+          "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+          "role": "dependency",
+          "coordinates": "org.jspecify:jspecify:1.0.0",
+          "origin": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "49bd6c637b3a96238d8e9b6e9f3f2b2d59e21703fa4e8b2c146b8ad72e32664d",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+    "prove",
+    "com.google.common.primitives.Longs#indexOf(long[], long)",
+    "--classes",
+    "prepare/mutant/mutant/guava-33.4.8-jre.jar",
+    "--classpath",
+    "prepare/mutant/lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+    "--classpath",
+    "prepare/mutant/lib/org.jspecify/jspecify-1.0.0.jar",
+    "--assume",
+    "true",
+    "--assert",
+    "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "66",
+    "--max-array-length",
+    "64",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
+    "commit": "aa042b39d8ccdaadc1e69f953d3899acd1b11250",
+    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 66,
+      "maxArrayLength": 64
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "constructed-mutation",
+      "meaning": "a constructed mutation of a base revision: sensitivity evidence, never an upstream result",
+      "method": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "revisions": {
+        "mutant": {
+          "commit": "mutant:f06690fa3e874f65515e8fd338a74d636e2c792f+ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb",
+          "loadedFrom": "mutant/guava-33.4.8-jre.jar",
+          "classSha256": "89a15ca87175263764a4d726d20e3f962bcc3512f0eb508ffa61a1b2fb5ced39",
+          "origin": "constructed: lib/com.google.guava/guava-33.4.8-jre.jar with 5 class(es) recompiled from guava/src/com/google/common/primitives/Longs.java at f06690fa3e874f65515e8fd338a74d636e2c792f, after the patch controls/last-match.patch (sha256 ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb)",
+          "parameters": {
+            "names": [
+              "array",
+              "target"
+            ],
+            "recordedIn": "MethodParameters"
+          },
+          "mutant": {
+            "base": {
+              "revision": "release",
+              "identity": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+              "provenance": "published JARs, each by its recorded sha256: the bytes are the identity, the URL only where they are fetched from"
+            },
+            "patch": {
+              "path": "controls/last-match.patch",
+              "sha256": "ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+            },
+            "description": "Search the same admitted slice backwards, returning the last occurrence."
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "mutant": [
+        {
+          "path": "mutant/guava-33.4.8-jre.jar",
+          "sha256": "624d70009284f77deb83a482c125d639e7a76be6c5efc7571f54edb70f21c92e",
+          "role": "original"
+        },
+        {
+          "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+          "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+          "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "com.google.common.primitives.Longs#indexOf([JJ)I",
+    "entryBindings": {
+      "mutant": {
+        "entry": "com.google.common.primitives.Longs#indexOf([JJ)I",
+        "classSha256": "89a15ca87175263764a4d726d20e3f962bcc3512f0eb508ffa61a1b2fb5ced39",
+        "loadedFrom": "mutant/guava-33.4.8-jre.jar",
+        "subject": "com.google.common.primitives.Longs#indexOf([JJ)I",
+        "subjectClassSha256": "89a15ca87175263764a4d726d20e3f962bcc3512f0eb508ffa61a1b2fb5ced39"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "checkedEntry": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "true"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "66"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "64"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "mutant": "mutant:f06690fa3e874f65515e8fd338a74d636e2c792f+ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "mutant": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+          "gaps",
+          "--target",
+          "com.google.common.primitives.Longs#indexOf(long[], long)",
+          "--classes",
+          "prepare/mutant/mutant/guava-33.4.8-jre.jar",
+          "--classpath",
+          "prepare/mutant/lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+          "--classpath",
+          "prepare/mutant/lib/org.jspecify/jspecify-1.0.0.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-mutant.stdout",
+        "stderr": "verifier/probe-mutant.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 91.8829,
+      "peakRssBytes": 752996352,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 91.8829,
+    "peakRssBytes": 752996352,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 91.931,
+  "missing": [],
+  "replayEvidence": "replay.json",
+  "receipt": "receipts/first-64-last/20261120T222103Z-3330981e/result.json",
+  "preparedClaim": "35c11eb0922d0aa2",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T22:22:39.703281+00:00"
+}

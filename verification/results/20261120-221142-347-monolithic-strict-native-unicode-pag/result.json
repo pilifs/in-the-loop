@@ -1,0 +1,304 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-221142-347-monolithic-strict-native-unicode-pag",
+  "title": "347 monolithic strict native Unicode page transfer",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1m34s, peak 1.7 GiB (estimated 3m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-221142-347-monolithic-strict-native-unicode-pag.json",
+    "sha256": "3e876496eb5b7e0386fd1fee161c5a5206dbec718cc9a58ffdb228753e3db523",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-221142-347-monolithic-strict-native-unicode-pag",
+      "title": "347 monolithic strict native Unicode page transfer",
+      "description": "Run the unpartitioned whole-domain fixed/fixed page at the original 90-second checker budget on the same class files. Preserve its time and first blocker or verdict apart from exhaustive strict case analysis.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "347"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T22:11:42+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 347 --tasks page-fix-fix --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/347-importer-four-byte-field/receipts/page-fix-fix"
+      ]
+    }
+  },
+  "sourceCommit": "aa042b39d8ccdaadc1e69f953d3899acd1b11250",
+  "startedAt": "2026-11-20T22:20:07+00:00",
+  "finishedAt": "2026-11-20T22:21:53+00:00",
+  "wallSeconds": 106.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2445690,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1861144576,
+    "wallSeconds": 94.5,
+    "cpuSeconds": 97.0,
+    "memoryOfEstimate": 0.87,
+    "durationOfEstimate": 0.52
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 347 --tasks page-fix-fix --checker-seconds 90",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 94.476,
+      "cpuSeconds": 97.019,
+      "cpuThrottledSeconds": 0.392,
+      "peakMemoryBytes": 1861144576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 2,
+        "bytes": 243,
+        "sha256": "24c2640704ba0b6226613816aa1d6d88f8843c1365a851551cd3cf1a2e8c0689",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "347-importer-four-byte-field: task page-fix-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/page-fix-fix/20261120T222019Z-3df70336/result.json",
+          "groups": [
+            "347",
+            "page-fix-fix",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "347-importer-four-byte-field: running task page-fix-fix (target route)",
+        "347-importer-four-byte-field: task page-fix-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/page-fix-fix/20261120T222019Z-3df70336/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b96ac4e9e8e8ed755a59760e9383ae2e1636b52a4c948dd0967ed58a401ca8d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/plan.json",
+      "change": "added",
+      "bytes": 10536,
+      "sha256": "456fc652fa1421ab311315741191fac25d8661ba329d348ac9a5f8974f1c8974",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/control-fix-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/control-fix-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 8934,
+      "sha256": "88fe2006954002b21368484aec7b3aa84cafb4087883daa2fa777b8b32fd5072",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/controls.json",
+      "change": "added",
+      "bytes": 33217,
+      "sha256": "8a8a7e8792a30a5e6647c3818d8a9fa0814648a3fc2754f711c44712fcd217f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/execution.json",
+      "change": "added",
+      "bytes": 103228,
+      "sha256": "513acfda57179d58c9cb9146adcf67bb9169d0ecb13ac51981b2d29872bd1c12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/streams.json",
+      "change": "added",
+      "bytes": 1977,
+      "sha256": "bef037304e8f0be6cb49c9e7754cb75251621b9d3b59c093763b16d90d835523",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 102,
+      "sha256": "b05636cae2c7d1a2180302895c120d52a5fd5174f111d0e5bf9758adc31474fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/verifier.json",
+      "change": "added",
+      "bytes": 67652,
+      "sha256": "c1fd04512a6810816278d787d412179b522a56cbb14a8fca63376db2678a7412",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4800,
+      "sha256": "23d729c65dd0149032d28afa1a33169b155efd712264c199dafe229da17288b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/result.json",
+      "change": "added",
+      "bytes": 14632,
+      "sha256": "8333b42b3e09c25a767b5ae24eae7a083865c9584308e9b6840da010d539cbbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/executions/20261120T222019Z-3df70336/attempt.json",
+      "change": "added",
+      "bytes": 64221,
+      "sha256": "85c59bbefb8f549d1a1d8ced202e15e66936ba8c5c23af390b5dc7b5540fe3cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/executions/20261120T222019Z-3df70336/checker.json",
+      "change": "added",
+      "bytes": 6280,
+      "sha256": "71c9cb0f7bad3f9dcc1fac0985a8abbfe829c1af2f1140560df5287c7cde4b2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/receipts/page-fix-fix/executions/20261120T222019Z-3df70336/correspondence.json",
+      "change": "added",
+      "bytes": 1262,
+      "sha256": "8ddfae4f68c7945ae58620d0ba75a9494cbdfd9c653f55da85340de8510be477",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T22:24:31+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/completion.json",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/plan.json",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/control-fix-fix-jdk21.stderr",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/control-fix-fix-jdk21.stdout",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/controls.json",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/execution.json",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/streams.json",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/verifier-output.txt",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/verifier.json",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/verifier.stderr",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/records/verifier.stdout",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/20261120T222019Z-3df70336/result.json",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/executions/20261120T222019Z-3df70336/attempt.json",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/executions/20261120T222019Z-3df70336/checker.json",
+      "examples/347-importer-four-byte-field/receipts/page-fix-fix/executions/20261120T222019Z-3df70336/correspondence.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-221142-347-monolithic-strict-native-unicode-pag"
+}

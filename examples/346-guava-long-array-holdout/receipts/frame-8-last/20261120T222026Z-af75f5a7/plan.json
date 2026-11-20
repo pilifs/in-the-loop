@@ -1,0 +1,231 @@
+{
+  "plan": {
+    "example": "346",
+    "task": "frame-8-last",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+    "revisions": [
+      "mutant"
+    ],
+    "claim": {
+      "task": "frame-8-last",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "file": "claims/frame-8.json",
+      "sha256": "3c5fd445d0c3b9305ceee0ab80c5d5d6e7a0cfbf28ad2f79fab1e131ee67133e",
+      "property": "frame-8",
+      "claimKind": "property",
+      "statement": "The method returns normally and every 64-bit input cell retains its entry value.",
+      "assume": "true",
+      "assert": "(\\forall int i; 0 <= i && i < array.length; array[i] == \\old(array[i]))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/search/SearchCases.java",
+          "sha256": "64c17385031ce98cbd40b8199a2cdd9eb86aec27ec69ab5b973514bde679a525"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c54cca578a9f2c07b963252441475fb6f8ac69721ec38f85ad4ce9da2fa09500"
+        },
+        {
+          "id": "altered-implementation",
+          "kind": "mutation",
+          "path": "controls/last-match.patch",
+          "sha256": "ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+        }
+      ],
+      "key": "8fcfe5ccaf7cfdef"
+    },
+    "prerequisites": [
+      "mutant-replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "mutant": {
+          "base": {
+            "revision": "release",
+            "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+            "published": [
+              {
+                "coordinates": "com.google.guava:guava:33.4.8-jre",
+                "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+              },
+              {
+                "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+                "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+              },
+              {
+                "coordinates": "org.jspecify:jspecify:1.0.0",
+                "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/last-match.patch",
+            "sha256": "ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+          },
+          "description": "Search the same admitted slice backwards, returning the last occurrence."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/frame-8-last"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-221141-346-bound-8-transfer-first-match-and-fra/examples/346-guava-long-array-holdout",
+    "network": true
+  },
+  "inputs": {
+    "example": "346",
+    "task": "frame-8-last",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+    "revisions": [
+      "mutant"
+    ],
+    "claim": {
+      "task": "frame-8-last",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "file": "claims/frame-8.json",
+      "sha256": "3c5fd445d0c3b9305ceee0ab80c5d5d6e7a0cfbf28ad2f79fab1e131ee67133e",
+      "property": "frame-8",
+      "claimKind": "property",
+      "statement": "The method returns normally and every 64-bit input cell retains its entry value.",
+      "assume": "true",
+      "assert": "(\\forall int i; 0 <= i && i < array.length; array[i] == \\old(array[i]))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/search/SearchCases.java",
+          "sha256": "64c17385031ce98cbd40b8199a2cdd9eb86aec27ec69ab5b973514bde679a525"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c54cca578a9f2c07b963252441475fb6f8ac69721ec38f85ad4ce9da2fa09500"
+        },
+        {
+          "id": "altered-implementation",
+          "kind": "mutation",
+          "path": "controls/last-match.patch",
+          "sha256": "ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+        }
+      ],
+      "key": "8fcfe5ccaf7cfdef"
+    },
+    "artifacts": [
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "mutant": {
+          "base": {
+            "revision": "release",
+            "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+            "published": [
+              {
+                "coordinates": "com.google.guava:guava:33.4.8-jre",
+                "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+              },
+              {
+                "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+                "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+              },
+              {
+                "coordinates": "org.jspecify:jspecify:1.0.0",
+                "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/last-match.patch",
+            "sha256": "ea75fe226ced5b8cd37151a03013fd9646e613b206f455bc15b3fd10caa2cecb"
+          },
+          "description": "Search the same admitted slice backwards, returning the last occurrence."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "c0751e301bb447687f9c7bc27eb87619fe005fc77c5a2f874156e7f888b60eb4"
+}

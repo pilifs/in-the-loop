@@ -38,14 +38,17 @@
       "established": 11,
       "refuted": 2
     },
-    "outcomesEarned": 4
+    "outcomesEarned": 4,
+    "conflictingAcceptedDispositions": 0
   },
   "examples": [
     {
       "example": 332,
       "title": "A paper setting read before or after initialization",
       "directory": "examples/332-paper-initialization",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "cached": {
           "fixture": "cached"
@@ -512,13 +515,30 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 6,
+        "allRoutes": {
+          "established": 5,
+          "refuted": 1
+        },
+        "exhaustiveJVM": {
+          "established": 5,
+          "refuted": 1
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "established": 5,
+          "refuted": 1
+        }
+      }
     },
     {
       "example": 333,
       "title": "A service chosen by the thread context loader",
       "directory": "examples/333-service-context-loader",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "default": {
           "fixture": "default"
@@ -1001,13 +1021,29 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 9,
+        "allRoutes": {
+          "established": 7,
+          "refuted": 2
+        },
+        "exhaustiveJVM": {
+          "established": 7,
+          "refuted": 2
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "open": 9
+        }
+      }
     },
     {
       "example": 334,
       "title": "An appointment in a skipped or repeated hour",
       "directory": "examples/334-calendar-offset-transitions",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "valid": {
           "fixture": "valid"
@@ -1336,13 +1372,29 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 6,
+        "allRoutes": {
+          "established": 4,
+          "refuted": 2
+        },
+        "exhaustiveJVM": {
+          "established": 4,
+          "refuted": 2
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "open": 6
+        }
+      }
     },
     {
       "example": 335,
       "title": "Guava's signed mean across both full word widths",
       "directory": "examples/335-guava-signed-mean",
-      "kind": null,
+      "origin": "real-world",
+      "role": "calibration",
+      "preparation": "published-artifact",
       "subjects": {
         "release": {
           "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
@@ -1360,6 +1412,7 @@
       },
       "calibration": null,
       "directJVMReceipts": [
+        "examples/335-guava-signed-mean/receipts/mutant-replay/20261120T182843Z-5bf9c9f4/result.json",
         "examples/335-guava-signed-mean/receipts/replay/20261120T183722Z-85dc2fa5/result.json"
       ],
       "claims": [
@@ -1654,13 +1707,29 @@
           "additionalContracts": [],
           "obtained": "refuted"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 4,
+        "allRoutes": {
+          "established": 2,
+          "refuted": 2
+        },
+        "exhaustiveJVM": {
+          "not applicable": 4
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "established": 2,
+          "refuted": 2
+        }
+      }
     },
     {
       "example": 336,
       "title": "The first matching element in a Guava int array",
       "directory": "examples/336-guava-first-array-match",
-      "kind": null,
+      "origin": "real-world",
+      "role": "calibration",
+      "preparation": "published-artifact",
       "subjects": {
         "release": {
           "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
@@ -1678,6 +1747,7 @@
       },
       "calibration": null,
       "directJVMReceipts": [
+        "examples/336-guava-first-array-match/receipts/mutant-replay/20261120T182848Z-29182ec1/result.json",
         "examples/336-guava-first-array-match/receipts/replay/20261120T183723Z-af235f3c/result.json"
       ],
       "claims": [
@@ -2073,6 +2143,66 @@
             {
               "route": "native bytecode induction",
               "id": "first-any-length",
+              "file": "examples/336-guava-first-array-match/records/array-induction/first-any-length/58996c50200b0046ffaa/result.json",
+              "sha256": "930d7c37fb2cf0fb74fb89b822e6bbb7592974388af9358222e4ab4783000d1b",
+              "scope": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs.",
+              "status": "established",
+              "obligations": [
+                {
+                  "name": "nonempty input domain",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "maximal signed length admitted",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "entry establishes invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "safe array access at 12",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "return the earliest match or minus one",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "preserve the input heap",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "iteration preserves invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "nonnegative strictly decreasing Java-int variant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "return the earliest match or minus one",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "preserve the input heap",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                }
+              ]
+            },
+            {
+              "route": "native bytecode induction",
+              "id": "first-any-length",
               "file": "examples/336-guava-first-array-match/records/array-induction/first-any-length/9e4e84ebc26188156167/result.json",
               "sha256": "44445f72bcaf4b9b8c2bf8ac1738797a218396c5362ea96ac9ee87600a4b363f",
               "scope": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs.",
@@ -2431,13 +2561,29 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 8,
+        "allRoutes": {
+          "established": 6,
+          "refuted": 2
+        },
+        "exhaustiveJVM": {
+          "not applicable": 8
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "established": 6,
+          "refuted": 2
+        }
+      }
     },
     {
       "example": 337,
       "title": "A JDK range fill observed through a second array root",
       "directory": "examples/337-jdk-range-fill-alias",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "original": {
           "fixture": "original"
@@ -2904,6 +3050,66 @@
             {
               "route": "native bytecode induction",
               "id": "fill-any-length",
+              "file": "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/6b85ebd4829039081f32/result.json",
+              "sha256": "b2880a503503d7eb71dc682ae0afc80040fc4c6163a38f0e5479b71641ac20e8",
+              "scope": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
+              "status": "established",
+              "obligations": [
+                {
+                  "name": "nonempty input domain",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "maximal signed length admitted",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "entry establishes invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "safe array access at 20",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "return with exactly the range written",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "iteration preserves invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "nonnegative strictly decreasing Java-int variant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                }
+              ]
+            },
+            {
+              "route": "native bytecode induction",
+              "id": "fill-any-length",
               "file": "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/8146bb84ec194af3ded5/result.json",
               "sha256": "b909b66484d70a693644aea49c56c15ce2211884283348c5c5ea0731ce39bf2f",
               "scope": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
@@ -3026,6 +3232,76 @@
           "nativeCaseAnalysis": [],
           "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [
+            {
+              "route": "native bytecode induction",
+              "id": "caller-any-length",
+              "file": "examples/337-jdk-range-fill-alias/records/array-induction/caller-any-length/2bf9f7a7d6d4481dc137/result.json",
+              "sha256": "c8db02ca49a4612de57a12355be6bc72f0dc4492c47881a0ac4523f3899f6ef0",
+              "scope": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
+              "status": "established",
+              "obligations": [
+                {
+                  "name": "nonempty input domain",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "maximal signed length admitted",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "entry establishes invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "safe array access at 20",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "return with exactly the range written",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "iteration preserves invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "nonnegative strictly decreasing Java-int variant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "caller establishes the helper precondition",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "caller read follows from the proved frame",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                }
+              ]
+            },
             {
               "route": "native bytecode induction",
               "id": "caller-any-length",
@@ -3365,6 +3641,86 @@
             {
               "route": "native bytecode induction",
               "id": "caller-extra-any-length",
+              "file": "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length/98d5d5ae53cf2d12ce0c/result.json",
+              "sha256": "1d84a6e0411983ee40a3591108032fa8d006b9de4e7613ec8c3cb703ccd25ef3",
+              "scope": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
+              "status": "unresolved",
+              "obligations": [
+                {
+                  "name": "nonempty input domain",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "maximal signed length admitted",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "entry establishes invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "safe array access at 20",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "return with exactly the range written",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "iteration preserves invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "nonnegative strictly decreasing Java-int variant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "caller establishes the helper precondition",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "caller read follows from the proved frame",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "caller establishes the helper precondition",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "caller read follows from the proved frame",
+                  "expected": "unsat",
+                  "obtained": "sat"
+                }
+              ]
+            },
+            {
+              "route": "native bytecode induction",
+              "id": "caller-extra-any-length",
               "file": "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length/a46b7d1d8170df9c6224/result.json",
               "sha256": "75584130fce768f3f55d9d3919bcd60629ac6c866189926e557fc928720c4f96",
               "scope": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
@@ -3445,13 +3801,29 @@
           ],
           "obtained": "refuted"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 8,
+        "allRoutes": {
+          "established": 4,
+          "refuted": 4
+        },
+        "exhaustiveJVM": {
+          "not applicable": 8
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "established": 4,
+          "refuted": 4
+        }
+      }
     },
     {
       "example": 338,
       "title": "A BOM stream rewinds its prefetched bytes",
       "directory": "examples/338-commons-io-bom-reset",
-      "kind": null,
+      "origin": "real-world",
+      "role": "calibration",
+      "preparation": "upstream-build",
       "subjects": {
         "parent": {
           "commit": "16bcc65a493123dfc1eeba7b3943a69acf03e47c"
@@ -3939,13 +4311,30 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 6,
+        "allRoutes": {
+          "refuted": 1,
+          "established": 5
+        },
+        "exhaustiveJVM": {
+          "refuted": 1,
+          "established": 5
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "refuted": 1,
+          "established": 5
+        }
+      }
     },
     {
       "example": 339,
       "title": "A CSV page counts records independently of their labels",
       "directory": "examples/339-commons-csv-page-numbers",
-      "kind": null,
+      "origin": "real-world",
+      "role": "calibration",
+      "preparation": "upstream-build",
       "subjects": {
         "parent": {
           "commit": "4f9a4037a2c1890154e1f077d66306ec54afbf60"
@@ -4721,13 +5110,30 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 8,
+        "allRoutes": {
+          "refuted": 3,
+          "established": 5
+        },
+        "exhaustiveJVM": {
+          "refuted": 3,
+          "established": 5
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "refuted": 3,
+          "established": 5
+        }
+      }
     },
     {
       "example": 340,
       "title": "A TreeList iterator survives a refused indexed edit",
       "directory": "examples/340-treelist-rejected-edit",
-      "kind": null,
+      "origin": "real-world",
+      "role": "calibration",
+      "preparation": "upstream-build",
       "subjects": {
         "parent": {
           "commit": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1"
@@ -5407,13 +5813,30 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 8,
+        "allRoutes": {
+          "established": 7,
+          "refuted": 1
+        },
+        "exhaustiveJVM": {
+          "established": 7,
+          "refuted": 1
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "established": 7,
+          "refuted": 1
+        }
+      }
     },
     {
       "example": 341,
       "title": "A UTF-8 decoder across every byte partition",
       "directory": "examples/341-utf8-chunk-boundaries",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "stream": {
           "fixture": "stream"
@@ -5760,13 +6183,30 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 6,
+        "allRoutes": {
+          "established": 5,
+          "refuted": 1
+        },
+        "exhaustiveJVM": {
+          "established": 5,
+          "refuted": 1
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "open": 5,
+          "refuted": 1
+        }
+      }
     },
     {
       "example": 342,
       "title": "Two real threads request the next ticket",
       "directory": "examples/342-two-thread-tickets",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "method": {
           "fixture": "method"
@@ -6234,13 +6674,28 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 6,
+        "allRoutes": {
+          "established": 5,
+          "refuted": 1
+        },
+        "exhaustiveJVM": {
+          "not applicable": 6
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "open": 6
+        }
+      }
     },
     {
       "example": 343,
       "title": "Two reservations on a JDK synchronized map",
       "directory": "examples/343-synchronized-map-reservations",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "whole": {
           "fixture": "whole"
@@ -6700,13 +7155,28 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 6,
+        "allRoutes": {
+          "established": 5,
+          "refuted": 1
+        },
+        "exhaustiveJVM": {
+          "not applicable": 6
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "open": 6
+        }
+      }
     },
     {
       "example": 344,
       "title": "Independent schedules with aliases and an ordered audit",
       "directory": "examples/344-seat-schedule-reduction",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "identity": {
           "fixture": "identity"
@@ -6835,13 +7305,28 @@
           "additionalContracts": [],
           "obtained": "refuted"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 2,
+        "allRoutes": {
+          "established": 1,
+          "refuted": 1
+        },
+        "exhaustiveJVM": {
+          "not applicable": 2
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "open": 2
+        }
+      }
     },
     {
       "example": 345,
       "title": "An unchanged importer across two dependency upgrades",
       "directory": "examples/345-paged-importer-upgrades",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "parent-parent": {
           "fixture": "client",
@@ -7434,20 +7919,6 @@
           "JVMWitnessReplays": [],
           "nativeCaseAnalysis": [
             {
-              "status": "established",
-              "record": "records/native-selectors/parent-fix/20261120T220835Z-adb5055d/tasks/count-parent-fix/result.json",
-              "admitted": 96,
-              "checked": 96,
-              "firstBlocker": null,
-              "file": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261120T220835Z-adb5055d/tasks/count-parent-fix/result.json",
-              "sha256": "64b2a11198443ba4d170532e30c736fef0289084ee965862eb0224fbb8198479",
-              "assumptions": [
-                "every JDK class is initialized already, its static initializer having run and thrown nothing",
-                "system properties use the standard JVM Properties table and the running JVM permits this property access"
-              ],
-              "wallSeconds": 262.78764
-            },
-            {
               "status": "open",
               "record": "../../verification/results/20261120-213848-345-parent-fix-exhaust-native-selector-b/outputs/examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261120T215140Z-0990de99/tasks/count-parent-fix/result.json",
               "admitted": 96,
@@ -7460,6 +7931,20 @@
                 "system properties use the standard JVM Properties table and the running JVM permits this property access"
               ],
               "wallSeconds": 75.14786
+            },
+            {
+              "status": "established",
+              "record": "records/native-selectors/parent-fix/20261120T220835Z-adb5055d/tasks/count-parent-fix/result.json",
+              "admitted": 96,
+              "checked": 96,
+              "firstBlocker": null,
+              "file": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261120T220835Z-adb5055d/tasks/count-parent-fix/result.json",
+              "sha256": "64b2a11198443ba4d170532e30c736fef0289084ee965862eb0224fbb8198479",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 262.78764
             }
           ],
           "ordinaryOrExhaustiveNative": "established",
@@ -8239,7 +8724,22 @@
           "additionalContracts": [],
           "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 16,
+        "allRoutes": {
+          "refuted": 7,
+          "established": 9
+        },
+        "exhaustiveJVM": {
+          "refuted": 7,
+          "established": 9
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "refuted": 7,
+          "established": 9
+        }
+      }
     }
   ],
   "originalStartup": [
@@ -8247,7 +8747,9 @@
       "example": 310,
       "title": "ThreeTenBP complete hours across midnight",
       "directory": "examples/310-threeten-complete-hours",
-      "kind": null,
+      "origin": "real-world",
+      "role": "calibration",
+      "preparation": "source-slice",
       "subjects": {
         "parent": {
           "commit": "fea38bd81e10d35ef8d991a4463733587e3ee7bc"
@@ -8788,7 +9290,9 @@
       "example": 321,
       "title": "JFreeChart range endpoints with an empty series",
       "directory": "examples/321-jfreechart-empty-series-range",
-      "kind": null,
+      "origin": "real-world",
+      "role": "calibration",
+      "preparation": "source-slice",
       "subjects": {
         "parent": {
           "commit": "f210e33d06f03354fb49b98d2b2282f8c9a89303"
@@ -9790,7 +10294,9 @@
       "example": 327,
       "title": "Joda-Time distances between leap-year MonthDay values",
       "directory": "examples/327-joda-monthday-distance",
-      "kind": null,
+      "origin": "real-world",
+      "role": "calibration",
+      "preparation": "source-slice",
       "subjects": {
         "parent": {
           "commit": "efce99164f0bbd2c70e7f9d71884a32473e02c6d"
@@ -11509,74 +12015,74 @@
     {
       "job": "20261120-221141-346-bound-64-transfer-first-match-and-fr",
       "title": "346 bound 64 transfer first-match and frame to long arrays",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221141-346-bound-64-transfer-first-match-and-fr/result.json"
     },
     {
       "job": "20261120-221141-346-bound-8-transfer-first-match-and-fra",
       "title": "346 bound 8 transfer first-match and frame to long arrays",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221141-346-bound-8-transfer-first-match-and-fra/result.json"
     },
     {
       "job": "20261120-221142-336-retain-the-original-int-array-proofs",
       "title": "336 retain the original int-array proofs on the widened rule",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221142-336-retain-the-original-int-array-proofs/result.json"
     },
     {
       "job": "20261120-221142-337-retain-the-original-int-array-proofs",
       "title": "337 retain the original int-array proofs on the widened rule",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221142-337-retain-the-original-int-array-proofs/result.json"
     },
     {
       "job": "20261120-221142-346-certify-the-released-guava-long-trav",
       "title": "346 certify the released Guava long traversal for every legal length",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221142-346-certify-the-released-guava-long-trav/result.json"
     },
     {
       "job": "20261120-221142-347-fix-fix-check-multibyte-csv-fields-w",
       "title": "347 fix-fix check multibyte CSV fields with native code",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221142-347-fix-fix-check-multibyte-csv-fields-w/result.json"
     },
     {
       "job": "20261120-221142-347-fix-parent-check-multibyte-csv-field",
       "title": "347 fix-parent check multibyte CSV fields with native code",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221142-347-fix-parent-check-multibyte-csv-field/result.json"
     },
     {
       "job": "20261120-221142-347-independently-exhaust-the-four-unico",
       "title": "347 independently exhaust the four Unicode importer configurations",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221142-347-independently-exhaust-the-four-unico/result.json"
     },
     {
       "job": "20261120-221142-347-monolithic-strict-native-unicode-pag",
       "title": "347 monolithic strict native Unicode page transfer",
-      "status": "pending",
-      "result": null
+      "status": "failed",
+      "result": "verification/results/20261120-221142-347-monolithic-strict-native-unicode-pag/result.json"
     },
     {
       "job": "20261120-221142-347-parent-fix-check-multibyte-csv-field",
       "title": "347 parent-fix check multibyte CSV fields with native code",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221142-347-parent-fix-check-multibyte-csv-field/result.json"
     },
     {
       "job": "20261120-221142-347-parent-parent-check-multibyte-csv-fi",
       "title": "347 parent-parent check multibyte CSV fields with native code",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221142-347-parent-parent-check-multibyte-csv-fi/result.json"
     },
     {
       "job": "20261120-221803-331-rerun-the-remaining-helper-check-at",
       "title": "331 rerun the remaining helper check at its original budget",
-      "status": "pending",
-      "result": null
+      "status": "passed",
+      "result": "verification/results/20261120-221803-331-rerun-the-remaining-helper-check-at/result.json"
     }
   ],
   "startupCounts": {
@@ -11771,7 +12277,9 @@
       "example": 346,
       "title": "First matching 64-bit element in a released Guava array",
       "directory": "examples/346-guava-long-array-holdout",
-      "kind": null,
+      "origin": "real-world",
+      "role": "calibration",
+      "preparation": "published-artifact",
       "subjects": {
         "release": {
           "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
@@ -11792,8 +12300,12 @@
         "sha256": "0f7182fb13e33b622550d7d37c232d2833d7eec0fda622aa7a8a85eca4903e55"
       },
       "directJVMReceipts": [
+        "examples/346-guava-long-array-holdout/receipts/mutant-replay/20261120T220543Z-d39884d9/result.json",
+        "examples/346-guava-long-array-holdout/receipts/mutant-replay/20261120T221209Z-2820dbfc/result.json",
+        "examples/346-guava-long-array-holdout/receipts/mutant-replay/20261120T223140Z-9aaf662b/result.json",
         "examples/346-guava-long-array-holdout/receipts/replay/20261120T220542Z-9ff062a4/result.json",
-        "examples/346-guava-long-array-holdout/receipts/replay/20261120T221207Z-eb3705e6/result.json"
+        "examples/346-guava-long-array-holdout/receipts/replay/20261120T221207Z-eb3705e6/result.json",
+        "examples/346-guava-long-array-holdout/receipts/replay/20261120T223139Z-8f787e1a/result.json"
       ],
       "claims": [
         {
@@ -11815,14 +12327,60 @@
             "status": "not applicable"
           },
           "strictNative": {
-            "status": "open",
-            "attemptsInCampaign": 0
+            "status": "established",
+            "file": "examples/346-guava-long-array-holdout/receipts/first-8-release/20261120T222019Z-05de849c/result.json",
+            "sha256": "ec293353acb31f7be52f6d8648dc42e775a599d0ff0e802ff6da34f96d621cf0",
+            "preparedClaim": "d09cdec366c50554",
+            "runtimeClasspath": {
+              "release": [
+                {
+                  "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+                  "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+                  "role": "original"
+                },
+                {
+                  "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+                  "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+                  "role": "dependency"
+                },
+                {
+                  "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+                  "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+                  "role": "dependency"
+                }
+              ]
+            },
+            "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+            "restsOn": [
+              "every JDK class is initialized already, its static initializer having run and thrown nothing"
+            ],
+            "bounds": {
+              "unwind": 10,
+              "maxArrayLength": 8
+            },
+            "witnessInputs": [],
+            "latestRun": {
+              "file": "examples/346-guava-long-array-holdout/receipts/first-8-release/executions/20261120T222019Z-05de849c/attempt.json",
+              "sha256": "d3d0ea0b8d2dd90f9371d77fa90260d5dc6323f292af4ec225072abdae028567",
+              "job": "20261120-221141-346-bound-8-transfer-first-match-and-fra",
+              "stage": "receipt-published",
+              "budget": {
+                "checkerSeconds": 120
+              },
+              "usage": {
+                "cpuSeconds": 0.0536,
+                "peakRssBytes": 69926912,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "firstBlocker": null
+            },
+            "attemptsInCampaign": 1
           },
           "JVMWitnessReplays": [],
           "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "frame-8-release",
@@ -11843,14 +12401,60 @@
             "status": "not applicable"
           },
           "strictNative": {
-            "status": "open",
-            "attemptsInCampaign": 0
+            "status": "established",
+            "file": "examples/346-guava-long-array-holdout/receipts/frame-8-release/20261120T222020Z-75829702/result.json",
+            "sha256": "a953cee998470fe3827c615f5cd7afb1c8c1d0f98bdd3e4669a5cd8625cd6ac2",
+            "preparedClaim": "e6a2389a9a6d6a6b",
+            "runtimeClasspath": {
+              "release": [
+                {
+                  "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+                  "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+                  "role": "original"
+                },
+                {
+                  "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+                  "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+                  "role": "dependency"
+                },
+                {
+                  "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+                  "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+                  "role": "dependency"
+                }
+              ]
+            },
+            "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+            "restsOn": [
+              "every JDK class is initialized already, its static initializer having run and thrown nothing"
+            ],
+            "bounds": {
+              "unwind": 10,
+              "maxArrayLength": 8
+            },
+            "witnessInputs": [],
+            "latestRun": {
+              "file": "examples/346-guava-long-array-holdout/receipts/frame-8-release/executions/20261120T222020Z-75829702/attempt.json",
+              "sha256": "85f7cc5cdc4f60032d0e6377bc9f105d0e52bf72d450b7653d9b1bd858334e1a",
+              "job": "20261120-221141-346-bound-8-transfer-first-match-and-fra",
+              "stage": "receipt-published",
+              "budget": {
+                "checkerSeconds": 120
+              },
+              "usage": {
+                "cpuSeconds": 0.0617,
+                "peakRssBytes": 80986112,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "firstBlocker": null
+            },
+            "attemptsInCampaign": 1
           },
           "JVMWitnessReplays": [],
           "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "first-8-last",
@@ -11871,8 +12475,70 @@
             "status": "not applicable"
           },
           "strictNative": {
-            "status": "open",
-            "attemptsInCampaign": 0
+            "status": "refuted",
+            "file": "examples/346-guava-long-array-holdout/receipts/first-8-last/20261120T222021Z-03db1baa/result.json",
+            "sha256": "a5862c8526b8b81f399e5072c3cbf0a34b88ade0b019e1a9addf6347e9d9dde6",
+            "preparedClaim": "ed2e1e62d70fc0ac",
+            "runtimeClasspath": {
+              "mutant": [
+                {
+                  "path": "mutant/guava-33.4.8-jre.jar",
+                  "sha256": "624d70009284f77deb83a482c125d639e7a76be6c5efc7571f54edb70f21c92e",
+                  "role": "original"
+                },
+                {
+                  "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+                  "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+                  "role": "dependency"
+                },
+                {
+                  "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+                  "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+                  "role": "dependency"
+                }
+              ]
+            },
+            "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+            "restsOn": [
+              "every JDK class is initialized already, its static initializer having run and thrown nothing"
+            ],
+            "bounds": {
+              "unwind": 10,
+              "maxArrayLength": 8
+            },
+            "witnessInputs": [
+              [
+                {
+                  "name": "array",
+                  "type": "long[]",
+                  "value": [
+                    "0",
+                    "0"
+                  ]
+                },
+                {
+                  "name": "target",
+                  "type": "long",
+                  "value": "0"
+                }
+              ]
+            ],
+            "latestRun": {
+              "file": "examples/346-guava-long-array-holdout/receipts/first-8-last/executions/20261120T222021Z-03db1baa/attempt.json",
+              "sha256": "65dfafbb5addee033a2c46df2911ea7546903f5b9d72e4891e7466c55dbc52d8",
+              "job": "20261120-221141-346-bound-8-transfer-first-match-and-fra",
+              "stage": "receipt-published",
+              "budget": {
+                "checkerSeconds": 120
+              },
+              "usage": {
+                "cpuSeconds": 0.2838,
+                "peakRssBytes": 80986112,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "firstBlocker": null
+            },
+            "attemptsInCampaign": 1
           },
           "JVMWitnessReplays": [
             {
@@ -11881,7 +12547,7 @@
             }
           ],
           "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "ordinaryOrExhaustiveNative": "refuted",
           "additionalContracts": [],
           "obtained": "refuted"
         },
@@ -11904,14 +12570,60 @@
             "status": "not applicable"
           },
           "strictNative": {
-            "status": "open",
-            "attemptsInCampaign": 0
+            "status": "established",
+            "file": "examples/346-guava-long-array-holdout/receipts/frame-8-last/20261120T222026Z-af75f5a7/result.json",
+            "sha256": "0289c19f3da092d4afb37f5f2bfb38727c57549483eb3eac1e4ca7b63c2c5fb5",
+            "preparedClaim": "57f085cb78c57128",
+            "runtimeClasspath": {
+              "mutant": [
+                {
+                  "path": "mutant/guava-33.4.8-jre.jar",
+                  "sha256": "624d70009284f77deb83a482c125d639e7a76be6c5efc7571f54edb70f21c92e",
+                  "role": "original"
+                },
+                {
+                  "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+                  "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+                  "role": "dependency"
+                },
+                {
+                  "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+                  "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+                  "role": "dependency"
+                }
+              ]
+            },
+            "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+            "restsOn": [
+              "every JDK class is initialized already, its static initializer having run and thrown nothing"
+            ],
+            "bounds": {
+              "unwind": 10,
+              "maxArrayLength": 8
+            },
+            "witnessInputs": [],
+            "latestRun": {
+              "file": "examples/346-guava-long-array-holdout/receipts/frame-8-last/executions/20261120T222026Z-af75f5a7/attempt.json",
+              "sha256": "8e963b54ae554e642e9dbcfc59cdfd6f4485fb6566e6add1c7b825f5feda9fbc",
+              "job": "20261120-221141-346-bound-8-transfer-first-match-and-fra",
+              "stage": "receipt-published",
+              "budget": {
+                "checkerSeconds": 120
+              },
+              "usage": {
+                "cpuSeconds": 0.1029,
+                "peakRssBytes": 80986112,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "firstBlocker": null
+            },
+            "attemptsInCampaign": 1
           },
           "JVMWitnessReplays": [],
           "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "first-64-release",
@@ -11932,13 +12644,124 @@
             "status": "not applicable"
           },
           "strictNative": {
-            "status": "open",
-            "attemptsInCampaign": 0
+            "status": "established",
+            "file": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/result.json",
+            "sha256": "0ac5115476bdd678051082e885f5f023b048e3ad92f0213c928e8cbe67008aec",
+            "preparedClaim": "2ac3244bc5438b39",
+            "runtimeClasspath": {
+              "release": [
+                {
+                  "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+                  "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+                  "role": "original"
+                },
+                {
+                  "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+                  "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+                  "role": "dependency"
+                },
+                {
+                  "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+                  "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+                  "role": "dependency"
+                }
+              ]
+            },
+            "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+            "restsOn": [
+              "every JDK class is initialized already, its static initializer having run and thrown nothing"
+            ],
+            "bounds": {
+              "unwind": 66,
+              "maxArrayLength": 64
+            },
+            "witnessInputs": [],
+            "latestRun": {
+              "file": "examples/346-guava-long-array-holdout/receipts/first-64-release/executions/20261120T222019Z-b19fbec3/attempt.json",
+              "sha256": "0dca99b2f3c8473ab8ab902563513a10703c48806886b831a987300ae435fbf9",
+              "job": "20261120-221141-346-bound-64-transfer-first-match-and-fr",
+              "stage": "receipt-published",
+              "budget": {
+                "checkerSeconds": 120
+              },
+              "usage": {
+                "cpuSeconds": 0.8138,
+                "peakRssBytes": 70361088,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "firstBlocker": null
+            },
+            "attemptsInCampaign": 1
           },
           "JVMWitnessReplays": [],
           "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [
+            {
+              "route": "native bytecode induction",
+              "id": "first-any-length",
+              "file": "examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/result.json",
+              "sha256": "b777d56543f02402779368bb6dd02e385c3e4b7fcda316e7625adb97c199cfcb",
+              "scope": "Every non-null, already allocated long array of legal Java length and all signed scalar inputs.",
+              "status": "established",
+              "obligations": [
+                {
+                  "name": "nonempty input domain",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "maximal signed length admitted",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "distinct elements can have identical low 32 bits",
+                  "expected": "sat",
+                  "obtained": "sat"
+                },
+                {
+                  "name": "entry establishes invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "safe array access at 13",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "return the earliest match or minus one",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "preserve the input heap",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "iteration preserves invariant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "nonnegative strictly decreasing Java-int variant",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "return the earliest match or minus one",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                },
+                {
+                  "name": "preserve the input heap",
+                  "expected": "unsat",
+                  "obtained": "unsat"
+                }
+              ]
+            },
             {
               "route": "native bytecode induction",
               "id": "first-any-length",
@@ -12005,7 +12828,7 @@
               ]
             }
           ],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "frame-64-release",
@@ -12026,14 +12849,60 @@
             "status": "not applicable"
           },
           "strictNative": {
-            "status": "open",
-            "attemptsInCampaign": 0
+            "status": "established",
+            "file": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/result.json",
+            "sha256": "0bda91841845708c895502f4da1fdcf56dc95d06e028dc938214c031d8eb0154",
+            "preparedClaim": "2f154da8414bf0d3",
+            "runtimeClasspath": {
+              "release": [
+                {
+                  "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+                  "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+                  "role": "original"
+                },
+                {
+                  "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+                  "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+                  "role": "dependency"
+                },
+                {
+                  "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+                  "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+                  "role": "dependency"
+                }
+              ]
+            },
+            "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+            "restsOn": [
+              "every JDK class is initialized already, its static initializer having run and thrown nothing"
+            ],
+            "bounds": {
+              "unwind": 66,
+              "maxArrayLength": 64
+            },
+            "witnessInputs": [],
+            "latestRun": {
+              "file": "examples/346-guava-long-array-holdout/receipts/frame-64-release/executions/20261120T222022Z-258fcdb1/attempt.json",
+              "sha256": "9d83af19662355f3c3ff79b1d7ed6c125d72ea63f9728e5c0a83cf4d3441a56f",
+              "job": "20261120-221141-346-bound-64-transfer-first-match-and-fr",
+              "stage": "receipt-published",
+              "budget": {
+                "checkerSeconds": 120
+              },
+              "usage": {
+                "cpuSeconds": 40.6077,
+                "peakRssBytes": 649957376,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "firstBlocker": null
+            },
+            "attemptsInCampaign": 1
           },
           "JVMWitnessReplays": [],
           "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "first-64-last",
@@ -12054,14 +12923,76 @@
             "status": "not applicable"
           },
           "strictNative": {
-            "status": "open",
-            "attemptsInCampaign": 0
+            "status": "refuted",
+            "file": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/result.json",
+            "sha256": "efe443eb798779f989fb2553e988db38b8c7cfb00226e0136bbf8c83cdbe0dcc",
+            "preparedClaim": "35c11eb0922d0aa2",
+            "runtimeClasspath": {
+              "mutant": [
+                {
+                  "path": "mutant/guava-33.4.8-jre.jar",
+                  "sha256": "624d70009284f77deb83a482c125d639e7a76be6c5efc7571f54edb70f21c92e",
+                  "role": "original"
+                },
+                {
+                  "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+                  "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+                  "role": "dependency"
+                },
+                {
+                  "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+                  "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+                  "role": "dependency"
+                }
+              ]
+            },
+            "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+            "restsOn": [
+              "every JDK class is initialized already, its static initializer having run and thrown nothing"
+            ],
+            "bounds": {
+              "unwind": 66,
+              "maxArrayLength": 64
+            },
+            "witnessInputs": [
+              [
+                {
+                  "name": "array",
+                  "type": "long[]",
+                  "value": [
+                    "0",
+                    "0"
+                  ]
+                },
+                {
+                  "name": "target",
+                  "type": "long",
+                  "value": "0"
+                }
+              ]
+            ],
+            "latestRun": {
+              "file": "examples/346-guava-long-array-holdout/receipts/first-64-last/executions/20261120T222103Z-3330981e/attempt.json",
+              "sha256": "06beb8777d5175ad1bfbf40acfe57f6a95e571dc4580d6d343c0cfa8e5aae723",
+              "job": "20261120-221141-346-bound-64-transfer-first-match-and-fr",
+              "stage": "receipt-published",
+              "budget": {
+                "checkerSeconds": 120
+              },
+              "usage": {
+                "cpuSeconds": 91.8829,
+                "peakRssBytes": 752996352,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "firstBlocker": null
+            },
+            "attemptsInCampaign": 1
           },
           "JVMWitnessReplays": [],
           "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "ordinaryOrExhaustiveNative": "refuted",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "refuted"
         },
         {
           "task": "frame-64-last",
@@ -12082,22 +13013,84 @@
             "status": "not applicable"
           },
           "strictNative": {
-            "status": "open",
-            "attemptsInCampaign": 0
+            "status": "established",
+            "file": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/result.json",
+            "sha256": "b0b84228b5fefd42a242b229f23073de170907debe748084116a650dc1e016c6",
+            "preparedClaim": "d18ec8b8dd6cae7a",
+            "runtimeClasspath": {
+              "mutant": [
+                {
+                  "path": "mutant/guava-33.4.8-jre.jar",
+                  "sha256": "624d70009284f77deb83a482c125d639e7a76be6c5efc7571f54edb70f21c92e",
+                  "role": "original"
+                },
+                {
+                  "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+                  "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+                  "role": "dependency"
+                },
+                {
+                  "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+                  "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+                  "role": "dependency"
+                }
+              ]
+            },
+            "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+            "restsOn": [
+              "every JDK class is initialized already, its static initializer having run and thrown nothing"
+            ],
+            "bounds": {
+              "unwind": 66,
+              "maxArrayLength": 64
+            },
+            "witnessInputs": [],
+            "latestRun": {
+              "file": "examples/346-guava-long-array-holdout/receipts/frame-64-last/executions/20261120T222239Z-af91ad3f/attempt.json",
+              "sha256": "778260bb3bffc89a84cbb2999fbaf84c4586fed1f1a998e163f70603462266be",
+              "job": "20261120-221141-346-bound-64-transfer-first-match-and-fr",
+              "stage": "receipt-published",
+              "budget": {
+                "checkerSeconds": 120
+              },
+              "usage": {
+                "cpuSeconds": 102.7427,
+                "peakRssBytes": 1262968832,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "firstBlocker": null
+            },
+            "attemptsInCampaign": 1
           },
           "JVMWitnessReplays": [],
           "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 8,
+        "allRoutes": {
+          "established": 6,
+          "refuted": 2
+        },
+        "exhaustiveJVM": {
+          "not applicable": 8
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "established": 6,
+          "refuted": 2
+        }
+      }
     },
     {
       "example": 347,
       "title": "A four-byte character crosses reads in the unchanged importer",
       "directory": "examples/347-importer-four-byte-field",
-      "kind": null,
+      "origin": "constructed",
+      "role": "control",
+      "preparation": "fixture",
       "subjects": {
         "parent-parent": {
           "fixture": "client",
@@ -12195,6 +13188,7 @@
       "directJVMReceipts": [
         "examples/347-importer-four-byte-field/receipts/replay/20261120T221050Z-d0537f1c/result.json",
         "examples/347-importer-four-byte-field/receipts/replay/20261120T221214Z-8a233c64/result.json",
+        "examples/347-importer-four-byte-field/receipts/replay/20261120T223145Z-54a51a82/result.json",
         "examples/347-importer-four-byte-field/receipts/replay-csv/20261120T221100Z-49b55b54/result.json",
         "examples/347-importer-four-byte-field/receipts/replay-io/20261120T221055Z-7f68ba46/result.json"
       ],
@@ -12215,17 +13209,44 @@
           },
           "expected": "refuted",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "refuted",
+            "inputs": 32,
+            "disagreements": 16,
+            "wallSeconds": 4.4523,
+            "peakJvmRssBytes": 86167552,
+            "witnessInputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 4
+              }
+            ],
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/bytes-parent-parent.json",
+            "sha256": "9f1e3affd85e16f09ffd3ee8bd939ac5e01afdb74ef0821b05d5470c4ed53a5b"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "refuted",
+              "record": "records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/bytes-parent-parent/result.json",
+              "admitted": 32,
+              "checked": 1,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/bytes-parent-parent/result.json",
+              "sha256": "b21b8c58cebc0367fa4bee29666b5e2554a682b10255cf02927e30496e3592c9",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing"
+              ],
+              "wallSeconds": 0.6871
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "refuted",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "refuted"
         },
         {
           "task": "count-parent-parent",
@@ -12243,17 +13264,45 @@
           },
           "expected": "refuted",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "refuted",
+            "inputs": 32,
+            "disagreements": 16,
+            "wallSeconds": 4.6306,
+            "peakJvmRssBytes": 115068928,
+            "witnessInputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 2
+              }
+            ],
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/count-parent-parent.json",
+            "sha256": "ca461002d394ba6c91acef5dab39d4619c9759d19fe70f2b2a77b5edd4eda030"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "refuted",
+              "record": "records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/count-parent-parent/result.json",
+              "admitted": 32,
+              "checked": 1,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/count-parent-parent/result.json",
+              "sha256": "44b7318c98aaef6bc2ca53c3b3232a7e19df6f91cce7946493a0cc98f11f40ee",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 2.79194
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "refuted",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "refuted"
         },
         {
           "task": "page-parent-parent",
@@ -12271,17 +13320,45 @@
           },
           "expected": "refuted",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "refuted",
+            "inputs": 32,
+            "disagreements": 24,
+            "wallSeconds": 1.6088,
+            "peakJvmRssBytes": 112820224,
+            "witnessInputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 2
+              }
+            ],
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/page-parent-parent.json",
+            "sha256": "6dc5e28e016d8decd143afa8219bcbf5697be081b93d6401e749ed7939da75ee"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "refuted",
+              "record": "records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/page-parent-parent/result.json",
+              "admitted": 32,
+              "checked": 1,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/page-parent-parent/result.json",
+              "sha256": "e45e099c43090fb68df5c61109981a25a70eadae135f20d88074bbe49e208f8a",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 3.07541
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "refuted",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "refuted"
         },
         {
           "task": "positive-parent-parent",
@@ -12299,17 +13376,39 @@
           },
           "expected": "established",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "established",
+            "inputs": 8,
+            "disagreements": 0,
+            "wallSeconds": 0.82,
+            "peakJvmRssBytes": 67399680,
+            "witnessInputs": null,
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/positive-parent-parent.json",
+            "sha256": "d29fd78798ed6a95430ce17a8407bcfe624d7ae98c50675b969d286d188663d1"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "established",
+              "record": "records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/positive-parent-parent/result.json",
+              "admitted": 8,
+              "checked": 8,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/positive-parent-parent/result.json",
+              "sha256": "03de432d9cbfdcba47513b63d8602b23958ae5e728dfc5c7cb423319176afe24",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 29.79508
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "bytes-parent-fix",
@@ -12327,17 +13426,44 @@
           },
           "expected": "refuted",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "refuted",
+            "inputs": 32,
+            "disagreements": 16,
+            "wallSeconds": 3.9372,
+            "peakJvmRssBytes": 84082688,
+            "witnessInputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 4
+              }
+            ],
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/bytes-parent-fix.json",
+            "sha256": "2496cfafc78c6e2e492dca10b700900b729d742b56e6d666075e8f3a74825b20"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "refuted",
+              "record": "records/native-selectors/parent-fix/20261120T222019Z-69ce97f9/tasks/bytes-parent-fix/result.json",
+              "admitted": 32,
+              "checked": 1,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/parent-fix/20261120T222019Z-69ce97f9/tasks/bytes-parent-fix/result.json",
+              "sha256": "5e23c0130aa8ea0a069fe3911d1e8d6ea4c9129cc9a88cfaaee5bba050b395e9",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing"
+              ],
+              "wallSeconds": 0.82904
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "refuted",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "refuted"
         },
         {
           "task": "count-parent-fix",
@@ -12355,17 +13481,39 @@
           },
           "expected": "established",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "established",
+            "inputs": 32,
+            "disagreements": 0,
+            "wallSeconds": 3.154,
+            "peakJvmRssBytes": 113569792,
+            "witnessInputs": null,
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/count-parent-fix.json",
+            "sha256": "2552be15432e74ff0862d029e0cbf896cd7abdd66b41c988d2c9e460f8fb52c6"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "established",
+              "record": "records/native-selectors/parent-fix/20261120T222019Z-69ce97f9/tasks/count-parent-fix/result.json",
+              "admitted": 32,
+              "checked": 32,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/parent-fix/20261120T222019Z-69ce97f9/tasks/count-parent-fix/result.json",
+              "sha256": "ae4d6878fe2f58481e00d643900f3bdb5110b17e3733894da7a540742242a644",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 117.30475
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "page-parent-fix",
@@ -12383,17 +13531,45 @@
           },
           "expected": "refuted",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "refuted",
+            "inputs": 32,
+            "disagreements": 16,
+            "wallSeconds": 1.633,
+            "peakJvmRssBytes": 117932032,
+            "witnessInputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 4
+              }
+            ],
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/page-parent-fix.json",
+            "sha256": "3f6eee151d60f46553826083bfcc6416bd151079cc66c41be7ec01099dacd6a3"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "refuted",
+              "record": "records/native-selectors/parent-fix/20261120T222019Z-69ce97f9/tasks/page-parent-fix/result.json",
+              "admitted": 32,
+              "checked": 1,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/parent-fix/20261120T222019Z-69ce97f9/tasks/page-parent-fix/result.json",
+              "sha256": "b8951d626cd1125b36fed12af5733ff1dbf98700fad7eead25f2ae06db77783f",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 6.1511
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "refuted",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "refuted"
         },
         {
           "task": "positive-parent-fix",
@@ -12411,17 +13587,39 @@
           },
           "expected": "established",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "established",
+            "inputs": 8,
+            "disagreements": 0,
+            "wallSeconds": 0.7411,
+            "peakJvmRssBytes": 67903488,
+            "witnessInputs": null,
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/positive-parent-fix.json",
+            "sha256": "c319db5d903fb060be0eda14fb8ea7af36d4af8dceeb7507c21580eb427a2b8a"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "established",
+              "record": "records/native-selectors/parent-fix/20261120T222019Z-69ce97f9/tasks/positive-parent-fix/result.json",
+              "admitted": 8,
+              "checked": 8,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/parent-fix/20261120T222019Z-69ce97f9/tasks/positive-parent-fix/result.json",
+              "sha256": "6f4f11cbd1f595e966cb8ff32d59e4d2591a09fda1f0d20dc5a5fa9e95409a74",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 26.69282
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "bytes-fix-parent",
@@ -12439,17 +13637,38 @@
           },
           "expected": "established",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "established",
+            "inputs": 32,
+            "disagreements": 0,
+            "wallSeconds": 3.3702,
+            "peakJvmRssBytes": 84385792,
+            "witnessInputs": null,
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/bytes-fix-parent.json",
+            "sha256": "081009f910c97266e8df837bcfd66ef2c35e2df11f1adacbdc1b59f06f11efc3"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "established",
+              "record": "records/native-selectors/fix-parent/20261120T222019Z-db28c646/tasks/bytes-fix-parent/result.json",
+              "admitted": 32,
+              "checked": 32,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/fix-parent/20261120T222019Z-db28c646/tasks/bytes-fix-parent/result.json",
+              "sha256": "bb02d7e5024a49f43ff4c54fe7df9882631f6e043fb01ff09fca170d2ff59987",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing"
+              ],
+              "wallSeconds": 3.60389
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "count-fix-parent",
@@ -12467,17 +13686,45 @@
           },
           "expected": "refuted",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "refuted",
+            "inputs": 32,
+            "disagreements": 16,
+            "wallSeconds": 3.7126,
+            "peakJvmRssBytes": 113311744,
+            "witnessInputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 2
+              }
+            ],
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/count-fix-parent.json",
+            "sha256": "36d249e01b00b855e4cdfcc7d10e45ee96c7f045c6bac90f90acf186968b1924"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "refuted",
+              "record": "records/native-selectors/fix-parent/20261120T222019Z-db28c646/tasks/count-fix-parent/result.json",
+              "admitted": 32,
+              "checked": 1,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/fix-parent/20261120T222019Z-db28c646/tasks/count-fix-parent/result.json",
+              "sha256": "dbd5d91a937607f8711beba80b668bebda190c1b1afad9d015850dc47f7dab08",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 2.76608
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "refuted",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "refuted"
         },
         {
           "task": "page-fix-parent",
@@ -12495,17 +13742,45 @@
           },
           "expected": "refuted",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "refuted",
+            "inputs": 32,
+            "disagreements": 16,
+            "wallSeconds": 1.7481,
+            "peakJvmRssBytes": 114208768,
+            "witnessInputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 2
+              }
+            ],
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/page-fix-parent.json",
+            "sha256": "af48854ec8b380f03b4e9da577a9d60e985d5746860e2e463671a71220b136f1"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "refuted",
+              "record": "records/native-selectors/fix-parent/20261120T222019Z-db28c646/tasks/page-fix-parent/result.json",
+              "admitted": 32,
+              "checked": 1,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/fix-parent/20261120T222019Z-db28c646/tasks/page-fix-parent/result.json",
+              "sha256": "014a2788b4c0c3d59af5dbc281fd50e250329a27530135255d6112d34653a8db",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 3.10453
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "refuted",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "refuted"
         },
         {
           "task": "positive-fix-parent",
@@ -12523,17 +13798,39 @@
           },
           "expected": "established",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "established",
+            "inputs": 8,
+            "disagreements": 0,
+            "wallSeconds": 0.7945,
+            "peakJvmRssBytes": 68395008,
+            "witnessInputs": null,
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/positive-fix-parent.json",
+            "sha256": "8ca4ea26f57f126ce6d2eefc0a15af5a29997e68816c2da299ec675e92942a93"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "established",
+              "record": "records/native-selectors/fix-parent/20261120T222019Z-db28c646/tasks/positive-fix-parent/result.json",
+              "admitted": 8,
+              "checked": 8,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/fix-parent/20261120T222019Z-db28c646/tasks/positive-fix-parent/result.json",
+              "sha256": "e7107b71578354fab06c4282c5609c6f8ab1538a7d8b1ae090ff68e1b5c7ef18",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 30.19874
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "bytes-fix-fix",
@@ -12551,17 +13848,38 @@
           },
           "expected": "established",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "established",
+            "inputs": 32,
+            "disagreements": 0,
+            "wallSeconds": 3.3841,
+            "peakJvmRssBytes": 83636224,
+            "witnessInputs": null,
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/bytes-fix-fix.json",
+            "sha256": "17400cc108f577657128d1e0f2555d7c3790fd1dc50978cb8c2117bd7555a9d8"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "established",
+              "record": "records/native-selectors/fix-fix/20261120T222019Z-eb07e39a/tasks/bytes-fix-fix/result.json",
+              "admitted": 32,
+              "checked": 32,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/fix-fix/20261120T222019Z-eb07e39a/tasks/bytes-fix-fix/result.json",
+              "sha256": "03c039967f46509a7b52030ba91dff3dd65aa428312f8dd07ce5a637cd67da7d",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing"
+              ],
+              "wallSeconds": 3.631
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "count-fix-fix",
@@ -12579,17 +13897,39 @@
           },
           "expected": "established",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "established",
+            "inputs": 32,
+            "disagreements": 0,
+            "wallSeconds": 3.4429,
+            "peakJvmRssBytes": 115113984,
+            "witnessInputs": null,
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/count-fix-fix.json",
+            "sha256": "28850c7bf1e63f738e8b260665437ee2a3ed7d9a3548351549ec4aa7854d1692"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "established",
+              "record": "records/native-selectors/fix-fix/20261120T222019Z-eb07e39a/tasks/count-fix-fix/result.json",
+              "admitted": 32,
+              "checked": 32,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/fix-fix/20261120T222019Z-eb07e39a/tasks/count-fix-fix/result.json",
+              "sha256": "a26398d862faedc7f2462feedf062a2ac1cc50cc28f73b64523ace34962ba8a7",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 112.1073
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "page-fix-fix",
@@ -12607,17 +13947,54 @@
           },
           "expected": "established",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "established",
+            "inputs": 32,
+            "disagreements": 0,
+            "wallSeconds": 1.0774,
+            "peakJvmRssBytes": 113659904,
+            "witnessInputs": null,
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/page-fix-fix.json",
+            "sha256": "50e55be872915f86c45c71764151eac9eeaa7f8e946e0cb4b4939d14879aabb1"
           },
           "strictNative": {
             "status": "open",
-            "attemptsInCampaign": 0
+            "latestRun": {
+              "file": "verification/results/20261120-221142-347-monolithic-strict-native-unicode-pag/outputs/examples/347-importer-four-byte-field/receipts/page-fix-fix/executions/20261120T222019Z-3df70336/attempt.json",
+              "sha256": "85c59bbefb8f549d1a1d8ced202e15e66936ba8c5c23af390b5dc7b5540fe3cd",
+              "job": "20261120-221142-347-monolithic-strict-native-unicode-pag",
+              "stage": "receipt-published",
+              "budget": {
+                "checkerSeconds": 90
+              },
+              "usage": {
+                "cpuSeconds": 90.643,
+                "peakRssBytes": 1804120064,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "firstBlocker": "the engine did not finish within the time limit"
+            },
+            "attemptsInCampaign": 1
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "established",
+              "record": "records/native-selectors/fix-fix/20261120T222019Z-eb07e39a/tasks/page-fix-fix/result.json",
+              "admitted": 32,
+              "checked": 32,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/fix-fix/20261120T222019Z-eb07e39a/tasks/page-fix-fix/result.json",
+              "sha256": "9b13d7286bb6c2f79a80f791c0e48177a21915306021414a7698763b6c474e35",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 103.23123
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         },
         {
           "task": "positive-fix-fix",
@@ -12635,26 +14012,65 @@
           },
           "expected": "established",
           "finiteJVM": {
-            "status": "not applicable"
+            "status": "established",
+            "inputs": 8,
+            "disagreements": 0,
+            "wallSeconds": 0.7412,
+            "peakJvmRssBytes": 67158016,
+            "witnessInputs": null,
+            "file": "examples/347-importer-four-byte-field/records/finite-proofs/20261120T222019Z-94d2f2bf/positive-fix-fix.json",
+            "sha256": "ec8972193ed079d19cca9ba0462ca12122ce753d92831ff2a0848619d08dbb49"
           },
           "strictNative": {
-            "status": "open",
+            "status": "not run",
             "attemptsInCampaign": 0
           },
           "JVMWitnessReplays": [],
-          "nativeCaseAnalysis": [],
-          "ordinaryOrExhaustiveNative": "open",
+          "nativeCaseAnalysis": [
+            {
+              "status": "established",
+              "record": "records/native-selectors/fix-fix/20261120T222019Z-eb07e39a/tasks/positive-fix-fix/result.json",
+              "admitted": 8,
+              "checked": 8,
+              "firstBlocker": null,
+              "file": "examples/347-importer-four-byte-field/records/native-selectors/fix-fix/20261120T222019Z-eb07e39a/tasks/positive-fix-fix/result.json",
+              "sha256": "3e299b4379435a06e640622787acf54631834e2991a07df8425f46c4494f6813",
+              "assumptions": [
+                "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "system properties use the standard JVM Properties table and the running JVM permits this property access"
+              ],
+              "wallSeconds": 0.00018
+            }
+          ],
+          "ordinaryOrExhaustiveNative": "established",
           "additionalContracts": [],
-          "obtained": "open"
+          "obtained": "established"
         }
-      ]
+      ],
+      "counts": {
+        "frozenPairs": 16,
+        "allRoutes": {
+          "refuted": 7,
+          "established": 9
+        },
+        "exhaustiveJVM": {
+          "refuted": 7,
+          "established": 9
+        },
+        "strictNativeIncludingCaseAnalysis": {
+          "refuted": 7,
+          "established": 9
+        }
+      }
     }
   ],
   "supplementalUnicode": {
     "example": 341,
     "title": "A UTF-8 decoder across every byte partition",
     "directory": "examples/341-utf8-chunk-boundaries",
-    "kind": null,
+    "origin": "constructed",
+    "role": "control",
+    "preparation": "fixture",
     "subjects": {
       "stream": {
         "fixture": "stream"
@@ -12700,7 +14116,7 @@
           "status": "not applicable"
         },
         "strictNative": {
-          "status": "open",
+          "status": "not run",
           "attemptsInCampaign": 0
         },
         "JVMWitnessReplays": [],
@@ -12743,7 +14159,7 @@
           "status": "not applicable"
         },
         "strictNative": {
-          "status": "open",
+          "status": "not run",
           "attemptsInCampaign": 0
         },
         "JVMWitnessReplays": [],
@@ -12785,7 +14201,7 @@
           "status": "not applicable"
         },
         "strictNative": {
-          "status": "open",
+          "status": "not run",
           "attemptsInCampaign": 0
         },
         "JVMWitnessReplays": [],
@@ -12828,7 +14244,7 @@
           "status": "not applicable"
         },
         "strictNative": {
-          "status": "open",
+          "status": "not run",
           "attemptsInCampaign": 0
         },
         "JVMWitnessReplays": [],
@@ -12871,7 +14287,7 @@
           "status": "not applicable"
         },
         "strictNative": {
-          "status": "open",
+          "status": "not run",
           "attemptsInCampaign": 0
         },
         "JVMWitnessReplays": [],
@@ -12913,7 +14329,7 @@
           "status": "not applicable"
         },
         "strictNative": {
-          "status": "open",
+          "status": "not run",
           "attemptsInCampaign": 0
         },
         "JVMWitnessReplays": [],
@@ -12973,9 +14389,11 @@
         "sha256": "9e1d0cedef4e6f825756651db30948053f7f78dabf0fedeb050cdaaaf80bd7b3"
       },
       "matchingBudgetRetry": {
-        "job": "20261120-221803-331-rerun-the-remaining-helper-check-at",
-        "status": "pending"
-      }
+        "file": "verification/results/20261120-221803-331-rerun-the-remaining-helper-check-at/result.json",
+        "sha256": "b601740e28b165769d16573e1c7cc067c8380be02d542bbe1f2751f37b90f9ba",
+        "status": "passed"
+      },
+      "aggregate": "All eleven frozen outcomes met expectation. Ten passed in the batch and the remaining helper passed the individual retry at the same 25-second checker budget."
     },
     "JBMC and auto": {
       "file": "verification/results/20261120-213850-compare-new-decoder-bytecode-with-jbmc-a/result.json",
@@ -12990,9 +14408,176 @@
       "summary": "passed: 1 passed step(s) in 25m37s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1"
     }
   },
+  "heldOutTransfers": {
+    "longArray": {
+      "firstPublicRuleAttempt": {
+        "file": "examples/346-guava-long-array-holdout/records/transfer-baseline.json",
+        "sha256": "0f7182fb13e33b622550d7d37c232d2833d7eec0fda622aa7a8a85eca4903e55"
+      },
+      "arbitraryLengths": [
+        {
+          "route": "native bytecode induction",
+          "id": "first-any-length",
+          "file": "examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/result.json",
+          "sha256": "b777d56543f02402779368bb6dd02e385c3e4b7fcda316e7625adb97c199cfcb",
+          "scope": "Every non-null, already allocated long array of legal Java length and all signed scalar inputs.",
+          "status": "established",
+          "obligations": [
+            {
+              "name": "nonempty input domain",
+              "expected": "sat",
+              "obtained": "sat"
+            },
+            {
+              "name": "maximal signed length admitted",
+              "expected": "sat",
+              "obtained": "sat"
+            },
+            {
+              "name": "distinct elements can have identical low 32 bits",
+              "expected": "sat",
+              "obtained": "sat"
+            },
+            {
+              "name": "entry establishes invariant",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "safe array access at 13",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "return the earliest match or minus one",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "preserve the input heap",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "iteration preserves invariant",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "nonnegative strictly decreasing Java-int variant",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "return the earliest match or minus one",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "preserve the input heap",
+              "expected": "unsat",
+              "obtained": "unsat"
+            }
+          ]
+        },
+        {
+          "route": "native bytecode induction",
+          "id": "first-any-length",
+          "file": "examples/346-guava-long-array-holdout/records/array-induction/first-any-length/30437c63909c329614e6/result.json",
+          "sha256": "e791bb25f3b218550077bac20ac367714f9cbc6070dd70c051bec72e7aa3de60",
+          "scope": "Every non-null, already allocated long array of legal Java length and all signed scalar inputs.",
+          "status": "established",
+          "obligations": [
+            {
+              "name": "nonempty input domain",
+              "expected": "sat",
+              "obtained": "sat"
+            },
+            {
+              "name": "maximal signed length admitted",
+              "expected": "sat",
+              "obtained": "sat"
+            },
+            {
+              "name": "distinct elements can have identical low 32 bits",
+              "expected": "sat",
+              "obtained": "sat"
+            },
+            {
+              "name": "entry establishes invariant",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "safe array access at 13",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "return the earliest match or minus one",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "preserve the input heap",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "iteration preserves invariant",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "nonnegative strictly decreasing Java-int variant",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "return the earliest match or minus one",
+              "expected": "unsat",
+              "obtained": "unsat"
+            },
+            {
+              "name": "preserve the input heap",
+              "expected": "unsat",
+              "obtained": "unsat"
+            }
+          ]
+        }
+      ],
+      "directInputsPerRevision": 1364,
+      "cellBits": 64,
+      "indexBits": 32
+    },
+    "fourByteField": {
+      "evidence": {
+        "file": "examples/347-importer-four-byte-field/records/decoder-transfer.json",
+        "sha256": "79d16bdf3bf6b3568fb82cb3406f9c41f64f0cc91ea05d3f7417bb2810efd0b9"
+      },
+      "matrix": {
+        "file": "examples/347-importer-four-byte-field/records/matrix/matrix.json",
+        "sha256": "befdcfc73790a7f8f03163aec67c28ae1f4b7630063b70bb794c3b7ed8c6d35c"
+      },
+      "directInputsPerConfiguration": 32,
+      "producerReceipts": 4,
+      "oneByteCuts": [
+        5,
+        6,
+        7
+      ],
+      "sameNativeLibraryTree": "eb6e139244595c7174c992df962f66b168dc1d1d"
+    }
+  },
+  "originalScopeLimits": {
+    "333": "Whole native entry reaches ClassLoader.getPlatformClassLoader. The scoped loader corpus was settled on the JVM.",
+    "334": "Whole native entry reaches TimeZone.getTimeZone(String). JDK image, tzdb bytes and finite valid-offset outcomes are pinned.",
+    "341": "The original per-chunk units claim has a strict native counterexample. Five whole native claims remain open. All 5,578 partitions were checked on the JVM.",
+    "342-344": "Bytecode-derived bounded schedule outcomes are separate from the ordinary whole-launcher checks and from a general Java Memory Model proof.",
+    "310,321,327": "Five scoped native witnesses refute their original claims on the unmodified JVM. Eighteen positive results retain startup assumptions."
+  },
   "queueCounts": {
-    "passed": 62,
-    "failed": 36,
-    "pending": 12
+    "passed": 73,
+    "failed": 37
   }
 }

@@ -1,0 +1,683 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-221141-346-bound-64-transfer-first-match-and-fr",
+  "title": "346 bound 64 transfer first-match and frame to long arrays",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m03s, peak 1.3 GiB (estimated 7m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-221141-346-bound-64-transfer-first-match-and-fr.json",
+    "sha256": "4137963c14be09b00f67db1cbb247644eaa0fc87432c6dec26ef644a01a4b3aa",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-221141-346-bound-64-transfer-first-match-and-fr",
+      "title": "346 bound 64 transfer first-match and frame to long arrays",
+      "description": "Use the same original 32-bit lengths, return indexes and unwind progression as 336 with arbitrary signed 64-bit cells and target. Check the released forward search and the reversed negative control, and qualify long-array witnesses on the original JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "346"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T22:11:41+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "7m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 346 --tasks first-64-release,frame-64-release,first-64-last,frame-64-last --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/346-guava-long-array-holdout/receipts/first-64-release",
+        "examples/346-guava-long-array-holdout/receipts/frame-64-release",
+        "examples/346-guava-long-array-holdout/receipts/first-64-last",
+        "examples/346-guava-long-array-holdout/receipts/frame-64-last"
+      ]
+    }
+  },
+  "sourceCommit": "aa042b39d8ccdaadc1e69f953d3899acd1b11250",
+  "startedAt": "2026-11-20T22:20:07+00:00",
+  "finishedAt": "2026-11-20T22:24:23+00:00",
+  "wallSeconds": 256.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2445690,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1395191808,
+    "wallSeconds": 243.5,
+    "cpuSeconds": 247.5,
+    "memoryOfEstimate": 0.65,
+    "durationOfEstimate": 0.58
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 346 --tasks first-64-release,frame-64-release,first-64-last,frame-64-last --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 243.548,
+      "cpuSeconds": 247.497,
+      "cpuThrottledSeconds": 0.55,
+      "peakMemoryBytes": 1395191808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 8,
+        "bytes": 930,
+        "sha256": "1eea8a2024dda230addeb412f10d04380956f87c7031cce5334d5de74a8aace5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "346-guava-long-array-holdout: task first-64-release: established (completed; as expected), receipt receipts/first-64-release/20261120T222019Z-b19fbec3/result.json",
+          "groups": [
+            "346",
+            "first-64-release",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "346-guava-long-array-holdout: task frame-64-release: established (completed; as expected), receipt receipts/frame-64-release/20261120T222022Z-258fcdb1/result.json",
+          "groups": [
+            "346",
+            "frame-64-release",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "346-guava-long-array-holdout: task first-64-last: refuted (completed; as expected), receipt receipts/first-64-last/20261120T222103Z-3330981e/result.json",
+          "groups": [
+            "346",
+            "first-64-last",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "346-guava-long-array-holdout: task frame-64-last: established (completed; as expected), receipt receipts/frame-64-last/20261120T222239Z-af91ad3f/result.json",
+          "groups": [
+            "346",
+            "frame-64-last",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "346-guava-long-array-holdout: running task first-64-release (target route)",
+        "346-guava-long-array-holdout: task first-64-release: established (completed; as expected), receipt receipts/first-64-release/20261120T222019Z-b19fbec3/result.json",
+        "346-guava-long-array-holdout: running task frame-64-release (target route)",
+        "346-guava-long-array-holdout: task frame-64-release: established (completed; as expected), receipt receipts/frame-64-release/20261120T222022Z-258fcdb1/result.json",
+        "346-guava-long-array-holdout: running task first-64-last (target route)",
+        "346-guava-long-array-holdout: task first-64-last: refuted (completed; as expected), receipt receipts/first-64-last/20261120T222103Z-3330981e/result.json",
+        "346-guava-long-array-holdout: running task frame-64-last (target route)",
+        "346-guava-long-array-holdout: task frame-64-last: established (completed; as expected), receipt receipts/frame-64-last/20261120T222239Z-af91ad3f/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "88198573622334d8310ffad4d18e71c082ee25060546a8b412d8005108631c4e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/plan.json",
+      "change": "added",
+      "bytes": 6227,
+      "sha256": "1fde012d568d6f682321a6e5778e3971eef610ef35812b293d6956259d112c2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/control-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/control-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 241135,
+      "sha256": "78ca3b5ccb6b5d7a660a4442669039db4559b78ee8eff820da4cc7c035748d89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/controls.json",
+      "change": "added",
+      "bytes": 503873,
+      "sha256": "54503cf4aa12bae301b762c13cd633c060cc2924fe2dddd34c25d82d5cfadbda",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/execution.json",
+      "change": "added",
+      "bytes": 519891,
+      "sha256": "a3b8c8756135982a811583a0e1920a4013cc7adbc2b8479d0cbd2603c651ce0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "e60f4e21b021c0ccf6ffe2fbb394c024cb289f0ba5ab4a2bb6efe3f3882c3649",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 807,
+      "sha256": "3d7a857b056f60637e2d3fbb361ead15d3e4c820dc55e9f0c5dd248b3edd06aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/verifier.json",
+      "change": "added",
+      "bytes": 15961,
+      "sha256": "e8a5eae8c3d5b4ab33a3d9355a3bda5c5a9b6fa7e3b4dfa6cc6272047a5a9ffe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7036,
+      "sha256": "dad250f2c059cc3d5c7a7d098b5f1251f8cdd1f9fd143a92219e0b727d2ac3f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/result.json",
+      "change": "added",
+      "bytes": 19680,
+      "sha256": "0ac5115476bdd678051082e885f5f023b048e3ad92f0213c928e8cbe67008aec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/executions/20261120T222019Z-b19fbec3/attempt.json",
+      "change": "added",
+      "bytes": 11088,
+      "sha256": "0dca99b2f3c8473ab8ab902563513a10703c48806886b831a987300ae435fbf9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-release/executions/20261120T222019Z-b19fbec3/checker.json",
+      "change": "added",
+      "bytes": 8727,
+      "sha256": "c0fb2f7d64889e149c5fc5f2bffe2cbf4a1fc93e0a71d3ff5560134360a920ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "082fcf2466bf779ac697b5e5fb3601395db6af50adf0bdd0a1c96a8cb4402f3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/plan.json",
+      "change": "added",
+      "bytes": 5957,
+      "sha256": "0ec1e34695b08a6dcd4ab04444e3358dd02a9c2bc3a3cfcef750c5e3e5c1cc4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/control-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/control-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 241135,
+      "sha256": "78ca3b5ccb6b5d7a660a4442669039db4559b78ee8eff820da4cc7c035748d89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/controls.json",
+      "change": "added",
+      "bytes": 503873,
+      "sha256": "b1da115a1ea7c73ac151d2ae6e34bee01eb75f3e8b2768585c972d08cedc79f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/execution.json",
+      "change": "added",
+      "bytes": 518446,
+      "sha256": "dda3a1b75406247dd95bf2db32d9d5ab2ea7fb9f569726c43dbeda6e88fe6667",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "c9bd60769ccf2e85675fb19a81a96f789a9aced37c6f57be9bbe3201e47a444b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 414,
+      "sha256": "d6d57b152e1575d27f0fc7e3946ec8dbc6caae9aa4c5caca136b67a14c9b91d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/verifier.json",
+      "change": "added",
+      "bytes": 14516,
+      "sha256": "0c47592e532eeae476c02e85171475e95a917f3ca565bafb42698124e542d4f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5868,
+      "sha256": "f2c0c262d5c032fd6d2357e1d6709e1e345b9eb4d19348c5b8be00dcc7a851af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/result.json",
+      "change": "added",
+      "bytes": 17702,
+      "sha256": "0bda91841845708c895502f4da1fdcf56dc95d06e028dc938214c031d8eb0154",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/executions/20261120T222022Z-258fcdb1/attempt.json",
+      "change": "added",
+      "bytes": 10815,
+      "sha256": "9d83af19662355f3c3ff79b1d7ed6c125d72ea63f9728e5c0a83cf4d3441a56f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-release/executions/20261120T222022Z-258fcdb1/checker.json",
+      "change": "added",
+      "bytes": 7420,
+      "sha256": "94859a777fa8ab859e1d88c2347a8c48fcf1e96e6b5db9a0e7d4d920814e051e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7194ae1fdebfba077fad43a6efbdfd4797227ee9571b0ec7f26db0b2db9ac754",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/plan.json",
+      "change": "added",
+      "bytes": 7540,
+      "sha256": "f082f2a11eae55fc105396ec004a9a9fbc0552c4c0d937b2b68c859a53e69ce6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/control-mutant-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/control-mutant-jdk21.stdout",
+      "change": "added",
+      "bytes": 241135,
+      "sha256": "520dee46590725a5c012480ef541764e2d46845ba8fe5d44bf147f45d78c27fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/controls.json",
+      "change": "added",
+      "bytes": 503904,
+      "sha256": "1cd077d09a366e4f8bd9a7fc5d79ef962700ac846127ca890d7d4d32fc777f9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/execution.json",
+      "change": "added",
+      "bytes": 526781,
+      "sha256": "849adaf5355385d50661b9384c92a3b2fb3419d845a817a3c5c9146eba50bf39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "c62f51e50cb7bd6428fe8bf4a4199d570cea8edf44a6c4470564c592b5728aa3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1120,
+      "sha256": "c1c9ac77bc22a4ecc80b75584c95c90cc07ada03cee70ac14b19d5af81677c8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/verifier.json",
+      "change": "added",
+      "bytes": 19856,
+      "sha256": "3b2651dd9793c19b332be3de9a99c1c4ccffd3b930b1d7144fdd8ffe8e0c22bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9675,
+      "sha256": "40813635598f9df44c664c5722fbe5233c55843265e88186de4f3d863bb36d46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/result.json",
+      "change": "added",
+      "bytes": 25965,
+      "sha256": "efe443eb798779f989fb2553e988db38b8c7cfb00226e0136bbf8c83cdbe0dcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/executions/20261120T222103Z-3330981e/attempt.json",
+      "change": "added",
+      "bytes": 12232,
+      "sha256": "06beb8777d5175ad1bfbf40acfe57f6a95e571dc4580d6d343c0cfa8e5aae723",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/executions/20261120T222103Z-3330981e/checker.json",
+      "change": "added",
+      "bytes": 11568,
+      "sha256": "11c2bbfd4b5f7647077a00b86e895de80aa3e2fb75404340a7dab19f10b27050",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/first-64-last/executions/20261120T222103Z-3330981e/replay.json",
+      "change": "added",
+      "bytes": 2276,
+      "sha256": "01b09e1906c0889d871353ac17ab12962a8ec654df081841cf9c14b90722d674",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9ade3e3586d88ac7fc7729ec8a8b9a0d49405414feca05811d90d0d6393217d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/plan.json",
+      "change": "added",
+      "bytes": 7274,
+      "sha256": "64f82be3755718c9f261c06655c9a22e9a0be9e34a89f28d2d73d5b1ea6375f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/control-mutant-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/control-mutant-jdk21.stdout",
+      "change": "added",
+      "bytes": 241135,
+      "sha256": "520dee46590725a5c012480ef541764e2d46845ba8fe5d44bf147f45d78c27fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/controls.json",
+      "change": "added",
+      "bytes": 503904,
+      "sha256": "492da0c4306101a760c67c9c29501044db47a9f648ccf8abbf9276dad2f5bd41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/execution.json",
+      "change": "added",
+      "bytes": 519356,
+      "sha256": "65cb00641b7b7938f239465aa30142c602b5fd1618ae59d0716e156b3ea47bef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "87490e2873da1d83d6361e446ba083d36aa2dcc4cd13b5be749f077c69a93efb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 415,
+      "sha256": "381c4a9bab0d530c6dd3f8f2418667046458c6a074d7cab95cb730b67bf2e59d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/verifier.json",
+      "change": "added",
+      "bytes": 15355,
+      "sha256": "6869e2fa8c053b8a001c1c383922f857121c2918e89ab4cbb0ded42db5f5a17f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5888,
+      "sha256": "47a4d3a3ea198338c244118cd7c258f657f4bca36f2baa611e20f39aac198e9e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/result.json",
+      "change": "added",
+      "bytes": 17964,
+      "sha256": "b0b84228b5fefd42a242b229f23073de170907debe748084116a650dc1e016c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/executions/20261120T222239Z-af91ad3f/attempt.json",
+      "change": "added",
+      "bytes": 11837,
+      "sha256": "778260bb3bffc89a84cbb2999fbaf84c4586fed1f1a998e163f70603462266be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/receipts/frame-64-last/executions/20261120T222239Z-af91ad3f/checker.json",
+      "change": "added",
+      "bytes": 7423,
+      "sha256": "4a89d841e8587de42f861901065a39c43558315534474a550c065d58f5f9f7a7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T22:24:31+00:00",
+    "applied": [
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/completion.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/plan.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/control-release-jdk21.stderr",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/control-release-jdk21.stdout",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/controls.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/execution.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/streams.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/verifier-output.txt",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/verifier.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/verifier.stderr",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/records/verifier.stdout",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/20261120T222019Z-b19fbec3/result.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/executions/20261120T222019Z-b19fbec3/attempt.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-release/executions/20261120T222019Z-b19fbec3/checker.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/completion.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/plan.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/control-release-jdk21.stderr",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/control-release-jdk21.stdout",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/controls.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/execution.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/streams.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/verifier-output.txt",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/verifier.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/verifier.stderr",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/records/verifier.stdout",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/20261120T222022Z-258fcdb1/result.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/executions/20261120T222022Z-258fcdb1/attempt.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-release/executions/20261120T222022Z-258fcdb1/checker.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/completion.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/plan.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/control-mutant-jdk21.stderr",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/control-mutant-jdk21.stdout",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/controls.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/execution.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/streams.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/verifier-output.txt",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/verifier.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/verifier.stderr",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/records/verifier.stdout",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/20261120T222103Z-3330981e/result.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/executions/20261120T222103Z-3330981e/attempt.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/executions/20261120T222103Z-3330981e/checker.json",
+      "examples/346-guava-long-array-holdout/receipts/first-64-last/executions/20261120T222103Z-3330981e/replay.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/completion.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/plan.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/control-mutant-jdk21.stderr",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/control-mutant-jdk21.stdout",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/controls.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/execution.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/streams.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/verifier-output.txt",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/verifier.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/verifier.stderr",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/records/verifier.stdout",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/20261120T222239Z-af91ad3f/result.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/executions/20261120T222239Z-af91ad3f/attempt.json",
+      "examples/346-guava-long-array-holdout/receipts/frame-64-last/executions/20261120T222239Z-af91ad3f/checker.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1282852,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}

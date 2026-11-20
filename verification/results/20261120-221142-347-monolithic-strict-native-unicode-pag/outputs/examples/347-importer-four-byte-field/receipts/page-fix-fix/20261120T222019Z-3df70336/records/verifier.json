@@ -1,0 +1,1541 @@
+{
+  "task": "page-fix-fix",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix-fix",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+      "prove",
+      "importer.Projection#page(int)",
+      "--classes",
+      "prepare/fix-fix/adapter-fix-fix.jar",
+      "--classpath",
+      "prepare/fix-fix/fix-fix.jar",
+      "--classpath",
+      "prepare/fix-fix/libraries/io-fix.jar",
+      "--classpath",
+      "prepare/fix-fix/libraries/csv-fix.jar",
+      "--classpath",
+      "prepare/fix-fix/libraries/codec.jar",
+      "--assume",
+      "code >= 0 && code < 32",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "96",
+      "--timeout",
+      "90",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 90.664,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
+      "commit": "aa042b39d8ccdaadc1e69f953d3899acd1b11250",
+      "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "timeout": 90,
+      "scope": {
+        "label": "adapter",
+        "meaning": "The five selector bits choose BOM, one-byte delegate, preview/reset, starting number minus one and page cap minus one for the literal two-row document with a U+1F600 field.",
+        "method": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+        "revisions": {
+          "fix-fix": {
+            "commit": "fixture:client",
+            "loadedFrom": "fix-fix.jar",
+            "classSha256": "b00740383acd7e63b1af061e0101518780826b8625f9576ef040191bfb3f1585",
+            "origin": "built from client by the fixture recipe",
+            "parameters": {
+              "names": [
+                "source",
+                "oneByte",
+                "preview",
+                "start",
+                "cap"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "importer.Projection#page(I)I",
+          "mapping": "The five selector bits choose BOM, one-byte delegate, preview/reset, starting number minus one and page cap minus one for the literal two-row document with a U+1F600 field.",
+          "cases": 32,
+          "correspondence": "finite-oracle"
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix-fix": [
+          {
+            "path": "adapter-fix-fix.jar",
+            "sha256": "a98b313d677b23044299e76008cfccd47ab71e28a4fd7f3c2dba0b6ed7d9c817",
+            "role": "adapter"
+          },
+          {
+            "path": "fix-fix.jar",
+            "sha256": "5d0a2eefe440fc7795a177e2fc37c8c1cce0d4c77ce5c08128d3f5e9410713cc",
+            "role": "original"
+          },
+          {
+            "path": "libraries/io-fix.jar",
+            "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/csv-fix.jar",
+            "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/codec.jar",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "importer.Projection#page(I)I",
+      "entryBindings": {
+        "fix-fix": {
+          "entry": "importer.Projection#page(I)I",
+          "classSha256": "3afa595dc83f6925b82a5a553f38c1e54c8001dca87ae9daf08cb3546d3a8152",
+          "loadedFrom": "adapter-fix-fix.jar",
+          "subject": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+          "subjectClassSha256": "b00740383acd7e63b1af061e0101518780826b8625f9576ef040191bfb3f1585"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+        "checkedEntry": "importer.Projection#page(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 32"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "96"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "96"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "importer.Projection#page(I)I",
+          "mapping": "The five selector bits choose BOM, one-byte delegate, preview/reset, starting number minus one and page cap minus one for the literal two-row document with a U+1F600 field.",
+          "cases": 32,
+          "correspondence": "finite-oracle"
+        }
+      },
+      "commits": {
+        "fix-fix": "fixture:client"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix-fix": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+            "gaps",
+            "--target",
+            "importer.Projection#page(int)",
+            "--classes",
+            "prepare/fix-fix/adapter-fix-fix.jar",
+            "--classpath",
+            "prepare/fix-fix/fix-fix.jar",
+            "--classpath",
+            "prepare/fix-fix/libraries/io-fix.jar",
+            "--classpath",
+            "prepare/fix-fix/libraries/csv-fix.jar",
+            "--classpath",
+            "prepare/fix-fix/libraries/codec.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.165,
+          "stdout": "verifier/probe-fix-fix.stdout",
+          "stderr": "verifier/probe-fix-fix.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.IOException.<init>(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.IOException.<init>(java.lang.Throwable)",
+              "sites": [
+                "org.apache.commons.io.IOUtils.close:752"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.io.UncheckedIOException.<init>(Ljava/io/IOException;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.UncheckedIOException.<init>(java.io.IOException)",
+              "sites": [
+                "org.apache.commons.io.function.Uncheck.wrap:371"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.ArrayIndexOutOfBoundsException.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ArrayIndexOutOfBoundsException.<init>(int)",
+              "sites": [
+                "java.util.Spliterators.checkFromToBounds:391",
+                "java.util.Spliterators.checkFromToBounds:394"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.AssertionError.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.AssertionError.<init>(int)",
+              "sites": [
+                "sun.nio.cs.StreamDecoder.lockedRead0:161",
+                "sun.nio.cs.StreamDecoder.readBytes:365"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+              "sites": [
+                "java.nio.charset.CharsetDecoder.decode:609",
+                "sun.nio.cs.StreamDecoder.readBytes:355"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.nio.HeapByteBuffer.<init>(IILjava/lang/foreign/MemorySegment;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.HeapByteBuffer.<init>(int, int, java.lang.foreign.MemorySegment)",
+              "sites": [
+                "java.nio.ByteBuffer.allocate:391"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.nio.HeapCharBuffer.<init>([CIILjava/lang/foreign/MemorySegment;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.HeapCharBuffer.<init>(char[], int, int, java.lang.foreign.MemorySegment)",
+              "sites": [
+                "java.nio.CharBuffer.wrap:436"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.nio.charset.CoderMalfunctionError.<init>(Ljava/lang/Exception;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.charset.CoderMalfunctionError.<init>(java.lang.Exception)",
+              "sites": [
+                "java.nio.charset.CharsetDecoder.decode:588"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.nio.charset.MalformedInputException.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.charset.MalformedInputException.<init>(int)",
+              "sites": [
+                "java.nio.charset.CoderResult.throwException:279"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.nio.charset.UnmappableCharacterException.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.charset.UnmappableCharacterException.<init>(int)",
+              "sites": [
+                "java.nio.charset.CoderResult.throwException:280"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.ArrayList.<init>(int)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.createHeaders:659"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.HashSet.<init>(int)",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.validate:2630"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.TreeMap.<init>(Ljava/util/Comparator;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.TreeMap.<init>(java.util.Comparator)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.createEmptyHeaderMap:602"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.concurrent.locks.ReentrantLock.<init>()",
+              "sites": [
+                "jdk.internal.misc.InternalLock.<init>:52"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.stream.AbstractTask.<init>(Ljava/util/stream/PipelineHelper;Ljava/util/Spliterator;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.stream.AbstractTask.<init>(java.util.stream.PipelineHelper, java.util.Spliterator)",
+              "sites": [
+                "java.util.stream.ReduceOps$ReduceTask.<init>:943"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.Closeable.close()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.Closeable.close()",
+              "sites": [
+                "org.apache.commons.io.IOUtils.close:748"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+              "sites": [
+                "importer.PageImporter.page:46"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.nio.channels.ReadableByteChannel.close()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.nio.channels.ReadableByteChannel.close()",
+              "sites": [
+                "sun.nio.cs.StreamDecoder.implClose:443"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.List.clear()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.List.clear()",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.nextRecord:899"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.List.sort(Ljava/util/Comparator;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.List.sort(java.util.Comparator)",
+              "sites": [
+                "org.apache.commons.io.input.BOMInputStream.<init>:260"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.Spliterator.forEachRemaining(Ljava/util/function/Consumer;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.Spliterator.forEachRemaining(java.util.function.Consumer)",
+              "sites": [
+                "java.util.stream.AbstractPipeline.copyInto:509",
+                "java.util.stream.ReferencePipeline$Head.forEach:762"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.concurrent.locks.ReentrantLock.lock()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.concurrent.locks.ReentrantLock.lock()",
+              "sites": [
+                "jdk.internal.misc.InternalLock.lock:74"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.concurrent.locks.ReentrantLock.unlock()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.concurrent.locks.ReentrantLock.unlock()",
+              "sites": [
+                "jdk.internal.misc.InternalLock.unlock:78"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.function.BiConsumer.accept(Ljava/lang/Object;Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.function.BiConsumer.accept(java.lang.Object, java.lang.Object)",
+              "sites": [
+                "java.util.stream.ReduceOps$3ReducingSink.accept:169"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.function.Consumer.accept(Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.function.Consumer.accept(java.lang.Object)",
+              "sites": [
+                "java.util.Spliterators$ArraySpliterator.forEachRemaining:1024",
+                "java.util.Spliterators$ArraySpliterator.tryAdvance:1034"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.stream.Sink.accept(Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.stream.Sink.accept(java.lang.Object)",
+              "sites": [
+                "java.util.stream.ReferencePipeline$2$1.accept:179"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.stream.Sink.begin(J)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.stream.Sink.begin(long)",
+              "sites": [
+                "java.util.stream.AbstractPipeline.copyInto:508",
+                "java.util.stream.AbstractPipeline.copyIntoWithCancel:526",
+                "java.util.stream.ReferencePipeline$2$1.begin:173"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.stream.Sink.end()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.stream.Sink.end()",
+              "sites": [
+                "java.util.stream.AbstractPipeline.copyInto:510",
+                "java.util.stream.AbstractPipeline.copyIntoWithCancel:528",
+                "java.util.stream.Sink$ChainedReference.end:261"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getSimpleName()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getSimpleName()",
+              "sites": [
+                "org.apache.commons.io.ByteOrderMark.toString:268",
+                "org.apache.commons.io.build.AbstractOrigin.getSimpleClassName:1354",
+                "org.apache.commons.io.build.AbstractOrigin.unsupportedOperation:1398"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Object.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Object.toString()",
+              "sites": [
+                "java.util.Objects.toString:164",
+                "org.apache.commons.io.build.AbstractOrigin.toString:1383"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.String.toUpperCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.String.toUpperCase(java.util.Locale)",
+              "sites": [
+                "org.apache.commons.io.ByteOrderMark.toString:277"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.String.trim()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.String.trim()",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.isBlank:1462",
+                "org.apache.commons.csv.CSVFormat.trim:2589",
+                "org.apache.commons.csv.Lexer.nextToken:271"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/CharSequence;)Ljava/lang/StringBuilder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(java.lang.CharSequence)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.nextRecord:928"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append(Z)Ljava/lang/StringBuilder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(boolean)",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.toString:2576"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append([C)Ljava/lang/StringBuilder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(char[])",
+              "sites": [
+                "org.apache.commons.csv.Lexer.appendNextEscapedCharacterToToken:78"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.compact()Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.compact()",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.fillBuffer:390",
+                "sun.nio.cs.StreamDecoder.readBytes:337"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.flip()Ljava/nio/Buffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.flip()",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.<init>:312",
+                "org.apache.commons.io.input.ReaderInputStream.fillBuffer:402"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.flip()Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.flip()",
+              "sites": [
+                "sun.nio.cs.StreamDecoder.<init>:320",
+                "sun.nio.cs.StreamDecoder.readBytes:361"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.get([BII)Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.get(byte[], int, int)",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.read:468"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.position(I)Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.position(int)",
+              "sites": [
+                "java.nio.charset.CharsetDecoder.decode:623",
+                "sun.nio.cs.StreamDecoder.readBytes:356"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.CharBuffer.compact()Ljava/nio/CharBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.CharBuffer.compact()",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.fillBuffer:377"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.CharBuffer.flip()Ljava/nio/Buffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.CharBuffer.flip()",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.<init>:310",
+                "org.apache.commons.io.input.ReaderInputStream.fillBuffer:388"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.CharBuffer.position(I)Ljava/nio/Buffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.CharBuffer.position(int)",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.fillBuffer:386"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.CharBuffer.put(Ljava/lang/String;)Ljava/nio/CharBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.CharBuffer.put(java.lang.String)",
+              "sites": [
+                "java.nio.charset.CharsetDecoder.decode:617"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.CharBuffer.slice()Ljava/nio/CharBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.CharBuffer.slice()",
+              "sites": [
+                "sun.nio.cs.StreamDecoder.implRead:380"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.Charset.displayName()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.Charset.displayName()",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.checkMinBufferSize:187"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.Charset.name()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.Charset.name()",
+              "sites": [
+                "org.apache.commons.io.ByteOrderMark.<clinit>:60",
+                "org.apache.commons.io.ByteOrderMark.<clinit>:71",
+                "org.apache.commons.io.ByteOrderMark.<clinit>:82"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.Charset.newDecoder()Ljava/nio/charset/CharsetDecoder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.Charset.newDecoder()",
+              "sites": [
+                "sun.nio.cs.StreamDecoder.<init>:308"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.Charset.newEncoder()",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.<init>:86",
+                "org.apache.commons.io.charset.CharsetEncoders.lambda$toCharsetEncoder$0:41",
+                "org.apache.commons.io.input.ReaderInputStream.newEncoder:198"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.CharsetEncoder.charset()Ljava/nio/charset/Charset;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.CharsetEncoder.charset()",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.checkMinBufferSize:187"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.CharsetEncoder.encode(Ljava/nio/CharBuffer;)Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.CharsetEncoder.encode(java.nio.CharBuffer)",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:147",
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:154"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.CharsetEncoder.encode(Ljava/nio/CharBuffer;Ljava/nio/ByteBuffer;Z)Ljava/nio/charset/CoderResult;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.CharsetEncoder.encode(java.nio.CharBuffer, java.nio.ByteBuffer, boolean)",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.fillBuffer:391"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.CharsetEncoder.flush(Ljava/nio/ByteBuffer;)Ljava/nio/charset/CoderResult;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.CharsetEncoder.flush(java.nio.ByteBuffer)",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.fillBuffer:397"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.CharsetEncoder.onMalformedInput(Ljava/nio/charset/CodingErrorAction;)Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.CharsetEncoder.onMalformedInput(java.nio.charset.CodingErrorAction)",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.newEncoder:199"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.CharsetEncoder.onUnmappableCharacter(Ljava/nio/charset/CodingErrorAction;)Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.CharsetEncoder.onUnmappableCharacter(java.nio.charset.CodingErrorAction)",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.newEncoder:200"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Iterator.next()",
+              "sites": [
+                "importer.PageImporter.page:49"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.stream()Ljava/util/stream/Stream;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.stream()",
+              "sites": [
+                "org.apache.commons.io.input.BOMInputStream.find:332"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.computeIfAbsent(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.computeIfAbsent(java.lang.Object, java.util.function.Function)",
+              "sites": [
+                "java.nio.charset.CoderResult.malformedForLength:222"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Spliterator.getComparator()Ljava/util/Comparator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Spliterator.getComparator()",
+              "sites": [
+                "java.util.stream.StreamOpFlag.fromCharacteristics:751"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.function.Function.apply(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.function.Function.apply(java.lang.Object)",
+              "sites": [
+                "java.util.stream.ReferencePipeline.collect:686"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.function.Supplier.get()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.function.Supplier.get()",
+              "sites": [
+                "java.util.stream.AbstractPipeline.sourceSpliterator:405",
+                "java.util.stream.AbstractPipeline.sourceStageSpliterator:290",
+                "java.util.stream.ReduceOps$3ReducingSink.begin:164",
+                "java.util.stream.ReferencePipeline.collect:677",
+                "org.apache.commons.io.charset.CharsetEncoders.toCharsetEncoder:53"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Collector.accumulator()Ljava/util/function/BiConsumer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Collector.accumulator()",
+              "sites": [
+                "java.util.stream.ReduceOps.makeRef:158",
+                "java.util.stream.ReferencePipeline.collect:678"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Collector.characteristics()Ljava/util/Set;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Collector.characteristics()",
+              "sites": [
+                "java.util.stream.ReduceOps$3.getOpFlags:185",
+                "java.util.stream.ReferencePipeline.collect:675",
+                "java.util.stream.ReferencePipeline.collect:676",
+                "java.util.stream.ReferencePipeline.collect:684"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Collector.combiner()Ljava/util/function/BinaryOperator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Collector.combiner()",
+              "sites": [
+                "java.util.stream.ReduceOps.makeRef:159"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Collector.finisher()Ljava/util/function/Function;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Collector.finisher()",
+              "sites": [
+                "java.util.stream.ReferencePipeline.collect:686"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Collector.supplier()Ljava/util/function/Supplier;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Collector.supplier()",
+              "sites": [
+                "java.util.stream.ReduceOps.makeRef:157",
+                "java.util.stream.ReferencePipeline.collect:677"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Node.spliterator()Ljava/util/Spliterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Node.spliterator()",
+              "sites": [
+                "java.util.stream.AbstractPipeline.opEvaluateParallelLazy:735"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.ReduceOps$AccumulatingSink.get()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.ReduceOps$AccumulatingSink.get()",
+              "sites": [
+                "java.util.stream.ReduceOps$ReduceOp.evaluateParallel:927",
+                "java.util.stream.ReduceOps$ReduceOp.evaluateSequential:921"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.ReduceOps$ReduceTask.invoke()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.ReduceOps$ReduceTask.invoke()",
+              "sites": [
+                "java.util.stream.ReduceOps$ReduceOp.evaluateParallel:927"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Stream.filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Stream.filter(java.util.function.Predicate)",
+              "sites": [
+                "org.apache.commons.io.input.BOMInputStream.find:332"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Stream.findFirst()Ljava/util/Optional;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Stream.findFirst()",
+              "sites": [
+                "org.apache.commons.io.input.BOMInputStream.find:332"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.TerminalOp.evaluateParallel(Ljava/util/stream/PipelineHelper;Ljava/util/Spliterator;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.TerminalOp.evaluateParallel(java.util.stream.PipelineHelper, java.util.Spliterator)",
+              "sites": [
+                "java.util.stream.AbstractPipeline.evaluate:233"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.TerminalOp.evaluateSequential(Ljava/util/stream/PipelineHelper;Ljava/util/Spliterator;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.TerminalOp.evaluateSequential(java.util.stream.PipelineHelper, java.util.Spliterator)",
+              "sites": [
+                "java.util.stream.AbstractPipeline.evaluate:234"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.TerminalOp.inputShape()Ljava/util/stream/StreamShape;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.TerminalOp.inputShape()",
+              "sites": [
+                "java.util.stream.AbstractPipeline.evaluate:227"
+              ]
+            },
+            {
+              "id": "class-initializer:java.util.stream.Collectors.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "java.util.stream.Collectors.<clinit>()",
+              "sites": [
+                "org.apache.commons.csv.CSVRecord.toList:330"
+              ]
+            },
+            {
+              "id": "class-initializer:java.util.stream.FindOps$FindSink$OfRef.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "java.util.stream.FindOps$FindSink$OfRef.<clinit>()",
+              "sites": [
+                "java.util.stream.FindOps.makeRef:60"
+              ]
+            },
+            {
+              "id": "class-initializer:java.util.stream.StreamOpFlag.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "java.util.stream.StreamOpFlag.<clinit>()",
+              "sites": [
+                "java.util.stream.StreamSupport.stream:70"
+              ]
+            },
+            {
+              "id": "class-initializer:org.apache.commons.io.Charsets.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.apache.commons.io.Charsets.<clinit>()",
+              "sites": [
+                "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin.getReader:733"
+              ]
+            },
+            {
+              "id": "string-conversion:importer.PageImporter$Row.toString()Ljava/lang/String;",
+              "kind": "string-conversion",
+              "call": "importer.PageImporter$Row.toString()",
+              "sites": [
+                "importer.PageImporter$Row.toString:20"
+              ]
+            },
+            {
+              "id": "string-conversion:java.util.stream.Collectors$CollectorImpl.toString()Ljava/lang/String;",
+              "kind": "string-conversion",
+              "call": "java.util.stream.Collectors$CollectorImpl.toString()",
+              "sites": [
+                "java.util.stream.Collectors$CollectorImpl.toString:197"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Character.charValue()C@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Character.charValue()",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.isLineBreak:1482",
+                "org.apache.commons.csv.CSVFormat.validate:2610",
+                "org.apache.commons.csv.CSVFormat.validate:2613",
+                "org.apache.commons.csv.CSVFormat.validate:2616",
+                "org.apache.commons.csv.Lexer.nullToDisabled:312"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Character.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Character.equals(java.lang.Object)",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.validate:2619",
+                "org.apache.commons.csv.CSVFormat.validate:2622"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.desiredAssertionStatus()",
+              "sites": [
+                "java.nio.charset.CharsetDecoder.<clinit>:138",
+                "java.nio.charset.CoderResult.<clinit>:84",
+                "java.util.Collections$ReverseComparator2.<clinit>:5620",
+                "java.util.ComparableTimSort.<clinit>:42",
+                "java.util.TimSort.<clinit>:62",
+                "java.util.stream.AbstractPipeline.<clinit>:72",
+                "java.util.stream.ReferencePipeline$StatelessOp.<clinit>:787",
+                "sun.nio.cs.StreamDecoder.<clinit>:49"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Comparable.compareTo(java.lang.Object)",
+              "sites": [
+                "java.util.Arrays.mergeSort:1145",
+                "java.util.Arrays.mergeSort:1161",
+                "java.util.Arrays.mergeSort:1168",
+                "java.util.Collections$ReverseComparator.compare:5565",
+                "java.util.ComparableTimSort.binarySort:262",
+                "java.util.ComparableTimSort.countRunAndMakeAscending:320",
+                "java.util.ComparableTimSort.countRunAndMakeAscending:321",
+                "java.util.ComparableTimSort.countRunAndMakeAscending:325",
+                "java.util.ComparableTimSort.gallopLeft:513",
+                "java.util.ComparableTimSort.gallopLeft:516",
+                "java.util.ComparableTimSort.gallopLeft:531",
+                "java.util.ComparableTimSort.gallopLeft:556",
+                "java.util.ComparableTimSort.gallopRight:583",
+                "java.util.ComparableTimSort.gallopRight:586",
+                "java.util.ComparableTimSort.gallopRight:602",
+                "java.util.ComparableTimSort.gallopRight:626",
+                "java.util.ComparableTimSort.mergeHi:808",
+                "java.util.ComparableTimSort.mergeLo:688",
+                "java.util.Comparators$NaturalOrderComparator.compare:52"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.equals(java.lang.Object)",
+              "sites": [
+                "java.util.HashMap.find:80",
+                "java.util.Objects.equals:64"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.hashCode()",
+              "sites": [
+                "java.util.Arrays.hashCode:4599",
+                "java.util.HashMap.find:77",
+                "java.util.HashMap.put:65",
+                "org.apache.commons.io.ByteOrderMark.hashCode:217"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.arrayOffset()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.arrayOffset()",
+              "sites": [
+                "sun.nio.cs.StreamDecoder.readBytes:350"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.get()B@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.get()",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.read:425"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.hasRemaining()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.hasRemaining()",
+              "sites": [
+                "java.nio.charset.CharsetDecoder.decode:595",
+                "org.apache.commons.io.input.ReaderInputStream.available:350",
+                "org.apache.commons.io.input.ReaderInputStream.read:424",
+                "org.apache.commons.io.input.ReaderInputStream.read:428",
+                "org.apache.commons.io.input.ReaderInputStream.read:466",
+                "sun.nio.cs.StreamDecoder.implRead:396",
+                "sun.nio.cs.StreamDecoder.implReady:438"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.limit()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.limit()",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:147",
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:154",
+                "sun.nio.cs.StreamDecoder.readBytes:346"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.position()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.position()",
+              "sites": [
+                "java.nio.charset.CharsetDecoder.decode:623",
+                "sun.nio.cs.StreamDecoder.readBytes:347"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.remaining()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.remaining()",
+              "sites": [
+                "java.nio.charset.CharsetDecoder.decode:596",
+                "org.apache.commons.io.input.ReaderInputStream.available:351",
+                "org.apache.commons.io.input.ReaderInputStream.read:467",
+                "sun.nio.cs.StreamDecoder.readBytes:364"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.CharBuffer.hasRemaining()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.CharBuffer.hasRemaining()",
+              "sites": [
+                "sun.nio.cs.StreamDecoder.implRead:389"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.CharBuffer.position()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.CharBuffer.position()",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.fillBuffer:378",
+                "sun.nio.cs.StreamDecoder.implRead:378",
+                "sun.nio.cs.StreamDecoder.implRead:391",
+                "sun.nio.cs.StreamDecoder.implRead:396",
+                "sun.nio.cs.StreamDecoder.implRead:402",
+                "sun.nio.cs.StreamDecoder.implRead:413",
+                "sun.nio.cs.StreamDecoder.implRead:419"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.CharBuffer.remaining()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.CharBuffer.remaining()",
+              "sites": [
+                "java.nio.charset.CharsetDecoder.decode:615",
+                "org.apache.commons.io.input.ReaderInputStream.fillBuffer:382"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.channels.ReadableByteChannel.read(Ljava/nio/ByteBuffer;)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.channels.ReadableByteChannel.read(java.nio.ByteBuffer)",
+              "sites": [
+                "sun.nio.cs.StreamDecoder.readBytes:341"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Comparator.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Comparator.hashCode()",
+              "sites": [
+                "java.util.Collections$ReverseComparator2.hashCode:5652"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Iterator.hasNext()",
+              "sites": [
+                "importer.PageImporter.page:49"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.add(java.lang.Object)",
+              "sites": [
+                "importer.PageImporter.page:50",
+                "org.apache.commons.csv.CSVParser.addRecordValue:586",
+                "org.apache.commons.csv.CSVParser.createHeaders:661"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.isEmpty()",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.nextRecord:935"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.size()",
+              "sites": [
+                "importer.Projection.page:46",
+                "importer.Projection.page:47",
+                "importer.Projection.page:51"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.add(java.lang.Object)",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.validate:2635"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.contains(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.contains(java.lang.Object)",
+              "sites": [
+                "java.util.stream.ReduceOps$3.getOpFlags:185",
+                "java.util.stream.ReferencePipeline.collect:675",
+                "java.util.stream.ReferencePipeline.collect:676",
+                "java.util.stream.ReferencePipeline.collect:684"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Spliterator.characteristics()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Spliterator.characteristics()",
+              "sites": [
+                "java.util.stream.StreamOpFlag.fromCharacteristics:750"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Spliterator.getExactSizeIfKnown()J@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Spliterator.getExactSizeIfKnown()",
+              "sites": [
+                "java.util.stream.AbstractPipeline.copyInto:508",
+                "java.util.stream.AbstractPipeline.copyIntoWithCancel:526"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Spliterator.hasCharacteristics(I)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Spliterator.hasCharacteristics(int)",
+              "sites": [
+                "java.util.stream.AbstractPipeline.sourceSpliterator:438"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Spliterator.tryAdvance(Ljava/util/function/Consumer;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Spliterator.tryAdvance(java.util.function.Consumer)",
+              "sites": [
+                "java.util.stream.ReferencePipeline.forEachWithCancel:129"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Spliterators$ArraySpliterator.hasCharacteristics(I)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Spliterators$ArraySpliterator.hasCharacteristics(int)",
+              "sites": [
+                "java.util.Spliterators$ArraySpliterator.getComparator:1052"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.function.Predicate.test(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.function.Predicate.test(java.lang.Object)",
+              "sites": [
+                "java.util.stream.ReferencePipeline$2$1.accept:178"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.stream.Sink.cancellationRequested()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.stream.Sink.cancellationRequested()",
+              "sites": [
+                "java.util.stream.ReferencePipeline.forEachWithCancel:129",
+                "java.util.stream.Sink$ChainedReference.cancellationRequested:266"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.stream.TerminalOp.getOpFlags()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.stream.TerminalOp.getOpFlags()",
+              "sites": [
+                "java.util.stream.AbstractPipeline.evaluate:233",
+                "java.util.stream.AbstractPipeline.evaluate:234"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.isHighSurrogate(C)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.isHighSurrogate(char)",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:149"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.isSurrogatePair(CC)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.isSurrogatePair(char, char)",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:153"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.isWhitespace(char)",
+              "sites": [
+                "org.apache.commons.csv.Lexer.nextToken:281",
+                "org.apache.commons.csv.Lexer.parseEncapsulatedToken:369",
+                "org.apache.commons.csv.Lexer.trimTrailingSpaces:515"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Integer.toHexString(I)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Integer.toHexString(int)",
+              "sites": [
+                "org.apache.commons.io.ByteOrderMark.toString:277"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+              "sites": [
+                "org.apache.commons.csv.CSVException.<init>:43",
+                "org.apache.commons.csv.CSVFormat.validate:2637",
+                "org.apache.commons.csv.CSVParser.createHeaders:651",
+                "org.apache.commons.io.IOUtils.checkFromIndexSize:607",
+                "org.apache.commons.io.build.AbstractOrigin.unsupportedOperation:1396",
+                "org.apache.commons.io.build.AbstractStreamBuilder.throwIae:426",
+                "org.apache.commons.io.input.ReaderInputStream.checkMinBufferSize:186"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.reflect.Array.newInstance(Ljava/lang/Class;I)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.reflect.Array.newInstance(java.lang.Class, int)",
+              "sites": [
+                "java.util.TimSort.<init>:157",
+                "java.util.TimSort.ensureCapacity:933"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.nio.ByteBuffer.createCapacityException(I)Ljava/lang/IllegalArgumentException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.nio.ByteBuffer.createCapacityException(int)",
+              "sites": [
+                "java.nio.ByteBuffer.allocate:390"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.nio.CharBuffer.allocate(I)Ljava/nio/CharBuffer;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.nio.CharBuffer.allocate(int)",
+              "sites": [
+                "org.apache.commons.io.input.ReaderInputStream.<init>:309"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.nio.file.Files.newBufferedReader(Ljava/nio/file/Path;Ljava/nio/charset/Charset;)Ljava/io/BufferedReader;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.nio.file.Files.newBufferedReader(java.nio.file.Path, java.nio.charset.Charset)",
+              "sites": [
+                "org.apache.commons.io.build.AbstractOrigin.getReader:1345"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.nio.file.Files.newInputStream(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/InputStream;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.nio.file.Files.newInputStream(java.nio.file.Path, java.nio.file.OpenOption[])",
+              "sites": [
+                "org.apache.commons.io.build.AbstractOrigin.getInputStream:1299"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.swap([Ljava/lang/Object;II)V@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.swap(java.lang.Object[], int, int)",
+              "sites": [
+                "java.util.Arrays.mergeSort:1146",
+                "java.util.Arrays.mergeSort:1341"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.toString([Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.toString(java.lang.Object[])",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.toString:2579",
+                "org.apache.commons.csv.CSVFormat.toString:2583",
+                "org.apache.commons.csv.CSVFormat.validate:2639",
+                "org.apache.commons.csv.CSVParser.createHeaders:644",
+                "org.apache.commons.csv.CSVParser.createHeaders:653",
+                "org.apache.commons.csv.CSVRecord.toString:355"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Collections.reverseOrder()Ljava/util/Comparator;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Collections.reverseOrder()",
+              "sites": [
+                "java.util.Comparator.reverseOrder:343"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Collections.unmodifiableList(Ljava/util/List;)Ljava/util/List;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Collections.unmodifiableList(java.util.List)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.createHeaders:667"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.stream.ForEachOps.makeRef(Ljava/util/function/Consumer;Z)Ljava/util/stream/TerminalOp;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.stream.ForEachOps.makeRef(java.util.function.Consumer, boolean)",
+              "sites": [
+                "java.util.stream.ReferencePipeline.forEach:596"
+              ]
+            },
+            {
+              "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+              "sites": [
+                "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 90.643,
+        "peakRssBytes": 1804120064,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "importer.Projection#page(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 32",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the engine did not finish within the time limit",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "importer.Projection#page(int) cannot be verified: the engine did not finish within the time limit",
+            "uri": null,
+            "line": 45
+          }
+        ],
+        "output": "✗ importer.Projection#page(int) cannot be verified: the engine did not finish within the time limit\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 90.53330507,
+          "properties": 1,
+          "unwind": 96,
+          "max_array_length": 96,
+          "stage": null,
+          "native": {
+            "paths": 1014,
+            "merges": 477,
+            "solver_calls": 3474,
+            "solving_seconds": 76.610851916,
+            "gates_evaluated": 437893,
+            "evaluating_seconds": 0.020619187,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 3313000,
+            "clauses": 11166488,
+            "seconds": 90.006235463,
+            "loading_seconds": 0.010028956,
+            "decoding_seconds": 0.002540654,
+            "encoding_seconds": 10.290738314,
+            "witness_seconds": 0.0,
+            "assumed": [
+              "system properties use the standard JVM Properties table and the running JVM permits this property access"
+            ]
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 90.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 90.0,
+              "seconds": 90.006,
+              "ended": "out-of-time",
+              "ending": "timeout",
+              "phases": {
+                "loading": 0.01,
+                "lowering": 0.003,
+                "symbolic": 3.092,
+                "encoding": 10.291,
+                "solving": 76.611,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 3313000,
+                "clauses": 11166488
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 90.546,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 90.006,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.538
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 32",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 96,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-221142-347-monolithic-strict-native-unicode-pag/.build-py/examples-75b7fcp3/targets/347/page-fix-fix/20261120T222019Z-3df70336",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-221142-347-monolithic-strict-native-unicode-pag/.build-py/examples-75b7fcp3/targets/347/page-fix-fix/20261120T222019Z-3df70336"
+  }
+}

@@ -76,13 +76,15 @@ def bytecode_selectors(data, owner, low, high, entry=None):
     return admitted
 
 
+def java_source(name, bodies):
+    return "package " + PACKAGE + ";\npublic final class " + name + " {\n" + "\n".join(bodies) + "\n}\n"
+
+
 def compile_methods(home, work, name, bodies, cp, classes):
     work.mkdir(parents=True, exist_ok=True)
     classes.mkdir(parents=True, exist_ok=True)
     src = work / (name + ".java")
-    src.write_text(
-        "package " + PACKAGE + ";\npublic final class " + name + " {\n" + "\n".join(bodies) + "\n}\n"
-    )
+    src.write_text(java_source(name, bodies))
     run = subprocess.run(
         [
             home / "bin/javac",
@@ -215,6 +217,7 @@ def disposition(answer, method, bounds, rc):
     if (
         answer["verdict"] == "verified"
         and stated["bounds"].get("complete")
+        and (stated.get("vacuity") or {}).get("status") == "non-vacuous"
         and answer.get("proof")
         and rc == 0
     ):
@@ -400,7 +403,12 @@ def archived_bytes(out, name):
 
 def validate_result(folder, plan, path):
     doc = read(path)
-    if doc["identity"] != finite_check.claim_identity(plan):
+    if (
+        doc["identity"] != finite_check.claim_identity(plan)
+        or doc["task"] != plan.task
+        or [doc["revision"]] != list(plan.revisions)
+        or not doc["classpath"]
+    ):
         raise ValueError("different frozen inputs")
     out = path.parents[2]
     calls = archived_bytes(out, doc["callsClass"])
@@ -415,11 +423,15 @@ def validate_result(folder, plan, path):
         or doc["bounds"] != plan.claim["bounds"]
     ):
         raise ValueError("different statement")
-    low, high = finite_check.envelope(
-        doc["guard"], doc.get("parameter", "code"), doc.get("maxCases", finite_check.LIMIT)
-    )
+    parameter = doc.get("parameter", "code")
+    low, high = finite_check.envelope(doc["guard"], parameter, doc.get("maxCases", finite_check.LIMIT))
     if doc["envelope"] != [low, high]:
         raise ValueError("different proved envelope")
+    source = workflow.inside(out, (path.parent / "Admission.java").relative_to(out))
+    if source.read_text() != java_source(
+        "Admission", admission_methods(plan.claim["assume"], parameter, low, high)
+    ):
+        raise ValueError("the compiled admission source differs from the frozen full guard")
     bytecode_selectors(calls.read_bytes(), "Calls", low, high, runtime_jar.parse_target(entry))
     admitted = bytecode_selectors(gate.read_bytes(), "Admission", low, high)
     checked = doc["checked"]
@@ -438,9 +450,15 @@ def validate_result(folder, plan, path):
         if r["status"] != "open":
             (answer,) = read(raw)
             name = PACKAGE + ".Calls#" + case_name(r["selector"]) + "()"
-            if r["target"] != name or disposition(answer, name, doc["bounds"], r["exit"])[0] != r["status"]:
+            if (
+                r["target"] != name
+                or disposition(answer, name, doc["bounds"], r["exit"])[0] != r["status"]
+                or r.get("assumptions", []) != (answer.get("stated") or {}).get("assumptions", [])
+            ):
                 raise ValueError("native status does not follow from the retained checker record")
     status = doc["status"]
+    if status not in {"established", "refuted", "open"}:
+        raise ValueError("unknown native selector disposition")
     if status == "established" and (
         set(ids) != set(admitted) or any(r["status"] != "established" for r in checked)
     ):
@@ -455,13 +473,15 @@ def validate_result(folder, plan, path):
         ):
             raise ValueError("the violation lacks an original JVM replay")
         side = replay["sides"][doc["revision"]]
+        inputs = [{"name": parameter, "type": "int", "value": checked[-1]["selector"]}]
         if (
             replay.get("claimKey") != plan.claim["key"]
+            or replay.get("jdkRelease") != doc["JDK"]
             or not side.get("admitted")
             or side.get("satisfies") is not False
             or side["classpath"] != [x["sha256"] for x in doc["classpath"]]
-            or replay["inputs"]
-            != [{"name": doc.get("parameter", "code"), "type": "int", "value": checked[-1]["selector"]}]
+            or replay["inputs"] != inputs
+            or side.get("program") != replay_candidate.source(entry, plan.claim, inputs, [parameter])
         ):
             raise ValueError("different replay binding or input")
     return {
@@ -510,7 +530,7 @@ def evidence(folder, plan, roots=None):
                         "firstBlocker": str(exc),
                     }
                 )
-    return accepted
+    return sorted(accepted, key=lambda record: Path(record["record"]).parents[2].name)
 
 
 def main(argv):

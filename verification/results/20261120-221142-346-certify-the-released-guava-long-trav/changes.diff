@@ -1,0 +1,1225 @@
+--- /dev/null
++++ b/examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/class.javap
+@@ -0,0 +1,931 @@
++Compiled from "Longs.java"
++public final class com.google.common.primitives.Longs {
++  public static final int BYTES;
++    descriptor: I
++
++  public static final long MAX_POWER_OF_TWO;
++    descriptor: J
++
++  private com.google.common.primitives.Longs();
++    descriptor: ()V
++    Code:
++       0: aload_0
++       1: invokespecial #14                 // Method java/lang/Object."<init>":()V
++       4: return
++
++  public static int hashCode(long);
++    descriptor: (J)I
++    Code:
++       0: lload_0
++       1: lload_0
++       2: bipush        32
++       4: lushr
++       5: lxor
++       6: l2i
++       7: ireturn
++
++  public static int compare(long, long);
++    descriptor: (JJ)I
++    Code:
++       0: lload_0
++       1: lload_2
++       2: invokestatic  #20                 // Method java/lang/Long.compare:(JJ)I
++       5: ireturn
++
++  public static boolean contains(long[], long);
++    descriptor: ([JJ)Z
++    Code:
++       0: aload_0
++       1: astore_3
++       2: aload_3
++       3: arraylength
++       4: istore        4
++       6: iconst_0
++       7: istore        5
++       9: iload         5
++      11: iload         4
++      13: if_icmpge     37
++      16: aload_3
++      17: iload         5
++      19: laload
++      20: lstore        6
++      22: lload         6
++      24: lload_1
++      25: lcmp
++      26: ifne          31
++      29: iconst_1
++      30: ireturn
++      31: iinc          5, 1
++      34: goto          9
++      37: iconst_0
++      38: ireturn
++
++  public static int indexOf(long[], long);
++    descriptor: ([JJ)I
++    Code:
++       0: aload_0
++       1: lload_1
++       2: iconst_0
++       3: aload_0
++       4: arraylength
++       5: invokestatic  #11                 // Method indexOf:([JJII)I
++       8: ireturn
++
++  private static int indexOf(long[], long, int, int);
++    descriptor: ([JJII)I
++    Code:
++       0: iload_3
++       1: istore        5
++       3: iload         5
++       5: iload         4
++       7: if_icmpge     28
++      10: aload_0
++      11: iload         5
++      13: laload
++      14: lload_1
++      15: lcmp
++      16: ifne          22
++      19: iload         5
++      21: ireturn
++      22: iinc          5, 1
++      25: goto          3
++      28: iconst_m1
++      29: ireturn
++
++  public static int indexOf(long[], long[]);
++    descriptor: ([J[J)I
++    Code:
++       0: aload_0
++       1: ldc           #24                 // String array
++       3: invokestatic  #26                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
++       6: pop
++       7: aload_1
++       8: ldc           #32                 // String target
++      10: invokestatic  #26                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
++      13: pop
++      14: aload_1
++      15: arraylength
++      16: ifne          21
++      19: iconst_0
++      20: ireturn
++      21: iconst_0
++      22: istore_2
++      23: iload_2
++      24: aload_0
++      25: arraylength
++      26: aload_1
++      27: arraylength
++      28: isub
++      29: iconst_1
++      30: iadd
++      31: if_icmpge     71
++      34: iconst_0
++      35: istore_3
++      36: iload_3
++      37: aload_1
++      38: arraylength
++      39: if_icmpge     63
++      42: aload_0
++      43: iload_2
++      44: iload_3
++      45: iadd
++      46: laload
++      47: aload_1
++      48: iload_3
++      49: laload
++      50: lcmp
++      51: ifeq          57
++      54: goto          65
++      57: iinc          3, 1
++      60: goto          36
++      63: iload_2
++      64: ireturn
++      65: iinc          2, 1
++      68: goto          23
++      71: iconst_m1
++      72: ireturn
++
++  public static int lastIndexOf(long[], long);
++    descriptor: ([JJ)I
++    Code:
++       0: aload_0
++       1: lload_1
++       2: iconst_0
++       3: aload_0
++       4: arraylength
++       5: invokestatic  #5                  // Method lastIndexOf:([JJII)I
++       8: ireturn
++
++  private static int lastIndexOf(long[], long, int, int);
++    descriptor: ([JJII)I
++    Code:
++       0: iload         4
++       2: iconst_1
++       3: isub
++       4: istore        5
++       6: iload         5
++       8: iload_3
++       9: if_icmplt     30
++      12: aload_0
++      13: iload         5
++      15: laload
++      16: lload_1
++      17: lcmp
++      18: ifne          24
++      21: iload         5
++      23: ireturn
++      24: iinc          5, -1
++      27: goto          6
++      30: iconst_m1
++      31: ireturn
++
++  public static long min(long...);
++    descriptor: ([J)J
++    Code:
++       0: aload_0
++       1: arraylength
++       2: ifle          9
++       5: iconst_1
++       6: goto          10
++       9: iconst_0
++      10: invokestatic  #34                 // Method com/google/common/base/Preconditions.checkArgument:(Z)V
++      13: aload_0
++      14: iconst_0
++      15: laload
++      16: lstore_1
++      17: iconst_1
++      18: istore_3
++      19: iload_3
++      20: aload_0
++      21: arraylength
++      22: if_icmpge     43
++      25: aload_0
++      26: iload_3
++      27: laload
++      28: lload_1
++      29: lcmp
++      30: ifge          37
++      33: aload_0
++      34: iload_3
++      35: laload
++      36: lstore_1
++      37: iinc          3, 1
++      40: goto          19
++      43: lload_1
++      44: lreturn
++
++  public static long max(long...);
++    descriptor: ([J)J
++    Code:
++       0: aload_0
++       1: arraylength
++       2: ifle          9
++       5: iconst_1
++       6: goto          10
++       9: iconst_0
++      10: invokestatic  #34                 // Method com/google/common/base/Preconditions.checkArgument:(Z)V
++      13: aload_0
++      14: iconst_0
++      15: laload
++      16: lstore_1
++      17: iconst_1
++      18: istore_3
++      19: iload_3
++      20: aload_0
++      21: arraylength
++      22: if_icmpge     43
++      25: aload_0
++      26: iload_3
++      27: laload
++      28: lload_1
++      29: lcmp
++      30: ifle          37
++      33: aload_0
++      34: iload_3
++      35: laload
++      36: lstore_1
++      37: iinc          3, 1
++      40: goto          19
++      43: lload_1
++      44: lreturn
++
++  public static long constrainToRange(long, long, long);
++    descriptor: (JJJ)J
++    Code:
++       0: lload_2
++       1: lload         4
++       3: lcmp
++       4: ifgt          11
++       7: iconst_1
++       8: goto          12
++      11: iconst_0
++      12: ldc           #38                 // String min (%s) must be less than or equal to max (%s)
++      14: lload_2
++      15: lload         4
++      17: invokestatic  #40                 // Method com/google/common/base/Preconditions.checkArgument:(ZLjava/lang/String;JJ)V
++      20: lload_0
++      21: lload_2
++      22: invokestatic  #43                 // Method java/lang/Math.max:(JJ)J
++      25: lload         4
++      27: invokestatic  #49                 // Method java/lang/Math.min:(JJ)J
++      30: lreturn
++
++  public static long[] concat(long[]...);
++    descriptor: ([[J)[J
++    Code:
++       0: lconst_0
++       1: lstore_1
++       2: aload_0
++       3: astore_3
++       4: aload_3
++       5: arraylength
++       6: istore        4
++       8: iconst_0
++       9: istore        5
++      11: iload         5
++      13: iload         4
++      15: if_icmpge     37
++      18: aload_3
++      19: iload         5
++      21: aaload
++      22: astore        6
++      24: lload_1
++      25: aload         6
++      27: arraylength
++      28: i2l
++      29: ladd
++      30: lstore_1
++      31: iinc          5, 1
++      34: goto          11
++      37: lload_1
++      38: invokestatic  #52                 // Method checkNoOverflow:(J)I
++      41: newarray       long
++      43: astore_3
++      44: iconst_0
++      45: istore        4
++      47: aload_0
++      48: astore        5
++      50: aload         5
++      52: arraylength
++      53: istore        6
++      55: iconst_0
++      56: istore        7
++      58: iload         7
++      60: iload         6
++      62: if_icmpge     98
++      65: aload         5
++      67: iload         7
++      69: aaload
++      70: astore        8
++      72: aload         8
++      74: iconst_0
++      75: aload_3
++      76: iload         4
++      78: aload         8
++      80: arraylength
++      81: invokestatic  #56                 // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
++      84: iload         4
++      86: aload         8
++      88: arraylength
++      89: iadd
++      90: istore        4
++      92: iinc          7, 1
++      95: goto          58
++      98: aload_3
++      99: areturn
++
++  private static int checkNoOverflow(long);
++    descriptor: (J)I
++    Code:
++       0: lload_0
++       1: lload_0
++       2: l2i
++       3: i2l
++       4: lcmp
++       5: ifne          12
++       8: iconst_1
++       9: goto          13
++      12: iconst_0
++      13: ldc           #62                 // String the total number of elements (%s) in the arrays must fit in an int
++      15: lload_0
++      16: invokestatic  #64                 // Method com/google/common/base/Preconditions.checkArgument:(ZLjava/lang/String;J)V
++      19: lload_0
++      20: l2i
++      21: ireturn
++
++  public static byte[] toByteArray(long);
++    descriptor: (J)[B
++    Code:
++       0: bipush        8
++       2: newarray       byte
++       4: astore_2
++       5: bipush        7
++       7: istore_3
++       8: iload_3
++       9: iflt          33
++      12: aload_2
++      13: iload_3
++      14: lload_0
++      15: ldc2_w        #67                 // long 255l
++      18: land
++      19: l2i
++      20: i2b
++      21: bastore
++      22: lload_0
++      23: bipush        8
++      25: lshr
++      26: lstore_0
++      27: iinc          3, -1
++      30: goto          8
++      33: aload_2
++      34: areturn
++
++  public static long fromByteArray(byte[]);
++    descriptor: ([B)J
++    Code:
++       0: aload_0
++       1: arraylength
++       2: bipush        8
++       4: if_icmplt     11
++       7: iconst_1
++       8: goto          12
++      11: iconst_0
++      12: ldc           #69                 // String array too small: %s < %s
++      14: aload_0
++      15: arraylength
++      16: bipush        8
++      18: invokestatic  #71                 // Method com/google/common/base/Preconditions.checkArgument:(ZLjava/lang/String;II)V
++      21: aload_0
++      22: iconst_0
++      23: baload
++      24: aload_0
++      25: iconst_1
++      26: baload
++      27: aload_0
++      28: iconst_2
++      29: baload
++      30: aload_0
++      31: iconst_3
++      32: baload
++      33: aload_0
++      34: iconst_4
++      35: baload
++      36: aload_0
++      37: iconst_5
++      38: baload
++      39: aload_0
++      40: bipush        6
++      42: baload
++      43: aload_0
++      44: bipush        7
++      46: baload
++      47: invokestatic  #74                 // Method fromBytes:(BBBBBBBB)J
++      50: lreturn
++
++  public static long fromBytes(byte, byte, byte, byte, byte, byte, byte, byte);
++    descriptor: (BBBBBBBB)J
++    Code:
++       0: iload_0
++       1: i2l
++       2: ldc2_w        #67                 // long 255l
++       5: land
++       6: bipush        56
++       8: lshl
++       9: iload_1
++      10: i2l
++      11: ldc2_w        #67                 // long 255l
++      14: land
++      15: bipush        48
++      17: lshl
++      18: lor
++      19: iload_2
++      20: i2l
++      21: ldc2_w        #67                 // long 255l
++      24: land
++      25: bipush        40
++      27: lshl
++      28: lor
++      29: iload_3
++      30: i2l
++      31: ldc2_w        #67                 // long 255l
++      34: land
++      35: bipush        32
++      37: lshl
++      38: lor
++      39: iload         4
++      41: i2l
++      42: ldc2_w        #67                 // long 255l
++      45: land
++      46: bipush        24
++      48: lshl
++      49: lor
++      50: iload         5
++      52: i2l
++      53: ldc2_w        #67                 // long 255l
++      56: land
++      57: bipush        16
++      59: lshl
++      60: lor
++      61: iload         6
++      63: i2l
++      64: ldc2_w        #67                 // long 255l
++      67: land
++      68: bipush        8
++      70: lshl
++      71: lor
++      72: iload         7
++      74: i2l
++      75: ldc2_w        #67                 // long 255l
++      78: land
++      79: lor
++      80: lreturn
++
++  public static java.lang.Long tryParse(java.lang.String);
++    descriptor: (Ljava/lang/String;)Ljava/lang/Long;
++    Code:
++       0: aload_0
++       1: bipush        10
++       3: invokestatic  #78                 // Method tryParse:(Ljava/lang/String;I)Ljava/lang/Long;
++       6: areturn
++
++  public static java.lang.Long tryParse(java.lang.String, int);
++    descriptor: (Ljava/lang/String;I)Ljava/lang/Long;
++    Code:
++       0: aload_0
++       1: invokestatic  #82                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;)Ljava/lang/Object;
++       4: checkcast     #85                 // class java/lang/String
++       7: invokevirtual #87                 // Method java/lang/String.isEmpty:()Z
++      10: ifeq          15
++      13: aconst_null
++      14: areturn
++      15: iload_1
++      16: iconst_2
++      17: if_icmplt     26
++      20: iload_1
++      21: bipush        36
++      23: if_icmple     53
++      26: new           #93                 // class java/lang/IllegalArgumentException
++      29: dup
++      30: new           #95                 // class java/lang/StringBuilder
++      33: dup
++      34: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
++      37: ldc           #98                 // String radix must be between MIN_RADIX and MAX_RADIX but was
++      39: invokevirtual #100                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
++      42: iload_1
++      43: invokevirtual #104                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
++      46: invokevirtual #107                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
++      49: invokespecial #111                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
++      52: athrow
++      53: aload_0
++      54: iconst_0
++      55: invokevirtual #114                // Method java/lang/String.charAt:(I)C
++      58: bipush        45
++      60: if_icmpne     67
++      63: iconst_1
++      64: goto          68
++      67: iconst_0
++      68: istore_2
++      69: iload_2
++      70: ifeq          77
++      73: iconst_1
++      74: goto          78
++      77: iconst_0
++      78: istore_3
++      79: iload_3
++      80: aload_0
++      81: invokevirtual #118                // Method java/lang/String.length:()I
++      84: if_icmpne     89
++      87: aconst_null
++      88: areturn
++      89: aload_0
++      90: iload_3
++      91: iinc          3, 1
++      94: invokevirtual #114                // Method java/lang/String.charAt:(I)C
++      97: invokestatic  #122                // Method com/google/common/primitives/Longs$AsciiDigits.digit:(C)I
++     100: istore        4
++     102: iload         4
++     104: iflt          113
++     107: iload         4
++     109: iload_1
++     110: if_icmplt     115
++     113: aconst_null
++     114: areturn
++     115: iload         4
++     117: ineg
++     118: i2l
++     119: lstore        5
++     121: ldc2_w        #128                // long -9223372036854775808l
++     124: iload_1
++     125: i2l
++     126: ldiv
++     127: lstore        7
++     129: iload_3
++     130: aload_0
++     131: invokevirtual #118                // Method java/lang/String.length:()I
++     134: if_icmpge     204
++     137: aload_0
++     138: iload_3
++     139: iinc          3, 1
++     142: invokevirtual #114                // Method java/lang/String.charAt:(I)C
++     145: invokestatic  #122                // Method com/google/common/primitives/Longs$AsciiDigits.digit:(C)I
++     148: istore        4
++     150: iload         4
++     152: iflt          169
++     155: iload         4
++     157: iload_1
++     158: if_icmpge     169
++     161: lload         5
++     163: lload         7
++     165: lcmp
++     166: ifge          171
++     169: aconst_null
++     170: areturn
++     171: lload         5
++     173: iload_1
++     174: i2l
++     175: lmul
++     176: lstore        5
++     178: lload         5
++     180: ldc2_w        #128                // long -9223372036854775808l
++     183: iload         4
++     185: i2l
++     186: ladd
++     187: lcmp
++     188: ifge          193
++     191: aconst_null
++     192: areturn
++     193: lload         5
++     195: iload         4
++     197: i2l
++     198: lsub
++     199: lstore        5
++     201: goto          129
++     204: iload_2
++     205: ifeq          214
++     208: lload         5
++     210: invokestatic  #130                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
++     213: areturn
++     214: lload         5
++     216: ldc2_w        #128                // long -9223372036854775808l
++     219: lcmp
++     220: ifne          225
++     223: aconst_null
++     224: areturn
++     225: lload         5
++     227: lneg
++     228: invokestatic  #130                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
++     231: areturn
++
++  public static com.google.common.base.Converter<java.lang.String, java.lang.Long> stringConverter();
++    descriptor: ()Lcom/google/common/base/Converter;
++    Code:
++       0: getstatic     #134                // Field com/google/common/primitives/Longs$LongConverter.INSTANCE:Lcom/google/common/base/Converter;
++       3: areturn
++
++  public static long[] ensureCapacity(long[], int, int);
++    descriptor: ([JII)[J
++    Code:
++       0: iload_1
++       1: iflt          8
++       4: iconst_1
++       5: goto          9
++       8: iconst_0
++       9: ldc           #140                // String Invalid minLength: %s
++      11: iload_1
++      12: invokestatic  #142                // Method com/google/common/base/Preconditions.checkArgument:(ZLjava/lang/String;I)V
++      15: iload_2
++      16: iflt          23
++      19: iconst_1
++      20: goto          24
++      23: iconst_0
++      24: ldc           #145                // String Invalid padding: %s
++      26: iload_2
++      27: invokestatic  #142                // Method com/google/common/base/Preconditions.checkArgument:(ZLjava/lang/String;I)V
++      30: aload_0
++      31: arraylength
++      32: iload_1
++      33: if_icmpge     46
++      36: aload_0
++      37: iload_1
++      38: iload_2
++      39: iadd
++      40: invokestatic  #147                // Method java/util/Arrays.copyOf:([JI)[J
++      43: goto          47
++      46: aload_0
++      47: areturn
++
++  public static java.lang.String join(java.lang.String, long...);
++    descriptor: (Ljava/lang/String;[J)Ljava/lang/String;
++    Code:
++       0: aload_0
++       1: invokestatic  #82                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;)Ljava/lang/Object;
++       4: pop
++       5: aload_1
++       6: arraylength
++       7: ifne          13
++      10: ldc           #153                // String
++      12: areturn
++      13: new           #95                 // class java/lang/StringBuilder
++      16: dup
++      17: aload_1
++      18: arraylength
++      19: bipush        10
++      21: imul
++      22: invokespecial #155                // Method java/lang/StringBuilder."<init>":(I)V
++      25: astore_2
++      26: aload_2
++      27: aload_1
++      28: iconst_0
++      29: laload
++      30: invokevirtual #158                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
++      33: pop
++      34: iconst_1
++      35: istore_3
++      36: iload_3
++      37: aload_1
++      38: arraylength
++      39: if_icmpge     60
++      42: aload_2
++      43: aload_0
++      44: invokevirtual #100                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
++      47: aload_1
++      48: iload_3
++      49: laload
++      50: invokevirtual #158                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
++      53: pop
++      54: iinc          3, 1
++      57: goto          36
++      60: aload_2
++      61: invokevirtual #107                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
++      64: areturn
++
++  public static java.util.Comparator<long[]> lexicographicalComparator();
++    descriptor: ()Ljava/util/Comparator;
++    Code:
++       0: getstatic     #161                // Field com/google/common/primitives/Longs$LexicographicalComparator.INSTANCE:Lcom/google/common/primitives/Longs$LexicographicalComparator;
++       3: areturn
++
++  public static void sortDescending(long[]);
++    descriptor: ([J)V
++    Code:
++       0: aload_0
++       1: invokestatic  #82                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;)Ljava/lang/Object;
++       4: pop
++       5: aload_0
++       6: iconst_0
++       7: aload_0
++       8: arraylength
++       9: invokestatic  #166                // Method sortDescending:([JII)V
++      12: return
++
++  public static void sortDescending(long[], int, int);
++    descriptor: ([JII)V
++    Code:
++       0: aload_0
++       1: invokestatic  #82                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;)Ljava/lang/Object;
++       4: pop
++       5: iload_1
++       6: iload_2
++       7: aload_0
++       8: arraylength
++       9: invokestatic  #170                // Method com/google/common/base/Preconditions.checkPositionIndexes:(III)V
++      12: aload_0
++      13: iload_1
++      14: iload_2
++      15: invokestatic  #174                // Method java/util/Arrays.sort:([JII)V
++      18: aload_0
++      19: iload_1
++      20: iload_2
++      21: invokestatic  #177                // Method reverse:([JII)V
++      24: return
++
++  public static void reverse(long[]);
++    descriptor: ([J)V
++    Code:
++       0: aload_0
++       1: invokestatic  #82                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;)Ljava/lang/Object;
++       4: pop
++       5: aload_0
++       6: iconst_0
++       7: aload_0
++       8: arraylength
++       9: invokestatic  #177                // Method reverse:([JII)V
++      12: return
++
++  public static void reverse(long[], int, int);
++    descriptor: ([JII)V
++    Code:
++       0: aload_0
++       1: invokestatic  #82                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;)Ljava/lang/Object;
++       4: pop
++       5: iload_1
++       6: iload_2
++       7: aload_0
++       8: arraylength
++       9: invokestatic  #170                // Method com/google/common/base/Preconditions.checkPositionIndexes:(III)V
++      12: iload_1
++      13: istore_3
++      14: iload_2
++      15: iconst_1
++      16: isub
++      17: istore        4
++      19: iload_3
++      20: iload         4
++      22: if_icmpge     52
++      25: aload_0
++      26: iload_3
++      27: laload
++      28: lstore        5
++      30: aload_0
++      31: iload_3
++      32: aload_0
++      33: iload         4
++      35: laload
++      36: lastore
++      37: aload_0
++      38: iload         4
++      40: lload         5
++      42: lastore
++      43: iinc          3, 1
++      46: iinc          4, -1
++      49: goto          19
++      52: return
++
++  public static void rotate(long[], int);
++    descriptor: ([JI)V
++    Code:
++       0: aload_0
++       1: iload_1
++       2: iconst_0
++       3: aload_0
++       4: arraylength
++       5: invokestatic  #180                // Method rotate:([JIII)V
++       8: return
++
++  public static void rotate(long[], int, int, int);
++    descriptor: ([JIII)V
++    Code:
++       0: aload_0
++       1: invokestatic  #82                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;)Ljava/lang/Object;
++       4: pop
++       5: iload_2
++       6: iload_3
++       7: aload_0
++       8: arraylength
++       9: invokestatic  #170                // Method com/google/common/base/Preconditions.checkPositionIndexes:(III)V
++      12: aload_0
++      13: arraylength
++      14: iconst_1
++      15: if_icmpgt     19
++      18: return
++      19: iload_3
++      20: iload_2
++      21: isub
++      22: istore        4
++      24: iload_1
++      25: ineg
++      26: iload         4
++      28: irem
++      29: istore        5
++      31: iload         5
++      33: ifge          44
++      36: iload         5
++      38: iload         4
++      40: iadd
++      41: goto          46
++      44: iload         5
++      46: istore        5
++      48: iload         5
++      50: iload_2
++      51: iadd
++      52: istore        6
++      54: iload         6
++      56: iload_2
++      57: if_icmpne     61
++      60: return
++      61: aload_0
++      62: iload_2
++      63: iload         6
++      65: invokestatic  #177                // Method reverse:([JII)V
++      68: aload_0
++      69: iload         6
++      71: iload_3
++      72: invokestatic  #177                // Method reverse:([JII)V
++      75: aload_0
++      76: iload_2
++      77: iload_3
++      78: invokestatic  #177                // Method reverse:([JII)V
++      81: return
++
++  public static long[] toArray(java.util.Collection<? extends java.lang.Number>);
++    descriptor: (Ljava/util/Collection;)[J
++    Code:
++       0: aload_0
++       1: instanceof    #184                // class com/google/common/primitives/Longs$LongArrayAsList
++       4: ifeq          15
++       7: aload_0
++       8: checkcast     #184                // class com/google/common/primitives/Longs$LongArrayAsList
++      11: invokevirtual #186                // Method com/google/common/primitives/Longs$LongArrayAsList.toLongArray:()[J
++      14: areturn
++      15: aload_0
++      16: invokeinterface #190,  1          // InterfaceMethod java/util/Collection.toArray:()[Ljava/lang/Object;
++      21: astore_1
++      22: aload_1
++      23: arraylength
++      24: istore_2
++      25: iload_2
++      26: newarray       long
++      28: astore_3
++      29: iconst_0
++      30: istore        4
++      32: iload         4
++      34: iload_2
++      35: if_icmpge     61
++      38: aload_3
++      39: iload         4
++      41: aload_1
++      42: iload         4
++      44: aaload
++      45: invokestatic  #82                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;)Ljava/lang/Object;
++      48: checkcast     #196                // class java/lang/Number
++      51: invokevirtual #198                // Method java/lang/Number.longValue:()J
++      54: lastore
++      55: iinc          4, 1
++      58: goto          32
++      61: aload_3
++      62: areturn
++
++  public static java.util.List<java.lang.Long> asList(long...);
++    descriptor: ([J)Ljava/util/List;
++    Code:
++       0: aload_0
++       1: arraylength
++       2: ifne          9
++       5: invokestatic  #202                // Method java/util/Collections.emptyList:()Ljava/util/List;
++       8: areturn
++       9: new           #184                // class com/google/common/primitives/Longs$LongArrayAsList
++      12: dup
++      13: aload_0
++      14: invokespecial #208                // Method com/google/common/primitives/Longs$LongArrayAsList."<init>":([J)V
++      17: areturn
++
++  static int access$000(long[], long, int, int);
++    descriptor: ([JJII)I
++    Code:
++       0: aload_0
++       1: lload_1
++       2: iload_3
++       3: iload         4
++       5: invokestatic  #11                 // Method indexOf:([JJII)I
++       8: ireturn
++
++  static int access$100(long[], long, int, int);
++    descriptor: ([JJII)I
++    Code:
++       0: aload_0
++       1: lload_1
++       2: iload_3
++       3: iload         4
++       5: invokestatic  #5                  // Method lastIndexOf:([JJII)I
++       8: ireturn
++}
+--- /dev/null
++++ b/examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/obligations.smt2
+@@ -0,0 +1,68 @@
++(set-logic QF_ABV)
++(declare-const length (_ BitVec 32))
++(declare-const cursor (_ BitVec 32))
++(declare-const target (_ BitVec 64))
++(declare-const k (_ BitVec 32))
++(declare-const from (_ BitVec 32))
++(declare-const to (_ BitVec 32))
++(declare-const value (_ BitVec 64))
++(declare-const initial (Array (_ BitVec 32) (_ BitVec 64)))
++(declare-const heap (Array (_ BitVec 32) (_ BitVec 64)))
++(declare-const otherInitial (Array (_ BitVec 32) (_ BitVec 64)))
++(declare-const otherLength (_ BitVec 32))
++(declare-const aliases Bool)
++; VC 0
++(push 1)
++(assert (bvsle #x00000000 length))
++(check-sat)
++(pop 1)
++; VC 1
++(push 1)
++(assert (and (bvsle #x00000000 length) (= length #x7fffffff)))
++(check-sat)
++(pop 1)
++; VC 2
++(push 1)
++(assert (and (bvsle #x00000000 length) (bvslt #x00000000 length) (distinct (select initial #x00000000) target) (= ((_ extract 31 0) (select initial #x00000000)) ((_ extract 31 0) target))))
++(check-sat)
++(pop 1)
++; VC 3
++(push 1)
++(assert (and (bvsle #x00000000 length) (not (and (bvsle #x00000000 #x00000000) (bvsle #x00000000 length) (= initial initial) (=> (and (bvsle #x00000000 k) (bvslt k #x00000000)) (distinct (select initial k) target))))))
++(check-sat)
++(pop 1)
++; VC 4
++(push 1)
++(assert (and (and (bvsle #x00000000 length) (and (bvsle #x00000000 cursor) (bvsle cursor length) (= heap initial) (=> (and (bvsle #x00000000 k) (bvslt k cursor)) (distinct (select heap k) target))) (not (bvsge cursor length))) (not (and (bvsle #x00000000 cursor) (bvslt cursor length)))))
++(check-sat)
++(pop 1)
++; VC 5
++(push 1)
++(assert (and (and (bvsle #x00000000 length) (and (bvsle #x00000000 cursor) (bvsle cursor length) (= heap initial) (=> (and (bvsle #x00000000 k) (bvslt k cursor)) (distinct (select heap k) target))) (bvsge cursor length)) (not (or (and (= #xffffffff #xffffffff) (=> (and (bvsle #x00000000 k) (bvslt k length)) (distinct (select initial k) target))) (and (and (bvsle #x00000000 #xffffffff) (bvslt #xffffffff length)) (= (select initial #xffffffff) target) (=> (and (bvsle #x00000000 k) (bvslt k #xffffffff)) (distinct (select initial k) target)))))))
++(check-sat)
++(pop 1)
++; VC 6
++(push 1)
++(assert (and (and (bvsle #x00000000 length) (and (bvsle #x00000000 cursor) (bvsle cursor length) (= heap initial) (=> (and (bvsle #x00000000 k) (bvslt k cursor)) (distinct (select heap k) target))) (bvsge cursor length)) (not (= heap initial))))
++(check-sat)
++(pop 1)
++; VC 7
++(push 1)
++(assert (and (and (bvsle #x00000000 length) (and (bvsle #x00000000 cursor) (bvsle cursor length) (= heap initial) (=> (and (bvsle #x00000000 k) (bvslt k cursor)) (distinct (select heap k) target))) (not (bvsge cursor length)) (distinct (ite (= (select heap cursor) target) #x00000000 (ite (bvslt (select heap cursor) target) #xffffffff #x00000001)) #x00000000)) (not (and (bvsle #x00000000 (bvadd cursor #x00000001)) (bvsle (bvadd cursor #x00000001) length) (= heap initial) (=> (and (bvsle #x00000000 k) (bvslt k (bvadd cursor #x00000001))) (distinct (select heap k) target))))))
++(check-sat)
++(pop 1)
++; VC 8
++(push 1)
++(assert (and (and (bvsle #x00000000 length) (and (bvsle #x00000000 cursor) (bvsle cursor length) (= heap initial) (=> (and (bvsle #x00000000 k) (bvslt k cursor)) (distinct (select heap k) target))) (not (bvsge cursor length)) (distinct (ite (= (select heap cursor) target) #x00000000 (ite (bvslt (select heap cursor) target) #xffffffff #x00000001)) #x00000000)) (not (and (bvsle #x00000000 (bvsub length (bvadd cursor #x00000001))) (bvslt (bvsub length (bvadd cursor #x00000001)) (bvsub length cursor)) (bvsle #x00000000 (bvsub length cursor))))))
++(check-sat)
++(pop 1)
++; VC 9
++(push 1)
++(assert (and (and (bvsle #x00000000 length) (and (bvsle #x00000000 cursor) (bvsle cursor length) (= heap initial) (=> (and (bvsle #x00000000 k) (bvslt k cursor)) (distinct (select heap k) target))) (not (bvsge cursor length)) (not (distinct (ite (= (select heap cursor) target) #x00000000 (ite (bvslt (select heap cursor) target) #xffffffff #x00000001)) #x00000000))) (not (or (and (= cursor #xffffffff) (=> (and (bvsle #x00000000 k) (bvslt k length)) (distinct (select initial k) target))) (and (and (bvsle #x00000000 cursor) (bvslt cursor length)) (= (select initial cursor) target) (=> (and (bvsle #x00000000 k) (bvslt k cursor)) (distinct (select initial k) target)))))))
++(check-sat)
++(pop 1)
++; VC 10
++(push 1)
++(assert (and (and (bvsle #x00000000 length) (and (bvsle #x00000000 cursor) (bvsle cursor length) (= heap initial) (=> (and (bvsle #x00000000 k) (bvslt k cursor)) (distinct (select heap k) target))) (not (bvsge cursor length)) (not (distinct (ite (= (select heap cursor) target) #x00000000 (ite (bvslt (select heap cursor) target) #xffffffff #x00000001)) #x00000000))) (not (= heap initial))))
++(check-sat)
++(pop 1)
+--- /dev/null
++++ b/examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/result.json
+@@ -0,0 +1,217 @@
++{
++  "schema": "java-array-induction-result/v1",
++  "sourceKey": "41253a07cc37be4ae7ec8b802a8b22012881dba24bb8e8637c54ffad0f870e48",
++  "entry": "com.google.common.primitives.Longs#indexOf([JJ)I",
++  "revision": "release",
++  "rule": "first-index",
++  "status": "established",
++  "domain": "Every non-null, already allocated long array of legal Java length and all signed scalar inputs.",
++  "preparation": "f06690fa3e874f65515e8fd338a74d636e2c792f",
++  "classpath": [
++    {
++      "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
++      "role": "original",
++      "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
++    },
++    {
++      "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
++      "role": "dependency",
++      "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
++    },
++    {
++      "path": "lib/org.jspecify/jspecify-1.0.0.jar",
++      "role": "dependency",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
++    }
++  ],
++  "classes": {
++    "com/google/common/primitives/Longs": {
++      "sha256": "b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9",
++      "origin": "lib/com.google.guava/guava-33.4.8-jre.jar"
++    }
++  },
++  "jdk": {
++    "feature": "21",
++    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++    "release": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    }
++  },
++  "rulesSha256": "ad65072c9b78c436841a78066d978aca34e12a264ac856209113ed721bf7272a",
++  "heapCellBits": 64,
++  "indexBits": 32,
++  "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
++  "solver": {
++    "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++    "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++  },
++  "solverTimeoutSeconds": 60,
++  "bytecode": [
++    {
++      "pc": 0,
++      "op": "iload_3",
++      "argument": "",
++      "member": ""
++    },
++    {
++      "pc": 1,
++      "op": "istore",
++      "argument": "5",
++      "member": ""
++    },
++    {
++      "pc": 3,
++      "op": "iload",
++      "argument": "5",
++      "member": ""
++    },
++    {
++      "pc": 5,
++      "op": "iload",
++      "argument": "4",
++      "member": ""
++    },
++    {
++      "pc": 7,
++      "op": "if_icmpge",
++      "argument": "28",
++      "member": ""
++    },
++    {
++      "pc": 10,
++      "op": "aload_0",
++      "argument": "",
++      "member": ""
++    },
++    {
++      "pc": 11,
++      "op": "iload",
++      "argument": "5",
++      "member": ""
++    },
++    {
++      "pc": 13,
++      "op": "laload",
++      "argument": "",
++      "member": ""
++    },
++    {
++      "pc": 14,
++      "op": "lload_1",
++      "argument": "",
++      "member": ""
++    },
++    {
++      "pc": 15,
++      "op": "lcmp",
++      "argument": "",
++      "member": ""
++    },
++    {
++      "pc": 16,
++      "op": "ifne",
++      "argument": "22",
++      "member": ""
++    },
++    {
++      "pc": 19,
++      "op": "iload",
++      "argument": "5",
++      "member": ""
++    },
++    {
++      "pc": 21,
++      "op": "ireturn",
++      "argument": "",
++      "member": ""
++    },
++    {
++      "pc": 22,
++      "op": "iinc",
++      "argument": "5, 1",
++      "member": ""
++    },
++    {
++      "pc": 25,
++      "op": "goto",
++      "argument": "3",
++      "member": ""
++    },
++    {
++      "pc": 28,
++      "op": "iconst_m1",
++      "argument": "",
++      "member": ""
++    },
++    {
++      "pc": 29,
++      "op": "ireturn",
++      "argument": "",
++      "member": ""
++    }
++  ],
++  "obligations": [
++    {
++      "name": "nonempty input domain",
++      "expected": "sat",
++      "obtained": "sat"
++    },
++    {
++      "name": "maximal signed length admitted",
++      "expected": "sat",
++      "obtained": "sat"
++    },
++    {
++      "name": "distinct elements can have identical low 32 bits",
++      "expected": "sat",
++      "obtained": "sat"
++    },
++    {
++      "name": "entry establishes invariant",
++      "expected": "unsat",
++      "obtained": "unsat"
++    },
++    {
++      "name": "safe array access at 13",
++      "expected": "unsat",
++      "obtained": "unsat"
++    },
++    {
++      "name": "return the earliest match or minus one",
++      "expected": "unsat",
++      "obtained": "unsat"
++    },
++    {
++      "name": "preserve the input heap",
++      "expected": "unsat",
++      "obtained": "unsat"
++    },
++    {
++      "name": "iteration preserves invariant",
++      "expected": "unsat",
++      "obtained": "unsat"
++    },
++    {
++      "name": "nonnegative strictly decreasing Java-int variant",
++      "expected": "unsat",
++      "obtained": "unsat"
++    },
++    {
++      "name": "return the earliest match or minus one",
++      "expected": "unsat",
++      "obtained": "unsat"
++    },
++    {
++      "name": "preserve the input heap",
++      "expected": "unsat",
++      "obtained": "unsat"
++    }
++  ],
++  "certificateSha256": "a722d68c157693a66e58d63678c0b6ae443c1ada5fc9ca7b9644129bc924b16d",
++  "disassemblySha256": "b3f96622dd45ae57d352230d8ab83b5169ab84ca28f8fb0ddd4f8baa81c65fc3"
++}

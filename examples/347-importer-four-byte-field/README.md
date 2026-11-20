@@ -1,5 +1,7 @@
 # A four-byte character crosses reads in the unchanged importer
 
-The first CSV row is `abc,😀`. With one-byte reads, the decoder receives the four UTF-8 bytes of the second field across read boundaries. The literal oracle expects the UTF-16 pair D83D DE00 in one field. The two historical upgrades, application class and record-number checks are the ones from example 345.
+The first CSV row is `abc,😀`. One-byte reads split its second field at all three interior boundaries of the four-byte scalar. The literal oracle expects the UTF-16 pair D83D DE00 in one field. The importer class bytes and both pairs of upstream JARs match example 345. Four native decoder receipts from example 341 cover the units and repeated EOF through both the plain stream and the BOM wrapper. [Input and expected records](controls/table.json) · [Decoder proofs and class hashes](records/decoder-transfer.json)
 
-[Input and expected records](controls/table.json) · [Four configurations](records/matrix/matrix.json) · [Decoder transfer](records/decoder-transfer.json)
+Exhaustive JVM checks and strict native case analysis agreed on all 16 claims. Five of the 12 primary byte, count and page claims held and seven were refuted. All four positive controls held. With both parents, 24 of 32 complete pages were wrong. With either single fix, 16 were wrong. Both fixes returned all 32 pages correctly. The single symbolic fixed/fixed page search exhausted its 90-second budget. Its native case analysis covered every admitted input. [Four configurations](records/matrix/matrix.json) · [Native proofs](records/native-selectors)
+
+After a preview and implicit reset, asking for one row numbered 2 with the CSV parent returned an empty page. The CSV fix alone returned record 2 with fields `["abcabc","😀"]`. With both fixes the fields were `["abc","😀"]`. [Original importer comparison](../345-paged-importer-upgrades/README.md)

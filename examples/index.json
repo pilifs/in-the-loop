@@ -13629,12 +13629,12 @@
             "attempts": 2
           },
           "helper-preservation": {
-            "path": "receipts/helper-preservation/20261120T195130Z-0aae7faa/result.json",
-            "attempt": "20261120T195130Z-0aae7faa",
+            "path": "receipts/helper-preservation/20261120T222019Z-d93083b6/result.json",
+            "attempt": "20261120T222019Z-d93083b6",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "caller-exact-preservation": {
             "path": "receipts/caller-exact-preservation/20261120T195153Z-43b6406d/result.json",
@@ -15679,7 +15679,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "This holdout uses the exact Guava 33.4.8-jre JAR from example 336. Array lengths, returned indexes and the decreasing measure stay signed 32-bit. Each element and the target occupy 64 bits. The initial public induction attempt is retained before extending the rule."
+        "This holdout uses the exact Guava 33.4.8-jre JAR from example 336. Array lengths, returned indexes and the decreasing measure stay signed 32-bit. Each element and the target occupy 64 bits. The initial public induction attempt is retained before extending the rule.",
+        "All eight strict native claims were decided at bounds 8 and 64. Both first-match claims for the reversed control were refuted. The released traversal also passed all eleven arbitrary-length solver checks, including one that admits distinct values with identical low halves."
       ],
       "source": "https://github.com/google/guava/commit/f06690fa3e874f65515e8fd338a74d636e2c792f",
       "target": {
@@ -15698,18 +15699,18 @@
           "first-64-last",
           "frame-64-last"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
           "mutant-replay": "scaffolded",
-          "first-8-release": "scaffolded",
-          "frame-8-release": "scaffolded",
-          "first-8-last": "scaffolded",
-          "frame-8-last": "scaffolded",
-          "first-64-release": "scaffolded",
-          "frame-64-release": "scaffolded",
-          "first-64-last": "scaffolded",
-          "frame-64-last": "scaffolded"
+          "first-8-release": "executable",
+          "frame-8-release": "executable",
+          "first-8-last": "executable",
+          "frame-8-last": "executable",
+          "first-64-release": "executable",
+          "frame-64-release": "executable",
+          "first-64-last": "executable",
+          "frame-64-last": "executable"
         },
         "expected": {
           "replay": null,
@@ -15724,31 +15725,95 @@
           "frame-64-last": "established"
         },
         "claims": {
-          "first-8-release": null,
-          "frame-8-release": null,
-          "first-8-last": null,
-          "frame-8-last": null,
-          "first-64-release": null,
-          "frame-64-release": null,
-          "first-64-last": null,
-          "frame-64-last": null
+          "first-8-release": "established",
+          "frame-8-release": "established",
+          "first-8-last": "refuted",
+          "frame-8-last": "established",
+          "first-64-release": "established",
+          "frame-64-release": "established",
+          "first-64-last": "refuted",
+          "frame-64-last": "established"
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261120T221207Z-eb3705e6/result.json",
-            "attempt": "20261120T221207Z-eb3705e6",
+            "path": "receipts/replay/20261120T223139Z-8f787e1a/result.json",
+            "attempt": "20261120T223139Z-8f787e1a",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "mutant-replay": {
-            "path": "receipts/mutant-replay/20261120T221209Z-2820dbfc/result.json",
-            "attempt": "20261120T221209Z-2820dbfc",
+            "path": "receipts/mutant-replay/20261120T223140Z-9aaf662b/result.json",
+            "attempt": "20261120T223140Z-9aaf662b",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
+          },
+          "first-8-release": {
+            "path": "receipts/first-8-release/20261120T222019Z-05de849c/result.json",
+            "attempt": "20261120T222019Z-05de849c",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "frame-8-release": {
+            "path": "receipts/frame-8-release/20261120T222020Z-75829702/result.json",
+            "attempt": "20261120T222020Z-75829702",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "first-8-last": {
+            "path": "receipts/first-8-last/20261120T222021Z-03db1baa/result.json",
+            "attempt": "20261120T222021Z-03db1baa",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "frame-8-last": {
+            "path": "receipts/frame-8-last/20261120T222026Z-af75f5a7/result.json",
+            "attempt": "20261120T222026Z-af75f5a7",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "first-64-release": {
+            "path": "receipts/first-64-release/20261120T222019Z-b19fbec3/result.json",
+            "attempt": "20261120T222019Z-b19fbec3",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "frame-64-release": {
+            "path": "receipts/frame-64-release/20261120T222022Z-258fcdb1/result.json",
+            "attempt": "20261120T222022Z-258fcdb1",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "first-64-last": {
+            "path": "receipts/first-64-last/20261120T222103Z-3330981e/result.json",
+            "attempt": "20261120T222103Z-3330981e",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "frame-64-last": {
+            "path": "receipts/frame-64-last/20261120T222239Z-af91ad3f/result.json",
+            "attempt": "20261120T222239Z-af91ad3f",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
           }
         },
         "staleReceipts": [],
@@ -15802,7 +15867,8 @@
       "existingTestsPassed": null,
       "notes": [
         "The compiled PageImporter and all selected runtime JARs have the same byte hashes as in example 345. The document starts with four ASCII bytes before the four-byte scalar, beyond IO’s three-byte BOM prefix. The one-byte delegate therefore forces cuts between its UTF-8 continuation bytes.",
-        "Example 341 checks all eight partitions of this scalar and repeated EOF. The importer rechecks the remaining bytes, displayed record numbers and fields through the real CSV parser before and after the historical reset repair."
+        "Example 341 checks all eight partitions of this scalar and repeated EOF. The importer rechecks the remaining bytes, displayed record numbers and fields through the real CSV parser before and after the historical reset repair.",
+        "All 16 native dispositions agree with the exhaustive JVM runs. Of 32 complete pages, the parent/parent combination returned 24 incorrectly, each single upgrade returned 16 incorrectly, and the double upgrade returned all 32 correctly. The four positive controls also held."
       ],
       "source": null,
       "target": {
@@ -15893,12 +15959,12 @@
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261120T221214Z-8a233c64/result.json",
-            "attempt": "20261120T221214Z-8a233c64",
+            "path": "receipts/replay/20261120T223145Z-54a51a82/result.json",
+            "attempt": "20261120T223145Z-54a51a82",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "replay-io": {
             "path": "receipts/replay-io/20261120T221055Z-7f68ba46/result.json",
