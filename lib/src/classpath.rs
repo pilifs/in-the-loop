@@ -571,6 +571,9 @@ impl ClassPath {
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
             ("java/util/Arrays", "fill", "([CC)V")
+            | ("java/util/Arrays", "fill", "([IIII)V")
+            | ("java/util/Arrays", "rangeCheck", "(III)V")
+            | ("java/util/Collections", "reverseOrder", "(Ljava/util/Comparator;)Ljava/util/Comparator;")
             | ("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
             | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
@@ -771,6 +774,9 @@ impl ClassPath {
             return Some(class);
         }
         if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
+            | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
+            | "java/util/Comparator" | "java/util/Comparators$NaturalOrderComparator"
+            | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"
             | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
             | "java/util/Spliterators$EmptySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef" | "java/util/Spliterators$EmptySpliterator$OfInt"

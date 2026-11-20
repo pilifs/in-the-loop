@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-185734-340-build-the-rejected-treelist-edit-acr",
+  "title": "340 build the rejected TreeList edit across both upstream revisions",
+  "description": "Build the actual Commons Collections parent and its direct fix on JDK 21. Record all Maven inputs, the first-parent link and content hashes for the runtime JARs.",
+  "kind": "real-world",
+  "capabilities": [
+    "targets:upstream-build",
+    "build:from-source"
+  ],
+  "links": {
+    "examples": [
+      "340"
+    ]
+  },
+  "expected": "Both clean Maven products have complete resolution inventories and the declared first parent.",
+  "submitted": {
+    "at": "2026-11-20T18:57:34+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "mvn",
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "parent",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/340-treelist-rejected-edit/controls/builds.json parent examples/340-treelist-rejected-edit/records/builds/parent.json",
+      "cwd": "."
+    },
+    {
+      "name": "fix",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/340-treelist-rejected-edit/controls/builds.json fix examples/340-treelist-rejected-edit/records/builds/fix.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/340-treelist-rejected-edit/records/builds"
+  ]
+}
