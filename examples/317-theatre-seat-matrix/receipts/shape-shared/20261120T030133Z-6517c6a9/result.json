@@ -1,0 +1,532 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "5225cc13d8a89e45",
+    "format": 1,
+    "example": "317",
+    "statement": {
+      "approach": "target",
+      "task": "shape-shared",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "revisions": [
+        "shared"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "shape-shared",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "seats.Seats#mark(IIII)[[I",
+        "file": "claims/shape.json",
+        "sha256": "4b809152dd5f37646a6d8da8862715a18bd0a5274e70803b26576167183f12df",
+        "property": "shape",
+        "claimKind": "property",
+        "statement": "The outer length and every row length match the requested rectangle.",
+        "assume": "code >= 0 && code < 18",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 4
+        },
+        "explicitBounds": {
+          "unwind": 16,
+          "maxArrayLength": 4
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/seats/Cases.java",
+            "sha256": "a116ff0ce9cd88ad65cf825147f9d2a80ce7aed833e5fb4a981eb7614fdf5d52"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "133f2c6fac7aaea402b6012aaaffb353736945c720d451d8413608af9607a851"
+          }
+        ],
+        "adapter": {
+          "entry": "seats.Projection#shape(I)I",
+          "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+          "correspondence": "finite-oracle",
+          "cases": 18
+        },
+        "key": "cf687ba95903304b"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 4
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "1a5f5853080ac4df3e62b8a272ee34539d208111d996b041110847b405f2461d",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "shape-shared",
+      "sidecar": "faf6cbf2f9cfd4b65fc4b79643d18401a2e9ba2dd19eb9865a1569fd0eb912b9",
+      "revisions": {
+        "shared": "52dfaabc852da536140a2815a07779d613faee65"
+      },
+      "dependencies": [
+        {
+          "revision": "shared",
+          "position": 0,
+          "role": "driver",
+          "sha256": "7fcfcafadb3e4d61c788e97104d14843734103f6bbc62a6f98f8455d0b4311fb"
+        },
+        {
+          "revision": "shared",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749"
+        },
+        {
+          "revision": "shared",
+          "position": 2,
+          "role": "original",
+          "sha256": "8422ccfd873330382ab01caf6acb537d4d797594691a643f747f858ed8563ec6"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/seats/Projection.java": "043d0b4eb728807a3876b7774da4c1e28ffc8611e53a4742ed3a28c90b4c57c3",
+        "claims/shape.json": "4b809152dd5f37646a6d8da8862715a18bd0a5274e70803b26576167183f12df",
+        "controls/table.json": "133f2c6fac7aaea402b6012aaaffb353736945c720d451d8413608af9607a851",
+        "driver/seats/Cases.java": "a116ff0ce9cd88ad65cf825147f9d2a80ce7aed833e5fb4a981eb7614fdf5d52"
+      },
+      "claimKey": "cf687ba95903304b"
+    }
+  },
+  "attempt": {
+    "id": "20261120T030133Z-6517c6a9",
+    "claim": "5225cc13d8a89e45",
+    "startedAt": "2026-11-20T03:01:33+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "seats.Projection#shape(int)",
+      "--classes",
+      "prepare/shared/adapter-shared.jar",
+      "--classpath",
+      "prepare/shared/shared.jar",
+      "--assume",
+      "code >= 0 && code < 18",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "4",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "0e549e9a2646bb53f8d923536bacf7cdbdf41143c03a864031694748efd656ed",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-025230-verify-independently-allocated-and-share",
+      "sourceCommit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-025230-verify-independently-allocated-and-share"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control shared on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-shared-jdk21.stdout",
+        "stderr": "records/control-shared-jdk21.stderr"
+      },
+      {
+        "name": "verifier shared on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.051,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 4,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "5225cc13d8a89e45",
+    "attempt": "20261120T030133Z-6517c6a9",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 18",
+          "verdict": "verified",
+          "domain": "code: int",
+          "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 0.008,
+            "properties": 1,
+            "unwind": 16,
+            "maxArrayLength": 4,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.007,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.006,
+                  "encoding": 0.001,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 885,
+                  "clauses": 1
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 59.992,
+                "seconds": 0.004,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.003,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 10,
+                  "clauses": 1
+                }
+              }
+            ],
+            "native": {
+              "paths": 7,
+              "merges": 0,
+              "solverCalls": 20,
+              "solvingSeconds": 5.8062e-05,
+              "gatesEvaluated": 52,
+              "evaluatingSeconds": 2.2751e-05,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "wordOperations": 67,
+              "finiteQueries": {
+                "diagrams": 20,
+                "bitwuzla": 0
+              },
+              "variables": 885,
+              "clauses": 1,
+              "seconds": 0.006774822,
+              "loadingSeconds": 6.1366e-05,
+              "decodingSeconds": 6.1876e-05,
+              "encodingSeconds": 0.000798781,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 18",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+              "classes": 38,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found shape(code=0).",
+              "witness": "shape(code=0)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 19,
+      "code": "\"shared\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+    "problem": null,
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 18"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 18",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found shape(code=0).",
+        "witness": "shape(code=0)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "ac1e4367b26d377b37e8e778fc8a9d666d15e07ab0ff427ac2b1e05d896ce6e2",
+        "bytes": 28708
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "2b3cc503b5566f8eb6686c62e837292f942116b9dfd5ff3adefbfc5a3f4a7ee7",
+        "bytes": 281
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "98b720518d08082068584e80f4d0ec6dabb9d5496f05fd74ba19a0261889a457",
+        "bytes": 1969
+      },
+      {
+        "path": "records/control-shared-jdk21.stdout",
+        "sha256": "2df2da7401c6e2cb803debd31d28f841d2c8e91acb01e2c85513d68bd419dffa",
+        "bytes": 2524
+      },
+      {
+        "path": "records/control-shared-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "5750394de4e19f524a880fff83608059473ea9fead803845cfbf9e5a63bdf790",
+        "bytes": 14494
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "5975f10bd97ea264de22b4a3c8736879abd9e0eb9fe187ed8feb9a88198f182d",
+        "bytes": 5877
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "84152926247241a2f90827f5f7a267d60174fba62253359012c4bd2c92237340",
+        "bytes": 14122
+      }
+    ]
+  }
+}

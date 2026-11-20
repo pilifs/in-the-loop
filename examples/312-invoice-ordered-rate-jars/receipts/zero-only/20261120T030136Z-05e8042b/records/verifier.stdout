@@ -1,0 +1,326 @@
+{
+  "wire_version": 1,
+  "verdict": "verified",
+  "target": "invoice.Invoice#total(int)",
+  "domain": "q: int",
+  "counterexample": null,
+  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over q: int in 0.0 s; loops unwound 10 times with unwinding assertions",
+  "problem": null,
+  "statement": "verifier/work/pair/RegressionPair.java",
+  "findings": [],
+  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verifier/work/pair/RegressionPair.java) calls the previous version's invoice.Invoice#total(int), relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✓ invoice.Invoice#total(int): the two versions agree on every input where q == 0 (the pair's property, below)\n✓ RegressionPair#agree satisfies `result` on every input where q == 0 (jvmcontract's own checker (CaDiCaL): 1 properties proved over q: int in 0.0 s; loops unwound 10 times with unwinding assertions)\n  not vacuous: agree(q=0) reaches the calls\n",
+  "work": "verifier/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 0.005811166,
+    "properties": 1,
+    "unwind": 10,
+    "max_array_length": 3,
+    "stage": null,
+    "native": {
+      "paths": 2,
+      "merges": 0,
+      "solver_calls": 2,
+      "solving_seconds": 0.000020348,
+      "gates_evaluated": 274,
+      "evaluating_seconds": 6.572e-6,
+      "divisions": 0,
+      "divisions_built": 0,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 278,
+      "clauses": 828,
+      "seconds": 0.00496006,
+      "loading_seconds": 0.000519935,
+      "decoding_seconds": 0.000044042,
+      "encoding_seconds": 0.000132208,
+      "witness_seconds": 0.0
+    },
+    "gap_mode": "strict",
+    "deadline_seconds": 60.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 60.0,
+        "seconds": 0.005,
+        "ended": "verified",
+        "ending": "verified",
+        "phases": {
+          "loading": 0.001,
+          "lowering": 0.0,
+          "symbolic": 0.004,
+          "encoding": 0.0,
+          "solving": 0.0,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 278,
+          "clauses": 828
+        }
+      },
+      {
+        "checker": "native",
+        "purpose": "probe",
+        "stage": null,
+        "budget_seconds": 59.994,
+        "seconds": 0.003,
+        "ended": "violation",
+        "ending": "counterexample",
+        "phases": {
+          "loading": 0.0,
+          "lowering": 0.0,
+          "symbolic": 0.002,
+          "encoding": 0.0,
+          "solving": 0.0,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 129,
+          "clauses": 320
+        }
+      }
+    ]
+  },
+  "stated": {
+    "kind": "property",
+    "domain": {
+      "parameters": [
+        {
+          "name": "q",
+          "type": "int",
+          "kind": "primitive",
+          "null": false
+        }
+      ],
+      "shared_arrays": false,
+      "text": "q: int"
+    },
+    "assumptions": [
+      {
+        "kind": "precondition",
+        "text": "q == 0",
+        "basis": "stated"
+      },
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result and the parameters, against result",
+      "exceptions": "none may be thrown"
+    },
+    "bounds": {
+      "unwind": 10,
+      "max_array_length": null,
+      "complete": true
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+      "classes": 38,
+      "jdk": "21.0.13"
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null,
+    "vacuity": {
+      "status": "non-vacuous",
+      "basis": "probe",
+      "text": "Some input in the domain reaches the calls: the tool's own checker found agree(q=0).",
+      "witness": "agree(q=0)"
+    }
+  },
+  "pair": {
+    "verdict": "verified",
+    "target": "RegressionPair#agree",
+    "domain": "q: int",
+    "assume": "q == 0",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over q: int in 0.0 s; loops unwound 10 times with unwinding assertions",
+    "problem": null,
+    "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ RegressionPair#agree satisfies `result` on every input where q == 0 (jvmcontract's own checker (CaDiCaL): 1 properties proved over q: int in 0.0 s; loops unwound 10 times with unwinding assertions)\n  not vacuous: agree(q=0) reaches the calls\n",
+    "work": "verifier/work/pair-work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.005811166,
+      "properties": 1,
+      "unwind": 10,
+      "max_array_length": 3,
+      "stage": null,
+      "native": {
+        "paths": 2,
+        "merges": 0,
+        "solver_calls": 2,
+        "solving_seconds": 0.000020348,
+        "gates_evaluated": 274,
+        "evaluating_seconds": 6.572e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 278,
+        "clauses": 828,
+        "seconds": 0.00496006,
+        "loading_seconds": 0.000519935,
+        "decoding_seconds": 0.000044042,
+        "encoding_seconds": 0.000132208,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.005,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 278,
+            "clauses": 828
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 59.994,
+          "seconds": 0.003,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.002,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 129,
+            "clauses": 320
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.02,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.008,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.01
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "q",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "q: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "q == 0",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 10,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(q=0).",
+        "witness": "agree(q=0)"
+      }
+    }
+  }
+}

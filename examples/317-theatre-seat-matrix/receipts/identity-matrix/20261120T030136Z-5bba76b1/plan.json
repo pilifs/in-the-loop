@@ -1,0 +1,190 @@
+{
+  "plan": {
+    "example": "317",
+    "task": "identity-matrix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "seats.Seats#mark(IIII)[[I",
+    "revisions": [
+      "matrix"
+    ],
+    "claim": {
+      "task": "identity-matrix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "file": "claims/identity.json",
+      "sha256": "f66099c96eda8bc524b3a73da0dde5d34c34890a27a5496722924bc16f3c7a5b",
+      "property": "identity",
+      "claimKind": "property",
+      "statement": "Each seat row has its own object identity.",
+      "assume": "code >= 0 && code < 18",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/seats/Cases.java",
+          "sha256": "a116ff0ce9cd88ad65cf825147f9d2a80ce7aed833e5fb4a981eb7614fdf5d52"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "133f2c6fac7aaea402b6012aaaffb353736945c720d451d8413608af9607a851"
+        }
+      ],
+      "adapter": {
+        "entry": "seats.Projection#identity(I)I",
+        "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+        "correspondence": "finite-oracle",
+        "cases": 18
+      },
+      "key": "cab0242bd4f229f6"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "matrix",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "matrix",
+        "adapters": [
+          "adapter/seats/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/identity-matrix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-025230-verify-independently-allocated-and-share/examples/317-theatre-seat-matrix",
+    "network": false
+  },
+  "inputs": {
+    "example": "317",
+    "task": "identity-matrix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "seats.Seats#mark(IIII)[[I",
+    "revisions": [
+      "matrix"
+    ],
+    "claim": {
+      "task": "identity-matrix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "file": "claims/identity.json",
+      "sha256": "f66099c96eda8bc524b3a73da0dde5d34c34890a27a5496722924bc16f3c7a5b",
+      "property": "identity",
+      "claimKind": "property",
+      "statement": "Each seat row has its own object identity.",
+      "assume": "code >= 0 && code < 18",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/seats/Cases.java",
+          "sha256": "a116ff0ce9cd88ad65cf825147f9d2a80ce7aed833e5fb4a981eb7614fdf5d52"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "133f2c6fac7aaea402b6012aaaffb353736945c720d451d8413608af9607a851"
+        }
+      ],
+      "adapter": {
+        "entry": "seats.Projection#identity(I)I",
+        "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+        "correspondence": "finite-oracle",
+        "cases": 18
+      },
+      "key": "cab0242bd4f229f6"
+    },
+    "artifacts": [
+      {
+        "revision": "matrix",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "matrix",
+        "adapters": [
+          "adapter/seats/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/seats/Projection.java",
+        "sha256": "043d0b4eb728807a3876b7774da4c1e28ffc8611e53a4742ed3a28c90b4c57c3"
+      }
+    ]
+  },
+  "key": "17fbf04d27fb6913bfa87a2a0c2b9c39091225056bcb3c132c190b14372e899c"
+}

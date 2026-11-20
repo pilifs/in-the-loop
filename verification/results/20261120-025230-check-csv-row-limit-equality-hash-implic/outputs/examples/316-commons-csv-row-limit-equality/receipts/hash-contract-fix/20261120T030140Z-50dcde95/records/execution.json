@@ -1,0 +1,839 @@
+{
+  "task": "hash-contract-fix",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "fix",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:adapter-fix.jar:slice/fix.jar:lib/commons-io/commons-io-2.22.0.jar:lib/commons-codec/commons-codec-1.22.0.jar",
+        "csvgrid.CsvCases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.114,
+      "stdout": "controls/control-fix-jdk21.stdout",
+      "stderr": "controls/control-fix-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "8dece1e74a1d70d42806d01bfb06a8ea310b6a526e34b14b669b30347f850693",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
+            "role": "adapter"
+          },
+          {
+            "path": "slice/fix.jar",
+            "sha256": "1c527dc585b991a6ac7c8bd0291a76887b5f30a0002c9177308659d934472f21",
+            "role": "original"
+          },
+          {
+            "path": "lib/commons-io/commons-io-2.22.0.jar",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/commons-codec/commons-codec-1.22.0.jar",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "csvgrid.CsvCases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/table.json",
+          "oracleSha256": "36b1f5e1e529b3b79fab2cd38376945c9f3eaccc58ed4938bc729395dd47aa1b"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm",
+        "executionId": "20261120T030140Z-50dcde95",
+        "startedAt": "2026-11-20T03:01:40.331213+00:00"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": [
+            1,
+            1
+          ],
+          "direct": {
+            "equal": true,
+            "hashContract": true,
+            "rows": [
+              1,
+              1
+            ]
+          },
+          "adapter": {
+            "equal": 1,
+            "hashContract": 1,
+            "rows": 1
+          }
+        },
+        {
+          "id": 1,
+          "input": [
+            1,
+            2
+          ],
+          "direct": {
+            "equal": false,
+            "hashContract": true,
+            "rows": [
+              1,
+              2
+            ]
+          },
+          "adapter": {
+            "equal": 1,
+            "hashContract": 1,
+            "rows": 1
+          }
+        },
+        {
+          "id": 2,
+          "input": [
+            1,
+            10
+          ],
+          "direct": {
+            "equal": false,
+            "hashContract": true,
+            "rows": [
+              1,
+              3
+            ]
+          },
+          "adapter": {
+            "equal": 1,
+            "hashContract": 1,
+            "rows": 1
+          }
+        },
+        {
+          "id": 3,
+          "input": [
+            2,
+            1
+          ],
+          "direct": {
+            "equal": false,
+            "hashContract": true,
+            "rows": [
+              2,
+              1
+            ]
+          },
+          "adapter": {
+            "equal": 1,
+            "hashContract": 1,
+            "rows": 1
+          }
+        },
+        {
+          "id": 4,
+          "input": [
+            2,
+            2
+          ],
+          "direct": {
+            "equal": true,
+            "hashContract": true,
+            "rows": [
+              2,
+              2
+            ]
+          },
+          "adapter": {
+            "equal": 1,
+            "hashContract": 1,
+            "rows": 1
+          }
+        },
+        {
+          "id": 5,
+          "input": [
+            2,
+            10
+          ],
+          "direct": {
+            "equal": false,
+            "hashContract": true,
+            "rows": [
+              2,
+              3
+            ]
+          },
+          "adapter": {
+            "equal": 1,
+            "hashContract": 1,
+            "rows": 1
+          }
+        },
+        {
+          "id": 6,
+          "input": [
+            10,
+            1
+          ],
+          "direct": {
+            "equal": false,
+            "hashContract": true,
+            "rows": [
+              3,
+              1
+            ]
+          },
+          "adapter": {
+            "equal": 1,
+            "hashContract": 1,
+            "rows": 1
+          }
+        },
+        {
+          "id": 7,
+          "input": [
+            10,
+            2
+          ],
+          "direct": {
+            "equal": false,
+            "hashContract": true,
+            "rows": [
+              3,
+              2
+            ]
+          },
+          "adapter": {
+            "equal": 1,
+            "hashContract": 1,
+            "rows": 1
+          }
+        },
+        {
+          "id": 8,
+          "input": [
+            10,
+            10
+          ],
+          "direct": {
+            "equal": true,
+            "hashContract": true,
+            "rows": [
+              3,
+              3
+            ]
+          },
+          "adapter": {
+            "equal": 1,
+            "hashContract": 1,
+            "rows": 1
+          }
+        }
+      ],
+      "control": "driver",
+      "record": "controls/controls.json",
+      "reason": null
+    },
+    {
+      "kind": "verifier",
+      "revision": "fix",
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+        "prove",
+        "csvgrid.Projection#hashContract(int)",
+        "--classes",
+        "prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "prepare/fix/slice/fix.jar",
+        "--classpath",
+        "prepare/fix/lib/commons-io/commons-io-2.22.0.jar",
+        "--classpath",
+        "prepare/fix/lib/commons-codec/commons-codec-1.22.0.jar",
+        "--assume",
+        "code >= 0 && code < 9",
+        "--assert",
+        "result == 1",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "24",
+        "--max-array-length",
+        "12",
+        "--timeout",
+        "60",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.041,
+      "stdout": "verifier/verifier.stdout",
+      "stderr": "verifier/verifier.stderr",
+      "identities": {
+        "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5",
+        "commit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+        "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+        "command": "prove",
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "engine": "native",
+        "gaps": "strict",
+        "bounds": {
+          "unwind": 24,
+          "maxArrayLength": 12
+        },
+        "timeout": 60,
+        "scope": {
+          "label": "adapter",
+          "meaning": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+          "method": "org.apache.commons.csv.CSVFormat#hashCode()I",
+          "revisions": {
+            "fix": {
+              "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
+              "loadedFrom": "slice/fix.jar",
+              "classSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417",
+              "origin": "an extracted source slice of 6d5993cb89f4f723ae416123b20f361bd863c484: src/main/java/org/apache/commons/csv/CSVException.java, src/main/java/org/apache/commons/csv/CSVFormat.java, src/main/java/org/apache/commons/csv/CSVParser.java, src/main/java/org/apache/commons/csv/CSVPrinter.java, src/main/java/org/apache/commons/csv/CSVRecord.java, src/main/java/org/apache/commons/csv/Constants.java, src/main/java/org/apache/commons/csv/DuplicateHeaderMode.java, src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java, src/main/java/org/apache/commons/csv/Lexer.java, src/main/java/org/apache/commons/csv/QuoteMode.java, src/main/java/org/apache/commons/csv/Token.java, src/main/java/org/apache/commons/csv/package-info.java, compiled by JDK 21 with --release 21 -g -parameters",
+              "parameters": {
+                "names": [],
+                "recordedIn": "LocalVariableTable"
+              }
+            }
+          },
+          "adapter": {
+            "entry": "csvgrid.Projection#hashContract(I)I",
+            "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+            "correspondence": "finite-oracle",
+            "cases": 9
+          },
+          "models": [],
+          "assumptions": []
+        },
+        "classpath": {
+          "fix": [
+            {
+              "path": "adapter-fix.jar",
+              "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
+              "role": "adapter"
+            },
+            {
+              "path": "slice/fix.jar",
+              "sha256": "1c527dc585b991a6ac7c8bd0291a76887b5f30a0002c9177308659d934472f21",
+              "role": "original"
+            },
+            {
+              "path": "lib/commons-io/commons-io-2.22.0.jar",
+              "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+              "role": "dependency"
+            },
+            {
+              "path": "lib/commons-codec/commons-codec-1.22.0.jar",
+              "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+              "role": "dependency"
+            }
+          ]
+        },
+        "checkedEntry": "csvgrid.Projection#hashContract(I)I",
+        "entryBindings": {
+          "fix": {
+            "entry": "csvgrid.Projection#hashContract(I)I",
+            "classSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
+            "loadedFrom": "adapter-fix.jar",
+            "subject": "org.apache.commons.csv.CSVFormat#hashCode()I",
+            "subjectClassSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417"
+          }
+        },
+        "recipe": {
+          "kind": "adapter",
+          "command": "prove",
+          "subject": "org.apache.commons.csv.CSVFormat#hashCode()I",
+          "checkedEntry": "csvgrid.Projection#hashContract(I)I",
+          "arguments": [
+            {
+              "field": "assume",
+              "flag": "--assume",
+              "value": "code >= 0 && code < 9"
+            },
+            {
+              "field": "assert",
+              "flag": "--assert",
+              "value": "result == 1"
+            },
+            {
+              "field": "engine",
+              "flag": "--engine",
+              "value": "native"
+            },
+            {
+              "field": "gaps",
+              "flag": "--gaps",
+              "value": "strict"
+            },
+            {
+              "field": "bounds.unwind",
+              "flag": "--unwind",
+              "value": "24"
+            },
+            {
+              "field": "bounds.maxArrayLength",
+              "flag": "--max-array-length",
+              "value": "12"
+            }
+          ],
+          "checkerDefaults": {
+            "observations": {
+              "values": [
+                "result",
+                "exception"
+              ],
+              "evidence": "stated.observations"
+            },
+            "nullable": {
+              "values": [],
+              "evidence": "stated.domain"
+            },
+            "mayAlias": {
+              "values": [],
+              "evidence": "stated.domain"
+            }
+          },
+          "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+          "correspondence": {
+            "entry": "csvgrid.Projection#hashContract(I)I",
+            "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+            "correspondence": "finite-oracle",
+            "cases": 9
+          }
+        },
+        "commits": {
+          "fix": "6d5993cb89f4f723ae416123b20f361bd863c484"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC",
+          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+          "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+          "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+          "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+        },
+        "cwd": "the attempt directory",
+        "probe": {
+          "fix": {
+            "argv": [
+              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+              "gaps",
+              "--target",
+              "csvgrid.Projection#hashContract(int)",
+              "--classes",
+              "prepare/fix/adapter-fix.jar",
+              "--classpath",
+              "prepare/fix/slice/fix.jar",
+              "--classpath",
+              "prepare/fix/lib/commons-io/commons-io-2.22.0.jar",
+              "--classpath",
+              "prepare/fix/lib/commons-codec/commons-codec-1.22.0.jar",
+              "--json"
+            ],
+            "status": "exited",
+            "exitCode": 0,
+            "seconds": 0.032,
+            "stdout": "verifier/probe-fix.stdout",
+            "stderr": "verifier/probe-fix.stderr",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.HashSet.<init>(int)",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.validate:2628"
+                ]
+              },
+              {
+                "id": "jdk-reference-method:java.lang.String.trim()Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.lang.String.trim()",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.isBlank:1460"
+                ]
+              },
+              {
+                "id": "string-conversion:java.lang.Character.toString()Ljava/lang/String;",
+                "kind": "string-conversion",
+                "call": "java.lang.Character.toString()",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.validate:2609",
+                  "org.apache.commons.csv.CSVFormat.validate:2612",
+                  "org.apache.commons.csv.CSVFormat.validate:2615",
+                  "org.apache.commons.csv.CSVFormat.validate:2618",
+                  "org.apache.commons.csv.CSVFormat.validate:2621",
+                  "org.apache.commons.csv.CSVFormat$Builder.setNullString:783"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.lang.Character.charValue()C@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.lang.Character.charValue()",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.isLineBreak:1480",
+                  "org.apache.commons.csv.CSVFormat.validate:2608",
+                  "org.apache.commons.csv.CSVFormat.validate:2611",
+                  "org.apache.commons.csv.CSVFormat.validate:2614"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.lang.Character.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.lang.Character.equals(java.lang.Object)",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.validate:2617",
+                  "org.apache.commons.csv.CSVFormat.validate:2620"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.Set.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.Set.add(java.lang.Object)",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.validate:2633"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.lang.Boolean.valueOf(Z)Ljava/lang/Boolean;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.Boolean.valueOf(boolean)",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.hashCode:2032",
+                  "org.apache.commons.csv.CSVFormat.hashCode:2033",
+                  "org.apache.commons.csv.CSVFormat.hashCode:2034"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.lang.Character.valueOf(C)Ljava/lang/Character;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.Character.valueOf(char)",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat$Builder.setEscape:493",
+                  "org.apache.commons.csv.Constants.<clinit>:43"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.lang.Long.valueOf(J)Ljava/lang/Long;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.Long.valueOf(long)",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.hashCode:2033"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.validate:2635"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.lang.String.valueOf(C)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.String.valueOf(char)",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat$Builder.setDelimiter:453",
+                  "org.apache.commons.csv.CSVFormat$Builder.setRecordSeparator:835"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.lang.System.lineSeparator()Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.System.lineSeparator()",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.<clinit>:1295"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.util.Arrays.equals([Ljava/lang/Object;[Ljava/lang/Object;)Z@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.Arrays.equals(java.lang.Object[], java.lang.Object[])",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.equals:1691"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.util.Arrays.hashCode([Ljava/lang/Object;)I@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.Arrays.hashCode(java.lang.Object[])",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.hashCode:2030",
+                  "org.apache.commons.csv.CSVFormat.hashCode:2031"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.util.Arrays.toString([Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.Arrays.toString(java.lang.Object[])",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.validate:2637"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.util.Objects.equals(Ljava/lang/Object;Ljava/lang/Object;)Z@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.Objects.equals(java.lang.Object, java.lang.Object)",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.equals:1689",
+                  "org.apache.commons.csv.CSVFormat.equals:1690",
+                  "org.apache.commons.csv.CSVFormat.equals:1694",
+                  "org.apache.commons.csv.CSVFormat.equals:1695"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.util.Objects.hash([Ljava/lang/Object;)I@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.Objects.hash(java.lang.Object[])",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat.hashCode:2032"
+                ]
+              }
+            ]
+          }
+        },
+        "usage": {
+          "cpuSeconds": 0.0355,
+          "peakRssBytes": 80039936,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        "executionId": "20261120T030140Z-50dcde95",
+        "startedAt": "2026-11-20T03:01:40.331213+00:00"
+      },
+      "observations": [
+        {
+          "wire_version": 1,
+          "verdict": "unverifiable",
+          "target": "csvgrid.Projection#hashContract(int)",
+          "domain": "code: int",
+          "assume": "code >= 0 && code < 9",
+          "assert": "result == 1",
+          "throws": [],
+          "throws_checked": [],
+          "counterexample": null,
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.valueOf(C)Ljava/lang/Character;@jdk-21.0.13 (java.lang.Character.valueOf(char) at org.apache.commons.csv.Constants.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "statement": "verifier/work/harness/PropertyHarness.java",
+          "findings": [
+            {
+              "rule_id": "unverifiable",
+              "message": "csvgrid.Projection#hashContract(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.valueOf(C)Ljava/lang/Character;@jdk-21.0.13 (java.lang.Character.valueOf(char) at org.apache.commons.csv.Constants.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+              "uri": null,
+              "line": 20
+            }
+          ],
+          "output": "✗ csvgrid.Projection#hashContract(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.valueOf(C)Ljava/lang/Character;@jdk-21.0.13 (java.lang.Character.valueOf(char) at org.apache.commons.csv.Constants.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+          "work": "verifier/work",
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 0.00683707,
+            "properties": 1,
+            "unwind": 24,
+            "max_array_length": 12,
+            "stage": null,
+            "native": {
+              "paths": 2,
+              "merges": 0,
+              "solver_calls": 2,
+              "solving_seconds": 5.15e-06,
+              "gates_evaluated": 6,
+              "evaluating_seconds": 2.815e-06,
+              "divisions": 0,
+              "divisions_built": 0,
+              "multiplications": 0,
+              "multiplications_built": 0,
+              "word_operations": 4,
+              "finite_queries": {
+                "diagrams": 2,
+                "bitwuzla": 0
+              },
+              "variables": 71,
+              "clauses": 1,
+              "seconds": 0.00551441,
+              "loading_seconds": 0.001055101,
+              "decoding_seconds": 8.3027e-05,
+              "encoding_seconds": 0.000119564,
+              "witness_seconds": 0.0
+            },
+            "gap_mode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.lang.Character.valueOf(C)Ljava/lang/Character;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.Character.valueOf(char)",
+                "sites": [
+                  "org.apache.commons.csv.Constants.<clinit>:43"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ],
+            "deadline_seconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budget_seconds": 60.0,
+                "seconds": 0.006,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 71,
+                  "clauses": 1
+                }
+              }
+            ],
+            "phases": {
+              "seconds": 0.032,
+              "setup": 0.001,
+              "harness": 0.0,
+              "gaps": 0.0,
+              "contracts": 0.0,
+              "runs": 0.006,
+              "replay": 0.0,
+              "jvm": 0.0,
+              "other": 0.025
+            }
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 9",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 24,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+              "classes": 38,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          }
+        }
+      ],
+      "control": null,
+      "record": "verifier/verifier.json",
+      "reason": null
+    }
+  ]
+}

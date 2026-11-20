@@ -1,0 +1,190 @@
+{
+  "plan": {
+    "example": "318",
+    "task": "history-evict",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "queuegrid.BoundedQueue#apply(I)I",
+    "revisions": [
+      "evict"
+    ],
+    "claim": {
+      "task": "history-evict",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "queuegrid.BoundedQueue#apply(I)I",
+      "file": "claims/history.json",
+      "sha256": "13c8b2a57fa8ceb270c2d86fb8208a3aa0fda47bcd96a9819f871d5a5a9380f3",
+      "property": "history",
+      "claimKind": "property",
+      "statement": "Every operation returns the response of a capacity-two rejecting queue.",
+      "assume": "code >= 0 && code < 121",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/queuegrid/Cases.java",
+          "sha256": "5f5b33fb584f046f01092fd0f7e9855b48aa88d73ff0acbbe519c3f00ad80e0f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "97cbe18cc23b166ddbbf57f75145eb5351bc9b9e573b17fc54334f8bc0980386"
+        }
+      ],
+      "adapter": {
+        "entry": "queuegrid.Projection#history(I)I",
+        "mapping": "Code is the bijective base-three command word read least-significant digit first. Commands 0/1 offer A/B, 2 polls. Responses 0/1 reject/accept and 2/3/4 return A/B/empty. Each word starts with a fresh empty queue.",
+        "correspondence": "finite-oracle",
+        "cases": 121
+      },
+      "key": "f3d3b70d1ca5e34f"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "evict",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "evict",
+        "adapters": [
+          "adapter/queuegrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/history-evict"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-025230-verify-bounded-queue-histories-and-final/examples/318-bounded-queue-histories",
+    "network": false
+  },
+  "inputs": {
+    "example": "318",
+    "task": "history-evict",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "queuegrid.BoundedQueue#apply(I)I",
+    "revisions": [
+      "evict"
+    ],
+    "claim": {
+      "task": "history-evict",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "queuegrid.BoundedQueue#apply(I)I",
+      "file": "claims/history.json",
+      "sha256": "13c8b2a57fa8ceb270c2d86fb8208a3aa0fda47bcd96a9819f871d5a5a9380f3",
+      "property": "history",
+      "claimKind": "property",
+      "statement": "Every operation returns the response of a capacity-two rejecting queue.",
+      "assume": "code >= 0 && code < 121",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/queuegrid/Cases.java",
+          "sha256": "5f5b33fb584f046f01092fd0f7e9855b48aa88d73ff0acbbe519c3f00ad80e0f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "97cbe18cc23b166ddbbf57f75145eb5351bc9b9e573b17fc54334f8bc0980386"
+        }
+      ],
+      "adapter": {
+        "entry": "queuegrid.Projection#history(I)I",
+        "mapping": "Code is the bijective base-three command word read least-significant digit first. Commands 0/1 offer A/B, 2 polls. Responses 0/1 reject/accept and 2/3/4 return A/B/empty. Each word starts with a fresh empty queue.",
+        "correspondence": "finite-oracle",
+        "cases": 121
+      },
+      "key": "f3d3b70d1ca5e34f"
+    },
+    "artifacts": [
+      {
+        "revision": "evict",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "evict",
+        "adapters": [
+          "adapter/queuegrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/queuegrid/Projection.java",
+        "sha256": "d94766d93610ed7dac3718ad32a9c99c9b6843b357e6255c8c355e5c94eda25a"
+      }
+    ]
+  },
+  "key": "21582142217426c59e04613f794ed03dffc936841d7171a4de2faa0d46d40007"
+}

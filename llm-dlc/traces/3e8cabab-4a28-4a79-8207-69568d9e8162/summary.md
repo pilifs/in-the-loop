@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 15:15 UTC (5511 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -2705,6 +2705,12 @@ Outputs applied for 3 of the 4 job(s); 1 kept under outputs/, not applied (the j
 change `wmswovokuroq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 6 job(s)
+
+change `kulpoouzrmkw` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 4 of the 6 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-025230-check-csv-row-limit-equality-hash-implic: failed: 1 failed step(s) in 21.8s, peak 679.9 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-025230-check-signed-zero-maximum-on-raw-and-num: failed: 1 failed step(s) in 13.1s, peak 298.3 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-025230-replay-the-paired-invoice-witness-on-eac: passed: 1 passed step(s) in 8.8s, peak 122.6 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-025230-verify-bounded-queue-histories-and-final: passed: 1 passed step(s) in 6.2s, peak 132.0 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4 Applied 62 output(s). 20261120-025230-verify-independently-allocated-and-share: passed: 1 passed step(s) in 8.8s, peak 139.6 MiB (estimated 2m00s, 2.0 GiB); 137 output file(s) changed; signals: example:task-as-expected×9 Applied 137 output(s). 20261120-025231-recheck-the-commons-text-lcs-score-after: passed: 1 passed step(s) in 3.8s, peak 93.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ## Conversation
 

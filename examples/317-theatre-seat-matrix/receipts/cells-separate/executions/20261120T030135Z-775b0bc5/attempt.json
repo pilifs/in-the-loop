@@ -1,0 +1,333 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T030135Z-775b0bc5",
+  "task": "cells-separate",
+  "claimKey": "c31694e13505beab",
+  "revisions": [
+    "separate"
+  ],
+  "startedAt": "2026-11-20T03:01:35.488880+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-025230-verify-independently-allocated-and-share",
+  "sourceCommit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0013
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.0674
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.0688
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.094
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 0.1471
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.2413
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "separate": {
+      "revision": "fixture:separate",
+      "target": {
+        "class": "seats.Seats",
+        "method": "mark",
+        "descriptor": "(IIII)[[I",
+        "loadedFrom": "separate.jar",
+        "classSha256": "78e94b639dd82042b75101616597897f2697bcf19a8b1536fb8ef98572462eb0",
+        "adapterCalls": [
+          "seats.Seats#mark(IIII)[[I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "7fcfcafadb3e4d61c788e97104d14843734103f6bbc62a6f98f8455d0b4311fb",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-separate.jar",
+          "sha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "separate.jar",
+          "sha256": "1ee06b8186b1db282265acafebeabf5eb90424380b2930fad046eae4b5e8f3da",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from separate by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "0ca42d08e7f2abe56780050dac7abeb34b8ab8b1c8a9855dcb39aca421074e86",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+    "prove",
+    "seats.Projection#cells(int)",
+    "--classes",
+    "prepare/separate/adapter-separate.jar",
+    "--classpath",
+    "prepare/separate/separate.jar",
+    "--assume",
+    "code >= 0 && code < 18",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "4",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5",
+    "commit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+    "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 4
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+      "method": "seats.Seats#mark(IIII)[[I",
+      "revisions": {
+        "separate": {
+          "commit": "fixture:separate",
+          "loadedFrom": "separate.jar",
+          "classSha256": "78e94b639dd82042b75101616597897f2697bcf19a8b1536fb8ef98572462eb0",
+          "origin": "built from separate by the fixture recipe",
+          "parameters": {
+            "names": [
+              "rows",
+              "cols",
+              "y",
+              "x"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "seats.Projection#cells(I)I",
+        "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+        "correspondence": "finite-oracle",
+        "cases": 18
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "separate": [
+        {
+          "path": "adapter-separate.jar",
+          "sha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+          "role": "adapter"
+        },
+        {
+          "path": "separate.jar",
+          "sha256": "1ee06b8186b1db282265acafebeabf5eb90424380b2930fad046eae4b5e8f3da",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "seats.Projection#cells(I)I",
+    "entryBindings": {
+      "separate": {
+        "entry": "seats.Projection#cells(I)I",
+        "classSha256": "db12d501b7f54fb694dcc127ac230dcf933648539da92a2b97b050c96b2c8ceb",
+        "loadedFrom": "adapter-separate.jar",
+        "subject": "seats.Seats#mark(IIII)[[I",
+        "subjectClassSha256": "78e94b639dd82042b75101616597897f2697bcf19a8b1536fb8ef98572462eb0"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "seats.Seats#mark(IIII)[[I",
+      "checkedEntry": "seats.Projection#cells(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 18"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "4"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "seats.Projection#cells(I)I",
+        "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+        "correspondence": "finite-oracle",
+        "cases": 18
+      }
+    },
+    "commits": {
+      "separate": "fixture:separate"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "separate": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+          "gaps",
+          "--target",
+          "seats.Projection#cells(int)",
+          "--classes",
+          "prepare/separate/adapter-separate.jar",
+          "--classpath",
+          "prepare/separate/separate.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-separate.stdout",
+        "stderr": "verifier/probe-separate.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0434,
+      "peakRssBytes": 80097280,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0434,
+    "peakRssBytes": 80097280,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.051,
+  "missing": [],
+  "receipt": "receipts/cells-separate/20261120T030135Z-775b0bc5/result.json",
+  "preparedClaim": "55f4b52f387cb624",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T03:01:35.730223+00:00"
+}

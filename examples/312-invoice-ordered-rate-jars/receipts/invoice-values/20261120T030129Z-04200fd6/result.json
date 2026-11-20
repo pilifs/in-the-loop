@@ -1,0 +1,416 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "5d50d282d0d63944",
+    "format": 1,
+    "example": "312",
+    "statement": {
+      "approach": "target",
+      "task": "invoice-values",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "invoice.Invoice#total(I)I",
+      "revisions": [
+        "two-first",
+        "three-first"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "invoice-values",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "invoice.Invoice#total(I)I",
+        "file": "claims/invoice-values.json",
+        "sha256": "e5060f92872f7e8bbd2879db8c325fc464cc03cc039b2a95f8fb738d44192bdc",
+        "property": "invoice-values",
+        "claimKind": "preservation",
+        "statement": "Both ordered closures return the same invoice amount on the admitted quantities.",
+        "assume": "q >= -2 && q <= 2",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 10,
+          "maxArrayLength": 3
+        },
+        "explicitBounds": {
+          "unwind": 10,
+          "maxArrayLength": 3
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/invoice/Invoices.java",
+            "sha256": "81544b955d71dc4932005efd62f005c792e8e43253e125e96a50225ba0e48595"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "c35340f7315c9ef8c3dc880c4433d6408dbd7fb28f80ec7fa3c49a039deaa16a"
+          }
+        ],
+        "key": "a3277271b04b82e9"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 3,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "23e4f7732ce0e7d1ad38e947120573a8ac816b70078d8ac3c281c70dc548f4f4",
+        "files": 1
+      },
+      "after": {
+        "sha256": "23e4f7732ce0e7d1ad38e947120573a8ac816b70078d8ac3c281c70dc548f4f4",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "invoice-values",
+      "sidecar": "bf0af6aa861e0f2e7931d51bc21178b70d9c055774241aa059c6505e33ac161b",
+      "revisions": {
+        "two-first": "3ceae89d0f4970ac5708ad5e68f6af358651072b",
+        "three-first": "3ceae89d0f4970ac5708ad5e68f6af358651072b"
+      },
+      "dependencies": [
+        {
+          "revision": "two-first",
+          "position": 0,
+          "role": "driver",
+          "sha256": "bb8b7b2e08dfa634c8ea338dcd294258aee1a21f5fa000dcf442692f6dafc1b9"
+        },
+        {
+          "revision": "two-first",
+          "position": 1,
+          "role": "original",
+          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda"
+        },
+        {
+          "revision": "two-first",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1"
+        },
+        {
+          "revision": "two-first",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3"
+        },
+        {
+          "revision": "three-first",
+          "position": 0,
+          "role": "driver",
+          "sha256": "bb8b7b2e08dfa634c8ea338dcd294258aee1a21f5fa000dcf442692f6dafc1b9"
+        },
+        {
+          "revision": "three-first",
+          "position": 1,
+          "role": "original",
+          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda"
+        },
+        {
+          "revision": "three-first",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3"
+        },
+        {
+          "revision": "three-first",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/invoice-values.json": "e5060f92872f7e8bbd2879db8c325fc464cc03cc039b2a95f8fb738d44192bdc",
+        "controls/oracle.py": "c35340f7315c9ef8c3dc880c4433d6408dbd7fb28f80ec7fa3c49a039deaa16a",
+        "driver/invoice/Invoices.java": "81544b955d71dc4932005efd62f005c792e8e43253e125e96a50225ba0e48595"
+      },
+      "claimKey": "a3277271b04b82e9"
+    }
+  },
+  "attempt": {
+    "id": "20261120T030129Z-04200fd6",
+    "claim": "5d50d282d0d63944",
+    "startedAt": "2026-11-20T03:01:29+00:00",
+    "seconds": 0.7,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/two-first",
+      "--after",
+      "verifier/classes/three-first",
+      "--target",
+      "invoice.Invoice#total(int)",
+      "--classpath",
+      "prepare/three-first/lib/rates/three.jar",
+      "--classpath",
+      "prepare/three-first/lib/rates/two.jar",
+      "--before-classpath",
+      "prepare/two-first/lib/rates/two.jar",
+      "--before-classpath",
+      "prepare/two-first/lib/rates/three.jar",
+      "--assume",
+      "q >= -2 && q <= 2",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "10",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "6085b5af0007f470fd2aa09077ca8e7d976510dcca3da7a86b25859a0cec424a",
+        "files": 1
+      },
+      "after": {
+        "sha256": "a335bb12c6e280f0ee6ac00f6c640b3be9ddbe29b3238748974c188c771e6763",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-025230-replay-the-paired-invoice-witness-on-eac",
+      "sourceCommit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-025230-replay-the-paired-invoice-witness-on-eac"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control two-first on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-two-first-jdk21.stdout",
+        "stderr": "records/control-two-first-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control three-first on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-three-first-jdk21.stdout",
+        "stderr": "records/control-three-first-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.497,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 10,
+      "maxArrayLength": 3,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "5d50d282d0d63944",
+    "attempt": "20261120T030129Z-04200fd6",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✗ Violation",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"two-first\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 23,
+      "code": "\"three-first\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "[{\"name\": \"q\", \"type\": \"int\", \"value\": 1}]",
+        "contract": "[2, null]",
+        "actual": "[3, null]"
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as agree(q=2), shrunk to the input above in 3 interpreter runs, replayed in the interpreter; domain q: int",
+    "problem": null,
+    "domain": "q: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "q",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "q: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "q >= -2 && q <= 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "37956bf70f81384da55db63bc0b33b5db7a4c93ef7921389ff16cd4ba4b19991",
+        "bytes": 35469
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "675e02f09f3a743d3ba6fc02f2f1de3c60fa842ea380f74a5341bf3f0eb2f385",
+        "bytes": 1429
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "3a5d1fce20113e8fc90ec1d1023e83152d48e990b0e1c05986b2d11236264f19",
+        "bytes": 2705
+      },
+      {
+        "path": "records/control-two-first-jdk21.stdout",
+        "sha256": "78d76a80c31af20fc8fcae2895c0e4344a57c03f5ad6c583a360e4aad1b5975d",
+        "bytes": 999
+      },
+      {
+        "path": "records/control-two-first-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "fb615ebcb53368e42b053a4fedbfd425b1288a67e0984b9ce2902decfc622271",
+        "bytes": 9356
+      },
+      {
+        "path": "records/control-three-first-jdk21.stdout",
+        "sha256": "c8242cf445460c0739d4c1287bc079ea142af0188f2273028f730be5d7b090bf",
+        "bytes": 1009
+      },
+      {
+        "path": "records/control-three-first-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "9c1a29fefd88867199312128d5f7a4e8e5e49b0e54c2e2f7d893eaa055762385",
+        "bytes": 11077
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "939a3a9c14ba3b34b865c1ad3e04bf3b44d139f054a00e3cdf42faa45518779d",
+        "bytes": 22972
+      }
+    ]
+  }
+}
