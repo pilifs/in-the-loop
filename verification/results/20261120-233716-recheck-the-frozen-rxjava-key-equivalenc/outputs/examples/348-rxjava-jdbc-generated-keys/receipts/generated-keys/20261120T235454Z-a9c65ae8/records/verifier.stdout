@@ -1,0 +1,158 @@
+{
+  "wire_version": 1,
+  "verdict": "unverifiable",
+  "target": "calibration.GeneratedKeys#keys(boolean)",
+  "domain": "combined: boolean",
+  "counterexample": null,
+  "proof": null,
+  "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.sql.DriverManager.getConnection(Ljava/lang/String;)Ljava/sql/Connection;@jdk-21.0.13 (java.sql.DriverManager.getConnection(java.lang.String) at before.calibration.GeneratedKeys.keys:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "statement": "verifier/work/harness/EquivalenceHarness.java",
+  "findings": [
+    {
+      "rule_id": "unverifiable",
+      "message": "calibration.GeneratedKeys#keys(boolean) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.sql.DriverManager.getConnection(Ljava/lang/String;)Ljava/sql/Connection;@jdk-21.0.13 (java.sql.DriverManager.getConnection(java.lang.String) at before.calibration.GeneratedKeys.keys:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "uri": null,
+      "line": 13
+    }
+  ],
+  "output": "✗ calibration.GeneratedKeys#keys(boolean) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.sql.DriverManager.getConnection(Ljava/lang/String;)Ljava/sql/Connection;@jdk-21.0.13 (java.sql.DriverManager.getConnection(java.lang.String) at before.calibration.GeneratedKeys.keys:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+  "work": "verifier/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 0.009672481,
+    "properties": 1,
+    "unwind": 16,
+    "max_array_length": 16,
+    "stage": null,
+    "native": {
+      "paths": 1,
+      "merges": 0,
+      "solver_calls": 0,
+      "solving_seconds": 0.0,
+      "gates_evaluated": 0,
+      "evaluating_seconds": 0.0,
+      "divisions": 0,
+      "divisions_built": 0,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 2,
+      "clauses": 1,
+      "seconds": 0.003588062,
+      "loading_seconds": 0.000080512,
+      "decoding_seconds": 0.000069851,
+      "encoding_seconds": 6.01e-7,
+      "witness_seconds": 0.0
+    },
+    "gap_mode": "strict",
+    "gaps": [
+      {
+        "id": "jdk-static-method:java.sql.DriverManager.getConnection(Ljava/lang/String;)Ljava/sql/Connection;@jdk-21.0.13",
+        "kind": "jdk-static-method",
+        "call": "java.sql.DriverManager.getConnection(java.lang.String)",
+        "sites": [
+          "before.calibration.GeneratedKeys.keys:13"
+        ],
+        "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+        "treatment": "refused"
+      }
+    ],
+    "deadline_seconds": 600.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 600.0,
+        "seconds": 0.004,
+        "ended": "no-verdict",
+        "ending": "no-verdict",
+        "phases": {
+          "loading": 0.0,
+          "lowering": 0.0,
+          "symbolic": 0.003,
+          "encoding": 0.0,
+          "solving": 0.0,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 2,
+          "clauses": 1
+        }
+      }
+    ],
+    "phases": {
+      "seconds": 0.129,
+      "setup": 0.001,
+      "harness": 0.0,
+      "gaps": 0.0,
+      "contracts": 0.0,
+      "runs": 0.004,
+      "replay": 0.0,
+      "jvm": 0.0,
+      "other": 0.124
+    }
+  },
+  "stated": {
+    "kind": "regression",
+    "domain": {
+      "parameters": [
+        {
+          "name": "combined",
+          "type": "boolean",
+          "kind": "primitive",
+          "null": false
+        }
+      ],
+      "shared_arrays": false,
+      "text": "combined: boolean"
+    },
+    "assumptions": [
+      {
+        "kind": "intended-inputs",
+        "text": "!(false): the input is not among those the change is meant for",
+        "basis": "stated"
+      },
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result, an array compared element by element",
+      "exceptions": "whether it throws, and which of 17 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest, then the checked exceptions either version declares, java.sql.SQLException, java.lang.Exception; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+    },
+    "bounds": {
+      "unwind": 16,
+      "max_array_length": null,
+      "complete": false
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+      "classes": 40,
+      "jdk": "21.0.13"
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null
+  }
+}
