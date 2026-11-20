@@ -1,0 +1,718 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-091739-verify-both-original-cube-repairs-throug",
+  "title": "Verify both original cube repairs through live BSP iterators",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.6s, peak 213.3 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-091739-verify-both-original-cube-repairs-throug.json",
+    "sha256": "c65ed868196eff7fd20219b967bbbc48cb7f384d769cdc3dae11e9b8fdfedca2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-091739-verify-both-original-cube-repairs-throug",
+      "title": "Verify both original cube repairs through live BSP iterators",
+      "description": "Check first-hit presence and all three coordinates in both pinned revisions on the four diagonal and two face-control rays. Traverse the real BSP nodes and selected JDK ArrayList iterators, count every permitted trigonometric rounding and qualify each counterexample against the independent rational slab oracle.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "329"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T09:17:39+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 329 --tasks presence-parent,presence-fix,point-parent,point-fix --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/329-commons-geometry-cube-vertex/receipts/presence-parent",
+        "examples/329-commons-geometry-cube-vertex/receipts/presence-fix",
+        "examples/329-commons-geometry-cube-vertex/receipts/point-parent",
+        "examples/329-commons-geometry-cube-vertex/receipts/point-fix"
+      ]
+    }
+  },
+  "sourceCommit": "805ad0ca1cddb1bf659f29968e0dcd16d0584110",
+  "startedAt": "2026-11-20T09:25:36+00:00",
+  "finishedAt": "2026-11-20T09:28:40+00:00",
+  "wallSeconds": 184.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 869782,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 223621120,
+    "wallSeconds": 17.6,
+    "cpuSeconds": 22.8,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 329 --tasks presence-parent,presence-fix,point-parent,point-fix --checker-seconds 30",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 17.641,
+      "cpuSeconds": 22.753,
+      "cpuThrottledSeconds": 2.275,
+      "peakMemoryBytes": 223621120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 8,
+        "bytes": 928,
+        "sha256": "3387c77dccd0b8939dc1aafe9389b2aea30b7533f7f5db1808d0aaa7ecaa5231",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "329-commons-geometry-cube-vertex: task presence-parent: refuted (completed; as expected), receipt receipts/presence-parent/20261120T092823Z-59c4e1fb/result.json",
+          "groups": [
+            "329",
+            "presence-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "329-commons-geometry-cube-vertex: task presence-fix: established (completed; as expected), receipt receipts/presence-fix/20261120T092828Z-4be1c496/result.json",
+          "groups": [
+            "329",
+            "presence-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "329-commons-geometry-cube-vertex: task point-parent: refuted (completed; as expected), receipt receipts/point-parent/20261120T092835Z-3a3e1597/result.json",
+          "groups": [
+            "329",
+            "point-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "329-commons-geometry-cube-vertex: task point-fix: established (completed; as expected), receipt receipts/point-fix/20261120T092836Z-bc037085/result.json",
+          "groups": [
+            "329",
+            "point-fix",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "329-commons-geometry-cube-vertex: running task presence-parent (target route)",
+        "329-commons-geometry-cube-vertex: task presence-parent: refuted (completed; as expected), receipt receipts/presence-parent/20261120T092823Z-59c4e1fb/result.json",
+        "329-commons-geometry-cube-vertex: running task presence-fix (target route)",
+        "329-commons-geometry-cube-vertex: task presence-fix: established (completed; as expected), receipt receipts/presence-fix/20261120T092828Z-4be1c496/result.json",
+        "329-commons-geometry-cube-vertex: running task point-parent (target route)",
+        "329-commons-geometry-cube-vertex: task point-parent: refuted (completed; as expected), receipt receipts/point-parent/20261120T092835Z-3a3e1597/result.json",
+        "329-commons-geometry-cube-vertex: running task point-fix (target route)",
+        "329-commons-geometry-cube-vertex: task point-fix: established (completed; as expected), receipt receipts/point-fix/20261120T092836Z-bc037085/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c711cceeff4bf1637e16a3193da8a2f55fe88e606bec52ab10a2fcc410b4de73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/plan.json",
+      "change": "added",
+      "bytes": 27824,
+      "sha256": "480e6cf7e96f66d8e5f27104dc2ee7a06b81227d9c46ea3f5495dd71148d107c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 933,
+      "sha256": "e2be9bc1f78b9ff9134cb6ba20aeab19b4c5dbf745eab27ff4f298138c2364bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/controls.json",
+      "change": "added",
+      "bytes": 7204,
+      "sha256": "fb8fbe50b77f7fe33b60da6d57470c04992c7b7489c20c8735aa69b5fb9b8758",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/execution.json",
+      "change": "added",
+      "bytes": 42002,
+      "sha256": "57cd629baf6fc2e2199d2dfcd8b37295415517f55f67674e59866281be282462",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "cd513bdbcfd60b2cb5b835925a55a42697b064c0c7687690ccc4f73f0282edd8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 569,
+      "sha256": "65575e9a108ab6fcd956d3c6f701f6bbf539a3360f5e459ee6c0b14262beb8aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/verifier.json",
+      "change": "added",
+      "bytes": 31462,
+      "sha256": "569e3f2851438087dd02840be887e0cb6e8dd08c77994fec9386cf5223d9b691",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6576,
+      "sha256": "0a6ba4b7b9e877ffeed16046b388f6e5ee13745b9371cdbb0c1f2ede203b9802",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/result.json",
+      "change": "added",
+      "bytes": 20987,
+      "sha256": "7ebe9758cd6916065fd2a363bc7d558a516a74a79d1e11b5cbe49fc5d4bf395a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/executions/20261120T092823Z-59c4e1fb/attempt.json",
+      "change": "added",
+      "bytes": 37651,
+      "sha256": "52a55b3cfe0c5c2ebf3a521439b802c95c6a63f134e5d8ee223060332a190ee2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/executions/20261120T092823Z-59c4e1fb/checker.json",
+      "change": "added",
+      "bytes": 8355,
+      "sha256": "6ebbdbe01e72d9754bc2954f5ac7c69589f56e5a37834da20f8181f2dcaf7191",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/executions/20261120T092823Z-59c4e1fb/correspondence.json",
+      "change": "added",
+      "bytes": 2655,
+      "sha256": "7682bf7015ba0dd20c862948015765bc78a21cbc8641f397c23650197759e06d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/executions/20261120T092823Z-59c4e1fb/replay.json",
+      "change": "added",
+      "bytes": 2333,
+      "sha256": "cd47211ccae1f6b72f91ca0e6b1559ddad42fbcf14f8f3fea18921ada9fe1ef9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5041920eb495a7858cf0b9dc58536a8497e4407f0ac5e962551b60ac684b2f6d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/plan.json",
+      "change": "added",
+      "bytes": 27925,
+      "sha256": "696e94870fd2ae847acafa48b83071585863b342a89891998eafe75d777206f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 989,
+      "sha256": "27050a6808e00e83e2083bf0a8c16d1476029e18e517f05cf514ce10b475d58a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/controls.json",
+      "change": "added",
+      "bytes": 7459,
+      "sha256": "9fa791e64f2b0a0cb0244d1172890b6f39710dcafd3c0b1636d7e8a853ac63d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/execution.json",
+      "change": "added",
+      "bytes": 38460,
+      "sha256": "021e7caaf4f5865c500b1ef796e4b3dff7f38fe76f71972033b95f0ec06da45b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "c11b5c260eeb83914024116c208119b95b9a0ba9d896b5efa66d6b4d933a7ead",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 279,
+      "sha256": "0095a0afb1591b53786335e6efd60e67e44712538a813a5fc088bf2bedfc8f69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/verifier.json",
+      "change": "added",
+      "bytes": 30604,
+      "sha256": "8c4f8ca68be950539eacde1916e312ac5966cdf4e33eb5a1777d5beb0c1776a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5894,
+      "sha256": "4e04e7528fa1f01629c9f737fb78f0e69498bc74fe30f80c3927873534c557a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/result.json",
+      "change": "added",
+      "bytes": 19658,
+      "sha256": "8731693a6c1ff7f5c5feca34f7316c557550853613de73bb6ff2b899248f46c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/executions/20261120T092828Z-4be1c496/attempt.json",
+      "change": "added",
+      "bytes": 37428,
+      "sha256": "361a24a76f65c7bd7a00fdeeaa404198f34d4db049e095c5f80c60cb90a14308",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/executions/20261120T092828Z-4be1c496/checker.json",
+      "change": "added",
+      "bytes": 7607,
+      "sha256": "6328b5b76697c0730d2d81fb8b80a005e02c98e185d93f66138925d5129fa509",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/executions/20261120T092828Z-4be1c496/correspondence.json",
+      "change": "added",
+      "bytes": 2649,
+      "sha256": "fb4e00cfdf309b2502816013d51c8acecddb63a0a24416ce401e98babc28f74f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "22673d08baeb67d429ab86d846a4c85e589a25ef156dac4231e5480b0dcefdbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/plan.json",
+      "change": "added",
+      "bytes": 27895,
+      "sha256": "92e65325ed7ea983e9749219e08be6bc44a105e9b40b35b5e915e3f42ef52a23",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 933,
+      "sha256": "e2be9bc1f78b9ff9134cb6ba20aeab19b4c5dbf745eab27ff4f298138c2364bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/controls.json",
+      "change": "added",
+      "bytes": 7198,
+      "sha256": "c1896a73258da159ce6d1dd0936e6c2181b182a7078ddc0b5defedf478d20b9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/execution.json",
+      "change": "added",
+      "bytes": 42044,
+      "sha256": "f3cda492a4b297f0544f53d5ef454d6b8a1adf42b209c92fb529d76bb07d3d50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "314fc6127b05cce00bde463bff9ed427197e655068d5efb40f4541e9db2fccf0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 575,
+      "sha256": "d823de8b9ac1407976a37bc00cbb29a1088f71b3710751311a6225121351c545",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/verifier.json",
+      "change": "added",
+      "bytes": 31492,
+      "sha256": "060624d0755872ba2935b4f4be6b4308fbb5e50dc72122b57844d7270dd96231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6601,
+      "sha256": "630182b9d1986da92b70f7e8b48aa1d45733aa90e8e9ac37ca390d8344930d36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/result.json",
+      "change": "added",
+      "bytes": 21041,
+      "sha256": "777885b85b0969a0a293624206ef664b5f30e217116641548ed92e47fd544416",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/executions/20261120T092835Z-3a3e1597/attempt.json",
+      "change": "added",
+      "bytes": 37660,
+      "sha256": "56c4cb191931628011ea5542eb30df82655f408dcbf44a7a7e11713b62a28614",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/executions/20261120T092835Z-3a3e1597/checker.json",
+      "change": "added",
+      "bytes": 8382,
+      "sha256": "5255853476f0e28b4a59686ff3a1f798352f140d1185ade202ca06993ea84606",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/executions/20261120T092835Z-3a3e1597/correspondence.json",
+      "change": "added",
+      "bytes": 2657,
+      "sha256": "3aef5f39ecf7d96cab6ebe14b8ca22f3a7fe1f181df03ef6d319a0260f019656",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-parent/executions/20261120T092835Z-3a3e1597/replay.json",
+      "change": "added",
+      "bytes": 2339,
+      "sha256": "f22daafaca44f7aa7ad9b33ea6373bf071062ca8a7077ef232455f2291684596",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "eb4122493b11fd5ef1c9f7962d1bff6db02328057dd6a7236eb5cb3c354d6e25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/plan.json",
+      "change": "added",
+      "bytes": 27996,
+      "sha256": "fdf604bb5a26ccb3b5075259d109fb03db9f138bdfe3b50cefa402d6467b9807",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 989,
+      "sha256": "27050a6808e00e83e2083bf0a8c16d1476029e18e517f05cf514ce10b475d58a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/controls.json",
+      "change": "added",
+      "bytes": 7453,
+      "sha256": "5a3da302c1487da3c936c497ef4010bbc0005f8d04a4884ed7216e107bef31e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/execution.json",
+      "change": "added",
+      "bytes": 38480,
+      "sha256": "7a1c38dde619d9e9e97b528eb48ee5afbb8953013de9591167e042949a44aa95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "5cff683785af170ece8775084d9ee07b78cbe070f5d39623ce10b964d68f2e9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 283,
+      "sha256": "0108038bc1f29c1e321b03dded34c1969d859fe82f98e767dfba34e7e63b67b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/verifier.json",
+      "change": "added",
+      "bytes": 30618,
+      "sha256": "ffa78110c5d7716e35f365215e0bc2dd1588dd808373fbcfc02198f5c1cee896",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5903,
+      "sha256": "738803fad9fa53ac6edb0d7c8ef924ecbb019c059fd14650a78264619bbbf6ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/result.json",
+      "change": "added",
+      "bytes": 19698,
+      "sha256": "bab01fdefb74152299dff242ca810b023f837c4fa038f0eb3e56f69623d2ab33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/executions/20261120T092836Z-bc037085/attempt.json",
+      "change": "added",
+      "bytes": 37439,
+      "sha256": "000e7bdcf0a9e5b84a5cae616426ef52735333ed57d87c5f74d78187c877fa88",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/executions/20261120T092836Z-bc037085/checker.json",
+      "change": "added",
+      "bytes": 7618,
+      "sha256": "57ca2c2723a38495e3a1f9395e7c8a78b56f0175493b3929b0a77abc0b100788",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/receipts/point-fix/executions/20261120T092836Z-bc037085/correspondence.json",
+      "change": "added",
+      "bytes": 2651,
+      "sha256": "604af04c492f00159bf430c4dee2c051883670e27b239c56531c6872691e9822",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T09:28:48+00:00",
+    "applied": [
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/completion.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/plan.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/control-parent-jdk21.stderr",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/control-parent-jdk21.stdout",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/controls.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/execution.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/streams.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/verifier-output.txt",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/verifier.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/verifier.stderr",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/records/verifier.stdout",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/20261120T092823Z-59c4e1fb/result.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/executions/20261120T092823Z-59c4e1fb/attempt.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/executions/20261120T092823Z-59c4e1fb/checker.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/executions/20261120T092823Z-59c4e1fb/correspondence.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-parent/executions/20261120T092823Z-59c4e1fb/replay.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/completion.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/plan.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/control-fix-jdk21.stderr",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/control-fix-jdk21.stdout",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/controls.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/execution.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/streams.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/verifier-output.txt",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/verifier.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/verifier.stderr",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/records/verifier.stdout",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/20261120T092828Z-4be1c496/result.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/executions/20261120T092828Z-4be1c496/attempt.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/executions/20261120T092828Z-4be1c496/checker.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/presence-fix/executions/20261120T092828Z-4be1c496/correspondence.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/completion.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/plan.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/control-parent-jdk21.stderr",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/control-parent-jdk21.stdout",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/controls.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/execution.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/streams.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/verifier-output.txt",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/verifier.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/verifier.stderr",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/records/verifier.stdout",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/20261120T092835Z-3a3e1597/result.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/executions/20261120T092835Z-3a3e1597/attempt.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/executions/20261120T092835Z-3a3e1597/checker.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/executions/20261120T092835Z-3a3e1597/correspondence.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-parent/executions/20261120T092835Z-3a3e1597/replay.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/completion.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/plan.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/control-fix-jdk21.stderr",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/control-fix-jdk21.stdout",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/controls.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/execution.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/streams.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/verifier-output.txt",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/verifier.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/verifier.stderr",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/records/verifier.stdout",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/20261120T092836Z-bc037085/result.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/executions/20261120T092836Z-bc037085/attempt.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/executions/20261120T092836Z-bc037085/checker.json",
+      "examples/329-commons-geometry-cube-vertex/receipts/point-fix/executions/20261120T092836Z-bc037085/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2546ab5107d0ec488b06f9c8fc4d9e3a9eef532f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2546ab5107d0ec488b06f9c8fc4d9e3a9eef532f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}
