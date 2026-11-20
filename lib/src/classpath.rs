@@ -519,6 +519,22 @@ impl ClassPath {
         })
     }
 
+    /// The final suppression methods and the exception handling they reach, from the selected runtime.
+    /// Both engines execute these bodies on the state of a constructor they observed.
+    pub(crate) fn throwable_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        if !matches!((owner, name, descriptor),
+            ("java/lang/Throwable", "addSuppressed", "(Ljava/lang/Throwable;)V")
+            | ("java/lang/Throwable", "getSuppressed", "()[Ljava/lang/Throwable;")
+            | ("java/lang/NullPointerException", "getMessage", "()Ljava/lang/String;")
+            | ("java/util/Objects", "requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;")) {
+            return None;
+        }
+        let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+        let method = class.method(name, descriptor)?.clone();
+        method.code.as_ref()?;
+        Some((class, method))
+    }
+
     /// Numeric code executed from the selected JDK image. Factories follow their actual
     /// allocation and cache branches. The hypot implementation includes the FdLibm helpers
     /// the selected image calls. An additional helper can produce a named refusal.

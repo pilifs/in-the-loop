@@ -263,13 +263,13 @@ impl<'a> Machine<'a> {
     /// Creates a JDK exception object (not thrown).
     pub fn new_throwable(&mut self, class: &str, message: Option<&str>) -> Ref {
         let message = message.map(|m| self.new_string(m).as_ref().unwrap());
-        self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None }))
+        self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None, suppressed: None }))
     }
 
     /// A fault that throws a new JDK exception whose message is the string object `message`, as `new E(message)`
     /// keeps the very String it is given.
     pub fn throw_with(&mut self, class: &str, message: Option<Ref>) -> Fault {
-        Fault::Throw(self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None })))
+        Fault::Throw(self.alloc(Object::Native(Native::Throwable { class: class.to_string(), message, cause: None, suppressed: None })))
     }
 
     /// A fault that throws a new JDK exception with a message of these code units: one that quotes a String.
@@ -307,7 +307,7 @@ impl<'a> Machine<'a> {
         match self.init.get(class) {
             Some(InitState::Done | InitState::InProgress) => return Ok(()),
             Some(InitState::Erroneous) => {
-                let error = self.alloc(Object::Native(Native::Throwable { class: "java/lang/NoClassDefFoundError".into(), message: None, cause: None }));
+                let error = self.alloc(Object::Native(Native::Throwable { class: "java/lang/NoClassDefFoundError".into(), message: None, cause: None, suppressed: None }));
                 return Err(Fault::Throw(error));
             }
             None => {}
@@ -364,6 +364,7 @@ impl<'a> Machine<'a> {
                         class: "java/lang/ExceptionInInitializerError".into(),
                         message: None,
                         cause: Some(exception),
+                        suppressed: None,
                     }));
                     return Err(Fault::Throw(wrapped));
                 }
@@ -391,6 +392,21 @@ impl<'a> Machine<'a> {
 
     /// Reads a static field: the class that declares it is initialised first, and only that one (JVMS §5.5).
     pub fn get_static(&mut self, class: &str, name: &str) -> Exec<Value> {
+        if class == crate::bmc::throwables::THROWABLE && matches!(name, "SUPPRESSED_SENTINEL" | "EMPTY_THROWABLE_ARRAY") {
+            if let Some(value) = self.statics.get(class).and_then(|fields| fields.get(name)) {
+                return Ok(*value);
+            }
+            // These two objects belong to the JDK class and survive the end of any input case.
+            self.clinit_depth += 1;
+            let value = if name == "EMPTY_THROWABLE_ARRAY" {
+                self.new_array_of(Type::object(class), Vec::new())
+            } else {
+                Value::Ref(self.alloc_native(Native::List { elements: Vec::new(), mutable: false }))
+            };
+            self.clinit_depth -= 1;
+            self.statics.entry(class.into()).or_default().insert(name.into(), value);
+            return Ok(value);
+        }
         if let Some(declaring) = self.static_declarer(class, name) {
             self.ensure_initialized(&declaring)?;
             if let Some(v) = self.statics.get(&declaring).and_then(|f| f.get(name)) {
@@ -448,7 +464,7 @@ impl<'a> Machine<'a> {
                     if c == "java/lang/Enum" {
                         base = Base::Enum { name: String::new(), ordinal: 0, text: None };
                     } else if self.cp.is_subtype(&c, "java/lang/Throwable") {
-                        base = Base::Throwable { message: None, cause: None };
+                        base = Base::Throwable { message: None, cause: None, suppressed: None };
                     } else if c != "java/lang/Object" && c != "java/lang/Record" {
                         return Err(Fault::Unsupported(format!("{} extends the JDK class {}, which the interpreter does not model", class.replace('/', "."), c.replace('/', "."))));
                     }
@@ -493,6 +509,9 @@ impl<'a> Machine<'a> {
     /// The key the instance field `owner.name:descriptor` has in `object`: its name, unless a subclass along the
     /// object's class hides it ([`ClassPath::field_key`]).
     fn field_key(&mut self, object: Value, owner: &str, name: &str, descriptor: &str) -> Exec<String> {
+        if owner == crate::bmc::throwables::THROWABLE && name == "suppressedExceptions" && descriptor == "Ljava/util/List;" {
+            return Ok(crate::bmc::throwables::SUPPRESSED.into());
+        }
         let Some(r) = object.as_ref() else { return Ok(name.to_string()) };
         let class = self.class_of(r);
         let hides = match self.hides.get(&class) {
@@ -513,6 +532,8 @@ impl<'a> Machine<'a> {
     pub fn get_field(&mut self, object: Value, name: &str) -> Exec<Value> {
         let Some(r) = object.as_ref() else { return Err(self.npe()) };
         match self.heap.get(r) {
+            Object::Instance { base: Base::Throwable { suppressed, .. }, .. } | Object::Native(Native::Throwable { suppressed, .. })
+                if name == crate::bmc::throwables::SUPPRESSED => suppressed.ok_or_else(|| Fault::Unsupported("suppression state of a throwable whose constructor was not observed".into())),
             Object::Instance { fields, .. } => fields.get(name).copied().ok_or_else(|| Fault::Unsupported(format!("no field {name} on {}", self.class_of(r)))),
             _ => Err(Fault::Unsupported(format!("getfield {name} on a {}", self.class_of(r)))),
         }
@@ -522,6 +543,11 @@ impl<'a> Machine<'a> {
         let Some(r) = object.as_ref() else { return Err(self.npe()) };
         self.check_write(r, &format!("field {name}"))?;
         match self.heap.get_mut(r) {
+            Object::Instance { base: Base::Throwable { suppressed, .. }, .. } | Object::Native(Native::Throwable { suppressed, .. })
+                if name == crate::bmc::throwables::SUPPRESSED => {
+                    *suppressed = Some(value);
+                    Ok(())
+                }
             Object::Instance { fields, .. } => {
                 fields.insert(name.to_string(), value);
                 Ok(())

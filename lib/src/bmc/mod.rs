@@ -124,7 +124,7 @@ pub mod runtime;
 mod ties;
 pub mod sat;
 pub mod strings;
-mod throwables;
+pub(crate) mod throwables;
 pub mod transcript;
 
 use std::collections::{BTreeMap, HashMap};
@@ -978,6 +978,8 @@ enum Literal {
     Thread,
     /// The one map `Collections.emptyMap()` returns ([`runtime`]).
     EmptyMap,
+    SuppressedSentinel,
+    EmptySuppressedArray,
     /// `Boolean.TRUE` or `Boolean.FALSE` ([`runtime::truth_constant`]).
     Truth(bool),
     /// A wrapper's mandated cache entry, distinct for each class and small value.
@@ -2465,6 +2467,8 @@ impl<'a> Engine<'a> {
                         Literal::Level(_) => runtime::LEVEL,
                         Literal::Thread => "java/lang/Thread",
                         Literal::EmptyMap => runtime::EMPTY_MAP,
+                        Literal::SuppressedSentinel => throwables::EMPTY_LIST,
+                        Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
                         Literal::Truth(_) => runtime::BOOLEAN,
                         Literal::CachedIntegral(class, _) => class,
                     };
@@ -3828,6 +3832,19 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if declaring == throwables::THROWABLE && class.name == throwables::THROWABLE {
+                    let constant = match (member.name.as_str(), member.descriptor.as_str()) {
+                        ("SUPPRESSED_SENTINEL", "Ljava/util/List;") => Some((Literal::SuppressedSentinel, throwables::EMPTY_LIST)),
+                        ("EMPTY_THROWABLE_ARRAY", "[Ljava/lang/Throwable;") => Some((Literal::EmptySuppressedArray, throwables::THROWABLE_ARRAY)),
+                        _ => None,
+                    };
+                    if let Some((key, ty)) = constant {
+                        let object = self.literal(path, key, ty);
+                        self.push(path, Val::R(Some(object)));
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                }
                 if self.cp.numeric_assertion_flag(&declaring, &member.name, &member.descriptor) {
                     let key = (declaring, member.name);
                     let flag = path.statics.entry(key).or_insert_with(|| {
@@ -4565,6 +4582,12 @@ impl<'a> Engine<'a> {
                 self.string(path, &units)
             }
             Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap | Literal::Truth(_) => self.alloc(path, class),
+            Literal::SuppressedSentinel => self.alloc(path, class),
+            Literal::EmptySuppressedArray => {
+                let o = self.alloc(path, class);
+                path.objects[o].array = Some(Array { element: Type::object(throwables::THROWABLE), length: self.b.constant(0, 32), cells: Vec::new(), refs: Vec::new() });
+                o
+            }
             Literal::CachedIntegral(_, n) => {
                 let o = self.alloc(path, class);
                 let value = i64::from(*n);
@@ -4588,6 +4611,9 @@ impl<'a> Engine<'a> {
     /// The key the instance field `owner.name:descriptor` has in object `o`: its name, unless a subclass along the
     /// object's class declares the name again ([`ClassPath::field_key`]), as the interpreter keys it.
     fn field_key(&mut self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<String, Stop> {
+        if owner == throwables::THROWABLE && name == "suppressedExceptions" && descriptor == "Ljava/util/List;" {
+            return Ok(throwables::SUPPRESSED.into());
+        }
         let class = &path.objects[o].class;
         // The active model's own bytecode can access representation fields absent from the JDK class.
         // A subclass declaring the same name still has a distinct field.
@@ -4722,6 +4748,9 @@ impl<'a> Engine<'a> {
             }
         }
         let args = self.pop_args(path, descriptor.params.len())?;
+        if caller == throwables::THROWABLE && member.owner == "java/util/Objects" && self.cp.throwable_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
+            return self.call(path, &member.owner, &member.name, &member.descriptor, args);
+        }
         if member.owner == crate::gap_contracts::INTRINSICS {
             return self.intrinsic(path, &member.name, args);
         }
@@ -4934,6 +4963,7 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
+            if let Some(step) = self.suppression_list(path, o, caller, member, &args) { return step; }
             if !special && path.objects[o].class == runtime::BOOLEAN && member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z" {
                 if let Some(step) = self.boolean_equals(path, o, &args) { return step; }
             }
@@ -5096,7 +5126,8 @@ impl<'a> Engine<'a> {
 
     /// Enters a bytecode method with the arguments in its locals.
     fn call(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: Vec<Val>) -> Step {
-        let (cf, m) = self.cp.checker_method(owner, name, descriptor)
+        let (cf, m) = self.cp.throwable_image_method(owner, name, descriptor)
+            .or_else(|| self.cp.checker_method(owner, name, descriptor))
             .or_else(|| self.cp.numeric_image_method(owner, name, descriptor))
             .ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;
         if m.is_abstract() {

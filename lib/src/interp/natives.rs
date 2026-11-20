@@ -110,7 +110,7 @@ fn set_throwable(m: &mut Machine, r: Ref, message: Option<Ref>, cause: Option<Re
                 *c = cause;
             }
         }
-        Object::Instance { base: Base::Throwable { message: msg, cause: c }, .. } => {
+        Object::Instance { base: Base::Throwable { message: msg, cause: c, .. }, .. } => {
             if set_message {
                 *msg = message;
             }
@@ -457,7 +457,7 @@ pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
         "java/util/HashMap" | "java/util/LinkedHashMap" | "java/util/TreeMap" => Native::Map { entries: Vec::new(), mutable: true },
         "java/util/HashSet" | "java/util/LinkedHashSet" | "java/util/TreeSet" => Native::Set { elements: Vec::new(), mutable: true },
         "java/lang/Object" => return Ok(Value::Ref(m.alloc(Object::Instance { class: class.into(), fields: Default::default(), base: Base::Object }))),
-        _ if m.cp.is_subtype(class, "java/lang/Throwable") => Native::Throwable { class: class.into(), message: None, cause: None },
+        _ if m.cp.is_subtype(class, "java/lang/Throwable") => Native::Throwable { class: class.into(), message: None, cause: None, suppressed: None },
         _ => return unsupported(format!("new {}", class.replace('/', "."))),
     };
     Ok(Value::Ref(m.alloc_native(native)))
@@ -477,7 +477,7 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
     };
     match native {
         Native::Throwable { .. } => {
-            init_throwable(m, r, descriptor, &args)?;
+            init_throwable(m, r, owner, descriptor, &args)?;
         }
         Native::StringBuilder(_) => {
             let initial = match descriptor {
@@ -564,7 +564,20 @@ fn hash_capacity(m: &mut Machine, descriptor: &str, args: &[Value]) -> Exec<()> 
     Ok(())
 }
 
-fn init_throwable(m: &mut Machine, r: Ref, descriptor: &str, args: &[Value]) -> Exec<()> {
+fn init_throwable(m: &mut Machine, r: Ref, owner: &str, descriptor: &str, args: &[Value]) -> Exec<()> {
+    use crate::bmc::throwables::{plain_constructor, SUPPRESSED, THROWABLE};
+    if plain_constructor(m.cp, owner, descriptor) || (owner == THROWABLE && descriptor == "(Ljava/lang/Throwable;)V") {
+        let fills_stack = args.get(3).is_none_or(|flag| flag.as_int() != 0);
+        if fills_stack && m.cp.bytecode_method(&m.class_of(r), "fillInStackTrace", "()Ljava/lang/Throwable;").is_some() {
+            return unsupported("Throwable constructor with an application fillInStackTrace override");
+        }
+        let state = if args.get(2).is_some_and(|flag| flag.as_int() == 0) {
+            Value::Null
+        } else {
+            m.get_static(THROWABLE, "SUPPRESSED_SENTINEL")?
+        };
+        m.put_field(Value::Ref(r), SUPPRESSED, state)?;
+    }
     match descriptor {
         "()V" => {}
         "(Ljava/lang/String;)V" => set_throwable(m, r, args[0].as_ref(), None, true, false),
@@ -585,6 +598,15 @@ fn init_throwable(m: &mut Machine, r: Ref, descriptor: &str, args: &[Value]) -> 
         _ => return unsupported(format!("Throwable.<init>{descriptor}")),
     }
     Ok(())
+}
+
+/// Execute the same final methods as the checker, on the ordinary interpreter heap.
+fn invoke_suppression(m: &mut Machine, r: Ref, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
+    let (class, method) = m.cp.throwable_image_method(crate::bmc::throwables::THROWABLE, name, descriptor)
+        .ok_or_else(|| Fault::Unsupported(format!("no selected JDK bytecode for Throwable.{name}{descriptor}")))?;
+    let mut full = vec![Value::Ref(r)];
+    full.extend(args);
+    m.invoke(&class, &method, full)
 }
 
 /// A method inherited from a JDK superclass, called on an application instance: `Enum.ordinal`,
@@ -634,7 +656,7 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
         },
         Base::Throwable { .. } => match name {
             "<init>" => {
-                init_throwable(m, r, descriptor, &args)?;
+                init_throwable(m, r, owner, descriptor, &args)?;
                 Ok(None)
             }
             "getMessage" | "getLocalizedMessage" => {
@@ -661,7 +683,7 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
                 Ok(Some(Value::Ref(r)))
             }
             "fillInStackTrace" => Ok(Some(Value::Ref(r))),
-            "addSuppressed" => Ok(None),
+            "addSuppressed" | "getSuppressed" => invoke_suppression(m, r, name, descriptor, args),
             "hashCode" => unsupported("Throwable.hashCode is identity-based"),
             _ => unsupported(format!("Throwable.{name}{descriptor}")),
         },
@@ -868,7 +890,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             "desiredAssertionStatus" => Ok(Some(Value::Int(0))),
             _ => unsupported(format!("Class.{name}: reflection is outside the model")),
         },
-        Native::Throwable { class, message, cause } => match name {
+        Native::Throwable { class, message, cause, .. } => match name {
             "getMessage" | "getLocalizedMessage" => Ok(Some(message.map(Value::Ref).unwrap_or(Value::Null))),
             "getCause" => Ok(Some(cause.map(Value::Ref).unwrap_or(Value::Null))),
             "initCause" => {
@@ -876,7 +898,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 Ok(Some(Value::Ref(r)))
             }
             "fillInStackTrace" => Ok(Some(Value::Ref(r))),
-            "addSuppressed" => Ok(None),
+            "addSuppressed" | "getSuppressed" => invoke_suppression(m, r, name, descriptor, args),
             _ => unsupported(format!("{}.{name}", class.replace('/', "."))),
         },
         Native::Lambda { sam_name, implementation, captured, instantiated, interface } => {

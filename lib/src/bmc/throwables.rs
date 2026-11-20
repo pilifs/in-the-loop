@@ -15,6 +15,8 @@
 //! - `Throwable`'s constructors call `fillInStackTrace()` on the object, virtually. Where an application class
 //!   overrides it, the JVM runs that override inside the constructor, which the engine does not: the constructor
 //!   is refused by name.
+//! - `addSuppressed` and `getSuppressed` execute the selected JDK bodies, including validation, disabled suppression,
+//!   append order and the shared empty array. The private list retains the exception references across path joins.
 //! - `getMessage()`, `getCause()`, `getLocalizedMessage()` and `toString()` are modelled on an exception whose
 //!   message and cause the engine kept, where the method the JVM runs is `Throwable`'s own ([`ClassPath::find_method`]
 //!   from the receiver's class, or from the class an `invokespecial` names). `getLocalizedMessage()` is
@@ -43,10 +45,17 @@ const MESSAGE: &str = "java/lang/Throwable#detailMessage";
 /// Where it holds the cause: the object itself for none, as the JDK's `Throwable.cause` does.
 const CAUSE: &str = "java/lang/Throwable#cause";
 
+/// Private JDK fields have a separate key even when an application subclass hides their names.
+pub(crate) const SUPPRESSED: &str = "java/lang/Throwable#suppressedExceptions";
+const ENABLE_SUPPRESSION: &str = "java/lang/Throwable#enableSuppression";
+pub(super) const EMPTY_LIST: &str = "java/util/Collections$EmptyList";
+pub(super) const THROWABLE_ARRAY: &str = "[Ljava/lang/Throwable;";
+
 /// The calling JDK model chose the constructor arguments. The real JDK can supply different details.
 const MODEL_DETAILS: &str = "java/lang/Throwable#modelDetails";
 
 /// The descriptors of `Throwable`'s constructors whose effect the engine keeps.
+const CONFIGURED: &str = "(Ljava/lang/String;Ljava/lang/Throwable;ZZ)V";
 const KEPT: [&str; 3] = ["()V", "(Ljava/lang/String;)V", "(Ljava/lang/String;Ljava/lang/Throwable;)V"];
 
 const GET_MESSAGE: (&str, &str) = ("getMessage", "()Ljava/lang/String;");
@@ -59,10 +68,13 @@ const FILL_IN: (&str, &str) = ("fillInStackTrace", "()Ljava/lang/Throwable;");
 /// `return`, with no handler, and the same holds of that superclass. Between the call and the `return` it may have
 /// the JDK's flight-recorder hook ([`traces_only`]), which `java.lang.Error`'s constructors have since JDK 25.
 pub fn plain_constructor(cp: &ClassPath, owner: &str, descriptor: &str) -> bool {
-    if !KEPT.contains(&descriptor) {
-        return false;
-    }
-    let arguments = KEPT.iter().position(|d| *d == descriptor).expect("kept");
+    let arguments = match descriptor {
+        CONFIGURED => 4,
+        _ => match KEPT.iter().position(|d| *d == descriptor) {
+            Some(n) => n,
+            None => return false,
+        },
+    };
     // With no JDK image the bytecode is not there to read: the built-in facts say which are plain.
     if !cp.has_jdk() {
         return crate::jdk_facts::plain_throwable_constructor(owner, arguments);
@@ -82,7 +94,10 @@ pub fn plain_constructor(cp: &ClassPath, owner: &str, descriptor: &str) -> bool 
         if !code.exception_table.is_empty() || insns.len() < arguments + 3 {
             return false;
         }
-        let loads = insns.iter().take(arguments + 1).enumerate().all(|(i, (_, insn))| matches!(insn, Insn::Load(Kind::Ref, n) if usize::from(*n) == i));
+        let loads = insns.iter().take(arguments + 1).enumerate().all(|(i, (_, insn))| {
+            let kind = if i >= 3 { Kind::Int } else { Kind::Ref };
+            matches!(insn, Insn::Load(k, n) if *k == kind && usize::from(*n) == i)
+        });
         let calls = matches!(&insns[arguments + 1].1, Insn::InvokeSpecial(index) if cf.pool.member(*index).is_ok_and(|m| m.owner == above && m.name == "<init>" && m.descriptor == descriptor));
         let rest: Vec<&Insn> = insns[arguments + 2..].iter().map(|(_, i)| i).collect();
         let returns = match rest.as_slice() {
@@ -135,7 +150,8 @@ impl Engine<'_> {
             if !special || !plain_constructor(self.cp, &member.owner, &member.descriptor) {
                 return None;
             }
-            if let Some((cf, _)) = self.cp.find_method(&class, FILL_IN.0, FILL_IN.1).filter(|(cf, _)| cf.name != THROWABLE && self.cp.is_application(&cf.name)) {
+            let fills_stack = !matches!(args.get(3), Some(Val::I(writable)) if self.b.constant_value(writable) == Some(0));
+            if let Some((cf, _)) = self.cp.find_method(&class, FILL_IN.0, FILL_IN.1).filter(|(cf, _)| fills_stack && cf.name != THROWABLE && self.cp.is_application(&cf.name)) {
                 return Some(unsupported(format!("{}.<init>{} on an object of {}, whose {}.fillInStackTrace() the JVM runs inside the constructor, which the engine does not", member.owner.replace('/', "."), member.descriptor, class.replace('/', "."), cf.name.replace('/', "."))));
             }
             if let Err(stop) = self.keeps(path, Some(o), "writes a field of an object made before it was called") {
@@ -144,12 +160,15 @@ impl Engine<'_> {
             let (message, cause) = match args {
                 [] => (Val::R(None), Val::R(Some(o))),
                 [m] => (m.clone(), Val::R(Some(o))),
-                [m, c] => (m.clone(), c.clone()),
+                [m, c] | [m, c, Val::I(_), Val::I(_)] => (m.clone(), c.clone()),
                 _ => return None,
             };
             if self.cp.has_models() && path.frames.iter().any(|frame| self.cp.runs_model(&frame.class.name)) {
                 path.objects[o].fields.insert(MODEL_DETAILS.to_string(), Val::R(None));
             } else {
+                if let Some(flag) = args.get(2) {
+                    path.objects[o].fields.insert(ENABLE_SUPPRESSION.into(), flag.clone());
+                }
                 path.objects[o].fields.insert(MESSAGE.to_string(), message);
                 path.objects[o].fields.insert(CAUSE.to_string(), cause);
             }
@@ -163,8 +182,34 @@ impl Engine<'_> {
         {
             return Some(unsupported(format!("{}.{} reads exception details supplied by a JDK model; the JDK's message and cause are unqualified", class.replace('/', "."), member.name)));
         }
+        // The explicit non-null message takes the JDK's superclass branch. VM-generated
+        // helpful NPE messages can consult native stack state and stay outside this profile.
+        let npe = "java/lang/NullPointerException";
+        if method == GET_MESSAGE && matches!(path.objects[o].fields.get(MESSAGE), Some(Val::R(Some(_))))
+            && self.cp.find_method(&from, method.0, method.1).is_some_and(|(cf, _)| cf.name == npe)
+            && self.cp.throwable_image_method(npe, method.0, method.1).is_some() {
+            return Some(self.call(path, npe, method.0, method.1, vec![Val::R(Some(o))]));
+        }
         if !path.objects[o].fields.contains_key(CAUSE) || !throwables_own(self.cp, &from, method) {
             return None;
+        }
+        if self.cp.throwable_image_method(THROWABLE, method.0, method.1).is_some() {
+            // Initialize the private field on first use. Its absence on an opaque throwable
+            // is never evidence of an empty list: the constructor check above must pass.
+            if !path.objects[o].fields.contains_key(SUPPRESSED) {
+                let sentinel = self.literal(path, Literal::SuppressedSentinel, EMPTY_LIST);
+                let initial = match path.objects[o].fields.get(ENABLE_SUPPRESSION) {
+                    Some(Val::I(flag)) => {
+                        let disabled = self.b.is_zero(flag);
+                        choice(&mut self.b, vec![(disabled, None), (-disabled, Some(sentinel))])
+                    }
+                    _ => Val::R(Some(sentinel)),
+                };
+                path.objects[o].fields.insert(SUPPRESSED.into(), initial);
+            }
+            let mut full = vec![Val::R(Some(o))];
+            full.extend_from_slice(args);
+            return Some(self.call(path, THROWABLE, method.0, method.1, full));
         }
         match method {
             GET_MESSAGE => {
@@ -209,6 +254,40 @@ impl Engine<'_> {
                     Text::Joined(s) => self.new_string(path, s.length, s.cells, Vec::new()),
                 };
                 self.push(path, Val::R(Some(r)));
+            }
+            _ => return None,
+        }
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// The ArrayList allocated privately by the JDK's addSuppressed. Its only consumers
+    /// append a Throwable or copy the references into a detached, typed result array.
+    pub(super) fn suppression_list(&mut self, path: &mut Path, o: usize, caller: &str, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
+        if caller != THROWABLE || path.objects[o].class != "java/util/ArrayList" {
+            return None;
+        }
+        match (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str(), args) {
+            ("java/util/ArrayList", "<init>", "(I)V", [Val::I(capacity)]) if self.b.constant_value(capacity).is_some_and(|n| n >= 0) => {
+                path.objects[o].array = Some(Array { element: Type::object(THROWABLE), length: self.b.constant(0, 32), cells: Vec::new(), refs: Vec::new() });
+            }
+            ("java/util/List", "add", "(Ljava/lang/Object;)Z", [value]) if path.objects[o].array.is_some() => {
+                if let Err(stop) = self.keeps(path, Some(o), "appends to a pre-existing suppression list") { return Some(Err(stop)); }
+                let list = path.objects[o].array.as_mut()?;
+                list.refs.push(value.clone());
+                list.length = self.b.constant(list.refs.len() as i64, 32);
+                let added = self.b.constant(1, 32);
+                self.push(path, Val::I(added));
+            }
+            ("java/util/List", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;", [Val::R(Some(empty))])
+                if path.literals.get(&Literal::EmptySuppressedArray) == Some(empty) => {
+                let array = path.objects[o].array.clone()?;
+                let result = if array.refs.is_empty() { *empty } else {
+                    let copy = self.alloc(path, THROWABLE_ARRAY);
+                    path.objects[copy].array = Some(array);
+                    copy
+                };
+                self.push(path, Val::R(Some(result)));
             }
             _ => return None,
         }
