@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-20T18:28:11.843Z",
-  "duration_seconds": 435645,
+  "ended": "2026-11-20T18:33:36.568Z",
+  "duration_seconds": 435970,
   "stats": {
-    "turns": 472,
-    "api_calls": 2511,
-    "tool_calls": 2230,
+    "turns": 474,
+    "api_calls": 2518,
+    "tool_calls": 2237,
     "tool_errors": 34,
     "compactions": 9,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 5956,
-      "output_tokens": 1304840,
-      "cache_read_input_tokens": 624712980,
-      "cache_creation_input_tokens": 3449351
+      "input_tokens": 5974,
+      "output_tokens": 1307755,
+      "cache_read_input_tokens": 626064638,
+      "cache_creation_input_tokens": 3455935
     }
   },
   "tools": {
-    "Bash": 2117,
+    "Bash": 2124,
     "Edit": 28,
     "SendMessage": 18,
     "ToolSearch": 15,
@@ -190,24 +190,24 @@
     {
       "index": 9,
       "started": "2026-11-20T12:22:10.685Z",
-      "ended": "2026-11-20T18:28:11.843Z",
-      "turns": 19,
-      "api_calls": 130,
+      "ended": "2026-11-20T18:33:36.568Z",
+      "turns": 21,
+      "api_calls": 137,
       "usage": {
-        "input_tokens": 300,
-        "output_tokens": 47677,
-        "cache_read_input_tokens": 17355379,
-        "cache_creation_input_tokens": 242686
+        "input_tokens": 318,
+        "output_tokens": 50592,
+        "cache_read_input_tokens": 18707037,
+        "cache_creation_input_tokens": 249270
       },
-      "peak_context_tokens": 190542
+      "peak_context_tokens": 197126
     }
   ],
   "log": {
-    "sha256": "414cf9dd5ceca70c7163a53ac206b5b30a488e2b83f5b36da52d8c706e9eae51",
-    "bytes": 44576830,
-    "lines": 20574,
-    "gzip_bytes": 7347755,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/414cf9dd5ceca70c7163a53ac206b5b30a488e2b83f5b36da52d8c706e9eae51.jsonl.gz"
+    "sha256": "50fe1a7950881029639bef7a965990a3b4592228a53387a6601b8c204edb5d19",
+    "bytes": 44663325,
+    "lines": 20633,
+    "gzip_bytes": 7360167,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/50fe1a7950881029639bef7a965990a3b4592228a53387a6601b8c204edb5d19.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -4602,6 +4602,22 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-181157-check-the-unchanged-importer-on-the-pinn: failed: 1 failed step(s) in 23.0s, peak 181.2 MiB (estimated 3m00s, 2.0 GiB); 240 output file(s) changed; signals: example:task-unexpected×16 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.",
       "log_sha256": "414cf9dd5ceca70c7163a53ac206b5b30a488e2b83f5b36da52d8c706e9eae51"
+    },
+    {
+      "change_id": "wkykvlzzqvnnmyztvmuqsynqotrrwmrk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A Codex worker adopts other sessions' logs inside its sandbox, and any agent may without asking",
+      "body": "",
+      "log_sha256": "50fe1a7950881029639bef7a965990a3b4592228a53387a6601b8c204edb5d19"
+    },
+    {
+      "change_id": "nxntuknxmuwyuuwoqlrnvrxwptryoqpq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the adopt-logs sandbox change into the line",
+      "body": "Brings in wkykvlzz, committed by the user from the workspace adopt-logs-sandbox: sync.py lists the workspaces without a jj snapshot, the loops' Codex sandbox may write the trace tools' state folder (~/.local/state/llm-traces), and CLAUDE.md and the operating notes say any agent may run sync.py adopt-logs without asking (the user, 2026-11-20). A Codex worker in a side workspace can then adopt other sessions' logs inside its sandbox, where its automatic reviewer had refused the escalation. No conflicts; the generated trace files regenerated.",
+      "log_sha256": "50fe1a7950881029639bef7a965990a3b4592228a53387a6601b8c204edb5d19"
     }
   ],
   "logs": {
@@ -5120,6 +5136,12 @@
       "lines": 9992,
       "gzip_bytes": 3979471,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/506c844ca3c412ead772bad503b6eb6aea81274b6009a5ed21bb9b7e63b50948.jsonl.gz"
+    },
+    "50fe1a7950881029639bef7a965990a3b4592228a53387a6601b8c204edb5d19": {
+      "bytes": 44663325,
+      "lines": 20633,
+      "gzip_bytes": 7360167,
+      "url": null
     },
     "528d90f0cae18e8cdc8eafc1f3c9787b2d0746cc099c11c19a9223cd4586a84b": {
       "bytes": 12780353,

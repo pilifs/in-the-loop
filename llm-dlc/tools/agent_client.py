@@ -73,6 +73,8 @@ INSTRUCTIONS = "CLAUDE.md"
 NOTES = ("llm-dlc/operating-notes.md",)
 SHADOWS = ("AGENTS.override.md", "AGENTS.md")  # Codex reads these before any fallback name
 DOC_BUDGET = 32 * 1024  # Codex's default project_doc_max_bytes
+# The trace tools' state (locks, journals, caches), as sync.py's STATE names it.
+TRACE_STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "llm-traces"
 # ChatGPT apps that reach a Codex session from the account (its `codex_apps` tools) and that no work here has a use
 # for, turned off by the user on 2026-11-19: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space,
 # Codex Document Control and Plugin Management stay. The ids are the connectors' own, as Codex's tool cache names
@@ -271,9 +273,14 @@ def codex_argv(model: str, effort: str, last: Path, thread: str | None, cwd: Pat
     # dependencies as a Claude Code worker does. Without the setting a command in the sandbox resolves no host,
     # and each fetch waits on the automatic reviewer (probed that day, CLI 0.170: refused, then let through when
     # asked; with the setting, through at once).
+    # The trace tools' own state folder is writable too: every locking sync.py command takes its lock there, so
+    # without it even `sync.py adopt-logs`, which only copies logs into the workspace, had to leave the sandbox, and
+    # the automatic reviewer refused it (2026-11-20). With it, adopt-logs runs in the sandbox (probed with `codex
+    # sandbox`, CLI 0.170); a commit still asks, since it writes the repository's store.
     if sandbox == "auto":
         for setting in ('sandbox_mode="workspace-write"', 'approval_policy="on-request"', 'approvals_reviewer="auto_review"',
-                        "sandbox_workspace_write.network_access=true"):
+                        "sandbox_workspace_write.network_access=true",
+                        f"sandbox_workspace_write.writable_roots={json.dumps([str(TRACE_STATE)])}"):
             argv += ["-c", setting]
     else:
         argv += ["-c", f'sandbox_mode="{sandbox}"']
