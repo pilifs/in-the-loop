@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-181157-check-the-unchanged-importer-on-the-pinn",
+  "title": "Check the unchanged importer on the pinned full Maven builds",
+  "description": "Strict native checking of all 16 frozen the unchanged importer obligations. Retain the actual upstream artifact, exact guard, parameters, allocations, checker and classpath for every result. Qualify any counterexample on an independent JVM; retain the first unsupported operation for each open claim.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "345"
+    ]
+  },
+  "expected": "Each original claim meets its own frozen expectation, recording an independently replayed witness for a refutation.",
+  "submitted": {
+    "at": "2026-11-20T18:11:57+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "mvn",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "memoryLimit": "4G",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Run strict native checking on the real dependencies",
+      "run": "python3 examples/tools/build.py 345 --tasks bytes-parent-parent,count-parent-parent,page-parent-parent,positive-parent-parent,bytes-parent-fix,count-parent-fix,page-parent-fix,positive-parent-fix,bytes-fix-parent,count-fix-parent,page-fix-parent,positive-fix-parent,bytes-fix-fix,count-fix-fix,page-fix-fix,positive-fix-fix --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/345-paged-importer-upgrades/receipts/bytes-parent-parent",
+    "examples/345-paged-importer-upgrades/receipts/count-parent-parent",
+    "examples/345-paged-importer-upgrades/receipts/page-parent-parent",
+    "examples/345-paged-importer-upgrades/receipts/positive-parent-parent",
+    "examples/345-paged-importer-upgrades/receipts/bytes-parent-fix",
+    "examples/345-paged-importer-upgrades/receipts/count-parent-fix",
+    "examples/345-paged-importer-upgrades/receipts/page-parent-fix",
+    "examples/345-paged-importer-upgrades/receipts/positive-parent-fix",
+    "examples/345-paged-importer-upgrades/receipts/bytes-fix-parent",
+    "examples/345-paged-importer-upgrades/receipts/count-fix-parent",
+    "examples/345-paged-importer-upgrades/receipts/page-fix-parent",
+    "examples/345-paged-importer-upgrades/receipts/positive-fix-parent",
+    "examples/345-paged-importer-upgrades/receipts/bytes-fix-fix",
+    "examples/345-paged-importer-upgrades/receipts/count-fix-fix",
+    "examples/345-paged-importer-upgrades/receipts/page-fix-fix",
+    "examples/345-paged-importer-upgrades/receipts/positive-fix-fix"
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "plan": {
+    "example": "339",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/pagination/PageCases.java",
+          "sha256": "6a51eb0881e60a2d5320575156980e28655d62e8661590547d7244e3765405de"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "8c62b967dfab8c5f9dd6c08f0e3352e0463e84415d7488b00bf1bf6d1601f9e4"
+        }
+      ],
+      "key": "ad825b46fe4889be"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-parent.json",
+          "sha256": "8b77fecec8fb4fe95f9c7d4185da9de8ac5c2864985f18e2990db79258f50584"
+        },
+        "adapters": [
+          "adapter/pagination/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+        "parent": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-fix.json",
+          "sha256": "122404a9a1d98e6f34538294584dcc03c8688f5ce815a256439a9844eb22074f"
+        },
+        "adapters": [
+          "adapter/pagination/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/replay"
+    },
+    "folder": "/home/filip/code/in-the-loop-foundation-domain-streams/examples/339-commons-csv-page-numbers",
+    "network": true
+  },
+  "inputs": {
+    "example": "339",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/pagination/PageCases.java",
+          "sha256": "6a51eb0881e60a2d5320575156980e28655d62e8661590547d7244e3765405de"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "8c62b967dfab8c5f9dd6c08f0e3352e0463e84415d7488b00bf1bf6d1601f9e4"
+        }
+      ],
+      "key": "ad825b46fe4889be"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-parent.json",
+          "sha256": "8b77fecec8fb4fe95f9c7d4185da9de8ac5c2864985f18e2990db79258f50584"
+        },
+        "adapters": [
+          "adapter/pagination/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+        "parent": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-fix.json",
+          "sha256": "122404a9a1d98e6f34538294584dcc03c8688f5ce815a256439a9844eb22074f"
+        },
+        "adapters": [
+          "adapter/pagination/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/pagination/Projection.java",
+        "sha256": "ce2bfccfdb51d698acd9f1c69bb32778b08640540c73adc0c023e93e018474a6"
+      }
+    ]
+  },
+  "key": "5a646c7f07e52c6d664281310b128d6b2690edf95c4976f97f6de5744d9dda5d"
+}

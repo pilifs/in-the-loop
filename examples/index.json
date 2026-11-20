@@ -13666,6 +13666,382 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 331 TASK"
       }
+    },
+    {
+      "id": "338",
+      "path": "examples/338-commons-io-bom-reset",
+      "title": "A BOM stream rewinds its prefetched bytes",
+      "summary": "The wrapper and its delegate can have different positions after a one-byte preview. Reset must restore the correct remaining bytes and EOF.",
+      "origin": "real-world",
+      "system": "Apache Commons IO",
+      "symbol": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "side-effecting-read"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The independent JVM oracle covered 36 inputs on each revision. parent mismatches were 10 for bytes, 0 for eof. fix mismatches were 0 for bytes, 0 for eof."
+      ],
+      "source": "https://github.com/apache/commons-io/commit/4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+      "target": {
+        "family": "commons-io-bom-reset",
+        "role": "calibration",
+        "case": "commons-io-bom-reset",
+        "tasks": [
+          "replay",
+          "bytes-parent",
+          "eof-parent",
+          "explicit-mark-parent",
+          "bytes-fix",
+          "eof-fix",
+          "explicit-mark-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "bytes-parent": "scaffolded",
+          "eof-parent": "scaffolded",
+          "explicit-mark-parent": "scaffolded",
+          "bytes-fix": "scaffolded",
+          "eof-fix": "scaffolded",
+          "explicit-mark-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "bytes-parent": "refuted",
+          "eof-parent": "established",
+          "explicit-mark-parent": "established",
+          "bytes-fix": "established",
+          "eof-fix": "established",
+          "explicit-mark-fix": "established"
+        },
+        "claims": {
+          "bytes-parent": null,
+          "eof-parent": null,
+          "explicit-mark-parent": null,
+          "bytes-fix": null,
+          "eof-fix": null,
+          "explicit-mark-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T180923Z-02b606d2/result.json",
+            "attempt": "20261120T180923Z-02b606d2",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/apache/commons-io/commit/4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 338 TASK"
+      }
+    },
+    {
+      "id": "339",
+      "path": "examples/339-commons-csv-page-numbers",
+      "title": "A CSV page counts records independently of their labels",
+      "summary": "A page starting at record two should still return the first input record when its limit is one.",
+      "origin": "real-world",
+      "system": "Apache Commons CSV",
+      "symbol": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The independent JVM oracle covered 24 inputs on each revision. parent mismatches were 10 for count, 10 for labels, 10 for fields. fix mismatches were 0 for count, 0 for labels, 0 for fields."
+      ],
+      "source": "https://github.com/apache/commons-csv/commit/7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+      "target": {
+        "family": "commons-csv-page-numbers",
+        "role": "calibration",
+        "case": "commons-csv-page-numbers",
+        "tasks": [
+          "replay",
+          "count-parent",
+          "labels-parent",
+          "fields-parent",
+          "start-one-parent",
+          "count-fix",
+          "labels-fix",
+          "fields-fix",
+          "start-one-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "count-parent": "scaffolded",
+          "labels-parent": "scaffolded",
+          "fields-parent": "scaffolded",
+          "start-one-parent": "scaffolded",
+          "count-fix": "scaffolded",
+          "labels-fix": "scaffolded",
+          "fields-fix": "scaffolded",
+          "start-one-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "count-parent": "refuted",
+          "labels-parent": "refuted",
+          "fields-parent": "refuted",
+          "start-one-parent": "established",
+          "count-fix": "established",
+          "labels-fix": "established",
+          "fields-fix": "established",
+          "start-one-fix": "established"
+        },
+        "claims": {
+          "count-parent": null,
+          "labels-parent": null,
+          "fields-parent": null,
+          "start-one-parent": null,
+          "count-fix": null,
+          "labels-fix": null,
+          "fields-fix": null,
+          "start-one-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T180923Z-0110a90a/result.json",
+            "attempt": "20261120T180923Z-0110a90a",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/apache/commons-csv/commit/7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 339 TASK"
+      }
+    },
+    {
+      "id": "345",
+      "path": "examples/345-paged-importer-upgrades",
+      "title": "An unchanged importer across two dependency upgrades",
+      "summary": "One unchanged page importer exposes the effect of each Commons IO and Commons CSV repair on bytes, record counts and numbered fields.",
+      "origin": "constructed",
+      "system": "Paged importer",
+      "symbol": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "composition"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The independent JVM oracle covered 96 inputs on each revision. parent-parent mismatches were 48 for bytes, 40 for count, 68 for page. fix-fix mismatches were 0 for bytes, 0 for count, 0 for page. parent-fix mismatches were 48 for bytes, 0 for count, 48 for page. fix-parent mismatches were 0 for bytes, 40 for count, 40 for page."
+      ],
+      "source": null,
+      "target": {
+        "family": "paged-importer-upgrades",
+        "role": "control",
+        "case": "paged-importer-upgrades",
+        "tasks": [
+          "replay",
+          "replay-io",
+          "replay-csv",
+          "bytes-parent-parent",
+          "count-parent-parent",
+          "page-parent-parent",
+          "positive-parent-parent",
+          "bytes-parent-fix",
+          "count-parent-fix",
+          "page-parent-fix",
+          "positive-parent-fix",
+          "bytes-fix-parent",
+          "count-fix-parent",
+          "page-fix-parent",
+          "positive-fix-parent",
+          "bytes-fix-fix",
+          "count-fix-fix",
+          "page-fix-fix",
+          "positive-fix-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "replay-io": "scaffolded",
+          "replay-csv": "scaffolded",
+          "bytes-parent-parent": "scaffolded",
+          "count-parent-parent": "scaffolded",
+          "page-parent-parent": "scaffolded",
+          "positive-parent-parent": "scaffolded",
+          "bytes-parent-fix": "scaffolded",
+          "count-parent-fix": "scaffolded",
+          "page-parent-fix": "scaffolded",
+          "positive-parent-fix": "scaffolded",
+          "bytes-fix-parent": "scaffolded",
+          "count-fix-parent": "scaffolded",
+          "page-fix-parent": "scaffolded",
+          "positive-fix-parent": "scaffolded",
+          "bytes-fix-fix": "scaffolded",
+          "count-fix-fix": "scaffolded",
+          "page-fix-fix": "scaffolded",
+          "positive-fix-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "replay-io": null,
+          "replay-csv": null,
+          "bytes-parent-parent": "refuted",
+          "count-parent-parent": "refuted",
+          "page-parent-parent": "refuted",
+          "positive-parent-parent": "established",
+          "bytes-parent-fix": "refuted",
+          "count-parent-fix": "established",
+          "page-parent-fix": "refuted",
+          "positive-parent-fix": "established",
+          "bytes-fix-parent": "established",
+          "count-fix-parent": "refuted",
+          "page-fix-parent": "refuted",
+          "positive-fix-parent": "established",
+          "bytes-fix-fix": "established",
+          "count-fix-fix": "established",
+          "page-fix-fix": "established",
+          "positive-fix-fix": "established"
+        },
+        "claims": {
+          "bytes-parent-parent": null,
+          "count-parent-parent": null,
+          "page-parent-parent": null,
+          "positive-parent-parent": null,
+          "bytes-parent-fix": null,
+          "count-parent-fix": null,
+          "page-parent-fix": null,
+          "positive-parent-fix": null,
+          "bytes-fix-parent": null,
+          "count-fix-parent": null,
+          "page-fix-parent": null,
+          "positive-fix-parent": null,
+          "bytes-fix-fix": null,
+          "count-fix-fix": null,
+          "page-fix-fix": null,
+          "positive-fix-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T181035Z-5b7c6ba3/result.json",
+            "attempt": "20261120T181035Z-5b7c6ba3",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-io": {
+            "path": "receipts/replay-io/20261120T181039Z-94299325/result.json",
+            "attempt": "20261120T181039Z-94299325",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-csv": {
+            "path": "receipts/replay-csv/20261120T181041Z-cec2f6fa/result.json",
+            "attempt": "20261120T181041Z-cec2f6fa",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 345 TASK"
+      }
     }
   ]
 }

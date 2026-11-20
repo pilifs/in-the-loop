@@ -1,0 +1,166 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-io-bom-reset",
+    "family": "commons-io-bom-reset",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-io",
+    "revisions": {
+      "parent": {
+        "commit": "16bcc65a493123dfc1eeba7b3943a69acf03e47c"
+      },
+      "fix": {
+        "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+        "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.test.skip=true",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotbugs.skip=true",
+        "package"
+      ],
+      "jdk": "21"
+    },
+    "adapters": [
+      "adapter/bom/Projection.java"
+    ],
+    "capturedBuilds": {
+      "parent": "records/build-parent.json",
+      "fix": "records/build-fix.json"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V"
+    },
+    {
+      "id": "bytes-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "claim": "claims/bytes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "eof-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "claim": "claims/eof.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "explicit-mark-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "claim": "claims/explicit-mark.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "bytes-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "claim": "claims/bytes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "eof-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "claim": "claims/eof.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "explicit-mark-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "claim": "claims/explicit-mark.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/bom/BomCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

@@ -79,6 +79,10 @@ def files(target):
         out.append((f"controls/{i}/path", control["path"]))
     for i, adapter in enumerate(target.get("preparation", {}).get("adapters", [])):
         out.append((f"preparation/adapters/{i}", adapter))
+    if catalog := target.get("preparation", {}).get("libraryCatalog"):
+        out.append(("preparation/libraryCatalog", catalog))
+    for name, record in target.get("preparation", {}).get("capturedBuilds", {}).items():
+        out.append((f"preparation/capturedBuilds/{name}", record))
     for name, revision in target["history"]["revisions"].items():
         if "fixture" in revision:
             out.append((f"history/revisions/{name}/fixture", revision["fixture"]))

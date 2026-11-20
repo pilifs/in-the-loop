@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "count",
+  "statement": "The cap limits produced records independently of their displayed numbers.",
+  "assume": "code >= 0 && code < 24",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 96
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "pagination.Projection#count(I)I",
+    "mapping": "The selector chooses the number of literal records, starting record number, page limit and whether hasNext is called twice before each next. Observe the records returned by the actual CSV iterator.",
+    "cases": 24,
+    "correspondence": "finite-oracle"
+  }
+}

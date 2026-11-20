@@ -25,7 +25,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "fixtures"))
-from targets import interfaces, runtime, runtime_jdk, runtime_maven, runtime_upstream  # noqa: E402
+from targets import interfaces, runtime, runtime_jdk, runtime_maven, runtime_upstream, upstream_artifact  # noqa: E402
 from targets import test_runtime as base  # noqa: E402  (its helpers; its tests stay in its own module)
 sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
 from cost_tier import cost  # noqa: E402
@@ -231,6 +231,20 @@ class UpstreamTest(UpstreamCase):
         dep = by_path["lib/fixture/example/gate-util/2.0/gate-util-2.0.jar"]
         self.assertEqual((dep.role, dep.coordinates, dep.sha256), ("dependency", "fixture.example:gate-util:2.0",
                                                                    runtime.sha256(self.dep)))
+        recipe = runtime_upstream.check_recipe("after", self.plan().artifacts[0])
+        products = [dataclasses.asdict(by_path[p]) for p in prepared.classpath if by_path[p].role in ("original", "dependency")]
+        captured = {"schema": "upstream-jar-build/v1", "recipe": self.plan().artifacts[0], "artifacts": products,
+                    "build": {"checkout": checkout, "outputs": built}}
+        entries = upstream_artifact.products(captured, recipe)
+        for name, digest, _, _, _ in entries:
+            runtime_maven.Cache().store(work / name, digest)
+        self.assertTrue(upstream_artifact.restore(entries, self.dir / "fresh"))
+        self.assertEqual([runtime.sha256(self.dir / "fresh" / e[0]) for e in entries], [e[1] for e in entries])
+        with self.assertRaisesRegex(runtime_maven.Blocked, "different recipe"):
+            upstream_artifact.products(captured, {**recipe, "commit": self.commits["before"]})
+        captured["artifacts"][0] = {**products[0], "sha256": "0" * 64}
+        with self.assertRaisesRegex(runtime_maven.Blocked, "Maven output"):
+            upstream_artifact.products(captured, recipe)
         self.assertEqual(prepared.source["target"]["loadedFrom"], "built/gate-1.0.jar")
         # the toolchain: the JDK by full path, the tool's version, the argv recorded and run, the isolation
         upstream = prepared.toolchain["upstream"]

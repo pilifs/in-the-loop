@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-181157-exhaust-the-frozen-observations-for-comm",
+  "title": "Exhaust the frozen observations for Commons IO prefix and EOF",
+  "description": "Check all 6 public claims for Commons IO prefix and EOF on the certified selector envelope. Invoke the real guard, method and assertion with a fresh class loader. Compare every adapter to independently reconstructed JVM objects and replay the first failing selector separately.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvm:finite-domain",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "338"
+    ]
+  },
+  "expected": "All cases and controls agree with the independent original JVM observations.",
+  "submitted": {
+    "at": "2026-11-20T18:11:57+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "mvn"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "memoryLimit": "4G",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Exhaust original selector domains",
+      "run": "python3 examples/tools/build.py 338 --finite-domain --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/338-commons-io-bom-reset/records/finite-proofs"
+  ]
+}

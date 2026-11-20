@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "339",
+  "title": "A CSV page counts records independently of their labels",
+  "summary": "A page starting at record two should still return the first input record when its limit is one.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons CSV",
+    "file": "src/main/java/org/apache/commons/csv/CSVParser.java",
+    "symbol": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A page starting at record two should still return the first input record when its limit is one."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 24 inputs on each revision. parent mismatches were 10 for count, 10 for labels, 10 for fields. fix mismatches were 0 for count, 0 for labels, 0 for fields."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-csv",
+    "url": "https://github.com/apache/commons-csv/commit/7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac"
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "plan": {
+    "example": "338",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/bom/BomCases.java",
+          "sha256": "362158fbf7d8b1b9fec4f91d523526a45ad6e74ff16cba385dc99fd2b3a96b9c"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "05d1d044deaa06657d4aa15c6aaf9352c5bf59316b3db72c945908dc8ae907f8"
+        }
+      ],
+      "key": "e7a0045525a0702e"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-io",
+        "commit": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-parent.json",
+          "sha256": "8ddbfaedd7f72df988fa2188cd2c7ac533fe32a132d706203dfd18fd0fb4585f"
+        },
+        "adapters": [
+          "adapter/bom/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-io",
+        "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+        "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-fix.json",
+          "sha256": "951c131a700d89372b07194cfd9e9329540d00ae6d85dcffb205e0b7a5065aee"
+        },
+        "adapters": [
+          "adapter/bom/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/replay"
+    },
+    "folder": "/home/filip/code/in-the-loop-foundation-domain-streams/examples/338-commons-io-bom-reset",
+    "network": true
+  },
+  "inputs": {
+    "example": "338",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/bom/BomCases.java",
+          "sha256": "362158fbf7d8b1b9fec4f91d523526a45ad6e74ff16cba385dc99fd2b3a96b9c"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "05d1d044deaa06657d4aa15c6aaf9352c5bf59316b3db72c945908dc8ae907f8"
+        }
+      ],
+      "key": "e7a0045525a0702e"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-io",
+        "commit": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-parent.json",
+          "sha256": "8ddbfaedd7f72df988fa2188cd2c7ac533fe32a132d706203dfd18fd0fb4585f"
+        },
+        "adapters": [
+          "adapter/bom/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-io",
+        "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+        "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-fix.json",
+          "sha256": "951c131a700d89372b07194cfd9e9329540d00ae6d85dcffb205e0b7a5065aee"
+        },
+        "adapters": [
+          "adapter/bom/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/bom/Projection.java",
+        "sha256": "224157e38d7f9cbd2e7fa09d8cdfdf7fe810ed98e5a4e4c28e53f7da7a34d043"
+      }
+    ]
+  },
+  "key": "a2d36db7d949cea59c5415380d6e818f77c529b8ac00ae09076a1c0d675d82ed"
+}

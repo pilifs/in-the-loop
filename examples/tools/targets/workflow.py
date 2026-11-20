@@ -15,7 +15,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from targets import sidecar
+from targets import runtime_maven, runtime_upstream, sidecar
 from targets.interfaces import TaskPlan, WORKFLOW, Unsupported
 
 CLAIM_SCHEMA = Path(__file__).resolve().parents[2] / "schema" / "target-claim.schema.json"
@@ -157,6 +157,29 @@ def artifact_sources(folder, target, revisions):
             if route != "fixture" or sidecar.slice_flag_problems(compiler["flags"]):
                 return f"revision {source} has an invalid fixture compiler recipe"
             entry["fixtureCompiler"] = compiler
+        if {"compileLibraries", "runtimeLibraries"} & defined[source].keys():
+            if route != "fixture" or not prep.get("libraryCatalog"):
+                return f"revision {source}: separate library paths require a fixture with a library catalog"
+            if not {"compileLibraries", "runtimeLibraries"} <= defined[source].keys():
+                return f"revision {source}: declare both compileLibraries and runtimeLibraries"
+            try:
+                catalog = json.loads(inside(folder, prep["libraryCatalog"]).read_text())
+                for path in ("compileLibraries", "runtimeLibraries"):
+                    entry[path] = list(defined[source][path])
+                entry["libraries"] = {}
+                for library in dict.fromkeys(entry["compileLibraries"] + entry["runtimeLibraries"]):
+                    item = catalog[library]
+                    if "build" in item:
+                        runtime_upstream.check_recipe(library, item)
+                        if not isinstance(item.get("class"), str) or not item["class"]:
+                            raise ValueError(f"{library} needs the class selecting its original upstream JAR")
+                        if "sha256" in item and not runtime_maven.SHA256.fullmatch(item["sha256"]):
+                            raise ValueError(f"{library} has an invalid JAR digest")
+                    else:
+                        runtime_maven.check_item(item, "dependency")
+                    entry["libraries"][library] = item
+            except (ClaimError, OSError, KeyError, TypeError, ValueError, runtime_maven.Blocked) as exc:
+                return f"revision {source}: invalid library catalog: {exc}"
         if entry.get("fixtureClasspath"):
             trees = []
             for relative in entry["fixtureClasspath"]:
@@ -192,6 +215,13 @@ def artifact_sources(folder, target, revisions):
             if "build" not in prep:
                 return "the upstream-build route names no build (tool, argv, jdk)"
             entry["build"] = prep["build"]
+            if name in prep.get("capturedBuilds", {}):
+                if "mutant" in entry:
+                    return f"revision {name}: a changed source must have its own upstream build"
+                try:
+                    entry["capturedBuild"] = hashed(folder, prep["capturedBuilds"][name])
+                except ClaimError as exc:
+                    return f"revision {name}: invalid upstream build record: {exc}"
         fixture = "fixture" in defined[source]
         if (route == "fixture") != fixture:
             return (f"revision {name}: the {route} route and a {'fixture' if fixture else 'commit'} revision"
@@ -212,8 +242,12 @@ def tools_of(task, route, prep, controls, artifacts=()):
     sources = list(prep.get("adapters", [])) + [c["path"] for c in controls]
     if route in ("fixture", "source-slice") or any(s.endswith(".java") for s in sources) or (mutants and route == "published-artifact"):
         required.append("javac")
-    if route in ("upstream-build", "source-slice") or mutants:
+    library_builds = [item["build"] for entry in artifacts for item in entry.get("libraries", {}).values() if "build" in item]
+    if route in ("upstream-build", "source-slice") or mutants or library_builds:
         required.append("git")
+    for build in library_builds:
+        if (tool := BUILD_TOOLS.get(build["tool"])) and tool not in required:
+            required.append(tool)
     if route == "upstream-build":
         tool = BUILD_TOOLS.get(prep["build"]["tool"])
         if tool:
@@ -343,7 +377,8 @@ def plan_task(folder, example, target, task):
         revisions=revisions, claim=claim, prerequisites=tuple(t.get("requires", [])), artifacts=artifacts,
         tools=tools_of(t, prep["route"], prep, controls, artifacts), engine=t.get("engine"), gaps=t.get("gaps"),
         expected=t.get("expected"), outputs={"receipts": f"receipts/{task}"}, folder=str(folder.resolve()),
-        network=prep["route"] in ("published-artifact", "upstream-build", "source-slice"), checkedLemmas=lemmas)
+        network=prep["route"] in ("published-artifact", "upstream-build", "source-slice") or
+                any(entry.get("libraries") for entry in artifacts), checkedLemmas=lemmas)
 
 
 

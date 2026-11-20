@@ -125,7 +125,8 @@ class A1OfflinePlanningOnThePackets(unittest.TestCase):
                     if plan.engine == "native":
                         self.assertNotIn("jbmc", plan.tools["required"] + plan.tools["optional"])
                     routes = {a["route"] for a in plan.artifacts}
-                    self.assertEqual(plan.network, bool(routes - {"fixture"}),
+                    acquisition = bool(routes - {"fixture"}) or any(a.get("libraries") for a in plan.artifacts)
+                    self.assertEqual(plan.network, acquisition,
                                      f"routes {sorted(routes)}: a task that acquires says so")
                     self.assertTrue(all(isinstance(g["observed"], bool) for g in packet["gaps"]))
                     self.assertEqual(packet["commands"][0], f"python3 examples/tools/build.py --plan {example['id']} "
@@ -258,6 +259,20 @@ class A2PreparationIntegrityOnTheReceipts(unittest.TestCase):
                 pinned |= {a["sha256"] for a in prep.get("slice", {}).get("published", {}).get(base, [])
                            if isinstance(a, dict) and "sha256" in a}
                 with self.subTest(str(directory.relative_to(EXAMPLES)), revision=revision, route=route):
+                    if capture := prep.get("capturedBuilds", {}).get(revision):
+                        record = json.loads((folder / capture).read_text())
+                        expected = [(a["role"], a["sha256"]) for a in record["artifacts"]]
+                        got = [(d["role"], d["sha256"]) for d in t["dependencies"]
+                               if d["revision"] == revision and d["role"] in ("original", "dependency")]
+                        self.assertEqual(got, expected)
+                        pinned.update(digest for _, digest in expected)
+                    if prep.get("libraryCatalog") and route == "fixture":
+                        catalog = json.loads((folder / prep["libraryCatalog"]).read_text())
+                        names = target["history"]["revisions"][base]["runtimeLibraries"]
+                        got = [d["sha256"] for d in t["dependencies"]
+                               if d["revision"] == revision and d["role"] == "dependency"]
+                        self.assertEqual(got, [catalog[name]["sha256"] for name in names])
+                        pinned.update(got)
                     if route == "fixture" and (roots := target["history"]["revisions"][base].get("fixtureClasspath")):
                         plan = json.loads((directory / "plan.json").read_text())["plan"]
                         source = next(a for a in plan["artifacts"] if a["revision"] == revision)
