@@ -31,11 +31,13 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   114 GB free on `/` at 23:40 UTC. Either way it doesn't fit beside the checkouts, the workspaces and the verification
   results. The agent also asked whether the normal Maven resolver may fetch the public dependencies it needs one at a
   time into a shared cache, since the operating notes (`llm-dlc/operating-notes.md`, "Few") allow a few dozen web
-  requests per task. Or is there a populated offline Maven repository it should use? The user has not answered that
-  yet.
+  requests per task. Or is there a populated offline Maven repository it should use? The user answered on
+  2026-11-20, through the run's continue message: Maven and Gradle resolution from Maven Central and the projects'
+  declared public repositories is exempt from the limit, fetched serially into one shared cache under
+  `~/.cache/in-the-loop/`, and BUMP cases are fetched one by one, never the full archive.
 - **Needs**: the user to restart the VM (Incus guest `claude-vm` on `mega`) with more storage, once no run is under
-  way. Then the BUMP cases the run recorded as blocked on the archive can be taken up. The user also needs to answer
-  the agent's Maven-resolver question.
+  way. Then the BUMP cases the run recorded as blocked on the archive can be taken up. Whether the resolver exemption belongs in the
+  operating notes for every run, and not only this run's message, is also the user's to decide.
 - **Tracked in**: the run's continue message (a note set by the user on 2026-11-20) and its final accounting.
 - **Closes when**: the VM has room for the archive and the blocked BUMP cases have been run, or the user drops BUMP
   from the brief.
