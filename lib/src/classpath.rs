@@ -535,35 +535,51 @@ impl ClassPath {
         Some((class, method))
     }
 
-    /// The decimal spelling is specified. Model a fresh String only if every normal
-    /// return in the image constructs one from its bytes (older images can return a literal).
-    pub(crate) fn fresh_long_decimal(&self) -> bool {
+    /// The text of these factories is specified. Its identity is fresh only when every
+    /// normal return in the selected image constructs a String from its encoded bytes.
+    pub(crate) fn fresh_string_factory(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         use crate::classfile::{Insn, Kind};
-        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load("java/lang/Long") else { return false };
-        let Some(code) = class.method("toString", "(J)Ljava/lang/String;").and_then(|m| m.code.as_ref()) else { return false };
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(owner) else { return false };
+        let Some(code) = class.method(name, descriptor).and_then(|m| m.code.as_ref()) else { return false };
         let Ok(insns) = code.instructions() else { return false };
         let mut returns = 0;
         for (i, (_, insn)) in insns.iter().enumerate() {
             if !matches!(insn, Insn::Return(Some(Kind::Ref))) { continue; }
-            let Some([(_, Insn::New(c)), (_, Insn::Dup), (_, Insn::Load(Kind::Ref, _)), (_, Insn::IConst(_)), (_, Insn::InvokeSpecial(m))])
-                = i.checked_sub(5).and_then(|start| insns.get(start..i)) else { return false };
+            let (start, c, m) = match &insns[..i] {
+                [.., (start, Insn::New(c)), (_, Insn::Dup), (_, Insn::Load(Kind::Ref, _)), (_, Insn::IConst(_)), (_, Insn::InvokeSpecial(m))]
+                    if owner == "java/lang/Long" => (start, c, m),
+                [.., (start, Insn::New(c)), (_, Insn::Dup), (_, Insn::Load(Kind::Int, 0)), (_, Insn::InvokeStatic(bytes)), (_, Insn::IConst(_)), (_, Insn::InvokeSpecial(m))]
+                    if owner == "java/lang/String" && class.pool.member(*bytes).is_ok_and(|b| matches!(b.owner.as_str(), "java/lang/StringLatin1" | "java/lang/StringUTF16")
+                        && b.name == "toBytes" && b.descriptor == "(C)[B") => (start, c, m),
+                _ => return false,
+            };
             if class.pool.class_name(*c).ok() != Some("java/lang/String")
                 || !class.pool.member(*m).is_ok_and(|m| m.owner == "java/lang/String" && m.name == "<init>" && m.descriptor == "([BB)V") { return false; }
             // No branch can jump into the construction sequence and return another reference.
-            let start = insns[i - 5].0;
             let end = insns[i].0;
             if !code.exception_table.is_empty() || insns.iter().any(|(_, op)| matches!(op, Insn::Jsr(_) | Insn::Ret(_))
-                || op.targets().iter().any(|pc| *pc > start && *pc <= end)) { return false; }
+                || op.targets().iter().any(|pc| pc > start && *pc <= end)) { return false; }
             returns += 1;
         }
         returns > 0
     }
 
+    /// Reference-array comparison and hashing call the actual elements' methods.
+    pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
+        matches!((owner, name, descriptor),
+            ("java/util/Arrays", "fill", "([CC)V")
+            | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
+            | ("java/util/Objects", "hash", "([Ljava/lang/Object;)I")
+            | ("java/util/Objects", "hashCode", "(Ljava/lang/Object;)I")
+            | ("jdk/internal/util/ArraysSupport", "hashCode", "([Ljava/lang/Object;III)I")
+            | ("java/util/Arrays", "equals", "([Ljava/lang/Object;[Ljava/lang/Object;)Z")
+            | ("java/util/Arrays", "hashCode", "([Ljava/lang/Object;)I"))
+    }
+
     /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
     pub(crate) fn library_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
-        if !matches!((owner, name, descriptor),
-            ("java/util/Arrays", "fill", "([CC)V")
-            | ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
+        if !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
+            ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
             | ("java/util/ArrayList", "<init>", "()V" | "(I)V")
             | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
             | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
@@ -596,6 +612,12 @@ impl ClassPath {
             | ("java/math/BigInteger", "toMagArray", "(J)[I")
             | ("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;")
             | ("java/lang/Short", "valueOf", "(S)Ljava/lang/Short;")
+            | ("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;")
+            | ("java/lang/Character", "<init>", "(C)V")
+            | ("java/lang/Character", "charValue", "()C")
+            | ("java/lang/Character", "toString", "()Ljava/lang/String;")
+            | ("java/lang/Character", "hashCode", "()I" | "(C)I")
+            | ("java/lang/Character", "equals", "(Ljava/lang/Object;)Z")
             | ("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;")
             | ("java/lang/Float", "valueOf", "(F)Ljava/lang/Float;")
             | ("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;")

@@ -154,17 +154,18 @@ const CLASS: &str = "java/lang/Class";
 const LOADER: &str = "java/lang/ClassLoader";
 const LOGGER: &str = "java/util/logging/Logger";
 const THREAD: &str = "java/lang/Thread";
+pub(super) const LINE_SEPARATOR: &str = "the contents and external string identity of the JVM's initial line separator are not bound";
 const COLLECTIONS: &str = "java/util/Collections";
 pub(super) const EMPTY_MAP: &str = "java/util/Collections$EmptyMap";
 const FOR_NAME: &str = "(Ljava/lang/String;)Ljava/lang/Class;";
 const PROXY: &str = "java/lang/reflect/Proxy";
 
-/// A constant in -128..127 has a mandated cached identity. Other values enter the
-/// selected image's factory, which may allocate or reach an unmodeled cache.
+/// Integral factories with a mandated cache. Character's cache covers ASCII only.
 pub(super) fn cached_wrapper(owner: &str, name: &str, descriptor: &str) -> Option<&'static str> {
     match (owner, name, descriptor) {
         ("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;") => Some("java/lang/Byte"),
         ("java/lang/Short", "valueOf", "(S)Ljava/lang/Short;") => Some("java/lang/Short"),
+        ("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;") => Some("java/lang/Character"),
         ("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;") => Some("java/lang/Long"),
         _ => None,
     }
@@ -175,6 +176,7 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     if (owner, name, descriptor) == ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;") { return true; }
     matches!(
         (owner, name, descriptor),
+        ("java/lang/System", "lineSeparator", "()Ljava/lang/String;") |
         (BOOLEAN, "valueOf", "(Z)Ljava/lang/Boolean;") | ("java/lang/reflect/Array", "getLength", "(Ljava/lang/Object;)I") | (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
     )
 }
@@ -542,6 +544,20 @@ impl Engine<'_> {
     /// the call stays the JDK's.
     pub(super) fn runtime_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
+            ("java/lang/System", "lineSeparator", []) => {
+                // Identity across calls is visible in the image: both load the same startup field.
+                let loaded = self.cp.load(owner).ok()??;
+                if loaded.origin != crate::classpath::Origin::Jdk { return None; }
+                let code = loaded.class.method(name, "()Ljava/lang/String;")?.code.as_ref()?;
+                let insns = code.instructions().ok()?;
+                let [(_, Insn::GetStatic(i)), (_, Insn::Return(Some(Kind::Ref)))] = insns.as_slice() else { return None };
+                let f = loaded.class.pool.member(*i).ok()?;
+                if (f.owner.as_str(), f.name.as_str(), f.descriptor.as_str()) != (owner, name, "Ljava/lang/String;") { return None; }
+                let o = self.literal(path, Literal::LineSeparator, STRING);
+                self.push(path, Val::R(Some(o)));
+                self.advance(path);
+                Some(Ok(None))
+            }
             (BOOLEAN, "valueOf", [Val::I(word)]) => {
                 let zero = self.b.is_zero(word);
                 let yes = self.literal(path, Literal::Truth(true), BOOLEAN);

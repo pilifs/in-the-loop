@@ -59,6 +59,7 @@ pub fn charset_constant(owner: &str, name: &str) -> Option<&'static str> {
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
+        ("java/lang/String", "valueOf", "(C)Ljava/lang/String;") |
         (INTEGER, "parseInt", "(Ljava/lang/String;)I") | ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J") | ("java/lang/Long", "toString", "(J)Ljava/lang/String;") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
     )
 }
@@ -256,7 +257,13 @@ impl Engine<'_> {
     /// call stays the JDK's.
     pub(super) fn bytes_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
-            ("java/lang/Long", "toString", [Val::J(word)]) if self.cp.fresh_long_decimal() => {
+            ("java/lang/String", "valueOf", [Val::I(unit)]) if descriptor == "(C)Ljava/lang/String;" && self.cp.fresh_string_factory(owner, name, descriptor) => {
+                let text = self.new_string(path, self.b.constant(1, 32), vec![self.b.trunc(unit, 16)], Vec::new());
+                self.push(path, Val::R(Some(text)));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            ("java/lang/Long", "toString", [Val::J(word)]) if self.cp.fresh_string_factory(owner, name, descriptor) => {
                 let (length, cells) = self.decimal(word);
                 let text = self.new_string(path, length, cells, Vec::new());
                 self.push(path, Val::R(Some(text)));

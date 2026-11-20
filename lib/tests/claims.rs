@@ -1277,3 +1277,28 @@ fn char_array_fill_snapshots_and_concat_preserve_jvm_units_and_identity() {
     let o = run(&options(classes, "claims.StringPadding#wrong", 3, "wrong-char-fill"));
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
 }
+
+#[test]
+fn boxed_characters_and_array_observations_match_the_jvm() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.CharacterFormats").status().unwrap().success());
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    for name in ["boxed", "arrays", "cached"] {
+        proved(classes, &format!("claims.CharacterFormats#{name}"), 4);
+        let descriptor = if name == "cached" { "(I)Z" } else { "(Z)Z" };
+        for i in [0, 1] {
+            assert_eq!(machine.call_static("claims/CharacterFormats", name, descriptor, vec![Value::Int(i)]).unwrap(), Some(Value::Int(1)));
+        }
+    }
+    let o = run(&options(classes, "claims.CharacterFormats#wrong", 4, "distinct-boxes"));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    proved(classes, "claims.CharacterFormats#separator", 4);
+    for method in ["expectsUnixContents", "expectsInternedIdentity"] {
+        let o = run(&options(classes, &format!("claims.CharacterFormats#{method}"), 4, method));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.output.contains("initial line separator"), "{}", o.output);
+    }
+}

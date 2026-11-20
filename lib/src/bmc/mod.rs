@@ -982,6 +982,9 @@ enum Literal {
     SuppressedSentinel,
     EmptySuppressedArray,
     ListEmptyStorage(bool),
+    /// The private Character cache as read by valueOf on its ASCII branch.
+    AsciiBoxes,
+    LineSeparator,
     /// `Boolean.TRUE` or `Boolean.FALSE` ([`runtime::truth_constant`]).
     Truth(bool),
     /// A wrapper's mandated cache entry, distinct for each class and small value.
@@ -2472,6 +2475,8 @@ impl<'a> Engine<'a> {
                         Literal::SuppressedSentinel => throwables::EMPTY_LIST,
                         Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
                         Literal::ListEmptyStorage(_) => array_list::OBJECT_ARRAY,
+                        Literal::AsciiBoxes => "[Ljava/lang/Character;",
+                        Literal::LineSeparator => STRING,
                         Literal::Truth(_) => runtime::BOOLEAN,
                         Literal::CachedIntegral(class, _) => class,
                     };
@@ -3308,6 +3313,9 @@ impl<'a> Engine<'a> {
                 if t == u {
                     pairs.push(self.b.and(*g, *h));
                 } else if let (Some(t), Some(u)) = (t, u) {
+                    if !one && path.objects[*t].class == STRING && path.objects[*u].class == STRING
+                        && [t, u].into_iter().any(|o| path.objects[*o].limit.as_deref() == Some(runtime::LINE_SEPARATOR))
+                        && self.b.and(*g, *h) != FALSE { return unsupported(runtime::LINE_SEPARATOR); }
                     // Whether two Locales are one object is the JDK's cache's to say ([`locale`]).
                     if !one && Self::is_known_locale(path, *t) && Self::is_known_locale(path, *u) && self.b.and(*g, *h) != FALSE {
                         return unsupported("a comparison of two Locale objects by reference: whether Locale.forLanguageTag returns one of Locale's constants, or the object an earlier call returned, is the JDK's cache's to say");
@@ -3839,6 +3847,21 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if class.name == "java/lang/Character" && path.frames.last().is_some_and(|f| f.method == "valueOf")
+                    && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
+                        == ("java/lang/Character$CharacterCache", "cache", "[Ljava/lang/Character;") {
+                    let Some(Val::I(unit)) = path.frames.last().and_then(|f| f.locals.first()).and_then(Option::as_ref) else {
+                        return unsupported("Character.valueOf with an unknown cache index");
+                    };
+                    let beyond = self.b.ult(&self.b.constant(127, 32), unit);
+                    let mut outside = path.cond.clone();
+                    outside.push(beyond);
+                    if self.solve(&outside)? { return unsupported("Character.valueOf reads a cache outside the mandated ASCII range"); }
+                    let o = self.literal(path, Literal::AsciiBoxes, "[Ljava/lang/Character;");
+                    self.push(path, Val::R(Some(o)));
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if class.name == "java/util/ArrayList" {
                     if let Some(default) = array_list::empty_storage(self.cp, &member) {
                         let object = self.literal(path, Literal::ListEmptyStorage(default), array_list::OBJECT_ARRAY);
@@ -4009,7 +4032,7 @@ impl<'a> Engine<'a> {
                 }
                 // The Strings concatenated are known objects, each with its content or none.
                 for (depth, t) in descriptor.params.iter().rev().enumerate() {
-                    if is_string(t) {
+                    if is_string(t) || matches!(t, Type::Object(class) if class == "java/lang/Character") {
                         if let Some(step) = self.concrete_ref(path, depth) {
                             return step;
                         }
@@ -4240,7 +4263,7 @@ impl<'a> Engine<'a> {
         let mut argument = |engine: &mut Self, path: &Path, pieces: &mut Vec<Piece>| -> Result<Option<Option<String>>, Stop> {
             let (v, t) = args.next().ok_or_else(|| Stop::Unsupported("a concatenation recipe with more arguments than its call site".into()))?;
             match (t, v) {
-                (t, Val::R(None)) if is_string(t) => pieces.push(Piece::Units("null".encode_utf16().collect())),
+                (Type::Object(_), Val::R(None)) => pieces.push(Piece::Units("null".encode_utf16().collect())),
                 (t, Val::R(Some(p))) if is_string(t) => match path.objects[p].content() {
                     Some(content) => pieces.push(Piece::Content(content.clone())),
                     None => return Ok(Some(path.objects[p].limit.clone())),
@@ -4248,6 +4271,12 @@ impl<'a> Engine<'a> {
                 (Type::Char, Val::I(bits)) => {
                     let length = engine.b.constant(1, 32);
                     pieces.push(Piece::Content(Array { element: Type::Char, length, cells: vec![engine.b.trunc(&bits, 16)], refs: Vec::new() }));
+                }
+                (Type::Object(class), Val::R(Some(o))) if class == "java/lang/Character" => {
+                    let Some(Val::I(unit)) = path.objects[o].fields.get("value") else {
+                        return unsupported("String concatenation needs an initialized Character value");
+                    };
+                    pieces.push(Piece::Content(Array { element: Type::Char, length: engine.b.constant(1, 32), cells: vec![engine.b.trunc(unit, 16)], refs: Vec::new() }));
                 }
                 // An int, a short or a byte is converted as `Integer.toString` converts it (JLS §5.1.11).
                 (Type::Int | Type::Short | Type::Byte, Val::I(bits)) => {
@@ -4599,6 +4628,11 @@ impl<'a> Engine<'a> {
             }
             Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap | Literal::Truth(_) => self.alloc(path, class),
             Literal::SuppressedSentinel => self.alloc(path, class),
+            Literal::LineSeparator => {
+                let o = self.alloc(path, STRING);
+                path.objects[o].limit = Some(runtime::LINE_SEPARATOR.into());
+                o
+            }
             Literal::EmptySuppressedArray | Literal::ListEmptyStorage(_) => {
                 let o = self.alloc(path, class);
                 let element = if literal == Literal::EmptySuppressedArray { throwables::THROWABLE } else { "java/lang/Object" };
@@ -4610,6 +4644,13 @@ impl<'a> Engine<'a> {
                 let value = i64::from(*n);
                 let word = if class == "java/lang/Long" { Val::J(self.b.constant(value, 64)) } else { Val::I(self.b.constant(value, 32)) };
                 path.objects[o].fields.insert("value".into(), word);
+                o
+            }
+            Literal::AsciiBoxes => {
+                let class = "java/lang/Character";
+                let refs = (0..=127).map(|i| Val::R(Some(self.literal(path, Literal::CachedIntegral(class, i), class)))).collect();
+                let o = self.alloc(path, "[Ljava/lang/Character;");
+                path.objects[o].array = Some(Array { element: Type::object(class), length: self.b.constant(128, 32), cells: Vec::new(), refs });
                 o
             }
         };
@@ -4787,6 +4828,10 @@ impl<'a> Engine<'a> {
             if let [Val::R(object)] = args.as_slice() {
                 let value = match *object {
                     Some(o) if path.objects[o].class == STRING => Some(o),
+                    Some(o) if path.objects[o].class == "java/lang/Character" && path.objects[o].fields.contains_key("value")
+                        && self.cp.numeric_image_method("java/lang/Character", "toString", "()Ljava/lang/String;").is_some() => {
+                        return self.call(path, "java/lang/Character", "toString", "()Ljava/lang/String;", vec![Val::R(Some(o))]);
+                    }
                     None => Some(self.literal(path, Literal::Str("null".encode_utf16().collect()), STRING)),
                     Some(_) => None,
                 };
@@ -4805,7 +4850,7 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
         }
-        if member.owner == "java/util/Arrays" && member.name == "fill" && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
+        if self.cp.collection_static(&member.owner, &member.name, &member.descriptor) && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
         if caller == STRING && member.owner == "java/lang/StringConcatHelper" {
@@ -4815,7 +4860,8 @@ impl<'a> Engine<'a> {
         if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             if let Some(class) = runtime::cached_wrapper(&member.owner, &member.name, &member.descriptor) {
                 if let [Val::I(word) | Val::J(word)] = args.as_slice() {
-                    if let Some(n) = self.b.constant_value(word).and_then(|v| i8::try_from(v).ok()) {
+                    if let Some(n) = self.b.constant_value(word).and_then(|v| i8::try_from(v).ok())
+                        .filter(|n| class != "java/lang/Character" || *n >= 0) {
                         let o = self.literal(path, Literal::CachedIntegral(class, n), class);
                         self.push(path, Val::R(Some(o)));
                         self.advance(path);
@@ -4991,6 +5037,13 @@ impl<'a> Engine<'a> {
                 if let [Val::R(source)] = args.as_slice() { return self.string_from_chars(path, o, *source); }
             }
             if let Some(step) = self.image_list_call(path, o, special, member, &args) { return step; }
+            // Only a box whose value was initialized by its constructor or the JVM cache.
+            if !special && path.objects[o].class == "java/lang/Character" && path.objects[o].fields.contains_key("value")
+                && self.cp.numeric_image_method("java/lang/Character", &member.name, &member.descriptor).is_some() {
+                let mut full = vec![Val::R(Some(o))];
+                full.extend(args);
+                return self.call(path, "java/lang/Character", &member.name, &member.descriptor, full);
+            }
             if !special && path.objects[o].class == runtime::BOOLEAN && member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z" {
                 if let Some(step) = self.boolean_equals(path, o, &args) { return step; }
             }

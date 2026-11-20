@@ -611,7 +611,10 @@ pub fn jdk_static_call(owner: &str, name: &str, descriptor: &str) -> JdkCall {
 /// The object arguments a string concatenation by `invokedynamic` would convert with `toString`: every parameter
 /// of its descriptor that is an object other than a `String` (a `string-conversion` gap each).
 pub fn converted_arguments(descriptor: &MethodDescriptor) -> Vec<String> {
-    descriptor.params.iter().filter_map(|p| if let Type::Object(class) = p { Some(class.clone()) } else { None }).filter(|c| c != "java/lang/String").collect()
+    descriptor.params.iter().filter_map(|p| match p {
+        Type::Object(class) if !matches!(class.as_str(), "java/lang/String" | "java/lang/Character") => Some(class.clone()),
+        _ => None,
+    }).collect()
 }
 
 /// The roots a proof of each target starts from: the method, and the constructors of its class when it is an
@@ -1190,7 +1193,7 @@ impl<'a> Walker<'a> {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
-                    } else if member.owner == "java/util/Arrays" && member.name == "fill" && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                    } else if self.cp.collection_static(&member.owner, &member.name, &member.descriptor) && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         // A class initializer can call the factory on an input for which it reads no cached

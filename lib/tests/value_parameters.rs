@@ -51,7 +51,8 @@ fn strings() -> &'static Path {
         for (name, lone) in [("before", "false"), ("after", "s.length() == 1 && s.charAt(0) == '\\uDBFF'")] {
             let source = root.join("src").join(name).join("s/Text.java");
             std::fs::create_dir_all(source.parent().unwrap()).unwrap();
-            std::fs::write(&source, format!("package s;\npublic final class Text {{\n    public static boolean lone(String s) {{ return {lone}; }}\n    public static String echo(String s) {{ return s; }}\n    public static int size(String s) {{ return s.length(); }}\n}}\n")).unwrap();
+            let echo = if name == "before" { "s" } else { "s + \"!\"" };
+            std::fs::write(&source, format!("package s;\npublic final class Text {{\n    public static boolean lone(String s) {{ return {lone}; }}\n    public static String echo(String s) {{ return s; }}\n    public static String changedEcho(String s) {{ return {echo}; }}\n    public static int size(String s) {{ return s.length(); }}\n}}\n")).unwrap();
             javac(&root.join(name), &[source]);
         }
         root
@@ -116,10 +117,8 @@ fn a_witness_with_an_isolated_surrogate_replays_on_the_jvm_unit_for_unit() {
     assert_eq!(c.input, "lone(s=\"\\udbff\")");
 }
 
-/// What the wiring leaves out is refused by name, never decided otherwise: JBMC, whose Strings are its own model
-/// (`--engine jbmc` refused, and under `--confirm` not asked), and a String result, which the harness compares with
-/// `Objects.equals`, a gap the own checker refuses. A property over a String is the own checker's too: its
-/// expressions read the String as Java does (`lib/tests/claims.rs`).
+/// JBMC has its own String representation. The native checker evaluates a String property
+/// and compares bounded String results with the selected JDK's Objects.equals.
 #[test]
 fn a_string_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() {
     jvmcontract::tool_tier!(pending);
@@ -156,8 +155,12 @@ fn a_string_parameter_is_the_own_checkers_alone_and_what_is_left_out_is_named() 
     let mut echo = options(&root.join("before"), &root.join("after"), "s.Text#echo", "echo");
     echo.shared_callees = false;
     let o = equivalence::run(&echo).unwrap();
-    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-    assert!(o.problem.as_deref().unwrap_or_default().contains("java.util.Objects.equals"), "{}", o.output);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let mut changed = options(&root.join("before"), &root.join("after"), "s.Text#changedEcho", "changed-echo");
+    changed.shared_callees = false;
+    let o = equivalence::run(&changed).unwrap();
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.replay.as_ref().is_some_and(|r| r.reproduced), "{}", o.output);
 }
 
 /// A String claim's cached evidence: an exact rerun reuses the proof, and the same claim under another bound is
