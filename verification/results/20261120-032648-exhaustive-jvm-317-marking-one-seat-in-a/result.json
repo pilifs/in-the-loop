@@ -1,0 +1,247 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032648-exhaustive-jvm-317-marking-one-seat-in-a",
+  "title": "Exhaustive JVM 317 Marking one seat in a rectangular theatre",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.3s, peak 123.4 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032648-exhaustive-jvm-317-marking-one-seat-in-a.json",
+    "sha256": "434e87785105a37fc94f3b2b7b2e2c9dbf69f35214d1763fa9f3d39f5dda99c9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032648-exhaustive-jvm-317-marking-one-seat-in-a",
+      "title": "Exhaustive JVM 317 Marking one seat in a rectangular theatre",
+      "description": "Independent rows preserve one marked coordinate. Sharing one row makes seats in other rows appear marked. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "317"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 317 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/317-theatre-seat-matrix/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:44:48+00:00",
+  "finishedAt": "2026-11-20T03:45:13+00:00",
+  "wallSeconds": 25.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 129351680,
+    "wallSeconds": 19.3,
+    "cpuSeconds": 29.0,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 317 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 19.282,
+      "cpuSeconds": 29.011,
+      "cpuThrottledSeconds": 0.555,
+      "peakMemoryBytes": 129351680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 9,
+        "bytes": 385,
+        "sha256": "ca11c88e43a193203ced505740f4df16b8a324d1d79dd221516251e28c3eafcc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "317 shape-matrix established 18 admitted ",
+        "317 shape-separate established 18 admitted ",
+        "317 shape-shared established 18 admitted ",
+        "317 cells-matrix established 18 admitted ",
+        "317 cells-separate established 18 admitted ",
+        "317 cells-shared refuted 18 admitted ",
+        "317 identity-matrix established 18 admitted ",
+        "317 identity-separate established 18 admitted ",
+        "317 identity-shared refuted 18 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/batch.json",
+      "change": "added",
+      "bytes": 5257,
+      "sha256": "6bbca85a5b307098119845c23532451e92db025687750741a18b27a322abd53c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/cells-matrix.json",
+      "change": "added",
+      "bytes": 7045,
+      "sha256": "1801143b94c28818ad60270fdde36cc449e0e1bf9427fa2522a64599fb7bcd1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/cells-separate.json",
+      "change": "added",
+      "bytes": 7065,
+      "sha256": "0fc9be0dab5b7aaee8abc5cf3af39ba60737796c99161e7fb2a814ed4b0fec74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/cells-shared.json",
+      "change": "added",
+      "bytes": 9163,
+      "sha256": "09f46199e11be1163b96a1415ceca43cba18f3c570d8c23656151f712affbd7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/identity-matrix.json",
+      "change": "added",
+      "bytes": 7060,
+      "sha256": "b99124f15bb5f5e43cc86f65cd1ebbef833dbbef38c340457ea581d39448dea3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/identity-separate.json",
+      "change": "added",
+      "bytes": 7080,
+      "sha256": "6cfe8a5cef263da49dc9151e23e3e53f4a615cef152d50b31814859753db1226",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/identity-shared.json",
+      "change": "added",
+      "bytes": 9186,
+      "sha256": "a9b4225f0cb0d28fbfd17cc02618ce06a1a953fa16f37793f5aab7ddcfbac277",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/shape-matrix.json",
+      "change": "added",
+      "bytes": 7045,
+      "sha256": "198411a241de83c0f84283de77182844f3fd3482e676ae4b03ab0902ba53e100",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/shape-separate.json",
+      "change": "added",
+      "bytes": 7065,
+      "sha256": "5b2a3763cb9d52bc5306a5ddbd7f40fa246e696ac9dc7b4200a25011e1abfa85",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/shape-shared.json",
+      "change": "added",
+      "bytes": 7044,
+      "sha256": "d2524f08e3919cd9c0006efa9a5a984e087d9da13bbacdb17f36fbd87c9fe16f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/batch.json",
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/cells-matrix.json",
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/cells-separate.json",
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/cells-shared.json",
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/identity-matrix.json",
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/identity-separate.json",
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/identity-shared.json",
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/shape-matrix.json",
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/shape-separate.json",
+      "examples/317-theatre-seat-matrix/records/finite-proofs/20261120T034454Z-944587fa/shape-shared.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

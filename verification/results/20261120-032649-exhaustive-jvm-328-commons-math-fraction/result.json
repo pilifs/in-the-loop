@@ -1,0 +1,223 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032649-exhaustive-jvm-328-commons-math-fraction",
+  "title": "Exhaustive JVM 328 Commons Math fraction percentages across integer overflow",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 38.4s, peak 432.6 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed",
+  "attention": [
+    "step 1 (Validate every bounded observation) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-032649-exhaustive-jvm-328-commons-math-fraction.json",
+    "sha256": "073cc8e8df63f637d7a167aedf650b261ad1f4483ff0dc94794ac7b4bb29a096",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032649-exhaustive-jvm-328-commons-math-fraction",
+      "title": "Exhaustive JVM 328 Commons Math fraction percentages across integer overflow",
+      "description": "Multiplying a numerator by 100 in its integer representation changes the percentage near the signed 32-bit boundary. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "328"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 328 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/328-commons-math-fraction-percentage/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:11+00:00",
+  "finishedAt": "2026-11-20T03:45:52+00:00",
+  "wallSeconds": 41.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 453562368,
+    "wallSeconds": 38.4,
+    "cpuSeconds": 63.9,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 0.32
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 328 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 38.396,
+      "cpuSeconds": 63.905,
+      "cpuThrottledSeconds": 9.295,
+      "peakMemoryBytes": 453562368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 6,
+        "bytes": 1395,
+        "sha256": "03e1654a59281c927fb2d644ffe8f9d5d753481052a66bbe4cc7102f394d136e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "328 bits-parent open 0 admitted build: javac wrote org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$1, org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$2, org/apache/commons/math3/analysis/i",
+        "328 bits-fix open 0 admitted build: javac wrote org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$1, org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$2, org/apache/commons/math3/analysis/i",
+        "328 normal-parent open 0 admitted build: javac wrote org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$1, org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$2, org/apache/commons/math3/analysis/i",
+        "328 normal-fix open 0 admitted build: javac wrote org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$1, org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$2, org/apache/commons/math3/analysis/i",
+        "328 small-parent open 0 admitted build: javac wrote org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$1, org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$2, org/apache/commons/math3/analysis/i",
+        "328 small-fix open 0 admitted build: javac wrote org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$1, org/apache/commons/math3/analysis/interpolation/BicubicSplineFunction$2, org/apache/commons/math3/analysis/i"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/batch.json",
+      "change": "added",
+      "bytes": 3535,
+      "sha256": "e73b639cd12253ed2a942fab74ebb7ac312ec62b7e60c9f83cc350dee2ea737e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/bits-fix.json",
+      "change": "added",
+      "bytes": 906,
+      "sha256": "663d9a672afea303626697eac599c75bd68beea96146981d99002b5751795aa6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/bits-parent.json",
+      "change": "added",
+      "bytes": 911,
+      "sha256": "c720acccdaf338bba527575fb9d6b83ec4e6f6808f9eefbead7ae71cc1a98f49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/normal-fix.json",
+      "change": "added",
+      "bytes": 908,
+      "sha256": "1b2739a1b5d468a5f1d39b80476ee0f28ce16caa6a068e3ad94da20c37af7b8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/normal-parent.json",
+      "change": "added",
+      "bytes": 917,
+      "sha256": "8d44730e61388a795b1bc29a1bbac0584bfdcac6ca937d0c25ead47fb0a164be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/small-fix.json",
+      "change": "added",
+      "bytes": 907,
+      "sha256": "19ab722cfd766f3233ca70cbd85d23107fa81df3c33a276310d56510ab79432e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/small-parent.json",
+      "change": "added",
+      "bytes": 916,
+      "sha256": "e38e623b1ba4a2488c9be11acebf11863f46afd51ddb4025444cfd9c7016af29",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/batch.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/bits-fix.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/bits-parent.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/normal-fix.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/normal-parent.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/small-fix.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T034514Z-407dd893/small-parent.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032649-exhaustive-jvm-328-commons-math-fraction"
+}

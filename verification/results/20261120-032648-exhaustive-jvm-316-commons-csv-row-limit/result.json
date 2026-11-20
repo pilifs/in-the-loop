@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032648-exhaustive-jvm-316-commons-csv-row-limit",
+  "title": "Exhaustive JVM 316 Commons CSV row limits distinguish format equality",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 41.0s, peak 651.3 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032648-exhaustive-jvm-316-commons-csv-row-limit.json",
+    "sha256": "e659f70b67427dfdf48685d8a1657c15f0c4670acd838c42df722109f5ca9c09",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032648-exhaustive-jvm-316-commons-csv-row-limit",
+      "title": "Exhaustive JVM 316 Commons CSV row limits distinguish format equality",
+      "description": "Two formats with different maxRows can read different numbers of records while the parent compares them equal. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "316"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 316 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/316-commons-csv-row-limit-equality/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:44:48+00:00",
+  "finishedAt": "2026-11-20T03:45:35+00:00",
+  "wallSeconds": 47.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 682971136,
+    "wallSeconds": 41.0,
+    "cpuSeconds": 58.3,
+    "memoryOfEstimate": 0.32,
+    "durationOfEstimate": 0.34
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 316 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 40.952,
+      "cpuSeconds": 58.297,
+      "cpuThrottledSeconds": 4.554,
+      "peakMemoryBytes": 682971136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 6,
+        "bytes": 249,
+        "sha256": "b0a1abfac2f1daa291f192cffe2667126c9554518175e44e8889167ee377ae3f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "316 equals-parent refuted 9 admitted ",
+        "316 equals-fix established 9 admitted ",
+        "316 hash-contract-parent established 9 admitted ",
+        "316 hash-contract-fix established 9 admitted ",
+        "316 rows-parent established 9 admitted ",
+        "316 rows-fix established 9 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/batch.json",
+      "change": "added",
+      "bytes": 3621,
+      "sha256": "605c4ea00ed609b46850fb40d7544a399452255da1686fb8276f047033257ea1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/equals-fix.json",
+      "change": "added",
+      "bytes": 6725,
+      "sha256": "929a2bd3f4e6f387a5cf8372f9b422626b0c39c43ab58fc64225b90b2074a6b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/equals-parent.json",
+      "change": "added",
+      "bytes": 8846,
+      "sha256": "de57874d71723f9b4924170490faa6bf0f8b54465d28a183d585612349ae360b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/hash-contract-fix.json",
+      "change": "added",
+      "bytes": 6728,
+      "sha256": "de36748e52c5c91141845f09f4100932166e0a776fa6f5987e9bec4814c8527a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/hash-contract-parent.json",
+      "change": "added",
+      "bytes": 6754,
+      "sha256": "d0167d7909a37e05242b34cbb185966d7b27e2901cc708d5b66723d076229e17",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/rows-fix.json",
+      "change": "added",
+      "bytes": 6779,
+      "sha256": "fd0723da174e23518a1af7c6bdcc9ee3b0de1daa0fb669f1ce5fe302f3f4b6d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/rows-parent.json",
+      "change": "added",
+      "bytes": 6806,
+      "sha256": "bb6f941e7d1fa4923bf62317002414f26415276af5220e4fb3ce804bbc532749",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [
+      "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/batch.json",
+      "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/equals-fix.json",
+      "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/equals-parent.json",
+      "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/hash-contract-fix.json",
+      "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/hash-contract-parent.json",
+      "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/rows-fix.json",
+      "examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/rows-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,1400 @@
+--- /dev/null
++++ b/examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/batch.json
+@@ -0,0 +1,118 @@
++{
++  "schema": "finite-jvm-batch/v1",
++  "id": "20261120T034454Z-8f630591",
++  "retryOf": null,
++  "order": [
++    "equals-parent",
++    "equals-fix",
++    "hash-contract-parent",
++    "hash-contract-fix",
++    "rows-parent",
++    "rows-fix"
++  ],
++  "claims": {
++    "equals-parent": {
++      "sourceClaim": "cc8ae0d21f898b22",
++      "inputsKey": "faa60dd71668904576242ee59d1966a3990382f9115c303dffcab60ad970038c",
++      "revisions": [
++        "parent"
++      ],
++      "expected": "refuted",
++      "sourceLocks": {
++        "parent": "dc994f33a4730b07418e4a1b30fb0f3bbc3ee1c3d507905a64e0ff3617560ca4"
++      }
++    },
++    "equals-fix": {
++      "sourceClaim": "cc8ae0d21f898b22",
++      "inputsKey": "b57f0290df6995a1a63bb5fce7a54bd8249ea944377b04395b62c1822b7f568b",
++      "revisions": [
++        "fix"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "fix": "a2dbd795af01be2e3a030d3b969f9a97152b2165ef114d7399cf2eb795da4f97"
++      }
++    },
++    "hash-contract-parent": {
++      "sourceClaim": "57ad584ba9edcaf1",
++      "inputsKey": "c926e339ee76c93b919225dfa02958bf1cd7ade31e9352f07b340620c74611ca",
++      "revisions": [
++        "parent"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "parent": "dc994f33a4730b07418e4a1b30fb0f3bbc3ee1c3d507905a64e0ff3617560ca4"
++      }
++    },
++    "hash-contract-fix": {
++      "sourceClaim": "57ad584ba9edcaf1",
++      "inputsKey": "b530877d1d684a8aa60ef2dce88a868dea12f21761dfed748950f5647a3192cf",
++      "revisions": [
++        "fix"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "fix": "a2dbd795af01be2e3a030d3b969f9a97152b2165ef114d7399cf2eb795da4f97"
++      }
++    },
++    "rows-parent": {
++      "sourceClaim": "f81d92b256df4635",
++      "inputsKey": "93a1bdb605d1115587543ad998810c8739a9577ac16325901f3016a88ffb8d49",
++      "revisions": [
++        "parent"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "parent": "dc994f33a4730b07418e4a1b30fb0f3bbc3ee1c3d507905a64e0ff3617560ca4"
++      }
++    },
++    "rows-fix": {
++      "sourceClaim": "f81d92b256df4635",
++      "inputsKey": "aa3e089290a84e4dbc89fccc9053da2d6a37a90294aa85aaecffa0de082be223",
++      "revisions": [
++        "fix"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "fix": "a2dbd795af01be2e3a030d3b969f9a97152b2165ef114d7399cf2eb795da4f97"
++      }
++    }
++  },
++  "status": "completed",
++  "completed": [
++    {
++      "task": "equals-parent",
++      "status": "refuted",
++      "sha256": "de57874d71723f9b4924170490faa6bf0f8b54465d28a183d585612349ae360b"
++    },
++    {
++      "task": "equals-fix",
++      "status": "established",
++      "sha256": "929a2bd3f4e6f387a5cf8372f9b422626b0c39c43ab58fc64225b90b2074a6b0"
++    },
++    {
++      "task": "hash-contract-parent",
++      "status": "established",
++      "sha256": "d0167d7909a37e05242b34cbb185966d7b27e2901cc708d5b66723d076229e17"
++    },
++    {
++      "task": "hash-contract-fix",
++      "status": "established",
++      "sha256": "de36748e52c5c91141845f09f4100932166e0a776fa6f5987e9bec4814c8527a"
++    },
++    {
++      "task": "rows-parent",
++      "status": "established",
++      "sha256": "bb6f941e7d1fa4923bf62317002414f26415276af5220e4fb3ce804bbc532749"
++    },
++    {
++      "task": "rows-fix",
++      "status": "established",
++      "sha256": "fd0723da174e23518a1af7c6bdcc9ee3b0de1daa0fb669f1ce5fe302f3f4b6d2"
++    }
++  ],
++  "missing": [],
++  "secondsPerJvm": 120,
++  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
++  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
++}
+--- /dev/null
++++ b/examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/equals-fix.json
+@@ -0,0 +1,200 @@
++{
++  "status": "established",
++  "entry": "csvgrid.Projection#equal(I)I",
++  "inputs": 9,
++  "differences": 0,
++  "sides": {
++    "fix": {
++      "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
++      "entry": {
++        "entry": "csvgrid.Projection#equal(I)I",
++        "classSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++        "loadedFrom": "adapter-fix.jar",
++        "subject": "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
++        "subjectClassSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417"
++      },
++      "classpath": [
++        {
++          "path": "adapter-fix.jar",
++          "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/fix.jar",
++          "sha256": "1c527dc585b991a6ac7c8bd0291a76887b5f30a0002c9177308659d934472f21",
++          "role": "original"
++        },
++        {
++          "path": "lib/commons-io/commons-io-2.22.0.jar",
++          "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/commons-codec/commons-codec-1.22.0.jar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = csvgrid.Projection.equal(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "73d1093129c591c8a1a2ef60a4b030ec964d9acf4e3229d1bbd06468e9ccc7bd",
++      "stdoutSha256": "5004735e8d80e4da0eb1d67e80d3e924c11f0cf6d5ecca5da95a103edb17bd85",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        8
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.249,
++      "cpuSeconds": 0.3382,
++      "peakRssBytes": 62009344,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "fix",
++      "entry": "csvgrid.Projection#equal(I)I",
++      "adapterSha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++      "adapterClassSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++      "subject": {
++        "class": "org.apache.commons.csv.CSVFormat",
++        "method": "equals",
++        "descriptor": "(Ljava/lang/Object;)Z",
++        "loadedFrom": "slice/fix.jar",
++        "classSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417",
++        "adapterCalls": [
++          "org.apache.commons.csv.CSVFormat#builder()Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
++          "org.apache.commons.csv.CSVFormat#hashCode()I",
++          "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++          "org.apache.commons.csv.CSVFormat$Builder#get()Lorg/apache/commons/csv/CSVFormat;",
++          "org.apache.commons.csv.CSVFormat$Builder#setMaxRows(J)Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVParser#close()V",
++          "org.apache.commons.csv.CSVParser#getRecords()Ljava/util/List;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 9,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 5.2455,
++  "controlSeconds": 0.1932,
++  "wallSeconds": 6.6134,
++  "task": "equals-fix",
++  "sourceClaim": "cc8ae0d21f898b22",
++  "inputsKey": "b57f0290df6995a1a63bb5fce7a54bd8249ea944377b04395b62c1822b7f568b",
++  "revisions": [
++    "fix"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "fix": "a2dbd795af01be2e3a030d3b969f9a97152b2165ef114d7399cf2eb795da4f97"
++  }
++}
+--- /dev/null
++++ b/examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/equals-parent.json
+@@ -0,0 +1,261 @@
++{
++  "status": "refuted",
++  "entry": "csvgrid.Projection#equal(I)I",
++  "inputs": 9,
++  "differences": 6,
++  "sides": {
++    "parent": {
++      "commit": "69248ba0bed03c71454b71ec0c79805f48f5c447",
++      "entry": {
++        "entry": "csvgrid.Projection#equal(I)I",
++        "classSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++        "loadedFrom": "adapter-parent.jar",
++        "subject": "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
++        "subjectClassSha256": "46ab661139474b842079ef7e01eee2bc6d510a3bc41976398d17df13144505fe"
++      },
++      "classpath": [
++        {
++          "path": "adapter-parent.jar",
++          "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/parent.jar",
++          "sha256": "fd505dc02188756555ec410f5c3be3f6f489b91b3a22200bacd2173b75ec4380",
++          "role": "original"
++        },
++        {
++          "path": "lib/commons-io/commons-io-2.22.0.jar",
++          "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/commons-codec/commons-codec-1.22.0.jar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = csvgrid.Projection.equal(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "73d1093129c591c8a1a2ef60a4b030ec964d9acf4e3229d1bbd06468e9ccc7bd",
++      "stdoutSha256": "912fabb759422d7934a5f50c15ff3b7965fe96594c9f9d1a6b74d7429ded34ff",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        8
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.232,
++      "cpuSeconds": 0.288,
++      "peakRssBytes": 62009344,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "parent",
++      "entry": "csvgrid.Projection#equal(I)I",
++      "adapterSha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++      "adapterClassSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++      "subject": {
++        "class": "org.apache.commons.csv.CSVFormat",
++        "method": "equals",
++        "descriptor": "(Ljava/lang/Object;)Z",
++        "loadedFrom": "slice/parent.jar",
++        "classSha256": "46ab661139474b842079ef7e01eee2bc6d510a3bc41976398d17df13144505fe",
++        "adapterCalls": [
++          "org.apache.commons.csv.CSVFormat#builder()Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
++          "org.apache.commons.csv.CSVFormat#hashCode()I",
++          "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++          "org.apache.commons.csv.CSVFormat$Builder#get()Lorg/apache/commons/csv/CSVFormat;",
++          "org.apache.commons.csv.CSVFormat$Builder#setMaxRows(J)Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVParser#close()V",
++          "org.apache.commons.csv.CSVParser#getRecords()Ljava/util/List;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 9,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 5.2155,
++  "controlSeconds": 0.19,
++  "replay": {
++    "claimKey": "cc8ae0d21f898b22",
++    "entry": "csvgrid.Projection#equal(I)I",
++    "inputs": [
++      {
++        "name": "code",
++        "type": "int",
++        "value": 1
++      }
++    ],
++    "observations": [
++      "result",
++      "exception"
++    ],
++    "by": "jvm",
++    "reproduced": true,
++    "sides": {
++      "parent": {
++        "entryClassSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++        "classpath": [
++          "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++          "fd505dc02188756555ec410f5c3be3f6f489b91b3a22200bacd2173b75ec4380",
++          "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
++          "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
++        ],
++        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 1;\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = csvgrid.Projection.equal(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++        "admitted": true,
++        "values": [
++          0,
++          null
++        ],
++        "satisfies": false
++      }
++    },
++    "jdkRelease": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    },
++    "finiteObservation": {
++      "id": 1,
++      "input": [
++        1,
++        2
++      ],
++      "field": "equal",
++      "direct": {
++        "parent": {
++          "equal": true,
++          "hashContract": true,
++          "rows": [
++            1,
++            2
++          ]
++        }
++      },
++      "tableSha256": "36b1f5e1e529b3b79fab2cd38376945c9f3eaccc58ed4938bc729395dd47aa1b"
++    }
++  },
++  "wallSeconds": 7.1377,
++  "task": "equals-parent",
++  "sourceClaim": "cc8ae0d21f898b22",
++  "inputsKey": "faa60dd71668904576242ee59d1966a3990382f9115c303dffcab60ad970038c",
++  "revisions": [
++    "parent"
++  ],
++  "expected": "refuted",
++  "sourceLocks": {
++    "parent": "dc994f33a4730b07418e4a1b30fb0f3bbc3ee1c3d507905a64e0ff3617560ca4"
++  }
++}
+--- /dev/null
++++ b/examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/hash-contract-fix.json
+@@ -0,0 +1,200 @@
++{
++  "status": "established",
++  "entry": "csvgrid.Projection#hashContract(I)I",
++  "inputs": 9,
++  "differences": 0,
++  "sides": {
++    "fix": {
++      "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
++      "entry": {
++        "entry": "csvgrid.Projection#hashContract(I)I",
++        "classSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++        "loadedFrom": "adapter-fix.jar",
++        "subject": "org.apache.commons.csv.CSVFormat#hashCode()I",
++        "subjectClassSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417"
++      },
++      "classpath": [
++        {
++          "path": "adapter-fix.jar",
++          "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/fix.jar",
++          "sha256": "1c527dc585b991a6ac7c8bd0291a76887b5f30a0002c9177308659d934472f21",
++          "role": "original"
++        },
++        {
++          "path": "lib/commons-io/commons-io-2.22.0.jar",
++          "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/commons-codec/commons-codec-1.22.0.jar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = csvgrid.Projection.hashContract(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "78543092f295cb679a3e8cf209a1e6b92a92fc228d6707e2d81b5d406aab1c29",
++      "stdoutSha256": "5004735e8d80e4da0eb1d67e80d3e924c11f0cf6d5ecca5da95a103edb17bd85",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        8
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.187,
++      "cpuSeconds": 0.2715,
++      "peakRssBytes": 62009344,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "fix",
++      "entry": "csvgrid.Projection#hashContract(I)I",
++      "adapterSha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++      "adapterClassSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++      "subject": {
++        "class": "org.apache.commons.csv.CSVFormat",
++        "method": "hashCode",
++        "descriptor": "()I",
++        "loadedFrom": "slice/fix.jar",
++        "classSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417",
++        "adapterCalls": [
++          "org.apache.commons.csv.CSVFormat#builder()Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
++          "org.apache.commons.csv.CSVFormat#hashCode()I",
++          "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++          "org.apache.commons.csv.CSVFormat$Builder#get()Lorg/apache/commons/csv/CSVFormat;",
++          "org.apache.commons.csv.CSVFormat$Builder#setMaxRows(J)Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVParser#close()V",
++          "org.apache.commons.csv.CSVParser#getRecords()Ljava/util/List;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 9,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 5.1012,
++  "controlSeconds": 0.0019,
++  "wallSeconds": 6.0061,
++  "task": "hash-contract-fix",
++  "sourceClaim": "57ad584ba9edcaf1",
++  "inputsKey": "b530877d1d684a8aa60ef2dce88a868dea12f21761dfed748950f5647a3192cf",
++  "revisions": [
++    "fix"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "fix": "a2dbd795af01be2e3a030d3b969f9a97152b2165ef114d7399cf2eb795da4f97"
++  }
++}
+--- /dev/null
++++ b/examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/hash-contract-parent.json
+@@ -0,0 +1,200 @@
++{
++  "status": "established",
++  "entry": "csvgrid.Projection#hashContract(I)I",
++  "inputs": 9,
++  "differences": 0,
++  "sides": {
++    "parent": {
++      "commit": "69248ba0bed03c71454b71ec0c79805f48f5c447",
++      "entry": {
++        "entry": "csvgrid.Projection#hashContract(I)I",
++        "classSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++        "loadedFrom": "adapter-parent.jar",
++        "subject": "org.apache.commons.csv.CSVFormat#hashCode()I",
++        "subjectClassSha256": "46ab661139474b842079ef7e01eee2bc6d510a3bc41976398d17df13144505fe"
++      },
++      "classpath": [
++        {
++          "path": "adapter-parent.jar",
++          "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/parent.jar",
++          "sha256": "fd505dc02188756555ec410f5c3be3f6f489b91b3a22200bacd2173b75ec4380",
++          "role": "original"
++        },
++        {
++          "path": "lib/commons-io/commons-io-2.22.0.jar",
++          "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/commons-codec/commons-codec-1.22.0.jar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = csvgrid.Projection.hashContract(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "78543092f295cb679a3e8cf209a1e6b92a92fc228d6707e2d81b5d406aab1c29",
++      "stdoutSha256": "5004735e8d80e4da0eb1d67e80d3e924c11f0cf6d5ecca5da95a103edb17bd85",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        8
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.188,
++      "cpuSeconds": 0.2527,
++      "peakRssBytes": 62009344,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "parent",
++      "entry": "csvgrid.Projection#hashContract(I)I",
++      "adapterSha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++      "adapterClassSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++      "subject": {
++        "class": "org.apache.commons.csv.CSVFormat",
++        "method": "hashCode",
++        "descriptor": "()I",
++        "loadedFrom": "slice/parent.jar",
++        "classSha256": "46ab661139474b842079ef7e01eee2bc6d510a3bc41976398d17df13144505fe",
++        "adapterCalls": [
++          "org.apache.commons.csv.CSVFormat#builder()Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
++          "org.apache.commons.csv.CSVFormat#hashCode()I",
++          "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++          "org.apache.commons.csv.CSVFormat$Builder#get()Lorg/apache/commons/csv/CSVFormat;",
++          "org.apache.commons.csv.CSVFormat$Builder#setMaxRows(J)Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVParser#close()V",
++          "org.apache.commons.csv.CSVParser#getRecords()Ljava/util/List;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 9,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 5.359,
++  "controlSeconds": 0.0013,
++  "wallSeconds": 6.3133,
++  "task": "hash-contract-parent",
++  "sourceClaim": "57ad584ba9edcaf1",
++  "inputsKey": "c926e339ee76c93b919225dfa02958bf1cd7ade31e9352f07b340620c74611ca",
++  "revisions": [
++    "parent"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "parent": "dc994f33a4730b07418e4a1b30fb0f3bbc3ee1c3d507905a64e0ff3617560ca4"
++  }
++}
+--- /dev/null
++++ b/examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/rows-fix.json
+@@ -0,0 +1,200 @@
++{
++  "status": "established",
++  "entry": "csvgrid.Projection#rows(I)I",
++  "inputs": 9,
++  "differences": 0,
++  "sides": {
++    "fix": {
++      "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
++      "entry": {
++        "entry": "csvgrid.Projection#rows(I)I",
++        "classSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++        "loadedFrom": "adapter-fix.jar",
++        "subject": "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++        "subjectClassSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417"
++      },
++      "classpath": [
++        {
++          "path": "adapter-fix.jar",
++          "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/fix.jar",
++          "sha256": "1c527dc585b991a6ac7c8bd0291a76887b5f30a0002c9177308659d934472f21",
++          "role": "original"
++        },
++        {
++          "path": "lib/commons-io/commons-io-2.22.0.jar",
++          "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/commons-codec/commons-codec-1.22.0.jar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = csvgrid.Projection.rows(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "a96c9d0deed2107bae4af0a56f66277679823464b9debfdebf83e9710c1cd7d0",
++      "stdoutSha256": "5004735e8d80e4da0eb1d67e80d3e924c11f0cf6d5ecca5da95a103edb17bd85",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        8
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.277,
++      "cpuSeconds": 0.4837,
++      "peakRssBytes": 62009344,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "fix",
++      "entry": "csvgrid.Projection#rows(I)I",
++      "adapterSha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++      "adapterClassSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++      "subject": {
++        "class": "org.apache.commons.csv.CSVFormat",
++        "method": "parse",
++        "descriptor": "(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++        "loadedFrom": "slice/fix.jar",
++        "classSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417",
++        "adapterCalls": [
++          "org.apache.commons.csv.CSVFormat#builder()Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
++          "org.apache.commons.csv.CSVFormat#hashCode()I",
++          "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++          "org.apache.commons.csv.CSVFormat$Builder#get()Lorg/apache/commons/csv/CSVFormat;",
++          "org.apache.commons.csv.CSVFormat$Builder#setMaxRows(J)Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVParser#close()V",
++          "org.apache.commons.csv.CSVParser#getRecords()Ljava/util/List;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 9,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 5.1046,
++  "controlSeconds": 0.0019,
++  "wallSeconds": 6.1021,
++  "task": "rows-fix",
++  "sourceClaim": "f81d92b256df4635",
++  "inputsKey": "aa3e089290a84e4dbc89fccc9053da2d6a37a90294aa85aaecffa0de082be223",
++  "revisions": [
++    "fix"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "fix": "a2dbd795af01be2e3a030d3b969f9a97152b2165ef114d7399cf2eb795da4f97"
++  }
++}
+--- /dev/null
++++ b/examples/316-commons-csv-row-limit-equality/records/finite-proofs/20261120T034454Z-8f630591/rows-parent.json
+@@ -0,0 +1,200 @@
++{
++  "status": "established",
++  "entry": "csvgrid.Projection#rows(I)I",
++  "inputs": 9,
++  "differences": 0,
++  "sides": {
++    "parent": {
++      "commit": "69248ba0bed03c71454b71ec0c79805f48f5c447",
++      "entry": {
++        "entry": "csvgrid.Projection#rows(I)I",
++        "classSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++        "loadedFrom": "adapter-parent.jar",
++        "subject": "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++        "subjectClassSha256": "46ab661139474b842079ef7e01eee2bc6d510a3bc41976398d17df13144505fe"
++      },
++      "classpath": [
++        {
++          "path": "adapter-parent.jar",
++          "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/parent.jar",
++          "sha256": "fd505dc02188756555ec410f5c3be3f6f489b91b3a22200bacd2173b75ec4380",
++          "role": "original"
++        },
++        {
++          "path": "lib/commons-io/commons-io-2.22.0.jar",
++          "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/commons-codec/commons-codec-1.22.0.jar",
++          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = csvgrid.Projection.rows(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "a96c9d0deed2107bae4af0a56f66277679823464b9debfdebf83e9710c1cd7d0",
++      "stdoutSha256": "5004735e8d80e4da0eb1d67e80d3e924c11f0cf6d5ecca5da95a103edb17bd85",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        8
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.305,
++      "cpuSeconds": 0.4588,
++      "peakRssBytes": 62009344,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "parent",
++      "entry": "csvgrid.Projection#rows(I)I",
++      "adapterSha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
++      "adapterClassSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
++      "subject": {
++        "class": "org.apache.commons.csv.CSVFormat",
++        "method": "parse",
++        "descriptor": "(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++        "loadedFrom": "slice/parent.jar",
++        "classSha256": "46ab661139474b842079ef7e01eee2bc6d510a3bc41976398d17df13144505fe",
++        "adapterCalls": [
++          "org.apache.commons.csv.CSVFormat#builder()Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
++          "org.apache.commons.csv.CSVFormat#hashCode()I",
++          "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
++          "org.apache.commons.csv.CSVFormat$Builder#get()Lorg/apache/commons/csv/CSVFormat;",
++          "org.apache.commons.csv.CSVFormat$Builder#setMaxRows(J)Lorg/apache/commons/csv/CSVFormat$Builder;",
++          "org.apache.commons.csv.CSVParser#close()V",
++          "org.apache.commons.csv.CSVParser#getRecords()Ljava/util/List;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 9,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 6.4796,
++  "controlSeconds": 0.0021,
++  "wallSeconds": 7.5084,
++  "task": "rows-parent",
++  "sourceClaim": "f81d92b256df4635",
++  "inputsKey": "93a1bdb605d1115587543ad998810c8739a9577ac16325901f3016a88ffb8d49",
++  "revisions": [
++    "parent"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "parent": "dc994f33a4730b07418e4a1b30fb0f3bbc3ee1c3d507905a64e0ff3617560ca4"
++  }
++}

@@ -1,0 +1,67 @@
+{
+  "schema": "finite-jvm-batch/v1",
+  "id": "20261120T034507Z-3e2f5c9c",
+  "retryOf": null,
+  "order": [
+    "label-legacy",
+    "label-modern",
+    "label-changed"
+  ],
+  "claims": {
+    "label-legacy": {
+      "sourceClaim": "fa6d8638769a3bdd",
+      "inputsKey": "3869f9cd8a61165ec1692d519550dff6de80fac84b7b8cfd3a70aef3999ca0ba",
+      "revisions": [
+        "legacy"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "legacy": "db1ad724c3039002d3d48d8681642a43117580c16c79eb355c5657a4b67f3114"
+      }
+    },
+    "label-modern": {
+      "sourceClaim": "fa6d8638769a3bdd",
+      "inputsKey": "b0ec174d4bf0d8a93dcd5fd7c4a048563ba3c9a92c002a95206ebc7e64af6f46",
+      "revisions": [
+        "modern"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "modern": "6d69b661ead54fbcd59a05da0a7713cd11da9011655252fb5338e43645f4b084"
+      }
+    },
+    "label-changed": {
+      "sourceClaim": "fa6d8638769a3bdd",
+      "inputsKey": "8f044966cc9d7435c79b1256b6307c6204e4f3f30e49933641c18439c1d3ec19",
+      "revisions": [
+        "changed"
+      ],
+      "expected": "refuted",
+      "sourceLocks": {
+        "changed": "a6f9271c9ad12da971098c45ff58bfcb3484658f8c2a307623d2858fb6c6665f"
+      }
+    }
+  },
+  "status": "completed",
+  "completed": [
+    {
+      "task": "label-legacy",
+      "status": "established",
+      "sha256": "891d6776d28a43fb2fd8c3c11315f87a03e6bcfc51a93033c6be7e774eb51e91"
+    },
+    {
+      "task": "label-modern",
+      "status": "established",
+      "sha256": "8a868d6298ac3fcf469b21bee96c8a2a1c63711fca756c97891b13068dee7069"
+    },
+    {
+      "task": "label-changed",
+      "status": "refuted",
+      "sha256": "b060851c1bad396523e084631bbc4a58f75fb9665ffb704013281efe7d54f1f2"
+    }
+  ],
+  "missing": [],
+  "secondsPerJvm": 120,
+  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
+  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
+}

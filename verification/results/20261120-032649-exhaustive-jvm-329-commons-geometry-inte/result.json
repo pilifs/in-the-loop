@@ -1,0 +1,202 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032649-exhaustive-jvm-329-commons-geometry-inte",
+  "title": "Exhaustive JVM 329 Commons Geometry intersects a unit cube at a shared vertex",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 16.5s, peak 188.6 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032649-exhaustive-jvm-329-commons-geometry-inte.json",
+    "sha256": "c9dd3515998a6816591772216de20c2ead013282dfe581d65c87d60e214f34d8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032649-exhaustive-jvm-329-commons-geometry-inte",
+      "title": "Exhaustive JVM 329 Commons Geometry intersects a unit cube at a shared vertex",
+      "description": "A line reaching a boundary edge or vertex can lose the first intersection with the polyhedron. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "329"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 329 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/329-commons-geometry-cube-vertex/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:14+00:00",
+  "finishedAt": "2026-11-20T03:45:33+00:00",
+  "wallSeconds": 19.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 197726208,
+    "wallSeconds": 16.5,
+    "cpuSeconds": 26.5,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.14
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 329 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 16.495,
+      "cpuSeconds": 26.545,
+      "cpuThrottledSeconds": 2.356,
+      "peakMemoryBytes": 197726208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 4,
+        "bytes": 156,
+        "sha256": "370fddea92899ab5554bd9c2cd1de53e91a26342db86a4bfdfcd4478af4598b4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "329 presence-parent refuted 6 admitted ",
+        "329 presence-fix established 6 admitted ",
+        "329 point-parent refuted 6 admitted ",
+        "329 point-fix established 6 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/batch.json",
+      "change": "added",
+      "bytes": 2538,
+      "sha256": "2c81686b7b95badad616ea26276e8c4cb1951f1ee3926dc350a747a6b385cb69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/point-fix.json",
+      "change": "added",
+      "bytes": 7724,
+      "sha256": "24ad796a8044d04f9da9ff3da7b74b3904f870017e24c4ba943ad1a66374e34f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/point-parent.json",
+      "change": "added",
+      "bytes": 10093,
+      "sha256": "82301de5a3c519a677980b3d4389b33de7f24ba71b76402f434beb86f74c61ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/presence-fix.json",
+      "change": "added",
+      "bytes": 7720,
+      "sha256": "75c0a54340c2fd8abd1f594c351aeecd82d4ac8bf26b2faa66bd007fe766d3ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/presence-parent.json",
+      "change": "added",
+      "bytes": 10083,
+      "sha256": "6cc57e20acfff366cfd00b0f37606bddeae7e6bca919e5a44fd68b5e30108f86",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [
+      "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/batch.json",
+      "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/point-fix.json",
+      "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/point-parent.json",
+      "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/presence-fix.json",
+      "examples/329-commons-geometry-cube-vertex/records/finite-proofs/20261120T034517Z-3bcc6d74/presence-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

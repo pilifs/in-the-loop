@@ -1,0 +1,140 @@
+{
+  "status": "established",
+  "entry": "bridgegrid.Projection#typedAgreement(I)I",
+  "inputs": 4,
+  "differences": 0,
+  "sides": {
+    "changed": {
+      "commit": "fixture:changed",
+      "entry": {
+        "entry": "bridgegrid.Projection#typedAgreement(I)I",
+        "classSha256": "abf4a8d9446d213304116c73ab4ce36898cde2a5bd0f6ed10e51a15ccebf7942",
+        "loadedFrom": "adapter-changed.jar",
+        "subject": "bridgegrid.Plus#map(Ljava/lang/Integer;)Ljava/lang/Integer;",
+        "subjectClassSha256": "72a7eb003bcf14da589c80d0cf9df61e13adbfb1d47bbb6ce74802efa54e1456"
+      },
+      "classpath": [
+        {
+          "path": "adapter-changed.jar",
+          "sha256": "525196bb1cd947b5cc918cf13799d5d32f2830e5f6491a19d63166d4e9a9f9d5",
+          "role": "adapter"
+        },
+        {
+          "path": "changed.jar",
+          "sha256": "2409d202ca6b43fa7273adf14fa5cf9be7f308b709f4034d39d09d4254992131",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = bridgegrid.Projection.typedAgreement(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "a476c6b01c547b5f8dd33bc552c4a6d752b1e9aed24c1f266971812ec9e40e55",
+      "stdoutSha256": "8e35fbee02509e049f9c78f8182bb7a75ae92dbe3cbec9afb5262058ef9b3c3c",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        3
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.094,
+      "cpuSeconds": 0.113,
+      "peakRssBytes": 61693952,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "changed",
+      "entry": "bridgegrid.Projection#typedAgreement(I)I",
+      "adapterSha256": "525196bb1cd947b5cc918cf13799d5d32f2830e5f6491a19d63166d4e9a9f9d5",
+      "adapterClassSha256": "abf4a8d9446d213304116c73ab4ce36898cde2a5bd0f6ed10e51a15ccebf7942",
+      "subject": {
+        "class": "bridgegrid.Plus",
+        "method": "map",
+        "descriptor": "(Ljava/lang/Integer;)Ljava/lang/Integer;",
+        "loadedFrom": "changed.jar",
+        "classSha256": "72a7eb003bcf14da589c80d0cf9df61e13adbfb1d47bbb6ce74802efa54e1456",
+        "adapterCalls": [
+          "bridgegrid.Mapper#map(Ljava/lang/Object;)Ljava/lang/Object;",
+          "bridgegrid.Plus#<init>()V",
+          "bridgegrid.Plus#map(Ljava/lang/Integer;)Ljava/lang/Integer;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The first four codes are null or actual Integers; code four is String one and only the erased call admits it.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 5,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 3.3491,
+  "controlSeconds": 0.0007,
+  "wallSeconds": 4.1726,
+  "task": "typed-agreement-changed",
+  "sourceClaim": "bd73a38e058dafe9",
+  "inputsKey": "ba1878f1c1f6c4ac9d670919ea5b4bef009b1a0c674ed850822ec24ecf370899",
+  "revisions": [
+    "changed"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "changed": "ed389a04438920af6025f01b41027f68871ddb7fcffb5cce0f12b1ae0cff7f62"
+  }
+}

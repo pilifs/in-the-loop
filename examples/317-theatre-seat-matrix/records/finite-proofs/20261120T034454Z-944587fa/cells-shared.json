@@ -1,0 +1,336 @@
+{
+  "status": "refuted",
+  "entry": "seats.Projection#cells(I)I",
+  "inputs": 18,
+  "differences": 15,
+  "sides": {
+    "shared": {
+      "commit": "fixture:shared",
+      "entry": {
+        "entry": "seats.Projection#cells(I)I",
+        "classSha256": "db12d501b7f54fb694dcc127ac230dcf933648539da92a2b97b050c96b2c8ceb",
+        "loadedFrom": "adapter-shared.jar",
+        "subject": "seats.Seats#mark(IIII)[[I",
+        "subjectClassSha256": "cc7c89e1f98c6cf6eed02e3d82728a39729e2470d346ce1872cde7a3ad090adf"
+      },
+      "classpath": [
+        {
+          "path": "adapter-shared.jar",
+          "sha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+          "role": "adapter"
+        },
+        {
+          "path": "shared.jar",
+          "sha256": "8422ccfd873330382ab01caf6acb537d4d797594691a643f747f858ed8563ec6",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 18)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = seats.Projection.cells(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "8a007c1ef22c2c596cc8a2bf9a17a0fc05f52d7f94783d7897147dd96eec5374",
+      "stdoutSha256": "0af0b2352ac0c37633b89912b7d68ac3d94b662097517a81297daca43f861672",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        17
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 4,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 5,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 6,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 7,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 8,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 9,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 10,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 11,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 12,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 13,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 14,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 15,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 16,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 17,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.115,
+      "cpuSeconds": 0.1439,
+      "peakRssBytes": 61673472,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "shared",
+      "entry": "seats.Projection#cells(I)I",
+      "adapterSha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+      "adapterClassSha256": "db12d501b7f54fb694dcc127ac230dcf933648539da92a2b97b050c96b2c8ceb",
+      "subject": {
+        "class": "seats.Seats",
+        "method": "mark",
+        "descriptor": "(IIII)[[I",
+        "loadedFrom": "shared.jar",
+        "classSha256": "cc7c89e1f98c6cf6eed02e3d82728a39729e2470d346ce1872cde7a3ad090adf",
+        "adapterCalls": [
+          "seats.Seats#mark(IIII)[[I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 18,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0024,
+  "controlSeconds": 0.0018,
+  "replay": {
+    "claimKey": "c31694e13505beab",
+    "entry": "seats.Projection#cells(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 3
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "shared": {
+        "entryClassSha256": "db12d501b7f54fb694dcc127ac230dcf933648539da92a2b97b050c96b2c8ceb",
+        "classpath": [
+          "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+          "8422ccfd873330382ab01caf6acb537d4d797594691a643f747f858ed8563ec6"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 3;\nif (!(code >= 0 && code < 18)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = seats.Projection.cells(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 3,
+      "input": [
+        2,
+        1,
+        0,
+        0
+      ],
+      "field": "cells",
+      "direct": {
+        "shared": {
+          "shape": [
+            2,
+            1,
+            1
+          ],
+          "cells": [
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ],
+          "identity": [
+            0,
+            0
+          ]
+        }
+      },
+      "tableSha256": "133f2c6fac7aaea402b6012aaaffb353736945c720d451d8413608af9607a851"
+    }
+  },
+  "wallSeconds": 1.6767,
+  "task": "cells-shared",
+  "sourceClaim": "c31694e13505beab",
+  "inputsKey": "bcd2005b06ebffb71bd9a5a098a884b5c4dabec8136d5204c1e7a9211e0f120c",
+  "revisions": [
+    "shared"
+  ],
+  "expected": "refuted",
+  "sourceLocks": {
+    "shared": "1c82840f5393bc42ca216bc3d52dffe2a274ceef8824c93a69e97b163150d059"
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "status": "established",
+  "entry": "optionalgrid.Projection#callbacks(I)I",
+  "inputs": 4,
+  "differences": 0,
+  "sides": {
+    "branch": {
+      "commit": "fixture:branch",
+      "entry": {
+        "entry": "optionalgrid.Projection#callbacks(I)I",
+        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
+        "loadedFrom": "adapter-branch.jar",
+        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+        "subjectClassSha256": "19152af2be123470a61510241076d64a3f7d50c960327b8e46d81d064bf3b51b"
+      },
+      "classpath": [
+        {
+          "path": "adapter-branch.jar",
+          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+          "role": "adapter"
+        },
+        {
+          "path": "branch.jar",
+          "sha256": "4c8e91c4af4bff44108bfbe0f7b6de8cf53052644582190064cec102b1d0d4cf",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.callbacks(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "7eb2bc9d4c00b3383cc5884190d3cf47bc319152d9d07d55dfeb0f36f4872ba1",
+      "stdoutSha256": "8e35fbee02509e049f9c78f8182bb7a75ae92dbe3cbec9afb5262058ef9b3c3c",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        3
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.103,
+      "cpuSeconds": 0.1077,
+      "peakRssBytes": 61767680,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "branch",
+      "entry": "optionalgrid.Projection#callbacks(I)I",
+      "adapterSha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+      "adapterClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
+      "subject": {
+        "class": "optionalgrid.Choice",
+        "method": "choose",
+        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+        "loadedFrom": "branch.jar",
+        "classSha256": "19152af2be123470a61510241076d64a3f7d50c960327b8e46d81d064bf3b51b",
+        "adapterCalls": [
+          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+          "optionalgrid.Fallback#<init>()V"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 4,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0037,
+  "controlSeconds": 0.0008,
+  "wallSeconds": 0.9085,
+  "task": "callbacks-branch",
+  "sourceClaim": "fd17da09f7be85db",
+  "inputsKey": "9e90e7bd8bbb02b78f844f8449b6c6ae2eb658fa42d4e35bc3d9a55b5a9082d9",
+  "revisions": [
+    "branch"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "branch": "94cd23af7aa141bab6018e7e8e30adf51e70b26f79e4ed243e04ac9c1d794683"
+  }
+}

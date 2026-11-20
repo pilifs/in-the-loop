@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032649-exhaustive-jvm-324-lazy-optional-fallbac",
+  "title": "Exhaustive JVM 324 Lazy Optional fallback has observable calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.1s, peak 133.0 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032649-exhaustive-jvm-324-lazy-optional-fallbac.json",
+    "sha256": "d306abe0ffa207d2d149b0cfa8e1203d349bda9b6dd20c820ce9caf94a741fd0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032649-exhaustive-jvm-324-lazy-optional-fallbac",
+      "title": "Exhaustive JVM 324 Lazy Optional fallback has observable calls",
+      "description": "Calling the supplier eagerly preserves all returned integers and invokes the supplier on present values. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "324"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 324 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/324-optional-fallback-effects/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:00+00:00",
+  "finishedAt": "2026-11-20T03:45:19+00:00",
+  "wallSeconds": 19.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 139436032,
+    "wallSeconds": 17.1,
+    "cpuSeconds": 25.0,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.14
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 324 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 17.088,
+      "cpuSeconds": 25.005,
+      "cpuThrottledSeconds": 0.357,
+      "peakMemoryBytes": 139436032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 6,
+        "bytes": 248,
+        "sha256": "dbcc8e42ba32496e123c225fb79687e34ebbe62095be9b5df4ca3229cf091f57",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "324 value-lazy established 4 admitted ",
+        "324 value-branch established 4 admitted ",
+        "324 value-eager established 4 admitted ",
+        "324 callbacks-lazy established 4 admitted ",
+        "324 callbacks-branch established 4 admitted ",
+        "324 callbacks-eager refuted 4 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/batch.json",
+      "change": "added",
+      "bytes": 3624,
+      "sha256": "d2c8bce6f7af92cbf4676ea3027803785342e1cdd7fcb33079e362339e578247",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/callbacks-branch.json",
+      "change": "added",
+      "bytes": 4859,
+      "sha256": "688d9cf53e681897c4d6e79a744335955343b292911866bd791a0dd71a8f4eb5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/callbacks-eager.json",
+      "change": "added",
+      "bytes": 6771,
+      "sha256": "c05081409b67a5cfbec3707bb7c21e052b87fbaedd308d7dbc85a72fee65151b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/callbacks-lazy.json",
+      "change": "added",
+      "bytes": 4838,
+      "sha256": "fbc1aa402764c242ddbc56dd721b328e9d48b233e40e15690afc9ed7f09b8c6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/value-branch.json",
+      "change": "added",
+      "bytes": 4839,
+      "sha256": "17ddbda86c9c77b1aeea1210c78d131c0148d017d649125903ef0fb87e5dec45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/value-eager.json",
+      "change": "added",
+      "bytes": 4828,
+      "sha256": "594deaa92eb177d0f3a3756b182faf708e30b39b3fc1b23f102df2c2d24f301b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/value-lazy.json",
+      "change": "added",
+      "bytes": 4819,
+      "sha256": "9fca212b0fa5d18f0f566b3630045157eb4ffca3afe55c94baac5b066c656018",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [
+      "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/batch.json",
+      "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/callbacks-branch.json",
+      "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/callbacks-eager.json",
+      "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/callbacks-lazy.json",
+      "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/value-branch.json",
+      "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/value-eager.json",
+      "examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/value-lazy.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

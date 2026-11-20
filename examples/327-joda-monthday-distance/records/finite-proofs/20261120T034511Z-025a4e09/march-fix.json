@@ -1,0 +1,230 @@
+{
+  "status": "established",
+  "entry": "jodagrid.Projection#days(I)I",
+  "inputs": 4,
+  "differences": 0,
+  "sides": {
+    "fix": {
+      "commit": "3a413d7844c22dc6ddd50bf5d0d55ff3589e47ac",
+      "entry": {
+        "entry": "jodagrid.Projection#days(I)I",
+        "classSha256": "8aaf7142a66aafa8754b28ffc061e4575e8edb15f2e93e0c48fba4b4515c9068",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+        "subjectClassSha256": "6a31ae2203fa1de13205857b4525c8a44a5834b4880a525ba2b5b333e38c48c9"
+      },
+      "classpath": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "c8af8c1de3c6bc77567967049ab591c285ba3ef303573d61f25339e52be6d0e8",
+          "role": "adapter"
+        },
+        {
+          "path": "slice/fix.jar",
+          "sha256": "5d0c9d52c048fda0ab78f6bc7e339e91e2525816247ddd0e02e65ae23cb117ac",
+          "role": "original"
+        },
+        {
+          "path": "lib/org.joda/joda-convert-1.2.jar",
+          "sha256": "5703e1a2ac1969fe90f87076c1f1136822bf31d8948252159c86e6d0535c81a8",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 25 && code / 5 >= 3 && code % 5 >= 3)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = jodagrid.Projection.days(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "29b58d7574f571b14ee5ed253fb9202be6f1304a4ce10bdbcf801c575e5b4bc4",
+      "stdoutSha256": "390b2c0b98bfbb4750fa15bad35776d09578a7b7baa958692cfd2f983f492d0f",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        24
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": false
+        },
+        {
+          "value": 1,
+          "admitted": false
+        },
+        {
+          "value": 2,
+          "admitted": false
+        },
+        {
+          "value": 3,
+          "admitted": false
+        },
+        {
+          "value": 4,
+          "admitted": false
+        },
+        {
+          "value": 5,
+          "admitted": false
+        },
+        {
+          "value": 6,
+          "admitted": false
+        },
+        {
+          "value": 7,
+          "admitted": false
+        },
+        {
+          "value": 8,
+          "admitted": false
+        },
+        {
+          "value": 9,
+          "admitted": false
+        },
+        {
+          "value": 10,
+          "admitted": false
+        },
+        {
+          "value": 11,
+          "admitted": false
+        },
+        {
+          "value": 12,
+          "admitted": false
+        },
+        {
+          "value": 13,
+          "admitted": false
+        },
+        {
+          "value": 14,
+          "admitted": false
+        },
+        {
+          "value": 15,
+          "admitted": false
+        },
+        {
+          "value": 16,
+          "admitted": false
+        },
+        {
+          "value": 17,
+          "admitted": false
+        },
+        {
+          "value": 18,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 19,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 20,
+          "admitted": false
+        },
+        {
+          "value": 21,
+          "admitted": false
+        },
+        {
+          "value": 22,
+          "admitted": false
+        },
+        {
+          "value": 23,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 24,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.235,
+      "cpuSeconds": 0.3338,
+      "peakRssBytes": 61616128,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "fix",
+      "entry": "jodagrid.Projection#days(I)I",
+      "adapterSha256": "c8af8c1de3c6bc77567967049ab591c285ba3ef303573d61f25339e52be6d0e8",
+      "adapterClassSha256": "8aaf7142a66aafa8754b28ffc061e4575e8edb15f2e93e0c48fba4b4515c9068",
+      "subject": {
+        "class": "org.joda.time.Days",
+        "method": "daysBetween",
+        "descriptor": "(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+        "loadedFrom": "slice/fix.jar",
+        "classSha256": "6a31ae2203fa1de13205857b4525c8a44a5834b4880a525ba2b5b333e38c48c9",
+        "adapterCalls": [
+          "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+          "org.joda.time.Days#getDays()I",
+          "org.joda.time.MonthDay#<init>(IILorg/joda/time/Chronology;)V",
+          "org.joda.time.chrono.ISOChronology#getInstanceUTC()Lorg/joda/time/chrono/ISOChronology;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "For code 5*i+j the actual ReadablePartial arguments are MonthDay at indices i and j from Feb 27 through March 2, including leap day, using ISOChronology in UTC. The expected signed count uses daily offsets in a leap year.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 25,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0049,
+  "controlSeconds": 0.003,
+  "wallSeconds": 0.8569,
+  "task": "march-fix",
+  "sourceClaim": "2a884fca8116e7a9",
+  "inputsKey": "ed531475e5b620a7239e193a2068378f313f8efc31f962ad4fc3883d305a19e3",
+  "revisions": [
+    "fix"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "fix": "7c74956dc117b02e55e7e43bfa78898b7c5ee145e425e7581cfeed1d20b9effd"
+  }
+}

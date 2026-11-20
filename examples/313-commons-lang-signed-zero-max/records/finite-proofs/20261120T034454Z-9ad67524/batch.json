@@ -1,0 +1,84 @@
+{
+  "schema": "finite-jvm-batch/v1",
+  "id": "20261120T034454Z-9ad67524",
+  "retryOf": null,
+  "order": [
+    "numeric-parent",
+    "numeric-fix",
+    "raw-bits-parent",
+    "raw-bits-fix"
+  ],
+  "claims": {
+    "numeric-parent": {
+      "sourceClaim": "ed1e3294043f137a",
+      "inputsKey": "7ff783552e1b4ffb76b7a933ca9438fd18c8614e5f1d7ee4fde9058a0c910bd8",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "parent": "89c4c55981d6b5597c7c6e4f5f23e493538ab11951361ae4308dc2aa4a964ff1"
+      }
+    },
+    "numeric-fix": {
+      "sourceClaim": "ed1e3294043f137a",
+      "inputsKey": "fb10172d45bd8297ad9a153e470abfddb647d210f376757a6436016e452ca27c",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "fix": "f3159d27386837663cb309dd49c63a601d536bbcef35bbf7e97b9e91c4562e04"
+      }
+    },
+    "raw-bits-parent": {
+      "sourceClaim": "20a716a332f22c7e",
+      "inputsKey": "3389304288d1b63736a80eaaa618894d5bfb9185fd0f6e601e8c583c9f39a2de",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "sourceLocks": {
+        "parent": "89c4c55981d6b5597c7c6e4f5f23e493538ab11951361ae4308dc2aa4a964ff1"
+      }
+    },
+    "raw-bits-fix": {
+      "sourceClaim": "20a716a332f22c7e",
+      "inputsKey": "8c86d0103f7ccedd171ff0d2d513e55fa6673426e43d1d94376e477b5837585c",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "fix": "f3159d27386837663cb309dd49c63a601d536bbcef35bbf7e97b9e91c4562e04"
+      }
+    }
+  },
+  "status": "completed",
+  "completed": [
+    {
+      "task": "numeric-parent",
+      "status": "established",
+      "sha256": "b1735cbcc3f51e13f7bfa12e0c2181ebfd2c4eef527ded91d9dba7b61a8f03c8"
+    },
+    {
+      "task": "numeric-fix",
+      "status": "established",
+      "sha256": "4b8ef21c37d8a544e9e39631978b43ec21c41886afb84faa2b5439a1330e9097"
+    },
+    {
+      "task": "raw-bits-parent",
+      "status": "refuted",
+      "sha256": "6205bf490a20baa075f1bd10cc14c85a10c916a1096fb316ee4f7d7812559d28"
+    },
+    {
+      "task": "raw-bits-fix",
+      "status": "established",
+      "sha256": "fc360cc9ace566f5796f13641c5d4b51bbae18ff5878ad2bab3ae9c7d7e0c076"
+    }
+  ],
+  "missing": [],
+  "secondsPerJvm": 120,
+  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
+  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
+}

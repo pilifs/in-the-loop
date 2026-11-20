@@ -1,0 +1,763 @@
+--- /dev/null
++++ b/examples/312-invoice-ordered-rate-jars/records/finite-proofs/20261120T034454Z-a16ee9d7/batch.json
+@@ -0,0 +1,88 @@
++{
++  "schema": "finite-jvm-batch/v1",
++  "id": "20261120T034454Z-a16ee9d7",
++  "retryOf": null,
++  "order": [
++    "invoice-values",
++    "zero-only",
++    "rate-two-first",
++    "rate-three-first"
++  ],
++  "claims": {
++    "invoice-values": {
++      "sourceClaim": "a3277271b04b82e9",
++      "inputsKey": "f14118ed603b524dd0be29ea967819a35c5b720df665c348f1b52615598092ec",
++      "revisions": [
++        "two-first",
++        "three-first"
++      ],
++      "expected": "refuted",
++      "sourceLocks": {
++        "two-first": "93b02b396b058d6d79c26ed2db16bbf1935fdf8b98e18c8d99b6cbe681a13932",
++        "three-first": "00ae6828d638d5a6d87b933b2d4ba1ca9fe8e52ad84502530e70e33c1da65bbc"
++      }
++    },
++    "zero-only": {
++      "sourceClaim": "653483ee673c9153",
++      "inputsKey": "9bf2d1c48cac8db3302e37f95baa4ecbc446651a38db07f67ba89373810125f7",
++      "revisions": [
++        "two-first",
++        "three-first"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "two-first": "93b02b396b058d6d79c26ed2db16bbf1935fdf8b98e18c8d99b6cbe681a13932",
++        "three-first": "00ae6828d638d5a6d87b933b2d4ba1ca9fe8e52ad84502530e70e33c1da65bbc"
++      }
++    },
++    "rate-two-first": {
++      "sourceClaim": "d0500ccf7426fbf2",
++      "inputsKey": "1eec495b92a979fe8c376a12e62006b798d9a396afca19382fc8532a6d48f9a9",
++      "revisions": [
++        "two-first"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "two-first": "93b02b396b058d6d79c26ed2db16bbf1935fdf8b98e18c8d99b6cbe681a13932"
++      }
++    },
++    "rate-three-first": {
++      "sourceClaim": "53397215b1ac6f04",
++      "inputsKey": "b1a6a5160c65446150c18ef0b805ef269c05ac9e55cd4a6ed072ec7d644a3f70",
++      "revisions": [
++        "three-first"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "three-first": "00ae6828d638d5a6d87b933b2d4ba1ca9fe8e52ad84502530e70e33c1da65bbc"
++      }
++    }
++  },
++  "status": "completed",
++  "completed": [
++    {
++      "task": "invoice-values",
++      "status": "refuted",
++      "sha256": "ae347ae46339e671a3600a1918b1b370fed5921d1393fdc255b485a55dea755d"
++    },
++    {
++      "task": "zero-only",
++      "status": "established",
++      "sha256": "1531ca4d9199434eaf3ee41d5f715c85640f873e8d45a143393206f10cb7a442"
++    },
++    {
++      "task": "rate-two-first",
++      "status": "established",
++      "sha256": "951c943cbc71061f8ef83a2810ccb03170087e9a6ca43aaf8cfca0163fae9ebe"
++    },
++    {
++      "task": "rate-three-first",
++      "status": "established",
++      "sha256": "2721c88f39c26f9f129b6ad592dcc6d726d44d9767e260158920793428cf2b77"
++    }
++  ],
++  "missing": [],
++  "secondsPerJvm": 120,
++  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
++  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
++}
+--- /dev/null
++++ b/examples/312-invoice-ordered-rate-jars/records/finite-proofs/20261120T034454Z-a16ee9d7/invoice-values.json
+@@ -0,0 +1,265 @@
++{
++  "status": "refuted",
++  "entry": "invoice.Invoice#total(I)I",
++  "inputs": 5,
++  "differences": 4,
++  "sides": {
++    "two-first": {
++      "commit": "fixture:client",
++      "entry": {
++        "entry": "invoice.Invoice#total(I)I",
++        "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
++        "loadedFrom": "two-first.jar",
++        "subject": "invoice.Invoice#total(I)I",
++        "subjectClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2"
++      },
++      "classpath": [
++        {
++          "path": "two-first.jar",
++          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
++          "role": "original"
++        },
++        {
++          "path": "lib/rates/two.jar",
++          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/rates/three.jar",
++          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "q",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint q = Integer.parseInt(args[0]);\nif (!(q >= -2 && q <= 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "ed99f59381f226c3eb260ff6c98aa52033d2bf1ddc29033cf33c130cfa9b6110",
++      "stdoutSha256": "d246db4e8d01048430b5808c864485edda20adaa14862de547ab347c08ad78ec",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        -2,
++        2
++      ],
++      "rows": [
++        {
++          "value": -2,
++          "admitted": true,
++          "observations": [
++            -4,
++            null
++          ]
++        },
++        {
++          "value": -1,
++          "admitted": true,
++          "observations": [
++            -2,
++            null
++          ]
++        },
++        {
++          "value": 0,
++          "admitted": true,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "observations": [
++            4,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.105,
++      "cpuSeconds": 0.1097,
++      "peakRssBytes": 61562880,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    },
++    "three-first": {
++      "commit": "fixture:client",
++      "entry": {
++        "entry": "invoice.Invoice#total(I)I",
++        "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
++        "loadedFrom": "three-first.jar",
++        "subject": "invoice.Invoice#total(I)I",
++        "subjectClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2"
++      },
++      "classpath": [
++        {
++          "path": "three-first.jar",
++          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
++          "role": "original"
++        },
++        {
++          "path": "lib/rates/three.jar",
++          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/rates/two.jar",
++          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "q",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint q = Integer.parseInt(args[0]);\nif (!(q >= -2 && q <= 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "ed99f59381f226c3eb260ff6c98aa52033d2bf1ddc29033cf33c130cfa9b6110",
++      "stdoutSha256": "207db56f01aa8563d130a1b93e666102b91385d3623a067fb4c528e515567af6",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        -2,
++        2
++      ],
++      "rows": [
++        {
++          "value": -2,
++          "admitted": true,
++          "observations": [
++            -6,
++            null
++          ]
++        },
++        {
++          "value": -1,
++          "admitted": true,
++          "observations": [
++            -3,
++            null
++          ]
++        },
++        {
++          "value": 0,
++          "admitted": true,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "observations": [
++            6,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.084,
++      "cpuSeconds": 0.0924,
++      "peakRssBytes": 61562880,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 8.0185,
++  "controlSeconds": 0.3892,
++  "replay": {
++    "claimKey": "a3277271b04b82e9",
++    "entry": "invoice.Invoice#total(I)I",
++    "inputs": [
++      {
++        "name": "q",
++        "type": "int",
++        "value": -2
++      }
++    ],
++    "observations": [
++      "result",
++      "exception"
++    ],
++    "by": "jvm",
++    "reproduced": true,
++    "sides": {
++      "two-first": {
++        "entryClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
++        "classpath": [
++          "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
++          "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
++          "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3"
++        ],
++        "program": "class CandidateReplay { public static void main(String[] args) {\nint q = -2;\nif (!(q >= -2 && q <= 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++        "admitted": true,
++        "values": [
++          -4,
++          null
++        ]
++      },
++      "three-first": {
++        "entryClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
++        "classpath": [
++          "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
++          "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
++          "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1"
++        ],
++        "program": "class CandidateReplay { public static void main(String[] args) {\nint q = -2;\nif (!(q >= -2 && q <= 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++        "admitted": true,
++        "values": [
++          -6,
++          null
++        ]
++      }
++    },
++    "jdkRelease": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    }
++  },
++  "wallSeconds": 11.4064,
++  "task": "invoice-values",
++  "sourceClaim": "a3277271b04b82e9",
++  "inputsKey": "f14118ed603b524dd0be29ea967819a35c5b720df665c348f1b52615598092ec",
++  "revisions": [
++    "two-first",
++    "three-first"
++  ],
++  "expected": "refuted",
++  "sourceLocks": {
++    "two-first": "93b02b396b058d6d79c26ed2db16bbf1935fdf8b98e18c8d99b6cbe681a13932",
++    "three-first": "00ae6828d638d5a6d87b933b2d4ba1ca9fe8e52ad84502530e70e33c1da65bbc"
++  }
++}
+--- /dev/null
++++ b/examples/312-invoice-ordered-rate-jars/records/finite-proofs/20261120T034454Z-a16ee9d7/rate-three-first.json
+@@ -0,0 +1,124 @@
++{
++  "status": "established",
++  "entry": "invoice.Invoice#total(I)I",
++  "inputs": 5,
++  "differences": 0,
++  "sides": {
++    "three-first": {
++      "commit": "fixture:client",
++      "entry": {
++        "entry": "invoice.Invoice#total(I)I",
++        "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
++        "loadedFrom": "three-first.jar",
++        "subject": "invoice.Invoice#total(I)I",
++        "subjectClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2"
++      },
++      "classpath": [
++        {
++          "path": "three-first.jar",
++          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
++          "role": "original"
++        },
++        {
++          "path": "lib/rates/three.jar",
++          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/rates/two.jar",
++          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "q",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint q = Integer.parseInt(args[0]);\nif (!(q >= -2 && q <= 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == q * 3));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "73b3cfd099cc01ec31638fa074bc980157a7a11c499fd682becabdf2ff3fe437",
++      "stdoutSha256": "6c2d219cf8a3dd07eac56e38442c42b14f301cf3f815284213037798995e03d3",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        -2,
++        2
++      ],
++      "rows": [
++        {
++          "value": -2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            -6,
++            null
++          ]
++        },
++        {
++          "value": -1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            -3,
++            null
++          ]
++        },
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            3,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            6,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.083,
++      "cpuSeconds": 0.0964,
++      "peakRssBytes": 61562880,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 0.0048,
++  "controlSeconds": 0.2207,
++  "wallSeconds": 1.0186,
++  "task": "rate-three-first",
++  "sourceClaim": "53397215b1ac6f04",
++  "inputsKey": "b1a6a5160c65446150c18ef0b805ef269c05ac9e55cd4a6ed072ec7d644a3f70",
++  "revisions": [
++    "three-first"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "three-first": "00ae6828d638d5a6d87b933b2d4ba1ca9fe8e52ad84502530e70e33c1da65bbc"
++  }
++}
+--- /dev/null
++++ b/examples/312-invoice-ordered-rate-jars/records/finite-proofs/20261120T034454Z-a16ee9d7/rate-two-first.json
+@@ -0,0 +1,124 @@
++{
++  "status": "established",
++  "entry": "invoice.Invoice#total(I)I",
++  "inputs": 5,
++  "differences": 0,
++  "sides": {
++    "two-first": {
++      "commit": "fixture:client",
++      "entry": {
++        "entry": "invoice.Invoice#total(I)I",
++        "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
++        "loadedFrom": "two-first.jar",
++        "subject": "invoice.Invoice#total(I)I",
++        "subjectClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2"
++      },
++      "classpath": [
++        {
++          "path": "two-first.jar",
++          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
++          "role": "original"
++        },
++        {
++          "path": "lib/rates/two.jar",
++          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/rates/three.jar",
++          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "q",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint q = Integer.parseInt(args[0]);\nif (!(q >= -2 && q <= 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == q * 2));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "cd5802e8b85dc014900b35df6ca20b1925c866faf97ab33e105b33fa8b68de74",
++      "stdoutSha256": "91b86716e226830d5bda2334724c16389cea65a962d2d81084cb59a82344af5d",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        -2,
++        2
++      ],
++      "rows": [
++        {
++          "value": -2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            -4,
++            null
++          ]
++        },
++        {
++          "value": -1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            -2,
++            null
++          ]
++        },
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            2,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            4,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.095,
++      "cpuSeconds": 0.1096,
++      "peakRssBytes": 61562880,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 0.0023,
++  "controlSeconds": 0.168,
++  "wallSeconds": 0.9128,
++  "task": "rate-two-first",
++  "sourceClaim": "d0500ccf7426fbf2",
++  "inputsKey": "1eec495b92a979fe8c376a12e62006b798d9a396afca19382fc8532a6d48f9a9",
++  "revisions": [
++    "two-first"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "two-first": "93b02b396b058d6d79c26ed2db16bbf1935fdf8b98e18c8d99b6cbe681a13932"
++  }
++}
+--- /dev/null
++++ b/examples/312-invoice-ordered-rate-jars/records/finite-proofs/20261120T034454Z-a16ee9d7/zero-only.json
+@@ -0,0 +1,147 @@
++{
++  "status": "established",
++  "entry": "invoice.Invoice#total(I)I",
++  "inputs": 1,
++  "differences": 0,
++  "sides": {
++    "two-first": {
++      "commit": "fixture:client",
++      "entry": {
++        "entry": "invoice.Invoice#total(I)I",
++        "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
++        "loadedFrom": "two-first.jar",
++        "subject": "invoice.Invoice#total(I)I",
++        "subjectClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2"
++      },
++      "classpath": [
++        {
++          "path": "two-first.jar",
++          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
++          "role": "original"
++        },
++        {
++          "path": "lib/rates/two.jar",
++          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/rates/three.jar",
++          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "q",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint q = Integer.parseInt(args[0]);\nif (!(q == 0)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "13e585125fb78200e81ac812e6c1c6aed1876195904ca46fc21d6ea3c0acc798",
++      "stdoutSha256": "d2fb874b5beffc221ce80a916bfabf70f330eebb2d59e099e601a8c413fbb902",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        0
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "observations": [
++            0,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.083,
++      "cpuSeconds": 0.0994,
++      "peakRssBytes": 61562880,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    },
++    "three-first": {
++      "commit": "fixture:client",
++      "entry": {
++        "entry": "invoice.Invoice#total(I)I",
++        "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
++        "loadedFrom": "three-first.jar",
++        "subject": "invoice.Invoice#total(I)I",
++        "subjectClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2"
++      },
++      "classpath": [
++        {
++          "path": "three-first.jar",
++          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
++          "role": "original"
++        },
++        {
++          "path": "lib/rates/three.jar",
++          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
++          "role": "dependency"
++        },
++        {
++          "path": "lib/rates/two.jar",
++          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "q",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint q = Integer.parseInt(args[0]);\nif (!(q == 0)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "13e585125fb78200e81ac812e6c1c6aed1876195904ca46fc21d6ea3c0acc798",
++      "stdoutSha256": "d2fb874b5beffc221ce80a916bfabf70f330eebb2d59e099e601a8c413fbb902",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        0
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "observations": [
++            0,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.105,
++      "cpuSeconds": 0.1072,
++      "peakRssBytes": 61562880,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 0.0034,
++  "controlSeconds": 0.0,
++  "wallSeconds": 2.0447,
++  "task": "zero-only",
++  "sourceClaim": "653483ee673c9153",
++  "inputsKey": "9bf2d1c48cac8db3302e37f95baa4ecbc446651a38db07f67ba89373810125f7",
++  "revisions": [
++    "two-first",
++    "three-first"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "two-first": "93b02b396b058d6d79c26ed2db16bbf1935fdf8b98e18c8d99b6cbe681a13932",
++    "three-first": "00ae6828d638d5a6d87b933b2d4ba1ca9fe8e52ad84502530e70e33c1da65bbc"
++  }
++}

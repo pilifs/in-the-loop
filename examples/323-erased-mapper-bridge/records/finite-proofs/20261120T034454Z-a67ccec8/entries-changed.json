@@ -1,0 +1,157 @@
+{
+  "status": "established",
+  "entry": "bridgegrid.Projection#entries(I)I",
+  "inputs": 5,
+  "differences": 0,
+  "sides": {
+    "changed": {
+      "commit": "fixture:changed",
+      "entry": {
+        "entry": "bridgegrid.Projection#entries(I)I",
+        "classSha256": "abf4a8d9446d213304116c73ab4ce36898cde2a5bd0f6ed10e51a15ccebf7942",
+        "loadedFrom": "adapter-changed.jar",
+        "subject": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+        "subjectClassSha256": "72a7eb003bcf14da589c80d0cf9df61e13adbfb1d47bbb6ce74802efa54e1456"
+      },
+      "classpath": [
+        {
+          "path": "adapter-changed.jar",
+          "sha256": "525196bb1cd947b5cc918cf13799d5d32f2830e5f6491a19d63166d4e9a9f9d5",
+          "role": "adapter"
+        },
+        {
+          "path": "changed.jar",
+          "sha256": "2409d202ca6b43fa7273adf14fa5cf9be7f308b709f4034d39d09d4254992131",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 5)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = bridgegrid.Projection.entries(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "13f02ca25a25774d7d66d30fc49bb46a9fea27d815c919fce5fcb68946ec58b4",
+      "stdoutSha256": "960ae6c1c9d13b4da739b518b6e5562a8bf151c064c3a7e638ee544c503767c1",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        4
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 4,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.085,
+      "cpuSeconds": 0.1055,
+      "peakRssBytes": 61693952,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "changed",
+      "entry": "bridgegrid.Projection#entries(I)I",
+      "adapterSha256": "525196bb1cd947b5cc918cf13799d5d32f2830e5f6491a19d63166d4e9a9f9d5",
+      "adapterClassSha256": "abf4a8d9446d213304116c73ab4ce36898cde2a5bd0f6ed10e51a15ccebf7942",
+      "subject": {
+        "class": "bridgegrid.Plus",
+        "method": "map",
+        "descriptor": "(Ljava/lang/Object;)Ljava/lang/Object;",
+        "loadedFrom": "changed.jar",
+        "classSha256": "72a7eb003bcf14da589c80d0cf9df61e13adbfb1d47bbb6ce74802efa54e1456",
+        "bridgeDispatch": {
+          "receiver": "bridgegrid.Plus",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/Object;",
+          "interfaces": [
+            "bridgegrid.Mapper"
+          ],
+          "accessFlags": 4161
+        },
+        "adapterCalls": [
+          "bridgegrid.Mapper#map(Ljava/lang/Object;)Ljava/lang/Object;",
+          "bridgegrid.Plus#<init>()V",
+          "bridgegrid.Plus#map(Ljava/lang/Integer;)Ljava/lang/Integer;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 5,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0024,
+  "controlSeconds": 0.0007,
+  "wallSeconds": 0.8177,
+  "task": "entries-changed",
+  "sourceClaim": "60476b93a0e580d0",
+  "inputsKey": "910b6fb9d266afac0ae8614f01958dd9cb2f3bdd1e06958aabe6f48158c57f24",
+  "revisions": [
+    "changed"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "changed": "ed389a04438920af6025f01b41027f68871ddb7fcffb5cce0f12b1ae0cff7f62"
+  }
+}
