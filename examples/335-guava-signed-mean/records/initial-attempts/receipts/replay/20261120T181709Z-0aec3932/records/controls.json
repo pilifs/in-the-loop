@@ -1,0 +1,167 @@
+{
+  "task": "replay",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "release",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:lib/com.google.guava/guava-33.4.8-jre.jar",
+        "mean.MeanCases",
+        "--observations"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.114,
+      "stdout": "controls/control-release-jdk21.stdout",
+      "stderr": "controls/control-release-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "f99f5e1a523ca58a0b82cb2ce79db8af9a24339b717e43e4ed94c49721b424e0",
+            "role": "driver"
+          },
+          {
+            "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+            "role": "original"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "mean.MeanCases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/oracle.py",
+          "oracleSha256": "e636cb3439ea8c1b8ad3d203870abf819b6c00ef553b586f319fe7bbedd2f023"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": null,
+      "control": "driver",
+      "directory": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/examples-j9adhrhg/targets/335/replay/20261120T181709Z-0aec3932",
+      "record": "controls/controls.json",
+      "reason": null,
+      "log": {
+        "cwd": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/examples-j9adhrhg/targets/335/replay/20261120T181709Z-0aec3932/prepare/release",
+        "problem": "a line of the driver's output is not a JSON object"
+      }
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "mutant",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:mutant/guava-33.4.8-jre.jar",
+        "mean.MeanCases",
+        "--observations"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.114,
+      "stdout": "controls/control-mutant-jdk21.stdout",
+      "stderr": "controls/control-mutant-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "mutant:f06690fa3e874f65515e8fd338a74d636e2c792f+103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "f99f5e1a523ca58a0b82cb2ce79db8af9a24339b717e43e4ed94c49721b424e0",
+            "role": "driver"
+          },
+          {
+            "path": "mutant/guava-33.4.8-jre.jar",
+            "sha256": "d895693b47636f7c6a2992fd37e7bb80b0aeb40891991ae5836bae45e2330c64",
+            "role": "original"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "mean.MeanCases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/oracle.py",
+          "oracleSha256": "e636cb3439ea8c1b8ad3d203870abf819b6c00ef553b586f319fe7bbedd2f023"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": null,
+      "control": "driver",
+      "directory": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/examples-j9adhrhg/targets/335/replay/20261120T181709Z-0aec3932",
+      "record": "controls/controls.json",
+      "reason": null,
+      "log": {
+        "cwd": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/examples-j9adhrhg/targets/335/replay/20261120T181709Z-0aec3932/prepare/mutant",
+        "problem": "a line of the driver's output is not a JSON object"
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "337",
+  "title": "A JDK range fill observed through a second array root",
+  "summary": "Verify the half-open write range when another caller reference can alias the target or select a distinct array.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "aliasing",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Java Arrays",
+    "file": "original/fill/Range.java",
+    "symbol": "fill.Range#apply([I[IIII)I"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Verify the half-open write range when another caller reference can alias the target or select a distinct array."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": []
+}

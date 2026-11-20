@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-183452-335-prove-guava-signed-means-over-both-e",
+  "title": "335 prove Guava signed means over both entire primitive domains",
+  "description": "Check the released IntMath.mean and LongMath.mean on all signed input pairs, together with the deliberately overflow-prone control. The 65-bit reference includes the carry from bit 63, and the external boundary check uses BigInteger.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "335"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T18:34:52+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 335 --tasks mean-32-release,mean-32-mutant,mean-64-release,mean-64-mutant --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/335-guava-signed-mean/receipts/mean-32-release",
+    "examples/335-guava-signed-mean/receipts/mean-32-mutant",
+    "examples/335-guava-signed-mean/receipts/mean-64-release",
+    "examples/335-guava-signed-mean/receipts/mean-64-mutant"
+  ]
+}

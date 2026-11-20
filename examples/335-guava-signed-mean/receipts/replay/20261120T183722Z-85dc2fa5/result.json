@@ -1,0 +1,201 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "6188a20310c0155e",
+    "format": 1,
+    "example": "335",
+    "statement": {
+      "approach": "target",
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "com.google.common.math.IntMath#mean(II)I",
+      "revisions": [
+        "release"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "replay",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "com.google.common.math.IntMath#mean(II)I",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/mean/MeanCases.java",
+            "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+          }
+        ],
+        "key": "7118c279594b7bd5"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay",
+      "sidecar": "12445110f14fd798723b4325c36f5e79f1bdb768111f0d2e8bf54556fdf8a2d6",
+      "revisions": {
+        "release": "f06690fa3e874f65515e8fd338a74d636e2c792f"
+      },
+      "dependencies": [
+        {
+          "revision": "release",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ccde79b194e7dc4c2708415ed128e7e19481b96b359c6fa2ba3fb90db72acacf"
+        },
+        {
+          "revision": "release",
+          "position": 1,
+          "role": "original",
+          "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+          "coordinates": "com.google.guava:guava:33.4.8-jre"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/oracle.py": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1",
+        "driver/mean/MeanCases.java": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+      },
+      "claimKey": "7118c279594b7bd5"
+    }
+  },
+  "attempt": {
+    "id": "20261120T183722Z-85dc2fa5",
+    "claim": "6188a20310c0155e",
+    "startedAt": "2026-11-20T18:37:22+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "048ef38bf4710ea653213f77e5edeeb3a6c2a930d85f64bd308a8e30b3e3049a",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control release on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-release-jdk21.stdout",
+        "stderr": "records/control-release-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "6188a20310c0155e",
+    "attempt": "20261120T183722Z-85dc2fa5",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: release holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"release\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "85fa1aae4fba2218e191ce9fb0f4849f54e1915c2ec9c27662b55bc30773bfe3",
+        "bytes": 40784
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "30eb2a4e4fb13dfa972b16bf36bafdf3bc18709e4c9cbb982192e62bc9c5c491",
+        "bytes": 180
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "32a5b0fe7b801cee793d6a4ff34356b97d9eadd82108afedd2acb54deb85de00",
+        "bytes": 1039
+      },
+      {
+        "path": "records/control-release-jdk21.stdout",
+        "sha256": "8b98fb9d2424af7934f85c46080fff1f981c0896ae9167fa2edb044b6dc4e6d1",
+        "bytes": 19256
+      },
+      {
+        "path": "records/control-release-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "d1d952b337d01581eac59a470bbf476bffff81c4aa7be1d22d6981ffa7a24439",
+        "bytes": 40986
+      }
+    ]
+  }
+}

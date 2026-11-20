@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-184235-310-test-native-counterexamples-on-unmod",
+  "title": "310 test native counterexamples on unmodified startup",
+  "description": "For each native counterexample found under observed initialization, construct its concrete input on the original ordered classpath without injecting startup state. Require the original guard, false assertion, identical observed value, class bytes and JDK. Preserve both scope identities.",
+  "kind": "real-world",
+  "capabilities": [
+    "target:history",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "310"
+    ]
+  },
+  "expected": "Each submitted witness is an admitted refutation of the original assertion in a fresh JVM and is linked to its qualifying native source.",
+  "submitted": {
+    "at": "2026-11-20T18:42:35+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "clock-parent on original bytecode",
+      "run": "python3 examples/tools/build.py 310 --original-witness clock-parent --from-task clock-parent-observed",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/310-threeten-complete-hours/records/original-witnesses",
+    "examples/310-threeten-complete-hours/receipts/clock-parent/executions"
+  ]
+}

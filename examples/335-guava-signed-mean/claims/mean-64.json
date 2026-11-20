@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "mean-64",
+  "statement": "For all ordered pairs of signed 64-bit values the sign-extended result is the arithmetic half of their exact signed sum at width 65.",
+  "assume": "true",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 8
+  },
+  "assert": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))"
+}

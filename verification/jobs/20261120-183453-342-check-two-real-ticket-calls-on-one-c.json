@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-183453-342-check-two-real-ticket-calls-on-one-c",
+  "title": "342 check two real ticket calls on one counter",
+  "description": "Run the frozen two-thread linearizability and serial controls against the synchronized method, synchronized block and split critical sections. Keep original strict refusals and the independent real-thread histories.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "342"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T18:34:53+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 342 --tasks histories-method,serial-method,histories-block,serial-block,histories-split,serial-split --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/342-two-thread-tickets/receipts/histories-method",
+    "examples/342-two-thread-tickets/receipts/serial-method",
+    "examples/342-two-thread-tickets/receipts/histories-block",
+    "examples/342-two-thread-tickets/receipts/serial-block",
+    "examples/342-two-thread-tickets/receipts/histories-split",
+    "examples/342-two-thread-tickets/receipts/serial-split"
+  ]
+}

@@ -21,7 +21,7 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
             return "the JVM witness does not identify the planned roots by name and type"
         name, data = expected["name"], value["value"]
         if data is None:
-            if expected["type"] == "int" or name not in nullable:
+            if expected["type"] in ("int", "long") or name not in nullable:
                 return f"{name} is null outside its planned domain"
         elif isinstance(data, dict):
             earlier = data.get("same")
@@ -29,9 +29,10 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
                     or inputs[earlier]["type"] != expected["type"] or inputs[earlier]["value"] is None
                     or not any(name in group and inputs[earlier]["name"] in group for group in aliases)):
                 return f"{name} has an alias outside its planned domain"
-        elif expected["type"] == "int":
-            if type(data) is not int or not -(2**31) <= data < 2**31:
-                return f"{name} is outside the planned int domain"
+        elif expected["type"] in ("int", "long"):
+            limit = 1 << (63 if expected["type"] == "long" else 31)
+            if type(data) is not int or not -limit <= data < limit:
+                return f"{name} is outside the planned {expected['type']} domain"
         elif expected["type"] == "int[]":
             if not isinstance(data, list) or len(data) > bound or not all(type(n) is int and -(2**31) <= n < 2**31 for n in data):
                 return f"{name} is outside the planned int-array domain at bound {bound}"

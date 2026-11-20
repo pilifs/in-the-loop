@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-184923-342-explore-compiled-ticket-monitors-wit",
+  "title": "342 explore compiled ticket monitors with two JVM workers",
+  "description": "Explore every enabled instruction of each compiled counter, the invocation and return intervals, monitor ownership and both Thread starts and joins. Compare the full labeled history with the sequential oracle. Require the duplicate ticket and terminal state to occur on a real JVM execution.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:monitor-histories",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "342"
+    ]
+  },
+  "expected": "Both correct counters are linearizable for all completed two-thread histories. The split counter has an admissible real JVM history with both tickets and the final counter equal to one.",
+  "submitted": {
+    "at": "2026-11-20T18:49:23+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "tickets-method",
+      "run": "python3 examples/tools/build.py 342 --monitor-histories tickets-method",
+      "cwd": "."
+    },
+    {
+      "name": "tickets-block",
+      "run": "python3 examples/tools/build.py 342 --monitor-histories tickets-block",
+      "cwd": "."
+    },
+    {
+      "name": "tickets-split",
+      "run": "python3 examples/tools/build.py 342 --monitor-histories tickets-split",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/342-two-thread-tickets/records/monitor-histories"
+  ]
+}

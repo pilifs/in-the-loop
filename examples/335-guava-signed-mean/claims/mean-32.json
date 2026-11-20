@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "mean-32",
+  "statement": "For all ordered pairs of signed 32-bit values the sign-extended result is the arithmetic half of their exact signed sum at width 33.",
+  "assume": "true",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 8
+  },
+  "assert": "((long) result) == ((((long) x) + ((long) y)) >> 1)"
+}

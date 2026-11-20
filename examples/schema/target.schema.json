@@ -194,6 +194,27 @@
         "adapters": { "description": "Adapter sources in the example's folder, compiled separately from the original sources.", "type": "array", "items": { "$ref": "#/$defs/file" } }
       }
     },
+    "monitorContracts": {
+      "description": "Completed histories from bounded sequentially consistent exploration of compiled monitor operations.",
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false, "required": ["id","revision","bindingTask","entry","expected"],
+        "properties": {
+          "id": {"$ref":"#/$defs/name"}, "revision": {"$ref":"#/$defs/name"}, "bindingTask": {"$ref":"#/$defs/name"},
+          "entry": {"type":"string","minLength":3}, "expected": {"enum":["established","refuted"]}
+        }
+      }
+    },
+    "arrayContracts": {
+      "description": "Inductive claims over every already allocated Java array, using an existing public task's prepared subject.",
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false, "required": ["id", "bindingTask", "revision", "entry", "rule"],
+        "properties": {
+          "id": {"$ref": "#/$defs/name"}, "bindingTask": {"$ref": "#/$defs/name"}, "revision": {"$ref": "#/$defs/name"},
+          "entry": {"type": "string", "minLength": 3}, "rule": {"enum": ["first-index", "range-fill"]},
+          "caller": {"description": "For a range fill, an application caller which reads an arbitrary cell through its second array root.", "type": "string", "minLength": 3}
+        }
+      }
+    },
     "tasks": {
       "description": "Each task a later agent can plan, prepare, run or hand off. Empty for a catalog entry. A repair is composed from separate tasks (the vulnerable property, the same property on the fix, preservation); there is no fix task.",
       "type": "array",

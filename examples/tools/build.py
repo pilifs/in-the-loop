@@ -211,6 +211,15 @@ def stages(out):
 
 def main(argv):
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
+    if len(argv) >= 2 and argv[1] == "--array-induction":
+        from targets import array_induction
+        return array_induction.main([argv[0], *argv[2:]])
+    if len(argv) >= 2 and argv[1] == "--original-witness":
+        from targets import original_witness
+        return original_witness.main([argv[0], *argv[2:]])
+    if len(argv) >= 2 and argv[1] == "--monitor-histories":
+        from targets import monitor_histories
+        return monitor_histories.main([argv[0], *argv[2:]])
     if len(argv) >= 2 and argv[1] == "--finite-domain":
         from targets import finite_check
         return finite_check.main([argv[0], *argv[2:]])

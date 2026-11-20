@@ -1,0 +1,5136 @@
+{
+  "schema": "java-monitor-histories/v1",
+  "sourceKey": "aee262998b1e94cdf26c9a160ce90fd6cf2471be3d428aa0c64944d4d251a760",
+  "entry": "tickets.Counter#take()I",
+  "revision": "split",
+  "status": "refuted",
+  "scope": {
+    "memory": "sequentially consistent",
+    "threads": 2,
+    "callsPerThread": 1,
+    "receivers": 1,
+    "initialValue": 0,
+    "completedCalls": 2,
+    "allocation": "one exact receiver and two fixed worker identities",
+    "scheduling": "all enabled compiled instructions plus start and join"
+  },
+  "originalJarSha256": "8eee029ebf72ef362a3f195145d1d546803da7c481ce8661117c43cd0624b8ab",
+  "classSha256": "a3fa6f9b5a38c349b2877b6592ce9303f5fe7df845d901fb5158b4459d353562",
+  "synchronizedMethod": false,
+  "field": "Field issued:I",
+  "jdk": {
+    "feature": "21",
+    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "disassembly": "Compiled from \"Counter.java\"\npublic class tickets.Counter {\n  private int issued;\n    descriptor: I\n\n  public tickets.Counter();\n    descriptor: ()V\n    Code:\n       0: aload_0\n       1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n       4: return\n\n  public int take();\n    descriptor: ()I\n    Code:\n       0: aload_0\n       1: dup\n       2: astore_2\n       3: monitorenter\n       4: aload_0\n       5: getfield      #7                  // Field issued:I\n       8: istore_1\n       9: aload_2\n      10: monitorexit\n      11: goto          19\n      14: astore_3\n      15: aload_2\n      16: monitorexit\n      17: aload_3\n      18: athrow\n      19: aload_0\n      20: invokevirtual #13                 // Method between:()V\n      23: aload_0\n      24: dup\n      25: astore_2\n      26: monitorenter\n      27: aload_0\n      28: iload_1\n      29: iconst_1\n      30: iadd\n      31: putfield      #7                  // Field issued:I\n      34: aload_0\n      35: getfield      #7                  // Field issued:I\n      38: aload_2\n      39: monitorexit\n      40: ireturn\n      41: astore        4\n      43: aload_2\n      44: monitorexit\n      45: aload         4\n      47: athrow\n    Exception table:\n       from    to  target type\n           4    11    14   any\n          14    17    14   any\n          27    40    41   any\n          41    45    41   any\n\n  protected void between();\n    descriptor: ()V\n    Code:\n       0: return\n\n  public int issued();\n    descriptor: ()I\n    Code:\n       0: aload_0\n       1: getfield      #7                  // Field issued:I\n       4: ireturn\n}\n",
+  "explorations": {
+    "ab": {
+      "visited": 61,
+      "transitions": 60,
+      "blockedTerminal": 0,
+      "completed": [
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        }
+      ]
+    },
+    "ba": {
+      "visited": 61,
+      "transitions": 60,
+      "blockedTerminal": 0,
+      "completed": [
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ],
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 2"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ]
+          ]
+        }
+      ]
+    },
+    "overlap": {
+      "visited": 1703,
+      "transitions": 2992,
+      "blockedTerminal": 0,
+      "completed": [
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            1
+          ],
+          "field": 1,
+          "linearizable": false,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            1,
+            1
+          ],
+          "field": 1,
+          "linearizable": false,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 2"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 2"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            1
+          ],
+          "field": 1,
+          "linearizable": false,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            1,
+            1
+          ],
+          "field": 1,
+          "linearizable": false,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 2"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 2"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 astore_2"
+            ],
+            [
+              1,
+              "3 monitorenter"
+            ],
+            [
+              1,
+              "4 aload_0"
+            ],
+            [
+              1,
+              "5 getfield"
+            ],
+            [
+              1,
+              "8 istore_1"
+            ],
+            [
+              1,
+              "9 aload_2"
+            ],
+            [
+              1,
+              "10 monitorexit"
+            ],
+            [
+              1,
+              "11 goto"
+            ],
+            [
+              1,
+              "19 aload_0"
+            ],
+            [
+              1,
+              "20 invokevirtual"
+            ],
+            [
+              1,
+              "23 aload_0"
+            ],
+            [
+              1,
+              "24 dup"
+            ],
+            [
+              1,
+              "25 astore_2"
+            ],
+            [
+              1,
+              "26 monitorenter"
+            ],
+            [
+              1,
+              "27 aload_0"
+            ],
+            [
+              1,
+              "28 iload_1"
+            ],
+            [
+              1,
+              "29 iconst_1"
+            ],
+            [
+              1,
+              "30 iadd"
+            ],
+            [
+              1,
+              "31 putfield"
+            ],
+            [
+              1,
+              "34 aload_0"
+            ],
+            [
+              1,
+              "35 getfield"
+            ],
+            [
+              1,
+              "38 aload_2"
+            ],
+            [
+              1,
+              "39 monitorexit"
+            ],
+            [
+              1,
+              "40 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 astore_2"
+            ],
+            [
+              0,
+              "3 monitorenter"
+            ],
+            [
+              0,
+              "4 aload_0"
+            ],
+            [
+              0,
+              "5 getfield"
+            ],
+            [
+              0,
+              "8 istore_1"
+            ],
+            [
+              0,
+              "9 aload_2"
+            ],
+            [
+              0,
+              "10 monitorexit"
+            ],
+            [
+              0,
+              "11 goto"
+            ],
+            [
+              0,
+              "19 aload_0"
+            ],
+            [
+              0,
+              "20 invokevirtual"
+            ],
+            [
+              0,
+              "23 aload_0"
+            ],
+            [
+              0,
+              "24 dup"
+            ],
+            [
+              0,
+              "25 astore_2"
+            ],
+            [
+              0,
+              "26 monitorenter"
+            ],
+            [
+              0,
+              "27 aload_0"
+            ],
+            [
+              0,
+              "28 iload_1"
+            ],
+            [
+              0,
+              "29 iconst_1"
+            ],
+            [
+              0,
+              "30 iadd"
+            ],
+            [
+              0,
+              "31 putfield"
+            ],
+            [
+              0,
+              "34 aload_0"
+            ],
+            [
+              0,
+              "35 getfield"
+            ],
+            [
+              0,
+              "38 aload_2"
+            ],
+            [
+              0,
+              "39 monitorexit"
+            ],
+            [
+              0,
+              "40 ireturn 2"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "jvmReplays": [
+    {
+      "mode": "ab",
+      "jvm": {
+        "mode": 0,
+        "invoked": [
+          1,
+          3
+        ],
+        "returned": [
+          2,
+          4
+        ],
+        "tickets": [
+          1,
+          2
+        ],
+        "final": 2
+      },
+      "linearizable": true,
+      "matchingSchedule": [
+        [
+          "main",
+          "start 0"
+        ],
+        [
+          0,
+          "invoke"
+        ],
+        [
+          0,
+          "0 aload_0"
+        ],
+        [
+          0,
+          "1 dup"
+        ],
+        [
+          0,
+          "2 astore_2"
+        ],
+        [
+          0,
+          "3 monitorenter"
+        ],
+        [
+          0,
+          "4 aload_0"
+        ],
+        [
+          0,
+          "5 getfield"
+        ],
+        [
+          0,
+          "8 istore_1"
+        ],
+        [
+          0,
+          "9 aload_2"
+        ],
+        [
+          0,
+          "10 monitorexit"
+        ],
+        [
+          0,
+          "11 goto"
+        ],
+        [
+          0,
+          "19 aload_0"
+        ],
+        [
+          0,
+          "20 invokevirtual"
+        ],
+        [
+          0,
+          "23 aload_0"
+        ],
+        [
+          0,
+          "24 dup"
+        ],
+        [
+          0,
+          "25 astore_2"
+        ],
+        [
+          0,
+          "26 monitorenter"
+        ],
+        [
+          0,
+          "27 aload_0"
+        ],
+        [
+          0,
+          "28 iload_1"
+        ],
+        [
+          0,
+          "29 iconst_1"
+        ],
+        [
+          0,
+          "30 iadd"
+        ],
+        [
+          0,
+          "31 putfield"
+        ],
+        [
+          0,
+          "34 aload_0"
+        ],
+        [
+          0,
+          "35 getfield"
+        ],
+        [
+          0,
+          "38 aload_2"
+        ],
+        [
+          0,
+          "39 monitorexit"
+        ],
+        [
+          0,
+          "40 ireturn 1"
+        ],
+        [
+          0,
+          "record response"
+        ],
+        [
+          "main",
+          "join 0"
+        ],
+        [
+          "main",
+          "start 1"
+        ],
+        [
+          1,
+          "invoke"
+        ],
+        [
+          1,
+          "0 aload_0"
+        ],
+        [
+          1,
+          "1 dup"
+        ],
+        [
+          1,
+          "2 astore_2"
+        ],
+        [
+          1,
+          "3 monitorenter"
+        ],
+        [
+          1,
+          "4 aload_0"
+        ],
+        [
+          1,
+          "5 getfield"
+        ],
+        [
+          1,
+          "8 istore_1"
+        ],
+        [
+          1,
+          "9 aload_2"
+        ],
+        [
+          1,
+          "10 monitorexit"
+        ],
+        [
+          1,
+          "11 goto"
+        ],
+        [
+          1,
+          "19 aload_0"
+        ],
+        [
+          1,
+          "20 invokevirtual"
+        ],
+        [
+          1,
+          "23 aload_0"
+        ],
+        [
+          1,
+          "24 dup"
+        ],
+        [
+          1,
+          "25 astore_2"
+        ],
+        [
+          1,
+          "26 monitorenter"
+        ],
+        [
+          1,
+          "27 aload_0"
+        ],
+        [
+          1,
+          "28 iload_1"
+        ],
+        [
+          1,
+          "29 iconst_1"
+        ],
+        [
+          1,
+          "30 iadd"
+        ],
+        [
+          1,
+          "31 putfield"
+        ],
+        [
+          1,
+          "34 aload_0"
+        ],
+        [
+          1,
+          "35 getfield"
+        ],
+        [
+          1,
+          "38 aload_2"
+        ],
+        [
+          1,
+          "39 monitorexit"
+        ],
+        [
+          1,
+          "40 ireturn 2"
+        ],
+        [
+          1,
+          "record response"
+        ],
+        [
+          "main",
+          "join 1"
+        ]
+      ]
+    },
+    {
+      "mode": "ba",
+      "jvm": {
+        "mode": 1,
+        "invoked": [
+          3,
+          1
+        ],
+        "returned": [
+          4,
+          2
+        ],
+        "tickets": [
+          2,
+          1
+        ],
+        "final": 2
+      },
+      "linearizable": true,
+      "matchingSchedule": [
+        [
+          "main",
+          "start 1"
+        ],
+        [
+          1,
+          "invoke"
+        ],
+        [
+          1,
+          "0 aload_0"
+        ],
+        [
+          1,
+          "1 dup"
+        ],
+        [
+          1,
+          "2 astore_2"
+        ],
+        [
+          1,
+          "3 monitorenter"
+        ],
+        [
+          1,
+          "4 aload_0"
+        ],
+        [
+          1,
+          "5 getfield"
+        ],
+        [
+          1,
+          "8 istore_1"
+        ],
+        [
+          1,
+          "9 aload_2"
+        ],
+        [
+          1,
+          "10 monitorexit"
+        ],
+        [
+          1,
+          "11 goto"
+        ],
+        [
+          1,
+          "19 aload_0"
+        ],
+        [
+          1,
+          "20 invokevirtual"
+        ],
+        [
+          1,
+          "23 aload_0"
+        ],
+        [
+          1,
+          "24 dup"
+        ],
+        [
+          1,
+          "25 astore_2"
+        ],
+        [
+          1,
+          "26 monitorenter"
+        ],
+        [
+          1,
+          "27 aload_0"
+        ],
+        [
+          1,
+          "28 iload_1"
+        ],
+        [
+          1,
+          "29 iconst_1"
+        ],
+        [
+          1,
+          "30 iadd"
+        ],
+        [
+          1,
+          "31 putfield"
+        ],
+        [
+          1,
+          "34 aload_0"
+        ],
+        [
+          1,
+          "35 getfield"
+        ],
+        [
+          1,
+          "38 aload_2"
+        ],
+        [
+          1,
+          "39 monitorexit"
+        ],
+        [
+          1,
+          "40 ireturn 1"
+        ],
+        [
+          1,
+          "record response"
+        ],
+        [
+          "main",
+          "join 1"
+        ],
+        [
+          "main",
+          "start 0"
+        ],
+        [
+          0,
+          "invoke"
+        ],
+        [
+          0,
+          "0 aload_0"
+        ],
+        [
+          0,
+          "1 dup"
+        ],
+        [
+          0,
+          "2 astore_2"
+        ],
+        [
+          0,
+          "3 monitorenter"
+        ],
+        [
+          0,
+          "4 aload_0"
+        ],
+        [
+          0,
+          "5 getfield"
+        ],
+        [
+          0,
+          "8 istore_1"
+        ],
+        [
+          0,
+          "9 aload_2"
+        ],
+        [
+          0,
+          "10 monitorexit"
+        ],
+        [
+          0,
+          "11 goto"
+        ],
+        [
+          0,
+          "19 aload_0"
+        ],
+        [
+          0,
+          "20 invokevirtual"
+        ],
+        [
+          0,
+          "23 aload_0"
+        ],
+        [
+          0,
+          "24 dup"
+        ],
+        [
+          0,
+          "25 astore_2"
+        ],
+        [
+          0,
+          "26 monitorenter"
+        ],
+        [
+          0,
+          "27 aload_0"
+        ],
+        [
+          0,
+          "28 iload_1"
+        ],
+        [
+          0,
+          "29 iconst_1"
+        ],
+        [
+          0,
+          "30 iadd"
+        ],
+        [
+          0,
+          "31 putfield"
+        ],
+        [
+          0,
+          "34 aload_0"
+        ],
+        [
+          0,
+          "35 getfield"
+        ],
+        [
+          0,
+          "38 aload_2"
+        ],
+        [
+          0,
+          "39 monitorexit"
+        ],
+        [
+          0,
+          "40 ireturn 2"
+        ],
+        [
+          0,
+          "record response"
+        ],
+        [
+          "main",
+          "join 0"
+        ]
+      ]
+    },
+    {
+      "mode": "overlap",
+      "jvm": {
+        "mode": 2,
+        "invoked": [
+          1,
+          2
+        ],
+        "returned": [
+          4,
+          3
+        ],
+        "tickets": [
+          1,
+          1
+        ],
+        "final": 1
+      },
+      "linearizable": false,
+      "matchingSchedule": [
+        [
+          "main",
+          "start 0"
+        ],
+        [
+          "main",
+          "start 1"
+        ],
+        [
+          0,
+          "invoke"
+        ],
+        [
+          0,
+          "0 aload_0"
+        ],
+        [
+          0,
+          "1 dup"
+        ],
+        [
+          0,
+          "2 astore_2"
+        ],
+        [
+          0,
+          "3 monitorenter"
+        ],
+        [
+          0,
+          "4 aload_0"
+        ],
+        [
+          0,
+          "5 getfield"
+        ],
+        [
+          0,
+          "8 istore_1"
+        ],
+        [
+          0,
+          "9 aload_2"
+        ],
+        [
+          0,
+          "10 monitorexit"
+        ],
+        [
+          0,
+          "11 goto"
+        ],
+        [
+          0,
+          "19 aload_0"
+        ],
+        [
+          0,
+          "20 invokevirtual"
+        ],
+        [
+          0,
+          "23 aload_0"
+        ],
+        [
+          0,
+          "24 dup"
+        ],
+        [
+          0,
+          "25 astore_2"
+        ],
+        [
+          1,
+          "invoke"
+        ],
+        [
+          1,
+          "0 aload_0"
+        ],
+        [
+          1,
+          "1 dup"
+        ],
+        [
+          1,
+          "2 astore_2"
+        ],
+        [
+          1,
+          "3 monitorenter"
+        ],
+        [
+          1,
+          "4 aload_0"
+        ],
+        [
+          1,
+          "5 getfield"
+        ],
+        [
+          1,
+          "8 istore_1"
+        ],
+        [
+          1,
+          "9 aload_2"
+        ],
+        [
+          1,
+          "10 monitorexit"
+        ],
+        [
+          0,
+          "26 monitorenter"
+        ],
+        [
+          0,
+          "27 aload_0"
+        ],
+        [
+          0,
+          "28 iload_1"
+        ],
+        [
+          0,
+          "29 iconst_1"
+        ],
+        [
+          0,
+          "30 iadd"
+        ],
+        [
+          0,
+          "31 putfield"
+        ],
+        [
+          0,
+          "34 aload_0"
+        ],
+        [
+          0,
+          "35 getfield"
+        ],
+        [
+          0,
+          "38 aload_2"
+        ],
+        [
+          0,
+          "39 monitorexit"
+        ],
+        [
+          0,
+          "40 ireturn 1"
+        ],
+        [
+          1,
+          "11 goto"
+        ],
+        [
+          1,
+          "19 aload_0"
+        ],
+        [
+          1,
+          "20 invokevirtual"
+        ],
+        [
+          1,
+          "23 aload_0"
+        ],
+        [
+          1,
+          "24 dup"
+        ],
+        [
+          1,
+          "25 astore_2"
+        ],
+        [
+          1,
+          "26 monitorenter"
+        ],
+        [
+          1,
+          "27 aload_0"
+        ],
+        [
+          1,
+          "28 iload_1"
+        ],
+        [
+          1,
+          "29 iconst_1"
+        ],
+        [
+          1,
+          "30 iadd"
+        ],
+        [
+          1,
+          "31 putfield"
+        ],
+        [
+          1,
+          "34 aload_0"
+        ],
+        [
+          1,
+          "35 getfield"
+        ],
+        [
+          1,
+          "38 aload_2"
+        ],
+        [
+          1,
+          "39 monitorexit"
+        ],
+        [
+          1,
+          "40 ireturn 1"
+        ],
+        [
+          1,
+          "record response"
+        ],
+        [
+          0,
+          "record response"
+        ],
+        [
+          "main",
+          "join 0"
+        ],
+        [
+          "main",
+          "join 1"
+        ]
+      ]
+    }
+  ],
+  "checkerSha256": "4f23ef196f546b097b98b320e9ca5059aa82013503f5891dd70003c63090d663",
+  "wallSeconds": 1.50033,
+  "peakProcessKiB": 59448
+}

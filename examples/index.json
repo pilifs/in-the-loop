@@ -13668,6 +13668,342 @@
       }
     },
     {
+      "id": "335",
+      "path": "examples/335-guava-signed-mean",
+      "title": "Guava's signed mean across both full word widths",
+      "summary": "Compute the floor of the exact signed sum divided by two, including sums outside the input word and negative odd sums.",
+      "origin": "real-world",
+      "system": "Guava",
+      "symbol": "com.google.common.math.IntMath#mean(II)I",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "integer-overflow",
+          "rounding"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both arguments range independently over their entire signed width. The independent JVM control uses BigInteger. The 64-bit predicate constructs the signed 65-bit sum from its low word and a sign bit that includes unsigned carry. The array and unwind bounds constrain neither argument."
+      ],
+      "source": "https://github.com/google/guava/commit/f06690fa3e874f65515e8fd338a74d636e2c792f",
+      "target": {
+        "family": "guava-signed-mean",
+        "role": "calibration",
+        "case": "guava-signed-mean",
+        "tasks": [
+          "replay",
+          "mutant-replay",
+          "mean-32-release",
+          "mean-32-mutant",
+          "mean-64-release",
+          "mean-64-mutant"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "mutant-replay": "scaffolded",
+          "mean-32-release": "scaffolded",
+          "mean-32-mutant": "scaffolded",
+          "mean-64-release": "scaffolded",
+          "mean-64-mutant": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "mutant-replay": null,
+          "mean-32-release": "established",
+          "mean-32-mutant": "refuted",
+          "mean-64-release": "established",
+          "mean-64-mutant": "refuted"
+        },
+        "claims": {
+          "mean-32-release": null,
+          "mean-32-mutant": null,
+          "mean-64-release": null,
+          "mean-64-mutant": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T183722Z-85dc2fa5/result.json",
+            "attempt": "20261120T183722Z-85dc2fa5",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "mutant-replay": {
+            "path": "receipts/mutant-replay/20261120T182843Z-5bf9c9f4/result.json",
+            "attempt": "20261120T182843Z-5bf9c9f4",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/google/guava/commit/f06690fa3e874f65515e8fd338a74d636e2c792f",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 335 TASK"
+      }
+    },
+    {
+      "id": "336",
+      "path": "examples/336-guava-first-array-match",
+      "title": "The first matching element in a Guava int array",
+      "summary": "The public release must return the first occurrence or minus one, terminate normally and preserve an already allocated array.",
+      "origin": "real-world",
+      "system": "Guava",
+      "symbol": "com.google.common.primitives.Ints#indexOf([II)I",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The two bounded milestones quantify over all signed 32-bit array elements and targets. The length-independent objective admits every non-null, already allocated Java int array. A prefix without a match and the decreasing measure length minus cursor are the proposed inductive assertions."
+      ],
+      "source": "https://github.com/google/guava/commit/f06690fa3e874f65515e8fd338a74d636e2c792f",
+      "target": {
+        "family": "guava-first-array-match",
+        "role": "calibration",
+        "case": "guava-first-array-match",
+        "tasks": [
+          "replay",
+          "mutant-replay",
+          "first-8-release",
+          "frame-8-release",
+          "first-8-last",
+          "frame-8-last",
+          "first-64-release",
+          "frame-64-release",
+          "first-64-last",
+          "frame-64-last"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "mutant-replay": "scaffolded",
+          "first-8-release": "scaffolded",
+          "frame-8-release": "scaffolded",
+          "first-8-last": "scaffolded",
+          "frame-8-last": "scaffolded",
+          "first-64-release": "scaffolded",
+          "frame-64-release": "scaffolded",
+          "first-64-last": "scaffolded",
+          "frame-64-last": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "mutant-replay": null,
+          "first-8-release": "established",
+          "frame-8-release": "established",
+          "first-8-last": "refuted",
+          "frame-8-last": "established",
+          "first-64-release": "established",
+          "frame-64-release": "established",
+          "first-64-last": "refuted",
+          "frame-64-last": "established"
+        },
+        "claims": {
+          "first-8-release": null,
+          "frame-8-release": null,
+          "first-8-last": null,
+          "frame-8-last": null,
+          "first-64-release": null,
+          "frame-64-release": null,
+          "first-64-last": null,
+          "frame-64-last": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T183723Z-af235f3c/result.json",
+            "attempt": "20261120T183723Z-af235f3c",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "mutant-replay": {
+            "path": "receipts/mutant-replay/20261120T182848Z-29182ec1/result.json",
+            "attempt": "20261120T182848Z-29182ec1",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/google/guava/commit/f06690fa3e874f65515e8fd338a74d636e2c792f",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 336 TASK"
+      }
+    },
+    {
+      "id": "337",
+      "path": "examples/337-jdk-range-fill-alias",
+      "title": "A JDK range fill observed through a second array root",
+      "summary": "Verify the half-open write range when another caller reference can alias the target or select a distinct array.",
+      "origin": "constructed",
+      "system": "Java Arrays",
+      "symbol": "fill.Range#apply([I[IIII)I",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing",
+          "off-by-one"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": null,
+      "target": {
+        "family": "jdk-range-fill-alias",
+        "role": "control",
+        "case": "jdk-range-fill-alias",
+        "tasks": [
+          "replay",
+          "frame-8-original",
+          "caller-8-original",
+          "frame-8-extra",
+          "caller-8-extra",
+          "frame-64-original",
+          "caller-64-original",
+          "frame-64-extra",
+          "caller-64-extra"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "frame-8-original": "scaffolded",
+          "caller-8-original": "scaffolded",
+          "frame-8-extra": "scaffolded",
+          "caller-8-extra": "scaffolded",
+          "frame-64-original": "scaffolded",
+          "caller-64-original": "scaffolded",
+          "frame-64-extra": "scaffolded",
+          "caller-64-extra": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "frame-8-original": "established",
+          "caller-8-original": "established",
+          "frame-8-extra": "refuted",
+          "caller-8-extra": "refuted",
+          "frame-64-original": "established",
+          "caller-64-original": "established",
+          "frame-64-extra": "refuted",
+          "caller-64-extra": "refuted"
+        },
+        "claims": {
+          "frame-8-original": null,
+          "caller-8-original": null,
+          "frame-8-extra": null,
+          "caller-8-extra": null,
+          "frame-64-original": null,
+          "caller-64-original": null,
+          "frame-64-extra": null,
+          "caller-64-extra": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T183754Z-529b2da1/result.json",
+            "attempt": "20261120T183754Z-529b2da1",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 337 TASK"
+      }
+    },
+    {
       "id": "338",
       "path": "examples/338-commons-io-bom-reset",
       "title": "A BOM stream rewinds its prefetched bytes",
@@ -13877,6 +14213,117 @@
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 339 TASK"
+      }
+    },
+    {
+      "id": "342",
+      "path": "examples/342-two-thread-tickets",
+      "title": "Two real threads request the next ticket",
+      "summary": "Compare a synchronized method, an equivalent synchronized block, and a read and write split across two monitor acquisitions.",
+      "origin": "constructed",
+      "system": "Ticket counter",
+      "symbol": "tickets.Counter#take()I",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "race-condition"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": null,
+      "target": {
+        "family": "two-thread-tickets",
+        "role": "control",
+        "case": "two-thread-tickets",
+        "tasks": [
+          "replay",
+          "replay-split",
+          "histories-method",
+          "serial-method",
+          "histories-block",
+          "serial-block",
+          "histories-split",
+          "serial-split"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "replay-split": "scaffolded",
+          "histories-method": "scaffolded",
+          "serial-method": "scaffolded",
+          "histories-block": "scaffolded",
+          "serial-block": "scaffolded",
+          "histories-split": "scaffolded",
+          "serial-split": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "replay-split": null,
+          "histories-method": "established",
+          "serial-method": "established",
+          "histories-block": "established",
+          "serial-block": "established",
+          "histories-split": "refuted",
+          "serial-split": "established"
+        },
+        "claims": {
+          "histories-method": null,
+          "serial-method": null,
+          "histories-block": null,
+          "serial-block": null,
+          "histories-split": null,
+          "serial-split": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T182837Z-cbdc3d4b/result.json",
+            "attempt": "20261120T182837Z-cbdc3d4b",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-split": {
+            "path": "receipts/replay-split/20261120T182840Z-66ece294/result.json",
+            "attempt": "20261120T182840Z-66ece294",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 342 TASK"
       }
     },
     {

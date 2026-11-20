@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "caller-64",
+  "statement": "The caller reads the entry value of its second root except for cells selected by an aliased write range.",
+  "assume": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 67,
+    "maxArrayLength": 64
+  },
+  "assert": "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+  "mayAlias": [
+    "a,other"
+  ]
+}

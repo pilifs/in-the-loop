@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "336",
+  "title": "The first matching element in a Guava int array",
+  "summary": "The public release must return the first occurrence or minus one, terminate normally and preserve an already allocated array.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Guava",
+    "file": "guava/src/com/google/common/primitives/Ints.java",
+    "symbol": "com.google.common.primitives.Ints#indexOf([II)I"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Compare the released search with a deliberately constructed last-match traversal."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The two bounded milestones quantify over all signed 32-bit array elements and targets. The length-independent objective admits every non-null, already allocated Java int array. A prefix without a match and the decreasing measure length minus cursor are the proposed inductive assertions."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/google/guava",
+    "url": "https://github.com/google/guava/commit/f06690fa3e874f65515e8fd338a74d636e2c792f"
+  }
+}

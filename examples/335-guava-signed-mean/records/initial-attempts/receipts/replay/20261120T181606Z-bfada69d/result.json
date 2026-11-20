@@ -1,0 +1,242 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "7b0219ae42c8defe",
+    "format": 1,
+    "example": "335",
+    "statement": {
+      "approach": "target",
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "com.google.common.math.IntMath#mean(II)I",
+      "revisions": [
+        "release",
+        "mutant"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "replay",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "com.google.common.math.IntMath#mean(II)I",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/mean/MeanCases.java",
+            "sha256": "ea45151e11e7634882a825ee60a05fe515e3f5387a35baeb8f18fcf6a81d480a"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "5b0e15c5742f5f0687dc0006298fa213a132d89ba48089f7a2ebba464212afa0"
+          }
+        ],
+        "key": "0f73adcd6b6b8875"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay",
+      "sidecar": "8bc0aa9c8067b9c5fe5346dbeaf3f11bf78c74b07e61e7dc6b645f6a94b37fba",
+      "revisions": {
+        "release": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "mutant": "f06690fa3e874f65515e8fd338a74d636e2c792f"
+      },
+      "dependencies": [
+        {
+          "revision": "release",
+          "position": 0,
+          "role": "driver",
+          "sha256": "f99f5e1a523ca58a0b82cb2ce79db8af9a24339b717e43e4ed94c49721b424e0"
+        },
+        {
+          "revision": "release",
+          "position": 1,
+          "role": "original",
+          "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+          "coordinates": "com.google.guava:guava:33.4.8-jre"
+        },
+        {
+          "revision": "mutant",
+          "position": 0,
+          "role": "driver",
+          "sha256": "f99f5e1a523ca58a0b82cb2ce79db8af9a24339b717e43e4ed94c49721b424e0"
+        },
+        {
+          "revision": "mutant",
+          "position": 1,
+          "role": "original",
+          "sha256": "d895693b47636f7c6a2992fd37e7bb80b0aeb40891991ae5836bae45e2330c64"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/oracle.py": "5b0e15c5742f5f0687dc0006298fa213a132d89ba48089f7a2ebba464212afa0",
+        "controls/overflow.patch": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8",
+        "driver/mean/MeanCases.java": "ea45151e11e7634882a825ee60a05fe515e3f5387a35baeb8f18fcf6a81d480a"
+      },
+      "claimKey": "0f73adcd6b6b8875"
+    }
+  },
+  "attempt": {
+    "id": "20261120T181606Z-bfada69d",
+    "claim": "7b0219ae42c8defe",
+    "startedAt": "2026-11-20T18:16:06+00:00",
+    "seconds": 0.0,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "048ef38bf4710ea653213f77e5edeeb3a6c2a930d85f64bd308a8e30b3e3049a",
+        "files": 1
+      },
+      "after": {
+        "sha256": "ca1de9c61c175ad0c51d511441a6e9d8b91dc694a525c9d392542ae55f7a1f67",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "tool-error",
+      "exitCode": null,
+      "reason": "revision release: the JVM did not start (not-started): the oracle controls/oracle.py gives no driver arguments: it defines neither driver_args() nor a non-empty PROBES list (driver_args is list); revision mutant: the JVM did not start (not-started): the oracle controls/oracle.py gives no driver arguments: it defines neither driver_args() nor a non-empty PROBES list (driver_args is list); revision release has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced; revision mutant has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced"
+    },
+    "stages": [
+      {
+        "name": "jvm-control release",
+        "status": "not-started",
+        "exitCode": null,
+        "seconds": 0.0,
+        "stdout": "records/control-release-jdk21.stdout",
+        "stderr": "records/control-release-jdk21.stderr",
+        "reason": "the oracle controls/oracle.py gives no driver arguments: it defines neither driver_args() nor a non-empty PROBES list (driver_args is list)"
+      },
+      {
+        "name": "jvm-control mutant",
+        "status": "not-started",
+        "exitCode": null,
+        "seconds": 0.0,
+        "stdout": "records/control-mutant-jdk21.stdout",
+        "stderr": "records/control-mutant-jdk21.stderr",
+        "reason": "the oracle controls/oracle.py gives no driver arguments: it defines neither driver_args() nor a non-empty PROBES list (driver_args is list)"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "7b0219ae42c8defe",
+    "attempt": "20261120T181606Z-bfada69d",
+    "status": null,
+    "vacuous": false,
+    "expectation": "not-evaluable",
+    "obligations": [],
+    "label": "⚠ No verdict: revision release: the JVM did not start (not-started): the oracle controls/oracle.py gives no driver arguments: it defines neither driver_args() nor a non-empty PROBES list (driver_args is list); revision mutant: the JVM did not start (not-started): the oracle controls/oracle.py gives no driver arguments: it defines neither driver_args() nor a non-empty PROBES list (driver_args is list); revision release has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced; revision mutant has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"release\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 18,
+      "code": "\"mutant\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": false
+    },
+    "proof": "no proof: 0 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": "revision release: the JVM did not start (not-started): the oracle controls/oracle.py gives no driver arguments: it defines neither driver_args() nor a non-empty PROBES list (driver_args is list); revision mutant: the JVM did not start (not-started): the oracle controls/oracle.py gives no driver arguments: it defines neither driver_args() nor a non-empty PROBES list (driver_args is list); revision release has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced; revision mutant has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced"
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "37aeb824839d9eedfb2c093045519424fb8917655fa87ba2786d8b12903ee93a",
+        "bytes": 1860
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "5e01a08d5ba70b17d3c5caf9534acf15cb0c52274912dfddfdeec948681b168b",
+        "bytes": 1091
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "25c8ce2fec9a69b0c1efc2ebe767ed4f8ae6b963675c8de019e8c538296fae11",
+        "bytes": 1685
+      },
+      {
+        "path": "records/control-release-jdk21.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/control-release-jdk21.stderr",
+        "sha256": "7a618097ad21ccb6180fab1308734dc073a7bbe8ae881c63224efb9429ab0c53",
+        "bytes": 162
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "d0b3953c85b8676087c15c57c2efe2819e640d3ded1ce27b3b8d3901dd6e158e",
+        "bytes": 1915
+      },
+      {
+        "path": "records/control-mutant-jdk21.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/control-mutant-jdk21.stderr",
+        "sha256": "7a618097ad21ccb6180fab1308734dc073a7bbe8ae881c63224efb9429ab0c53",
+        "bytes": 162
+      }
+    ]
+  }
+}

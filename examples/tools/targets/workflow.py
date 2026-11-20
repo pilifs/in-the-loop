@@ -663,7 +663,21 @@ def handoff(folder, example, target, task):
     if task not in [t["id"] for t in target.get("tasks", [])]:
         return Unsupported("handoff", WORKFLOW, f"example {example.get('id')} has no task {task!r}", stage="handoff")
     from targets import workflow_handoff
-    return workflow_handoff.packet(folder, example, target, task)
+    packet = workflow_handoff.packet(folder, example, target, task)
+    if target.get("monitorContracts"):
+        from targets import monitor_histories
+        bounded = plan_task(folder, example, target, task)
+        if isinstance(bounded, TaskPlan) and (contracts := monitor_histories.evidence(Path(folder), target, bounded)):
+            packet["monitorContracts"] = contracts
+    if (Path(folder) / "records/original-witnesses" / task).is_dir():
+        from targets import original_witness
+        plan = plan_task(folder, example, target, task)
+        if isinstance(plan, TaskPlan):
+            packet["originalWitnesses"] = original_witness.evidence(Path(folder), plan)
+    if any(s["bindingTask"] == task for s in target.get("arrayContracts", [])):
+        from targets import array_induction
+        packet["arrayContracts"] = array_induction.evidence(Path(folder), target, task)
+    return packet
 
 
 def project(folder, example, target):

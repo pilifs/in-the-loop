@@ -1,0 +1,22 @@
+--- a/guava/src/com/google/common/math/IntMath.java
++++ b/guava/src/com/google/common/math/IntMath.java
+@@ -697,7 +697,7 @@
+     // Efficient method for computing the arithmetic mean.
+     // The alternative (x + y) / 2 fails for large values.
+     // The alternative (x + y) >>> 1 fails for negative values.
+-    return (x & y) + ((x ^ y) >> 1);
++    return (x + y) / 2;
+   }
+ 
+   /**
+--- a/guava/src/com/google/common/math/LongMath.java
++++ b/guava/src/com/google/common/math/LongMath.java
+@@ -976,7 +976,7 @@
+     // Efficient method for computing the arithmetic mean.
+     // The alternative (x + y) / 2 fails for large values.
+     // The alternative (x + y) >>> 1 fails for negative values.
+-    return (x & y) + ((x ^ y) >> 1);
++    return (x + y) / 2;
+   }
+ 
+   /*

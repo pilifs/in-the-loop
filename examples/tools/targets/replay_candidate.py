@@ -1,4 +1,4 @@
-"""Qualify concrete int and int[] witnesses on each revision's own ordered classpath."""
+"""Qualify concrete int, long and int[] witnesses on each revision's own ordered classpath."""
 
 import hashlib
 import json
@@ -16,7 +16,7 @@ def supported(entry, claim):
     if not descriptor or descriptor.split(")")[-1] not in ("I", "J") or claim.get("throws"):
         return False
     params = descriptor_parameters(descriptor)
-    return params is not None and all(t in ("int", "int[]") for t in params)
+    return params is not None and all(t in ("int", "long", "int[]") for t in params)
 
 
 def snapshot_assertion(assertion, inputs, names):
@@ -41,6 +41,37 @@ def snapshot_assertion(assertion, inputs, names):
     return assertion, declarations
 
 
+def quantified(expression):
+    """Render bounded JML quantifiers as short-circuiting Java expressions on the actual replay objects."""
+    head = re.compile(r"\(\s*\\(forall|exists)\s+int\s+([A-Za-z_$][\w$]*)\s*;")
+    while matches := list(head.finditer(expression)):
+        match = matches[-1]
+        depth, end = 1, match.end()
+        while end < len(expression) and depth:
+            depth += int(expression[end] == "(") - int(expression[end] == ")")
+            end += 1
+        if depth:
+            raise ValueError("unterminated JVM witness quantifier")
+        kind, variable = match.groups()
+        parts = expression[match.end():end - 1].split(";", 1)
+        if len(parts) != 2:
+            raise ValueError("a JVM witness quantifier requires a range and predicate")
+        v = re.escape(variable)
+        bound = re.fullmatch(rf"\s*0\s*<=\s*{v}\s*&&\s*{v}\s*<\s*([A-Za-z_$][\w$]*(?:\.length)?|[0-9]+)\s*", parts[0])
+        if not bound:
+            raise ValueError("JVM witness quantifier needs a zero-based finite range")
+        universal = kind == "forall"
+        condition = ("!" if universal else "") + "(" + parts[1] + ")"
+        replacement = ("((java.util.function.BooleanSupplier) () -> { for (int " + variable + " = 0; "
+                       + variable + " < " + bound.group(1) + "; " + variable + "++) { if (" + condition
+                       + ") return " + str(not universal).lower() + "; } return " + str(universal).lower()
+                       + "; }).getAsBoolean()")
+        expression = expression[:match.start()] + replacement + expression[end:]
+    if "\\forall" in expression or "\\exists" in expression:
+        raise ValueError("unsupported JVM witness quantifier syntax")
+    return expression
+
+
 def source(entry, claim, inputs, names):
     """Render a replay of the selected public static entry. Inputs have already been type checked."""
     owner, method, descriptor = runtime_jar.parse_target(entry)
@@ -53,22 +84,32 @@ def source(entry, claim, inputs, names):
             literal = names[value["same"]]
         elif isinstance(value, list):
             literal = "new int[]{" + ",".join(map(str, value)) + "}"
+        elif arg["type"] == "long":
+            literal = str(value) + "L"
         else:
             literal = str(value)
         statements.append(f'{arg["type"]} {arg["name"]} = {literal};')
     condition = claim.get("assume") or "true"
     if claim.get("allowedChange"):
         condition = f'({condition}) && !({claim["allowedChange"]})'
-    statements.append(f'if (!({condition})) {{ System.out.println("outside"); return; }}')
+    statements.append(f'if (!({quantified(condition)})) {{ System.out.println("outside"); return; }}')
     assertion, snapshots = snapshot_assertion(claim.get("assert"), inputs, names)
     statements.extend(snapshots)
     ret = "long" if descriptor.endswith("J") else "int"
-    statements.extend([f"{ret} result = 0;", "Throwable failure = null;",
-                       f'try {{ result = {owner}.{method}({", ".join(names)}); }} catch (Throwable t) {{ failure = t; }}',
-                       'System.out.println("admitted");'])
+    uses_quantifier = assertion and ("\\forall" in assertion or "\\exists" in assertion)
+    result_name = "result"
+    if uses_quantifier:
+        result_name = "returnedValue"
+        while result_name in names:
+            result_name += "_"
+    statements.extend([f"{ret} {result_name} = 0;", "Throwable failure = null;",
+                       f'try {{ {result_name} = {owner}.{method}({", ".join(names)}); }} catch (Throwable t) {{ failure = t; }}'])
+    if uses_quantifier:
+        statements.append(f"final {ret} result = {result_name};")
+    statements.append('System.out.println("admitted");')
     selected = claim.get("observations") or ["result", "exception"]
     if assertion:
-        statements.append(f'System.out.println(failure == null && ({assertion}));')
+        statements.append(f'System.out.println(failure == null && ({quantified(assertion)}));')
     for o in selected:
         kind = o if isinstance(o, str) else o["kind"]
         if kind == "result":

@@ -1,0 +1,232 @@
+{
+  "plan": {
+    "example": "335",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "com.google.common.math.IntMath#mean(II)I",
+    "revisions": [
+      "release",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "com.google.common.math.IntMath#mean(II)I",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/mean/MeanCases.java",
+          "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+        },
+        {
+          "id": "altered-implementation",
+          "kind": "mutation",
+          "path": "controls/overflow.patch",
+          "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+        }
+      ],
+      "key": "5b1815186453c5d1"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          }
+        ],
+        "coordinates": "com.google.guava:guava:33.4.8-jre",
+        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "mutant": {
+          "base": {
+            "revision": "release",
+            "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+            "published": [
+              {
+                "coordinates": "com.google.guava:guava:33.4.8-jre",
+                "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/overflow.patch",
+            "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+          },
+          "description": "Replace both released mean implementations with same-width addition and division by two."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/mutant-replay"
+    },
+    "folder": "/home/filip/code/in-the-loop-foundation-domain-streams/examples/335-guava-signed-mean",
+    "network": true
+  },
+  "inputs": {
+    "example": "335",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "com.google.common.math.IntMath#mean(II)I",
+    "revisions": [
+      "release",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "com.google.common.math.IntMath#mean(II)I",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/mean/MeanCases.java",
+          "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+        },
+        {
+          "id": "altered-implementation",
+          "kind": "mutation",
+          "path": "controls/overflow.patch",
+          "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+        }
+      ],
+      "key": "5b1815186453c5d1"
+    },
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          }
+        ],
+        "coordinates": "com.google.guava:guava:33.4.8-jre",
+        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "mutant": {
+          "base": {
+            "revision": "release",
+            "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+            "published": [
+              {
+                "coordinates": "com.google.guava:guava:33.4.8-jre",
+                "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/overflow.patch",
+            "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+          },
+          "description": "Replace both released mean implementations with same-width addition and division by two."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "689d1c69e530490d90ec2c4592ec8f805fd2ce7f7456166c07ad43777e79bc3a"
+}
