@@ -12,28 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T08:55:11.593Z",
-  "duration_seconds": 40662,
+  "ended": "2026-11-20T09:16:59.650Z",
+  "duration_seconds": 41970,
   "stats": {
-    "turns": 9,
-    "api_calls": 2462,
-    "tool_calls": 6180,
-    "tool_errors": 194,
-    "compactions": 8,
+    "turns": 10,
+    "api_calls": 2537,
+    "tool_calls": 6379,
+    "tool_errors": 200,
+    "compactions": 9,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 4526676,
-      "output_tokens": 1196187,
-      "cache_read_input_tokens": 748793472,
+      "input_tokens": 4707106,
+      "output_tokens": 1229007,
+      "cache_read_input_tokens": 765283712,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 3553,
-    "exec": 2363,
-    "apply_patch": 181,
+    "Bash": 3671,
+    "exec": 2433,
+    "apply_patch": 189,
     "wait": 44,
-    "sleep": 39
+    "sleep": 42
   },
   "files_touched": [
     "examples/197-shared-int-array-poststates/README.md",
@@ -91,11 +91,13 @@
     "examples/tools/targets/workflow_ingest.py",
     "examples/tools/targets/workflow_refusal.py",
     "examples/tools/test_build.py",
+    "lib/Cargo.toml",
     "lib/models/README.md",
     "lib/models/build.sh",
     "lib/models/java/util/IdentityHashMap.java",
     "lib/models/java/util/concurrent/ConcurrentHashMap.java",
     "lib/solvers/README.md",
+    "lib/src/bmc/array_list.rs",
     "lib/src/bmc/arraycopy.rs",
     "lib/src/bmc/bits.rs",
     "lib/src/bmc/bytes.rs",
@@ -108,10 +110,12 @@
     "lib/src/bmc/runtime.rs",
     "lib/src/bmc/sat.rs",
     "lib/src/bmc/strings.rs",
+    "lib/src/bmc/trig.rs",
     "lib/src/classpath.rs",
     "lib/src/harness/expr.rs",
     "lib/src/interp/mod.rs",
     "lib/src/interp/natives.rs",
+    "lib/src/interp/value.rs",
     "lib/src/models.rs",
     "lib/src/observed.rs",
     "lib/src/observed/ObservedInitializer.java",
@@ -123,6 +127,7 @@
     "lib/tests/fixtures/claims/claims/CharacterFormats.java",
     "lib/tests/fixtures/claims/claims/EnumOrder.java",
     "lib/tests/fixtures/claims/claims/L.java",
+    "lib/tests/fixtures/claims/claims/ListConversions.java",
     "lib/tests/fixtures/claims/claims/R.java",
     "lib/tests/fixtures/claims/claims/Registries.java",
     "lib/tests/fixtures/claims/claims/Samples.java",
@@ -257,24 +262,38 @@
     {
       "index": 8,
       "started": "2026-11-20T07:25:36.655Z",
-      "ended": "2026-11-20T08:55:11.593Z",
+      "ended": "2026-11-20T09:03:21.202Z",
       "turns": 1,
-      "api_calls": 322,
+      "api_calls": 341,
       "usage": {
-        "input_tokens": 504548,
-        "output_tokens": 155409,
-        "cache_read_input_tokens": 106446976,
+        "input_tokens": 514381,
+        "output_tokens": 164080,
+        "cache_read_input_tokens": 115960448,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 496692
+      "peak_context_tokens": 505141
+    },
+    {
+      "index": 9,
+      "started": "2026-11-20T09:03:21.208Z",
+      "ended": "2026-11-20T09:16:59.650Z",
+      "turns": 1,
+      "api_calls": 56,
+      "usage": {
+        "input_tokens": 170597,
+        "output_tokens": 24149,
+        "cache_read_input_tokens": 6976768,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 179866
     }
   ],
   "log": {
-    "sha256": "927794b4fa91437138477f95a1c560d19ea12808b50e8ef944977674903d5e65",
-    "bytes": 57569690,
-    "lines": 19034,
-    "gzip_bytes": 21795361,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/927794b4fa91437138477f95a1c560d19ea12808b50e8ef944977674903d5e65.jsonl.gz"
+    "sha256": "7b04205d992f5e46c8143370d08db6730ddb1cd5d1e33381aa3503f8ae6cd715",
+    "bytes": 59939299,
+    "lines": 19611,
+    "gzip_bytes": 22641393,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/7b04205d992f5e46c8143370d08db6730ddb1cd5d1e33381aa3503f8ae6cd715.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1069,6 +1088,22 @@
       "summary": "Record 103 native decisions on the Java fast-follow examples",
       "body": "Close the original Commons CSV and Commons Collections multiset packets at their frozen guards, ordered classpaths, observers and bounds. On the final checker both have five proofs and one independently replayed historical counterexample. The parent CSV format compares limits 10 and 2 equal while reading three and two records. Removing A from a multiset containing one A and one B leaves the parent total at two although only B remains. Chart startup, Joda provider selection and the geometry sine retain 22 precise native obligations.\n\nRe-audited all 125 original claim and subject pairs. The finite JVM route has 92 proofs and 33 refutations; native now has 76 proofs and 27 refutations, with no withdrawn or contradictory evidence. All 355 report links resolved. Compared 1,296 unique results and applied artifacts in the 17 new systemd jobs byte-for-byte with the collector. Twelve jobs passed, three early mixed CSV batches retained superseded diagnostics, and two calendar batches kept their current environmental blockers. All nine affected examples validated, including their public plans and offline discovery index.\n\nThe final checker reproduced both original 197 poststate witnesses on the 71-heap grids and proved the released 308 score in 0.628 s at 77.6 MiB peak process RSS, with all 225 release and rebuild cases correct and 44 shared-row mutant mismatches. The campaign report distinguishes per-claim process RSS from whole-packet cgroup peak memory, restores five previous measurements and records preparation as the dominant cost for both newly completed library packets. The verification queue is drained.",
       "log_sha256": "927794b4fa91437138477f95a1c560d19ea12808b50e8ef944977674903d5e65"
+    },
+    {
+      "change_id": "vtsuruzsqxrlvslrkvkttmrvquxzswmv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "7b04205d992f5e46c8143370d08db6730ddb1cd5d1e33381aa3503f8ae6cd715"
+    },
+    {
+      "change_id": "tpxuxtmvttsoxkypzvootqpkmoyuosrk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Certify Java sine and cosine rounding bounds (verification pending)",
+      "body": "Strict native checks enclose each reachable angle with exact rational Taylor sums and consider both adjacent binary64 values permitted by Java. The host approximation only suggests a bracket. A counterexample must hold across all rounding choices, and arguments without a certificate stay open. This carries the original cube construction beyond the rounded value of negative pi over two.\n\nThe selected tests passed 17 of 17. Public floating-point controls passed on Temurin 21 and 25, including the change of sign across a quadrant, a fully replayed false claim and an open implementation-dependent last bit. Both directed endpoints matched an independent 4096-bit MPFR calculation on 216 evaluations. Job 20261120-091126-trace-cube-intersections-across-certifie repeats the four six-ray claims on both original revisions at their existing bounds.",
+      "log_sha256": "7b04205d992f5e46c8143370d08db6730ddb1cd5d1e33381aa3503f8ae6cd715"
     }
   ],
   "logs": {
@@ -1268,6 +1303,12 @@
       "bytes": 3340116,
       "lines": 796,
       "gzip_bytes": 1144347,
+      "url": null
+    },
+    "7b04205d992f5e46c8143370d08db6730ddb1cd5d1e33381aa3503f8ae6cd715": {
+      "bytes": 59939299,
+      "lines": 19611,
+      "gzip_bytes": 22641393,
       "url": null
     },
     "83286b210d21c074b4a3d1d9d123cbfc20416cb3969da67de5626758c9a2e87b": {

@@ -65,6 +65,7 @@
 //! | `invokestatic` of `Objects.requireNonNull(Object)` and `(Object, String)`, and of `Pattern.compile(String)` ([`models_jdk_reference_static`]) | modelled in [`Engine::call_jdk_static`]: `requireNonNull` returns its argument or throws `NullPointerException`; `compile` throws it for null, returns a new `Pattern` with no content (its methods the JDK calls they name) for a constant regular expression of the plain form ([`crate::jdk_facts::plain_regex`]), which the JDK compiles whatever it is, and is the gap `jdk-static-method` for any other |
 //! | `invokestatic` of `String.valueOf(Object)` | the argument itself for a String, the interned `"null"` for null; for any other object the gap `jdk-static-method` (the object's `toString()`), which the scan names wherever the call is |
 //! | `Math.hypot(double, double)` and `StrictMath.hypot` on a JDK image | runs the selected image's bytecode, including the FdLibm scaling and high-word helpers. Its synthetic assertion flags cover both settings. Floor and ceiling use bounded operand coverage. `atan2` is exact on nonzero axes, preserving signed zero and quadrant. |
+//! | `Math.sin/cos` and `StrictMath.sin/cos` on finite operand sets | Signed zero follows the specified special cases. For nonzero angles up to eight radians in magnitude, exact rational Taylor bounds certify adjacent binary64 endpoints. Every call covers both permitted roundings independently; the counterexample qualifier requires failure for every choice. A missing bracket leaves the claim open. |
 //! | `invokestatic` of `BigInteger.valueOf(long)` with a JDK image | runs the selected JDK's factory and allocation bytecode, including the constructors and the magnitude array. A path reading an initialized JDK cache field stops at that field. Without the image the factory is a `jdk-static-method` gap |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
@@ -117,6 +118,7 @@ mod enum_universe;
 pub mod bits;
 mod finite_words;
 mod floating;
+mod trig;
 pub mod gaps;
 pub mod bytes;
 pub mod locale;
@@ -1410,6 +1412,8 @@ struct Engine<'a> {
     /// What the models the run used take for granted beyond the bytecode (the default locale, under
     /// [`strings::LOCALE_ASSUMPTION`]), for the statement.
     assumed: std::collections::BTreeSet<String>,
+    /// Mathematical brackets are reusable. Each invocation still gets its own rounding choice.
+    trig_brackets: HashMap<(trig::Function, u64), (u64, u64)>,
     assumption_ids: BTreeMap<String, String>,
     /// The loops an invariant covered past the bound ([`loops`]), for the outcome.
     loops: std::collections::BTreeSet<String>,
@@ -1547,6 +1551,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         arrays: Vec::new(),
         string_arrays: Vec::new(),
         assumed: Default::default(),
+        trig_brackets: HashMap::new(),
         assumption_ids: Default::default(),
         loops: Default::default(),
         known_loops: Default::default(),

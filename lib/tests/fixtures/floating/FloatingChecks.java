@@ -60,6 +60,20 @@ public class FloatingChecks {
         return Double.doubleToRawLongBits(Math.sin(x)) == Double.doubleToRawLongBits(x) && Math.cos(x) == 1.0;
     }
 
+    public static boolean cosineBracket(int n) {
+        // The two adjacent doubles enclosing cos(x) at and just past the binary64
+        // approximation to -pi/2. Crossing the quadrant changes its sign.
+        double x = n == 0 ? -0x1.921fb54442d18p0 : -0x1.921fb54442d19p0;
+        double lower = n == 0 ? 0x1.1a62633145c06p-54 : -0x1.72cece675d1fdp-53;
+        double upper = n == 0 ? 0x1.1a62633145c07p-54 : -0x1.72cece675d1fcp-53;
+        double a = Math.cos(x), b = StrictMath.cos(x);
+        return a >= lower && a <= upper && b >= lower && b <= upper;
+    }
+
+    public static boolean exactSine(int n) {
+        return Math.sin(n == 0 ? -Math.PI / 2 : -9.0) == -1.0;
+    }
+
     public static boolean integralPart(int n) {
         double[] x = {-0.0, -0.25, 0.25, Double.POSITIVE_INFINITY};
         double[] down = {-0.0, -1.0, +0.0, Double.POSITIVE_INFINITY};
@@ -130,6 +144,9 @@ public class FloatingChecks {
         for (int n = 0; n < 6; n++) if (!axes(n)) throw new AssertionError(n);
         for (int n = 0; n < 5; n++) if (!hypot(n)) throw new AssertionError(n);
         if (!zeroAngle(0) || !zeroAngle(1) || zeroAngle(2)) throw new AssertionError();
+        if (!cosineBracket(0) || !cosineBracket(1) || exactSine(1)) throw new AssertionError();
+        double nearMinusOne = Math.sin(-Math.PI / 2);
+        if (!(nearMinusOne >= -1.0 && nearMinusOne <= -0x1.fffffffffffffp-1)) throw new AssertionError();
         if (!naiveHypot(0) || naiveHypot(1)) throw new AssertionError();
         for (int n = 0; n < 3; n++) if (root(n) != 1) throw new AssertionError(n);
         for (int n = 0; n < 4; n++) if (rounded(n) != 1 || !boundaries(n) || !integralPart(n)) throw new AssertionError(n);

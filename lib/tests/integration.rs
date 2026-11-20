@@ -587,7 +587,10 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
         ("bucket", "n >= 2 && n <= 7", "result == (n < 4 ? 2 : 4)", Verdict::Verified),
         ("bucket", "n >= 2 && n <= 7", "result == 2", Verdict::Violation),
         ("zeroAngle", "n >= 0 && n < 2", "result", Verdict::Verified),
-        ("zeroAngle", "n == 2", "result", Verdict::Unverifiable),
+        ("zeroAngle", "n == 2", "result", Verdict::Violation),
+        ("cosineBracket", "n >= 0 && n < 2", "result", Verdict::Verified),
+        ("exactSine", "n == 0", "result", Verdict::Unverifiable),
+        ("exactSine", "n == 1", "result", Verdict::Unverifiable),
         ("integralPart", "n >= 0 && n < 4", "result", Verdict::Verified),
         ("axes", "n >= 0 && n < 6", "result", Verdict::Verified),
         ("diagonalAngle", "n == 1", "result", Verdict::Unverifiable),
@@ -607,9 +610,13 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
         options.assert = Some(assertion.into());
         let result = property::run(&options).unwrap();
         assert_eq!(result.verdict, expected, "{method}: {}", result.output);
+        if method == "zeroAngle" && expected == Verdict::Violation {
+            assert!(result.replay.as_ref().is_some_and(|r| r.reproduced));
+        }
         if expected == Verdict::Unverifiable {
             let reason = match method {
-                "zeroAngle" => "reachable argument 0x3ff0000000000000",
+                "exactSine" if guard == "n == 0" => "permitted trigonometric rounding",
+                "exactSine" => "without a certified rounding bracket",
                 "signaling" => "signaling NaN",
                 "diagonalAngle" => "outside its exact nonzero-axis cases",
                 _ => "64 reachable operand tuples",

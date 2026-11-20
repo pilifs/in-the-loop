@@ -112,17 +112,28 @@ impl Engine<'_> {
                 x.clone()
             }
             "sin" | "cos" => {
-                let zero = self.b.is_zero(&self.b.trunc(x, 63));
-                if zero != TRUE {
-                    let mut outside = path.cond.clone();
-                    outside.push(-zero);
-                    if self.solve(&outside)? {
-                        let mut model = self.b.snapshot();
-                        let bits = raw_in_model(&mut self.b, &mut model, x) as u64;
-                        return unsupported(format!("{}.{name}(D)D beyond signed zero, reachable argument 0x{bits:016x}", owner.replace('/', ".")));
-                    }
-                }
-                if name == "sin" { x.clone() } else { self.b.constant(1.0f64.to_bits() as i64, 64) }
+                let function = if name == "sin" { super::trig::Function::Sin } else { super::trig::Function::Cos };
+                let mut rounded = false;
+                let bits = self.finite_words(path, name, [x], 64, |engine, [raw]| {
+                    let key = (function, raw as u64);
+                    let pair = match engine.trig_brackets.get(&key) {
+                        Some(&cached) => cached,
+                        None => {
+                            let Some(bracket) = function.bracket(f64::from_bits(key.1)) else {
+                                return unsupported(format!("{}.{name}(D)D without a certified rounding bracket at 0x{:016x}", owner.replace('/', "."), key.1));
+                            };
+                            engine.trig_brackets.insert(key, bracket);
+                            bracket
+                        }
+                    };
+                    let lower = engine.b.constant(pair.0 as i64, 64);
+                    if pair.0 == pair.1 { return Ok(lower); }
+                    rounded = true;
+                    let choice = engine.b.var();
+                    Ok(engine.b.ite_bits(choice, &lower, &engine.b.constant(pair.1 as i64, 64)))
+                })?;
+                if rounded { path.unbound_platform_value = Some("a permitted trigonometric rounding"); }
+                bits
             }
             "atan2" => {
                 // Java fixes the angle exactly on each nonzero axis. Math.atan2 can be a
@@ -212,11 +223,18 @@ impl Engine<'_> {
     /// unsatisfiable before using the result. The limit bounds cost and never truncates the domain.
     fn finite_operation<const N: usize>(&mut self, path: &Path, operation: &str, operands: [&Bits; N], width: usize,
         evaluate: impl Fn([i64; N]) -> Option<i64>) -> Result<Bits, Stop> {
+        self.finite_words(path, operation, operands, width, |engine, values| {
+            let value = evaluate(values).ok_or_else(|| Stop::Unsupported(format!("{operation} with an unspecified NaN result encoding")))?;
+            Ok(engine.b.constant(value, width))
+        })
+    }
+
+    fn finite_words<const N: usize>(&mut self, path: &Path, operation: &str, operands: [&Bits; N], width: usize,
+        mut evaluate: impl FnMut(&mut Self, [i64; N]) -> Result<Bits, Stop>) -> Result<Bits, Stop> {
         const MAX_TUPLES: usize = 64;
-        let checked = |values| evaluate(values).ok_or_else(|| Stop::Unsupported(format!("{operation} with an unspecified NaN result encoding")));
         if operands.iter().all(|word| self.b.constant_value(word).is_some()) {
             let raw = operands.map(|word| self.b.constant_value(word).expect("constant"));
-            return Ok(self.b.constant(checked(raw)?, width));
+            return evaluate(self, raw);
         }
         let mut remaining = path.cond.clone();
         let mut result = self.b.constant(0, width);
@@ -232,7 +250,7 @@ impl Engine<'_> {
                 let equal = self.b.eq(word, &self.b.constant(value, word.len()));
                 selected = self.b.and(selected, equal);
             }
-            let value = self.b.constant(checked(values)?, width);
+            let value = evaluate(self, values)?;
             result = if count == 0 { value } else { self.b.ite_bits(selected, &value, &result) };
             remaining.push(-selected);
             count += 1;
