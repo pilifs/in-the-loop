@@ -1,0 +1,465 @@
+{
+  "task": "parse-fix",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/939ddab4eca9221f7c0f59562c69f798d5268a7b/jvmcontract",
+      "prove",
+      "taigrid.Projection#parse(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/slice/fix.jar",
+      "--classpath",
+      "prepare/fix/lib/org.joda/joda-convert-2.2.4.jar",
+      "--classpath",
+      "prepare/fix/lib/org.jspecify/jspecify-1.0.1.jar",
+      "--assume",
+      "code >= 0 && code < 20",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "24",
+      "--max-array-length",
+      "20",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.041,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "bbdbd579498e5cf9d5108218786ef14a745bb126ed88c175c7cfa2612ee36e24",
+      "commit": "2b3258d19610cf1cc9b5a4dc0af0116d44925444",
+      "libTree": "939ddab4eca9221f7c0f59562c69f798d5268a7b",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 20
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+        "method": "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+        "revisions": {
+          "fix": {
+            "commit": "1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c",
+            "loadedFrom": "slice/fix.jar",
+            "classSha256": "18ec95331a96c1984b2b1cf5300b104a27f8be8ee0c48e3ba6d075a28bc9f562",
+            "origin": "an extracted source slice of 1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c: src/main/java/org/threeten/extra/scale/SystemUtcRules.java, src/main/java/org/threeten/extra/scale/TaiInstant.java, src/main/java/org/threeten/extra/scale/TimeSource.java, src/main/java/org/threeten/extra/scale/UtcInstant.java, src/main/java/org/threeten/extra/scale/UtcRules.java, src/main/java/org/threeten/extra/scale/package-info.java, compiled by JDK 21 with --release 21 -g -parameters",
+            "parameters": {
+              "names": [
+                "text"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "taigrid.Projection#parse(I)I",
+          "mapping": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+          "correspondence": "finite-oracle",
+          "cases": 20
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix": [
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "e5a1196dbe5ead43aa433ddc281283f422ae5d3177029670632bb6a420517ef1",
+            "role": "adapter"
+          },
+          {
+            "path": "slice/fix.jar",
+            "sha256": "ff4ce05db7be9138585a464485e41667bd4ed8ef97c827567809e438b72d3955",
+            "role": "original"
+          },
+          {
+            "path": "lib/org.joda/joda-convert-2.2.4.jar",
+            "sha256": "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org.jspecify/jspecify-1.0.1.jar",
+            "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "taigrid.Projection#parse(I)I",
+      "entryBindings": {
+        "fix": {
+          "entry": "taigrid.Projection#parse(I)I",
+          "classSha256": "a660eb6780fe7be33f7135b99d0ef67213401970506cfd136d74b4863be82253",
+          "loadedFrom": "adapter-fix.jar",
+          "subject": "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+          "subjectClassSha256": "18ec95331a96c1984b2b1cf5300b104a27f8be8ee0c48e3ba6d075a28bc9f562"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+        "checkedEntry": "taigrid.Projection#parse(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 20"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "24"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "20"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "taigrid.Projection#parse(I)I",
+          "mapping": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+          "correspondence": "finite-oracle",
+          "cases": 20
+        }
+      },
+      "commits": {
+        "fix": "1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/939ddab4eca9221f7c0f59562c69f798d5268a7b/jvmcontract",
+            "gaps",
+            "--target",
+            "taigrid.Projection#parse(int)",
+            "--classes",
+            "prepare/fix/adapter-fix.jar",
+            "--classpath",
+            "prepare/fix/slice/fix.jar",
+            "--classpath",
+            "prepare/fix/lib/org.joda/joda-convert-2.2.4.jar",
+            "--classpath",
+            "prepare/fix/lib/org.jspecify/jspecify-1.0.1.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-fix.stdout",
+          "stderr": "verifier/probe-fix.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.time.format.DateTimeParseException.<init>(Ljava/lang/String;Ljava/lang/CharSequence;I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.time.format.DateTimeParseException.<init>(java.lang.String, java.lang.CharSequence, int)",
+              "sites": [
+                "org.threeten.extra.scale.TaiInstant.parse:220"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.time.format.DateTimeParseException.<init>(Ljava/lang/String;Ljava/lang/CharSequence;ILjava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.time.format.DateTimeParseException.<init>(java.lang.String, java.lang.CharSequence, int, java.lang.Throwable)",
+              "sites": [
+                "org.threeten.extra.scale.TaiInstant.parse:217"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.regex.Matcher.group(I)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.regex.Matcher.group(int)",
+              "sites": [
+                "org.threeten.extra.scale.TaiInstant.parse:210",
+                "org.threeten.extra.scale.TaiInstant.parse:211",
+                "org.threeten.extra.scale.TaiInstant.parse:212"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
+              "sites": [
+                "org.threeten.extra.scale.TaiInstant.parse:207"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.regex.Matcher.matches()",
+              "sites": [
+                "org.threeten.extra.scale.TaiInstant.parse:208"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0396,
+        "peakRssBytes": 80695296,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "taigrid.Projection#parse(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 20",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 24 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ taigrid.Projection#parse(int) satisfies `result == 1` on every input where code >= 0 && code < 20 (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 24 times with unwinding assertions)\n  not vacuous: parse(code=0) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 0.00920408,
+          "properties": 1,
+          "unwind": 24,
+          "max_array_length": 20,
+          "stage": null,
+          "native": {
+            "paths": 21,
+            "merges": 0,
+            "solver_calls": 87,
+            "solving_seconds": 0.000134,
+            "gates_evaluated": 232,
+            "evaluating_seconds": 0.000100095,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 53,
+            "finite_queries": {
+              "diagrams": 87,
+              "bitwuzla": 0
+            },
+            "variables": 462,
+            "clauses": 1,
+            "seconds": 0.008379876,
+            "loading_seconds": 0.000564207,
+            "decoding_seconds": 6.6567e-05,
+            "encoding_seconds": 0.001548038,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.008,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.002,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 462,
+                "clauses": 1
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.991,
+              "seconds": 0.002,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 10,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.037,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.01,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.025
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 20",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 24,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found parse(code=0).",
+            "witness": "parse(code=0)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-062318-verify-canonical-signed-tai-texts-and-in/.build-py/examples-7na_kb4y/targets/315/parse-fix/20261120T063209Z-65ca99dd",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-062318-verify-canonical-signed-tai-texts-and-in/.build-py/examples-7na_kb4y/targets/315/parse-fix/20261120T063209Z-65ca99dd"
+  }
+}
