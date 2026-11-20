@@ -178,6 +178,7 @@ _RESERVED_IP = re.compile(r"^(?:0\.|10\.|127\.|169\.254\.|192\.168\.|172\.(?:1[6
 VERSION_BEFORE = re.compile(r"(?i)(?:\b(?:version|ver\.?|openjdk|jdk|javac?|adoptium|temurin|corretto|graalvm(?: ce)?)"
                             r"|\b(?:java|jdk)\.[a-z.]+@)[\s\"'=:_\-]*$")
 VERSION_AFTER = re.compile(r"\s*\|\s*[\d.]+(?:\+\d+)?-[a-z]")
+DECISION_ID_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*-D\d{3,}")
 REVIEW_PATTERNS = [
     ("public-ip",r"(?<![\w.\-+])(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)(?![\w.\-+])",
      lambda s: not _RESERVED_IP.match(s)),
@@ -189,11 +190,12 @@ REVIEW_PATTERNS = [
      lambda s: "[REDACTED" not in s),
     # Long mixed-case strings with digits: API keys of unknown formats, base64 blobs. Hashes
     # (hex, lower case) and UUIDs do not match; integrity hashes, file paths and embedded images
-    # (base64 PNG, JPEG, GIF, PDF, WEBP, or anything over 1000 characters) are skipped.
+    # (base64 PNG, JPEG, GIF, PDF, WEBP, or anything over 1000 characters) are skipped, and so are the ids
+    # of llm-dlc/decisions/ (a record's name, lower-case words and dashes, then -D and a number).
     ("long-token", r"(?<![\w/+=\-])(?!sha(?:1|256|384|512)-)(?=[A-Za-z0-9+/_\-]*\d)(?=[A-Za-z0-9+/_\-]*[a-z])"
                    r"(?=[A-Za-z0-9+/_\-]*[A-Z])[A-Za-z0-9+/_\-]{40,}={0,2}(?![\w/+=\-])",
      lambda s: len(s) < 1000 and not s.startswith(("iVBORw0KGgo", "/9j/", "R0lGOD", "JVBERi0", "UklGR"))
-     and ("/" not in s or "+" in s or s.endswith("="))),
+     and ("/" not in s or "+" in s or s.endswith("=")) and not DECISION_ID_RE.fullmatch(s)),
 ]
 ANSI_RE = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 
@@ -541,6 +543,6 @@ RULES_STAMP = f"{{RULES_HASH}}@{{RULES_GENERATED}}"
 
 _STAMP_MARK = "# --- " + "stamp"
 # --- stamp: written by `sync.py stamp`; the hash covers everything above this line.
-RULES_HASH = "78c668e7b10737a14e92b82c81e36f3b862976e35c590e0dbf75e66e00c95d80"
-RULES_GENERATED = "2026-11-01T23:27:26+00:00"
+RULES_HASH = "9cd81b6967e00e00d5dda975e6e4a7c0e236a50e17446173672129c6667865d8"
+RULES_GENERATED = "2026-11-20T15:05:04+00:00"
 RULES_STAMP = f"{RULES_HASH}@{RULES_GENERATED}"

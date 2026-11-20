@@ -12,32 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-20T11:13:04.009Z",
-  "duration_seconds": 409537,
+  "ended": "2026-11-20T16:08:13.540Z",
+  "duration_seconds": 427247,
   "stats": {
-    "turns": 452,
-    "api_calls": 2376,
-    "tool_calls": 2110,
-    "tool_errors": 33,
-    "compactions": 8,
+    "turns": 455,
+    "api_calls": 2417,
+    "tool_calls": 2150,
+    "tool_errors": 34,
+    "compactions": 9,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 5644,
-      "output_tokens": 1254572,
-      "cache_read_input_tokens": 605106543,
-      "cache_creation_input_tokens": 3203004
+      "input_tokens": 5730,
+      "output_tokens": 1272432,
+      "cache_read_input_tokens": 610536562,
+      "cache_creation_input_tokens": 3370074
     }
   },
   "tools": {
-    "Bash": 2009,
+    "Bash": 2046,
     "Edit": 28,
     "SendMessage": 18,
-    "ToolSearch": 13,
-    "TaskStop": 11,
+    "ToolSearch": 14,
+    "TaskStop": 12,
     "Write": 8,
     "ListAgents": 7,
     "Read": 7,
-    "AskUserQuestion": 5,
+    "AskUserQuestion": 6,
     "Monitor": 2,
     "Skill": 2
   },
@@ -174,24 +174,38 @@
     {
       "index": 8,
       "started": "2026-11-19T18:00:49.571Z",
-      "ended": "2026-11-20T11:13:04.009Z",
-      "turns": 149,
-      "api_calls": 551,
+      "ended": "2026-11-20T11:27:16.162Z",
+      "turns": 150,
+      "api_calls": 556,
       "usage": {
-        "input_tokens": 1402,
-        "output_tokens": 140727,
-        "cache_read_input_tokens": 160714071,
-        "cache_creation_input_tokens": 414728
+        "input_tokens": 1414,
+        "output_tokens": 143318,
+        "cache_read_input_tokens": 162965129,
+        "cache_creation_input_tokens": 418389
       },
-      "peak_context_tokens": 449115
+      "peak_context_tokens": 452776
+    },
+    {
+      "index": 9,
+      "started": "2026-11-20T12:22:10.685Z",
+      "ended": "2026-11-20T16:08:13.540Z",
+      "turns": 2,
+      "api_calls": 36,
+      "usage": {
+        "input_tokens": 74,
+        "output_tokens": 15269,
+        "cache_read_input_tokens": 3178961,
+        "cache_creation_input_tokens": 163409
+      },
+      "peak_context_tokens": 110181
     }
   ],
   "log": {
-    "sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb",
-    "bytes": 41890033,
-    "lines": 19418,
-    "gzip_bytes": 6854686,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb.jsonl.gz"
+    "sha256": "f21473647c8b0c0928e7201165da06d85dcad7d7b2171225b3656b0a785f5640",
+    "bytes": 43010806,
+    "lines": 19801,
+    "gzip_bytes": 7091682,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/f21473647c8b0c0928e7201165da06d85dcad7d7b2171225b3656b0a785f5640.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -4482,6 +4496,14 @@
       "summary": "Merge the single-agent run twenty-example-fast-follow into the line",
       "body": "The single-agent run twenty-example-fast-follow (session 0cea9d0e-0fe8-427e-8e71-96614b084e11) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
       "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
+    },
+    {
+      "change_id": "nzqqsxtvxszvpluopnxszvoqsmqkuvyw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Stop reading decision ids as long tokens",
+      "body": "The long-token review rule flagged every watcher decision id (single-NAME-D001: lower-case words, dashes, then -D and a number) that appears in a session log, so each new decision added a warning and an allow-list proposal: about a hundred warnings after the twenty-example run. The rule now skips a token that is wholly in that shape; a mixed-case key with the same prefix still matches (new unit test in test_review.py). The rules are restamped after a full rescan. Two findings remain open and proposed for the allow list: a placeholder id ending in D00N in a watcher transcript, and the made-up value of the new test as it appears in that transcript. Verified with test_costs.py run --changed (11 of 11).",
+      "log_sha256": "f21473647c8b0c0928e7201165da06d85dcad7d7b2171225b3656b0a785f5640"
     }
   ],
   "logs": {
@@ -5821,6 +5843,12 @@
       "bytes": 39117505,
       "lines": 17246,
       "gzip_bytes": 6531433,
+      "url": null
+    },
+    "f21473647c8b0c0928e7201165da06d85dcad7d7b2171225b3656b0a785f5640": {
+      "bytes": 43010806,
+      "lines": 19801,
+      "gzip_bytes": 7091682,
       "url": null
     },
     "f2f6fae66d8179e3965295f4d55705f824f3af8e835352e4e3804a71ffbc6c58": {

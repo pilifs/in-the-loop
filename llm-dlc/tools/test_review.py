@@ -57,6 +57,11 @@ class Review(unittest.TestCase):
         self.r.reviewed = {sync.finding_id("public-ip", HOME_A): {}}
         self.assertIn("other-home-dir", self.r.review_hits(line(HOME_A)))
 
+    def test_a_decision_id_is_not_a_long_token_but_a_key_with_its_shape_is(self):
+        self.assertEqual(list(self.r.review_hits(line("single-twenty-example-fast-follow-D004"))), [])
+        made_up = "single-twenty-example-fast-follow-Dq4Zx7"
+        self.assertIn("long-token", self.r.review_hits(line(made_up + "Kp2Lm9Nb")))
+
     def test_an_error_can_be_reviewed_too(self):
         address = "someone" + "@" + "corp.test"
         self.assertIn("email", self.r.leaks(line(address)))
