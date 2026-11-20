@@ -12,28 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T06:45:26.486Z",
-  "duration_seconds": 32877,
+  "ended": "2026-11-20T06:54:59.946Z",
+  "duration_seconds": 33450,
   "stats": {
     "turns": 8,
-    "api_calls": 2023,
-    "tool_calls": 5171,
+    "api_calls": 2052,
+    "tool_calls": 5234,
     "tool_errors": 162,
     "compactions": 7,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 3937809,
-      "output_tokens": 995736,
-      "cache_read_input_tokens": 594295296,
+      "input_tokens": 3968112,
+      "output_tokens": 1011531,
+      "cache_read_input_tokens": 605291392,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 2998,
-    "exec": 1947,
+    "Bash": 3032,
+    "exec": 1974,
     "apply_patch": 164,
     "wait": 44,
-    "sleep": 18
+    "sleep": 20
   },
   "files_touched": [
     "examples/197-shared-int-array-poststates/README.md",
@@ -241,24 +241,24 @@
     {
       "index": 7,
       "started": "2026-11-20T06:02:44.155Z",
-      "ended": "2026-11-20T06:45:26.486Z",
+      "ended": "2026-11-20T06:54:59.946Z",
       "turns": 1,
-      "api_calls": 177,
+      "api_calls": 206,
       "usage": {
-        "input_tokens": 363856,
-        "output_tokens": 84073,
-        "cache_read_input_tokens": 45479424,
+        "input_tokens": 394159,
+        "output_tokens": 99868,
+        "cache_read_input_tokens": 56475520,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 365360
+      "peak_context_tokens": 393468
     }
   ],
   "log": {
-    "sha256": "756c1f16b00a6ff222d12020ce01b48f55558812b66bff869bca1c64ca4f1274",
-    "bytes": 48470194,
-    "lines": 15731,
-    "gzip_bytes": 18260840,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/756c1f16b00a6ff222d12020ce01b48f55558812b66bff869bca1c64ca4f1274.jsonl.gz"
+    "sha256": "67f2fa9b3e92de959997e66858e2622f9e7722a0067603863c6c1e6585959f9b",
+    "bytes": 48993570,
+    "lines": 15947,
+    "gzip_bytes": 18480278,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/67f2fa9b3e92de959997e66858e2622f9e7722a0067603863c6c1e6585959f9b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -967,20 +967,28 @@
       "log_sha256": "e3a23be5800aa1152d9f79eca21fda2b6b91409acfdeecf12a766395e190cb54"
     },
     {
-      "change_id": "vyxyklmmtsqtnvmzukvnvqqrzxuvrqto",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "756c1f16b00a6ff222d12020ce01b48f55558812b66bff869bca1c64ca4f1274"
-    },
-    {
       "change_id": "qwovsntvwpznlymkqvvomsoyotrrowlk",
       "commit_id": null,
       "immutable": false,
       "summary": "Execute bounded ArrayList operations from the runtime image (verification pending)",
       "body": "Use the selected JDK bytecode for a constructed ArrayList's growth, membership, indexed reads and writes, and typed array copies. The checker qualifies the private empty arrays and the actual runtime array class. Copying a typed destination preserves a successful prefix on failure in both engines. Model selection stays explicit. Object arrays can hold array components of other ranks as Java allows. Stream.of(T...) uses the existing sequential array stream and runs the application's predicate. Decimal Long.toString uses the signed conversion path when the image returns fresh Strings.\n\nJVM and native controls passed on Temurin 21 and 25 for capacity growth, nulls, identity, oversized buffers, detached typed arrays, partial stores, nested array types, stream short-circuiting and decimal formatting. The updated native conformance corpus passed in isolation and the changed test selection passed. A fresh proof now establishes the existing guarded copy of a mutable list. A single strict probe also proved the fixed duration lexer on its original domain. Joda-Time advanced to the system property selecting its zone provider.\n\nJobs 20261120-063346-verify-both-historical-duration-tokenize and 20261120-063346-verify-partial-dates-past-the-shared-lis check the two historical consumers. Jobs 20261120-063346-recheck-ordered-resource-failures-on-sha, 20261120-063346-recheck-all-signed-tai-observations-on-t and 20261120-063347-repeat-fraction-overflow-checks-on-the-s repeat the other three affected packets. Jobs 20261120-063347-recheck-both-array-roots-after-typed-lis and 20261120-063347-recheck-the-released-lcs-score-after-typ verify the two original regressions. Jobs 20261120-063726-compare-bounded-arraylist-claims-across and 20261120-063726-confirm-jvm-corpus-verdicts-after-select cover the full JBMC, automatic and confirmation comparisons.",
       "log_sha256": "756c1f16b00a6ff222d12020ce01b48f55558812b66bff869bca1c64ca4f1274"
+    },
+    {
+      "change_id": "tumxsvkkyqqsnymvyqzvqxrmtksupmxp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "67f2fa9b3e92de959997e66858e2622f9e7722a0067603863c6c1e6585959f9b"
+    },
+    {
+      "change_id": "snvmzxnulsvnxospqlyvolkqvmzvvlvv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the duration, partial-date and list regression runs",
+      "body": "The selected JDK list methods preserved every ThreeTen, resource-closure and Fraction verdict. The duration checker refuted the historical separated-field claim and proved the fixed text and quoting observations. Three original claims stopped at Arrays.fill(char[],char). All ten MonthDay checks reached the ambient time-zone provider property. Keep both failed jobs and their partial results.\n\nAll seven result trees and their applied receipts matched the collector byte for byte. The 71-heap array-root regression retained both replayed witnesses. The released LCS score was proved in 0.740 seconds and 80.3 MiB at the original bounds; the release and source agreed with all 225 JVM cases and the shared-row control differed on 44. The source-claim audit and pipeline schema check passed.",
+      "log_sha256": "67f2fa9b3e92de959997e66858e2622f9e7722a0067603863c6c1e6585959f9b"
     }
   ],
   "logs": {
@@ -1102,6 +1110,12 @@
       "bytes": 40340110,
       "lines": 12935,
       "gzip_bytes": 15183978,
+      "url": null
+    },
+    "67f2fa9b3e92de959997e66858e2622f9e7722a0067603863c6c1e6585959f9b": {
+      "bytes": 48993570,
+      "lines": 15947,
+      "gzip_bytes": 18480278,
       "url": null
     },
     "6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852": {

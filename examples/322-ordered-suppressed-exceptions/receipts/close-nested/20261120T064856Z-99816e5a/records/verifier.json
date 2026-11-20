@@ -1,0 +1,413 @@
+{
+  "task": "close-nested",
+  "record": {
+    "kind": "verifier",
+    "revision": "nested",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/335a22e6e80e41aa92a70769dbe0c550df5af0e1/jvmcontract",
+      "prove",
+      "paint.Projection#close(int)",
+      "--classes",
+      "prepare/nested/adapter-nested.jar",
+      "--classpath",
+      "prepare/nested/nested.jar",
+      "--assume",
+      "code >= 0 && code < 8",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "10",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.051,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "0ff976342fcca72a1260b9e143eb70376e4139e3f5080ea62f2aa69e2a164eb0",
+      "commit": "c938ffc598f7cd20489b9edb557285a3229dc1e7",
+      "libTree": "335a22e6e80e41aa92a70769dbe0c550df5af0e1",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "method": "paint.Paint#run(I)Lpaint/Outcome;",
+        "revisions": {
+          "nested": {
+            "commit": "fixture:nested",
+            "loadedFrom": "nested.jar",
+            "classSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf",
+            "origin": "built from nested by the fixture recipe",
+            "parameters": {
+              "names": [
+                "mask"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "paint.Projection#close(I)I",
+          "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+          "correspondence": "finite-oracle",
+          "cases": 8
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "nested": [
+          {
+            "path": "adapter-nested.jar",
+            "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+            "role": "adapter"
+          },
+          {
+            "path": "nested.jar",
+            "sha256": "cff7a4657f1229e0a2fe978edd1611ef7dbb62318eb6b330e546c831763b6af3",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "paint.Projection#close(I)I",
+      "entryBindings": {
+        "nested": {
+          "entry": "paint.Projection#close(I)I",
+          "classSha256": "4331440adb1cd29279a26d56d9fb144af87fe0faf5bbfe1f834736ee4b66329f",
+          "loadedFrom": "adapter-nested.jar",
+          "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+          "subjectClassSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+        "checkedEntry": "paint.Projection#close(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 8"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "16"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "10"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "paint.Projection#close(I)I",
+          "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+          "correspondence": "finite-oracle",
+          "cases": 8
+        }
+      },
+      "commits": {
+        "nested": "fixture:nested"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "nested": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/335a22e6e80e41aa92a70769dbe0c550df5af0e1/jvmcontract",
+            "gaps",
+            "--target",
+            "paint.Projection#close(int)",
+            "--classes",
+            "prepare/nested/adapter-nested.jar",
+            "--classpath",
+            "prepare/nested/nested.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-nested.stdout",
+          "stderr": "verifier/probe-nested.stderr",
+          "gaps": [
+            {
+              "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+              "sites": [
+                "paint.Paint.run:7"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0503,
+        "peakRssBytes": 80003072,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "paint.Projection#close(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 8",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ paint.Projection#close(int) satisfies `result == 1` on every input where code >= 0 && code < 8 (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: close(code=0) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 0.010841499,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 10,
+          "stage": null,
+          "native": {
+            "paths": 8,
+            "merges": 0,
+            "solver_calls": 11,
+            "solving_seconds": 1.3555e-05,
+            "gates_evaluated": 12,
+            "evaluating_seconds": 5.491e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 5,
+            "finite_queries": {
+              "diagrams": 10,
+              "bitwuzla": 0
+            },
+            "variables": 9,
+            "clauses": 1,
+            "seconds": 0.009722054,
+            "loading_seconds": 0.00129382,
+            "decoding_seconds": 0.000168668,
+            "encoding_seconds": 0.000129985,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.01,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.008,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 9,
+                "clauses": 1
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.989,
+              "seconds": 0.004,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.003,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 8,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.046,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.014,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.031
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 8",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found close(code=0).",
+            "witness": "close(code=0)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-063346-recheck-ordered-resource-failures-on-sha/.build-py/examples-an73miqg/targets/322/close-nested/20261120T064856Z-99816e5a",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-063346-recheck-ordered-resource-failures-on-sha/.build-py/examples-an73miqg/targets/322/close-nested/20261120T064856Z-99816e5a"
+  }
+}

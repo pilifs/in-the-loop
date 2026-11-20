@@ -1,0 +1,426 @@
+{
+  "task": "primary-reversed",
+  "record": {
+    "kind": "verifier",
+    "revision": "reversed",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/335a22e6e80e41aa92a70769dbe0c550df5af0e1/jvmcontract",
+      "prove",
+      "paint.Projection#primary(int)",
+      "--classes",
+      "prepare/reversed/adapter-reversed.jar",
+      "--classpath",
+      "prepare/reversed/reversed.jar",
+      "--assume",
+      "code >= 0 && code < 8",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "10",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.061,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "0ff976342fcca72a1260b9e143eb70376e4139e3f5080ea62f2aa69e2a164eb0",
+      "commit": "c938ffc598f7cd20489b9edb557285a3229dc1e7",
+      "libTree": "335a22e6e80e41aa92a70769dbe0c550df5af0e1",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "method": "paint.Paint#run(I)Lpaint/Outcome;",
+        "revisions": {
+          "reversed": {
+            "commit": "fixture:reversed",
+            "loadedFrom": "reversed.jar",
+            "classSha256": "a0051c0c3f13569c760d1fe118e783e06348d11231f2ffecdaa57db4e369a7e1",
+            "origin": "built from reversed by the fixture recipe",
+            "parameters": {
+              "names": [
+                "mask"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "paint.Projection#primary(I)I",
+          "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+          "correspondence": "finite-oracle",
+          "cases": 8
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "reversed": [
+          {
+            "path": "adapter-reversed.jar",
+            "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+            "role": "adapter"
+          },
+          {
+            "path": "reversed.jar",
+            "sha256": "9f038d83cc48f78cb9678b76351261bd96f46d82e88a517f7ef6ffb2a52f2c53",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "paint.Projection#primary(I)I",
+      "entryBindings": {
+        "reversed": {
+          "entry": "paint.Projection#primary(I)I",
+          "classSha256": "4331440adb1cd29279a26d56d9fb144af87fe0faf5bbfe1f834736ee4b66329f",
+          "loadedFrom": "adapter-reversed.jar",
+          "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+          "subjectClassSha256": "a0051c0c3f13569c760d1fe118e783e06348d11231f2ffecdaa57db4e369a7e1"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+        "checkedEntry": "paint.Projection#primary(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 8"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "16"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "10"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "paint.Projection#primary(I)I",
+          "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+          "correspondence": "finite-oracle",
+          "cases": 8
+        }
+      },
+      "commits": {
+        "reversed": "fixture:reversed"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "reversed": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/335a22e6e80e41aa92a70769dbe0c550df5af0e1/jvmcontract",
+            "gaps",
+            "--target",
+            "paint.Projection#primary(int)",
+            "--classes",
+            "prepare/reversed/adapter-reversed.jar",
+            "--classpath",
+            "prepare/reversed/reversed.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-reversed.stdout",
+          "stderr": "verifier/probe-reversed.stderr",
+          "gaps": [
+            {
+              "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+              "sites": [
+                "paint.Paint.run:7"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0518,
+        "peakRssBytes": 80003072,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "violation",
+        "target": "paint.Projection#primary(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 8",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": {
+          "input": "primary(code=3)",
+          "outcome": "0",
+          "values": [
+            "3"
+          ],
+          "shrink_runs": 3,
+          "inputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 3
+            }
+          ],
+          "call": {
+            "class": "paint.Projection",
+            "class_file": "paint/Projection.class",
+            "classes": "after",
+            "method": "primary",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 3,
+                "from": "code"
+              }
+            ]
+          }
+        },
+        "proof": "found by jvmcontract's own checker (Bitwuzla) in 0.0 s searching inputs in [0:20], replayed in the interpreter; domain code: int",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "property-violated",
+            "message": "Property of paint.Projection#primary(int) violated: `result == 1` where code >= 0 && code < 8:\n  primary(code=3)\n    outcome: 0",
+            "uri": null,
+            "line": 5
+          }
+        ],
+        "output": "✗ Property of paint.Projection#primary(int) violated: `result == 1` where code >= 0 && code < 8:\n  primary(code=3)\n    outcome: 0\n  (found by jvmcontract's own checker (Bitwuzla) in 0.0 s searching inputs in [0:20], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 0.008999125,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 10,
+          "stage": "[0:20]",
+          "native": {
+            "paths": 7,
+            "merges": 0,
+            "solver_calls": 11,
+            "solving_seconds": 1.2283e-05,
+            "gates_evaluated": 12,
+            "evaluating_seconds": 4.728e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 6,
+            "finite_queries": {
+              "diagrams": 11,
+              "bitwuzla": 0
+            },
+            "variables": 11,
+            "clauses": 1,
+            "seconds": 0.008134399,
+            "loading_seconds": 0.000576769,
+            "decoding_seconds": 9.657e-05,
+            "encoding_seconds": 0.00011061,
+            "witness_seconds": 1.3474e-05
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.008,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.007,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 11,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.048,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.008,
+            "replay": 0.007,
+            "jvm": 0.0,
+            "other": 0.032
+          }
+        },
+        "replay": {
+          "by": "interpreter",
+          "reproduced": true
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 8",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-063346-recheck-ordered-resource-failures-on-sha/.build-py/examples-an73miqg/targets/322/primary-reversed/20261120T064852Z-6b4def44",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-063346-recheck-ordered-resource-failures-on-sha/.build-py/examples-an73miqg/targets/322/primary-reversed/20261120T064852Z-6b4def44"
+  }
+}
