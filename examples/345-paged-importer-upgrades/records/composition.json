@@ -1,0 +1,945 @@
+{
+  "schema": "finite-importer-composition/v1",
+  "strategy": "Exhaustive finite JVM evaluation and independently replayed counterexamples",
+  "producerPrecedents": {
+    "338": {
+      "parent": [
+        {
+          "task": "bytes-parent",
+          "sourceKey": "5008426585e68000",
+          "status": "refuted",
+          "receipt": "examples/338-commons-io-bom-reset/records/finite-proofs/20261120T182356Z-5a993d0f/bytes-parent.json",
+          "sha256": "1eb9f04a94f0b42139f8f1866b7b1aaab8fe6877edb46b0bd3b3f5c88615c674"
+        },
+        {
+          "task": "eof-parent",
+          "sourceKey": "ec7710c3d0d496b1",
+          "status": "established",
+          "receipt": "examples/338-commons-io-bom-reset/records/finite-proofs/20261120T182356Z-5a993d0f/eof-parent.json",
+          "sha256": "cd47b27d2b109046419576785e7ed957d0aaf3763ae895755d05e4cce0eac268"
+        }
+      ],
+      "fix": [
+        {
+          "task": "bytes-fix",
+          "sourceKey": "5008426585e68000",
+          "status": "established",
+          "receipt": "examples/338-commons-io-bom-reset/records/finite-proofs/20261120T182356Z-5a993d0f/bytes-fix.json",
+          "sha256": "503705046c6819a32fd60e94cabd3a68ca1862d4c7c65ea2dd5cbd17cbdd84a8"
+        },
+        {
+          "task": "eof-fix",
+          "sourceKey": "ec7710c3d0d496b1",
+          "status": "established",
+          "receipt": "examples/338-commons-io-bom-reset/records/finite-proofs/20261120T182356Z-5a993d0f/eof-fix.json",
+          "sha256": "7982767fb674723db47ba695130d0e586f749d969b236b5e2bbd41661a7a91ad"
+        }
+      ]
+    },
+    "339": {
+      "parent": [
+        {
+          "task": "count-parent",
+          "sourceKey": "8f3e909bdca5847d",
+          "status": "refuted",
+          "receipt": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/count-parent.json",
+          "sha256": "a9fadba7cc96774f9f5d785702d13d4bdd06c5fd158445e73c3d10e20221823c"
+        },
+        {
+          "task": "labels-parent",
+          "sourceKey": "9cbe2cbafe03691b",
+          "status": "refuted",
+          "receipt": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/labels-parent.json",
+          "sha256": "23967a8926c5d470e7c55460d3603273db27efdbc477915999ba9a0d78a576ba"
+        },
+        {
+          "task": "fields-parent",
+          "sourceKey": "bb75b6937a8a45bd",
+          "status": "refuted",
+          "receipt": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/fields-parent.json",
+          "sha256": "d177a48fc7feb15d69c8890361dc6698f06bf026742fded9eee6893f8720b7c7"
+        }
+      ],
+      "fix": [
+        {
+          "task": "count-fix",
+          "sourceKey": "8f3e909bdca5847d",
+          "status": "established",
+          "receipt": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/count-fix.json",
+          "sha256": "16b75247675186d0f51f2511e811bb1d08e12db0501b54d38f888676c72d5c5a"
+        },
+        {
+          "task": "labels-fix",
+          "sourceKey": "9cbe2cbafe03691b",
+          "status": "established",
+          "receipt": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/labels-fix.json",
+          "sha256": "f3430dfc9f63a5a356574fba0278538ece2e8e058eaa7605be3b1308714e6625"
+        },
+        {
+          "task": "fields-fix",
+          "sourceKey": "bb75b6937a8a45bd",
+          "status": "established",
+          "receipt": "examples/339-commons-csv-page-numbers/records/finite-proofs/20261120T182356Z-5be10ea1/fields-fix.json",
+          "sha256": "1ae3c76ae754f97955db1f454ded73acae2d3410c1801dbbfe4370734bb41275"
+        }
+      ]
+    }
+  },
+  "assumptions": [
+    "stock pinned JDK",
+    "fresh input streams and parsers",
+    "three literal documents and the frozen 96 selectors"
+  ],
+  "costScope": "Each strategy starts with a fresh application build and empty proof cache. Updates individually start from the cold parent/parent proof store. JVM wall and process RSS include launch. The OS page cache is uncontrolled; the four separate Maven builds are recorded separately.",
+  "reuse": "The byte-only client runs without CSV or Codec. A CSV stage is keyed by the complete runtime IO/CSV/Codec closure and the exact UTF-16 text, start and cap. An unrelated JAR is omitted only from the isolated producers; every scenario is also checked on the full classpath.",
+  "transferContracts": {
+    "338": {
+      "path": "examples/338-commons-io-bom-reset/controls/importer-transfer.json",
+      "sha256": "635f8b9d437cdffa02f44e4ab50c0f7ee80a6c012e382e4c19e9a5593837afa9"
+    },
+    "339": {
+      "path": "examples/339-commons-csv-page-numbers/controls/importer-transfer.json",
+      "sha256": "e1ba7d6bcb147a7d94f332d5c62952080b849f1a5b6bfb217fe4b779d5e7e9c8"
+    }
+  },
+  "inline": [
+    {
+      "scenario": "clean",
+      "cell": [
+        "parent",
+        "parent"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "103dd2fa44aeca030c13808bf6546bf44f3d9261f2f9bc91b8460f6859fa719a",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 48,
+          "count": 40,
+          "page": 68
+        },
+        "witnesses": {
+          "bytes": 4,
+          "count": 2,
+          "page": 2
+        },
+        "allRowsSha256": "e586aae2b4d3e0d1e76c5047497058f7f207e8cb84f2efd1bb5b679ad7b9306d"
+      },
+      "work": {
+        "computed": 96,
+        "reused": 0,
+        "wholeClaimsReused": 0,
+        "wholeClaimsComputed": 3
+      },
+      "wallSeconds": 2.40847,
+      "preparationSeconds": 2.1,
+      "checkingSeconds": 0.122,
+      "replaySeconds": 0.092,
+      "peakChildRssBytes": 128552960,
+      "phases": [
+        {
+          "phase": "compile application",
+          "wallSeconds": 0.643,
+          "cpuSeconds": 1.2433,
+          "peakRssBytes": 128552960,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "compile unrelated control",
+          "wallSeconds": 0.435,
+          "cpuSeconds": 0.8103,
+          "peakRssBytes": 95531008,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "compile unrelated control",
+          "wallSeconds": 0.364,
+          "cpuSeconds": 0.706,
+          "peakRssBytes": 98209792,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "compile Inline",
+          "wallSeconds": 0.658,
+          "cpuSeconds": 1.2786,
+          "peakRssBytes": 116396032,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "inline JVM checking",
+          "wallSeconds": 0.122,
+          "cpuSeconds": 0.186,
+          "peakRssBytes": 51146752,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.092,
+          "cpuSeconds": 0.1284,
+          "peakRssBytes": 47005696,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "classpath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ]
+    },
+    {
+      "scenario": "unchanged",
+      "cell": [
+        "parent",
+        "parent"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "103dd2fa44aeca030c13808bf6546bf44f3d9261f2f9bc91b8460f6859fa719a",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 48,
+          "count": 40,
+          "page": 68
+        },
+        "witnesses": {
+          "bytes": 4,
+          "count": 2,
+          "page": 2
+        },
+        "allRowsSha256": "e586aae2b4d3e0d1e76c5047497058f7f207e8cb84f2efd1bb5b679ad7b9306d"
+      },
+      "work": {
+        "computed": 0,
+        "reused": 96,
+        "wholeClaimsReused": 3,
+        "wholeClaimsComputed": 0
+      },
+      "wallSeconds": 0.09336,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0,
+      "replaySeconds": 0.091,
+      "peakChildRssBytes": 47194112,
+      "phases": [
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.091,
+          "cpuSeconds": 0.128,
+          "peakRssBytes": 47194112,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "classpath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ]
+    },
+    {
+      "scenario": "change-io",
+      "cell": [
+        "fix",
+        "parent"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "127f6d08445f6fa7c814dfb1a12b5bf93b3f098e8edf6a982ea0fef0fb3fff3d",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 0,
+          "count": 40,
+          "page": 40
+        },
+        "witnesses": {
+          "count": 2,
+          "page": 2
+        },
+        "allRowsSha256": "4afdeefb20aede5de55a015f932b36d0cf51955e90d26fb45a7ac1638b185a7e"
+      },
+      "work": {
+        "computed": 96,
+        "reused": 0,
+        "wholeClaimsReused": 0,
+        "wholeClaimsComputed": 3
+      },
+      "wallSeconds": 0.22639,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0.142,
+      "replaySeconds": 0.081,
+      "peakChildRssBytes": 51666944,
+      "phases": [
+        {
+          "phase": "inline JVM checking",
+          "wallSeconds": 0.142,
+          "cpuSeconds": 0.1756,
+          "peakRssBytes": 51666944,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.081,
+          "cpuSeconds": 0.1195,
+          "peakRssBytes": 46911488,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "classpath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ]
+    },
+    {
+      "scenario": "change-csv",
+      "cell": [
+        "parent",
+        "fix"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "dd2476b28b60f0d0212cdca6444c67dcc0539a7e69898a31b9594231bc4acc74",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 48,
+          "count": 0,
+          "page": 48
+        },
+        "witnesses": {
+          "bytes": 4,
+          "page": 4
+        },
+        "allRowsSha256": "25888da396f57e23d052f3c3567d664f4be5b19d7a67dfc670e95069cc23c40c"
+      },
+      "work": {
+        "computed": 96,
+        "reused": 0,
+        "wholeClaimsReused": 0,
+        "wholeClaimsComputed": 3
+      },
+      "wallSeconds": 0.25681,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0.142,
+      "replaySeconds": 0.112,
+      "peakChildRssBytes": 51113984,
+      "phases": [
+        {
+          "phase": "inline JVM checking",
+          "wallSeconds": 0.142,
+          "cpuSeconds": 0.1769,
+          "peakRssBytes": 51113984,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.112,
+          "cpuSeconds": 0.1296,
+          "peakRssBytes": 46247936,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "classpath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ]
+    },
+    {
+      "scenario": "change-unused",
+      "cell": [
+        "parent",
+        "parent"
+      ],
+      "unusedJarSha256": "15ed615953cd9984e6dd190136f22716531200894b1027383f9292d75306c8ab",
+      "preparedKey": "a4286e1ef5445471eada6761146fd539829821f0d7f835600e02bb47353fe3b9",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "15ed615953cd9984e6dd190136f22716531200894b1027383f9292d75306c8ab"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 48,
+          "count": 40,
+          "page": 68
+        },
+        "witnesses": {
+          "bytes": 4,
+          "count": 2,
+          "page": 2
+        },
+        "allRowsSha256": "e586aae2b4d3e0d1e76c5047497058f7f207e8cb84f2efd1bb5b679ad7b9306d"
+      },
+      "work": {
+        "computed": 96,
+        "reused": 0,
+        "wholeClaimsReused": 0,
+        "wholeClaimsComputed": 3
+      },
+      "wallSeconds": 0.22771,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0.122,
+      "replaySeconds": 0.092,
+      "peakChildRssBytes": 51097600,
+      "phases": [
+        {
+          "phase": "inline JVM checking",
+          "wallSeconds": 0.122,
+          "cpuSeconds": 0.1854,
+          "peakRssBytes": 51097600,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.092,
+          "cpuSeconds": 0.1307,
+          "peakRssBytes": 47173632,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "classpath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "15ed615953cd9984e6dd190136f22716531200894b1027383f9292d75306c8ab"
+      ]
+    },
+    {
+      "scenario": "both-fixes",
+      "cell": [
+        "fix",
+        "fix"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "1e4369d00cd474eaedabd8baae93f625d8891ff0bdb8516c80027009d68f7323",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+        "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 0,
+          "count": 0,
+          "page": 0
+        },
+        "witnesses": {},
+        "allRowsSha256": "e17dfea15b4e36a2bec4d25673df6f086ba720120b02a33c9d09ad21cb35e47a"
+      },
+      "work": {
+        "computed": 96,
+        "reused": 0,
+        "wholeClaimsReused": 0,
+        "wholeClaimsComputed": 3
+      },
+      "wallSeconds": 0.11417,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0.112,
+      "replaySeconds": 0,
+      "peakChildRssBytes": 50827264,
+      "phases": [
+        {
+          "phase": "inline JVM checking",
+          "wallSeconds": 0.112,
+          "cpuSeconds": 0.1759,
+          "peakRssBytes": 50827264,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "classpath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+        "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ]
+    }
+  ],
+  "composed": [
+    {
+      "scenario": "clean",
+      "cell": [
+        "parent",
+        "parent"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "103dd2fa44aeca030c13808bf6546bf44f3d9261f2f9bc91b8460f6859fa719a",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 48,
+          "count": 40,
+          "page": 68
+        },
+        "witnesses": {
+          "bytes": 4,
+          "count": 2,
+          "page": 2
+        },
+        "allRowsSha256": "e586aae2b4d3e0d1e76c5047497058f7f207e8cb84f2efd1bb5b679ad7b9306d"
+      },
+      "work": {
+        "IO": {
+          "computed": 24,
+          "reused": 0
+        },
+        "CSV": {
+          "computed": 36,
+          "reused": 0
+        },
+        "linkedInputs": 96,
+        "claimsJoinedFromCheckedFacts": [
+          "bytes",
+          "count",
+          "page"
+        ]
+      },
+      "wallSeconds": 3.50162,
+      "preparationSeconds": 3.225,
+      "checkingSeconds": 0.173,
+      "replaySeconds": 0.091,
+      "peakChildRssBytes": 126554112,
+      "phases": [
+        {
+          "phase": "compile application",
+          "wallSeconds": 0.638,
+          "cpuSeconds": 1.2387,
+          "peakRssBytes": 125366272,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "compile unrelated control",
+          "wallSeconds": 0.375,
+          "cpuSeconds": 0.7101,
+          "peakRssBytes": 97165312,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "compile unrelated control",
+          "wallSeconds": 0.396,
+          "cpuSeconds": 0.739,
+          "peakRssBytes": 99958784,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "compile IOFact",
+          "wallSeconds": 0.537,
+          "cpuSeconds": 1.0501,
+          "peakRssBytes": 110874624,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "IO and decoder JVM checking",
+          "wallSeconds": 0.092,
+          "cpuSeconds": 0.1344,
+          "peakRssBytes": 47681536,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "compile CSVFact",
+          "wallSeconds": 0.65,
+          "cpuSeconds": 1.2434,
+          "peakRssBytes": 126554112,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "CSV JVM checking",
+          "wallSeconds": 0.081,
+          "cpuSeconds": 0.1188,
+          "peakRssBytes": 46768128,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "compile Inline",
+          "wallSeconds": 0.629,
+          "cpuSeconds": 1.2175,
+          "peakRssBytes": 117727232,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.091,
+          "cpuSeconds": 0.1401,
+          "peakRssBytes": 47599616,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "stageFactsSha256": "53f367fbf5170295d25c558f5489033d42d24a0b63ff1f2eb4045b7aec395277"
+    },
+    {
+      "scenario": "unchanged",
+      "cell": [
+        "parent",
+        "parent"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "103dd2fa44aeca030c13808bf6546bf44f3d9261f2f9bc91b8460f6859fa719a",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 48,
+          "count": 40,
+          "page": 68
+        },
+        "witnesses": {
+          "bytes": 4,
+          "count": 2,
+          "page": 2
+        },
+        "allRowsSha256": "e586aae2b4d3e0d1e76c5047497058f7f207e8cb84f2efd1bb5b679ad7b9306d"
+      },
+      "work": {
+        "IO": {
+          "computed": 0,
+          "reused": 24
+        },
+        "CSV": {
+          "computed": 0,
+          "reused": 36
+        },
+        "linkedInputs": 96,
+        "claimsJoinedFromCheckedFacts": [
+          "bytes",
+          "count",
+          "page"
+        ]
+      },
+      "wallSeconds": 0.09527,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0,
+      "replaySeconds": 0.092,
+      "peakChildRssBytes": 47411200,
+      "phases": [
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.092,
+          "cpuSeconds": 0.1291,
+          "peakRssBytes": 47411200,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "stageFactsSha256": "53f367fbf5170295d25c558f5489033d42d24a0b63ff1f2eb4045b7aec395277"
+    },
+    {
+      "scenario": "change-io",
+      "cell": [
+        "fix",
+        "parent"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "127f6d08445f6fa7c814dfb1a12b5bf93b3f098e8edf6a982ea0fef0fb3fff3d",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 0,
+          "count": 40,
+          "page": 40
+        },
+        "witnesses": {
+          "count": 2,
+          "page": 2
+        },
+        "allRowsSha256": "4afdeefb20aede5de55a015f932b36d0cf51955e90d26fb45a7ac1638b185a7e"
+      },
+      "work": {
+        "IO": {
+          "computed": 24,
+          "reused": 0
+        },
+        "CSV": {
+          "computed": 12,
+          "reused": 0
+        },
+        "linkedInputs": 96,
+        "claimsJoinedFromCheckedFacts": [
+          "bytes",
+          "count",
+          "page"
+        ]
+      },
+      "wallSeconds": 0.26939,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0.173,
+      "replaySeconds": 0.092,
+      "peakChildRssBytes": 47702016,
+      "phases": [
+        {
+          "phase": "IO and decoder JVM checking",
+          "wallSeconds": 0.092,
+          "cpuSeconds": 0.1414,
+          "peakRssBytes": 47702016,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "CSV JVM checking",
+          "wallSeconds": 0.081,
+          "cpuSeconds": 0.1123,
+          "peakRssBytes": 46055424,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.092,
+          "cpuSeconds": 0.1305,
+          "peakRssBytes": 46952448,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "stageFactsSha256": "84e99344d1ff00b9f06c1087c6867218244b7ea376940b507bd5db763eabad77"
+    },
+    {
+      "scenario": "change-csv",
+      "cell": [
+        "parent",
+        "fix"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "dd2476b28b60f0d0212cdca6444c67dcc0539a7e69898a31b9594231bc4acc74",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 48,
+          "count": 0,
+          "page": 48
+        },
+        "witnesses": {
+          "bytes": 4,
+          "page": 4
+        },
+        "allRowsSha256": "25888da396f57e23d052f3c3567d664f4be5b19d7a67dfc670e95069cc23c40c"
+      },
+      "work": {
+        "IO": {
+          "computed": 0,
+          "reused": 24
+        },
+        "CSV": {
+          "computed": 36,
+          "reused": 0
+        },
+        "linkedInputs": 96,
+        "claimsJoinedFromCheckedFacts": [
+          "bytes",
+          "count",
+          "page"
+        ]
+      },
+      "wallSeconds": 0.20758,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0.091,
+      "replaySeconds": 0.112,
+      "peakChildRssBytes": 47050752,
+      "phases": [
+        {
+          "phase": "CSV JVM checking",
+          "wallSeconds": 0.091,
+          "cpuSeconds": 0.1148,
+          "peakRssBytes": 47050752,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.112,
+          "cpuSeconds": 0.1617,
+          "peakRssBytes": 46698496,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "stageFactsSha256": "908da85b030551d456d59a00877ab639845bcc390815b1975aa566e8bcb51ed3"
+    },
+    {
+      "scenario": "change-unused",
+      "cell": [
+        "parent",
+        "parent"
+      ],
+      "unusedJarSha256": "15ed615953cd9984e6dd190136f22716531200894b1027383f9292d75306c8ab",
+      "preparedKey": "a4286e1ef5445471eada6761146fd539829821f0d7f835600e02bb47353fe3b9",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+        "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "15ed615953cd9984e6dd190136f22716531200894b1027383f9292d75306c8ab"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 48,
+          "count": 40,
+          "page": 68
+        },
+        "witnesses": {
+          "bytes": 4,
+          "count": 2,
+          "page": 2
+        },
+        "allRowsSha256": "e586aae2b4d3e0d1e76c5047497058f7f207e8cb84f2efd1bb5b679ad7b9306d"
+      },
+      "work": {
+        "IO": {
+          "computed": 0,
+          "reused": 24
+        },
+        "CSV": {
+          "computed": 0,
+          "reused": 36
+        },
+        "linkedInputs": 96,
+        "claimsJoinedFromCheckedFacts": [
+          "bytes",
+          "count",
+          "page"
+        ]
+      },
+      "wallSeconds": 0.10571,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0,
+      "replaySeconds": 0.102,
+      "peakChildRssBytes": 47493120,
+      "phases": [
+        {
+          "phase": "independent JVM witness replay",
+          "wallSeconds": 0.102,
+          "cpuSeconds": 0.1492,
+          "peakRssBytes": 47493120,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "stageFactsSha256": "53f367fbf5170295d25c558f5489033d42d24a0b63ff1f2eb4045b7aec395277"
+    },
+    {
+      "scenario": "both-fixes",
+      "cell": [
+        "fix",
+        "fix"
+      ],
+      "unusedJarSha256": "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05",
+      "preparedKey": "1e4369d00cd474eaedabd8baae93f625d8891ff0bdb8516c80027009d68f7323",
+      "runtimeClasspath": [
+        "34036b077a572b63356e21c1e363422e4abac9360cf6899e894d4aa9138b4a8a",
+        "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+        "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+        "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+        "fd0206e962591e1c32f91a634a270e48e4d53631c80e4cff65b705785121fc05"
+      ],
+      "coordinatorRssHighwaterBytes": 39698432,
+      "outcomes": {
+        "differences": {
+          "bytes": 0,
+          "count": 0,
+          "page": 0
+        },
+        "witnesses": {},
+        "allRowsSha256": "e17dfea15b4e36a2bec4d25673df6f086ba720120b02a33c9d09ad21cb35e47a"
+      },
+      "work": {
+        "IO": {
+          "computed": 24,
+          "reused": 0
+        },
+        "CSV": {
+          "computed": 12,
+          "reused": 0
+        },
+        "linkedInputs": 96,
+        "claimsJoinedFromCheckedFacts": [
+          "bytes",
+          "count",
+          "page"
+        ]
+      },
+      "wallSeconds": 0.19801,
+      "preparationSeconds": 0,
+      "checkingSeconds": 0.193,
+      "replaySeconds": 0,
+      "peakChildRssBytes": 47906816,
+      "phases": [
+        {
+          "phase": "IO and decoder JVM checking",
+          "wallSeconds": 0.112,
+          "cpuSeconds": 0.156,
+          "peakRssBytes": 47906816,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "phase": "CSV JVM checking",
+          "wallSeconds": 0.081,
+          "cpuSeconds": 0.111,
+          "peakRssBytes": 46161920,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ],
+      "stageFactsSha256": "37967b69430c311eae7a21f2105dbddabee60cbfff6c287882a17813538ce01f"
+    }
+  ]
+}

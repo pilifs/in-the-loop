@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-192109-341-exhaust-streaming-utf-8-partitions-o",
+  "title": "341 exhaust streaming UTF-8 partitions on pinned JVMs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m48s, peak 232.4 MiB (estimated 15m00s, 2.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-192109-341-exhaust-streaming-utf-8-partitions-o.json",
+    "sha256": "794c52be9832f9a48397da3a0f97c2dff9d18c1a70539e4572185366af07ce2a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-192109-341-exhaust-streaming-utf-8-partitions-o",
+      "title": "341 exhaust streaming UTF-8 partitions on pinned JVMs",
+      "description": "Execute the entire frozen selector domain for streaming UTF-8 partitions on the actual original classes, checking guard, typed assertion and every obtained counterexample. The separate direct oracle reconstructs its admitted inputs and observations.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "341"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:21:09+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "15m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Prove each finite selector claim",
+          "run": "python3 examples/tools/build.py 341 --finite-domain --checker-seconds 360 --max-cases 5578",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/341-utf8-chunk-boundaries/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "startedAt": "2026-11-20T19:38:03+00:00",
+  "finishedAt": "2026-11-20T19:40:40+00:00",
+  "wallSeconds": 157.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1016104,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 243712000,
+    "wallSeconds": 108.3,
+    "cpuSeconds": 166.3,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove each finite selector claim",
+      "run": "python3 examples/tools/build.py 341 --finite-domain --checker-seconds 360 --max-cases 5578",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 108.327,
+      "cpuSeconds": 166.265,
+      "cpuThrottledSeconds": 2.949,
+      "peakMemoryBytes": 243712000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-each-finite-selector-cla.log",
+        "lines": 6,
+        "bytes": 252,
+        "sha256": "2a8605b204bfa034f6c8d49f5742734bdc268110e083353bf9d2d841d0cf4c85",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "341 units-stream established 5578 admitted ",
+        "341 eof-stream established 5578 admitted ",
+        "341 units-separate refuted 5578 admitted ",
+        "341 eof-separate established 5578 admitted ",
+        "341 units-bom established 5578 admitted ",
+        "341 eof-bom established 5578 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/batch.json",
+      "change": "added",
+      "bytes": 3629,
+      "sha256": "d43854a4d48622e3509632ff0208959b2033e774c6128218a9e17767a13c5e68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/eof-bom.json",
+      "change": "added",
+      "bytes": 979609,
+      "sha256": "d873b336e2f5ad181d5de4481c8d5cc5223b0d235576fded414049edf9d9de27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/eof-separate.json",
+      "change": "added",
+      "bytes": 979459,
+      "sha256": "f77c6a56d14d9e087db038b21ad5b373f157937b0d960223a8f375c0b17babf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/eof-stream.json",
+      "change": "added",
+      "bytes": 979457,
+      "sha256": "0801592670c643e2c1e825d54e225601c993f1a050eef0da74c978e9fcf0f0a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/units-bom.json",
+      "change": "added",
+      "bytes": 979620,
+      "sha256": "5b6c76af2086ea54b027d091ccbd80105b586eb5e90ae3b35bf4daa205424014",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/units-separate.json",
+      "change": "added",
+      "bytes": 986390,
+      "sha256": "68e137e265f48edcd481a741d94af6481b79818d3b1cecf1cba7c9a56be255c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/units-stream.json",
+      "change": "added",
+      "bytes": 979460,
+      "sha256": "9964a1a36ce8901581a2a129edd0d6bca60fd5ecfa43a382f76ab22bd4db42cf",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:43:05+00:00",
+    "applied": [
+      "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/batch.json",
+      "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/eof-bom.json",
+      "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/eof-separate.json",
+      "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/eof-stream.json",
+      "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/units-bom.json",
+      "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/units-separate.json",
+      "examples/341-utf8-chunk-boundaries/records/finite-proofs/20261120T193852Z-bafe350a/units-stream.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
