@@ -1,0 +1,601 @@
+{
+  "task": "caller-exact-preservation",
+  "record": {
+    "kind": "verifier",
+    "revision": null,
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+      "equivalence",
+      "--before",
+      "verifier/classes/recursive",
+      "--after",
+      "verifier/classes/iterative",
+      "--target",
+      "tiling.Floor#exact(int)",
+      "--assume",
+      "n >= 0 && n <= 18",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "24",
+      "--max-array-length",
+      "0",
+      "--timeout",
+      "25",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 19.688,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "a990d43a599efa7a1b4984bf3be06662596e8c592473bd2ae8c2e19b5082b706",
+      "commit": "a10ab079076ec30343c3ee666712cea363b4e119",
+      "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+      "command": "equivalence",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 0
+      },
+      "timeout": 25,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "tiling.Floor#exact(I)I",
+        "revisions": {
+          "recursive": {
+            "commit": "fixture:recursive",
+            "loadedFrom": "recursive.jar",
+            "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee",
+            "origin": "built from recursive by the fixture recipe",
+            "parameters": {
+              "names": [
+                "n"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          },
+          "iterative": {
+            "commit": "fixture:iterative",
+            "loadedFrom": "iterative.jar",
+            "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee",
+            "origin": "built from iterative by the fixture recipe",
+            "parameters": {
+              "names": [
+                "n"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "recursive": [
+          {
+            "path": "recursive.jar",
+            "sha256": "d9739bee0045310d4862fce5bdc70008360bd1b233a144199e48b1974228a059",
+            "role": "original"
+          }
+        ],
+        "iterative": [
+          {
+            "path": "iterative.jar",
+            "sha256": "d9c90f4145583fa7963d15c007183b72da35871bd06fd00c514f18eca1de3266",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "tiling.Floor#exact(I)I",
+      "entryBindings": {
+        "recursive": {
+          "entry": "tiling.Floor#exact(I)I",
+          "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee",
+          "loadedFrom": "recursive.jar",
+          "subject": "tiling.Floor#exact(I)I",
+          "subjectClassSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee"
+        },
+        "iterative": {
+          "entry": "tiling.Floor#exact(I)I",
+          "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee",
+          "loadedFrom": "iterative.jar",
+          "subject": "tiling.Floor#exact(I)I",
+          "subjectClassSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee"
+        }
+      },
+      "recipe": {
+        "kind": "direct-method",
+        "command": "equivalence",
+        "subject": "tiling.Floor#exact(I)I",
+        "checkedEntry": "tiling.Floor#exact(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "n >= 0 && n <= 18"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "24"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "0"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+      },
+      "commits": {
+        "recursive": "fixture:recursive",
+        "iterative": "fixture:iterative"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "classes": {
+        "recursive": {
+          "dir": "verifier/classes/recursive",
+          "from": "prepare/recursive/recursive.jar",
+          "sha256": "d9739bee0045310d4862fce5bdc70008360bd1b233a144199e48b1974228a059",
+          "entries": 3
+        },
+        "iterative": {
+          "dir": "verifier/classes/iterative",
+          "from": "prepare/iterative/iterative.jar",
+          "sha256": "d9c90f4145583fa7963d15c007183b72da35871bd06fd00c514f18eca1de3266",
+          "entries": 3
+        }
+      },
+      "probe": {
+        "recursive": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+            "gaps",
+            "--target",
+            "tiling.Floor#exact(int)",
+            "--classes",
+            "prepare/recursive/recursive.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-recursive.stdout",
+          "stderr": "verifier/probe-recursive.stderr",
+          "gaps": []
+        },
+        "iterative": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+            "gaps",
+            "--target",
+            "tiling.Floor#exact(int)",
+            "--classes",
+            "prepare/iterative/iterative.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-iterative.stdout",
+          "stderr": "verifier/probe-iterative.stderr",
+          "gaps": []
+        }
+      },
+      "usage": {
+        "cpuSeconds": 20.1053,
+        "peakRssBytes": 219328512,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "tiling.Floor#exact(int)",
+        "domain": "n: int",
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 19.2 s; loops unwound 24 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/pair/RegressionPair.java",
+        "findings": [],
+        "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verifier/work/pair/RegressionPair.java) calls the previous version's tiling.Floor#exact(int), relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✓ tiling.Floor#exact(int): the two versions agree on every input where n >= 0 && n <= 18 (the pair's property, below)\n✓ RegressionPair#agree satisfies `result` on every input where n >= 0 && n <= 18 (jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 19.2 s; loops unwound 24 times with unwinding assertions)\n  not vacuous: agree(n=0) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 19.168116475,
+          "properties": 1,
+          "unwind": 24,
+          "max_array_length": 0,
+          "stage": null,
+          "native": {
+            "paths": 20,
+            "merges": 0,
+            "solver_calls": 39428,
+            "solving_seconds": 17.556988774,
+            "gates_evaluated": 61270,
+            "evaluating_seconds": 0.055346495,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 23505,
+            "finite_queries": {
+              "diagrams": 39428,
+              "bitwuzla": 0
+            },
+            "variables": 282671,
+            "clauses": 1,
+            "seconds": 18.967840952,
+            "loading_seconds": 0.000697465,
+            "decoding_seconds": 6.6665e-05,
+            "encoding_seconds": 0.897965682,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 25.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 25.0,
+              "seconds": 18.968,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.512,
+                "encoding": 0.898,
+                "solving": 17.557,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 282671,
+                "clauses": 1
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 5.832,
+              "seconds": 0.005,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 10,
+                "clauses": 1
+              }
+            }
+          ]
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "n",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "n: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "n >= 0 && n <= 18",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 24,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+            "classes": 38,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found agree(n=0).",
+            "witness": "agree(n=0)"
+          }
+        },
+        "pair": {
+          "verdict": "verified",
+          "target": "RegressionPair#agree",
+          "domain": "n: int",
+          "assume": "n >= 0 && n <= 18",
+          "assert": "result",
+          "throws": [],
+          "throws_checked": [],
+          "counterexample": null,
+          "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 19.2 s; loops unwound 24 times with unwinding assertions",
+          "problem": null,
+          "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
+          "findings": [],
+          "output": "✓ RegressionPair#agree satisfies `result` on every input where n >= 0 && n <= 18 (jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 19.2 s; loops unwound 24 times with unwinding assertions)\n  not vacuous: agree(n=0) reaches the calls\n",
+          "work": "verifier/work/pair-work",
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 19.168116475,
+            "properties": 1,
+            "unwind": 24,
+            "max_array_length": 0,
+            "stage": null,
+            "native": {
+              "paths": 20,
+              "merges": 0,
+              "solver_calls": 39428,
+              "solving_seconds": 17.556988774,
+              "gates_evaluated": 61270,
+              "evaluating_seconds": 0.055346495,
+              "divisions": 0,
+              "divisions_built": 0,
+              "multiplications": 0,
+              "multiplications_built": 0,
+              "word_operations": 23505,
+              "finite_queries": {
+                "diagrams": 39428,
+                "bitwuzla": 0
+              },
+              "variables": 282671,
+              "clauses": 1,
+              "seconds": 18.967840952,
+              "loading_seconds": 0.000697465,
+              "decoding_seconds": 6.6665e-05,
+              "encoding_seconds": 0.897965682,
+              "witness_seconds": 0.0
+            },
+            "gap_mode": "strict",
+            "deadline_seconds": 25.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budget_seconds": 25.0,
+                "seconds": 18.968,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.512,
+                  "encoding": 0.898,
+                  "solving": 17.557,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 282671,
+                  "clauses": 1
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budget_seconds": 5.832,
+                "seconds": 0.005,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.005,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 10,
+                  "clauses": 1
+                }
+              }
+            ],
+            "phases": {
+              "seconds": 19.201,
+              "setup": 0.002,
+              "harness": 0.0,
+              "gaps": 0.0,
+              "contracts": 0.0,
+              "runs": 18.973,
+              "replay": 0.0,
+              "jvm": 0.0,
+              "other": 0.227
+            }
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "n",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "n: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "n >= 0 && n <= 18",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 24,
+              "max_array_length": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+              "classes": 38,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found agree(n=0).",
+              "witness": "agree(n=0)"
+            }
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032648-native-331-floor-tiling-counts-and-two-d/.build-py/examples-7zm1d4x1/targets/331/caller-exact-preservation/20261120T035036Z-62973020",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032648-native-331-floor-tiling-counts-and-two-d/.build-py/examples-7zm1d4x1/targets/331/caller-exact-preservation/20261120T035036Z-62973020"
+  }
+}

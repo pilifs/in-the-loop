@@ -1,0 +1,1637 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032648-native-331-floor-tiling-counts-and-two-d",
+  "title": "Native 331 Floor tiling counts and two dependent callers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m18s, peak 266.3 MiB (estimated 2m00s, 2.0 GiB); 164 output file(s) changed; signals: example:task-as-expected×11",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032648-native-331-floor-tiling-counts-and-two-d.json",
+    "sha256": "ae90f29e89910f6e704026788989ee1f9a252c015c17718bd700f94c7c4a4554",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032648-native-331-floor-tiling-counts-and-two-d",
+      "title": "Native 331 Floor tiling counts and two dependent callers",
+      "description": "Exact counts and parity share a helper. A changed base case and a discarded two-cell choice exercise both dependents. Run each original claim on its declared subject, preserve all stages and require the independently calibrated observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "331"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T03:26:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "11m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 331 --tasks exact-recursive,exact-iterative,exact-one-tile,exact-base-change,parity-recursive,parity-iterative,parity-one-tile,parity-base-change,helper-preservation,caller-exact-preservation,caller-parity-preservation --checker-seconds 25",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive",
+        "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative",
+        "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile",
+        "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change",
+        "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive",
+        "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative",
+        "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile",
+        "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change",
+        "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation",
+        "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation",
+        "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:48:58+00:00",
+  "finishedAt": "2026-11-20T03:51:19+00:00",
+  "wallSeconds": 141.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 660.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 279187456,
+    "wallSeconds": 138.3,
+    "cpuSeconds": 155.0,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 1.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 331 --tasks exact-recursive,exact-iterative,exact-one-tile,exact-base-change,parity-recursive,parity-iterative,parity-one-tile,parity-base-change,helper-preservation,caller-exact-preservation,caller-parity-preservation --checker-seconds 25",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 660.0,
+      "cancelled": false,
+      "wallSeconds": 138.305,
+      "cpuSeconds": 155.045,
+      "cpuThrottledSeconds": 1.958,
+      "peakMemoryBytes": 279187456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 22,
+        "bytes": 2662,
+        "sha256": "ee0341e2ed7a1053a6c23a16e556421826f0a3b2e26974d7a2451e417c3718de",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 11
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "331-floor-tiling-proof-reuse: task exact-recursive: established (completed; as expected), receipt receipts/exact-recursive/20261120T034901Z-0762e97b/result.json",
+          "groups": [
+            "331",
+            "exact-recursive",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "331-floor-tiling-proof-reuse: task exact-iterative: established (completed; as expected), receipt receipts/exact-iterative/20261120T034922Z-23222961/result.json",
+          "groups": [
+            "331",
+            "exact-iterative",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "331-floor-tiling-proof-reuse: task exact-one-tile: refuted (completed; as expected), receipt receipts/exact-one-tile/20261120T034924Z-331e5dfc/result.json",
+          "groups": [
+            "331",
+            "exact-one-tile",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "331-floor-tiling-proof-reuse: task exact-base-change: refuted (completed; as expected), receipt receipts/exact-base-change/20261120T034926Z-9875af35/result.json",
+          "groups": [
+            "331",
+            "exact-base-change",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 10,
+          "text": "331-floor-tiling-proof-reuse: task parity-recursive: established (completed; as expected), receipt receipts/parity-recursive/20261120T034940Z-49449625/result.json",
+          "groups": [
+            "331",
+            "parity-recursive",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "331-floor-tiling-proof-reuse: task parity-iterative: established (completed; as expected), receipt receipts/parity-iterative/20261120T034959Z-4ae158ef/result.json",
+          "groups": [
+            "331",
+            "parity-iterative",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 14,
+          "text": "331-floor-tiling-proof-reuse: task parity-one-tile: refuted (completed; as expected), receipt receipts/parity-one-tile/20261120T035001Z-567a9b7e/result.json",
+          "groups": [
+            "331",
+            "parity-one-tile",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 16,
+          "text": "331-floor-tiling-proof-reuse: task parity-base-change: refuted (completed; as expected), receipt receipts/parity-base-change/20261120T035003Z-b7d30100/result.json",
+          "groups": [
+            "331",
+            "parity-base-change",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 18,
+          "text": "331-floor-tiling-proof-reuse: task helper-preservation: established (completed; as expected), receipt receipts/helper-preservation/20261120T035016Z-d28c57a8/result.json",
+          "groups": [
+            "331",
+            "helper-preservation",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 20,
+          "text": "331-floor-tiling-proof-reuse: task caller-exact-preservation: established (completed; as expected), receipt receipts/caller-exact-preservation/20261120T035036Z-62973020/result.json",
+          "groups": [
+            "331",
+            "caller-exact-preservation",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 22,
+          "text": "331-floor-tiling-proof-reuse: task caller-parity-preservation: established (completed; as expected), receipt receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/result.json",
+          "groups": [
+            "331",
+            "caller-parity-preservation",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "331-floor-tiling-proof-reuse: running task exact-recursive (target route)",
+        "331-floor-tiling-proof-reuse: task exact-recursive: established (completed; as expected), receipt receipts/exact-recursive/20261120T034901Z-0762e97b/result.json",
+        "331-floor-tiling-proof-reuse: running task exact-iterative (target route)",
+        "331-floor-tiling-proof-reuse: task exact-iterative: established (completed; as expected), receipt receipts/exact-iterative/20261120T034922Z-23222961/result.json",
+        "331-floor-tiling-proof-reuse: running task exact-one-tile (target route)",
+        "331-floor-tiling-proof-reuse: task exact-one-tile: refuted (completed; as expected), receipt receipts/exact-one-tile/20261120T034924Z-331e5dfc/result.json",
+        "331-floor-tiling-proof-reuse: running task exact-base-change (target route)",
+        "331-floor-tiling-proof-reuse: task exact-base-change: refuted (completed; as expected), receipt receipts/exact-base-change/20261120T034926Z-9875af35/result.json",
+        "331-floor-tiling-proof-reuse: running task parity-recursive (target route)",
+        "331-floor-tiling-proof-reuse: task parity-recursive: established (completed; as expected), receipt receipts/parity-recursive/20261120T034940Z-49449625/result.json",
+        "331-floor-tiling-proof-reuse: running task parity-iterative (target route)",
+        "331-floor-tiling-proof-reuse: task parity-iterative: established (completed; as expected), receipt receipts/parity-iterative/20261120T034959Z-4ae158ef/result.json",
+        "331-floor-tiling-proof-reuse: running task parity-one-tile (target route)",
+        "331-floor-tiling-proof-reuse: task parity-one-tile: refuted (completed; as expected), receipt receipts/parity-one-tile/20261120T035001Z-567a9b7e/result.json",
+        "331-floor-tiling-proof-reuse: running task parity-base-change (target route)",
+        "331-floor-tiling-proof-reuse: task parity-base-change: refuted (completed; as expected), receipt receipts/parity-base-change/20261120T035003Z-b7d30100/result.json",
+        "331-floor-tiling-proof-reuse: running task helper-preservation (target route)",
+        "331-floor-tiling-proof-reuse: task helper-preservation: established (completed; as expected), receipt receipts/helper-preservation/20261120T035016Z-d28c57a8/result.json",
+        "331-floor-tiling-proof-reuse: running task caller-exact-preservation (target route)",
+        "331-floor-tiling-proof-reuse: task caller-exact-preservation: established (completed; as expected), receipt receipts/caller-exact-preservation/20261120T035036Z-62973020/result.json",
+        "331-floor-tiling-proof-reuse: running task caller-parity-preservation (target route)",
+        "331-floor-tiling-proof-reuse: task caller-parity-preservation: established (completed; as expected), receipt receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e271a5bf085d0d0fc2e93b328b7e3e4ff672a2964c1ce6fb7111375232959718",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/plan.json",
+      "change": "added",
+      "bytes": 4532,
+      "sha256": "ac2d542f27c4b11e3e905a52bc15de105a4827b40be74ca810fbf121fa8c770d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/control-recursive-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/control-recursive-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/controls.json",
+      "change": "added",
+      "bytes": 6726,
+      "sha256": "f4f6506f3cfb9f875a9527c83f91fd340ecbd9a7de93a548ebdccf9f4c0d94af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/execution.json",
+      "change": "added",
+      "bytes": 20256,
+      "sha256": "619edc1550d3353608236ee17b252d3a4c22a2948fe570b6c1326e6b0b7f0b78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/streams.json",
+      "change": "added",
+      "bytes": 1991,
+      "sha256": "2621e43bc8c8e8ce786f88d3deec0ec206df1cd5a9898a82575b6591d8de1eea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 545,
+      "sha256": "2aec0a20dff8af199415f432ccc9d525d8dbd641ed6a0b6691f75fdc3b5ae5ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/verifier.json",
+      "change": "added",
+      "bytes": 13502,
+      "sha256": "4459eb1e757d2269528b68b30d5602a667081981b46ceb16df30ad6091db58df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6180,
+      "sha256": "78212b85da51bb21cf8ff4cedef36d064c9323d0aec0af8b6dd07e623e2d7cc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/result.json",
+      "change": "added",
+      "bytes": 17142,
+      "sha256": "6dd82d00a0e7cdba1ab7935a2e9f7753cb3953324e02545439ed225ff2535138",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/executions/20261120T034901Z-0762e97b/attempt.json",
+      "change": "added",
+      "bytes": 8526,
+      "sha256": "7a9084e851da42849201b547f8eecf9fc14db707fe04cc9522b65834e50ce941",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/executions/20261120T034901Z-0762e97b/checker.json",
+      "change": "added",
+      "bytes": 7463,
+      "sha256": "dd96841fcecaa8c7ead900c77aab571ffe910c9cfe799240260eee87f391ae25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b4c993d3d7167ac5e4a4ef895787393773e942274b1f6ed1896ca0548e69c33f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/plan.json",
+      "change": "added",
+      "bytes": 4532,
+      "sha256": "4fffc65fe914b187f83aa9aebdd83f12db2213b6203b7a86bc5f4fb640211ddd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/control-iterative-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/control-iterative-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/controls.json",
+      "change": "added",
+      "bytes": 6726,
+      "sha256": "1512a3f80fa4a605af6630b11cafe219517d394ce712775a75d3de07e5494876",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/execution.json",
+      "change": "added",
+      "bytes": 20223,
+      "sha256": "c7bd9b24ae08128bc1c2d2b78cd4eeef05651c74ad9c10922ec2ad5da3cededd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/streams.json",
+      "change": "added",
+      "bytes": 1991,
+      "sha256": "6a98dc8c6b35d1479005d7f246407951b46899caf7ae5597e062ff5b62248297",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 544,
+      "sha256": "0317684182d7596265cb7fccdd962d458069d4ad41cdb9c80a525d1203bca2a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/verifier.json",
+      "change": "added",
+      "bytes": 13469,
+      "sha256": "31c56d319cdd6f9d80eaf1ee3ce29062010278c6bb117bdcdea6429d87f2c16c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6152,
+      "sha256": "c54e84aa17d0dc4d0f2f110d86045bfb89ebc1992c6215e58480ba43e37fd28d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/result.json",
+      "change": "added",
+      "bytes": 17112,
+      "sha256": "fe9ec80dc59ed4fa25e6e1bbe3c4b54e31c1e8f594ad78026a238b47e0fc8cd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/executions/20261120T034922Z-23222961/attempt.json",
+      "change": "added",
+      "bytes": 8518,
+      "sha256": "a8b4f2d2004adc244680a6e644b30c4f008e0a3b5d3876427ca11557ecc9f4de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/executions/20261120T034922Z-23222961/checker.json",
+      "change": "added",
+      "bytes": 7432,
+      "sha256": "fb7a4e7f97ae54079ca9d18b2a83c1a8563e5b063611a8c8451f29bea9f33538",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "de90f85663b32ad9db983b48cbcf3b06ee000d78360ecba82843d21207265a25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/plan.json",
+      "change": "added",
+      "bytes": 4526,
+      "sha256": "1499a03abfab1e3f1ebfbdf15dcf67aac1461e56da376ae19f162c04108478e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/control-one-tile-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/control-one-tile-jdk21.stdout",
+      "change": "added",
+      "bytes": 1348,
+      "sha256": "a4ce9f9dd22423b1a85b56c32fd8c50116bd52c21596126a889fb7b1719f5be4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/controls.json",
+      "change": "added",
+      "bytes": 6692,
+      "sha256": "94ed27df819e80ef32d010331f0a3d04f168bc557aa3df4d6a7d26483817ce4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/execution.json",
+      "change": "added",
+      "bytes": 22928,
+      "sha256": "bad2b956bf0b12b707ad4cdcd9a680ec640b1e7f27e03ce614055773b25cb412",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "99bbdd5ee58436bb6c24f8cc234658450ed34b5291571dc5961ccae2c51366aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 900,
+      "sha256": "9e07fd610dff6706a68b90eb7d8567d02eeb50b079471c8f537fef6f95a307a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/verifier.json",
+      "change": "added",
+      "bytes": 14337,
+      "sha256": "fe71523fd12fc7c208a782dd176c5114dc23a37057299bb105508c3254ff4032",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6957,
+      "sha256": "b7c6a1bdca260d85ac31904b8bb61fc631c643551083a895af46f56437711652",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/result.json",
+      "change": "added",
+      "bytes": 18477,
+      "sha256": "83d65210db4afdb9cb3e3d595c03dcf4e41986ac373729614c99d2765eb83713",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/executions/20261120T034924Z-331e5dfc/attempt.json",
+      "change": "added",
+      "bytes": 8613,
+      "sha256": "6f82aa351cdddc75e1b9f7cd1fcc14f558afda692dbbf98655ee25071bd1a0e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/executions/20261120T034924Z-331e5dfc/checker.json",
+      "change": "added",
+      "bytes": 8277,
+      "sha256": "a9d90bc7ec228bb21c0b1b8861e867ea13a669722c14bcefc2366676c3866d90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/executions/20261120T034924Z-331e5dfc/replay.json",
+      "change": "added",
+      "bytes": 1473,
+      "sha256": "8754d1820fb55489de0392980ca5579ab11c53968db6ca785fc808df459f8b47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "30ac8426ec3103099ac64e31fa61ab43693477c667c1f7955d08b4621783b818",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/plan.json",
+      "change": "added",
+      "bytes": 4562,
+      "sha256": "edf0f204e70596cf30abb987620bbbf0754dfab78f1992d3ef560217f80ae326",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/control-base-change-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/control-base-change-jdk21.stdout",
+      "change": "added",
+      "bytes": 1369,
+      "sha256": "b83acf5ab5b1e14ddf6099722c6b0b02f20fbc7969af0151e5931098ab85b730",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/controls.json",
+      "change": "added",
+      "bytes": 6743,
+      "sha256": "abb1cadcf3ded883ad0128c9bf3b424ebc0cf3bb715b57fb865f4fb302ce5cbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/execution.json",
+      "change": "added",
+      "bytes": 23064,
+      "sha256": "4a09278cef58f496b4fff9550aa492ddfdb269cb31f5ead9268c4da5ae3133f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/streams.json",
+      "change": "added",
+      "bytes": 2007,
+      "sha256": "f92480b5bb48e5671276acea617f2b080be403e552dd2b59d157f15d2c27f226",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 901,
+      "sha256": "eb732844c75b240e333d536121e6c830c59cc82fd939e64ffa47bd6e4c1d85f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/verifier.json",
+      "change": "added",
+      "bytes": 14437,
+      "sha256": "b258a762cf63e7c9537b52b983e05f63b7f732753ef96d10f181fbd845d1338a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6989,
+      "sha256": "67d4271cacbc71273b4890f7e60c4e2bfc39ec3091246cf88bdf3774bd00d377",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/result.json",
+      "change": "added",
+      "bytes": 18565,
+      "sha256": "ef5aed004f63ac00e759e0aa8f779ca13797feb9dba203e013a8d81633493973",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/executions/20261120T034926Z-9875af35/attempt.json",
+      "change": "added",
+      "bytes": 8698,
+      "sha256": "529d1395ed1b84c860d287ae0a5ce9279cd19c19c8c639916dce632e09c1b38c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/executions/20261120T034926Z-9875af35/checker.json",
+      "change": "added",
+      "bytes": 8318,
+      "sha256": "7c173013672b4acda535572ef0502502785fba507e82a7e8138cf5712e6260a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/executions/20261120T034926Z-9875af35/replay.json",
+      "change": "added",
+      "bytes": 1476,
+      "sha256": "00425ae5c98855e40e103db924cf124374897b4a8c19ca7e092d336af90d6efb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5d20991d2417cd6e24c9527785e9f5325726a909ffd1a75a7f2fd33487d1d306",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/plan.json",
+      "change": "added",
+      "bytes": 4549,
+      "sha256": "111d685be34e2ba88c3f779aa306a721b21f3b03d6b61f68d46e24e276182baa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/control-recursive-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/control-recursive-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/controls.json",
+      "change": "added",
+      "bytes": 6729,
+      "sha256": "151b249e744258dd09645991fafcc8075b2a1727dc91dd5295bf74dd241ddb95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/execution.json",
+      "change": "added",
+      "bytes": 20274,
+      "sha256": "dc544808f5979b150e691120adc4cdab3c078aebaf5dc139ed638788f902b1f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/streams.json",
+      "change": "added",
+      "bytes": 1991,
+      "sha256": "7a69a7c27c2ef3056766553fb595995a988c7aef30399e97d28fb3d2b8d59c96",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 548,
+      "sha256": "118f3910a1be5adadc5eb65ca007423d12eab4670310dfe78ec950e39afc49a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/verifier.json",
+      "change": "added",
+      "bytes": 13522,
+      "sha256": "23044bf8a743a9321e48129b8cc367929763a5a5f4437556f396d401a8c0db31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6188,
+      "sha256": "03d8b20ec43bed226fd808df6e5222e9745d8d9be5cb5d22103a647e3dd082f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/result.json",
+      "change": "added",
+      "bytes": 17163,
+      "sha256": "650752dadeb49c79e30a896be78c67d777873f594efdaaa26df9a615bbbf76b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/executions/20261120T034940Z-49449625/attempt.json",
+      "change": "added",
+      "bytes": 8539,
+      "sha256": "742e9b8054c8361e18c331f40c04b9c6b3b3e76a25ea10a9a6e64864923d846e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/executions/20261120T034940Z-49449625/checker.json",
+      "change": "added",
+      "bytes": 7472,
+      "sha256": "a348aa814fcecc14ce77800860e98170afb9f67c134d382f8ecdfc91fc320f23",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7e66470afab9da8bca941a623665c50917c9ee42b6a89780314b3c76ecf4f8aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/plan.json",
+      "change": "added",
+      "bytes": 4549,
+      "sha256": "9c4bf4da53dd5be63d333d72beca460b7fbdfc352900afd6d84924f34368327b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/control-iterative-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/control-iterative-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/controls.json",
+      "change": "added",
+      "bytes": 6729,
+      "sha256": "137974f6e1a6d4966d99bb34ab7a963e97f272535eb2a8a1241d7b9a56f6aac8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/execution.json",
+      "change": "added",
+      "bytes": 20240,
+      "sha256": "d07c5c99356b1bf362b7a7e366a6add50cf2b298074db90a34014c50fced4d8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/streams.json",
+      "change": "added",
+      "bytes": 1991,
+      "sha256": "7fe41edb46adcfa6ec353d47e935f57a4812bcc50e42e512d6f4abe83aec3234",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 547,
+      "sha256": "036e03ceeb873a3188b0fca1f9550eab1227b07756fed56a7d172a680e98e630",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/verifier.json",
+      "change": "added",
+      "bytes": 13488,
+      "sha256": "775ae7ad5377c3af1fc6623e30394549a19a3d7e8f84b12723c96f7b4b42821d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6158,
+      "sha256": "c19dbafd20fbebe3898052dc014e13bc1e2d4dd27abcc3577e0c89f78d7e2b7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/result.json",
+      "change": "added",
+      "bytes": 17133,
+      "sha256": "f9129c92a7c638fea05a643d96894f8e58f8ecf1add9a0135e0b420f9b6945d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/executions/20261120T034959Z-4ae158ef/attempt.json",
+      "change": "added",
+      "bytes": 8532,
+      "sha256": "4fe6d061981bb8ca07a52e519ed6098b64c50c878d7ed5f07b48f501f1b11720",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/executions/20261120T034959Z-4ae158ef/checker.json",
+      "change": "added",
+      "bytes": 7440,
+      "sha256": "70fc0782ebfbfbe1fca16bad4f422ad430574a3748645dfaa207f13245f12188",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "66f5a501f2d6ea4a9e08fcb2586f5c7572c8963c9973c6f1ef89216536c981e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/plan.json",
+      "change": "added",
+      "bytes": 4543,
+      "sha256": "0c0a7df4efbb32c28ed6b17909dbfa3a1b840e6a21669f1b921099389c8c6007",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/control-one-tile-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/control-one-tile-jdk21.stdout",
+      "change": "added",
+      "bytes": 1348,
+      "sha256": "a4ce9f9dd22423b1a85b56c32fd8c50116bd52c21596126a889fb7b1719f5be4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/controls.json",
+      "change": "added",
+      "bytes": 6695,
+      "sha256": "eebe940c7ef1764f11a56219eed6dd2e41f24bc0d675a66d9a9ac3261a95fb4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/execution.json",
+      "change": "added",
+      "bytes": 22632,
+      "sha256": "a7233cc4bf564a51f855e166764a64f5bb25e1d4df095121aa87757b5d1ca4c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "d5d2ab83f5f736d724c5267dca110f570c50128c8720ab941dde0b41ca43cf57",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 840,
+      "sha256": "7e93ce5d2d929f6169eb84468f0d8aaa1faab9435ba8a34a85f47a926389f07b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/verifier.json",
+      "change": "added",
+      "bytes": 14054,
+      "sha256": "bd915b2a421d2c266dd8d35bd4128369b9841e0d63afff60884fedbd619f2028",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6693,
+      "sha256": "f6232266864509384b780010d4dc36a67f1ec5b8fe767a6f54349a8041138c7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/result.json",
+      "change": "added",
+      "bytes": 17984,
+      "sha256": "f9280381b3039c4c4eb2734b7309c42b35787ba7444c2871a7e24cb45e82765f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/executions/20261120T035001Z-567a9b7e/attempt.json",
+      "change": "added",
+      "bytes": 8627,
+      "sha256": "cb1d3f26fec696253a0983761134c084ddcaf8d49d25d0cd26a2bc8f6ca2e1f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/executions/20261120T035001Z-567a9b7e/checker.json",
+      "change": "added",
+      "bytes": 7999,
+      "sha256": "b3718b261c7216a03e435f90b47aae179717c53621bba6511247e3a970864855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/executions/20261120T035001Z-567a9b7e/replay.json",
+      "change": "added",
+      "bytes": 1478,
+      "sha256": "56ef365184060225a512cf58ca1fd38decadc86cab4bf0252f4b24bc94065d3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "bf95c900ab8d495e71f3dcea93e3f7a735abc9de56414e3fc122bcce78795f37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/plan.json",
+      "change": "added",
+      "bytes": 4579,
+      "sha256": "5ace8f9a597b6d136716442be7cd862afa7a271ea0d392d7990d5a7815f8d6a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/control-base-change-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/control-base-change-jdk21.stdout",
+      "change": "added",
+      "bytes": 1369,
+      "sha256": "b83acf5ab5b1e14ddf6099722c6b0b02f20fbc7969af0151e5931098ab85b730",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/controls.json",
+      "change": "added",
+      "bytes": 6746,
+      "sha256": "8cd146f278626cbc00359808d1919a21c8293ce388535c60579982679e72cb2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/execution.json",
+      "change": "added",
+      "bytes": 23087,
+      "sha256": "c041948bdf3938f92687e2f58c673361dca2023caa6358d2ec6146bef66389e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/streams.json",
+      "change": "added",
+      "bytes": 2007,
+      "sha256": "497f0b29d336353c32929fdadd3bbce6e20ebabdec27365d45a22611a075928f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 905,
+      "sha256": "febbf1b1c55c60286f1bfa5029f8000e8517ecddab4cdb6ebfe6a11f63cb308e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/verifier.json",
+      "change": "added",
+      "bytes": 14459,
+      "sha256": "4ee0e9bbe517bd03bf3381fad2b47b2f34d6ac534fbb9ba15a01ab042f58292a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6998,
+      "sha256": "144ac55eb39f974757c12550c81783df5d1e9e7c3151658709085e57d189862c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/result.json",
+      "change": "added",
+      "bytes": 18586,
+      "sha256": "3f26a762e28628c512d74559fadee76cf348452667d0be49400e69e4c6849736",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/executions/20261120T035003Z-b7d30100/attempt.json",
+      "change": "added",
+      "bytes": 8711,
+      "sha256": "a89ae10ec78e688f2fe1e32686a4c64682cb95e7bbc06fb0d621faff7040e523",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/executions/20261120T035003Z-b7d30100/checker.json",
+      "change": "added",
+      "bytes": 8329,
+      "sha256": "fea0f8d4dd1bd8f012c5204acca26c4bf6a45418b919edc00218f0262b8da9d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/executions/20261120T035003Z-b7d30100/replay.json",
+      "change": "added",
+      "bytes": 1479,
+      "sha256": "a37c4fd62059f24f1f605e9bf61c6a05d95a4856b7e9f318861b278ac8b6f79d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "acc942dfc184062b52b4a326f84148aa811a63d350235f2a6c214b077826571d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/plan.json",
+      "change": "added",
+      "bytes": 5074,
+      "sha256": "85d9592d11dcf7713789829dff3915b166ffc7d66d015b68bae2ad2c63f3abc7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/control-iterative-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/control-iterative-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/control-recursive-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/control-recursive-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/controls.json",
+      "change": "added",
+      "bytes": 13421,
+      "sha256": "17891210d0656886ae05ae1756d08032fc791af378a0a95b14b9313702434c78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/execution.json",
+      "change": "added",
+      "bytes": 36034,
+      "sha256": "548476c72c4308af68ccfb63aaeb543cdede8c15baa7d32e357578546cdd80fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/streams.json",
+      "change": "added",
+      "bytes": 2697,
+      "sha256": "18d7f40f706fd683988022157b13115e177a0179f53c1659fc99e6dc2a6dfd4e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1097,
+      "sha256": "3cad8aabe4af907fbbe5e8804a2298df9c9d5bbf72420488ee1ebc9d393fe3cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/verifier.json",
+      "change": "added",
+      "bytes": 22537,
+      "sha256": "aae1932b7ab3b987b96e0af60f1e71cda883a3c1d1a30a1a3451a5c1ae911922",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11839,
+      "sha256": "f9e623ce3c6b8013baf51fc3098f51af28a56a9a80b07d7acb72c3c34be50256",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/result.json",
+      "change": "added",
+      "bytes": 12079,
+      "sha256": "8591c0b013a05d85022f2c64a65c1dde5629d3c27331a04ed464c6d66b7554b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/executions/20261120T035016Z-d28c57a8/attempt.json",
+      "change": "added",
+      "bytes": 11829,
+      "sha256": "08d7e506a0b540cea7e84eca12775df246c2169c8ef91c7ea12b2168a4ccf009",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/executions/20261120T035016Z-d28c57a8/checker.json",
+      "change": "added",
+      "bytes": 14144,
+      "sha256": "c68ebb8a4cf08afc4d5a1082082b6da50eeb05b8a3912ff07d367d4a2cee642b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "97fb0e2a6ba000209a46eb30243e26dc131cd4def34957dad6c62f56cde313e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/plan.json",
+      "change": "added",
+      "bytes": 5144,
+      "sha256": "efd96bbe721af017eec08d5d811639262fa86535074b4f8a69ca5b692d3f51b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/control-iterative-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/control-iterative-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/control-recursive-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/control-recursive-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/controls.json",
+      "change": "added",
+      "bytes": 13431,
+      "sha256": "bfaedf0c3e5e2bf3f416919f94101d205dd739d87a9eaf5e065cff1999567843",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/execution.json",
+      "change": "added",
+      "bytes": 36061,
+      "sha256": "f9685d06f928aae21fb05373fe05a5f92579b5ae15b89e4729615a27ce359291",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/streams.json",
+      "change": "added",
+      "bytes": 2697,
+      "sha256": "e09fe6ade5db3527184f933a2b92c3e16758cc8e59a5ecdd48c882c214950ea5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1099,
+      "sha256": "3f134587deb6164205b1391535f3a9629c9d073b86451fe94fda9f9881c21dde",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/verifier.json",
+      "change": "added",
+      "bytes": 22576,
+      "sha256": "a6b8dbb54d84f5ddaf888a901c4310c174f83c7fdb76b6f764a5bd06f35ae7a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11849,
+      "sha256": "2e22bfd0f884caf4afb156be1d918a26711aaf7c8ac654cacd921362701ac106",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/result.json",
+      "change": "added",
+      "bytes": 12124,
+      "sha256": "8fd1d3cfa7e30bc933414ca2fd5a7a64d75d3df16c5bd531f1c3fea6bdc793bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/executions/20261120T035036Z-62973020/attempt.json",
+      "change": "added",
+      "bytes": 11855,
+      "sha256": "af58ba5499ab4b80ff073504c92136b916fa087a2a4d9e58a09433469cd9b749",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/executions/20261120T035036Z-62973020/checker.json",
+      "change": "added",
+      "bytes": 14155,
+      "sha256": "8cd03dca2a7e7d2f0df7c7483303d544c6ca7e0470b3c4a47f46ea1db1c00237",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6933ca5193fea79a5164bb54d836c474b1fcb4b555953805d070de49ac5d7fe3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/plan.json",
+      "change": "added",
+      "bytes": 5159,
+      "sha256": "023a8ea91ae8ad999b13d034d72a626209459806944c33e47d3b08e699e0c8cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/control-iterative-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/control-iterative-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/control-recursive-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/control-recursive-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/controls.json",
+      "change": "added",
+      "bytes": 13436,
+      "sha256": "615e825555842a2e89aa26723e469f2893d7cf2afb4f8ce0f4c653d3e7a2c6fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/execution.json",
+      "change": "added",
+      "bytes": 36074,
+      "sha256": "d07386cf655a2aa124c7b119652dfe46530dcf5ba65b459a7750c3e8e025869c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/streams.json",
+      "change": "added",
+      "bytes": 2697,
+      "sha256": "9d3d3b1b9b8314a0287faf564970d79478bbda72767edce19fed072b33247548",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1101,
+      "sha256": "a5d9947839bb5edbead1f70c95beeba36ce2f26dedc0412ea5a5a7b44bbf9161",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/verifier.json",
+      "change": "added",
+      "bytes": 22591,
+      "sha256": "981b6d7e918d95da44ac049fba17dcb4457c57dd777600f3f0a75e3df6684867",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11850,
+      "sha256": "3bf8f1cc128f3e159946fe5d06994b045217740f15c9a370c3ea399229aef1a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/result.json",
+      "change": "added",
+      "bytes": 12134,
+      "sha256": "51e9501d1f5419a2d7f9503c1b9398f144e17461dfd556a167bb68b8c5577b50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/executions/20261120T035056Z-6004d1c1/attempt.json",
+      "change": "added",
+      "bytes": 11870,
+      "sha256": "f0024ca8de4adbbbf3affd397b1584e305b971b743b83dd8a524d5241d949232",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/executions/20261120T035056Z-6004d1c1/checker.json",
+      "change": "added",
+      "bytes": 14157,
+      "sha256": "29f7003837309aed77a8bf1b1693e37db6a123aae1321d1687d0448bf289e548",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:51:50+00:00",
+    "applied": [
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/control-recursive-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/control-recursive-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T034901Z-0762e97b/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/executions/20261120T034901Z-0762e97b/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/executions/20261120T034901Z-0762e97b/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/control-iterative-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/control-iterative-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/20261120T034922Z-23222961/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/executions/20261120T034922Z-23222961/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative/executions/20261120T034922Z-23222961/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/control-one-tile-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/control-one-tile-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/20261120T034924Z-331e5dfc/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/executions/20261120T034924Z-331e5dfc/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/executions/20261120T034924Z-331e5dfc/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile/executions/20261120T034924Z-331e5dfc/replay.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/control-base-change-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/control-base-change-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/20261120T034926Z-9875af35/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/executions/20261120T034926Z-9875af35/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/executions/20261120T034926Z-9875af35/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change/executions/20261120T034926Z-9875af35/replay.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/control-recursive-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/control-recursive-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T034940Z-49449625/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/executions/20261120T034940Z-49449625/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/executions/20261120T034940Z-49449625/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/control-iterative-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/control-iterative-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/20261120T034959Z-4ae158ef/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/executions/20261120T034959Z-4ae158ef/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative/executions/20261120T034959Z-4ae158ef/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/control-one-tile-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/control-one-tile-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/20261120T035001Z-567a9b7e/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/executions/20261120T035001Z-567a9b7e/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/executions/20261120T035001Z-567a9b7e/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile/executions/20261120T035001Z-567a9b7e/replay.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/control-base-change-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/control-base-change-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/20261120T035003Z-b7d30100/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/executions/20261120T035003Z-b7d30100/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/executions/20261120T035003Z-b7d30100/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change/executions/20261120T035003Z-b7d30100/replay.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/control-iterative-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/control-iterative-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/control-recursive-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/control-recursive-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/20261120T035016Z-d28c57a8/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/executions/20261120T035016Z-d28c57a8/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation/executions/20261120T035016Z-d28c57a8/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/control-iterative-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/control-iterative-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/control-recursive-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/control-recursive-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/20261120T035036Z-62973020/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/executions/20261120T035036Z-62973020/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation/executions/20261120T035036Z-62973020/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/control-iterative-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/control-iterative-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/control-recursive-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/control-recursive-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/executions/20261120T035056Z-6004d1c1/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation/executions/20261120T035056Z-6004d1c1/checker.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1198086,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}
