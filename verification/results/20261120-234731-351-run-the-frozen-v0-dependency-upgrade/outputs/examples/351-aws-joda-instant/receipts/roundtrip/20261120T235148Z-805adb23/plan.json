@@ -1,0 +1,267 @@
+{
+  "plan": {
+    "example": "351",
+    "task": "roundtrip",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+    "revisions": [
+      "old",
+      "new"
+    ],
+    "claim": {
+      "task": "roundtrip",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+      "file": "claims/roundtrip.json",
+      "sha256": "6da683401562349d225c185da82348ef6509e544f1133dcc428dd0271981c64d",
+      "property": "roundtrip",
+      "claimKind": "preservation",
+      "statement": "Both SDK revisions return the original milliseconds through their public ISO formatter and parser for Long.MAX_VALUE and 2000-01-01T00:00:00.123Z.",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": "false",
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "caller-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "759dd5c10ef97976dd59420a460758c0711ba576d9de6b5fa08459ff9130074f"
+        },
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/calibration/CaseDriver.java",
+          "sha256": "666dcb74003a773402e43604312e2f0f7818fffc10dc6d848637c49643830546"
+        }
+      ],
+      "adapter": {
+        "entry": "calibration.Projection#roundtrip(Z)J",
+        "mapping": "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception.",
+        "correspondence": "caller-oracle",
+        "cases": 2
+      },
+      "key": "636fd8e9f73b016f"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "old",
+        "route": "published-artifact",
+        "repository": "https://github.com/compsuite-team/aws-sdk-java",
+        "commit": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "published": [
+          {
+            "coordinates": "com.amazonaws:aws-java-sdk-core:1.11.664",
+            "url": "https://repo.maven.apache.org/maven2/com/amazonaws/aws-java-sdk-core/1.11.664/aws-java-sdk-core-1.11.664.jar",
+            "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+          },
+          {
+            "coordinates": "joda-time:joda-time:2.8.1",
+            "url": "https://repo.maven.apache.org/maven2/joda-time/joda-time/2.8.1/joda-time-2.8.1.jar",
+            "sha256": "b4670b95f75957c974284c5f3ada966040be2578f643c5c6083d262162061fa2"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "new",
+        "route": "published-artifact",
+        "repository": "https://github.com/compsuite-team/aws-sdk-java",
+        "commit": "985a81b554e02742036fd158e6494c61a367f980",
+        "parent": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "published": [
+          {
+            "coordinates": "com.amazonaws:aws-java-sdk-core:1.11.664",
+            "url": "https://repo.maven.apache.org/maven2/com/amazonaws/aws-java-sdk-core/1.11.664/aws-java-sdk-core-1.11.664.jar",
+            "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+          },
+          {
+            "coordinates": "joda-time:joda-time:2.10.5",
+            "url": "https://repo.maven.apache.org/maven2/joda-time/joda-time/2.10.5/joda-time-2.10.5.jar",
+            "sha256": "4ee73e7ff8e2df0d4e3408cf1a1527a59f265dd9fb43fb9b2eb818d87f93759e"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/roundtrip"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-234731-351-run-the-frozen-v0-dependency-upgrade/examples/351-aws-joda-instant",
+    "network": true
+  },
+  "inputs": {
+    "example": "351",
+    "task": "roundtrip",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+    "revisions": [
+      "old",
+      "new"
+    ],
+    "claim": {
+      "task": "roundtrip",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+      "file": "claims/roundtrip.json",
+      "sha256": "6da683401562349d225c185da82348ef6509e544f1133dcc428dd0271981c64d",
+      "property": "roundtrip",
+      "claimKind": "preservation",
+      "statement": "Both SDK revisions return the original milliseconds through their public ISO formatter and parser for Long.MAX_VALUE and 2000-01-01T00:00:00.123Z.",
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": "false",
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "caller-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "759dd5c10ef97976dd59420a460758c0711ba576d9de6b5fa08459ff9130074f"
+        },
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/calibration/CaseDriver.java",
+          "sha256": "666dcb74003a773402e43604312e2f0f7818fffc10dc6d848637c49643830546"
+        }
+      ],
+      "adapter": {
+        "entry": "calibration.Projection#roundtrip(Z)J",
+        "mapping": "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception.",
+        "correspondence": "caller-oracle",
+        "cases": 2
+      },
+      "key": "636fd8e9f73b016f"
+    },
+    "artifacts": [
+      {
+        "revision": "old",
+        "route": "published-artifact",
+        "repository": "https://github.com/compsuite-team/aws-sdk-java",
+        "commit": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "published": [
+          {
+            "coordinates": "com.amazonaws:aws-java-sdk-core:1.11.664",
+            "url": "https://repo.maven.apache.org/maven2/com/amazonaws/aws-java-sdk-core/1.11.664/aws-java-sdk-core-1.11.664.jar",
+            "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+          },
+          {
+            "coordinates": "joda-time:joda-time:2.8.1",
+            "url": "https://repo.maven.apache.org/maven2/joda-time/joda-time/2.8.1/joda-time-2.8.1.jar",
+            "sha256": "b4670b95f75957c974284c5f3ada966040be2578f643c5c6083d262162061fa2"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "new",
+        "route": "published-artifact",
+        "repository": "https://github.com/compsuite-team/aws-sdk-java",
+        "commit": "985a81b554e02742036fd158e6494c61a367f980",
+        "parent": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "published": [
+          {
+            "coordinates": "com.amazonaws:aws-java-sdk-core:1.11.664",
+            "url": "https://repo.maven.apache.org/maven2/com/amazonaws/aws-java-sdk-core/1.11.664/aws-java-sdk-core-1.11.664.jar",
+            "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+          },
+          {
+            "coordinates": "joda-time:joda-time:2.10.5",
+            "url": "https://repo.maven.apache.org/maven2/joda-time/joda-time/2.10.5/joda-time-2.10.5.jar",
+            "sha256": "4ee73e7ff8e2df0d4e3408cf1a1527a59f265dd9fb43fb9b2eb818d87f93759e"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/calibration/Projection.java",
+        "sha256": "db7e1ab52f68c631b103e6b1f52f72aceb76899e2269c28313814d7e62030421"
+      }
+    ]
+  },
+  "key": "6efd5179bedec8c11d31545ebc6185fb3e7a488aaa81c43e003dec812a75c012"
+}

@@ -1,0 +1,170 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-233743-run-assisted-compcheck-on-original-aws-d",
+  "title": "Run assisted CompCheck on original AWS DateUtils bytecode",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24.9s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Compare assisted original bytecode with and without AWS issue 233 knowledge) was held back 29.6s by its 2-CPU quota in 24.9s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-233743-run-assisted-compcheck-on-original-aws-d.json",
+    "sha256": "6d58ce6d392fc57e28ff457b9282f1b39d3e6522b7c1c4d8e6c7d056072b6d8b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-233743-run-assisted-compcheck-on-original-aws-d",
+      "title": "Run assisted CompCheck on original AWS DateUtils bytecode",
+      "description": "The two unassisted callsite-only CompCheck runs both failed to build AWS offline and wrote empty contexts. Repeat both knowledge treatments on the same stock production c15-2 using the actual original DateUtils.class, independently hash-matched to the AWS calibration, in Maven target/classes. The case-specific preparation supplies authentic binary dependencies, never knowledge context, API return values, test fixtures or expected answers. Record context size, matching result, generated test counts and the first unsupported step.",
+      "kind": "real-world",
+      "capabilities": [
+        "baseline:compcheck"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/baselines/compcheck_aws.py"
+        ]
+      },
+      "expected": "Each treatment records its scoped stock outcome on bytecode from the actual old revision, including an open result if the workflow cannot reach generated JUnit validation.",
+      "submitted": {
+        "at": "2026-11-20T23:37:43+00:00",
+        "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+      },
+      "requires": [
+        "bwrap",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "4m",
+        "memoryLimit": "6G",
+        "timeout": "16m",
+        "notes": "The baseline configures a 60-second EvoSuite search with a 4 GiB heap on a matching context. The paired cold run took 24 seconds including preparation and 2.82 GiB peak."
+      },
+      "steps": [
+        {
+          "name": "Compare assisted original bytecode with and without AWS issue 233 knowledge",
+          "run": "python3 -I lib/benchmark/external-upgrades/baselines/compcheck_aws.py --prepared-client --output lib/benchmark/external-upgrades/baselines/compcheck-aws-assisted.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/external-upgrades/baselines/compcheck-aws-assisted.json"
+      ]
+    }
+  },
+  "sourceCommit": "6e92aaddc7b1c22a69296ef7b8244cd762342f05",
+  "startedAt": "2026-11-20T23:51:33+00:00",
+  "finishedAt": "2026-11-20T23:52:04+00:00",
+  "wallSeconds": 31.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3705952,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 240.0,
+    "notes": "The baseline configures a 60-second EvoSuite search with a 4 GiB heap on a matching context. The paired cold run took 24 seconds including preparation and 2.82 GiB peak."
+  },
+  "usage": {
+    "peakMemoryBytes": 3034312704,
+    "wallSeconds": 24.9,
+    "cpuSeconds": 35.6,
+    "memoryOfEstimate": 0.71,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare assisted original bytecode with and without AWS issue 233 knowledge",
+      "run": "python3 -I lib/benchmark/external-upgrades/baselines/compcheck_aws.py --prepared-client --output lib/benchmark/external-upgrades/baselines/compcheck-aws-assisted.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 24.855,
+      "cpuSeconds": 35.621,
+      "cpuThrottledSeconds": 29.563,
+      "peakMemoryBytes": 3034312704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-assisted-original-byte.log",
+        "lines": 2,
+        "bytes": 121,
+        "sha256": "45bff7c645afa5c381c48e755921d467908841ec486893b56da058d3da48ceda",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "normal CLI exit 0 context True match True test logs 0",
+        "leave-issue-233-out CLI exit 1 context True match None test logs 0"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/compcheck-aws-assisted.json",
+      "change": "added",
+      "bytes": 7429,
+      "sha256": "f6ac2b9cd9406e0732328be9667bdc63250abf8b37ae0a88854d4e6a8a1a69bb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T23:52:12+00:00",
+    "applied": [
+      "lib/benchmark/external-upgrades/baselines/compcheck-aws-assisted.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

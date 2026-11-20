@@ -1,0 +1,494 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "2ba8a613c0ad4c75",
+    "format": 1,
+    "example": "348",
+    "statement": {
+      "approach": "target",
+      "task": "generated-keys",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder#returnGeneratedKeys()Lcom/github/davidmoten/rx/jdbc/QueryUpdate$ReturnGeneratedKeysBuilder;",
+      "revisions": [
+        "old",
+        "new"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "generated-keys",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder#returnGeneratedKeys()Lcom/github/davidmoten/rx/jdbc/QueryUpdate$ReturnGeneratedKeysBuilder;",
+        "file": "claims/generated-keys.json",
+        "sha256": "145ae8e23010ecf1790b5d30db30d88f124d952678c3a60803234df1073fc38b",
+        "property": "generated-keys",
+        "claimKind": "preservation",
+        "statement": "On a fresh H2 database with an identity primary key, both versions return the same ordered integer keys for two known values inserted either in one statement or in two successive calls.",
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": "false",
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 16
+        },
+        "explicitBounds": {
+          "unwind": 16,
+          "maxArrayLength": 16
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "independent-observer",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "73c811be894457ed3e5d8cc7bfa9cb739946782e07c77efd5c49d24cfae95c09"
+          },
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/calibration/KeyCases.java",
+            "sha256": "bb7dca3d0cbdd54a7389728f3a3e363fad6e3e6e835e0e3fd6211c87d1232597"
+          }
+        ],
+        "adapter": {
+          "entry": "calibration.GeneratedKeys#keys(Z)[I",
+          "mapping": "The boolean selects one two-row statement or two single-row inserts. An unnamed H2 database belongs to a fresh JDBC connection. The original rxjava-jdbc subscriber drains the keys and the adapter copies each returned integer at its original index.",
+          "correspondence": "independent-observer",
+          "cases": 2
+        },
+        "key": "8a3ffbec57461471"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16,
+      "intendedInputs": "false"
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "generated-keys",
+      "sidecar": "0c65511846d4a869bb6f3d456bd9630ff320f0c6ff1884dd37ba436e5912b436",
+      "revisions": {
+        "old": "5e04239e1f831878884972fbf72ab1f529b0647d",
+        "new": "735c4108c0ebfd9ad4f350d496e9c74bc0893bb7"
+      },
+      "dependencies": [
+        {
+          "revision": "old",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ab07bc1231eae03ab4e8c610440dcd771d4ee98adb0a063791df9777dd24e5b8"
+        },
+        {
+          "revision": "old",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "d53485122d67cc2a1654fd32457e4574e9a390bd2ba84c12b71d44236d32d758"
+        },
+        {
+          "revision": "old",
+          "position": 2,
+          "role": "original",
+          "sha256": "255534e7f9851da0c8058d46943bdf669c28bf9c8f470f76431782b16a00eddb",
+          "coordinates": "com.github.davidmoten:rxjava-jdbc:0.7.15"
+        },
+        {
+          "revision": "old",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "0b98b07e261badda7b77e249e911dedd91110f920a714370fab63d8b9fa793f0",
+          "coordinates": "io.reactivex:rxjava:1.3.7"
+        },
+        {
+          "revision": "old",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "9788497de36c12400868cfc5c2a6a30c7070a73e03583a71756cd3998fd887f3",
+          "coordinates": "com.github.davidmoten:rxjava-extras:0.8.0.14"
+        },
+        {
+          "revision": "old",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
+          "coordinates": "commons-io:commons-io:2.4"
+        },
+        {
+          "revision": "old",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
+          "coordinates": "org.slf4j:slf4j-api:1.7.21"
+        },
+        {
+          "revision": "old",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "15ff85021790a1e92f5eb58eb436c8ad96d9484fb411256979a4431082bf75fe",
+          "coordinates": "com.zaxxer:HikariCP-java6:2.3.13"
+        },
+        {
+          "revision": "old",
+          "position": 8,
+          "role": "dependency",
+          "sha256": "27ead171e2d11a3228946b512a326525322d96f73c4a21736fec6b00ea2f248d",
+          "coordinates": "com.github.davidmoten:guava-mini:0.1.1"
+        },
+        {
+          "revision": "old",
+          "position": 9,
+          "role": "dependency",
+          "sha256": "9563e26fd7863cca0f5d468ef09f2927047f8b85a8c76d98766ed5863cb678b2",
+          "coordinates": "org.slf4j:slf4j-log4j12:1.7.21"
+        },
+        {
+          "revision": "old",
+          "position": 10,
+          "role": "dependency",
+          "sha256": "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
+          "coordinates": "log4j:log4j:1.2.17"
+        },
+        {
+          "revision": "old",
+          "position": 11,
+          "role": "dependency",
+          "sha256": "225b22e9857235c46c93861410b60b8c81c10dc8985f4faf188985ba5445126c",
+          "coordinates": "com.h2database:h2:1.4.192"
+        },
+        {
+          "revision": "new",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ab07bc1231eae03ab4e8c610440dcd771d4ee98adb0a063791df9777dd24e5b8"
+        },
+        {
+          "revision": "new",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "d53485122d67cc2a1654fd32457e4574e9a390bd2ba84c12b71d44236d32d758"
+        },
+        {
+          "revision": "new",
+          "position": 2,
+          "role": "original",
+          "sha256": "255534e7f9851da0c8058d46943bdf669c28bf9c8f470f76431782b16a00eddb",
+          "coordinates": "com.github.davidmoten:rxjava-jdbc:0.7.15"
+        },
+        {
+          "revision": "new",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "0b98b07e261badda7b77e249e911dedd91110f920a714370fab63d8b9fa793f0",
+          "coordinates": "io.reactivex:rxjava:1.3.7"
+        },
+        {
+          "revision": "new",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "9788497de36c12400868cfc5c2a6a30c7070a73e03583a71756cd3998fd887f3",
+          "coordinates": "com.github.davidmoten:rxjava-extras:0.8.0.14"
+        },
+        {
+          "revision": "new",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
+          "coordinates": "commons-io:commons-io:2.4"
+        },
+        {
+          "revision": "new",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
+          "coordinates": "org.slf4j:slf4j-api:1.7.21"
+        },
+        {
+          "revision": "new",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "15ff85021790a1e92f5eb58eb436c8ad96d9484fb411256979a4431082bf75fe",
+          "coordinates": "com.zaxxer:HikariCP-java6:2.3.13"
+        },
+        {
+          "revision": "new",
+          "position": 8,
+          "role": "dependency",
+          "sha256": "27ead171e2d11a3228946b512a326525322d96f73c4a21736fec6b00ea2f248d",
+          "coordinates": "com.github.davidmoten:guava-mini:0.1.1"
+        },
+        {
+          "revision": "new",
+          "position": 9,
+          "role": "dependency",
+          "sha256": "9563e26fd7863cca0f5d468ef09f2927047f8b85a8c76d98766ed5863cb678b2",
+          "coordinates": "org.slf4j:slf4j-log4j12:1.7.21"
+        },
+        {
+          "revision": "new",
+          "position": 10,
+          "role": "dependency",
+          "sha256": "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
+          "coordinates": "log4j:log4j:1.2.17"
+        },
+        {
+          "revision": "new",
+          "position": 11,
+          "role": "dependency",
+          "sha256": "3ad9ac4b6aae9cd9d3ac1c447465e1ed06019b851b893dd6a8d76ddb6d85bca6",
+          "coordinates": "com.h2database:h2:1.4.200"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/calibration/GeneratedKeys.java": "9e6b4bd082b20d703dfd4accd6d1bc57e9f81f74e05f55aa591ef9f031813ce8",
+        "claims/generated-keys.json": "145ae8e23010ecf1790b5d30db30d88f124d952678c3a60803234df1073fc38b",
+        "controls/oracle.py": "73c811be894457ed3e5d8cc7bfa9cb739946782e07c77efd5c49d24cfae95c09",
+        "driver/calibration/KeyCases.java": "bb7dca3d0cbdd54a7389728f3a3e363fad6e3e6e835e0e3fd6211c87d1232597"
+      },
+      "claimKey": "8a3ffbec57461471"
+    }
+  },
+  "attempt": {
+    "id": "20261120T235140Z-237629dc",
+    "claim": "2ba8a613c0ad4c75",
+    "startedAt": "2026-11-20T23:51:40+00:00",
+    "seconds": 0.8,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/old",
+      "--after",
+      "verifier/classes/new",
+      "--target",
+      "calibration.GeneratedKeys#keys(boolean)",
+      "--classpath",
+      "prepare/new/lib/com.github.davidmoten/rxjava-jdbc-0.7.15.jar",
+      "--classpath",
+      "prepare/new/lib/io.reactivex/rxjava-1.3.7.jar",
+      "--classpath",
+      "prepare/new/lib/com.github.davidmoten/rxjava-extras-0.8.0.14.jar",
+      "--classpath",
+      "prepare/new/lib/commons-io/commons-io-2.4.jar",
+      "--classpath",
+      "prepare/new/lib/org.slf4j/slf4j-api-1.7.21.jar",
+      "--classpath",
+      "prepare/new/lib/com.zaxxer/HikariCP-java6-2.3.13.jar",
+      "--classpath",
+      "prepare/new/lib/com.github.davidmoten/guava-mini-0.1.1.jar",
+      "--classpath",
+      "prepare/new/lib/org.slf4j/slf4j-log4j12-1.7.21.jar",
+      "--classpath",
+      "prepare/new/lib/log4j/log4j-1.2.17.jar",
+      "--classpath",
+      "prepare/new/lib/com.h2database/h2-1.4.200.jar",
+      "--before-classpath",
+      "prepare/old/lib/com.github.davidmoten/rxjava-jdbc-0.7.15.jar",
+      "--before-classpath",
+      "prepare/old/lib/io.reactivex/rxjava-1.3.7.jar",
+      "--before-classpath",
+      "prepare/old/lib/com.github.davidmoten/rxjava-extras-0.8.0.14.jar",
+      "--before-classpath",
+      "prepare/old/lib/commons-io/commons-io-2.4.jar",
+      "--before-classpath",
+      "prepare/old/lib/org.slf4j/slf4j-api-1.7.21.jar",
+      "--before-classpath",
+      "prepare/old/lib/com.zaxxer/HikariCP-java6-2.3.13.jar",
+      "--before-classpath",
+      "prepare/old/lib/com.github.davidmoten/guava-mini-0.1.1.jar",
+      "--before-classpath",
+      "prepare/old/lib/org.slf4j/slf4j-log4j12-1.7.21.jar",
+      "--before-classpath",
+      "prepare/old/lib/log4j/log4j-1.2.17.jar",
+      "--before-classpath",
+      "prepare/old/lib/com.h2database/h2-1.4.192.jar",
+      "--unchanged-unless",
+      "false",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "16",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jvmcontract": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "c412276a03168ec3fda5592696bad3e28b77ffcea4fd6f38e89cd26f1368b31f",
+        "files": 1
+      },
+      "after": {
+        "sha256": "c412276a03168ec3fda5592696bad3e28b77ffcea4fd6f38e89cd26f1368b31f",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-234730-348-run-the-frozen-v0-dependency-upgrade",
+      "sourceCommit": "6e92aaddc7b1c22a69296ef7b8244cd762342f05",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-234730-348-run-the-frozen-v0-dependency-upgrade"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control old on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.266,
+        "stdout": "records/control-old-jdk21.stdout",
+        "stderr": "records/control-old-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control new on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.314,
+        "stdout": "records/control-new-jdk21.stdout",
+        "stderr": "records/control-new-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.175,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 16,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "2ba8a613c0ad4c75",
+    "attempt": "20261120T235140Z-237629dc",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"old\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 17,
+      "code": "\"new\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.sql.DriverManager.getConnection(Ljava/lang/String;)Ljava/sql/Connection;@jdk-21.0.13 (java.sql.DriverManager.getConnection(java.lang.String) at before.calibration.GeneratedKeys.keys:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "combined: boolean",
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "19e1c0f3b34caff9a042a6d0a8122d002e5f2c012f4ef22564435a4521d75d70",
+        "bytes": 245411
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "ead35874f2fac85989b921f9f658485d6e4008cc1393d64c3ff050b29b3e30eb",
+        "bytes": 518
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "be5d57e770835b80a1cd20981fa7c36512fe4eedc718e7185a6f692dd529d4e0",
+        "bytes": 2629
+      },
+      {
+        "path": "records/control-old-jdk21.stdout",
+        "sha256": "7676b5d5a011fbfd00e9a59ded6527bbc671ef878f8c3fef7727d0605e9cb857",
+        "bytes": 190
+      },
+      {
+        "path": "records/control-old-jdk21.stderr",
+        "sha256": "ab5825589316112b93ac9c2892a4cec096e8e5c42e1662a6d929f4fa70edfc62",
+        "bytes": 232
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "78f7a90b0502398c71b3b2067c9e6152e51e42cc218a1796d018c30fa178dc65",
+        "bytes": 12182
+      },
+      {
+        "path": "records/control-new-jdk21.stdout",
+        "sha256": "63597f2dcb850a54b23298a3cc017b712f28e9afa9f262626a4baf7da1ccfd7d",
+        "bytes": 196
+      },
+      {
+        "path": "records/control-new-jdk21.stderr",
+        "sha256": "ab5825589316112b93ac9c2892a4cec096e8e5c42e1662a6d929f4fa70edfc62",
+        "bytes": 232
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "73e64ec061cae7da2f0e3e6c720dc8e13aac5b04a3e885254cdf7a13de8f3d1a",
+        "bytes": 6594
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "8dae8453b95d137726e57d7c322d177083f90cde4dcad99315f207c0a527d022",
+        "bytes": 225172
+      }
+    ]
+  }
+}
