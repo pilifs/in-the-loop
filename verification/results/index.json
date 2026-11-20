@@ -2,6 +2,51 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261120-010828-retry-all-five-full-grid-threetenbp-regi",
+      "title": "Retry all five full-grid ThreeTenBP registry claims with finite words",
+      "status": "failed",
+      "summary": "failed: 4 failed, 1 passed step(s) in 1m44s, peak 848.8 MiB (estimated 1m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-as-expected×1",
+      "attention": [
+        "step 1 (Check clock-parent-observed) exited 1, expected 0",
+        "step 1 (Check clock-parent-observed) was held back 11.5s by its 1-CPU quota in 11.8s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (Check clock-fix-observed) exited 1, expected 0",
+        "step 2 (Check clock-fix-observed) was held back 10.2s by its 1-CPU quota in 12.8s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 3 (Check reversal-parent-observed) exited 1, expected 0",
+        "step 3 (Check reversal-parent-observed) was held back 10.2s by its 1-CPU quota in 14.6s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 4 (Check reversal-fix-observed) exited 1, expected 0",
+        "step 4 (Check reversal-fix-observed) was held back 11.0s by its 1-CPU quota in 21.7s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 5 (Check same-day-observed) was held back 24.0s by its 1-CPU quota in 43.5s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261120-000226-threetenbp-clock-parent-with-observed-ch",
+          "20261120-000226-threetenbp-clock-fix-with-observed-chron",
+          "20261120-000227-threetenbp-reversal-parent-with-observed",
+          "20261120-000226-threetenbp-reversal-fix-with-observed-ch",
+          "20261120-000227-threetenbp-same-day-with-observed-chrono"
+        ]
+      },
+      "sourceCommit": "462c52564de4ae70c251d8fb1ee87ce313e4b6e7",
+      "finishedAt": "2026-11-20T01:19:26+00:00",
+      "wallSeconds": 104.4,
+      "peakMemoryBytes": 890028032,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 60.0,
+        "notes": "The previous three full-grid attempts reached the original 600-second checker budget. A 60-second fixed-clock probe returned in under five seconds with the finite solver. Each task retains its complete 600-second allowance."
+      },
+      "host": "vm-1",
+      "result": "20261120-010828-retry-all-five-full-grid-threetenbp-regi/result.json"
+    },
+    {
       "id": "20261120-005556-recheck-jbmc-preservation-on-all-71-null",
       "title": "Recheck JBMC preservation on all 71 nullable array heaps",
       "status": "passed",
