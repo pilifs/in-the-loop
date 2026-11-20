@@ -18,6 +18,26 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-047: a single-agent run that a client's 5xx error stopped waits for the user, though the user lets the watcher restart it
+
+- **Status**: open (the user chose on 2026-11-20 to keep the rule in the Claude Code watcher's memory for now and
+  settle the skill later).
+- **Raised**: 2026-11-20 by the watcher of the single-agent run `next-proof-campaign` (Codex, `gpt-6.2-astra` at max
+  effort, session `0cea9d0e-0fe8-427e-8e71-96614b084e11`). The loop's record:
+  `llm-dlc/loop-summaries/2026-11-20-175356-single-next-proof-campaign.md`.
+- **Found**: at 20:10:33 UTC cycle 1's turn ended with `error_during_execution`: "unexpected status 503 Service
+  Unavailable: no healthy upstream" from the Codex backend, after the commit `zsxmmtkw`. The loop ended with status 1.
+  The `single-agent-run` skill says a status-1 run continues (`single_run.py start NAME`) only at the user's word, so
+  the run sat idle until the user came back. The user then said that a watcher may restart a run stopped by a 5xx
+  error itself, every 5 to 10 minutes. That rule lives only in the Claude Code watcher's memory. A Codex watcher
+  (Sol 6.2), or a new Claude Code session on another machine, doesn't have it and would still wait.
+- **Needs**: the user to decide whether the exception goes into `.claude/skills/single-agent-run/SKILL.md` (stage 3,
+  "Status 1 is not an end of the work"), and maybe into `single_run.py`. One option is a `retry` hint on an `ended`
+  event whose note names a 5xx. Other status-1 causes (a quota, a cycle with no commit and no verdict, a start
+  refusal) stay the user's either way.
+- **Tracked in**: the Claude Code watcher's memory (`resume-on-5xx`).
+- **Closes when**: the skill states the 5xx exception, or the user decides it stays a per-watcher convenience.
+
 ### VF-046: OpenAI's cybersecurity filter ended a Codex run's turn on this repository's CVE examples
 
 - **Status**: open (the user chose on 2026-11-19 to land the run's work and go on with the fast-follow run on the
