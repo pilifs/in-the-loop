@@ -904,6 +904,18 @@
         "native": {
           "description": "The own checker's account of its search, when the verdict is its: the numbers of its summary line (paths, merges, solverCalls, solvingSeconds, gatesEvaluated, evaluatingSeconds, divisions, divisionsBuilt, multiplications, multiplicationsBuilt, variables, clauses, seconds), and since 2026-11-06 the seconds of its other phases (loadingSeconds, decodingSeconds, encodingSeconds, witnessSeconds; lib/src/phases.rs).",
           "type": "object",
+          "properties": {
+            "finiteQueries": {
+              "description": "Queries answered by reduced word diagrams and by the backing Bitwuzla solver in finite-word mode.",
+              "type": "object",
+              "required": ["diagrams", "bitwuzla"],
+              "additionalProperties": false,
+              "properties": {
+                "diagrams": { "type": "integer", "minimum": 0 },
+                "bitwuzla": { "type": "integer", "minimum": 0 }
+              }
+            }
+          },
           "additionalProperties": { "type": "number" }
         }
       }

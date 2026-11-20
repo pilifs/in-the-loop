@@ -1,0 +1,267 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-005556-recheck-jbmc-preservation-on-all-71-null",
+  "title": "Recheck JBMC preservation on all 71 nullable array heaps",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 7.2s, peak 74.7 MiB (estimated 20.0s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (Run the preserving and distinguishing pairs) was held back 6.3s by its 1-CPU quota in 7.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-005556-recheck-jbmc-preservation-on-all-71-null.json",
+    "sha256": "bd6967fb2657b37bc36801719ff6145b1584c79a61fce5b584c646e4e17bbfea",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-005556-recheck-jbmc-preservation-on-all-71-null",
+      "title": "Recheck JBMC preservation on all 71 nullable array heaps",
+      "description": "Compare both final roots for the original maintaining and skipped-write methods, including nulls, shared roots, and distinct arrays with equal cells. The generated observer must preserve writes made before an exception. Compare the semantic and class digests with the previous refusal and retain both raw checker statements and JVM witness evidence.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc:arrays",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "197"
+        ],
+        "jobs": [
+          "20261119-164549-197-integrated-jbmc-preserving-and-discr"
+        ]
+      },
+      "expected": "The full 71-heap profile has a complete non-vacuous JBMC establishment and a JVM-reproduced refutation with both root observers.",
+      "submitted": {
+        "at": "2026-11-20T00:55:56+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "20s",
+        "memoryLimit": "2G",
+        "timeout": "5m"
+      },
+      "steps": [
+        {
+          "name": "Run the preserving and distinguishing pairs",
+          "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --records verification/wide-array-checks > verification/wide-array-checks.json",
+          "cwd": "."
+        },
+        {
+          "name": "Require the full frozen profile and both qualified verdicts",
+          "run": "python3 -c \"import json; r=json.load(open('verification/wide-array-checks.json')); assert len(r['rows']) == 2 and all(s['profile'] == 'nullable-shared-binary-length-2' and s['qualified'] for s in r['rows'])\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/wide-array-checks",
+        "verification/wide-array-checks.json"
+      ]
+    }
+  },
+  "sourceCommit": "9e8673aab5bbcc61daf425c64b347798a4adbbdd",
+  "startedAt": "2026-11-20T01:02:23+00:00",
+  "finishedAt": "2026-11-20T01:05:14+00:00",
+  "wallSeconds": 171.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2340616,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 2147483648,
+    "timeoutSeconds": 300.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 20.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 78360576,
+    "wallSeconds": 7.2,
+    "cpuSeconds": 6.7,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.36
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 162.022,
+      "cpuSeconds": 161.736,
+      "cpuThrottledSeconds": 0.309,
+      "peakMemoryBytes": 2885439488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "23ba4d7b47507fdf76b2c8787c9252fc5f472894425c754549de8742273de141",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-005556-recheck-jbmc-preservation-on-all-71-null/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 41s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run the preserving and distinguishing pairs",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --records verification/wide-array-checks > verification/wide-array-checks.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 7.015,
+      "cpuSeconds": 6.711,
+      "cpuThrottledSeconds": 6.314,
+      "peakMemoryBytes": 78360576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-preserving-and-disting.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Require the full frozen profile and both qualified verdicts",
+      "run": "python3 -c \"import json; r=json.load(open('verification/wide-array-checks.json')); assert len(r['rows']) == 2 and all(s['profile'] == 'nullable-shared-binary-length-2' and s['qualified'] for s in r['rows'])\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.019,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5218304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-require-the-full-frozen-profil.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/wide-array-checks/nullable-shared-binary-length-2-alternative.stdout",
+      "change": "added",
+      "bytes": 20259,
+      "sha256": "c6f1eb78c2e60aa5499886a16316416eb7ce62fd4a297247f606afb9d23a953f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/wide-array-checks/nullable-shared-binary-length-2-preserving.stdout",
+      "change": "added",
+      "bytes": 14579,
+      "sha256": "3932d40ce1eee038c505a43eae56aaff0385039bf600b1877c96b7404d85f928",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/wide-array-checks.json",
+      "change": "added",
+      "bytes": 16146,
+      "sha256": "cb2e1878a1eaf8134ff18484387b7c4ce2d9818c2e8643c082b6ccb55ba033f7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T01:05:33+00:00",
+    "applied": [
+      "verification/wide-array-checks/nullable-shared-binary-length-2-alternative.stdout",
+      "verification/wide-array-checks/nullable-shared-binary-length-2-preserving.stdout",
+      "verification/wide-array-checks.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7d8740c37c5d6d6e4f25c39af8a5ac52b76224cf",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7d8740c37c5d6d6e4f25c39af8a5ac52b76224cf/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

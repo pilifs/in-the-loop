@@ -2135,6 +2135,13 @@ class DeadlineTest(unittest.TestCase):
         self.assertNotIn("loopsCoveredByInvariants", plain)
         self.assertNotIn("modelsAssume", plain)
         jsonschema.validate(plain, schema["properties"]["search"])
+        counts = {"diagrams": 3123, "bitwuzla": 0}
+        finite = build.search_record({"search": {**search, "native": {**search["native"], "finite_queries": counts}}})
+        self.assertEqual(finite["native"]["finiteQueries"], counts)
+        jsonschema.validate(finite, schema["properties"]["search"])
+        for bad in ({"diagrams": 3123}, {"diagrams": -1, "bitwuzla": 0}, {"diagrams": 4, "bitwuzla": "0"}):
+            with self.assertRaises(jsonschema.ValidationError):
+                jsonschema.validate({**finite, "native": {"finiteQueries": bad}}, schema["properties"]["search"])
 
     def test_a_run_keeps_how_the_checker_said_it_ended(self):
         """Step 4b: JBMC's kinds of no verdict stay apart in the record, read from its --json-ui output."""
