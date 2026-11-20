@@ -1,0 +1,63 @@
+[
+  {
+    "claimKey": "cc8ae0d21f898b22",
+    "entry": "csvgrid.Projection#equal(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 7
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
+        "classpath": [
+          "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
+          "fd505dc02188756555ec410f5c3be3f6f489b91b3a22200bacd2173b75ec4380",
+          "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+          "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 7;\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = csvgrid.Projection.equal(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 7,
+      "input": [
+        10,
+        2
+      ],
+      "field": "equal",
+      "direct": {
+        "parent": {
+          "equal": true,
+          "hashContract": true,
+          "rows": [
+            3,
+            2
+          ]
+        }
+      },
+      "tableSha256": "36b1f5e1e529b3b79fab2cd38376945c9f3eaccc58ed4938bc729395dd47aa1b"
+    }
+  }
+]
