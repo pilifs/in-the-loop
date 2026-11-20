@@ -1,0 +1,577 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "c95805b51fd453aa",
+    "format": 1,
+    "example": "319",
+    "statement": {
+      "approach": "target",
+      "task": "lookup-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.collect.ImmutableMap$Builder#buildKeepingLast()Lcom/google/common/collect/ImmutableMap;",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "lookup-fix",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "com.google.common.collect.ImmutableMap$Builder#buildKeepingLast()Lcom/google/common/collect/ImmutableMap;",
+        "file": "claims/lookup.json",
+        "sha256": "b8764e2bb01938254a3e9b4b34ab35a0ca827dca544d5473be3bd6ab4453f80d",
+        "property": "lookup",
+        "claimKind": "property",
+        "statement": "Every lookup returns the value from the last matching put.",
+        "assume": "code >= 0 && code < 121",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 30,
+          "maxArrayLength": 12
+        },
+        "explicitBounds": {
+          "unwind": 30,
+          "maxArrayLength": 12
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/mapgrid/Cases.java",
+            "sha256": "ab82101d3530bc819086bff801626d5b7c7f7725ead12f62ac71dc8a0b1242f8"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "18fd747ec4d77a586fddd00ede65c1c711e9a61fdf5481c45707647f668e69c3"
+          }
+        ],
+        "adapter": {
+          "entry": "mapgrid.Projection#lookup(I)I",
+          "mapping": "A bijective base-three word of up to four String keys QED, R&D and X drives one builder. Each put uses its one-based position. Size, per-key lookup (zero means absent), and unordered entries are independently observed. Entry pairs are sorted by key and value after iteration.",
+          "correspondence": "finite-oracle",
+          "cases": 121
+        },
+        "key": "cca230c3e68b0f36"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 12
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "lookup-fix",
+      "sidecar": "7907956eea710d5202715b8bdc5a9766847227699824326dfd55a28608180f34",
+      "revisions": {
+        "fix": "87d550f3fe7dc22540b1b6dba21179a1b2b92658"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "b6c40cac6c73c003d124be440cd8d6af77aa323c7f616371cf122d4784808df6"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "109089022129950bd6d5f29e0307c59b878c294821e23441f75a3f35ab32b325"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "7d16354074d3b1431ef77c2d2c62d0a2456e01348aadd775f2eae00fa421119d"
+        },
+        {
+          "revision": "fix",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+          "coordinates": "com.google.guava:failureaccess:1.0.1"
+        },
+        {
+          "revision": "fix",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+          "coordinates": "com.google.code.findbugs:jsr305:3.0.2"
+        },
+        {
+          "revision": "fix",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb",
+          "coordinates": "org.checkerframework:checker-qual:3.12.0"
+        },
+        {
+          "revision": "fix",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "cd5257c08a246cf8628817ae71cb822be192ef91f6881ca4a3fcff4f1de1cff3",
+          "coordinates": "com.google.errorprone:error_prone_annotations:2.7.1"
+        },
+        {
+          "revision": "fix",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b",
+          "coordinates": "com.google.j2objc:j2objc-annotations:1.3"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/mapgrid/Projection.java": "da0ca2e026c22d831ddb407032b7985efae5857b5d806609a42c003df3d239e9",
+        "claims/lookup.json": "b8764e2bb01938254a3e9b4b34ab35a0ca827dca544d5473be3bd6ab4453f80d",
+        "controls/table.json": "18fd747ec4d77a586fddd00ede65c1c711e9a61fdf5481c45707647f668e69c3",
+        "driver/mapgrid/Cases.java": "ab82101d3530bc819086bff801626d5b7c7f7725ead12f62ac71dc8a0b1242f8"
+      },
+      "claimKey": "cca230c3e68b0f36",
+      "scopes": {
+        "fix": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261120T052930Z-b6fefa43",
+    "claim": "c95805b51fd453aa",
+    "startedAt": "2026-11-20T05:29:30+00:00",
+    "seconds": 0.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "mapgrid.Projection#lookup(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/slice/fix.jar",
+      "--classpath",
+      "prepare/fix/lib/com.google.guava/failureaccess-1.0.1.jar",
+      "--classpath",
+      "prepare/fix/lib/com.google.code.findbugs/jsr305-3.0.2.jar",
+      "--classpath",
+      "prepare/fix/lib/org.checkerframework/checker-qual-3.12.0.jar",
+      "--classpath",
+      "prepare/fix/lib/com.google.errorprone/error_prone_annotations-2.7.1.jar",
+      "--classpath",
+      "prepare/fix/lib/com.google.j2objc/j2objc-annotations-1.3.jar",
+      "--assume",
+      "code >= 0 && code < 121",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "30",
+      "--max-array-length",
+      "12",
+      "--timeout",
+      "30",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "e0955182e79e2109aeda95e25f55fa4c60707a578163746f2b33e6b1e4119dcc"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "dffaa47a10fd103437c17b8bba4831cd74991f6248bfe122d90a1d21f15e2042",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-052129-prove-guava-duplicate-entry-handling-wit",
+      "sourceCommit": "cd0b1f8132160f1664dafef096bf2a9d3103766e",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-052129-prove-guava-duplicate-entry-handling-wit"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.122,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 30,
+      "maxArrayLength": 12,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "c95805b51fd453aa",
+    "attempt": "20261120T052930Z-b6fefa43",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 121",
+          "verdict": "verified",
+          "domain": "code: int",
+          "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.1 s; loops unwound 30 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 0.076,
+            "properties": 1,
+            "unwind": 30,
+            "maxArrayLength": 12,
+            "stage": null,
+            "deadlineSeconds": 30.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 30.0,
+                "seconds": 0.072,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.059,
+                  "encoding": 0.009,
+                  "solving": 0.003,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 1036,
+                  "clauses": 1
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 29.924,
+                "seconds": 0.004,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 12,
+                  "clauses": 1
+                }
+              }
+            ],
+            "native": {
+              "paths": 122,
+              "merges": 0,
+              "solverCalls": 697,
+              "solvingSeconds": 0.002677198,
+              "gatesEvaluated": 4448,
+              "evaluatingSeconds": 0.001618273,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "wordOperations": 98,
+              "finiteQueries": {
+                "diagrams": 697,
+                "bitwuzla": 0
+              },
+              "variables": 1036,
+              "clauses": 1,
+              "seconds": 0.072275448,
+              "loadingSeconds": 0.001280621,
+              "decodingSeconds": 0.000208172,
+              "encodingSeconds": 0.008895278,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 121",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 30,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found lookup(code=0).",
+              "witness": "lookup(code=0)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.1 s; loops unwound 30 times with unwinding assertions",
+    "problem": null,
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 121"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 121",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 30,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found lookup(code=0).",
+        "witness": "lookup(code=0)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "d14055757a49a0d94d155572d59354a52e44e89ea15439928520b047032e3cf5",
+        "bytes": 155203
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "d92411e74c7be78bc7c52ea5643f5258fb77d58d7779dede37e9c4bf943da7d8",
+        "bytes": 286
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "35db46a731ba8090bd9b0900387eb0ec8b77cd00f0104c7331e3d1ace804b1cb",
+        "bytes": 1947
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "7827fca078c8f3bcab7a77b4c4dbb40f6cff312192cffda3c4e4d992fc774072",
+        "bytes": 21140
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "e948a619c4a1cf369f14581f6f7f3968e18fd1daacf6588abb52a794821a5c74",
+        "bytes": 84900
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "6734a98b50810b9f5419625459582adf8a2ebc86fa133c4ad79741e77bcdcd9e",
+        "bytes": 5902
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "e2ca1b1e3f1b36b36589f609297b7887b0738619958b9eab12b0face988d8bcb",
+        "bytes": 69462
+      }
+    ]
+  }
+}

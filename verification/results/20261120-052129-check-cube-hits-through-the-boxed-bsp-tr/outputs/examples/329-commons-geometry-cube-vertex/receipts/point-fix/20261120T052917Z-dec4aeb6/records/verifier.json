@@ -1,0 +1,537 @@
+{
+  "task": "point-fix",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e669f4360d01a0bec4f72d0d26912b8022bb3778/jvmcontract",
+      "prove",
+      "cubegrid.Projection#point(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/slice/fix.jar",
+      "--classpath",
+      "prepare/fix/lib/org.apache.commons/commons-numbers-core-1.0-beta1.jar",
+      "--classpath",
+      "prepare/fix/lib/org.apache.commons/commons-numbers-angle-1.0-beta1.jar",
+      "--classpath",
+      "prepare/fix/lib/org.apache.commons/commons-numbers-arrays-1.0-beta1.jar",
+      "--classpath",
+      "prepare/fix/lib/org.apache.commons/commons-numbers-quaternion-1.0-beta1.jar",
+      "--assume",
+      "code >= 0 && code < 6",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "30",
+      "--max-array-length",
+      "16",
+      "--timeout",
+      "30",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.051,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "e0955182e79e2109aeda95e25f55fa4c60707a578163746f2b33e6b1e4119dcc",
+      "commit": "cd0b1f8132160f1664dafef096bf2a9d3103766e",
+      "libTree": "e669f4360d01a0bec4f72d0d26912b8022bb3778",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 30,
+        "maxArrayLength": 16
+      },
+      "timeout": 30,
+      "scope": {
+        "label": "adapter",
+        "meaning": "Four signed cube diagonals from the upstream repair and two face-center rays, with the unit cube and tolerance 1e-10. Compare the coordinates of the facet-plane intersection by component with absolute tolerance 1e-10. Several different facets may contain the same vertex.",
+        "method": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+        "revisions": {
+          "fix": {
+            "commit": "17833efe2b8f1b563e8c261a28d26af441a3778c",
+            "loadedFrom": "slice/fix.jar",
+            "classSha256": "9393168b3c87419c48019e2c37ae32703ab039be19eb68a368b2dd67c037d31f",
+            "origin": "an extracted source slice of 17833efe2b8f1b563e8c261a28d26af441a3778c: commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Geometry.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Point.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Spatial.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Vector.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/exception/GeometryException.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/exception/IllegalNormException.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/exception/package-info.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/DoubleFunction1N.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/DoubleFunction2N.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/DoubleFunction3N.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/GeometryInternalError.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/SimpleTupleFormat.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/package-info.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/package-info.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/AbstractRegion.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/AbstractSubHyperplane.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BSPTree.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BSPTreeVisitor.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryAttribute.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryBuilder.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryProjection.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryProjector.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundarySizeVisitor.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Characterization.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Embedding.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Hyperplane.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/InsideFinder.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/NodesSet.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Region.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/RegionFactory.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Side.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/SubHyperplane.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Transform.java, commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/package-info.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/AffineTransformMatrix.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/EuclideanVector.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/MultiDimensionalEuclideanVector.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/exception/NonInvertibleTransformException.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/exception/package-info.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/internal/Matrices.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/internal/Vectors.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/internal/package-info.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/AffineTransformMatrix1D.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/Interval.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/IntervalsSet.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/OrientedPoint.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/SubOrientedPoint.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/Vector1D.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/package-info.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/package-info.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/AffineTransformMatrix3D.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Line.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/OutlineExtractor.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Plane.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/PolyhedronsSet.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Segment.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/SphericalCoordinates.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/SubLine.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/SubPlane.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Vector3D.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/package-info.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisAngleSequence.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisReferenceFrame.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisSequence.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisSequenceType.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/QuaternionRotation.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/Rotation3D.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/package-info.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/AffineTransformMatrix2D.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/Line.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/NestedLoops.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/PolarCoordinates.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/PolygonsSet.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/Segment.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/SubLine.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/Vector2D.java, commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/package-info.java, compiled by JDK 21 with --release 21 -g -parameters",
+            "parameters": {
+              "names": [
+                "point",
+                "line"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "cubegrid.Projection#point(I)I",
+          "mapping": "Four signed cube diagonals from the upstream repair and two face-center rays, with the unit cube and tolerance 1e-10. Compare the coordinates of the facet-plane intersection by component with absolute tolerance 1e-10. Several different facets may contain the same vertex.",
+          "correspondence": "finite-oracle",
+          "cases": 6
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix": [
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "ff99862d479c460cf3ccc95286474376c80b224e5e223a83ff7cfad2cb8c68b7",
+            "role": "adapter"
+          },
+          {
+            "path": "slice/fix.jar",
+            "sha256": "d9c329ff2e65241324fb9b23ca0fa0de901d5a6e6a792d33b1b6e55cd7b63cbc",
+            "role": "original"
+          },
+          {
+            "path": "lib/org.apache.commons/commons-numbers-core-1.0-beta1.jar",
+            "sha256": "10fe92bffba4d5d0920967db3f9f317e121bd601a9b8278529be53a68bac09f7",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org.apache.commons/commons-numbers-angle-1.0-beta1.jar",
+            "sha256": "cae25277cb0fbe87496f78b422b5aa8a982130c1ff529da7e28e45de978d277e",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org.apache.commons/commons-numbers-arrays-1.0-beta1.jar",
+            "sha256": "df538a6562c02a9c8dac62f51082ccb171bd8f9f18eeeeca080a2058500d12ab",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org.apache.commons/commons-numbers-quaternion-1.0-beta1.jar",
+            "sha256": "654f45af15e005b42e400349bf59a1eb3d128a5a4a7e140cbb3beb8cf4e83cb5",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "cubegrid.Projection#point(I)I",
+      "entryBindings": {
+        "fix": {
+          "entry": "cubegrid.Projection#point(I)I",
+          "classSha256": "ae36b399e7e87caf4e3368550eb076f436b5584f57a9c6991d0a0555cbf3659b",
+          "loadedFrom": "adapter-fix.jar",
+          "subject": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+          "subjectClassSha256": "9393168b3c87419c48019e2c37ae32703ab039be19eb68a368b2dd67c037d31f"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+        "checkedEntry": "cubegrid.Projection#point(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 6"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "30"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "16"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "cubegrid.Projection#point(I)I",
+          "mapping": "Four signed cube diagonals from the upstream repair and two face-center rays, with the unit cube and tolerance 1e-10. Compare the coordinates of the facet-plane intersection by component with absolute tolerance 1e-10. Several different facets may contain the same vertex.",
+          "correspondence": "finite-oracle",
+          "cases": 6
+        }
+      },
+      "commits": {
+        "fix": "17833efe2b8f1b563e8c261a28d26af441a3778c"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e669f4360d01a0bec4f72d0d26912b8022bb3778/jvmcontract",
+            "gaps",
+            "--target",
+            "cubegrid.Projection#point(int)",
+            "--classes",
+            "prepare/fix/adapter-fix.jar",
+            "--classpath",
+            "prepare/fix/slice/fix.jar",
+            "--classpath",
+            "prepare/fix/lib/org.apache.commons/commons-numbers-core-1.0-beta1.jar",
+            "--classpath",
+            "prepare/fix/lib/org.apache.commons/commons-numbers-angle-1.0-beta1.jar",
+            "--classpath",
+            "prepare/fix/lib/org.apache.commons/commons-numbers-arrays-1.0-beta1.jar",
+            "--classpath",
+            "prepare/fix/lib/org.apache.commons/commons-numbers-quaternion-1.0-beta1.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.064,
+          "stdout": "verifier/probe-fix.stdout",
+          "stderr": "verifier/probe-fix.stderr",
+          "gaps": [
+            {
+              "id": "jdk-reference-method:java.lang.Iterable.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Iterable.iterator()",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.NodesSet.addAll:61"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Iterator.next()",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.NodesSet.add:45",
+                "org.apache.commons.geometry.core.partitioning.NodesSet.addAll:61",
+                "org.apache.commons.geometry.core.partitioning.RegionFactory.recurseComplement:178",
+                "org.apache.commons.geometry.core.partitioning.RegionFactory.recurseComplement:185"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.iterator()",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.NodesSet.add:45",
+                "org.apache.commons.geometry.core.partitioning.NodesSet.iterator:69"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.entrySet()Ljava/util/Set;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.entrySet()",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.RegionFactory.recurseComplement:178"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map$Entry.getKey()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map$Entry.getKey()",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.RegionFactory.recurseComplement:179",
+                "org.apache.commons.geometry.core.partitioning.RegionFactory.recurseComplement:181"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map$Entry.getValue()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map$Entry.getValue()",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.RegionFactory.recurseComplement:184"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Set.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Set.iterator()",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.RegionFactory.recurseComplement:178"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.equals(java.lang.Object)",
+              "sites": [
+                "java.util.HashMap.find:80",
+                "org.apache.commons.geometry.core.partitioning.BSPTree.condense:382",
+                "org.apache.commons.geometry.core.partitioning.RegionFactory$VanishingToLeaf.fixNode:372"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.hashCode()",
+              "sites": [
+                "java.util.HashMap.find:77",
+                "java.util.HashMap.put:65"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Iterator.hasNext()",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.NodesSet.add:45",
+                "org.apache.commons.geometry.core.partitioning.NodesSet.addAll:61",
+                "org.apache.commons.geometry.core.partitioning.RegionFactory.recurseComplement:178",
+                "org.apache.commons.geometry.core.partitioning.RegionFactory.recurseComplement:185"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.add(java.lang.Object)",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.Characterization.characterize:96",
+                "org.apache.commons.geometry.core.partitioning.NodesSet.add:53"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.size()",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.Characterization.characterize:99"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.valueOf(java.lang.Object)",
+              "sites": [
+                "org.apache.commons.geometry.core.partitioning.BSPTree.visit:278"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.041,
+        "peakRssBytes": 80207872,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "cubegrid.Projection#point(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 6",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "outside the fragment: java.lang.Math.hypot(DD)D",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "cubegrid.Projection#point(int) cannot be verified: outside the fragment: java.lang.Math.hypot(DD)D",
+            "uri": null,
+            "line": 25
+          }
+        ],
+        "output": "✗ cubegrid.Projection#point(int) cannot be verified: outside the fragment: java.lang.Math.hypot(DD)D\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 0.011913659,
+          "properties": 1,
+          "unwind": 30,
+          "max_array_length": 16,
+          "stage": null,
+          "native": {
+            "paths": 1,
+            "merges": 0,
+            "solver_calls": 7,
+            "solving_seconds": 1.0709e-05,
+            "gates_evaluated": 10,
+            "evaluating_seconds": 3.406e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 7,
+            "finite_queries": {
+              "diagrams": 7,
+              "bitwuzla": 0
+            },
+            "variables": 11,
+            "clauses": 1,
+            "seconds": 0.010856396,
+            "loading_seconds": 0.001467715,
+            "decoding_seconds": 0.00040767,
+            "encoding_seconds": 0.000177122,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 30.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 30.0,
+              "seconds": 0.011,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.009,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 11,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.037,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.011,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.025
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 6",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 30,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-052129-check-cube-hits-through-the-boxed-bsp-tr/.build-py/examples-uuzlsc0w/targets/329/point-fix/20261120T052917Z-dec4aeb6",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-052129-check-cube-hits-through-the-boxed-bsp-tr/.build-py/examples-uuzlsc0w/targets/329/point-fix/20261120T052917Z-dec4aeb6"
+  }
+}
