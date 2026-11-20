@@ -631,7 +631,6 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if let Some(a) = &strings {
         parameters.max_string_length = Some(a.domain().max_length);
     }
-    let parameters = parameters;
     // The plan's choices (O2), as in a regression check: flags for null and for one of other roots' objects, and a
     // node at two roots one object with no flag.
     if let Some(c) = plan.map(crate::construction::choices).filter(|c| !c.is_empty()) {
@@ -876,7 +875,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 Err(problem) => return refuse(&mut out, line, format!("the property is not well-formed: javac does not take its expressions, its measure or its lemmas' as Java: {problem}")),
             };
             let holds_call = assertion.as_ref().map(|_| harness::expr::claim_call("holds", &names));
-            let mut h = match generate(assume_call.as_deref(), holds_call.as_deref(), &thrown_calls) {
+            // A javac assertion can share a harness with an ordinary int-range guard. Keep that guard in
+            // the harness bytecode so the word solver can read its bounds from the very expression it runs.
+            let direct_guard = options.assume.as_deref().filter(|text| enter_call.is_none()
+                && harness::expr::parse(text, &params).is_ok_and(|e| !harness::expr::int_intervals(&e).is_empty()));
+            let mut h = match generate(direct_guard.or(assume_call.as_deref()), holds_call.as_deref(), &thrown_calls) {
                 Ok(h) => h,
                 Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
             };
@@ -920,6 +923,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
     };
     let throws_text = signals.iter().map(Signal::render).collect::<Vec<_>>();
+    if !over_objects {
+        if let Some(guard) = &harness.assume {
+            parameters.int_intervals = harness::expr::int_intervals(guard);
+        }
+    }
     let throws_checked = signals.iter().map(|s| format!("{} when {}", s.java_name(), s.when)).collect::<Vec<_>>();
     std::fs::create_dir_all(&harness_dir)?;
     for g in &given {

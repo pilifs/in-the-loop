@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T01:01:53.948Z",
-  "duration_seconds": 12264,
+  "ended": "2026-11-20T01:14:11.539Z",
+  "duration_seconds": 13002,
   "stats": {
     "turns": 4,
-    "api_calls": 819,
-    "tool_calls": 2181,
-    "tool_errors": 76,
+    "api_calls": 868,
+    "tool_calls": 2283,
+    "tool_errors": 77,
     "compactions": 3,
     "peak_context_tokens": 478319,
     "usage": {
-      "input_tokens": 1449805,
-      "output_tokens": 400635,
-      "cache_read_input_tokens": 234105984,
+      "input_tokens": 1496415,
+      "output_tokens": 423987,
+      "cache_read_input_tokens": 243937536,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1315,
-    "exec": 781,
-    "apply_patch": 53,
+    "Bash": 1361,
+    "exec": 830,
+    "apply_patch": 60,
     "wait": 32
   },
   "files_touched": [
@@ -59,6 +59,7 @@
     "lib/models/README.md",
     "lib/models/build.sh",
     "lib/models/java/util/concurrent/ConcurrentHashMap.java",
+    "lib/solvers/README.md",
     "lib/src/bmc/bits.rs",
     "lib/src/bmc/finite_words.rs",
     "lib/src/bmc/gaps.rs",
@@ -83,6 +84,7 @@
     "lib/tests/fixtures/claims/claims/Registries.java",
     "lib/tests/fixtures/claims/claims/Samples.java",
     "lib/tests/fixtures/claims/claims/UnicodePoints.java",
+    "lib/tests/fixtures/restart-qualification/check.py",
     "lib/tests/paired_array_roots.rs",
     "llm-dlc/tools/test_performance.py",
     "verification/README.md",
@@ -135,24 +137,24 @@
     {
       "index": 3,
       "started": "2026-11-20T00:46:36.703Z",
-      "ended": "2026-11-20T01:01:53.948Z",
+      "ended": "2026-11-20T01:14:11.539Z",
       "turns": 1,
-      "api_calls": 57,
+      "api_calls": 106,
       "usage": {
-        "input_tokens": 171397,
-        "output_tokens": 30282,
-        "cache_read_input_tokens": 7610880,
+        "input_tokens": 218007,
+        "output_tokens": 53634,
+        "cache_read_input_tokens": 17442432,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 180705
+      "peak_context_tokens": 223670
     }
   ],
   "log": {
-    "sha256": "0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce",
-    "bytes": 21046631,
-    "lines": 6514,
-    "gzip_bytes": 7908279,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce.jsonl.gz"
+    "sha256": "b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b",
+    "bytes": 21911173,
+    "lines": 6875,
+    "gzip_bytes": 8288248,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -493,20 +495,28 @@
       "log_sha256": "bb1c5d731ed81cebfbb3a2fe5a6071ce9054546e9838ec5a5e933efdf6c5086f"
     },
     {
-      "change_id": "llsuqxpuzorptvsxkkpwqnvwpmltkwlo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce"
-    },
-    {
       "change_id": "lmwyrqvpvwsuwvqwmkzykypmytsryzvu",
       "commit_id": null,
       "immutable": false,
       "summary": "Qualify both array poststates through throws (verification pending)",
       "body": "When exception class is outside the selected observer, the pair harness records a normal int or an out-of-range long sentinel for a throw and retains the actual final arrays. The unconditional JVM handler also catches exceptions whose JDK inheritance JBMC stubs. Class-sensitive observations keep the original handler.\n\nJob 20261120-005556-recheck-jbmc-preservation-on-all-71-null runs both revision pairs against the original 71-heap profile and archives the raw checker statements. The capped preserving probe was complete and non-vacuous. Independent JVM tests verified pre-throw writes, both int endpoints and a thrown versus returned outcome. Example 197 replay validation and all 34 changed test groups passed.",
       "log_sha256": "0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce"
+    },
+    {
+      "change_id": "nlnqooprtytxttyuwoxmsnkwttrryqwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b"
+    },
+    {
+      "change_id": "nzsmlyksrxyuvkkqqzmymzmmlttpklqx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Solve bounded integer domains with word diagrams (verification pending)",
+      "body": "The native checker can encode high bits fixed by its compiled integer guard and solve arithmetic on reduced ordered decision diagrams. Every term and clause goes to the backing word-level solver, which takes over at an input or node limit. Candidates still require ordinary JVM qualification. The checker records how many queries each solver answered.\n\nA full-grid fixed ThreeTenBP probe completed in 4.7 seconds after a 600-second deadline on the same artifacts. Job 20261120-010828-retry-all-five-full-grid-threetenbp-regi links all five original observed-registry executions and preserves their bounds and 600-second budgets. All changed tests passed, including every three-bit input for all word operations, real fallback queries, signed long limits, vacuous and unsupported interval guards. The default CaDiCaL engine uses full-width inputs.",
+      "log_sha256": "b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b"
     }
   ],
   "logs": {
@@ -604,6 +614,12 @@
       "bytes": 10921003,
       "lines": 3326,
       "gzip_bytes": 4026124,
+      "url": null
+    },
+    "b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b": {
+      "bytes": 21911173,
+      "lines": 6875,
+      "gzip_bytes": 8288248,
       "url": null
     },
     "bb1c5d731ed81cebfbb3a2fe5a6071ce9054546e9838ec5a5e933efdf6c5086f": {

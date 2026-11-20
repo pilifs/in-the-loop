@@ -122,6 +122,46 @@ pub enum Expr {
     Compiled(Box<Compiled>),
 }
 
+/// Necessary bounds from a conjunction consisting entirely of comparisons between int parameters and
+/// int literals. The harness still evaluates the full precondition, including strict endpoints.
+pub(crate) fn int_intervals(expr: &Expr) -> std::collections::BTreeMap<u32, (i32, i32)> {
+    use std::collections::BTreeMap;
+    fn literal(expr: &Expr) -> Option<i32> {
+        match expr {
+            Expr::Int(n) => Some(*n),
+            Expr::Neg(n) => match **n { Expr::Int(v) => v.checked_neg(), _ => None },
+            _ => None,
+        }
+    }
+    fn visit(expr: &Expr, bounds: &mut BTreeMap<u32, (i32, i32)>) -> Option<()> {
+        let Expr::Binary(op, a, b) = expr else { return None };
+        if *op == BinOp::LogAnd {
+            visit(a, bounds)?;
+            return visit(b, bounds);
+        }
+        let (slot, value, reversed) = match (&**a, &**b) {
+            (Expr::Var(_, Ty::Int, slot), b) => (*slot, literal(b)?, false),
+            (a, Expr::Var(_, Ty::Int, slot)) => (*slot, literal(a)?, true),
+            _ => return None,
+        };
+        let range = bounds.entry(u32::from(slot)).or_insert((i32::MIN, i32::MAX));
+        let (lo, hi) = match (op, reversed) {
+            (BinOp::Eq, _) => (value, value),
+            (BinOp::Ge, false) | (BinOp::Le, true) => (value, i32::MAX),
+            (BinOp::Gt, false) | (BinOp::Lt, true) => (value.checked_add(1)?, i32::MAX),
+            (BinOp::Le, false) | (BinOp::Ge, true) => (i32::MIN, value),
+            (BinOp::Lt, false) | (BinOp::Gt, true) => (i32::MIN, value.checked_sub(1)?),
+            _ => return None,
+        };
+        *range = (range.0.max(lo), range.1.min(hi));
+        Some(())
+    }
+    let mut bounds = BTreeMap::new();
+    if visit(expr, &mut bounds).is_none() { return BTreeMap::new(); }
+    bounds.retain(|_, (lo, hi)| lo <= hi && (*lo ^ *hi).leading_zeros() != 0);
+    bounds
+}
+
 /// The class the harness calls an expression through that the tool's own compiler doesn't take (a lambda, a
 /// stream, a call into a library): written as Java source beside the harness and compiled by javac, one static
 /// boolean method per expression, whose parameters are the names the expressions may read
@@ -1882,6 +1922,20 @@ fn emit_long(v: i64, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn int_input_prefixes_follow_the_compiled_conjunction_only() {
+        let vars = super::super::params(&["a".into(), "b".into()], &[Type::Int, Type::Int]);
+        let ranges = |s| int_intervals(&parse(s, &vars).unwrap());
+        let expected = std::collections::BTreeMap::from([(0, (0, 191)), (1, (-8, -1))]);
+        assert_eq!(ranges("0 <= a && 192 > a && b >= -8 && b < 0"), expected);
+        assert_eq!(ranges("a == 127"), [(0, (127, 127))].into_iter().collect());
+        assert!(ranges("a >= -1 && a <= 1").is_empty());
+        assert!(ranges("a >= 9 && a < 2").is_empty());
+        assert!(ranges("a > 2147483647").is_empty());
+        assert!(ranges("a == 0 || a == 191").is_empty());
+        assert!(ranges("a >= 0 && a <= 191 && b / a == 0").is_empty());
+    }
 
     fn params() -> Vec<Param> {
         vec![

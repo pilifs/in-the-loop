@@ -49,7 +49,7 @@ struct Word {
 /// What `op` gives on operands of `width` bits with these values (sign-extended, a condition nonzero when set), as
 /// the JVM computes it, and a division by zero as SMT-LIB does ([`WordOp`]); the low bits of the result are the
 /// operation's.
-fn word_value(op: WordOp, width: usize, v: &[i64]) -> i64 {
+pub(super) fn word_value(op: WordOp, width: usize, v: &[i64]) -> i64 {
     let mask = if width >= 64 { u64::MAX } else { (1u64 << width) - 1 };
     let u = |x: i64| (x as u64) & mask;
     let s = |x: i64| {
@@ -67,9 +67,10 @@ fn word_value(op: WordOp, width: usize, v: &[i64]) -> i64 {
         },
         WordOp::Div => real_division(width, s(a), s(b)).0,
         WordOp::Rem => real_division(width, s(a), s(b)).1,
-        WordOp::Shl => (u(a) << u(b).min(63)) as i64,
+        WordOp::Shl | WordOp::Ushr if u(b) >= width as u64 => 0,
+        WordOp::Shl => (u(a) << u(b)) as i64,
         WordOp::Shr => s(a) >> u(b).min(63),
-        WordOp::Ushr => (u(a) >> u(b).min(63)) as i64,
+        WordOp::Ushr => (u(a) >> u(b)) as i64,
         WordOp::And => a & b,
         WordOp::Or => a | b,
         WordOp::Xor => a ^ b,
@@ -376,6 +377,8 @@ impl Blaster {
         self.word_ops.len()
     }
 
+    pub(super) fn finite_queries(&self) -> Option<super::sat::FiniteQueries> { self.solver.finite_queries() }
+
     /// Defines a gate to a solver that takes terms.
     fn define(&mut self, out: Lit, gate: Gate) {
         self.solver.terms().expect("a solver that takes terms").gate(out, gate);
@@ -607,6 +610,16 @@ impl Blaster {
     /// `width` fresh bits.
     pub fn fresh(&mut self, width: usize) -> Bits {
         (0..width).map(|_| self.var()).collect()
+    }
+
+    pub(super) fn int_input(&mut self, range: Option<(i32, i32)>) -> Bits {
+        if let Some((lo, hi)) = range.filter(|(lo, hi)| self.words && lo <= hi) {
+            let free = (32 - (lo ^ hi).leading_zeros()) as usize;
+            let mut bits = self.fresh(free);
+            bits.extend_from_slice(&self.constant(i64::from(lo), 32)[free..]);
+            return bits;
+        }
+        self.fresh(32)
     }
 
     /// A constant of the width.

@@ -16,13 +16,20 @@
 //!
 //! A solver may also take the formula as terms ([`Terms`]), the word-level prototype of Phase 6c: the encoding then
 //! defines each gate and each word-level operation's bits to it instead of bit-blasting them into clauses, and the
-//! scheduling is unchanged. Only `bitwuzla-words` does ([`super::bitwuzla`]).
+//! scheduling is unchanged. The word-level Bitwuzla solver and its finite-domain front end take terms.
 
 use super::bits::Lit;
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Serialize)]
+pub struct FiniteQueries {
+    pub diagrams: u64,
+    pub bitwuzla: u64,
+}
 
 /// An incremental SAT solver as the engine uses it. Literals are DIMACS numbers: a variable is a positive number,
 /// its negation the negative one, and a variable is made by using it.
 pub trait Sat {
+    fn finite_queries(&self) -> Option<FiniteQueries> { None }
     /// The solver by name and version, as results and transcripts record it: `CaDiCaL 1.9.5 (bundled)`.
     fn signature(&self) -> String;
     /// The solver as a result's evidence records it ([`crate::statement::native_sat`]): its name, version, where it
@@ -125,14 +132,15 @@ pub trait Terms {
 }
 
 /// The environment variable choosing the solver for checks whose options don't: `cadical` (the default), `bitwuzla`
-/// ([`super::bitwuzla`]), given the engine's clauses, or `bitwuzla-words`, given its terms ([`Terms`]), each with
+/// ([`super::bitwuzla`]), given the engine's clauses, or `bitwuzla-words`, given its terms ([`Terms`]).
+/// `bitwuzla-finite` first solves bounded terms with reduced decision diagrams. Each Bitwuzla mode takes
 /// Bitwuzla's options after a colon if any (`bitwuzla:preprocess=0`). Like the
 /// transcripts' variable, it reaches the checks that the proof drivers, the benchmark or a job run, and the results
 /// name the solver it chose, with those options ([`super::solver_signature`]).
 pub const ENV: &str = "JVMCONTRACT_SOLVER";
 
 /// The solvers by the names [`ENV`] and `jvmcontract transcript --solver` take.
-pub const NAMES: &[&str] = &["cadical", "bitwuzla", "bitwuzla-words"];
+pub const NAMES: &[&str] = &["cadical", "bitwuzla", "bitwuzla-words", "bitwuzla-finite"];
 
 /// What makes a new, empty solver of one kind and configuration.
 pub type Maker = std::sync::Arc<dyn Fn() -> Box<dyn Sat> + Send + Sync>;
@@ -148,11 +156,15 @@ pub fn named(name: &str) -> Result<Maker, crate::Error> {
     match base {
         "cadical" if options.is_none() => Ok(std::sync::Arc::new(cadical)),
         "cadical" => Err(crate::Error::new(format!("{ENV}: the bundled CaDiCaL takes no options here ({name:?})"))),
-        "bitwuzla" | "bitwuzla-words" => {
-            let words = base == "bitwuzla-words";
+        "bitwuzla" | "bitwuzla-words" | "bitwuzla-finite" => {
+            let words = base != "bitwuzla";
+            let finite = base == "bitwuzla-finite";
             let settings = super::bitwuzla::settings(options.unwrap_or(""))?;
             super::bitwuzla::Bitwuzla::configured(&settings, words)?;
-            Ok(std::sync::Arc::new(move || super::bitwuzla::boxed_configured(&settings, words)))
+            Ok(std::sync::Arc::new(move || {
+                let solver = super::bitwuzla::boxed_configured(&settings, words);
+                if finite { Box::new(super::finite_words::Solver::new(solver)) } else { solver }
+            }))
         }
         _ => Err(crate::Error::new(format!("{ENV}: no solver called {name:?} (the solvers are {})", NAMES.join(", ")))),
     }

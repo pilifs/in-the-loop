@@ -106,6 +106,7 @@
 
 pub mod bitwuzla;
 pub mod bits;
+mod finite_words;
 pub mod gaps;
 pub mod bytes;
 pub mod locale;
@@ -292,6 +293,9 @@ impl Default for Options {
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Parameters {
     pub nullable: Vec<u32>,
+    /// Necessary signed-int intervals from the harness's own precondition, indexed by local slot.
+    /// Word solvers can omit high bits shared by both endpoints. The full guard still runs.
+    pub int_intervals: BTreeMap<u32, (i32, i32)>,
     /// Groups of parameters any two of which may be one array, each group in slot order.
     pub may_alias: Vec<Vec<u32>>,
     /// The most code units a `String` parameter has: an input-domain bound, part of the claim. `None` refuses a
@@ -301,7 +305,7 @@ pub struct Parameters {
 
 impl Parameters {
     pub fn is_default(&self) -> bool {
-        self.nullable.is_empty() && self.may_alias.is_empty() && self.max_string_length.is_none()
+        self.nullable.is_empty() && self.may_alias.is_empty() && self.max_string_length.is_none() && self.int_intervals.is_empty()
     }
 }
 
@@ -350,6 +354,7 @@ pub struct Outcome {
     /// How many word-level operations the solver was given as terms, when it takes terms ([`sat::Terms`]); zero
     /// when it is given clauses.
     pub word_operations: u64,
+    pub finite_queries: Option<sat::FiniteQueries>,
     pub seconds: f64,
     /// The phases the solving and evaluating above are not: reading and parsing class files, decoding methods,
     /// building circuits (the encoding, as the paths are explored), and reading a witness out of a model; the
@@ -434,6 +439,7 @@ impl Outcome {
             multiplications: self.multiplications,
             multiplications_built: self.refined_multiplications,
             word_operations: self.word_operations,
+            finite_queries: self.finite_queries,
             variables: self.variables,
             clauses: self.clauses,
             seconds: self.seconds,
@@ -493,6 +499,8 @@ pub struct Stats {
     /// Absent for a solver given clauses.
     #[serde(skip_serializing_if = "is_zero")]
     pub word_operations: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub finite_queries: Option<sat::FiniteQueries>,
     pub variables: i32,
     pub clauses: u64,
     pub seconds: f64,
@@ -1573,6 +1581,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         multiplications: engine.b.multiplications().0,
         refined_multiplications: engine.b.multiplications().1,
         word_operations: engine.b.word_operations() as u64,
+        finite_queries: engine.b.finite_queries(),
         seconds: started.elapsed().as_secs_f64(),
         loading: (cp.loading() - loading_before).as_secs_f64(),
         decoding: engine.decoding.as_secs_f64(),
@@ -1699,7 +1708,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
                     let small = engine.b.fresh(16);
                     engine.b.sext(&small, 32)
                 }
-                Type::Int => engine.b.fresh(32),
+                Type::Int => engine.b.int_input(options_in.int_intervals.get(&slot).copied()),
                 Type::Long => engine.b.fresh(64),
                 _ => unreachable!(),
             };

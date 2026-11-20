@@ -1,0 +1,73 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-010828-retry-all-five-full-grid-threetenbp-regi",
+  "title": "Retry all five full-grid ThreeTenBP registry claims with finite words",
+  "description": "Retry the full clock, reversal and same-day obligations on the original bound adapter and upstream classpaths, observed chronology state, checked String-keyed map, 32 unwinds and 600-second budgets. The operational change enables exact finite decision diagrams in front of the word solver. Each retry names its predecessor. The independent JVM control compares the adapter with 36,864 direct calls per revision.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "310"
+    ],
+    "jobs": [
+      "20261120-000226-threetenbp-clock-parent-with-observed-ch",
+      "20261120-000226-threetenbp-clock-fix-with-observed-chron",
+      "20261120-000227-threetenbp-reversal-parent-with-observed",
+      "20261120-000226-threetenbp-reversal-fix-with-observed-ch",
+      "20261120-000227-threetenbp-same-day-with-observed-chrono"
+    ]
+  },
+  "expected": "The parent clock is refuted with an independently reproduced JVM witness. The fixed clock, both reversal properties and relational same-day preservation are non-vacuously established. Solver counts, timings and memory remain attached to each execution.",
+  "submitted": {
+    "at": "2026-11-20T01:08:28+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1,
+    "memory": "2G",
+    "memoryLimit": "4G",
+    "duration": "1m",
+    "timeout": "16m",
+    "notes": "The previous three full-grid attempts reached the original 600-second checker budget. A 60-second fixed-clock probe returned in under five seconds with the finite solver. Each task retains its complete 600-second allowance."
+  },
+  "steps": [
+    {
+      "name": "Check clock-parent-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-parent-observed --checker-seconds 600 --retry-of 20261120T000707Z-4cb75a77"
+    },
+    {
+      "name": "Check clock-fix-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-fix-observed --checker-seconds 600 --retry-of 20261120T000707Z-4d3a2649"
+    },
+    {
+      "name": "Check reversal-parent-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-parent-observed --checker-seconds 600 --retry-of 20261120T000707Z-4ecbd8a4"
+    },
+    {
+      "name": "Check reversal-fix-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-fix-observed --checker-seconds 600 --retry-of 20261120T000707Z-4de6fd45"
+    },
+    {
+      "name": "Check same-day-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task same-day-observed --checker-seconds 600 --retry-of 20261120T000707Z-4ca562e1"
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/310-threeten-complete-hours/receipts/clock-parent-observed",
+    "examples/310-threeten-complete-hours/receipts/clock-fix-observed",
+    "examples/310-threeten-complete-hours/receipts/reversal-parent-observed",
+    "examples/310-threeten-complete-hours/receipts/reversal-fix-observed",
+    "examples/310-threeten-complete-hours/receipts/same-day-observed"
+  ]
+}

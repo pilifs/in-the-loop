@@ -10,6 +10,12 @@ migration would need a brief of its own.
 - [`compare.py`](compare.py) runs the comparison as a pipeline job. Its tests are `test_compare.py`.
 - `comparison/` holds the jobs' outputs: `bit-blasted.json` and `.md`, and `word-level.json` and `.md`.
 
+### Finite integer domains
+
+`JVMCONTRACT_SOLVER=bitwuzla-finite` checks the same native assertions using reduced decision diagrams over the free input bits. Each leaf holds a machine word. The checker can fix identical high bits at both ends of an int interval when its compiled precondition is a conjunction of int comparisons. It still executes the complete guard and uses the ordinary bytecode for the method and the assertion.
+
+Bitwuzla receives every term and permanent clause. When a diagram would exceed 18 free input bits or 750,000 nodes, Bitwuzla answers subsequent queries on that formula. The native search record reports how many queries each solver handled in `finite_queries`. The Bitwuzla build and options are recorded in the checker statement. Example 310 exercises this strategy on two independently bounded calendar inputs.
+
 ## Recommendation: don't move the engine to word-level solving now
 
 **Keep CaDiCaL 1.9.5 and the engine's own bit-blasting as the default. Keep `bitwuzla-words` as an opt-in
