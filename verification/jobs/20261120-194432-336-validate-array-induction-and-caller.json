@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-194432-336-validate-array-induction-and-caller",
+  "title": "336 validate array induction and caller dependencies",
+  "description": "Check the actual compiled transition system over every legal Java int-array length. Range fill additionally sends a changed range through the same proved helper. Require the countermodel to the caller postcondition on that revision and the independent concrete alias replay.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:array-invariant",
+    "proof:reuse"
+  ],
+  "links": {
+    "examples": [
+      "336"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:44:32+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "z3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "first-any-length",
+      "run": "python3 examples/tools/build.py 336 --array-induction first-any-length --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/336-guava-first-array-match/records/array-induction/first-any-length"
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "plan": {
+    "example": "341",
+    "task": "eof-bom",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "chunks.Inputs#eof(I)I",
+    "revisions": [
+      "bom"
+    ],
+    "claim": {
+      "task": "eof-bom",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "file": "claims/eof.json",
+      "sha256": "968a4b4d0fbbe332f782a8bd8f8870e8d450c9e9417d85590045df961475630c",
+      "property": "eof",
+      "claimKind": "property",
+      "statement": "The reader returns EOF again after all code units have been consumed.",
+      "assume": "code >= 0 && code < 5578",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "explicitBounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/chunks/DecodeCases.java",
+          "sha256": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987"
+        }
+      ],
+      "key": "d8e48b42f9e862f0"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "bom",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "bom",
+        "compileLibraries": [
+          "io-fix"
+        ],
+        "runtimeLibraries": [
+          "io-fix"
+        ],
+        "libraries": {
+          "io-fix": {
+            "repository": "https://github.com/apache/commons-io",
+            "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+            "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+            "class": "org.apache.commons.io.input.BOMInputStream",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
+          }
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/eof-bom"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-341-check-streaming-utf-8-partitions-fro/examples/341-utf8-chunk-boundaries",
+    "network": true
+  },
+  "inputs": {
+    "example": "341",
+    "task": "eof-bom",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "chunks.Inputs#eof(I)I",
+    "revisions": [
+      "bom"
+    ],
+    "claim": {
+      "task": "eof-bom",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "file": "claims/eof.json",
+      "sha256": "968a4b4d0fbbe332f782a8bd8f8870e8d450c9e9417d85590045df961475630c",
+      "property": "eof",
+      "claimKind": "property",
+      "statement": "The reader returns EOF again after all code units have been consumed.",
+      "assume": "code >= 0 && code < 5578",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "explicitBounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/chunks/DecodeCases.java",
+          "sha256": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987"
+        }
+      ],
+      "key": "d8e48b42f9e862f0"
+    },
+    "artifacts": [
+      {
+        "revision": "bom",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "bom",
+        "compileLibraries": [
+          "io-fix"
+        ],
+        "runtimeLibraries": [
+          "io-fix"
+        ],
+        "libraries": {
+          "io-fix": {
+            "repository": "https://github.com/apache/commons-io",
+            "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+            "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+            "class": "org.apache.commons.io.input.BOMInputStream",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
+          }
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "29beca868ef4b5c41c79e441465053a8ddeb4fac26bcf1387cd50430c0ecf3eb"
+}

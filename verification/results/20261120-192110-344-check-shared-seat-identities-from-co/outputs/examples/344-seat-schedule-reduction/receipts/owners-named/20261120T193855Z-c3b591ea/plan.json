@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "344",
+    "task": "owners-named",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "seats.Reservations#singleOwner(I)I",
+    "revisions": [
+      "named"
+    ],
+    "claim": {
+      "task": "owners-named",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Reservations#singleOwner(I)I",
+      "file": "claims/owners.json",
+      "sha256": "49889f2f421d82966d48f18f1a7f5fcd9ca0a743e48f57faa5fdc497f151d0dd",
+      "property": "owners",
+      "claimKind": "property",
+      "statement": "The two handles report the same owner when they designate the same seat. Distinct seats record their own worker.",
+      "assume": "code >= 0 && code < 36",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/seats/SeatCases.java",
+          "sha256": "dd0f1d352c223bd00cd26aabc36e5448342d43368103f99bce4cbe361a660442"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "0ce9aa744587d3466f120f9466fdc75f5dd91f40494a50f4a077f149cda22746"
+        }
+      ],
+      "key": "2d70922c5336fb65"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "named",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "named",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/owners-named"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192110-344-check-shared-seat-identities-from-co/examples/344-seat-schedule-reduction",
+    "network": false
+  },
+  "inputs": {
+    "example": "344",
+    "task": "owners-named",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "seats.Reservations#singleOwner(I)I",
+    "revisions": [
+      "named"
+    ],
+    "claim": {
+      "task": "owners-named",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Reservations#singleOwner(I)I",
+      "file": "claims/owners.json",
+      "sha256": "49889f2f421d82966d48f18f1a7f5fcd9ca0a743e48f57faa5fdc497f151d0dd",
+      "property": "owners",
+      "claimKind": "property",
+      "statement": "The two handles report the same owner when they designate the same seat. Distinct seats record their own worker.",
+      "assume": "code >= 0 && code < 36",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/seats/SeatCases.java",
+          "sha256": "dd0f1d352c223bd00cd26aabc36e5448342d43368103f99bce4cbe361a660442"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "0ce9aa744587d3466f120f9466fdc75f5dd91f40494a50f4a077f149cda22746"
+        }
+      ],
+      "key": "2d70922c5336fb65"
+    },
+    "artifacts": [
+      {
+        "revision": "named",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "named",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "2870bdce0015dd60f7c1d0a5b079dd9b36f0079da32a69b635d5c574bf5c3815"
+}

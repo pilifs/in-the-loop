@@ -1,0 +1,931 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-192109-343-check-real-synchronized-reservations",
+  "title": "343 check real synchronized reservations from compiled Java",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 10.2s, peak 144.5 MiB (estimated 4m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-192109-343-check-real-synchronized-reservations.json",
+    "sha256": "712b89818e884971334b00631746d116e57887979bfc9f3ae54fd4033852be16",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-192109-343-check-real-synchronized-reservations",
+      "title": "343 check real synchronized reservations from compiled Java",
+      "description": "Run every frozen real synchronized reservations property and its preserving or distinguishing controls. On a strict refusal keep the first unsupported operation. Counterexamples require an independent original JVM observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "343"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:21:09+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 343 --tasks history-whole,size-whole,distinct-whole,history-split,size-split,distinct-split --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/343-synchronized-map-reservations/receipts/history-whole",
+        "examples/343-synchronized-map-reservations/receipts/size-whole",
+        "examples/343-synchronized-map-reservations/receipts/distinct-whole",
+        "examples/343-synchronized-map-reservations/receipts/history-split",
+        "examples/343-synchronized-map-reservations/receipts/size-split",
+        "examples/343-synchronized-map-reservations/receipts/distinct-split"
+      ]
+    }
+  },
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "startedAt": "2026-11-20T19:38:03+00:00",
+  "finishedAt": "2026-11-20T19:39:03+00:00",
+  "wallSeconds": 60.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1016104,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 151511040,
+    "wallSeconds": 10.2,
+    "cpuSeconds": 15.2,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 343 --tasks history-whole,size-whole,distinct-whole,history-split,size-split,distinct-split --checker-seconds 120",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 10.232,
+      "cpuSeconds": 15.157,
+      "cpuThrottledSeconds": 0.36,
+      "peakMemoryBytes": 151511040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 12,
+        "bytes": 1520,
+        "sha256": "f9a2dd2aee9b2e837a6bed71dcccb360344f74ef0ee511779ab1ac959756d46a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "343-synchronized-map-reservations: task history-whole: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/history-whole/20261120T193853Z-29330b98/result.json",
+          "groups": [
+            "343",
+            "history-whole",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "343-synchronized-map-reservations: task size-whole: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/size-whole/20261120T193855Z-bcc9ccff/result.json",
+          "groups": [
+            "343",
+            "size-whole",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "343-synchronized-map-reservations: task distinct-whole: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/distinct-whole/20261120T193858Z-35aea767/result.json",
+          "groups": [
+            "343",
+            "distinct-whole",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "343-synchronized-map-reservations: task history-split: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/history-split/20261120T193858Z-9d4f8b86/result.json",
+          "groups": [
+            "343",
+            "history-split",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "343-synchronized-map-reservations: task size-split: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/size-split/20261120T193900Z-ac46421e/result.json",
+          "groups": [
+            "343",
+            "size-split",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "343-synchronized-map-reservations: task distinct-split: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/distinct-split/20261120T193902Z-9842e45f/result.json",
+          "groups": [
+            "343",
+            "distinct-split",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "343-synchronized-map-reservations: running task history-whole (target route)",
+        "343-synchronized-map-reservations: task history-whole: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/history-whole/20261120T193853Z-29330b98/result.json",
+        "343-synchronized-map-reservations: running task size-whole (target route)",
+        "343-synchronized-map-reservations: task size-whole: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/size-whole/20261120T193855Z-bcc9ccff/result.json",
+        "343-synchronized-map-reservations: running task distinct-whole (target route)",
+        "343-synchronized-map-reservations: task distinct-whole: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/distinct-whole/20261120T193858Z-35aea767/result.json",
+        "343-synchronized-map-reservations: running task history-split (target route)",
+        "343-synchronized-map-reservations: task history-split: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/history-split/20261120T193858Z-9d4f8b86/result.json",
+        "343-synchronized-map-reservations: running task size-split (target route)",
+        "343-synchronized-map-reservations: task size-split: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/size-split/20261120T193900Z-ac46421e/result.json",
+        "343-synchronized-map-reservations: running task distinct-split (target route)",
+        "343-synchronized-map-reservations: task distinct-split: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/distinct-split/20261120T193902Z-9842e45f/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d14b587c96a94b10f278b29656a19f9bc345f183b3b8592aafb333159d1104a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/plan.json",
+      "change": "added",
+      "bytes": 4636,
+      "sha256": "59da798f67617370280f7e9e592bb35cb5f056f62a8de03feb9697206f39daca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/control-whole-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/control-whole-jdk21.stdout",
+      "change": "added",
+      "bytes": 687,
+      "sha256": "7cceb923e3f557c3febb781e1f866f2f326f2cd13643ad55d345c0509366fdb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/controls.json",
+      "change": "added",
+      "bytes": 5050,
+      "sha256": "4c6424077636d0a46b2780d07767f15d7308b8d3706649f485eebf3bd6302ecd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/execution.json",
+      "change": "added",
+      "bytes": 21318,
+      "sha256": "65beb4c2e003f712d26754bb94e2b1cc58eb08f499631b39b04e648141d70fe0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "80be53cb854fb8cde7374f9ca2f70e7842c5a38d23b5a90b1f9d74c3662cde6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 556,
+      "sha256": "6fdcd666756e8af2620373f1ac8cb2a9323a4f46851206adddde29fe68c3af54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/verifier.json",
+      "change": "added",
+      "bytes": 16126,
+      "sha256": "c6c164e9a56bcbac2de071627be43bcbfb4823ac6c28daef7fab4f21912bc786",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6251,
+      "sha256": "20c4727ea3244cd3d22a9da2b1c377fb6a5247656157a4f1167f8abfbb79d865",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/result.json",
+      "change": "added",
+      "bytes": 14055,
+      "sha256": "19ea8618f43cf8d46ca0c1ef1862f67447d82535c3a68168beabe7a85b487213",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/executions/20261120T193853Z-29330b98/attempt.json",
+      "change": "added",
+      "bytes": 11524,
+      "sha256": "cfbf57c5da3dea4c7c191fda618fa1bcca6fa3847bfd575fa8494890763be6e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-whole/executions/20261120T193853Z-29330b98/checker.json",
+      "change": "added",
+      "bytes": 7486,
+      "sha256": "5fc01a19ed4937d6b3c0e855cdf9971a1497b31125dc314f5ee3b2b0f06db6f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "63c40c73ca6b3fddf820c208e0ec61b113cfd902b5f41c8b701e1eba55f4378b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/plan.json",
+      "change": "added",
+      "bytes": 4559,
+      "sha256": "165dc2dadbf92e69d4d3832a610663f730179deda9177283fa1e4848673e75a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/control-whole-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/control-whole-jdk21.stdout",
+      "change": "added",
+      "bytes": 687,
+      "sha256": "7cceb923e3f557c3febb781e1f866f2f326f2cd13643ad55d345c0509366fdb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/controls.json",
+      "change": "added",
+      "bytes": 5041,
+      "sha256": "b34fdd476e27126ae7281d4eaaff81d9823d361818d8e9e03f4d918240d3f2e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/execution.json",
+      "change": "added",
+      "bytes": 21354,
+      "sha256": "e7e75123dbd197f3bfa3cf36560ed21f4222174f507de2e453b548118fa609fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "219334f43394241ea7e3843677badd08b1389df9fee4988865d207d950fb1831",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 553,
+      "sha256": "502863936108ceae387c7a907640e274af4110f57ee36394ee50a3cbe5350207",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/verifier.json",
+      "change": "added",
+      "bytes": 16156,
+      "sha256": "cdece34a2644243aafcfe0a6dda15a4107fa2ae04a8aeb84537fd75c49192659",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6277,
+      "sha256": "4c1059000c429fbb3b972d427e6f25c0f6d27eee9dac0ed641a003a30145c4c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/result.json",
+      "change": "added",
+      "bytes": 14100,
+      "sha256": "4272449667431f0a842bc28229352b3fb278717de0281da9f1ee134fb5d22091",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/executions/20261120T193855Z-bcc9ccff/attempt.json",
+      "change": "added",
+      "bytes": 11526,
+      "sha256": "833b48a72020a62035b3bb464870787de2403796738d475c514fe88476c6b270",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-whole/executions/20261120T193855Z-bcc9ccff/checker.json",
+      "change": "added",
+      "bytes": 7528,
+      "sha256": "3c33e313e24ff413c98c962ad482fd911918e792bc745e713337f7471f6fb455",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "63624cda62aa38bdaf7ffda51bfbfeae8ed4be26c1798d85fa0263b3deda021f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/plan.json",
+      "change": "added",
+      "bytes": 4557,
+      "sha256": "796dbcddfb0c596d74c68810d23d4190ba3b25afd1493cdf57778e5acd3b4595",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/control-whole-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/control-whole-jdk21.stdout",
+      "change": "added",
+      "bytes": 687,
+      "sha256": "7cceb923e3f557c3febb781e1f866f2f326f2cd13643ad55d345c0509366fdb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/controls.json",
+      "change": "added",
+      "bytes": 5052,
+      "sha256": "82f88b85c702bb87a175a03b2d25c09a20b481f24e756fa7914ce6fa2a7790ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/execution.json",
+      "change": "added",
+      "bytes": 21316,
+      "sha256": "6c83beb74477fe6cf8333524fbf4c1169bd505f17cbfb43e43cd33bf68af2b79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "e74446a7e9b275e49f9c67ef4034145df2d3b737757fe51ca7e40c7fb31facb5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 556,
+      "sha256": "6fdcd666756e8af2620373f1ac8cb2a9323a4f46851206adddde29fe68c3af54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/verifier.json",
+      "change": "added",
+      "bytes": 16126,
+      "sha256": "1dc96811c2c853e6bf6e4aba4f5b3f97e71c0d916bd23abcbc43c167ce83631e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6248,
+      "sha256": "4c7c70828f15aaf1b7eaafdc50772fb45abbafabae289e49722a5de7bf83d9d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/result.json",
+      "change": "added",
+      "bytes": 14015,
+      "sha256": "457571e655cd0552f9c268e0960fd7147697d2674a486cd0fbdffa12d5b3835d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/executions/20261120T193858Z-35aea767/attempt.json",
+      "change": "added",
+      "bytes": 11527,
+      "sha256": "ed5712b4733b25eda7e4b81a988922af960acc342b5edb0b3e383246943d8fda",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-whole/executions/20261120T193858Z-35aea767/checker.json",
+      "change": "added",
+      "bytes": 7483,
+      "sha256": "aec587d98d9e71b620c8c1fab7bb8a056de43ee05a88e011a2870ddc39790265",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b793f08c457429f95d7bf8185f49a6b26a18f912f5c2993520b356c39a6a7368",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/plan.json",
+      "change": "added",
+      "bytes": 4632,
+      "sha256": "9601c4c43400ad582c08e71c9d67495ce9a3e690bca03e4c3f5b48f5adc96c52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/control-split-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/control-split-jdk21.stdout",
+      "change": "added",
+      "bytes": 686,
+      "sha256": "20450d97ce8b2d19294d69b9a9652693798031d9ab8cc96d7e6f4cf2f2ff2c67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/controls.json",
+      "change": "added",
+      "bytes": 5049,
+      "sha256": "9267b5407f64848e90ccfdd6b76cff0891823af4be020e373a6a81f629e02064",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/execution.json",
+      "change": "added",
+      "bytes": 21789,
+      "sha256": "fbdc7ac889c3203ebb9cbfd56c973139ffb13cd630429393a73e444482d45610",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "eda73d86a8f034436597ece385c6edac146664fa8123517acf6e7f40e5060bab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 556,
+      "sha256": "6fdcd666756e8af2620373f1ac8cb2a9323a4f46851206adddde29fe68c3af54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/verifier.json",
+      "change": "added",
+      "bytes": 16580,
+      "sha256": "97656e828402227f7138a0781740258a47cbadb24f8b3fde1c6636a7100a17e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6248,
+      "sha256": "e86340dbe8e944741fc12693734d0dcf86ad7f3eb7adc66e842c6379d1bb03dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/result.json",
+      "change": "added",
+      "bytes": 14050,
+      "sha256": "27b7deb7274083925a4e70a283f47134f1eb771bf4a04ad8c22b82ddae5e4c42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/executions/20261120T193858Z-9d4f8b86/attempt.json",
+      "change": "added",
+      "bytes": 11963,
+      "sha256": "7cdfa636618552f4bce62c54f9a71e3ce7a3fefb74ee920f303d0a664b3f6cd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/history-split/executions/20261120T193858Z-9d4f8b86/checker.json",
+      "change": "added",
+      "bytes": 7484,
+      "sha256": "9e4dc39d059754b9eb25ea8560172749d22e26b1bc6de89fa5e0fe436dc58944",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "aee2fd90cb5fa333bd9a04f0377a5e3d1b78e3311cefba0b3107516e875e476c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/plan.json",
+      "change": "added",
+      "bytes": 4559,
+      "sha256": "7b73b1687f89c1186fde1bddfd52f4400ad5706a33c00ba4a680c2759df2bd38",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/control-split-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/control-split-jdk21.stdout",
+      "change": "added",
+      "bytes": 686,
+      "sha256": "ac8809d155fe1d90b167b849d4b614da90219a1c77e1e48e134269fbc3caba32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/controls.json",
+      "change": "added",
+      "bytes": 5040,
+      "sha256": "a2e602e6015f7a0005711ec038e74334d4a962f34adb6722304341d5b24ce320",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/execution.json",
+      "change": "added",
+      "bytes": 21829,
+      "sha256": "6ecad2c1a05e3cb02f6b0c84f675c2637a18fc1490cca3807ccb280fd92b645f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "2cd30c28a557b9560b13401a32845d028e39ce3d304d4e08f43a7c79e837695f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 553,
+      "sha256": "502863936108ceae387c7a907640e274af4110f57ee36394ee50a3cbe5350207",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/verifier.json",
+      "change": "added",
+      "bytes": 16614,
+      "sha256": "90b151dffa5a9e8f3e80d13f6b932afee47181cb9bc40605adc6097a37206512",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6280,
+      "sha256": "617b892944dbea87c09b11dc900ec1d790322a9869bb3ee40f2d9a02ec6bcfe4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/result.json",
+      "change": "added",
+      "bytes": 14101,
+      "sha256": "1e1a7c1047a4b2963e6c5b1964306636592cfe5cf58a9addcd8b99e1cc6f0417",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/executions/20261120T193900Z-ac46421e/attempt.json",
+      "change": "added",
+      "bytes": 11964,
+      "sha256": "9119c9af6771d89b65ec3288c1300b710f081a1c88c893706e1dffd69343e6d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/size-split/executions/20261120T193900Z-ac46421e/checker.json",
+      "change": "added",
+      "bytes": 7530,
+      "sha256": "c545450c36e22490052f2b1ff6319e341fea69c1ada7fb03c5e38989f2204963",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b15c11a51d7d7e1fa97cce3538c9f47d4821b72c53c1e160d0a38b4bf5268eaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/plan.json",
+      "change": "added",
+      "bytes": 4557,
+      "sha256": "35214342788fc68b34287dde9bb0f1f5d41e67e8562c2275721229eb122ee06b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/control-split-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/control-split-jdk21.stdout",
+      "change": "added",
+      "bytes": 686,
+      "sha256": "ac8809d155fe1d90b167b849d4b614da90219a1c77e1e48e134269fbc3caba32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/controls.json",
+      "change": "added",
+      "bytes": 5051,
+      "sha256": "8c4f7eb6dd87070146362280dc7d896235927f0e3ddd629f04c01e2725d04a95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/execution.json",
+      "change": "added",
+      "bytes": 21787,
+      "sha256": "81f52483a699e7cd324d9f8b3506d6d0c2c6ce2571364c0d1fe1e601f41d0bf6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "32b0d1f30fbd507808ee59c31e87b2286831d9e72b8a8db4d867597a75bcef7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 556,
+      "sha256": "6fdcd666756e8af2620373f1ac8cb2a9323a4f46851206adddde29fe68c3af54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/verifier.json",
+      "change": "added",
+      "bytes": 16580,
+      "sha256": "97121995dc0c358f610679677ef49ded6c11206517cc942c7211e5756062efa7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6248,
+      "sha256": "2a086db35b9b1cac930bba2f6aa22e4311c6dd8d8fe3a64b09af48e91eebb500",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/result.json",
+      "change": "added",
+      "bytes": 14014,
+      "sha256": "db5fa1ef26d661a26ce95b2097155d0842245fa512e949c741517b83e7e04c7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/executions/20261120T193902Z-9842e45f/attempt.json",
+      "change": "added",
+      "bytes": 11962,
+      "sha256": "0dec0a0a50847888e3f9f1173952b612d1be3e77a57211eecd4b0ce9b2152b89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/343-synchronized-map-reservations/receipts/distinct-split/executions/20261120T193902Z-9842e45f/checker.json",
+      "change": "added",
+      "bytes": 7482,
+      "sha256": "903d21a3e28f757b352548e17e9bccbac512d40edee3648b215e5e453b46f537",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:39:13+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/completion.json",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/plan.json",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/control-whole-jdk21.stderr",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/control-whole-jdk21.stdout",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/controls.json",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/execution.json",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/streams.json",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/verifier-output.txt",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/verifier.json",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/verifier.stderr",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/records/verifier.stdout",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/20261120T193853Z-29330b98/result.json",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/executions/20261120T193853Z-29330b98/attempt.json",
+      "examples/343-synchronized-map-reservations/receipts/history-whole/executions/20261120T193853Z-29330b98/checker.json",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/completion.json",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/plan.json",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/control-whole-jdk21.stderr",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/control-whole-jdk21.stdout",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/controls.json",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/execution.json",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/streams.json",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/verifier-output.txt",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/verifier.json",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/verifier.stderr",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/records/verifier.stdout",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/20261120T193855Z-bcc9ccff/result.json",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/executions/20261120T193855Z-bcc9ccff/attempt.json",
+      "examples/343-synchronized-map-reservations/receipts/size-whole/executions/20261120T193855Z-bcc9ccff/checker.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/completion.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/plan.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/control-whole-jdk21.stderr",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/control-whole-jdk21.stdout",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/controls.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/execution.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/streams.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/verifier-output.txt",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/verifier.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/verifier.stderr",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/records/verifier.stdout",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/20261120T193858Z-35aea767/result.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/executions/20261120T193858Z-35aea767/attempt.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-whole/executions/20261120T193858Z-35aea767/checker.json",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/completion.json",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/plan.json",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/control-split-jdk21.stderr",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/control-split-jdk21.stdout",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/controls.json",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/execution.json",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/streams.json",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/verifier-output.txt",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/verifier.json",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/verifier.stderr",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/records/verifier.stdout",
+      "examples/343-synchronized-map-reservations/receipts/history-split/20261120T193858Z-9d4f8b86/result.json",
+      "examples/343-synchronized-map-reservations/receipts/history-split/executions/20261120T193858Z-9d4f8b86/attempt.json",
+      "examples/343-synchronized-map-reservations/receipts/history-split/executions/20261120T193858Z-9d4f8b86/checker.json",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/completion.json",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/plan.json",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/control-split-jdk21.stderr",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/control-split-jdk21.stdout",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/controls.json",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/execution.json",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/streams.json",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/verifier-output.txt",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/verifier.json",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/verifier.stderr",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/records/verifier.stdout",
+      "examples/343-synchronized-map-reservations/receipts/size-split/20261120T193900Z-ac46421e/result.json",
+      "examples/343-synchronized-map-reservations/receipts/size-split/executions/20261120T193900Z-ac46421e/attempt.json",
+      "examples/343-synchronized-map-reservations/receipts/size-split/executions/20261120T193900Z-ac46421e/checker.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/completion.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/plan.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/control-split-jdk21.stderr",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/control-split-jdk21.stdout",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/controls.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/execution.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/streams.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/verifier-output.txt",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/verifier.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/verifier.stderr",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/records/verifier.stdout",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/20261120T193902Z-9842e45f/result.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/executions/20261120T193902Z-9842e45f/attempt.json",
+      "examples/343-synchronized-map-reservations/receipts/distinct-split/executions/20261120T193902Z-9842e45f/checker.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-343-check-real-synchronized-reservations"
+}

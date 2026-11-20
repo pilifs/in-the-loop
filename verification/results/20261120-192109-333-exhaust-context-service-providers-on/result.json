@@ -1,0 +1,247 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-192109-333-exhaust-context-service-providers-on",
+  "title": "333 exhaust context service providers on pinned JVMs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 23.8s, peak 147.2 MiB (estimated 3m00s, 2.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-192109-333-exhaust-context-service-providers-on.json",
+    "sha256": "80f3eedad5b6afd53fee7167e8a714cb98ee6b7805ff2a0332f3bf4ae83bbc29",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-192109-333-exhaust-context-service-providers-on",
+      "title": "333 exhaust context service providers on pinned JVMs",
+      "description": "Execute the entire frozen selector domain for context service providers on the actual original classes, checking guard, typed assertion and every obtained counterexample. The separate direct oracle reconstructs its admitted inputs and observations.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "333"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:21:09+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Prove each finite selector claim",
+          "run": "python3 examples/tools/build.py 333 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/333-service-context-loader/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "startedAt": "2026-11-20T19:38:03+00:00",
+  "finishedAt": "2026-11-20T19:39:15+00:00",
+  "wallSeconds": 72.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1016104,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 154402816,
+    "wallSeconds": 23.8,
+    "cpuSeconds": 41.5,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove each finite selector claim",
+      "run": "python3 examples/tools/build.py 333 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 23.827,
+      "cpuSeconds": 41.504,
+      "cpuThrottledSeconds": 2.618,
+      "peakMemoryBytes": 154402816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-each-finite-selector-cla.log",
+        "lines": 9,
+        "bytes": 382,
+        "sha256": "fe52027b6997fe8d8b459d5cc0d3d2d22b7cd05ad7220582db395b373c8269e2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "333 orders-default established 16 admitted ",
+        "333 selection-default established 16 admitted ",
+        "333 lazy-default established 16 admitted ",
+        "333 orders-explicit established 16 admitted ",
+        "333 selection-explicit established 16 admitted ",
+        "333 lazy-explicit established 16 admitted ",
+        "333 orders-app refuted 16 admitted ",
+        "333 selection-app refuted 16 admitted ",
+        "333 lazy-app established 16 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/batch.json",
+      "change": "added",
+      "bytes": 5275,
+      "sha256": "358d6f1f4eaa7745ec2e37067b58f3aa784987fa41db31067b8f05ffd3d04642",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/lazy-app.json",
+      "change": "added",
+      "bytes": 5377,
+      "sha256": "7326bee1ae7022da20b2e54969e74bf2b0f71ab49d1c72d08e3a0096cbc0128d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/lazy-default.json",
+      "change": "added",
+      "bytes": 5405,
+      "sha256": "5820c14516d3e8141fbf99ffa84589a733df0b020077ab33bfc9ca0665e822b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/lazy-explicit.json",
+      "change": "added",
+      "bytes": 5412,
+      "sha256": "f1a5e64336f983451189ea4ffb1b9bf25a5a119bccaf96ece2067127eb89d72f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/orders-app.json",
+      "change": "added",
+      "bytes": 6874,
+      "sha256": "eefd1e50e54c01f716fc3d62cb952770ffcbd872f3041994ccc3a5df0fe53368",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/orders-default.json",
+      "change": "added",
+      "bytes": 5426,
+      "sha256": "c4f14ce8bf5006507e36153d62a1257fd60df09469e5abeed028b0e9f4704995",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/orders-explicit.json",
+      "change": "added",
+      "bytes": 5434,
+      "sha256": "96241455bf9400bb7e5e3bcafb351d3b55762a0aa7f8e171e72f30c822140a74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/selection-app.json",
+      "change": "added",
+      "bytes": 7083,
+      "sha256": "c4add56b3117a2414d83c28a5684f0ae598e22da0e5454161bffa5c914e62e89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/selection-default.json",
+      "change": "added",
+      "bytes": 5530,
+      "sha256": "3d70c036b448adb2e9932b816e15b044ef103d5836de9feee8735b9106fb2323",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/selection-explicit.json",
+      "change": "added",
+      "bytes": 5535,
+      "sha256": "783d33a8f2fcf9e28783cf36b4c87a408607c1498fc62070045ed5f7aea4049b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:43:05+00:00",
+    "applied": [
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/batch.json",
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/lazy-app.json",
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/lazy-default.json",
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/lazy-explicit.json",
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/orders-app.json",
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/orders-default.json",
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/orders-explicit.json",
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/selection-app.json",
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/selection-default.json",
+      "examples/333-service-context-loader/records/finite-proofs/20261120T193851Z-d9cdd0fc/selection-explicit.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

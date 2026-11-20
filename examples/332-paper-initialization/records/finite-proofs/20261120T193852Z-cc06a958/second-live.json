@@ -1,0 +1,189 @@
+{
+  "status": "refuted",
+  "entry": "paper.Scenario#value(I)I",
+  "inputs": 9,
+  "differences": 4,
+  "sides": {
+    "live": {
+      "commit": "fixture:live",
+      "entry": {
+        "entry": "paper.Scenario#value(I)I",
+        "classSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815",
+        "loadedFrom": "live.jar",
+        "subject": "paper.Scenario#value(I)I",
+        "subjectClassSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815"
+      },
+      "classpath": [
+        {
+          "path": "live.jar",
+          "sha256": "be323bb19caec16f6f2f0ea197266bda6bf3c16f0bee9fff1ce016e64a7cfb84",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = paper.Scenario.value(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code / 3 == 2 ? 2 : 1)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "b09be6aae84c048702cea07f4f403fc3f792efc7d89337c0e9aa71dcd9615dfe",
+      "stdoutSha256": "02122f578caf87279b0ce144830995ce18994dcb0043e7da804a6d1e553b4e97",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        8
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            2,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 4,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 5,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            2,
+            null
+          ]
+        },
+        {
+          "value": 6,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 7,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 8,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            2,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.061,
+      "cpuSeconds": 0.0779,
+      "peakRssBytes": 62468096,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [],
+  "prepareSeconds": 1.3921,
+  "controlSeconds": 0.5686,
+  "replay": {
+    "claimKey": "fec4de52f7b18f7b",
+    "entry": "paper.Scenario#value(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 2
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "live": {
+        "entryClassSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815",
+        "classpath": [
+          "be323bb19caec16f6f2f0ea197266bda6bf3c16f0bee9fff1ce016e64a7cfb84"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 2;\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = paper.Scenario.value(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (code / 3 == 2 ? 2 : 1)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          2,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "wallSeconds": 2.9214,
+  "task": "second-live",
+  "sourceClaim": "fec4de52f7b18f7b",
+  "inputsKey": "f062c69cead6d986ad8d0bac79b2870b16e6bb0685d2883204ac54d27549edb3",
+  "revisions": [
+    "live"
+  ],
+  "expected": "refuted",
+  "sourceLocks": {
+    "live": "6dbace1e28fd7531fb35f0ba7a9268001e4b8f99e77d0f17d6691d35747fe65c"
+  }
+}

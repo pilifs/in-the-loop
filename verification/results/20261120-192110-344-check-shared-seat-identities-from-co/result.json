@@ -1,0 +1,423 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-192110-344-check-shared-seat-identities-from-co",
+  "title": "344 check shared seat identities from compiled Java",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 5.6s, peak 127.8 MiB (estimated 4m00s, 2.0 GiB); 28 output file(s) changed; signals: example:task-unexpected×2",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-192110-344-check-shared-seat-identities-from-co.json",
+    "sha256": "391bfb2e774ae5bb40d055a1da5c722702db1c4a2423e23164233e8e71fd0f93",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-192110-344-check-shared-seat-identities-from-co",
+      "title": "344 check shared seat identities from compiled Java",
+      "description": "Run every frozen shared seat identities property and its preserving or distinguishing controls. On a strict refusal keep the first unsupported operation. Counterexamples require an independent original JVM observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "344"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:21:10+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 344 --tasks owners-identity,owners-named --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/344-seat-schedule-reduction/receipts/owners-identity",
+        "examples/344-seat-schedule-reduction/receipts/owners-named"
+      ]
+    }
+  },
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "startedAt": "2026-11-20T19:38:03+00:00",
+  "finishedAt": "2026-11-20T19:38:58+00:00",
+  "wallSeconds": 55.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1016104,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 133963776,
+    "wallSeconds": 5.6,
+    "cpuSeconds": 7.7,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 344 --tasks owners-identity,owners-named --checker-seconds 120",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 5.616,
+      "cpuSeconds": 7.656,
+      "cpuThrottledSeconds": 0.121,
+      "peakMemoryBytes": 133963776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 4,
+        "bytes": 487,
+        "sha256": "f3e8eb143240f231f1d5db1b30f0846aebc2829db06e0c7fbd7e11daac87da4f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 2
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "344-seat-schedule-reduction: task owners-identity: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/owners-identity/20261120T193853Z-1bb7d2cb/result.json",
+          "groups": [
+            "344",
+            "owners-identity",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "344-seat-schedule-reduction: task owners-named: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/owners-named/20261120T193855Z-c3b591ea/result.json",
+          "groups": [
+            "344",
+            "owners-named",
+            "unresolved",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "344-seat-schedule-reduction: running task owners-identity (target route)",
+        "344-seat-schedule-reduction: task owners-identity: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/owners-identity/20261120T193853Z-1bb7d2cb/result.json",
+        "344-seat-schedule-reduction: running task owners-named (target route)",
+        "344-seat-schedule-reduction: task owners-named: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/owners-named/20261120T193855Z-c3b591ea/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8c56740631517e61add30f48d16acabdb2c291e09f15990c6777a9cb36b44cea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/plan.json",
+      "change": "added",
+      "bytes": 4626,
+      "sha256": "f5fe4092b5c8e019b18c9391dbe10a1ddffc281f72a5df91d155a3eb6d041f92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/control-identity-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/control-identity-jdk21.stdout",
+      "change": "added",
+      "bytes": 4706,
+      "sha256": "4ca91e0ea9bf44dca904d60474fadb5e895601000919fd8eef7672196e79c4d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/controls.json",
+      "change": "added",
+      "bytes": 29410,
+      "sha256": "08c05c0dab07507d573a2d793a744e168088c30729009b12168e615138e75f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/execution.json",
+      "change": "added",
+      "bytes": 43949,
+      "sha256": "48ead17a186c8e3bb639e094fce1cb6d6880bc6e5d67c978b75407087554a69e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/streams.json",
+      "change": "added",
+      "bytes": 1985,
+      "sha256": "e4c5faad737fadff7a3862d20c01186efe640e0509bf631ebdd2af4535b07836",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 555,
+      "sha256": "afffa636a580361069aef6b69f431eed2fb545b89ad3c46e38c998603f0f6165",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/verifier.json",
+      "change": "added",
+      "bytes": 14492,
+      "sha256": "d9fd095d638abd73143f1c9aee602260eeb8fff6f90b5276f046cc7ae7f8b40e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6256,
+      "sha256": "27653b245b9b907024809ff988b36d749fc0d93d70d556619844b210e7506f5d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/result.json",
+      "change": "added",
+      "bytes": 14080,
+      "sha256": "1a66f88ec1aec2adc9c61601cbcbe351c70b716d26bc0ad0b5aeea65776b2ac4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/executions/20261120T193853Z-1bb7d2cb/attempt.json",
+      "change": "added",
+      "bytes": 9981,
+      "sha256": "e90a0313a524e2b40e397c02154aabc860a3a90a01905cd1a90eeaffd8cb1401",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-identity/executions/20261120T193853Z-1bb7d2cb/checker.json",
+      "change": "added",
+      "bytes": 7499,
+      "sha256": "6d0ac71f9c149800bf7bdf9b596d95918fc485fad901efc13a6b7e97e108de3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a619549e7f9ccb6664f7d661e701c37b01a6ac7dc9adbe34bb5fc4cb1363d53a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/plan.json",
+      "change": "added",
+      "bytes": 4589,
+      "sha256": "98b89f27e806c07521017977268fb35055da0bb2f7055cd73725c0f7da08f731",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/control-named-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/control-named-jdk21.stdout",
+      "change": "added",
+      "bytes": 4682,
+      "sha256": "616a03c4757c9ad0533845fd57691de58ea710fc0a76dd6ca5776d82cdb35c8e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/controls.json",
+      "change": "added",
+      "bytes": 29356,
+      "sha256": "76e78cfbe2afc21a18d4a0f9877b2e64d22d1320bd01274907a069ded5182d69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/execution.json",
+      "change": "added",
+      "bytes": 43848,
+      "sha256": "e09092e8f7504abee9831927bed0d8b10c8a6e2790407b002f90d2259a176ae7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/streams.json",
+      "change": "added",
+      "bytes": 1961,
+      "sha256": "38d432e43944f9555a9814af1265865e825cac81e8bef8ec5dbcda6b6476c3d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 555,
+      "sha256": "afffa636a580361069aef6b69f431eed2fb545b89ad3c46e38c998603f0f6165",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/verifier.json",
+      "change": "added",
+      "bytes": 14427,
+      "sha256": "f0c9a80637ed4d2f795415f283aece86251244840ee8b967d7a67bd6a7912b3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6254,
+      "sha256": "ffb7ae55b6d2ffa7e44e0153bc8168740e8fd6a747da99b97f881424cccd2f4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/result.json",
+      "change": "added",
+      "bytes": 14026,
+      "sha256": "545225a0a27c30d47138445aa467bea01a14bd691427ba4178306977fc7d2cfd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/executions/20261120T193855Z-c3b591ea/attempt.json",
+      "change": "added",
+      "bytes": 9906,
+      "sha256": "50d8aa45f8d8cb4b5297a968e77587333d23498d7b450f2ec6c2c2a8d31f12d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/344-seat-schedule-reduction/receipts/owners-named/executions/20261120T193855Z-c3b591ea/checker.json",
+      "change": "added",
+      "bytes": 7491,
+      "sha256": "7e4b00b9f2488f1a1d7e93a566e66863de1cab352ef68bb423b8413e31b5f2b5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:39:13+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/completion.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/plan.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/control-identity-jdk21.stderr",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/control-identity-jdk21.stdout",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/controls.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/execution.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/streams.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/verifier-output.txt",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/verifier.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/verifier.stderr",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/records/verifier.stdout",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/20261120T193853Z-1bb7d2cb/result.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/executions/20261120T193853Z-1bb7d2cb/attempt.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-identity/executions/20261120T193853Z-1bb7d2cb/checker.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/completion.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/plan.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/control-named-jdk21.stderr",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/control-named-jdk21.stdout",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/controls.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/execution.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/streams.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/verifier-output.txt",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/verifier.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/verifier.stderr",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/records/verifier.stdout",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/20261120T193855Z-c3b591ea/result.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/executions/20261120T193855Z-c3b591ea/attempt.json",
+      "examples/344-seat-schedule-reduction/receipts/owners-named/executions/20261120T193855Z-c3b591ea/checker.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192110-344-check-shared-seat-identities-from-co"
+}

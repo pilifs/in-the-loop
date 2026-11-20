@@ -1,0 +1,931 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-192108-332-check-paper-startup-from-compiled-ja",
+  "title": "332 check paper startup from compiled Java",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 16.0s, peak 143.8 MiB (estimated 4m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-192108-332-check-paper-startup-from-compiled-ja.json",
+    "sha256": "9bba076119f19d3b60cc79b06ab0f035dfb642d32222460e301d5f6579adb8de",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-192108-332-check-paper-startup-from-compiled-ja",
+      "title": "332 check paper startup from compiled Java",
+      "description": "Run every frozen paper startup property and its preserving or distinguishing controls. On a strict refusal keep the first unsupported operation. Counterexamples require an independent original JVM observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "332"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:21:08+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 332 --tasks second-cached,init-count-cached,second-helper,init-count-helper,second-live,init-count-live --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/332-paper-initialization/receipts/second-cached",
+        "examples/332-paper-initialization/receipts/init-count-cached",
+        "examples/332-paper-initialization/receipts/second-helper",
+        "examples/332-paper-initialization/receipts/init-count-helper",
+        "examples/332-paper-initialization/receipts/second-live",
+        "examples/332-paper-initialization/receipts/init-count-live"
+      ]
+    }
+  },
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "startedAt": "2026-11-20T19:38:03+00:00",
+  "finishedAt": "2026-11-20T19:39:08+00:00",
+  "wallSeconds": 65.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1016104,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 150761472,
+    "wallSeconds": 16.0,
+    "cpuSeconds": 24.0,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 332 --tasks second-cached,init-count-cached,second-helper,init-count-helper,second-live,init-count-live --checker-seconds 120",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 16.018,
+      "cpuSeconds": 23.975,
+      "cpuThrottledSeconds": 0.736,
+      "peakMemoryBytes": 150761472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 12,
+        "bytes": 1448,
+        "sha256": "d49dbaf1dee1c71a44ab5b9e60ba9448be63e4597d5f1c02ea6ed399e8363b86",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "332-paper-initialization: task second-cached: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/second-cached/20261120T193852Z-d8f1e4c5/result.json",
+          "groups": [
+            "332",
+            "second-cached",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "332-paper-initialization: task init-count-cached: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/init-count-cached/20261120T193855Z-ee4ebc4a/result.json",
+          "groups": [
+            "332",
+            "init-count-cached",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "332-paper-initialization: task second-helper: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/second-helper/20261120T193858Z-d68cc333/result.json",
+          "groups": [
+            "332",
+            "second-helper",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "332-paper-initialization: task init-count-helper: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/init-count-helper/20261120T193901Z-6cce825d/result.json",
+          "groups": [
+            "332",
+            "init-count-helper",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "332-paper-initialization: task second-live: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/second-live/20261120T193903Z-d4e1dc01/result.json",
+          "groups": [
+            "332",
+            "second-live",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "332-paper-initialization: task init-count-live: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/init-count-live/20261120T193906Z-17ef90a8/result.json",
+          "groups": [
+            "332",
+            "init-count-live",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "332-paper-initialization: running task second-cached (target route)",
+        "332-paper-initialization: task second-cached: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/second-cached/20261120T193852Z-d8f1e4c5/result.json",
+        "332-paper-initialization: running task init-count-cached (target route)",
+        "332-paper-initialization: task init-count-cached: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/init-count-cached/20261120T193855Z-ee4ebc4a/result.json",
+        "332-paper-initialization: running task second-helper (target route)",
+        "332-paper-initialization: task second-helper: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/second-helper/20261120T193858Z-d68cc333/result.json",
+        "332-paper-initialization: running task init-count-helper (target route)",
+        "332-paper-initialization: task init-count-helper: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/init-count-helper/20261120T193901Z-6cce825d/result.json",
+        "332-paper-initialization: running task second-live (target route)",
+        "332-paper-initialization: task second-live: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/second-live/20261120T193903Z-d4e1dc01/result.json",
+        "332-paper-initialization: running task init-count-live (target route)",
+        "332-paper-initialization: task init-count-live: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/init-count-live/20261120T193906Z-17ef90a8/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4671c3303c9bd5fc7c68fd74fcaea6b3be626da1ff2d8901e7b282da27f04eaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/plan.json",
+      "change": "added",
+      "bytes": 4510,
+      "sha256": "4af2937b4a8df1160aaa9f0616493655771e7ede287a6923376c4b5de6634921",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/control-cached-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/control-cached-jdk21.stdout",
+      "change": "added",
+      "bytes": 960,
+      "sha256": "8beab77619bfc3e0de5588b5d901a137205f0e8462ef6251b76491302ac0343d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/controls.json",
+      "change": "added",
+      "bytes": 5580,
+      "sha256": "d08f217c0b8f8fb2630c1d435045fd17e11d0e9235930a3d395c426b4847af2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/execution.json",
+      "change": "added",
+      "bytes": 21227,
+      "sha256": "cc1fe2a384e5578ca5337d30616383977d0aec619b257a6f3601f157b4b90d54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "2a71625de42c0dd811ec27e7a03fbd1566f25a7d1b3f9890950fbe37f8f7d9ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 685,
+      "sha256": "42d502ed0032303540d3118195fb55fffc4a119df7467307290abdfb8c508f97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/verifier.json",
+      "change": "added",
+      "bytes": 15574,
+      "sha256": "a17c9fa7b2858c145daeeef4b16d14f345c253090f62c237ad481cacb4fa32cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7307,
+      "sha256": "c395067436a531eab3f356a7b4bd9993aa6e95a2f9e670d1038ebe92d18065da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/result.json",
+      "change": "added",
+      "bytes": 15072,
+      "sha256": "8728df373c7685788329d23b90adb6de577e3b2127f7040bd79853cf723bc0e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/executions/20261120T193852Z-d8f1e4c5/attempt.json",
+      "change": "added",
+      "bytes": 10098,
+      "sha256": "b41a10bff1716c2e17e0efd11e5640291198965e18faf146997e850f6eeb6139",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-cached/executions/20261120T193852Z-d8f1e4c5/checker.json",
+      "change": "added",
+      "bytes": 8579,
+      "sha256": "39d49ac62a9e6e81c73c645710a1781f80c85c953d682f59e67eec579684932c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e05d7d73966fdc1b2e1168f350c4cb79334f81376a70f0ac3cccbf8d51f1f85b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/plan.json",
+      "change": "added",
+      "bytes": 4482,
+      "sha256": "ac14e3237588b7643cbcdb7fa8f852c12a878ac96bb67fe88d180b5be48eca32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/control-cached-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/control-cached-jdk21.stdout",
+      "change": "added",
+      "bytes": 960,
+      "sha256": "8beab77619bfc3e0de5588b5d901a137205f0e8462ef6251b76491302ac0343d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/controls.json",
+      "change": "added",
+      "bytes": 5592,
+      "sha256": "c96f8c7f8351943f91c3faa3d6f8be1a21c470f42a6128144c6042f6cd109df5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/execution.json",
+      "change": "added",
+      "bytes": 21146,
+      "sha256": "fde380415f7f9bf6b08ba9655c8a9ad24513df0b10f7493ea8b26a70cc8f9c70",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "d5b290bbdf0cdcc12c2a89ed9e6259dfb482105a5ec6cb550b015a7282cc293e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 685,
+      "sha256": "e431978eddef9f4e59ac8abe686349dcd92f1d2b2e9a8f55097e594c64cce45a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/verifier.json",
+      "change": "added",
+      "bytes": 15501,
+      "sha256": "0481315434c6cb54b507774e3cada4318db337b2ac140bcb3227261c1dc3b383",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7268,
+      "sha256": "4a088a2f0b2ec07d4b4a78f931f1ffa9b761af7d274f51177f272fc719001cf1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/result.json",
+      "change": "added",
+      "bytes": 14956,
+      "sha256": "8140453482d63afb24220edc34ad9758928aeffad131ab9bdd9cf640e7d72cd2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/executions/20261120T193855Z-ee4ebc4a/attempt.json",
+      "change": "added",
+      "bytes": 10063,
+      "sha256": "7c275ed682adf78869d41d13b32005a6eea8f966cb302f8f31b9057995740a08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-cached/executions/20261120T193855Z-ee4ebc4a/checker.json",
+      "change": "added",
+      "bytes": 8516,
+      "sha256": "00ce0b39c2eca131bae4807c6c8bfeb89efda4345545c13bf3a96ac53fe0bc71",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cb1acba3665cb9f773851a33c89eb53c68b39ba3ab20f8e7c48d501f07e8fa29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/plan.json",
+      "change": "added",
+      "bytes": 4510,
+      "sha256": "8e384fd6e4f09ce5ae9870533fe678821d35fd02e6e5c1c188ac553498eac969",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/control-helper-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/control-helper-jdk21.stdout",
+      "change": "added",
+      "bytes": 960,
+      "sha256": "8beab77619bfc3e0de5588b5d901a137205f0e8462ef6251b76491302ac0343d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/controls.json",
+      "change": "added",
+      "bytes": 5580,
+      "sha256": "373da60a46b18dcda918d5ad7c4781c91a8513dd090123bb693d2d50946a1a01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/execution.json",
+      "change": "added",
+      "bytes": 21222,
+      "sha256": "77718d49e0b911d62d73c2fc1ca54b057e6ad11d86d96586a2df7b6014303a5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "2c5216a210a2400359b1b97d2d01e154ba9e7767d6ee4439cc55688b26d15efb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 685,
+      "sha256": "42d502ed0032303540d3118195fb55fffc4a119df7467307290abdfb8c508f97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/verifier.json",
+      "change": "added",
+      "bytes": 15569,
+      "sha256": "f20ab26b84dffba894760c303e2fe7ea929a1275f10897449321e61aa2d175ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7307,
+      "sha256": "29f50d686c1c9f33904334960bb2cf03bce78763cf9ed88f315f183629828d29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/result.json",
+      "change": "added",
+      "bytes": 15071,
+      "sha256": "0c022a840db50202f17f5dc695813bd6b620bf462fdfcfb830d9e53982af35d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/executions/20261120T193858Z-d68cc333/attempt.json",
+      "change": "added",
+      "bytes": 10093,
+      "sha256": "8f2bf921f9086b29b655d806803650646e5561ec987aafc658318b2b26f05f62",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-helper/executions/20261120T193858Z-d68cc333/checker.json",
+      "change": "added",
+      "bytes": 8579,
+      "sha256": "48bf2105bfe2fca85c3228f96eae57e1327dad4e30b774fc72e5debce993266a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3eb4d2c38ff50cd7447054ca4cea6318cafca5807fb250dbb259554f21eb3544",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/plan.json",
+      "change": "added",
+      "bytes": 4482,
+      "sha256": "cbee06e6f04629231398e1cc88dc4ffe287b5dce6ed82e46b5a5c9fc7a9b2fc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/control-helper-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/control-helper-jdk21.stdout",
+      "change": "added",
+      "bytes": 960,
+      "sha256": "8beab77619bfc3e0de5588b5d901a137205f0e8462ef6251b76491302ac0343d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/controls.json",
+      "change": "added",
+      "bytes": 5592,
+      "sha256": "1a3ecc54138b03e85f7d98bba0429e57adb3a98c5d870c5b9dcd14bc37422ac1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/execution.json",
+      "change": "added",
+      "bytes": 21142,
+      "sha256": "ccf458274f13bf0c45b8334bf59e85d0af81ae7a3aaf1a9d1072ecb9e12747bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "900945207aedd2d260da1432fbbdbc3dc988c0d3302fd643c41c754d22d11118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 685,
+      "sha256": "e431978eddef9f4e59ac8abe686349dcd92f1d2b2e9a8f55097e594c64cce45a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/verifier.json",
+      "change": "added",
+      "bytes": 15497,
+      "sha256": "5cef5e5e726d462fa258c795ab52f87e661b9b289cb558608159dae75e356c31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7268,
+      "sha256": "d2ce4092defb783fbbf137a4cf419bba1527152ad5deca0029602d03ac1bab6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/result.json",
+      "change": "added",
+      "bytes": 14955,
+      "sha256": "235c87b5f3b2fbce7dfc60bc777f0ac0a103c844360b57821dfb66daa112a57e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/executions/20261120T193901Z-6cce825d/attempt.json",
+      "change": "added",
+      "bytes": 10058,
+      "sha256": "35eaab48cd483547f583c54950ea88fc4e317aaa2f0633f801c22f130e7fd1c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-helper/executions/20261120T193901Z-6cce825d/checker.json",
+      "change": "added",
+      "bytes": 8516,
+      "sha256": "eb8b84420e3c320a6f11b68c7c61a0b5ab5a251b5891c2b803f8a38ce671df50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "effb3ed5fa48c13e7ed58ff2b838cb9b5189134ee445c80473dca6fa2cac8b4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/plan.json",
+      "change": "added",
+      "bytes": 4489,
+      "sha256": "54e1fb56b8fe3b6e91871b4f20c6787e23131f6805aa93eda673e746d8ddc629",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/control-live-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/control-live-jdk21.stdout",
+      "change": "added",
+      "bytes": 960,
+      "sha256": "3b54675076251886654b85e2277470b4db971eaabdffadc8aa4483c846f43fb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/controls.json",
+      "change": "added",
+      "bytes": 5560,
+      "sha256": "83f83085d67bf79e2cb7d449554f5f295f286f870dccb62020b0442813defe1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/execution.json",
+      "change": "added",
+      "bytes": 21175,
+      "sha256": "76b504678717aa2e62e68316a34df0c4421f4d75cb18ae2f05bcd601c6d5c852",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/streams.json",
+      "change": "added",
+      "bytes": 1949,
+      "sha256": "c045e8899bbaf13a81796ce4149d09afdd22d44598a6a70b239ff9954b9a480f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 685,
+      "sha256": "42d502ed0032303540d3118195fb55fffc4a119df7467307290abdfb8c508f97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/verifier.json",
+      "change": "added",
+      "bytes": 15530,
+      "sha256": "ede5d23e149cae964feb1687d965d819c45f76206bc6ba6e593b4fb99cc25f99",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7309,
+      "sha256": "4dfe58e7c9bc509870ff7a143d508d594882820013b2aae99e04a321ecaf9593",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/result.json",
+      "change": "added",
+      "bytes": 15037,
+      "sha256": "efd7272f8c9cdf323db3fda7d3f92e39c8ac01b63867d714b4a22b06bf3db7cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/executions/20261120T193903Z-d4e1dc01/attempt.json",
+      "change": "added",
+      "bytes": 10044,
+      "sha256": "d2c447fc914dfd87e545fe553190c090204ba45c3ab26f27ebfd4371d0f2eb27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/second-live/executions/20261120T193903Z-d4e1dc01/checker.json",
+      "change": "added",
+      "bytes": 8577,
+      "sha256": "af665a91e6de89befc77919e6c8f4ead00a0b08383c357b49c2a7807802679d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7bf25425a04153ca68eeac15ebc6a184b82ee73575198b3c2cd67b17479da3dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/plan.json",
+      "change": "added",
+      "bytes": 4465,
+      "sha256": "96148e6173e80ba2579feb3ceed36a31caf597074f05662840c570363bedce10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/control-live-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/control-live-jdk21.stdout",
+      "change": "added",
+      "bytes": 960,
+      "sha256": "3b54675076251886654b85e2277470b4db971eaabdffadc8aa4483c846f43fb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/controls.json",
+      "change": "added",
+      "bytes": 5572,
+      "sha256": "bcd227b397ab332d21ee41655b101873aba784d40a4135ec6552d3269c465c90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/execution.json",
+      "change": "added",
+      "bytes": 21090,
+      "sha256": "a00687559f8a8e36dc6759f52bc61e4a64a44de513ed3296930f60cdc73957b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/streams.json",
+      "change": "added",
+      "bytes": 1949,
+      "sha256": "d4dc0fa63f19e876076f96a37e9d8085de2828c5f0459d399a5834bb60e21e05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 685,
+      "sha256": "e431978eddef9f4e59ac8abe686349dcd92f1d2b2e9a8f55097e594c64cce45a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/verifier.json",
+      "change": "added",
+      "bytes": 15453,
+      "sha256": "24b37dca75e8388a08b60cc049f8bf9e300bf2b88c4ce3350c6eaa0bc2f50be6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7264,
+      "sha256": "8635893148283982e0268038392796e94eb29dec35051b6eb5c7a592e2204dcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/result.json",
+      "change": "added",
+      "bytes": 14923,
+      "sha256": "b7d904e43999a281011dfc3e9d678145cecedf9f2ed51284a5738e3397230717",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/executions/20261120T193906Z-17ef90a8/attempt.json",
+      "change": "added",
+      "bytes": 10008,
+      "sha256": "b0fda6a61916e62459bfe5eb667728e7d7c3f90c547dee52e5bfeea863e6c013",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/332-paper-initialization/receipts/init-count-live/executions/20261120T193906Z-17ef90a8/checker.json",
+      "change": "added",
+      "bytes": 8510,
+      "sha256": "1291ed740c3431e411825d2369f7e4bd9c3b4a401b16118d7061df80dd5c5001",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:39:11+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/completion.json",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/plan.json",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/control-cached-jdk21.stderr",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/control-cached-jdk21.stdout",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/controls.json",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/execution.json",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/streams.json",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/verifier-output.txt",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/verifier.json",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/verifier.stderr",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/records/verifier.stdout",
+      "examples/332-paper-initialization/receipts/second-cached/20261120T193852Z-d8f1e4c5/result.json",
+      "examples/332-paper-initialization/receipts/second-cached/executions/20261120T193852Z-d8f1e4c5/attempt.json",
+      "examples/332-paper-initialization/receipts/second-cached/executions/20261120T193852Z-d8f1e4c5/checker.json",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/completion.json",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/plan.json",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/control-cached-jdk21.stderr",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/control-cached-jdk21.stdout",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/controls.json",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/execution.json",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/streams.json",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/verifier-output.txt",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/verifier.json",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/verifier.stderr",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/records/verifier.stdout",
+      "examples/332-paper-initialization/receipts/init-count-cached/20261120T193855Z-ee4ebc4a/result.json",
+      "examples/332-paper-initialization/receipts/init-count-cached/executions/20261120T193855Z-ee4ebc4a/attempt.json",
+      "examples/332-paper-initialization/receipts/init-count-cached/executions/20261120T193855Z-ee4ebc4a/checker.json",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/completion.json",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/plan.json",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/control-helper-jdk21.stderr",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/control-helper-jdk21.stdout",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/controls.json",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/execution.json",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/streams.json",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/verifier-output.txt",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/verifier.json",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/verifier.stderr",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/records/verifier.stdout",
+      "examples/332-paper-initialization/receipts/second-helper/20261120T193858Z-d68cc333/result.json",
+      "examples/332-paper-initialization/receipts/second-helper/executions/20261120T193858Z-d68cc333/attempt.json",
+      "examples/332-paper-initialization/receipts/second-helper/executions/20261120T193858Z-d68cc333/checker.json",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/completion.json",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/plan.json",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/control-helper-jdk21.stderr",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/control-helper-jdk21.stdout",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/controls.json",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/execution.json",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/streams.json",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/verifier-output.txt",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/verifier.json",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/verifier.stderr",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/records/verifier.stdout",
+      "examples/332-paper-initialization/receipts/init-count-helper/20261120T193901Z-6cce825d/result.json",
+      "examples/332-paper-initialization/receipts/init-count-helper/executions/20261120T193901Z-6cce825d/attempt.json",
+      "examples/332-paper-initialization/receipts/init-count-helper/executions/20261120T193901Z-6cce825d/checker.json",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/completion.json",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/plan.json",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/control-live-jdk21.stderr",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/control-live-jdk21.stdout",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/controls.json",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/execution.json",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/streams.json",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/verifier-output.txt",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/verifier.json",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/verifier.stderr",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/records/verifier.stdout",
+      "examples/332-paper-initialization/receipts/second-live/20261120T193903Z-d4e1dc01/result.json",
+      "examples/332-paper-initialization/receipts/second-live/executions/20261120T193903Z-d4e1dc01/attempt.json",
+      "examples/332-paper-initialization/receipts/second-live/executions/20261120T193903Z-d4e1dc01/checker.json",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/completion.json",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/plan.json",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/control-live-jdk21.stderr",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/control-live-jdk21.stdout",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/controls.json",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/execution.json",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/streams.json",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/verifier-output.txt",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/verifier.json",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/verifier.stderr",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/records/verifier.stdout",
+      "examples/332-paper-initialization/receipts/init-count-live/20261120T193906Z-17ef90a8/result.json",
+      "examples/332-paper-initialization/receipts/init-count-live/executions/20261120T193906Z-17ef90a8/attempt.json",
+      "examples/332-paper-initialization/receipts/init-count-live/executions/20261120T193906Z-17ef90a8/checker.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192108-332-check-paper-startup-from-compiled-ja"
+}

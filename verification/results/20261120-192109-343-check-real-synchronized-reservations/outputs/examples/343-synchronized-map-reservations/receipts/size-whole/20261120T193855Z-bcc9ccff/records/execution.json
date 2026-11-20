@@ -1,0 +1,639 @@
+{
+  "task": "size-whole",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "whole",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:whole.jar",
+        "reservations.BookingCases",
+        "--histories"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.152,
+      "stdout": "controls/control-whole-jdk21.stdout",
+      "stderr": "controls/control-whole-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:whole",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "72d3006c76b8628d20013eacfe6e58d827010f927db19cde07d83b51eee6be38",
+            "role": "driver"
+          },
+          {
+            "path": "whole.jar",
+            "sha256": "444950732182ae19dc2c4e89f0d7c05754aad7b3d10988c8944683e9571f8571",
+            "role": "original"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "reservations.BookingCases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/oracle.py",
+          "oracleSha256": "259b35a3be1fcd161070da72caf0f37c5ab69724407f67e8c7acb776bd3d60eb"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm",
+        "executionId": "20261120T193855Z-bcc9ccff",
+        "startedAt": "2026-11-20T19:38:55.773276+00:00"
+      },
+      "observations": [
+        {
+          "mode": 0,
+          "distinct": false,
+          "invoked": [
+            1,
+            3
+          ],
+          "returned": [
+            2,
+            4
+          ],
+          "success": [
+            true,
+            false
+          ],
+          "size": 1,
+          "owners": [
+            "A",
+            null
+          ]
+        },
+        {
+          "mode": 1,
+          "distinct": false,
+          "invoked": [
+            3,
+            1
+          ],
+          "returned": [
+            4,
+            2
+          ],
+          "success": [
+            false,
+            true
+          ],
+          "size": 1,
+          "owners": [
+            "B",
+            null
+          ]
+        },
+        {
+          "mode": 2,
+          "distinct": false,
+          "invoked": [
+            1,
+            3
+          ],
+          "returned": [
+            2,
+            4
+          ],
+          "success": [
+            true,
+            false
+          ],
+          "size": 1,
+          "owners": [
+            "A",
+            null
+          ]
+        },
+        {
+          "mode": 0,
+          "distinct": true,
+          "invoked": [
+            1,
+            3
+          ],
+          "returned": [
+            2,
+            4
+          ],
+          "success": [
+            true,
+            true
+          ],
+          "size": 2,
+          "owners": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "mode": 1,
+          "distinct": true,
+          "invoked": [
+            3,
+            1
+          ],
+          "returned": [
+            4,
+            2
+          ],
+          "success": [
+            true,
+            true
+          ],
+          "size": 2,
+          "owners": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "mode": 2,
+          "distinct": true,
+          "invoked": [
+            1,
+            3
+          ],
+          "returned": [
+            2,
+            4
+          ],
+          "success": [
+            true,
+            true
+          ],
+          "size": 2,
+          "owners": [
+            "A",
+            "B"
+          ]
+        }
+      ],
+      "control": "driver",
+      "record": "controls/controls.json",
+      "reason": null
+    },
+    {
+      "kind": "verifier",
+      "revision": "whole",
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+        "prove",
+        "reservations.Booking#size(int)",
+        "--classes",
+        "prepare/whole/whole.jar",
+        "--assume",
+        "code >= 0 && code < 6",
+        "--assert",
+        "result == (code >= 3 ? 2 : 1)",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "24",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "120",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.042,
+      "stdout": "verifier/verifier.stdout",
+      "stderr": "verifier/verifier.stderr",
+      "identities": {
+        "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+        "commit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+        "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+        "command": "prove",
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "engine": "native",
+        "gaps": "strict",
+        "bounds": {
+          "unwind": 24,
+          "maxArrayLength": 8
+        },
+        "timeout": 120,
+        "scope": {
+          "label": "constructed-fixture",
+          "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+          "method": "reservations.Booking#size(I)I",
+          "revisions": {
+            "whole": {
+              "commit": "fixture:whole",
+              "loadedFrom": "whole.jar",
+              "classSha256": "fe4ef1c6b082da40a388cd8099216a5faa228c6e8bb579a2b2a225dffc451340",
+              "origin": "built from whole by the fixture recipe",
+              "parameters": {
+                "names": [
+                  "code"
+                ],
+                "recordedIn": "MethodParameters"
+              }
+            }
+          },
+          "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+          "models": [],
+          "assumptions": []
+        },
+        "classpath": {
+          "whole": [
+            {
+              "path": "whole.jar",
+              "sha256": "444950732182ae19dc2c4e89f0d7c05754aad7b3d10988c8944683e9571f8571",
+              "role": "original"
+            }
+          ]
+        },
+        "checkedEntry": "reservations.Booking#size(I)I",
+        "entryBindings": {
+          "whole": {
+            "entry": "reservations.Booking#size(I)I",
+            "classSha256": "fe4ef1c6b082da40a388cd8099216a5faa228c6e8bb579a2b2a225dffc451340",
+            "loadedFrom": "whole.jar",
+            "subject": "reservations.Booking#size(I)I",
+            "subjectClassSha256": "fe4ef1c6b082da40a388cd8099216a5faa228c6e8bb579a2b2a225dffc451340"
+          }
+        },
+        "recipe": {
+          "kind": "direct-method",
+          "command": "prove",
+          "subject": "reservations.Booking#size(I)I",
+          "checkedEntry": "reservations.Booking#size(I)I",
+          "arguments": [
+            {
+              "field": "assume",
+              "flag": "--assume",
+              "value": "code >= 0 && code < 6"
+            },
+            {
+              "field": "assert",
+              "flag": "--assert",
+              "value": "result == (code >= 3 ? 2 : 1)"
+            },
+            {
+              "field": "engine",
+              "flag": "--engine",
+              "value": "native"
+            },
+            {
+              "field": "gaps",
+              "flag": "--gaps",
+              "value": "strict"
+            },
+            {
+              "field": "bounds.unwind",
+              "flag": "--unwind",
+              "value": "24"
+            },
+            {
+              "field": "bounds.maxArrayLength",
+              "flag": "--max-array-length",
+              "value": "8"
+            }
+          ],
+          "checkerDefaults": {
+            "observations": {
+              "values": [
+                "result",
+                "exception"
+              ],
+              "evidence": "stated.observations"
+            },
+            "nullable": {
+              "values": [],
+              "evidence": "stated.domain"
+            },
+            "mayAlias": {
+              "values": [],
+              "evidence": "stated.domain"
+            }
+          },
+          "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+        },
+        "commits": {
+          "whole": "fixture:whole"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC",
+          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+          "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+        },
+        "cwd": "the attempt directory",
+        "probe": {
+          "whole": {
+            "argv": [
+              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+              "gaps",
+              "--target",
+              "reservations.Booking#size(int)",
+              "--classes",
+              "prepare/whole/whole.jar",
+              "--json"
+            ],
+            "status": "exited",
+            "exitCode": 0,
+            "seconds": 0.033,
+            "stdout": "verifier/probe-whole.stdout",
+            "stderr": "verifier/probe-whole.stderr",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+                "sites": [
+                  "reservations.Booking.run:41"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.lang.Thread.<init>(Ljava/lang/Runnable;Ljava/lang/String;)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.Thread.<init>(java.lang.Runnable, java.lang.String)",
+                "sites": [
+                  "reservations.Booking.run:33"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.CyclicBarrier.<init>(int)",
+                "sites": [
+                  "reservations.Booking.run:18"
+                ]
+              },
+              {
+                "id": "jdk-void-method:java.lang.Thread.join()V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.lang.Thread.join()",
+                "sites": [
+                  "reservations.Booking.run:37",
+                  "reservations.Booking.run:39",
+                  "reservations.Booking.run:40"
+                ]
+              },
+              {
+                "id": "jdk-void-method:java.lang.Thread.start()V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.lang.Thread.start()",
+                "sites": [
+                  "reservations.Booking.run:36",
+                  "reservations.Booking.run:38"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.lang.Object.equals(java.lang.Object)",
+                "sites": [
+                  "java.util.HashMap.find:80"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.lang.Object.hashCode()",
+                "sites": [
+                  "java.util.HashMap.find:77",
+                  "java.util.HashMap.put:65"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.util.Collections.synchronizedMap(Ljava/util/Map;)Ljava/util/Map;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.Collections.synchronizedMap(java.util.Map)",
+                "sites": [
+                  "reservations.Slots.<init>:8"
+                ]
+              }
+            ]
+          }
+        },
+        "usage": {
+          "cpuSeconds": 0.0342,
+          "peakRssBytes": 78487552,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        "executionId": "20261120T193855Z-bcc9ccff",
+        "startedAt": "2026-11-20T19:38:55.773276+00:00"
+      },
+      "observations": [
+        {
+          "wire_version": 1,
+          "verdict": "unverifiable",
+          "target": "reservations.Booking#size(int)",
+          "domain": "code: int",
+          "assume": "code >= 0 && code < 6",
+          "assert": "result == (code >= 3 ? 2 : 1)",
+          "throws": [],
+          "throws_checked": [],
+          "counterexample": null,
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13 (java.util.concurrent.CyclicBarrier.<init>(int) at reservations.Booking.run:18). With --gaps assume it assumes instead that java.util.concurrent.CyclicBarrier.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "statement": "verifier/work/harness/PropertyHarness.java",
+          "findings": [
+            {
+              "rule_id": "unverifiable",
+              "message": "reservations.Booking#size(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13 (java.util.concurrent.CyclicBarrier.<init>(int) at reservations.Booking.run:18). With --gaps assume it assumes instead that java.util.concurrent.CyclicBarrier.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+              "uri": null,
+              "line": 48
+            }
+          ],
+          "output": "✗ reservations.Booking#size(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13 (java.util.concurrent.CyclicBarrier.<init>(int) at reservations.Booking.run:18). With --gaps assume it assumes instead that java.util.concurrent.CyclicBarrier.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+          "work": "verifier/work",
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.014584605,
+            "properties": 1,
+            "unwind": 24,
+            "max_array_length": 8,
+            "stage": null,
+            "native": {
+              "paths": 4,
+              "merges": 0,
+              "solver_calls": 4,
+              "solving_seconds": 0.001401086,
+              "gates_evaluated": 122,
+              "evaluating_seconds": 8.658e-06,
+              "divisions": 1,
+              "divisions_built": 1,
+              "multiplications": 0,
+              "multiplications_built": 0,
+              "variables": 5160,
+              "clauses": 17845,
+              "seconds": 0.013006427,
+              "loading_seconds": 0.000145162,
+              "decoding_seconds": 0.0001068,
+              "encoding_seconds": 0.004397379,
+              "witness_seconds": 0.0
+            },
+            "gap_mode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.CyclicBarrier.<init>(int)",
+                "sites": [
+                  "reservations.Booking.run:18"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "deadline_seconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budget_seconds": 120.0,
+                "seconds": 0.013,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.007,
+                  "encoding": 0.004,
+                  "solving": 0.001,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 5160,
+                  "clauses": 17845
+                }
+              }
+            ],
+            "phases": {
+              "seconds": 0.03,
+              "setup": 0.002,
+              "harness": 0.0,
+              "gaps": 0.0,
+              "contracts": 0.0,
+              "runs": 0.013,
+              "replay": 0.0,
+              "jvm": 0.0,
+              "other": 0.015
+            }
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 6",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == (code >= 3 ? 2 : 1)",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 24,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          }
+        }
+      ],
+      "control": null,
+      "record": "verifier/verifier.json",
+      "reason": null
+    }
+  ]
+}

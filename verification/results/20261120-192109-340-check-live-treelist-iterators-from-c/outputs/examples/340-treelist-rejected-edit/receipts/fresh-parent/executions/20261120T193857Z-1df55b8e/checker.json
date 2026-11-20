@@ -1,0 +1,209 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "trees.Projection#fresh(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/built/commons-collections4-4.6.0-SNAPSHOT.jar",
+    "--classpath",
+    "prepare/parent/lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+    "--assume",
+    "code >= 0 && code < 112",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "48",
+    "--max-array-length",
+    "16",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.084,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "trees.Projection#fresh(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 112",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:org.apache.commons.collections4.list.TreeList.add(Ljava/lang/Object;)Z@jdk-21.0.13 (org.apache.commons.collections4.list.TreeList.add(java.lang.Object) at trees.Projection.inspect:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "trees.Projection#fresh(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:org.apache.commons.collections4.list.TreeList.add(Ljava/lang/Object;)Z@jdk-21.0.13 (org.apache.commons.collections4.list.TreeList.add(java.lang.Object) at trees.Projection.inspect:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "uri": null,
+          "line": 39
+        }
+      ],
+      "output": "✗ trees.Projection#fresh(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:org.apache.commons.collections4.list.TreeList.add(Ljava/lang/Object;)Z@jdk-21.0.13 (org.apache.commons.collections4.list.TreeList.add(java.lang.Object) at trees.Projection.inspect:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.043615678,
+        "properties": 1,
+        "unwind": 48,
+        "max_array_length": 16,
+        "stage": null,
+        "native": {
+          "paths": 8,
+          "merges": 0,
+          "solver_calls": 8,
+          "solving_seconds": 0.005201304,
+          "gates_evaluated": 202,
+          "evaluating_seconds": 1.4819e-05,
+          "divisions": 1,
+          "divisions_built": 1,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 4744,
+          "clauses": 16347,
+          "seconds": 0.037038306,
+          "loading_seconds": 0.000536765,
+          "decoding_seconds": 0.000112391,
+          "encoding_seconds": 0.005386658,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "jdk-primitive-method:org.apache.commons.collections4.list.TreeList.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "org.apache.commons.collections4.list.TreeList.add(java.lang.Object)",
+            "sites": [
+              "trees.Projection.inspect:13"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 120.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 120.0,
+            "seconds": 0.037,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.001,
+              "lowering": 0.0,
+              "symbolic": 0.026,
+              "encoding": 0.005,
+              "solving": 0.005,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 4744,
+              "clauses": 16347
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.074,
+          "setup": 0.004,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.037,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.033
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 112",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 48,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6203,
+    "sha256": "234be7385fe5d2c621eba8ae2300d28578de0a4b2a8ef6c937db415427a0b890"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

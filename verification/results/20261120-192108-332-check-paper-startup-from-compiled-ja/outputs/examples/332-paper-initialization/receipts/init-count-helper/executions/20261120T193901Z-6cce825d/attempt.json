@@ -1,0 +1,319 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T193901Z-6cce825d",
+  "task": "init-count-helper",
+  "claimKey": "3ef63deb082003f6",
+  "revisions": [
+    "helper"
+  ],
+  "startedAt": "2026-11-20T19:39:01.445672+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-192108-332-check-paper-startup-from-compiled-ja",
+  "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.598
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.1665
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.2024
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.2355
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.4058
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "helper": {
+      "revision": "fixture:helper",
+      "target": {
+        "class": "paper.Scenario",
+        "method": "count",
+        "descriptor": "(I)I",
+        "loadedFrom": "helper.jar",
+        "classSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "2fed89888d17a3800a3f4bd45e89c74e59c5019b2cd8b3b03a535f879e2dd827",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "helper.jar",
+          "sha256": "c509e55e2a1b4f07231fd8c44bbbf2c10cd17d9ffbdc31504ffc5d8184ed2af8",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from helper by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "86068496f45064c5156e2141712b3e0c04925d2898ca9d423ad4f2ecbf68f692",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "paper.Scenario#count(int)",
+    "--classes",
+    "prepare/helper/helper.jar",
+    "--assume",
+    "code >= 0 && code < 9",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "32",
+    "--max-array-length",
+    "24",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 32,
+      "maxArrayLength": 24
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "paper.Scenario#count(I)I",
+      "revisions": {
+        "helper": {
+          "commit": "fixture:helper",
+          "loadedFrom": "helper.jar",
+          "classSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815",
+          "origin": "built from helper by the fixture recipe",
+          "parameters": {
+            "names": [
+              "code"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "helper": [
+        {
+          "path": "helper.jar",
+          "sha256": "c509e55e2a1b4f07231fd8c44bbbf2c10cd17d9ffbdc31504ffc5d8184ed2af8",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "paper.Scenario#count(I)I",
+    "entryBindings": {
+      "helper": {
+        "entry": "paper.Scenario#count(I)I",
+        "classSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815",
+        "loadedFrom": "helper.jar",
+        "subject": "paper.Scenario#count(I)I",
+        "subjectClassSha256": "3caf7a040b92c475621e2501e30ec60d09b09119816a18bb32780ec6806a6815"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "paper.Scenario#count(I)I",
+      "checkedEntry": "paper.Scenario#count(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 9"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "32"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "24"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "helper": "fixture:helper"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "helper": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+          "gaps",
+          "--target",
+          "paper.Scenario#count(int)",
+          "--classes",
+          "prepare/helper/helper.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-helper.stdout",
+        "stderr": "verifier/probe-helper.stderr",
+        "gaps": [
+          {
+            "id": "jdk-static-method:java.lang.System.clearProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.System.clearProperty(java.lang.String)",
+            "sites": [
+              "paper.Scenario.set:5"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.System.getProperty(java.lang.String, java.lang.String)",
+            "sites": [
+              "paper.Paper.read:5"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.System.setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.System.setProperty(java.lang.String, java.lang.String)",
+            "sites": [
+              "paper.Scenario.set:6"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0264,
+      "peakRssBytes": 80142336,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0264,
+    "peakRssBytes": 80142336,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.031,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/init-count-helper/20261120T193901Z-6cce825d/result.json",
+  "preparedClaim": "6d10728dbff7fb8e",
+  "firstBlocker": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-static-method:java.lang.System.clearProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.clearProperty(java.lang.String) at paper.Scenario.set:5); jdk-static-method:java.lang.System.setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.setProperty(java.lang.String, java.lang.String) at paper.Scenario.set:6). They have no approximation under --gaps assume, since their values could only be made up: only contracts close them (--gaps advised)",
+  "endedAt": "2026-11-20T19:39:03.851524+00:00"
+}

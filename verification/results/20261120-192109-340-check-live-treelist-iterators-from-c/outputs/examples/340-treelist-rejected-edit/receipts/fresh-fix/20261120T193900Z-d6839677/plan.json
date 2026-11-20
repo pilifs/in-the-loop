@@ -1,0 +1,232 @@
+{
+  "plan": {
+    "example": "340",
+    "task": "fresh-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "fresh-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "file": "claims/fresh.json",
+      "sha256": "53e5f2e322355c858002c984271ac992f6cc5caf5a209b35c3334f2c5f0a8bdb",
+      "property": "fresh",
+      "claimKind": "property",
+      "statement": "On a rejected indexed operation the fresh iterator returns the original first element.",
+      "assume": "code >= 0 && code < 112",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 16
+      },
+      "explicitBounds": {
+        "unwind": 48,
+        "maxArrayLength": 16
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/trees/TreeCases.java",
+          "sha256": "9819bbc2d7a44d5d62da8acab7ad6ff440d0faf7e43387fc8f2438daf6e382c7"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "a9175b3282dca1e4af1b57d724a8a88c646976192ca7263ab926ed47fc94ac5d"
+        }
+      ],
+      "adapter": {
+        "entry": "trees.Projection#fresh(I)I",
+        "cases": 112,
+        "correspondence": "finite-oracle",
+        "mapping": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit."
+      },
+      "key": "30fcb8fb042af68e"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-collections",
+        "commit": "fe8eb4989392cb436438978b151aa800b70195b9",
+        "parent": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/builds/fix.json",
+          "sha256": "9682247aa8959e05ea92d21771b0f459aee7c06742709f7f760a048a83e64447"
+        },
+        "adapters": [
+          "adapter/trees/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/fresh-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-340-check-live-treelist-iterators-from-c/examples/340-treelist-rejected-edit",
+    "network": true
+  },
+  "inputs": {
+    "example": "340",
+    "task": "fresh-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "fresh-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "file": "claims/fresh.json",
+      "sha256": "53e5f2e322355c858002c984271ac992f6cc5caf5a209b35c3334f2c5f0a8bdb",
+      "property": "fresh",
+      "claimKind": "property",
+      "statement": "On a rejected indexed operation the fresh iterator returns the original first element.",
+      "assume": "code >= 0 && code < 112",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 16
+      },
+      "explicitBounds": {
+        "unwind": 48,
+        "maxArrayLength": 16
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/trees/TreeCases.java",
+          "sha256": "9819bbc2d7a44d5d62da8acab7ad6ff440d0faf7e43387fc8f2438daf6e382c7"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "a9175b3282dca1e4af1b57d724a8a88c646976192ca7263ab926ed47fc94ac5d"
+        }
+      ],
+      "adapter": {
+        "entry": "trees.Projection#fresh(I)I",
+        "cases": 112,
+        "correspondence": "finite-oracle",
+        "mapping": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit."
+      },
+      "key": "30fcb8fb042af68e"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-collections",
+        "commit": "fe8eb4989392cb436438978b151aa800b70195b9",
+        "parent": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/builds/fix.json",
+          "sha256": "9682247aa8959e05ea92d21771b0f459aee7c06742709f7f760a048a83e64447"
+        },
+        "adapters": [
+          "adapter/trees/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/trees/Projection.java",
+        "sha256": "effcf2fd5603728001504ef305624693ba20d0f9d3af5d3d77ac58b80394265b"
+      }
+    ]
+  },
+  "key": "e3fa5c3465640a12bfc099ef3413a3603cf407919d0618ba658181bf68f3f6d0"
+}

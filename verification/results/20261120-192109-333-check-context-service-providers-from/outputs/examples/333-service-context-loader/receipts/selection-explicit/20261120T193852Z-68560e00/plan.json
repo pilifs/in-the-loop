@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "333",
+    "task": "selection-explicit",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "styles.World#selection(I)I",
+    "revisions": [
+      "explicit"
+    ],
+    "claim": {
+      "task": "selection-explicit",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#selection(I)I",
+      "file": "claims/selection.json",
+      "sha256": "e3815561a03a6c3db221a15b2503e5797f422f8d7bfa963d2be7b05cd691d926",
+      "property": "selection",
+      "claimKind": "property",
+      "statement": "The first selected implementation matches the first provider visible on each context lookup.",
+      "assume": "code >= 0 && code < 16",
+      "assert": "result == 3 * ((code / 4) == 0 ? 0 : (code / 4) == 3 ? 2 : 1) + ((code % 4) == 0 ? 0 : (code % 4) == 3 ? 2 : 1)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 16
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 16
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/styles/LoaderCases.java",
+          "sha256": "210af68654d8cb05059e29f0ef2ffea83956f20587bb3a3ea4b83f372c5fe636"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "54461048d5955ba99842201e1d829db253a0aebc6342db4daf1f9647a1364951"
+        }
+      ],
+      "key": "ce32ce97759cfc9d"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "explicit",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "explicit",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/selection-explicit"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-333-check-context-service-providers-from/examples/333-service-context-loader",
+    "network": false
+  },
+  "inputs": {
+    "example": "333",
+    "task": "selection-explicit",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "styles.World#selection(I)I",
+    "revisions": [
+      "explicit"
+    ],
+    "claim": {
+      "task": "selection-explicit",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#selection(I)I",
+      "file": "claims/selection.json",
+      "sha256": "e3815561a03a6c3db221a15b2503e5797f422f8d7bfa963d2be7b05cd691d926",
+      "property": "selection",
+      "claimKind": "property",
+      "statement": "The first selected implementation matches the first provider visible on each context lookup.",
+      "assume": "code >= 0 && code < 16",
+      "assert": "result == 3 * ((code / 4) == 0 ? 0 : (code / 4) == 3 ? 2 : 1) + ((code % 4) == 0 ? 0 : (code % 4) == 3 ? 2 : 1)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 16
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 16
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/styles/LoaderCases.java",
+          "sha256": "210af68654d8cb05059e29f0ef2ffea83956f20587bb3a3ea4b83f372c5fe636"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "54461048d5955ba99842201e1d829db253a0aebc6342db4daf1f9647a1364951"
+        }
+      ],
+      "key": "ce32ce97759cfc9d"
+    },
+    "artifacts": [
+      {
+        "revision": "explicit",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "explicit",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "c9d6e5bf771dfbea840280c1c5d75643b9e6ded6f5aa587676430eb67823f2d8"
+}

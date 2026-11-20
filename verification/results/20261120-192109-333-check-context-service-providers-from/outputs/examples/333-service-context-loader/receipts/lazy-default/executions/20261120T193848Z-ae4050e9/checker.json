@@ -1,0 +1,219 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "styles.World#lazy(int)",
+    "--classes",
+    "prepare/default/default.jar",
+    "--assume",
+    "code >= 0 && code < 16",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "32",
+    "--max-array-length",
+    "16",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.031,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "styles.World#lazy(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 16",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13 (java.lang.ClassLoader.getPlatformClassLoader() at styles.World.sequence:65). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "styles.World#lazy(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13 (java.lang.ClassLoader.getPlatformClassLoader() at styles.World.sequence:65). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "uri": null,
+          "line": 97
+        }
+      ],
+      "output": "✗ styles.World#lazy(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13 (java.lang.ClassLoader.getPlatformClassLoader() at styles.World.sequence:65). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.006280185,
+        "properties": 1,
+        "unwind": 32,
+        "max_array_length": 16,
+        "stage": null,
+        "native": {
+          "paths": 3,
+          "merges": 0,
+          "solver_calls": 2,
+          "solving_seconds": 3.193e-05,
+          "gates_evaluated": 81,
+          "evaluating_seconds": 4.157e-06,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 113,
+          "clauses": 268,
+          "seconds": 0.00533858,
+          "loading_seconds": 0.000374272,
+          "decoding_seconds": 8.4949e-05,
+          "encoding_seconds": 7.2755e-05,
+          "witness_seconds": 0.0,
+          "assumed": [
+            "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+            "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+          ]
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.ClassLoader.getPlatformClassLoader()",
+            "sites": [
+              "styles.World.sequence:65"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 120.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 120.0,
+            "seconds": 0.005,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.005,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 113,
+              "clauses": 268
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.018,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.005,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.011
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 16",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 32,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 7152,
+    "sha256": "4e006b7ef3405e193e4ae5efd94516efc6e0d66c0fe637d8c2abc465215dd8f9"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

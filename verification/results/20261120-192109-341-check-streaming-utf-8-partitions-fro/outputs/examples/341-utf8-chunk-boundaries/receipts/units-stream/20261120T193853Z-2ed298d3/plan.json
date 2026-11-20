@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "341",
+    "task": "units-stream",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "chunks.Inputs#units(I)I",
+    "revisions": [
+      "stream"
+    ],
+    "claim": {
+      "task": "units-stream",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "file": "claims/units.json",
+      "sha256": "46a06368d84ac3f45baff3b7bbc0d2c54f53984567628bb7b87ef5a19c8a16ee",
+      "property": "units",
+      "claimKind": "property",
+      "statement": "The reader returns the original UTF-16 code units exactly for every cut partition.",
+      "assume": "code >= 0 && code < 5578",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "explicitBounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/chunks/DecodeCases.java",
+          "sha256": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987"
+        }
+      ],
+      "key": "729b5e29b253f054"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "stream",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "stream",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/units-stream"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-341-check-streaming-utf-8-partitions-fro/examples/341-utf8-chunk-boundaries",
+    "network": false
+  },
+  "inputs": {
+    "example": "341",
+    "task": "units-stream",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "chunks.Inputs#units(I)I",
+    "revisions": [
+      "stream"
+    ],
+    "claim": {
+      "task": "units-stream",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "file": "claims/units.json",
+      "sha256": "46a06368d84ac3f45baff3b7bbc0d2c54f53984567628bb7b87ef5a19c8a16ee",
+      "property": "units",
+      "claimKind": "property",
+      "statement": "The reader returns the original UTF-16 code units exactly for every cut partition.",
+      "assume": "code >= 0 && code < 5578",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "explicitBounds": {
+        "unwind": 160,
+        "maxArrayLength": 48
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/chunks/DecodeCases.java",
+          "sha256": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987"
+        }
+      ],
+      "key": "729b5e29b253f054"
+    },
+    "artifacts": [
+      {
+        "revision": "stream",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "stream",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "0555cb4017601fb32f12efdcdf475d048bfaecb8c14e9d29d0a218470c4dfc8f"
+}

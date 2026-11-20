@@ -387,7 +387,7 @@ def run(folder, example, target, spec):
                 "delegate": p.delegate,
                 "translatorSha256": runtime.sha256(Path(synchronized_map.__file__)),
             }
-        dest = folder / "records/monitor-histories" / spec["id"]
+        dest = folder / "records/monitor-histories" / spec["id"] / workflow.canonical_digest(doc)[:20]
         dest.mkdir(parents=True, exist_ok=True)
         (dest / "result.json").write_text(json.dumps(doc, indent=2) + "\n")
         print(
@@ -411,11 +411,21 @@ def evidence(folder, target, plan):
             "threads": 2,
             "callsPerThread": 1,
         }
-        path = folder / "records/monitor-histories" / spec["id"] / "result.json"
-        if path.is_file():
-            record = json.loads(path.read_text())
-            if record.get("sourceKey") == key:
-                entry.update(status=record["status"], record=path.relative_to(folder).as_posix())
+        root = folder / "records/monitor-histories" / spec["id"]
+        matched = []
+        for path in [root / "result.json", *sorted(root.glob("*/result.json"))]:
+            if not path.is_file():
+                continue
+            doc = json.loads(path.read_text())
+            runs = doc.get("explorations", {})
+            if (doc.get("sourceKey") != key or not runs or not doc.get("jvmReplays")
+                or any(run.get("blockedTerminal") or not run.get("completed") for run in runs.values())):
+                continue
+            status = "refuted" if any(not row["linearizable"] for run in runs.values() for row in run["completed"]) else "established"
+            if doc.get("status") == status:
+                matched.append({"status": status, "record": path.relative_to(folder).as_posix()})
+        if matched:
+            entry.update(matched[-1], records=matched)
         result.append(entry)
     return result
 

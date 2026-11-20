@@ -118,6 +118,19 @@ def execute(shape, limits, strategy):
                 enabled[who] = move
         if not enabled:
             raise ValueError("unfinished deadlocked history")
+        if strategy == "by-name":
+            # A deliberately incorrect persistent set picks one named monitor
+            # when two acquisitions appear independent. A second handle can
+            # designate the same seat or the same ordered audit sink.
+            seen_kinds = set()
+            for who, (_, footprint) in tuple(enabled.items()):
+                if s.pcs[who] % 8 in (1, 3):
+                    kind = footprint[0]
+                    if kind in seen_kinds:
+                        del enabled[who]
+                        pruned += 1
+                    else:
+                        seen_kinds.add(kind)
         prior = set(sleep)
         for who, (successor, resource_) in enabled.items():
             if who in prior:

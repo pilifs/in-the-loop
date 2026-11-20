@@ -1,0 +1,437 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "a6be282cc3a63439",
+    "format": 1,
+    "example": "333",
+    "statement": {
+      "approach": "target",
+      "task": "orders-explicit",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#orders(I)I",
+      "revisions": [
+        "explicit"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "orders-explicit",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "styles.World#orders(I)I",
+        "file": "claims/orders.json",
+        "sha256": "f3e74bb161ba3ae82ce839bff0e2bf60e2eb5f84aaff384a168413c2f26055ce",
+        "property": "orders",
+        "claimKind": "property",
+        "statement": "Both ordered descriptor enumerations match the two independently selected context loaders.",
+        "assume": "code >= 0 && code < 16",
+        "assert": "result == code",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 32,
+          "maxArrayLength": 16
+        },
+        "explicitBounds": {
+          "unwind": 32,
+          "maxArrayLength": 16
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/styles/LoaderCases.java",
+            "sha256": "210af68654d8cb05059e29f0ef2ffea83956f20587bb3a3ea4b83f372c5fe636"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "54461048d5955ba99842201e1d829db253a0aebc6342db4daf1f9647a1364951"
+          }
+        ],
+        "key": "68c4dfac1f86658d"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "c632fdb73931019f422895eb905dadb02acd00a336bbad7a1b6f20d8a420c8f7",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "orders-explicit",
+      "sidecar": "c3dfc6075b2aabc87268abf94c8c3bfc3986870cc8614f0b7a52498cd7d9502b",
+      "revisions": {
+        "explicit": "d600bc5b15eac1f2922fb4ea87cff93f3e797d92"
+      },
+      "dependencies": [
+        {
+          "revision": "explicit",
+          "position": 0,
+          "role": "driver",
+          "sha256": "a962c13d713bfc836e14a470fc684196f6cba5e00b976e15fca7a1c779f8fb1c"
+        },
+        {
+          "revision": "explicit",
+          "position": 1,
+          "role": "original",
+          "sha256": "848ec26556086476e4e14c66f07a3edd6733f74d5a0f248310b34fd038e7b75c"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/orders.json": "f3e74bb161ba3ae82ce839bff0e2bf60e2eb5f84aaff384a168413c2f26055ce",
+        "controls/oracle.py": "54461048d5955ba99842201e1d829db253a0aebc6342db4daf1f9647a1364951",
+        "driver/styles/LoaderCases.java": "210af68654d8cb05059e29f0ef2ffea83956f20587bb3a3ea4b83f372c5fe636"
+      },
+      "claimKey": "68c4dfac1f86658d"
+    }
+  },
+  "attempt": {
+    "id": "20261120T193850Z-acde5809",
+    "claim": "a6be282cc3a63439",
+    "startedAt": "2026-11-20T19:38:50+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "styles.World#orders(int)",
+      "--classes",
+      "prepare/explicit/explicit.jar",
+      "--assume",
+      "code >= 0 && code < 16",
+      "--assert",
+      "result == code",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "32",
+      "--max-array-length",
+      "16",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "144ac62eb4ade0eec805776276d9a05d68c44424c7cee321c4ab0fc35235f29c",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-192109-333-check-context-service-providers-from",
+      "sourceCommit": "31028833d39d26a20c33659c087364d14e9f9eb1",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-333-check-context-service-providers-from"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control explicit on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-explicit-jdk21.stdout",
+        "stderr": "records/control-explicit-jdk21.stderr"
+      },
+      {
+        "name": "verifier explicit on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.031,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 32,
+      "maxArrayLength": 16,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "a6be282cc3a63439",
+    "attempt": "20261120T193850Z-acde5809",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == code",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == code",
+          "assume": "code >= 0 && code < 16",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13 (java.lang.ClassLoader.getPlatformClassLoader() at styles.World.sequence:65). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.008,
+            "properties": 1,
+            "unwind": 32,
+            "maxArrayLength": 16,
+            "stage": null,
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 0.007,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.006,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 113,
+                  "clauses": 268
+                }
+              }
+            ],
+            "native": {
+              "paths": 3,
+              "merges": 0,
+              "solverCalls": 2,
+              "solvingSeconds": 2.5989e-05,
+              "gatesEvaluated": 81,
+              "evaluatingSeconds": 4.409e-06,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 113,
+              "clauses": 268,
+              "seconds": 0.006881203,
+              "loadingSeconds": 0.000419346,
+              "decodingSeconds": 7.5441e-05,
+              "encodingSeconds": 6.964e-05,
+              "witnessSeconds": 0.0
+            },
+            "modelsAssume": [
+              "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+              "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+            ],
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.ClassLoader.getPlatformClassLoader()",
+                "sites": [
+                  "styles.World.sequence:65"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 16",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == code",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 32,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"explicit\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ClassLoader.getPlatformClassLoader()Ljava/lang/ClassLoader;@jdk-21.0.13 (java.lang.ClassLoader.getPlatformClassLoader() at styles.World.sequence:65). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == code",
+      "assume": "code >= 0 && code < 16"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "269328145f3e4812466b738fdf458d4a19d32e1cf38fc9452603b594e12349f9",
+        "bytes": 27097
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "60a7c06ec35164698ae07c1b16e8fe121d02d29334febf38667532bbcfabef8f",
+        "bytes": 471
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "f9e64651a926cff9383d72118048121e0d1091bc282f2d9515123f0e34248526",
+        "bytes": 1983
+      },
+      {
+        "path": "records/control-explicit-jdk21.stdout",
+        "sha256": "5e84f72adc609d04d7ce6ef65db2eaa30aefdeaef844c4d83a81536c8cb11531",
+        "bytes": 1078
+      },
+      {
+        "path": "records/control-explicit-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "f15fd0aa0b78e405bb66e118d32d8016b1d4ce6d6b87b31e84049db76d8fcdbd",
+        "bytes": 8534
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "c3933924f5c97f94c0837777402f669510d2e1a7f916b2d3f6d52bc8ec306d05",
+        "bytes": 7165
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "c2dc7359dacd440e6966ddc9bc96b6f102602fbeadf50fa73b27f36ddea7333a",
+        "bytes": 18360
+      }
+    ]
+  }
+}

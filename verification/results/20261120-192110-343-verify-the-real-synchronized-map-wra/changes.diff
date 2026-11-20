@@ -1,0 +1,7353 @@
+--- a/examples/343-synchronized-map-reservations/records/monitor-histories/reservations-split/result.json
++++ b/examples/343-synchronized-map-reservations/records/monitor-histories/reservations-split/result.json
+@@ -7779,9 +7779,9 @@
+       ]
+     }
+   ],
+-  "checkerSha256": "33f8e0b057d21f8a4ed07e6c9ee43a6de2b86b42d819e072bff77f65c6120b17",
+-  "wallSeconds": 2.36553,
+-  "peakProcessKiB": 51904,
++  "checkerSha256": "4e72641b77f4900bc4d47404bd7834747d5e00982a3ba4b79358b391ffc3819f",
++  "wallSeconds": 4.09826,
++  "peakProcessKiB": 51764,
+   "jdkWrapper": {
+     "classes": {
+       "java/util/Collections": "8b515a27e185a771e37058b79d663d4b8de7987aef6f43f8eb268931891c071e",
+@@ -8186,6 +8186,6 @@
+         "2 15 0 2 1 0 1 0 2 1"
+       ]
+     },
+-    "translatorSha256": "385aee61220269216b55a694f429a55624fc0a5b480984ec3e9b3db866a3e9f9"
++    "translatorSha256": "cec43281a15ceee424c0dc56e5f96826a394bf865d7a61d14884491fd0cb582f"
+   }
+ }
+--- /dev/null
++++ b/examples/343-synchronized-map-reservations/records/monitor-histories/reservations-whole/result.json
+@@ -0,0 +1,7327 @@
++{
++  "schema": "java-monitor-histories/v1",
++  "sourceKey": "5bdac643b67602e84590f506e6bde87b2ab6e4d8b7717c76b944b8df6b4c71f1",
++  "entry": "reservations.Slots#reserve(Ljava/lang/String;Ljava/lang/String;)Z",
++  "revision": "whole",
++  "status": "established",
++  "scope": {
++    "memory": "sequentially consistent",
++    "threads": 2,
++    "callsPerThread": 1,
++    "receivers": 1,
++    "initialValue": "empty map",
++    "completedCalls": 2,
++    "allocation": "one reservation receiver, one synchronized wrapper and its private HashMap, two fixed workers and up to two named keys",
++    "scheduling": "all enabled compiled instructions plus start and join"
++  },
++  "originalJarSha256": "444950732182ae19dc2c4e89f0d7c05754aad7b3d10988c8944683e9571f8571",
++  "classSha256": "57bfccac297ba91b1101605df51afa86039c4681aeb58afefc2b9be974bae0b7",
++  "synchronizedMethod": false,
++  "field": "private HashMap contents through the synchronized wrapper",
++  "jdk": {
++    "feature": "21",
++    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++    "release": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    }
++  },
++  "disassembly": "Compiled from \"Slots.java\"\npublic class reservations.Slots {\n  final java.util.Map<java.lang.String, java.lang.String> slots;\n    descriptor: Ljava/util/Map;\n\n  public reservations.Slots();\n    descriptor: ()V\n    Code:\n       0: aload_0\n       1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n       4: aload_0\n       5: new           #7                  // class java/util/HashMap\n       8: dup\n       9: invokespecial #9                  // Method java/util/HashMap.\"<init>\":()V\n      12: invokestatic  #10                 // Method java/util/Collections.synchronizedMap:(Ljava/util/Map;)Ljava/util/Map;\n      15: putfield      #16                 // Field slots:Ljava/util/Map;\n      18: return\n\n  public boolean reserve(java.lang.String, java.lang.String);\n    descriptor: (Ljava/lang/String;Ljava/lang/String;)Z\n    Code:\n       0: aload_0\n       1: getfield      #16                 // Field slots:Ljava/util/Map;\n       4: dup\n       5: astore_3\n       6: monitorenter\n       7: aload_0\n       8: getfield      #16                 // Field slots:Ljava/util/Map;\n      11: aload_1\n      12: invokeinterface #22,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z\n      17: ifeq          24\n      20: iconst_0\n      21: aload_3\n      22: monitorexit\n      23: ireturn\n      24: aload_0\n      25: getfield      #16                 // Field slots:Ljava/util/Map;\n      28: aload_1\n      29: aload_2\n      30: invokeinterface #28,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;\n      35: pop\n      36: iconst_1\n      37: aload_3\n      38: monitorexit\n      39: ireturn\n      40: astore        4\n      42: aload_3\n      43: monitorexit\n      44: aload         4\n      46: athrow\n    Exception table:\n       from    to  target type\n           7    23    40   any\n          24    39    40   any\n          40    44    40   any\n\n  protected void between();\n    descriptor: ()V\n    Code:\n       0: return\n}\n",
++  "explorations": {
++    "same-ab": {
++      "visited": 55,
++      "transitions": 54,
++      "blockedTerminal": 0,
++      "completed": [
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            1,
++            0
++          ],
++          "field": [
++            1,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "20 iconst_0"
++            ],
++            [
++              1,
++              "21 aload_3"
++            ],
++            [
++              1,
++              "22 monitorexit"
++            ],
++            [
++              1,
++              "23 ireturn 0"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        }
++      ]
++    },
++    "same-ba": {
++      "visited": 55,
++      "transitions": 54,
++      "blockedTerminal": 0,
++      "completed": [
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            0,
++            1
++          ],
++          "field": [
++            2,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ],
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "20 iconst_0"
++            ],
++            [
++              0,
++              "21 aload_3"
++            ],
++            [
++              0,
++              "22 monitorexit"
++            ],
++            [
++              0,
++              "23 ireturn 0"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ]
++          ]
++        }
++      ]
++    },
++    "same-overlap": {
++      "visited": 949,
++      "transitions": 1644,
++      "blockedTerminal": 0,
++      "completed": [
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            1,
++            0
++          ],
++          "field": [
++            1,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "20 iconst_0"
++            ],
++            [
++              1,
++              "21 aload_3"
++            ],
++            [
++              1,
++              "22 monitorexit"
++            ],
++            [
++              1,
++              "23 ireturn 0"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            1,
++            0
++          ],
++          "field": [
++            1,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "20 iconst_0"
++            ],
++            [
++              1,
++              "21 aload_3"
++            ],
++            [
++              1,
++              "22 monitorexit"
++            ],
++            [
++              1,
++              "23 ireturn 0"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            1,
++            0
++          ],
++          "field": [
++            1,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "20 iconst_0"
++            ],
++            [
++              1,
++              "21 aload_3"
++            ],
++            [
++              1,
++              "22 monitorexit"
++            ],
++            [
++              1,
++              "23 ireturn 0"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            0,
++            1
++          ],
++          "field": [
++            2,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "20 iconst_0"
++            ],
++            [
++              0,
++              "21 aload_3"
++            ],
++            [
++              0,
++              "22 monitorexit"
++            ],
++            [
++              0,
++              "23 ireturn 0"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            0,
++            1
++          ],
++          "field": [
++            2,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "20 iconst_0"
++            ],
++            [
++              0,
++              "21 aload_3"
++            ],
++            [
++              0,
++              "22 monitorexit"
++            ],
++            [
++              0,
++              "23 ireturn 0"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            1,
++            0
++          ],
++          "field": [
++            1,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "20 iconst_0"
++            ],
++            [
++              1,
++              "21 aload_3"
++            ],
++            [
++              1,
++              "22 monitorexit"
++            ],
++            [
++              1,
++              "23 ireturn 0"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            1,
++            0
++          ],
++          "field": [
++            1,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "20 iconst_0"
++            ],
++            [
++              1,
++              "21 aload_3"
++            ],
++            [
++              1,
++              "22 monitorexit"
++            ],
++            [
++              1,
++              "23 ireturn 0"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            0,
++            1
++          ],
++          "field": [
++            2,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "20 iconst_0"
++            ],
++            [
++              0,
++              "21 aload_3"
++            ],
++            [
++              0,
++              "22 monitorexit"
++            ],
++            [
++              0,
++              "23 ireturn 0"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            0,
++            1
++          ],
++          "field": [
++            2,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "20 iconst_0"
++            ],
++            [
++              0,
++              "21 aload_3"
++            ],
++            [
++              0,
++              "22 monitorexit"
++            ],
++            [
++              0,
++              "23 ireturn 0"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            0,
++            1
++          ],
++          "field": [
++            2,
++            0
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "20 iconst_0"
++            ],
++            [
++              0,
++              "21 aload_3"
++            ],
++            [
++              0,
++              "22 monitorexit"
++            ],
++            [
++              0,
++              "23 ireturn 0"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        }
++      ]
++    },
++    "distinct-ab": {
++      "visited": 65,
++      "transitions": 64,
++      "blockedTerminal": 0,
++      "completed": [
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            1,
++            1
++          ],
++          "field": [
++            1,
++            2
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        }
++      ]
++    },
++    "distinct-ba": {
++      "visited": 65,
++      "transitions": 64,
++      "blockedTerminal": 0,
++      "completed": [
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            1,
++            1
++          ],
++          "field": [
++            1,
++            2
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ],
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ]
++          ]
++        }
++      ]
++    },
++    "distinct-overlap": {
++      "visited": 1087,
++      "transitions": 1884,
++      "blockedTerminal": 0,
++      "completed": [
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            1,
++            1
++          ],
++          "field": [
++            1,
++            2
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            1,
++            1
++          ],
++          "field": [
++            1,
++            2
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              0
++            ],
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            1,
++            1
++          ],
++          "field": [
++            1,
++            2
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ],
++            [
++              "return",
++              1
++            ]
++          ],
++          "returns": [
++            1,
++            1
++          ],
++          "field": [
++            1,
++            2
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            1,
++            1
++          ],
++          "field": [
++            1,
++            2
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        },
++        {
++          "history": [
++            [
++              "invoke",
++              1
++            ],
++            [
++              "return",
++              1
++            ],
++            [
++              "invoke",
++              0
++            ],
++            [
++              "return",
++              0
++            ]
++          ],
++          "returns": [
++            1,
++            1
++          ],
++          "field": [
++            1,
++            2
++          ],
++          "linearizable": true,
++          "schedule": [
++            [
++              "main",
++              "start 0"
++            ],
++            [
++              "main",
++              "start 1"
++            ],
++            [
++              1,
++              "invoke reservation"
++            ],
++            [
++              1,
++              "0 aload_0"
++            ],
++            [
++              1,
++              "1 getfield"
++            ],
++            [
++              1,
++              "4 dup"
++            ],
++            [
++              1,
++              "5 astore_3"
++            ],
++            [
++              1,
++              "6 monitorenter"
++            ],
++            [
++              1,
++              "7 aload_0"
++            ],
++            [
++              1,
++              "8 getfield"
++            ],
++            [
++              1,
++              "11 aload_1"
++            ],
++            [
++              1,
++              "12 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              1,
++              "17 ifeq"
++            ],
++            [
++              1,
++              "24 aload_0"
++            ],
++            [
++              1,
++              "25 getfield"
++            ],
++            [
++              1,
++              "28 aload_1"
++            ],
++            [
++              1,
++              "29 aload_2"
++            ],
++            [
++              1,
++              "30 invokeinterface"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              1,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              1,
++              "35 pop"
++            ],
++            [
++              1,
++              "36 iconst_1"
++            ],
++            [
++              1,
++              "37 aload_3"
++            ],
++            [
++              1,
++              "38 monitorexit"
++            ],
++            [
++              1,
++              "39 ireturn 1"
++            ],
++            [
++              1,
++              "record response"
++            ],
++            [
++              0,
++              "invoke reservation"
++            ],
++            [
++              0,
++              "0 aload_0"
++            ],
++            [
++              0,
++              "1 getfield"
++            ],
++            [
++              0,
++              "4 dup"
++            ],
++            [
++              0,
++              "5 astore_3"
++            ],
++            [
++              0,
++              "6 monitorenter"
++            ],
++            [
++              0,
++              "7 aload_0"
++            ],
++            [
++              0,
++              "8 getfield"
++            ],
++            [
++              0,
++              "11 aload_1"
++            ],
++            [
++              0,
++              "12 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 12 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 18 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.containsKey 19 return"
++            ],
++            [
++              0,
++              "17 ifeq"
++            ],
++            [
++              0,
++              "24 aload_0"
++            ],
++            [
++              0,
++              "25 getfield"
++            ],
++            [
++              0,
++              "28 aload_1"
++            ],
++            [
++              0,
++              "29 aload_2"
++            ],
++            [
++              0,
++              "30 invokeinterface"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 6 acquire"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 13 call"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 19 release"
++            ],
++            [
++              0,
++              "SynchronizedMap.put 20 return"
++            ],
++            [
++              0,
++              "35 pop"
++            ],
++            [
++              0,
++              "36 iconst_1"
++            ],
++            [
++              0,
++              "37 aload_3"
++            ],
++            [
++              0,
++              "38 monitorexit"
++            ],
++            [
++              0,
++              "39 ireturn 1"
++            ],
++            [
++              0,
++              "record response"
++            ],
++            [
++              "main",
++              "join 0"
++            ],
++            [
++              "main",
++              "join 1"
++            ]
++          ]
++        }
++      ]
++    }
++  },
++  "jvmReplays": [
++    {
++      "mode": "same-ab",
++      "jvm": {
++        "mode": 0,
++        "distinct": false,
++        "invoked": [
++          1,
++          3
++        ],
++        "returned": [
++          2,
++          4
++        ],
++        "success": [
++          true,
++          false
++        ],
++        "size": 1,
++        "owners": [
++          "A",
++          null
++        ]
++      },
++      "linearizable": true,
++      "matchingSchedule": [
++        [
++          "main",
++          "start 0"
++        ],
++        [
++          0,
++          "invoke reservation"
++        ],
++        [
++          0,
++          "0 aload_0"
++        ],
++        [
++          0,
++          "1 getfield"
++        ],
++        [
++          0,
++          "4 dup"
++        ],
++        [
++          0,
++          "5 astore_3"
++        ],
++        [
++          0,
++          "6 monitorenter"
++        ],
++        [
++          0,
++          "7 aload_0"
++        ],
++        [
++          0,
++          "8 getfield"
++        ],
++        [
++          0,
++          "11 aload_1"
++        ],
++        [
++          0,
++          "12 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          0,
++          "17 ifeq"
++        ],
++        [
++          0,
++          "24 aload_0"
++        ],
++        [
++          0,
++          "25 getfield"
++        ],
++        [
++          0,
++          "28 aload_1"
++        ],
++        [
++          0,
++          "29 aload_2"
++        ],
++        [
++          0,
++          "30 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 13 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 19 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 20 return"
++        ],
++        [
++          0,
++          "35 pop"
++        ],
++        [
++          0,
++          "36 iconst_1"
++        ],
++        [
++          0,
++          "37 aload_3"
++        ],
++        [
++          0,
++          "38 monitorexit"
++        ],
++        [
++          0,
++          "39 ireturn 1"
++        ],
++        [
++          0,
++          "record response"
++        ],
++        [
++          "main",
++          "join 0"
++        ],
++        [
++          "main",
++          "start 1"
++        ],
++        [
++          1,
++          "invoke reservation"
++        ],
++        [
++          1,
++          "0 aload_0"
++        ],
++        [
++          1,
++          "1 getfield"
++        ],
++        [
++          1,
++          "4 dup"
++        ],
++        [
++          1,
++          "5 astore_3"
++        ],
++        [
++          1,
++          "6 monitorenter"
++        ],
++        [
++          1,
++          "7 aload_0"
++        ],
++        [
++          1,
++          "8 getfield"
++        ],
++        [
++          1,
++          "11 aload_1"
++        ],
++        [
++          1,
++          "12 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          1,
++          "17 ifeq"
++        ],
++        [
++          1,
++          "20 iconst_0"
++        ],
++        [
++          1,
++          "21 aload_3"
++        ],
++        [
++          1,
++          "22 monitorexit"
++        ],
++        [
++          1,
++          "23 ireturn 0"
++        ],
++        [
++          1,
++          "record response"
++        ],
++        [
++          "main",
++          "join 1"
++        ]
++      ]
++    },
++    {
++      "mode": "same-ba",
++      "jvm": {
++        "mode": 1,
++        "distinct": false,
++        "invoked": [
++          3,
++          1
++        ],
++        "returned": [
++          4,
++          2
++        ],
++        "success": [
++          false,
++          true
++        ],
++        "size": 1,
++        "owners": [
++          "B",
++          null
++        ]
++      },
++      "linearizable": true,
++      "matchingSchedule": [
++        [
++          "main",
++          "start 1"
++        ],
++        [
++          1,
++          "invoke reservation"
++        ],
++        [
++          1,
++          "0 aload_0"
++        ],
++        [
++          1,
++          "1 getfield"
++        ],
++        [
++          1,
++          "4 dup"
++        ],
++        [
++          1,
++          "5 astore_3"
++        ],
++        [
++          1,
++          "6 monitorenter"
++        ],
++        [
++          1,
++          "7 aload_0"
++        ],
++        [
++          1,
++          "8 getfield"
++        ],
++        [
++          1,
++          "11 aload_1"
++        ],
++        [
++          1,
++          "12 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          1,
++          "17 ifeq"
++        ],
++        [
++          1,
++          "24 aload_0"
++        ],
++        [
++          1,
++          "25 getfield"
++        ],
++        [
++          1,
++          "28 aload_1"
++        ],
++        [
++          1,
++          "29 aload_2"
++        ],
++        [
++          1,
++          "30 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 13 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 19 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 20 return"
++        ],
++        [
++          1,
++          "35 pop"
++        ],
++        [
++          1,
++          "36 iconst_1"
++        ],
++        [
++          1,
++          "37 aload_3"
++        ],
++        [
++          1,
++          "38 monitorexit"
++        ],
++        [
++          1,
++          "39 ireturn 1"
++        ],
++        [
++          1,
++          "record response"
++        ],
++        [
++          "main",
++          "join 1"
++        ],
++        [
++          "main",
++          "start 0"
++        ],
++        [
++          0,
++          "invoke reservation"
++        ],
++        [
++          0,
++          "0 aload_0"
++        ],
++        [
++          0,
++          "1 getfield"
++        ],
++        [
++          0,
++          "4 dup"
++        ],
++        [
++          0,
++          "5 astore_3"
++        ],
++        [
++          0,
++          "6 monitorenter"
++        ],
++        [
++          0,
++          "7 aload_0"
++        ],
++        [
++          0,
++          "8 getfield"
++        ],
++        [
++          0,
++          "11 aload_1"
++        ],
++        [
++          0,
++          "12 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          0,
++          "17 ifeq"
++        ],
++        [
++          0,
++          "20 iconst_0"
++        ],
++        [
++          0,
++          "21 aload_3"
++        ],
++        [
++          0,
++          "22 monitorexit"
++        ],
++        [
++          0,
++          "23 ireturn 0"
++        ],
++        [
++          0,
++          "record response"
++        ],
++        [
++          "main",
++          "join 0"
++        ]
++      ]
++    },
++    {
++      "mode": "same-overlap",
++      "jvm": {
++        "mode": 2,
++        "distinct": false,
++        "invoked": [
++          1,
++          3
++        ],
++        "returned": [
++          2,
++          4
++        ],
++        "success": [
++          true,
++          false
++        ],
++        "size": 1,
++        "owners": [
++          "A",
++          null
++        ]
++      },
++      "linearizable": true,
++      "matchingSchedule": [
++        [
++          "main",
++          "start 0"
++        ],
++        [
++          "main",
++          "start 1"
++        ],
++        [
++          0,
++          "invoke reservation"
++        ],
++        [
++          0,
++          "0 aload_0"
++        ],
++        [
++          0,
++          "1 getfield"
++        ],
++        [
++          0,
++          "4 dup"
++        ],
++        [
++          0,
++          "5 astore_3"
++        ],
++        [
++          0,
++          "6 monitorenter"
++        ],
++        [
++          0,
++          "7 aload_0"
++        ],
++        [
++          0,
++          "8 getfield"
++        ],
++        [
++          0,
++          "11 aload_1"
++        ],
++        [
++          0,
++          "12 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          0,
++          "17 ifeq"
++        ],
++        [
++          0,
++          "24 aload_0"
++        ],
++        [
++          0,
++          "25 getfield"
++        ],
++        [
++          0,
++          "28 aload_1"
++        ],
++        [
++          0,
++          "29 aload_2"
++        ],
++        [
++          0,
++          "30 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 13 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 19 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 20 return"
++        ],
++        [
++          0,
++          "35 pop"
++        ],
++        [
++          0,
++          "36 iconst_1"
++        ],
++        [
++          0,
++          "37 aload_3"
++        ],
++        [
++          0,
++          "38 monitorexit"
++        ],
++        [
++          0,
++          "39 ireturn 1"
++        ],
++        [
++          0,
++          "record response"
++        ],
++        [
++          "main",
++          "join 0"
++        ],
++        [
++          1,
++          "invoke reservation"
++        ],
++        [
++          1,
++          "0 aload_0"
++        ],
++        [
++          1,
++          "1 getfield"
++        ],
++        [
++          1,
++          "4 dup"
++        ],
++        [
++          1,
++          "5 astore_3"
++        ],
++        [
++          1,
++          "6 monitorenter"
++        ],
++        [
++          1,
++          "7 aload_0"
++        ],
++        [
++          1,
++          "8 getfield"
++        ],
++        [
++          1,
++          "11 aload_1"
++        ],
++        [
++          1,
++          "12 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          1,
++          "17 ifeq"
++        ],
++        [
++          1,
++          "20 iconst_0"
++        ],
++        [
++          1,
++          "21 aload_3"
++        ],
++        [
++          1,
++          "22 monitorexit"
++        ],
++        [
++          1,
++          "23 ireturn 0"
++        ],
++        [
++          1,
++          "record response"
++        ],
++        [
++          "main",
++          "join 1"
++        ]
++      ]
++    },
++    {
++      "mode": "distinct-ab",
++      "jvm": {
++        "mode": 0,
++        "distinct": true,
++        "invoked": [
++          1,
++          3
++        ],
++        "returned": [
++          2,
++          4
++        ],
++        "success": [
++          true,
++          true
++        ],
++        "size": 2,
++        "owners": [
++          "A",
++          "B"
++        ]
++      },
++      "linearizable": true,
++      "matchingSchedule": [
++        [
++          "main",
++          "start 0"
++        ],
++        [
++          0,
++          "invoke reservation"
++        ],
++        [
++          0,
++          "0 aload_0"
++        ],
++        [
++          0,
++          "1 getfield"
++        ],
++        [
++          0,
++          "4 dup"
++        ],
++        [
++          0,
++          "5 astore_3"
++        ],
++        [
++          0,
++          "6 monitorenter"
++        ],
++        [
++          0,
++          "7 aload_0"
++        ],
++        [
++          0,
++          "8 getfield"
++        ],
++        [
++          0,
++          "11 aload_1"
++        ],
++        [
++          0,
++          "12 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          0,
++          "17 ifeq"
++        ],
++        [
++          0,
++          "24 aload_0"
++        ],
++        [
++          0,
++          "25 getfield"
++        ],
++        [
++          0,
++          "28 aload_1"
++        ],
++        [
++          0,
++          "29 aload_2"
++        ],
++        [
++          0,
++          "30 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 13 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 19 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 20 return"
++        ],
++        [
++          0,
++          "35 pop"
++        ],
++        [
++          0,
++          "36 iconst_1"
++        ],
++        [
++          0,
++          "37 aload_3"
++        ],
++        [
++          0,
++          "38 monitorexit"
++        ],
++        [
++          0,
++          "39 ireturn 1"
++        ],
++        [
++          0,
++          "record response"
++        ],
++        [
++          "main",
++          "join 0"
++        ],
++        [
++          "main",
++          "start 1"
++        ],
++        [
++          1,
++          "invoke reservation"
++        ],
++        [
++          1,
++          "0 aload_0"
++        ],
++        [
++          1,
++          "1 getfield"
++        ],
++        [
++          1,
++          "4 dup"
++        ],
++        [
++          1,
++          "5 astore_3"
++        ],
++        [
++          1,
++          "6 monitorenter"
++        ],
++        [
++          1,
++          "7 aload_0"
++        ],
++        [
++          1,
++          "8 getfield"
++        ],
++        [
++          1,
++          "11 aload_1"
++        ],
++        [
++          1,
++          "12 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          1,
++          "17 ifeq"
++        ],
++        [
++          1,
++          "24 aload_0"
++        ],
++        [
++          1,
++          "25 getfield"
++        ],
++        [
++          1,
++          "28 aload_1"
++        ],
++        [
++          1,
++          "29 aload_2"
++        ],
++        [
++          1,
++          "30 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 13 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 19 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 20 return"
++        ],
++        [
++          1,
++          "35 pop"
++        ],
++        [
++          1,
++          "36 iconst_1"
++        ],
++        [
++          1,
++          "37 aload_3"
++        ],
++        [
++          1,
++          "38 monitorexit"
++        ],
++        [
++          1,
++          "39 ireturn 1"
++        ],
++        [
++          1,
++          "record response"
++        ],
++        [
++          "main",
++          "join 1"
++        ]
++      ]
++    },
++    {
++      "mode": "distinct-ba",
++      "jvm": {
++        "mode": 1,
++        "distinct": true,
++        "invoked": [
++          3,
++          1
++        ],
++        "returned": [
++          4,
++          2
++        ],
++        "success": [
++          true,
++          true
++        ],
++        "size": 2,
++        "owners": [
++          "A",
++          "B"
++        ]
++      },
++      "linearizable": true,
++      "matchingSchedule": [
++        [
++          "main",
++          "start 1"
++        ],
++        [
++          1,
++          "invoke reservation"
++        ],
++        [
++          1,
++          "0 aload_0"
++        ],
++        [
++          1,
++          "1 getfield"
++        ],
++        [
++          1,
++          "4 dup"
++        ],
++        [
++          1,
++          "5 astore_3"
++        ],
++        [
++          1,
++          "6 monitorenter"
++        ],
++        [
++          1,
++          "7 aload_0"
++        ],
++        [
++          1,
++          "8 getfield"
++        ],
++        [
++          1,
++          "11 aload_1"
++        ],
++        [
++          1,
++          "12 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          1,
++          "17 ifeq"
++        ],
++        [
++          1,
++          "24 aload_0"
++        ],
++        [
++          1,
++          "25 getfield"
++        ],
++        [
++          1,
++          "28 aload_1"
++        ],
++        [
++          1,
++          "29 aload_2"
++        ],
++        [
++          1,
++          "30 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 13 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 19 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 20 return"
++        ],
++        [
++          1,
++          "35 pop"
++        ],
++        [
++          1,
++          "36 iconst_1"
++        ],
++        [
++          1,
++          "37 aload_3"
++        ],
++        [
++          1,
++          "38 monitorexit"
++        ],
++        [
++          1,
++          "39 ireturn 1"
++        ],
++        [
++          1,
++          "record response"
++        ],
++        [
++          "main",
++          "join 1"
++        ],
++        [
++          "main",
++          "start 0"
++        ],
++        [
++          0,
++          "invoke reservation"
++        ],
++        [
++          0,
++          "0 aload_0"
++        ],
++        [
++          0,
++          "1 getfield"
++        ],
++        [
++          0,
++          "4 dup"
++        ],
++        [
++          0,
++          "5 astore_3"
++        ],
++        [
++          0,
++          "6 monitorenter"
++        ],
++        [
++          0,
++          "7 aload_0"
++        ],
++        [
++          0,
++          "8 getfield"
++        ],
++        [
++          0,
++          "11 aload_1"
++        ],
++        [
++          0,
++          "12 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          0,
++          "17 ifeq"
++        ],
++        [
++          0,
++          "24 aload_0"
++        ],
++        [
++          0,
++          "25 getfield"
++        ],
++        [
++          0,
++          "28 aload_1"
++        ],
++        [
++          0,
++          "29 aload_2"
++        ],
++        [
++          0,
++          "30 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 13 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 19 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 20 return"
++        ],
++        [
++          0,
++          "35 pop"
++        ],
++        [
++          0,
++          "36 iconst_1"
++        ],
++        [
++          0,
++          "37 aload_3"
++        ],
++        [
++          0,
++          "38 monitorexit"
++        ],
++        [
++          0,
++          "39 ireturn 1"
++        ],
++        [
++          0,
++          "record response"
++        ],
++        [
++          "main",
++          "join 0"
++        ]
++      ]
++    },
++    {
++      "mode": "distinct-overlap",
++      "jvm": {
++        "mode": 2,
++        "distinct": true,
++        "invoked": [
++          1,
++          3
++        ],
++        "returned": [
++          2,
++          4
++        ],
++        "success": [
++          true,
++          true
++        ],
++        "size": 2,
++        "owners": [
++          "A",
++          "B"
++        ]
++      },
++      "linearizable": true,
++      "matchingSchedule": [
++        [
++          "main",
++          "start 0"
++        ],
++        [
++          "main",
++          "start 1"
++        ],
++        [
++          0,
++          "invoke reservation"
++        ],
++        [
++          0,
++          "0 aload_0"
++        ],
++        [
++          0,
++          "1 getfield"
++        ],
++        [
++          0,
++          "4 dup"
++        ],
++        [
++          0,
++          "5 astore_3"
++        ],
++        [
++          0,
++          "6 monitorenter"
++        ],
++        [
++          0,
++          "7 aload_0"
++        ],
++        [
++          0,
++          "8 getfield"
++        ],
++        [
++          0,
++          "11 aload_1"
++        ],
++        [
++          0,
++          "12 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          0,
++          "17 ifeq"
++        ],
++        [
++          0,
++          "24 aload_0"
++        ],
++        [
++          0,
++          "25 getfield"
++        ],
++        [
++          0,
++          "28 aload_1"
++        ],
++        [
++          0,
++          "29 aload_2"
++        ],
++        [
++          0,
++          "30 invokeinterface"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 6 acquire"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 13 call"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 19 release"
++        ],
++        [
++          0,
++          "SynchronizedMap.put 20 return"
++        ],
++        [
++          0,
++          "35 pop"
++        ],
++        [
++          0,
++          "36 iconst_1"
++        ],
++        [
++          0,
++          "37 aload_3"
++        ],
++        [
++          0,
++          "38 monitorexit"
++        ],
++        [
++          0,
++          "39 ireturn 1"
++        ],
++        [
++          0,
++          "record response"
++        ],
++        [
++          "main",
++          "join 0"
++        ],
++        [
++          1,
++          "invoke reservation"
++        ],
++        [
++          1,
++          "0 aload_0"
++        ],
++        [
++          1,
++          "1 getfield"
++        ],
++        [
++          1,
++          "4 dup"
++        ],
++        [
++          1,
++          "5 astore_3"
++        ],
++        [
++          1,
++          "6 monitorenter"
++        ],
++        [
++          1,
++          "7 aload_0"
++        ],
++        [
++          1,
++          "8 getfield"
++        ],
++        [
++          1,
++          "11 aload_1"
++        ],
++        [
++          1,
++          "12 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 12 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 18 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.containsKey 19 return"
++        ],
++        [
++          1,
++          "17 ifeq"
++        ],
++        [
++          1,
++          "24 aload_0"
++        ],
++        [
++          1,
++          "25 getfield"
++        ],
++        [
++          1,
++          "28 aload_1"
++        ],
++        [
++          1,
++          "29 aload_2"
++        ],
++        [
++          1,
++          "30 invokeinterface"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 6 acquire"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 13 call"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 19 release"
++        ],
++        [
++          1,
++          "SynchronizedMap.put 20 return"
++        ],
++        [
++          1,
++          "35 pop"
++        ],
++        [
++          1,
++          "36 iconst_1"
++        ],
++        [
++          1,
++          "37 aload_3"
++        ],
++        [
++          1,
++          "38 monitorexit"
++        ],
++        [
++          1,
++          "39 ireturn 1"
++        ],
++        [
++          1,
++          "record response"
++        ],
++        [
++          "main",
++          "join 1"
++        ]
++      ]
++    }
++  ],
++  "checkerSha256": "4e72641b77f4900bc4d47404bd7834747d5e00982a3ba4b79358b391ffc3819f",
++  "wallSeconds": 3.23666,
++  "peakProcessKiB": 62748,
++  "jdkWrapper": {
++    "classes": {
++      "java/util/Collections": "8b515a27e185a771e37058b79d663d4b8de7987aef6f43f8eb268931891c071e",
++      "java/util/Collections$SynchronizedMap": "127a790ffa58a7c97f63fe8bf18bc93c7740dcf13e3156690fc79e25a9669b56",
++      "java/util/HashMap": "8435b00bf2cf42391cc63f44cfe2dc52e96e3dfe7219932249feb67660a320cd",
++      "java/lang/String": "831a11d5c76c84b8777a7813440b4570d49934dee05c285c9068a0ec43158412"
++    },
++    "methods": {
++      "containsKey": {
++        "descriptor": "(Ljava/lang/Object;)Z",
++        "acquire": 6,
++        "call": 12,
++        "release": 18,
++        "return": 19,
++        "normalBytecode": [
++          {
++            "pc": 0,
++            "op": "aload_0",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 1,
++            "op": "getfield",
++            "arg": "#21",
++            "member": "Field mutex:Ljava/lang/Object;"
++          },
++          {
++            "pc": 4,
++            "op": "dup",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 5,
++            "op": "astore_2",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 6,
++            "op": "monitorenter",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 7,
++            "op": "aload_0",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 8,
++            "op": "getfield",
++            "arg": "#15",
++            "member": "Field m:Ljava/util/Map;"
++          },
++          {
++            "pc": 11,
++            "op": "aload_1",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 12,
++            "op": "invokeinterface",
++            "arg": "#33,  2",
++            "member": "InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z"
++          },
++          {
++            "pc": 17,
++            "op": "aload_2",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 18,
++            "op": "monitorexit",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 19,
++            "op": "ireturn",
++            "arg": "",
++            "member": ""
++          }
++        ]
++      },
++      "put": {
++        "descriptor": "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
++        "acquire": 6,
++        "call": 13,
++        "release": 19,
++        "return": 20,
++        "normalBytecode": [
++          {
++            "pc": 0,
++            "op": "aload_0",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 1,
++            "op": "getfield",
++            "arg": "#21",
++            "member": "Field mutex:Ljava/lang/Object;"
++          },
++          {
++            "pc": 4,
++            "op": "dup",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 5,
++            "op": "astore_3",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 6,
++            "op": "monitorenter",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 7,
++            "op": "aload_0",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 8,
++            "op": "getfield",
++            "arg": "#15",
++            "member": "Field m:Ljava/util/Map;"
++          },
++          {
++            "pc": 11,
++            "op": "aload_1",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 12,
++            "op": "aload_2",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 13,
++            "op": "invokeinterface",
++            "arg": "#43,  3",
++            "member": "InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
++          },
++          {
++            "pc": 18,
++            "op": "aload_3",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 19,
++            "op": "monitorexit",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 20,
++            "op": "areturn",
++            "arg": "",
++            "member": ""
++          }
++        ]
++      },
++      "get": {
++        "descriptor": "(Ljava/lang/Object;)Ljava/lang/Object;",
++        "acquire": 6,
++        "call": 12,
++        "release": 18,
++        "return": 19,
++        "normalBytecode": [
++          {
++            "pc": 0,
++            "op": "aload_0",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 1,
++            "op": "getfield",
++            "arg": "#21",
++            "member": "Field mutex:Ljava/lang/Object;"
++          },
++          {
++            "pc": 4,
++            "op": "dup",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 5,
++            "op": "astore_2",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 6,
++            "op": "monitorenter",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 7,
++            "op": "aload_0",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 8,
++            "op": "getfield",
++            "arg": "#15",
++            "member": "Field m:Ljava/util/Map;"
++          },
++          {
++            "pc": 11,
++            "op": "aload_1",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 12,
++            "op": "invokeinterface",
++            "arg": "#40,  2",
++            "member": "InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;"
++          },
++          {
++            "pc": 17,
++            "op": "aload_2",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 18,
++            "op": "monitorexit",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 19,
++            "op": "areturn",
++            "arg": "",
++            "member": ""
++          }
++        ]
++      },
++      "size": {
++        "descriptor": "()I",
++        "acquire": 6,
++        "call": 11,
++        "release": 17,
++        "return": 18,
++        "normalBytecode": [
++          {
++            "pc": 0,
++            "op": "aload_0",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 1,
++            "op": "getfield",
++            "arg": "#21",
++            "member": "Field mutex:Ljava/lang/Object;"
++          },
++          {
++            "pc": 4,
++            "op": "dup",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 5,
++            "op": "astore_1",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 6,
++            "op": "monitorenter",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 7,
++            "op": "aload_0",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 8,
++            "op": "getfield",
++            "arg": "#15",
++            "member": "Field m:Ljava/util/Map;"
++          },
++          {
++            "pc": 11,
++            "op": "invokeinterface",
++            "arg": "#25,  1",
++            "member": "InterfaceMethod java/util/Map.size:()I"
++          },
++          {
++            "pc": 16,
++            "op": "aload_1",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 17,
++            "op": "monitorexit",
++            "arg": "",
++            "member": ""
++          },
++          {
++            "pc": 18,
++            "op": "ireturn",
++            "arg": "",
++            "member": ""
++          }
++        ]
++      }
++    },
++    "mutex": "the wrapper itself",
++    "delegate": {
++      "writeHistories": 21,
++      "calls": 62,
++      "stdoutSha256": "ca566481aeaacca5b8aec939ec545c2d862ff8af6966f0ede336395989b48080",
++      "driverSha256": "085eaaaa883d0090a9cc670ce8e87e0184f7729ec636a2b9b47ea78a8fe322d3",
++      "rows": [
++        "0 0 0 0 0 0 0 0 0 0",
++        "0 0 0 0 0 1 0 1 0 1",
++        "0 0 0 0 0 2 0 2 0 1",
++        "0 0 0 0 1 0 0 0 0 0",
++        "0 0 0 0 1 1 0 0 1 1",
++        "0 0 0 0 1 2 0 0 2 1",
++        "1 0 1 0 0 0 1 1 0 1",
++        "1 0 1 0 0 1 1 1 0 1",
++        "1 0 1 0 0 2 1 2 0 1",
++        "1 0 1 0 1 0 0 1 0 1",
++        "1 0 1 0 1 1 0 1 1 2",
++        "1 0 1 0 1 2 0 1 2 2",
++        "1 1 2 0 0 0 1 2 0 1",
++        "1 1 2 0 0 1 2 1 0 1",
++        "1 1 2 0 0 2 2 2 0 1",
++        "1 1 2 0 1 0 0 2 0 1",
++        "1 1 2 0 1 1 0 2 1 2",
++        "1 1 2 0 1 2 0 2 2 2",
++        "1 2 0 1 0 0 0 0 1 1",
++        "1 2 0 1 0 1 0 1 1 2",
++        "1 2 0 1 0 2 0 2 1 2",
++        "1 2 0 1 1 0 1 0 1 1",
++        "1 2 0 1 1 1 1 0 1 1",
++        "1 2 0 1 1 2 1 0 2 1",
++        "1 3 0 2 0 0 0 0 2 1",
++        "1 3 0 2 0 1 0 1 2 2",
++        "1 3 0 2 0 2 0 2 2 2",
++        "1 3 0 2 1 0 1 0 2 1",
++        "1 3 0 2 1 1 2 0 1 1",
++        "1 3 0 2 1 2 2 0 2 1",
++        "2 0 1 0 0 0 1 1 0 1",
++        "2 0 1 0 1 0 0 1 0 1",
++        "2 1 1 0 0 0 1 1 0 1",
++        "2 1 1 0 1 0 0 1 0 1",
++        "2 2 1 1 0 0 1 1 1 2",
++        "2 2 1 1 1 0 1 1 1 2",
++        "2 3 1 2 0 0 1 1 2 2",
++        "2 3 1 2 1 0 1 1 2 2",
++        "2 4 2 0 0 0 1 2 0 1",
++        "2 4 2 0 1 0 0 2 0 1",
++        "2 5 2 0 0 0 1 2 0 1",
++        "2 5 2 0 1 0 0 2 0 1",
++        "2 6 2 1 0 0 1 2 1 2",
++        "2 6 2 1 1 0 1 2 1 2",
++        "2 7 2 2 0 0 1 2 2 2",
++        "2 7 2 2 1 0 1 2 2 2",
++        "2 8 1 1 0 0 1 1 1 2",
++        "2 8 1 1 1 0 1 1 1 2",
++        "2 9 2 1 0 0 1 2 1 2",
++        "2 9 2 1 1 0 1 2 1 2",
++        "2 10 0 1 0 0 0 0 1 1",
++        "2 10 0 1 1 0 1 0 1 1",
++        "2 11 0 1 0 0 0 0 1 1",
++        "2 11 0 1 1 0 1 0 1 1",
++        "2 12 1 2 0 0 1 1 2 2",
++        "2 12 1 2 1 0 1 1 2 2",
++        "2 13 2 2 0 0 1 2 2 2",
++        "2 13 2 2 1 0 1 2 2 2",
++        "2 14 0 2 0 0 0 0 2 1",
++        "2 14 0 2 1 0 1 0 2 1",
++        "2 15 0 2 0 0 0 0 2 1",
++        "2 15 0 2 1 0 1 0 2 1"
++      ]
++    },
++    "translatorSha256": "cec43281a15ceee424c0dc56e5f96826a394bf865d7a61d14884491fd0cb582f"
++  }
++}

@@ -379,22 +379,25 @@ def solve(induction, domain, work, seconds):
 
 
 def range_caller(induction, method, domain, helper):
-    """Check the actual caller's argument order, monitor-free frame and read through the second root."""
+    """Check each path to the helper, then consume its frame at the actual second-root read."""
     code = method["code"]
+    calls = [i for i, ins in enumerate(code) if ins.op == "invokestatic"]
     if (
         induction.rule != "range-fill"
         or method["handlers"]
         or "static " not in method["header"]
-        or [i.op for i in code]
-        != ["aload_0", "iload_2", "iload_3", "iload", "invokestatic", "aload_1", "iload", "iaload", "ireturn"]
-        or code[3].arg != "4"
-        or code[6].arg != "5"
-        or induction.call(code[4]) != helper
+        or len(calls) != 1
     ):
-        raise ValueError("the caller does not forward the certified range and read the selected second root")
+        raise ValueError("the caller needs one static range-fill call without exception handlers")
+    at = calls[0]
+    tail = code[at + 1 :]
+    if (
+        induction.call(code[at]) != helper
+        or [ins.op for ins in tail] != ["aload_1", "iload", "iaload", "ireturn"]
+        or tail[1].arg != "5"
+    ):
+        raise ValueError("the caller must read the observed index of the second root after the helper")
     old_cell = term("ite", "aliases", term("select", "initial", "k"), term("select", "otherInitial", "k"))
-    filled = term("ite", between("from", "k", "to"), "value", term("select", "initial", "k"))
-    postcondition = term("=>", between(ZERO, "k", "length"), term("=", term("select", "heap", "k"), filled))
     observed = term("ite", "aliases", term("select", "heap", "k"), term("select", "otherInitial", "k"))
     wanted = term("ite", both("aliases", between("from", "k", "to")), "value", old_cell)
     admitted = [
@@ -403,11 +406,32 @@ def range_caller(induction, method, domain, helper):
         between(ZERO, "k", "otherLength"),
         term("=>", "aliases", term("=", "length", "otherLength")),
     ]
-    # For distinct roots the helper's only array operand is the first root. For an alias its postcondition supplies the read.
-    induction.vc("caller establishes the helper precondition", admitted, both(*domain))
-    induction.vc(
-        "caller read follows from the proved frame", [*admitted, postcondition], term("=", observed, wanted)
-    )
+    entry = State(dict(enumerate(("@array", "@other", "from", "to", "value", "k"))), path=tuple(admitted))
+    paths = induction.walk(method, entry, 0, stop=code[at].pc)
+    if not paths:
+        raise ValueError("no path reaches the range-fill helper")
+    for kind, state in paths:
+        if (
+            kind != "head"
+            or len(state.stack) != 4
+            or state.stack[0] != "@array"
+            or state.heap != "initial"
+            or state.locals != entry.locals
+        ):
+            raise ValueError("unrepresented caller stack, heap, or locals at the helper")
+        _, lower, upper, value = state.stack
+        helper_domain = both(
+            term("bvsle", ZERO, lower), term("bvsle", lower, upper), term("bvsle", upper, "length")
+        )
+        induction.vc("caller establishes the helper precondition", state.path, helper_domain)
+        written = term("ite", between(lower, "k", upper), value, term("select", "initial", "k"))
+        frame = term("=>", between(ZERO, "k", "length"), term("=", term("select", "heap", "k"), written))
+        induction.vc(
+            "caller read follows from the proved frame",
+            [*state.path, helper_domain, frame],
+            term("=", observed, wanted),
+        )
+    return code[at].pc, tail[2].pc
 
 
 def record_key(folder, target, contract):
@@ -555,15 +579,15 @@ def run(folder, target, spec, seconds):
             caller_file.write_bytes(caller_data)
             caller_code, caller_disassembly = methods(home / "bin/javap", caller_file)
             called = caller_code[caller_name, caller_descriptor]
-            range_caller(induction, called, domain, (cls, name, descriptor))
+            invocation_pc, observation_pc = range_caller(induction, called, domain, (cls, name, descriptor))
             disassembly += "\n" + caller_disassembly
             caller_evidence = {
                 "entry": caller,
                 "classSha256": classes[caller_owner.replace(".", "/")]["sha256"],
                 "callee": spec["entry"],
                 "calleeClassSha256": classes[cls]["sha256"],
-                "invocationPc": called["code"][4].pc,
-                "observationPc": called["code"][7].pc,
+                "invocationPc": invocation_pc,
+                "observationPc": observation_pc,
                 "roots": "the same int array or two distinct int arrays of independent legal lengths",
             }
         smt, obligations, solver = solve(induction, domain, work, seconds)

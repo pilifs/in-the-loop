@@ -1,0 +1,44 @@
+{
+  "claimKey": "a1a38ec51be2119d",
+  "entry": "com.google.common.math.LongMath#mean(JJ)J",
+  "inputs": [
+    {
+      "name": "x",
+      "type": "long",
+      "value": "9223372036854775807"
+    },
+    {
+      "name": "y",
+      "type": "long",
+      "value": "9223372036854775807"
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "by": "jvm",
+  "reproduced": true,
+  "sides": {
+    "mutant": {
+      "entryClassSha256": "129883f030ee77626b634b3d9e24dad1b3e27cbcb4256960e8e8e4867ed2b55a",
+      "classpath": [
+        "d895693b47636f7c6a2992fd37e7bb80b0aeb40891991ae5836bae45e2330c64"
+      ],
+      "program": "class CandidateReplay { public static void main(String[] args) {\nlong x = 9223372036854775807L;\nlong y = 9223372036854775807L;\nif (!(true)) { System.out.println(\"outside\"); return; }\nlong result = 0;\nThrowable failure = null;\ntry { result = com.google.common.math.LongMath.mean(x, y); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && ((result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "admitted": true,
+      "values": [
+        -1,
+        null
+      ],
+      "satisfies": false
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  }
+}

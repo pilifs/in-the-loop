@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "343",
+    "task": "size-whole",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "reservations.Booking#size(I)I",
+    "revisions": [
+      "whole"
+    ],
+    "claim": {
+      "task": "size-whole",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#size(I)I",
+      "file": "claims/size.json",
+      "sha256": "47889db7d6164cc6719c42c8f3cfdedba16b62d18e56e5117c34cbda7d387ef5",
+      "property": "size",
+      "claimKind": "property",
+      "statement": "The map contains each of the requested keys exactly once after joining both workers.",
+      "assume": "code >= 0 && code < 6",
+      "assert": "result == (code >= 3 ? 2 : 1)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/reservations/BookingCases.java",
+          "sha256": "9a571b2c1559a2d2b6e87ace750cc44831094419435a036c16be55055cbf4591"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "259b35a3be1fcd161070da72caf0f37c5ab69724407f67e8c7acb776bd3d60eb"
+        }
+      ],
+      "key": "4e3470e8af39d741"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "whole",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "whole",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/size-whole"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-192109-343-check-real-synchronized-reservations/examples/343-synchronized-map-reservations",
+    "network": false
+  },
+  "inputs": {
+    "example": "343",
+    "task": "size-whole",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "reservations.Booking#size(I)I",
+    "revisions": [
+      "whole"
+    ],
+    "claim": {
+      "task": "size-whole",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#size(I)I",
+      "file": "claims/size.json",
+      "sha256": "47889db7d6164cc6719c42c8f3cfdedba16b62d18e56e5117c34cbda7d387ef5",
+      "property": "size",
+      "claimKind": "property",
+      "statement": "The map contains each of the requested keys exactly once after joining both workers.",
+      "assume": "code >= 0 && code < 6",
+      "assert": "result == (code >= 3 ? 2 : 1)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/reservations/BookingCases.java",
+          "sha256": "9a571b2c1559a2d2b6e87ace750cc44831094419435a036c16be55055cbf4591"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "259b35a3be1fcd161070da72caf0f37c5ab69724407f67e8c7acb776bd3d60eb"
+        }
+      ],
+      "key": "4e3470e8af39d741"
+    },
+    "artifacts": [
+      {
+        "revision": "whole",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "whole",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "7c02a78428e1f3691dbd6b6e41108deb0151b5046411e54a7b2a1cb8436c2d34"
+}

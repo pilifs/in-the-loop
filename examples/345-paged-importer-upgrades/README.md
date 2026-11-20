@@ -12,3 +12,18 @@ Commons IO repaired the bytes delivered after a preview and implicit reset. Comm
 For the two-row document `a,b\nc,d\n`, preview the first byte, reset without a mark, and request one row starting at record 2. Both installations with the CSV parent return an empty page. That masks the IO error. With CSV fixed and IO old, the count is correct, but record 2 has three fields, `["a","ba","b"]`. With both fixes it has the expected two fields, `["a","b"]`. The four installations also passed every positive control with preview disabled and starting number 1. [Four complete JVM observation streams](records/matrix) · [Independent literal oracle](controls/table.json)
 
 The two CSV revisions were built separately against their declared Commons IO 2.22.0 and Commons Codec 1.22.0. At runtime, each cell loaded one selected IO JAR and one selected CSV JAR. Codec stayed fixed. The full Maven builds record their clean revisions, first-parent checks, compiler, resolved inputs and product hashes. [Build records](records/builds) · [Public proof tasks](target.json) · [Frozen obligations](milestones.json)
+
+### What an upgrade costs
+
+Each update starts from the same parent/parent evidence. The inline check runs the whole importer. The composed check first obtains the remaining bytes and decoded UTF-16 from 24 stream inputs, then checks CSV for each distinct text, start and cap. Both strategies produce the same 96 complete observations as a fresh JVM for each configuration. The byte client loads IO alone. The CSV stage binds IO, CSV and Codec, so changing IO also rechecks CSV on every newly reachable parser input. [Measured runs and cache keys](records/composition.json)
+
+| Update | Inline inputs checked / reused | IO inputs checked / reused | CSV inputs checked / reused | Inline wall | Composed wall |
+|---|---:|---:|---:|---:|---:|
+| Clean parent/parent | 96 / 0 | 24 / 0 | 36 / 0 | 2.408 s | 3.502 s |
+| Unchanged | 0 / 96 | 0 / 24 | 0 / 36 | 0.093 s | 0.095 s |
+| IO only | 96 / 0 | 24 / 0 | 12 / 0 | 0.226 s | 0.269 s |
+| CSV only | 96 / 0 | 0 / 24 | 36 / 0 | 0.257 s | 0.208 s |
+| Unused class only | 96 / 0 | 0 / 24 | 0 / 36 | 0.228 s | 0.106 s |
+| Both fixes | 96 / 0 | 24 / 0 | 12 / 0 | 0.114 s | 0.198 s |
+
+The cold finite-JVM runs include application preparation (2.100 s inline, 3.225 s composed), checking (0.122 s, 0.173 s) and independent witness replay (0.092 s, 0.091 s). Peak child-process RSS was 122.6 MiB and 120.7 MiB respectively. The IO repair removes the duplicate-prefix inputs, reducing the reachable CSV cases from 36 to 12. Changing an unrelated class gives the application a new classpath identity and preserves both isolated producer results. [Byte and decoder evidence](../338-commons-io-bom-reset/records/importer-facts.json) · [CSV evidence](../339-commons-csv-page-numbers/records/importer-facts.json)
