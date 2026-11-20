@@ -2942,6 +2942,12 @@ change `nxntuknxmuwy` · [log `7032dc319e30`](https://terminalvalue.net/raw-trac
 
 Brings in wkykvlzz, committed by the user from the workspace adopt-logs-sandbox: sync.py lists the workspaces without a jj snapshot, the loops' Codex sandbox may write the trace tools' state folder (~/.local/state/llm-traces), and CLAUDE.md and the operating notes say any agent may run sync.py adopt-logs without asking (the user, 2026-11-20). A Codex worker in a side workspace can then adopt other sessions' logs inside its sandbox, where its automatic reviewer had refused the escalation. No conflicts; the generated trace files regenerated.
 
+### Propose a Codex session log's file name for the allow list
+
+change `yowlqvsrxtsw` · [log `7032dc319e30`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7032dc319e3048de09df14ab220da56adc62d190eefb16a88fd588a5849e935f.jsonl.gz)
+
+The long-token rule flags rollout-&lt;timestamp>-&lt;thread id>, the name of a Codex session log under ~/.codex/sessions, which a session read while looking into the adopt-logs refusal. It holds a timestamp and a UUID, no credential; proposed for a person to approve.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7032dc319e3048de09df14ab220da56adc62d190eefb16a88fd588a5849e935f.jsonl.gz) has every step in between: reasoning, tool calls and their results.

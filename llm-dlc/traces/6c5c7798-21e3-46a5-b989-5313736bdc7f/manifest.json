@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-20T18:33:36.568Z",
-  "duration_seconds": 435970,
+  "ended": "2026-11-20T18:37:07.355Z",
+  "duration_seconds": 436181,
   "stats": {
     "turns": 474,
-    "api_calls": 2518,
-    "tool_calls": 2237,
+    "api_calls": 2521,
+    "tool_calls": 2240,
     "tool_errors": 34,
     "compactions": 9,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 5974,
-      "output_tokens": 1307755,
-      "cache_read_input_tokens": 626064638,
-      "cache_creation_input_tokens": 3455935
+      "input_tokens": 5980,
+      "output_tokens": 1308797,
+      "cache_read_input_tokens": 626658077,
+      "cache_creation_input_tokens": 3457607
     }
   },
   "tools": {
-    "Bash": 2124,
+    "Bash": 2127,
     "Edit": 28,
     "SendMessage": 18,
     "ToolSearch": 15,
@@ -190,24 +190,24 @@
     {
       "index": 9,
       "started": "2026-11-20T12:22:10.685Z",
-      "ended": "2026-11-20T18:33:36.568Z",
+      "ended": "2026-11-20T18:37:07.355Z",
       "turns": 21,
-      "api_calls": 137,
+      "api_calls": 140,
       "usage": {
-        "input_tokens": 318,
-        "output_tokens": 50592,
-        "cache_read_input_tokens": 18707037,
-        "cache_creation_input_tokens": 249270
+        "input_tokens": 324,
+        "output_tokens": 51634,
+        "cache_read_input_tokens": 19300476,
+        "cache_creation_input_tokens": 250942
       },
-      "peak_context_tokens": 197126
+      "peak_context_tokens": 198798
     }
   ],
   "log": {
-    "sha256": "50fe1a7950881029639bef7a965990a3b4592228a53387a6601b8c204edb5d19",
-    "bytes": 44663325,
-    "lines": 20633,
-    "gzip_bytes": 7360167,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/50fe1a7950881029639bef7a965990a3b4592228a53387a6601b8c204edb5d19.jsonl.gz"
+    "sha256": "4e9a8f9052e8104d2666537c2d2746c723584d2d267c7662207afd7f9eb5f231",
+    "bytes": 44742540,
+    "lines": 20655,
+    "gzip_bytes": 7374584,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/4e9a8f9052e8104d2666537c2d2746c723584d2d267c7662207afd7f9eb5f231.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -4618,6 +4618,14 @@
       "summary": "Merge the adopt-logs sandbox change into the line",
       "body": "Brings in wkykvlzz, committed by the user from the workspace adopt-logs-sandbox: sync.py lists the workspaces without a jj snapshot, the loops' Codex sandbox may write the trace tools' state folder (~/.local/state/llm-traces), and CLAUDE.md and the operating notes say any agent may run sync.py adopt-logs without asking (the user, 2026-11-20). A Codex worker in a side workspace can then adopt other sessions' logs inside its sandbox, where its automatic reviewer had refused the escalation. No conflicts; the generated trace files regenerated.",
       "log_sha256": "50fe1a7950881029639bef7a965990a3b4592228a53387a6601b8c204edb5d19"
+    },
+    {
+      "change_id": "yowlqvsrxtswooyumwznvkzzozrupxtl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose a Codex session log's file name for the allow list",
+      "body": "The long-token rule flags rollout-<timestamp>-<thread id>, the name of a Codex session log under ~/.codex/sessions, which a session read while looking into the adopt-logs refusal. It holds a timestamp and a UUID, no credential; proposed for a person to approve.",
+      "log_sha256": "4e9a8f9052e8104d2666537c2d2746c723584d2d267c7662207afd7f9eb5f231"
     }
   ],
   "logs": {
@@ -5124,6 +5132,12 @@
       "lines": 11596,
       "gzip_bytes": 4516312,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/4dacf8d87129c46932d0bbc064201c7923a2e196ce4c4e49209b9b372b13b336.jsonl.gz"
+    },
+    "4e9a8f9052e8104d2666537c2d2746c723584d2d267c7662207afd7f9eb5f231": {
+      "bytes": 44742540,
+      "lines": 20655,
+      "gzip_bytes": 7374584,
+      "url": null
     },
     "4fddef184963a7fb70ecd513aaef90d81fc2e2c7855a8e72dbc5f1f776f0e02a": {
       "bytes": 11767274,
