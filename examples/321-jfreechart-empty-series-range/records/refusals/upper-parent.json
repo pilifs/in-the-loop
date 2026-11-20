@@ -1,0 +1,154 @@
+{
+  "schema": "example-target-refusal/v1",
+  "task": "upper-parent",
+  "claimKey": "18e135c5a003610b",
+  "revisions": [
+    "parent"
+  ],
+  "refusal": {
+    "stage": "verifier",
+    "text": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getDefault() at org.jfree.data.time.RegularTimePeriod.<clinit>:165). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+  },
+  "observed": {
+    "job": "20261120-103714-check-chart-startup-without-a-captured-c",
+    "result": "verification/results/20261120-103714-check-chart-startup-without-a-captured-c/result.json",
+    "receipt": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T103855Z-c8c7cf67/result.json",
+    "receiptSha256": "1d6643cc8b0a0913536557e59328b470dd3365a0336c69911d6443abf23d5a0b",
+    "verifierOutput": "examples/321-jfreechart-empty-series-range/receipts/upper-parent/20261120T103855Z-c8c7cf67/records/verifier.stdout",
+    "verifierOutputSha256": "5db47fc91a56e4ad9548571a24a07b737852a7e68f128ea2eaebb0817a8e7f08",
+    "execution": "20261120T103855Z-c8c7cf67",
+    "retryOf": null
+  },
+  "verifier": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "3667c01a64afea01c0d12461c7d9a3a67685bea1",
+    "libTree": "29e34d8802decff2c4c91717db160d151b315c9c",
+    "engine": "native",
+    "gaps": "strict",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS"
+  },
+  "command": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/29e34d8802decff2c4c91717db160d151b315c9c/jvmcontract",
+    "prove",
+    "rangegrid.Projection#upper(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/slice/parent.jar",
+    "--classpath",
+    "prepare/parent/lib/org.jfree/jcommon-1.0.17.jar",
+    "--classpath",
+    "prepare/parent/lib/javax.servlet/servlet-api-2.5.jar",
+    "--classpath",
+    "prepare/parent/lib/com.lowagie/itext-2.1.5.jar",
+    "--assume",
+    "code >= 0 && code < 30",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "30",
+    "--max-array-length",
+    "12",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "bindingId": "e8e4145340952fe88d672ac12e5066bcf1f7394308c293e4fc244a0927e7f448",
+  "entryBindings": {
+    "parent": {
+      "entry": "rangegrid.Projection#upper(I)I",
+      "classSha256": "5877b246e6e32578bae2dcf53a016e0af318936285b021d8fafe03b22b387aee",
+      "loadedFrom": "adapter-parent.jar",
+      "subject": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;",
+      "subjectClassSha256": "6a0d3736c23372efbc1c6a6dd239a0b8672fe5e9eb0ae52fda032be9a597d0f8"
+    }
+  },
+  "budget": {
+    "checkerSeconds": 30
+  },
+  "environment": {
+    "JVMCONTRACT_SOLVER": "bitwuzla-finite"
+  },
+  "artifacts": [
+    {
+      "revision": "parent",
+      "path": "adapter-parent.jar",
+      "sha256": "c705a93a4b9acba9688a88fe0b956d37a3179af6b1259578a936bf653232dd86",
+      "role": "adapter"
+    },
+    {
+      "revision": "parent",
+      "path": "slice/parent.jar",
+      "sha256": "3fe30a535cc14d3c1d7667e36b7deb0a6753d72ebedd9dc670ead2f0d7d9ed9c",
+      "role": "original"
+    },
+    {
+      "revision": "parent",
+      "path": "lib/org.jfree/jcommon-1.0.17.jar",
+      "sha256": "90a5f9ceaed977edfe8f514dcb15ddf5001cf9111a8fcd87b7cd8b0bb6231acc",
+      "role": "dependency"
+    },
+    {
+      "revision": "parent",
+      "path": "lib/javax.servlet/servlet-api-2.5.jar",
+      "sha256": "c658ea360a70faeeadb66fb3c90a702e4142a0ab7768f9ae9828678e0d9ad4dc",
+      "role": "dependency"
+    },
+    {
+      "revision": "parent",
+      "path": "lib/com.lowagie/itext-2.1.5.jar",
+      "sha256": "40bc530593f9173e90aff5cd000c8cb185ebf851f9617b131d43f81989a9ad41",
+      "role": "dependency"
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;@jdk-21.0.13",
+      "kind": "jdk-static-method",
+      "call": "java.util.TimeZone.getDefault()",
+      "sites": [
+        "org.jfree.data.time.RegularTimePeriod.<clinit>:165"
+      ]
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 321 upper-parent",
+    "attempt": "python3 examples/tools/build.py 321 --task upper-parent --checker-seconds 30",
+    "job": "20261120-103714-check-chart-startup-without-a-captured-c",
+    "target": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;",
+    "checkedEntry": "rangegrid.Projection#upper(I)I"
+  },
+  "semantics": "RegularTimePeriod reads the JVM default time zone while initializing its calendar, before the collection with an explicit UTC zone is constructed.",
+  "why": "The original task executes startup from bytecode. The successful companion has separately stated startup evidence and its own claim key.",
+  "module": {
+    "likely": [
+      "lib/src/bmc/calendar.rs",
+      "lib/src/observed.rs"
+    ],
+    "note": "Qualify the ambient zone, calendar factory and their initialization effects while running the original initializer."
+  },
+  "strategies": [
+    {
+      "by": "20261120T103855Z-c8c7cf67",
+      "outcome": "Original strict check refused the named startup query."
+    },
+    {
+      "by": "examples/321-jfreechart-empty-series-range/receipts/upper-parent-observed/executions/20261120T102150Z-3829a191/attempt.json",
+      "outcome": "Separate observed-startup claim refuted on the same binary, ordered jars and input domain."
+    }
+  ],
+  "scopedCompanion": {
+    "task": "upper-parent-observed",
+    "claimKey": "b1e307022ad4848f",
+    "receipt": "examples/321-jfreechart-empty-series-range/receipts/upper-parent-observed/20261120T102150Z-3829a191/result.json",
+    "originalScopeControl": true
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "schema": "example-target-refusal/v1",
+  "task": "reversal-on-returns-fix",
+  "claimKey": "62fcdf3eecf21061",
+  "revisions": [
+    "fix"
+  ],
+  "refusal": {
+    "stage": "verifier",
+    "text": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.joda.time.DateTimeZone.getDefaultProvider:447). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+  },
+  "observed": {
+    "job": "20261120-103714-check-partial-dates-without-captured-pro",
+    "result": "verification/results/20261120-103714-check-partial-dates-without-captured-pro/result.json",
+    "receipt": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix/20261120T103856Z-8ddb96f2/result.json",
+    "receiptSha256": "15eecfe461cd6abafc9f8a558a2d90d5c6bddb91c6aba5b0499f38ec8f25b2d6",
+    "verifierOutput": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix/20261120T103856Z-8ddb96f2/records/verifier.stdout",
+    "verifierOutputSha256": "a71a280fe059b694e1e611b9af90a1a1f387367455f8cd4ac34a688837abe28e",
+    "execution": "20261120T103856Z-8ddb96f2",
+    "retryOf": null
+  },
+  "verifier": {
+    "jvmcontract": "fb69b5727f48cf1c165a6874ca7caa5ee300ac28a96693b39df0be59c66dd381",
+    "commit": "a7eecf4f3f39bac5311d4c1403284180cbbac87b",
+    "libTree": "d4ad43334d44e065027ce8a64c6eabcbe6ec8af6",
+    "engine": "native",
+    "gaps": "strict",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS"
+  },
+  "command": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d4ad43334d44e065027ce8a64c6eabcbe6ec8af6/jvmcontract",
+    "prove",
+    "jodagrid.Projection#reversal(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/slice/fix.jar",
+    "--classpath",
+    "prepare/fix/lib/org.joda/joda-convert-1.2.jar",
+    "--assume",
+    "code >= 0 && code < 25 && jodagrid.Projection.normal(code) == 1 && jodagrid.Projection.normal((code % 5) * 5 + code / 5) == 1",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "30",
+    "--max-array-length",
+    "12",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "bindingId": "426672ffe674ab3c1d664cab4516581c14d0272d79bfae68f0f130a814e72629",
+  "entryBindings": {
+    "fix": {
+      "entry": "jodagrid.Projection#reversal(I)I",
+      "classSha256": "8aaf7142a66aafa8754b28ffc061e4575e8edb15f2e93e0c48fba4b4515c9068",
+      "loadedFrom": "adapter-fix.jar",
+      "subject": "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+      "subjectClassSha256": "6a31ae2203fa1de13205857b4525c8a44a5834b4880a525ba2b5b333e38c48c9"
+    }
+  },
+  "budget": {
+    "checkerSeconds": 30
+  },
+  "environment": {
+    "JVMCONTRACT_SOLVER": "bitwuzla-finite"
+  },
+  "artifacts": [
+    {
+      "revision": "fix",
+      "path": "adapter-fix.jar",
+      "sha256": "c8af8c1de3c6bc77567967049ab591c285ba3ef303573d61f25339e52be6d0e8",
+      "role": "adapter"
+    },
+    {
+      "revision": "fix",
+      "path": "slice/fix.jar",
+      "sha256": "5d0c9d52c048fda0ab78f6bc7e339e91e2525816247ddd0e02e65ae23cb117ac",
+      "role": "original"
+    },
+    {
+      "revision": "fix",
+      "path": "lib/org.joda/joda-convert-1.2.jar",
+      "sha256": "5703e1a2ac1969fe90f87076c1f1136822bf31d8948252159c86e6d0535c81a8",
+      "role": "dependency"
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+      "kind": "jdk-static-method",
+      "call": "java.lang.System.getProperty(java.lang.String)",
+      "sites": [
+        "org.joda.time.DateTimeZone.getDefaultProvider:447"
+      ]
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 327 reversal-on-returns-fix",
+    "attempt": "python3 examples/tools/build.py 327 --task reversal-on-returns-fix --checker-seconds 30",
+    "job": "20261120-103714-check-partial-dates-without-captured-pro",
+    "target": "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+    "checkedEntry": "jodagrid.Projection#reversal(I)I"
+  },
+  "semantics": "DateTimeZone reads the JVM system property that selects the zone provider. Both prepared classpaths use the UTC provider fallback when no provider is selected and the zone-data resource is absent.",
+  "why": "The original task executes startup from bytecode. The successful companion has separately stated startup evidence and its own claim key.",
+  "module": {
+    "likely": [
+      "lib/src/observed.rs",
+      "lib/src/bmc/runtime.rs"
+    ],
+    "note": "Bind the two provider properties and the ordered resource lookup, then execute the original provider selection and initialization."
+  },
+  "strategies": [
+    {
+      "by": "20261120T103856Z-8ddb96f2",
+      "outcome": "Original strict check refused the named startup query."
+    },
+    {
+      "by": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/executions/20261120T100720Z-bb2e05f1/attempt.json",
+      "outcome": "Separate observed-startup claim established on the same binary, ordered jars and input domain."
+    }
+  ],
+  "scopedCompanion": {
+    "task": "reversal-on-returns-fix-observed",
+    "claimKey": "a1811ded99d051ad",
+    "receipt": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T100720Z-bb2e05f1/result.json",
+    "originalScopeControl": true
+  }
+}

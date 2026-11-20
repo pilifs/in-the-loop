@@ -50,6 +50,16 @@ class JudgeTest(unittest.TestCase):
         self.assertEqual(command.call_args.kwargs["env"]["JVMCONTRACT_SOLVER"], "bitwuzla-words")
 
     def test_the_recorded_refusal_on_the_same_claim_passes(self):
+        folder, _, target = load("321")
+        [semantic] = workflow_refusal.predictions(folder, target, "lower-parent")
+        packet = json.loads((folder / semantic["packet"]).read_text())
+        observed = workflow_refusal.read_receipt(folder, "lower-parent", packet["observed"]["execution"], with_policy=True)
+        policy = {"checkerSeconds": 30, "solver": "bitwuzla-finite"}
+        self.assertEqual(semantic["policy"], policy)
+        for changed, expected in [(observed, True), ({**observed, "budgetExhausted": True}, False),
+                                  ({**observed, "policy": {**policy, "checkerSeconds": 600}}, False),
+                                  ({**observed, "policy": {**policy, "solver": "cadical"}}, False)]:
+            self.assertEqual(workflow_refusal.judge(semantic, semantic["claimKey"], 1, [], [changed])[0], expected)
         ok, how = workflow_refusal.judge(prediction(), "k1", 1, ["x: task t: unresolved (completed; NOT AS EXPECTED "
                                                                    "(refuted)), receipt receipts/t/a/result.json"],
                                          [receipt()])
