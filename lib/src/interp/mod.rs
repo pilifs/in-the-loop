@@ -595,6 +595,11 @@ impl<'a> Machine<'a> {
             self.ensure_initialized(owner)?;
             return self.invoke(&class, &method, args);
         }
+        if owner == "java/util/Arrays" && name == "fill" {
+            if let Some((class, method)) = self.cp.library_image_method(owner, name, descriptor) {
+                return self.invoke(&class, &method, args);
+            }
+        }
         natives::invoke_static_jdk(self, owner, name, descriptor, args)
     }
 

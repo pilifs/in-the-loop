@@ -34,7 +34,7 @@ impl Engine<'_> {
         if path.objects[o].class != LIST || self.cp.runs_model(LIST) { return None; }
         let (name, descriptor) = (member.name.as_str(), member.descriptor.as_str());
         if special && member.owner != LIST { return None; }
-        self.cp.list_image_method(LIST, name, descriptor)?;
+        self.cp.library_image_method(LIST, name, descriptor)?;
         if name == "<init>" {
             if !special { return None; }
             if let [Val::I(capacity)] = args {
@@ -74,7 +74,7 @@ impl Engine<'_> {
                 Some(self.new_reference_array(path, element, count.clone()))
             }
             (LIST, _, _, _, _) | ("jdk/internal/util/ArraysSupport", _, _, _, _)
-                if m.owner != LIST && self.cp.list_image_method(&m.owner, &m.name, &m.descriptor).is_some() => {
+                if m.owner != LIST && self.cp.library_image_method(&m.owner, &m.name, &m.descriptor).is_some() => {
                 Some(self.call(path, &m.owner, &m.name, &m.descriptor, args.to_vec()))
             }
             _ => None,

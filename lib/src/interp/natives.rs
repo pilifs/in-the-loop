@@ -820,7 +820,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             let value = string_method(m, &s, name, descriptor, &args)?;
             // The JDK returns the String itself where a substring is its whole range or nothing is lowered, and
             // the literal "" for any other empty substring: `==` sees which.
-            if let (true, Value::Ref(made)) = (matches!(name, "substring" | "toLowerCase"), value) {
+            if let (true, Value::Ref(made)) = (matches!(name, "substring" | "toLowerCase" | "concat"), value) {
                 let content = match m.heap.get(made) {
                     Object::Native(Native::String(t)) => Some(t.units().to_vec()),
                     _ => None,

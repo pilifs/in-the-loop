@@ -1258,3 +1258,22 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
     let o = run(&options(classes, "claims.ListConversions#wrong", 4, "wrong-typed-copy"));
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
 }
+
+#[test]
+fn char_array_fill_snapshots_and_concat_preserve_jvm_units_and_identity() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.StringPadding").status().unwrap().success());
+    for name in ["copy", "boundaries"] { proved(classes, &format!("claims.StringPadding#{name}"), 3); }
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    for a in [0, 1] {
+        for b in [0, 1] {
+            assert_eq!(machine.call_static("claims/StringPadding", "copy", "(ZZ)Z", vec![Value::Int(a), Value::Int(b)]).unwrap(), Some(Value::Int(1)));
+        }
+    }
+    assert_eq!(machine.call_static("claims/StringPadding", "boundaries", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    let o = run(&options(classes, "claims.StringPadding#wrong", 3, "wrong-char-fill"));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+}

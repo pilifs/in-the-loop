@@ -559,10 +559,12 @@ impl ClassPath {
         returns > 0
     }
 
-    /// List methods and their helpers are entered only on an initialized, exact ArrayList.
-    pub(crate) fn list_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+    /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
+    pub(crate) fn library_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !matches!((owner, name, descriptor),
-            ("java/util/ArrayList", "<init>", "()V" | "(I)V")
+            ("java/util/Arrays", "fill", "([CC)V")
+            | ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
+            | ("java/util/ArrayList", "<init>", "()V" | "(I)V")
             | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
             | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
             | ("java/util/ArrayList", "set", "(ILjava/lang/Object;)Ljava/lang/Object;")

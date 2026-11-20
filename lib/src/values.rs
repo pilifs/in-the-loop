@@ -948,6 +948,17 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         calls: &["indexOf(Ljava/lang/String;I)I"],
     },
     OperationEvidence {
+        operation: "java.lang.String.concat(Ljava/lang/String;)Ljava/lang/String;",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "bounded UTF-16 receiver and suffix, including isolated surrogates; an empty suffix returns the receiver",
+        throws: &[NPE],
+        leaves_out: &["concatenations above the checker's content bound"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["concatUnits"],
+        calls: &["concat(Ljava/lang/String;)Ljava/lang/String;"],
+    },
+    OperationEvidence {
         operation: "java.lang.String.substring(I)Ljava/lang/String;",
         family: Family::String,
         source: STRINGS_SOURCE,
@@ -1283,7 +1294,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 24);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 25);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

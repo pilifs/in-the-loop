@@ -1126,7 +1126,8 @@ impl<'a> Walker<'a> {
 
     fn walk(&mut self, owner: &str, name: &str, descriptor: &str) -> Result<(), Error> {
         let Some((cf, m)) = self.cp.checker_method(owner, name, descriptor)
-            .or_else(|| self.cp.numeric_image_method(owner, name, descriptor)) else { return Ok(()) };
+            .or_else(|| self.cp.numeric_image_method(owner, name, descriptor))
+            .or_else(|| self.cp.library_image_method(owner, name, descriptor)) else { return Ok(()) };
         let label = format!("{}.{name}{descriptor}", cf.name.replace('/', "."));
         if !self.scan.methods.insert(label) {
             return Ok(());
@@ -1188,6 +1189,8 @@ impl<'a> Walker<'a> {
                         self.initialise(&declaring, &site);
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
+                        self.enqueue(&member.owner, &member.name, &member.descriptor);
+                    } else if member.owner == "java/util/Arrays" && member.name == "fill" && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         // A class initializer can call the factory on an input for which it reads no cached

@@ -4805,6 +4805,12 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
         }
+        if member.owner == "java/util/Arrays" && member.name == "fill" && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
+            return self.call(path, &member.owner, &member.name, &member.descriptor, args);
+        }
+        if caller == STRING && member.owner == "java/lang/StringConcatHelper" {
+            if let Some(step) = self.concat_strings(path, member, &args) { return step; }
+        }
         if let Some(step) = self.image_list_static(path, caller, member, &args) { return step; }
         if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             if let Some(class) = runtime::cached_wrapper(&member.owner, &member.name, &member.descriptor) {
@@ -4981,6 +4987,9 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
+            if special && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == (STRING, "<init>", "([C)V") {
+                if let [Val::R(source)] = args.as_slice() { return self.string_from_chars(path, o, *source); }
+            }
             if let Some(step) = self.image_list_call(path, o, special, member, &args) { return step; }
             if !special && path.objects[o].class == runtime::BOOLEAN && member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z" {
                 if let Some(step) = self.boolean_equals(path, o, &args) { return step; }
@@ -5145,7 +5154,7 @@ impl<'a> Engine<'a> {
     /// Enters a bytecode method with the arguments in its locals.
     fn call(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: Vec<Val>) -> Step {
         let (cf, m) = self.cp.throwable_image_method(owner, name, descriptor)
-            .or_else(|| self.cp.list_image_method(owner, name, descriptor).filter(|_| !self.cp.runs_model(owner)))
+            .or_else(|| self.cp.library_image_method(owner, name, descriptor).filter(|_| !self.cp.runs_model(owner)))
             .or_else(|| self.cp.checker_method(owner, name, descriptor))
             .or_else(|| self.cp.numeric_image_method(owner, name, descriptor))
             .ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;

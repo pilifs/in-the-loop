@@ -116,6 +116,15 @@ public final class Operations {
         return part == s ? 2 : part == "" ? 3 : 1;
     }
 
+    static boolean concatUnits(int n, int first, int m, int last) {
+        String left = of(n, first, 0, 0);
+        String right = of(m, last, 0, 0);
+        String joined = left.concat(right);
+        return joined.length() == n + m && (joined == left) == (m == 0)
+                && (n == 0 || joined.charAt(0) == (char) first)
+                && (m == 0 || joined.charAt(n) == (char) last);
+    }
+
     static int substringFrom(int n, int a, int b, int c, int from, int m, int d, int e, int f) {
         String s = of(n, a, b, c);
         return made(s, s.substring(from), of(m, d, e, f));

@@ -64,7 +64,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
@@ -331,9 +331,47 @@ impl Engine<'_> {
         }
     }
 
+    /// A fresh String constructed from a char array snapshots its units, including
+    /// isolated surrogates. Later writes to the array cannot change the String.
+    pub(super) fn string_from_chars(&mut self, path: &mut Path, object: usize, source: Option<usize>) -> Step {
+        let Some(a) = source else { return self.raise(path, "java/lang/NullPointerException") };
+        if self.there_before(path, a) { self.reads(path, || "String(char[]) reads an array that existed before the call".into())?; }
+        self.keeps(path, Some(object), "initializes a pre-existing String")?;
+        let Some(chars) = path.objects[a].as_array().filter(|a| a.element == Type::Char).cloned() else {
+            return unsupported("String(char[]) needs known UTF-16 array cells");
+        };
+        path.objects[object].array = Some(chars);
+        self.advance(path);
+        Ok(None)
+    }
+
+    /// String.concat itself runs from the image, so it supplies both its null check and
+    /// its return of the receiver for an empty suffix. Its binary helper makes a fresh
+    /// String from the two immutable UTF-16 inputs.
+    pub(super) fn concat_strings(&mut self, path: &mut Path, m: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
+        if !matches!((m.name.as_str(), m.descriptor.as_str()),
+            ("simpleConcat", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/String;")
+            | ("doConcat", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;")) { return None; }
+        let [Val::R(Some(left)), Val::R(Some(right))] = args else { return None };
+        let a = path.objects[*left].content()?.clone();
+        let b = path.objects[*right].content()?.clone();
+        if a.cells.len().saturating_add(b.cells.len()) > MAX_STRING_CONTENT {
+            return Some(unsupported("String.concat exceeds the checker's UTF-16 content bound"));
+        }
+        let joined = self.joined(&a, &b);
+        let result = self.new_string(path, joined.length, joined.cells, Vec::new());
+        self.push(path, Val::R(Some(result)));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
     /// The String methods of this module on the String `o` of content `s`: see the module's notes.
     pub(super) fn string_method_on_content(&mut self, path: &mut Path, o: usize, s: &Array, name: &str, descriptor: &str, args: &[Val]) -> Step {
         match (name, descriptor, args) {
+            ("concat", "(Ljava/lang/String;)Ljava/lang/String;", [other]) => {
+                if self.cp.library_image_method(STRING, name, descriptor).is_none() { return unsupported("no selected JDK bytecode for String.concat"); }
+                self.call(path, STRING, name, descriptor, vec![Val::R(Some(o)), other.clone()])
+            }
             ("substring", "(I)Ljava/lang/String;", [Val::I(begin)]) => {
                 let length = s.length.clone();
                 let bad = self.bad_range(begin, &length, &length);
