@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-013844-qualify-shared-and-distinct-right-root-p",
+  "title": "Qualify shared and distinct right-root projections on JBMC",
+  "description": "Check whether JBMC can distinguish the same skipped write by the right root specifically. On the 71 nullable/shared heaps the witnessed right-root change must alias the left root and reproduce on the JVM. On the nine distinct non-null pairs of zero- or one-cell binary arrays, both implementations must preserve the right root, including equal-but-distinct arrays. Recheck the original two-root preserving and distinguishing pair on that distinct profile. Record the checked bounds, nullability, alias group, guard, selected observations, raw checker bytes and proof non-vacuity.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc:arrays",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "197"
+    ],
+    "jobs": [
+      "20261120-005556-recheck-jbmc-preservation-on-all-71-null",
+      "20261119-164549-197-integrated-jbmc-preserving-and-discr"
+    ]
+  },
+  "expected": "Four complete non-vacuous establishments and two independently replayed refutations. The wide right-only witness names a shared root. The nine-heap both-root profile uses the same semantic and subject digests as its earlier handler refusal.",
+  "submitted": {
+    "at": "2026-11-20T01:38:44+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1,
+    "memory": "1G",
+    "memoryLimit": "2G",
+    "duration": "20s",
+    "timeout": "5m"
+  },
+  "steps": [
+    {
+      "name": "Check shared-right",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --profile nullable-shared-binary-length-2 --observation right-root --records verification/qualified-array-projections > verification/shared-right-array-projection.json"
+    },
+    {
+      "name": "Check distinct-right",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --profile distinct-binary-length-1 --observation right-root --records verification/qualified-array-projections > verification/distinct-right-array-projection.json"
+    },
+    {
+      "name": "Check distinct-both",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --profile distinct-binary-length-1 --observation both-roots --records verification/qualified-array-projections > verification/distinct-both-array-projection.json"
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/qualified-array-projections",
+    "verification/shared-right-array-projection.json",
+    "verification/distinct-right-array-projection.json",
+    "verification/distinct-both-array-projection.json"
+  ]
+}

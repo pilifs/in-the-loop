@@ -12,29 +12,31 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T01:25:47.424Z",
-  "duration_seconds": 13698,
+  "ended": "2026-11-20T01:39:03.729Z",
+  "duration_seconds": 14494,
   "stats": {
     "turns": 4,
-    "api_calls": 931,
-    "tool_calls": 2413,
-    "tool_errors": 79,
+    "api_calls": 988,
+    "tool_calls": 2531,
+    "tool_errors": 86,
     "compactions": 3,
     "peak_context_tokens": 478319,
     "usage": {
-      "input_tokens": 1542270,
-      "output_tokens": 444761,
-      "cache_read_input_tokens": 259324416,
+      "input_tokens": 1834721,
+      "output_tokens": 466409,
+      "cache_read_input_tokens": 275171072,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1421,
-    "exec": 893,
-    "apply_patch": 67,
+    "Bash": 1477,
+    "exec": 950,
+    "apply_patch": 72,
     "wait": 32
   },
   "files_touched": [
+    "examples/197-shared-int-array-poststates/README.md",
+    "examples/197-shared-int-array-poststates/example.json",
     "examples/197-shared-int-array-poststates/proofs/overlap.py",
     "examples/310-threeten-complete-hours/README.md",
     "examples/310-threeten-complete-hours/controls/ShortCrossings.java",
@@ -89,6 +91,7 @@
     "lib/tests/fixtures/restart-qualification/check.py",
     "lib/tests/paired_array_roots.rs",
     "llm-dlc/loops/foundation-and-python-results.md",
+    "llm-dlc/session-notes/01a1f5be-43bd-7532-a80c-5b4f5c304590.md",
     "llm-dlc/tools/test_performance.py",
     "verification/README.md",
     "verification/pipeline.py",
@@ -140,24 +143,24 @@
     {
       "index": 3,
       "started": "2026-11-20T00:46:36.703Z",
-      "ended": "2026-11-20T01:25:47.424Z",
+      "ended": "2026-11-20T01:39:03.729Z",
       "turns": 1,
-      "api_calls": 169,
+      "api_calls": 226,
       "usage": {
-        "input_tokens": 263862,
-        "output_tokens": 74408,
-        "cache_read_input_tokens": 32829312,
+        "input_tokens": 556313,
+        "output_tokens": 96056,
+        "cache_read_input_tokens": 48675968,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 265318
+      "peak_context_tokens": 301733
     }
   ],
   "log": {
-    "sha256": "0d5e02c30d5c26a76e72d77495ea4b81906a5a058eb94bbf1a1ada38c8b5e156",
-    "bytes": 22832709,
-    "lines": 7306,
-    "gzip_bytes": 8637546,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/0d5e02c30d5c26a76e72d77495ea4b81906a5a058eb94bbf1a1ada38c8b5e156.jsonl.gz"
+    "sha256": "8379daebb208d9b41dce32e3adf26b276e28b500176a28442ab1233b04cac7f8",
+    "bytes": 23695934,
+    "lines": 7725,
+    "gzip_bytes": 9002036,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/8379daebb208d9b41dce32e3adf26b276e28b500176a28442ab1233b04cac7f8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -544,6 +547,22 @@
       "summary": "Validate finite word counters in receipts (verification pending)",
       "body": "The public receipt schema now accepts the checker’s two nonnegative integer query counts and rejects missing or malformed counts. The initial five full-grid runs stopped at receipt publication despite returning four proofs and a reproduced parent counterexample. Their checker outcomes, prepared bindings and replay stages are archived in 20261120-010828-retry-all-five-full-grid-threetenbp-regi.\n\nJob 20261120-012520-publish-five-linked-full-grid-threetenbp retries those five archived executions individually at the same 600-second budgets. All five real search records passed the corrected schema. Twelve changed Python test groups passed. This merge also brings in the two qualified wide-array results from 20261120-005556-recheck-jbmc-preservation-on-all-71-null.",
       "log_sha256": "0d5e02c30d5c26a76e72d77495ea4b81906a5a058eb94bbf1a1ada38c8b5e156"
+    },
+    {
+      "change_id": "lyszoznyxllslntslktrkxkvusutstxx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-012520-publish-five-linked-full-grid-threetenbp: passed: 5 passed step(s) in 1m36s, peak 848.5 MiB (estimated 1m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "8379daebb208d9b41dce32e3adf26b276e28b500176a28442ab1233b04cac7f8"
+    },
+    {
+      "change_id": "tsynttsptnpsotumqolwoxnkzwymsyww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Close full-grid calendar deadlines (verification pending)",
+      "body": "All five full-grid calendar obligations under the captured registry have published receipts on their original subject bindings. The fixed clock and the two reversal checks completed in 5.365, 6.867 and 14.383 checker seconds at their previous 600-second budgets. The parent witness at ticks 2 and 97 returned 24 instead of 23. Resource gap packets now link to their closing receipts. Four property receipts failed schema validation in the previous batch. Its same-day equivalence published successfully, as this audit and the session correction record.\n\nAll 111 outputs from the wide-array and two calendar batches matched their manifest digests. Both example validators and all 37 changed test groups passed. Job 20261120-013844-qualify-shared-and-distinct-right-root-p separately checks a right-root-only JBMC witness for sharing and both projections on the historical nine-heap domain. The checker statements are checked against nullability, the alias group, input guard, bounds and selected observations.\n\nTrace review proposal e1eb1bc6 matches the third public restart watcher decision. All 67 human-approved entries remain identical.",
+      "log_sha256": "8379daebb208d9b41dce32e3adf26b276e28b500176a28442ab1233b04cac7f8"
     }
   ],
   "logs": {
@@ -641,6 +660,12 @@
       "bytes": 17053450,
       "lines": 5305,
       "gzip_bytes": 6287319,
+      "url": null
+    },
+    "8379daebb208d9b41dce32e3adf26b276e28b500176a28442ab1233b04cac7f8": {
+      "bytes": 23695934,
+      "lines": 7725,
+      "gzip_bytes": 9002036,
       "url": null
     },
     "94308245cb3b6bfb1d7d110de20df0888371c62e56987ade685382ba0a7c1368": {
