@@ -6,6 +6,8 @@
 use super::*;
 
 const LIST: &str = "java/util/ArrayList";
+const SUBLIST: &str = "java/util/ArrayList$SubList";
+const VIEW_ITERATOR: &str = "java/util/ArrayList$SubList$1";
 pub(super) const OBJECT_ARRAY: &str = "[Ljava/lang/Object;";
 
 /// Both private storage sentinels must be freshly allocated Object[0]s in the image.
@@ -34,15 +36,23 @@ impl Engine<'_> {
         if self.cp.runs_model(LIST) { return None; }
         let class = path.objects[o].class.as_str();
         let iterator = class == "java/util/ArrayList$Itr";
-        if class != LIST && !iterator { return None; }
+        let view = class == SUBLIST;
+        if class != LIST && !iterator && !view && class != VIEW_ITERATOR { return None; }
         let (name, descriptor) = (member.name.as_str(), member.descriptor.as_str());
         if special && member.owner != class { return None; }
-        let (cf, method) = self.cp.library_image_method(class, name, descriptor)?;
+        let (cf, method) = self.cp.library_image_method(class, name, descriptor).or_else(|| {
+            let (cf, m) = self.cp.find_method(class, name, descriptor)?;
+            if !view || name == "<init>" || cf.name != "java/util/AbstractList" { return None; }
+            self.cp.library_image_method(&cf.name, &m.name, &m.descriptor)
+        })?;
         if name == "<init>" {
             if !special { return None; }
-            if iterator {
-                let [Val::R(Some(list))] = args else { return None };
-                if path.objects[*list].class != LIST || !path.objects[*list].fields.contains_key("elementData") { return None; }
+            if class != LIST {
+                let Some(Val::R(Some(backing))) = args.first() else { return None };
+                let b = &path.objects[*backing];
+                if !((b.class == LIST && b.fields.contains_key("elementData")) || (b.class == SUBLIST && b.fields.contains_key("root"))) {
+                    return None;
+                }
             }
             if let [Val::I(capacity)] = args {
                 // Negative capacities throw in the constructor itself. A successful
@@ -53,7 +63,7 @@ impl Engine<'_> {
                     Err(stop) => return Some(Err(stop)),
                 }
             }
-        } else if !path.objects[o].fields.contains_key(if iterator { "this$0" } else { "elementData" }) {
+        } else if !path.objects[o].fields.contains_key(if view { "root" } else if class == LIST { "elementData" } else { "this$0" }) {
             return None;
         }
         let mut full = vec![Val::R(Some(o))];
@@ -65,11 +75,17 @@ impl Engine<'_> {
     /// the actual destination component and System.arraycopy, including partial stores.
     pub(super) fn image_list_static(&mut self, path: &mut Path, caller: &str, m: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
         match (caller, m.owner.as_str(), m.name.as_str(), m.descriptor.as_str(), args) {
-            ("java/util/ArrayList$Itr", LIST, "elementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;", _)
+            (LIST | SUBLIST, LIST | SUBLIST | "java/util/AbstractList", "subListRangeCheck", "(III)V", _) => {
+                let (cf, method) = self.cp.find_method(&m.owner, &m.name, &m.descriptor)?;
+                if cf.name != "java/util/AbstractList" || !method.is_static() { return None; }
+                let (cf, method) = self.cp.library_image_method(&cf.name, &m.name, &m.descriptor)?;
+                Some(self.enter_method(path, &m.owner, cf, method, args.to_vec()))
+            }
+            ("java/util/ArrayList$Itr" | SUBLIST | VIEW_ITERATOR, LIST, "elementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;", _)
                 if self.cp.library_image_method(LIST, &m.name, &m.descriptor).is_some() => {
                 Some(self.call(path, LIST, &m.name, &m.descriptor, args.to_vec()))
             }
-            (LIST, "java/util/Objects", "checkIndex", "(II)I", [Val::I(i), Val::I(n)]) => {
+            (LIST | SUBLIST, "java/util/Objects", "checkIndex", "(II)I", [Val::I(i), Val::I(n)]) => {
                 let inside = self.b.ult(i, n); // n is the initialized list's nonnegative size
                 Some(self.branch_throw(path, -inside, "java/lang/IndexOutOfBoundsException", Val::I(i.clone())))
             }

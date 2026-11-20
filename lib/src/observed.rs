@@ -13,8 +13,9 @@
 //! and whether it is the pooled one a literal of that content is), a `Class`, a `java.util.HashMap` itself (no
 //! subclass) whose keys are Strings or null and whose values are held, an empty exact ConcurrentHashMap with
 //! its single-threaded registry model selected, and an array of integral primitives or of
-//! held references. Two fields that hold one object hold one object here. Any other value (a `float`, an
-//! `IdentityHashMap`, an object of a class of the application) is **not held**: the field has no value in the
+//! held references. A final application class with only final integral and String fields is held with every
+//! superclass through Object. The observer binds each declaring class's bytes and field layout. Two fields
+//! that hold one object hold one object here. Any other value (a `float` or an `IdentityHashMap`) is **not held**: the field has no value in the
 //! check, and a read of it before the check writes it is refused by name ([`Observed::fields`]), so nothing is
 //! made up for it.
 //!
@@ -352,7 +353,8 @@ fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::Class
             if tool_sha256(tool, &part.name)?.as_deref() != Some(part.sha256.as_str()) || (i == 0 && !cf.is_final())
                 || cf.super_class.as_deref() != Some(parent) { return Err(mismatch()); }
             let fields: Vec<_> = cf.fields.iter().filter(|f| !f.is_static()).collect();
-            if fields.len() != part.fields.len() { return Err(mismatch()); }
+            let names: std::collections::BTreeSet<_> = fields.iter().map(|f| &f.name).collect();
+            if fields.len() != part.fields.len() || names.len() != fields.len() { return Err(mismatch()); }
             for f in fields {
                 let Some(slot) = part.fields.get(&(f.name.clone(), f.descriptor.clone())) else { return Err(mismatch()); };
                 let fits = match (f.descriptor.as_str(), slot) {

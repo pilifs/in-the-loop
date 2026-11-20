@@ -501,6 +501,46 @@ public final class ObservedInitializer {
             return "{\"n\":" + ((Number) boxed).longValue() + "}";
         }
 
+        /** A final application value with only final integral and String fields all the
+         * way to Object. Read the complete layout without invoking any application code. */
+        private List<Class<?>> valueHierarchy(Class<?> type) {
+            if (!Modifier.isFinal(type.getModifiers()) || type.isHidden() || type.isArray()) return null;
+            List<Class<?>> hierarchy = new ArrayList<>();
+            boolean hasField = false;
+            for (Class<?> c = type; c != Object.class; c = c.getSuperclass()) {
+                if (c == null || c.getClassLoader() != ClassLoader.getSystemClassLoader()) return null;
+                hierarchy.add(c);
+                for (Field f : c.getDeclaredFields()) {
+                    if (Modifier.isStatic(f.getModifiers())) continue;
+                    Class<?> t = f.getType();
+                    if (!Modifier.isFinal(f.getModifiers()) || (!t.isPrimitive() && t != String.class)
+                            || t == float.class || t == double.class || !f.trySetAccessible()) return null;
+                    hasField = true;
+                }
+            }
+            return hasField ? hierarchy : null;
+        }
+
+        private String frozenValue(List<Class<?>> hierarchy, Object instance) throws Exception {
+            List<String> classes = new ArrayList<>();
+            for (Class<?> c : hierarchy) {
+                String name = c.getName().replace('.', '/');
+                List<String> fields = new ArrayList<>();
+                Field[] declared = c.getDeclaredFields();
+                java.util.Arrays.sort(declared, java.util.Comparator.comparing(Field::getName).thenComparing(f -> f.getType().descriptorString()));
+                for (Field f : declared) {
+                    if (Modifier.isStatic(f.getModifiers())) continue;
+                    f.setAccessible(true);
+                    Object raw = f.get(instance);
+                    String held = f.getType().isPrimitive() ? primitive(f.getType(), raw) : value(raw);
+                    fields.add("{\"name\":" + text(f.getName()) + ",\"type\":" + text(f.getType().descriptorString()) + ",\"value\":" + held + "}");
+                }
+                String digest = sha256(c.getClassLoader(), name);
+                classes.add("{\"name\":" + text(name) + ",\"sha256\":" + text(digest) + ",\"fields\":[" + String.join(",", fields) + "]}");
+            }
+            return "{\"k\":\"value\",\"classes\":[" + String.join(",", classes) + "]}";
+        }
+
         private String value(Object v) {
             if (v == null) {
                 return "null";
@@ -521,6 +561,17 @@ public final class ObservedInitializer {
             }
             if (type.isArray() && (type.getComponentType() == float.class || type.getComponentType() == double.class)) {
                 return unheld("an array of " + type.getComponentType().getName(), v);
+            }
+            List<Class<?>> hierarchy = valueHierarchy(type);
+            if (hierarchy != null) {
+                try {
+                    String held = frozenValue(hierarchy, v);
+                    int id = objects.size();
+                    ids.put(v, id);
+                    objects.add(held);
+                    return "{\"o\":" + id + "}";
+                }
+                catch (Exception e) { return unheld("an unreadable value of " + nameOf(type), v); }
             }
             if (!(v instanceof String) && !(v instanceof Class) && !map && !emptyConcurrentMap && !type.isArray()) {
                 return unheld("an object of " + nameOf(type), v);

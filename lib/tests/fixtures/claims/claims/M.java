@@ -608,7 +608,10 @@ public final class M {
         if (k < 0 || k > 2 ? found != null || Tables.BY_NAME.containsKey(name) : !found.getName().equals(name)) {
             return false;
         }
-        return Tables.BY_NAME.size() == Tables.COUNT && Tables.COUNT == 3 && Tables.MARKS.length == 2 && Tables.MARKS[1] == ']'
+        return Tables.ALIAS == Tables.FIXED && Tables.OTHER != Tables.FIXED
+                && Tables.ALIAS.offset == (1L << 40) && Tables.FIXED.offset == -3
+                && Tables.FIXED.name == Tables.OTHER.name && Tables.FIXED.name != "UTC" && Tables.FIXED.name.equals("UTC")
+                && Tables.BY_NAME.size() == Tables.COUNT && Tables.COUNT == 3 && Tables.MARKS.length == 2 && Tables.MARKS[1] == ']'
                 && Tables.LABEL == "label" && Tables.PREFIX.equals("claims.") && Tables.PREFIX != "claims."
                 && Tables.ORDER.length == 1 && Tables.ORDER[0] == String.class && Tables.SAME == Tables.BY_NAME && Tables.NONE == null;
     }

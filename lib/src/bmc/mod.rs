@@ -5129,8 +5129,8 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
-            if special && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == (STRING, "<init>", "([C)V") {
-                if let [Val::R(source)] = args.as_slice() { return self.string_from_chars(path, o, *source); }
+            if special && member.owner == STRING && member.name == "<init>" && matches!(member.descriptor.as_str(), "([C)V" | "(Ljava/lang/String;)V") {
+                if let [Val::R(source)] = args.as_slice() { return self.initialize_string(path, o, *source, &member.descriptor); }
             }
             if !special {
                 if let Some((cf, method)) = self.cp.image_default_method(&path.objects[o].class, &member.name, &member.descriptor) {

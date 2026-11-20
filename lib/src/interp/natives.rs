@@ -265,6 +265,7 @@ fn native_to_string(m: &mut Machine, r: Ref) -> Exec<JStr> {
             out
         }
         Native::Iterator { .. } | Native::ArrayListIterator { .. } => return unsupported("Iterator.toString is identity-based"),
+        Native::ArrayListSubList { .. } => return unsupported("rendering a live ArrayList sublist"),
         Native::Lambda { .. } => return unsupported("a lambda's toString is identity-based"),
     })
 }
@@ -715,6 +716,11 @@ fn collection_elements(m: &mut Machine, v: Value) -> Exec<Vec<Value>> {
     let Some(r) = v.as_ref() else { return Err(m.npe()) };
     match m.heap.get(r) {
         Object::Native(Native::List { elements, .. }) | Object::Native(Native::Set { elements, .. }) => Ok(elements.clone()),
+        Object::Native(Native::ArrayListSubList { root, offset, length, expected_mod_count, .. }) => {
+            if m.array_list_mod_count.get(root) != Some(expected_mod_count) { return Err(m.throw("java/util/ConcurrentModificationException", None)); }
+            let Object::Native(Native::List { elements, .. }) = m.heap.get(*root) else { return unsupported("sublist without its root"); };
+            Ok(elements[*offset..*offset + *length].to_vec())
+        }
         Object::Instance { class, .. } if matches!(class.as_str(), "java/util/HashMap$KeySet" | "java/util/HashMap$EntrySet") => {
             let it = m.call_virtual(v, "java/util/Set", "iterator", "()Ljava/util/Iterator;", vec![])?.expect("iterator reference");
             let mut elements = Vec::new();
@@ -870,6 +876,42 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         Native::List { elements, mutable } => list_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Set { elements, mutable } => set_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Map { entries, mutable } => map_method(m, r, entries, mutable, name, descriptor, &args),
+        Native::ArrayListSubList { root, offset, length, expected_mod_count, .. } => {
+            if (name, descriptor) == ("subList", "(II)Ljava/util/List;") {
+                return array_sublist(m, root, Some(r), offset, length, expected_mod_count, &args).map(Some);
+            }
+            let indexed = matches!((name, descriptor), ("get" | "remove", "(I)Ljava/lang/Object;") | ("set", "(ILjava/lang/Object;)Ljava/lang/Object;"));
+            let mut actual = args;
+            if indexed {
+                let i = actual[0].as_int();
+                if i < 0 || i as usize >= length { return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&index_message(i.into(), length)))); }
+                actual[0] = Value::Int(offset as i32 + i);
+            }
+            if m.array_list_mod_count.get(&root) != Some(&expected_mod_count) { return Err(m.throw("java/util/ConcurrentModificationException", None)); }
+            if indexed {
+                let value = m.call_virtual(Value::Ref(root), "java/util/ArrayList", name, descriptor, actual)?;
+                if name == "remove" {
+                    let mut ancestor = Some(r);
+                    while let Some(a) = ancestor {
+                        if let Object::Native(Native::ArrayListSubList { parent, length, expected_mod_count, .. }) = m.heap.get_mut(a) {
+                            *length -= 1;
+                            *expected_mod_count = m.array_list_mod_count[&root];
+                            ancestor = *parent;
+                        } else { return unsupported("sublist without its parent view"); }
+                    }
+                }
+                return Ok(value);
+            }
+            match (name, descriptor) {
+                ("size", "()I") => Ok(Some(Value::Int(length as i32))),
+                ("isEmpty", "()Z") => Ok(Some(Value::bool(length == 0))),
+                ("toArray", "()[Ljava/lang/Object;" | "([Ljava/lang/Object;)[Ljava/lang/Object;") => {
+                    let elements = collection_elements(m, Value::Ref(r))?;
+                    list_method(m, r, elements, false, name, descriptor, &actual)
+                }
+                _ => unsupported(format!("ArrayList sublist.{name}{descriptor}")),
+            }
+        }
         Native::ArrayListIterator { list, cursor, last, expected_mod_count } => {
             let Some(&current) = m.array_list_mod_count.get(&list) else { return unsupported("ArrayList iterator lost its list"); };
             let Object::Native(Native::List { elements, .. }) = m.heap.get(list) else { return unsupported("ArrayList iterator without list storage"); };
@@ -1366,6 +1408,14 @@ fn compare_values(a: Value, b: Value, t: &Type) -> i32 {
     }
 }
 
+fn array_sublist(m: &mut Machine, root: Ref, parent: Option<Ref>, offset: usize, length: usize, expected_mod_count: i32, args: &[Value]) -> Exec<Value> {
+    let (from, to) = (args[0].as_int(), args[1].as_int());
+    if from < 0 { return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&format!("fromIndex = {from}")))); }
+    if i64::from(to) > length as i64 { return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&format!("toIndex = {to}")))); }
+    if from > to { return Err(m.throw("java/lang/IllegalArgumentException", Some(&format!("fromIndex({from}) > toIndex({to})")))); }
+    Ok(Value::Ref(m.alloc_native(Native::ArrayListSubList { root, parent, offset: offset + from as usize, length: (to - from) as usize, expected_mod_count })))
+}
+
 fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool, name: &str, descriptor: &str, args: &[Value]) -> Exec<Option<Value>> {
     let len = elements.len();
     let made = m.immutable_list_kind(r);
@@ -1456,6 +1506,9 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             Some(destination)
         }
         ("subList", _) => {
+            if let Some(&count) = m.array_list_mod_count.get(&r) {
+                return array_sublist(m, r, None, 0, len, count, args).map(Some);
+            }
             let (from, to) = (args[0].as_int(), args[1].as_int());
             if from < 0 || to as usize > len || from > to {
                 return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&format!("fromIndex: {from}, toIndex: {to}, size: {len}"))));

@@ -11,7 +11,9 @@ public final class StringPadding {
         buf[0] = 'z';
         String end = emptySuffix ? "" : "8";
         String result = prefix.concat(end);
-        return prefix.charAt(0) == unit && prefix.charAt(1) == unit && (result == prefix) == emptySuffix
+        String copy = new String(prefix);
+        return copy != prefix && copy.equals(prefix) && copy.charAt(0) == unit
+                && prefix.charAt(0) == unit && prefix.charAt(1) == unit && (result == prefix) == emptySuffix
                 && result.length() == (emptySuffix ? 2 : 3) && result.charAt(0) == unit && (emptySuffix || result.charAt(2) == '8');
     }
 
@@ -19,7 +21,8 @@ public final class StringPadding {
         char[] none = {};
         Arrays.fill(none, 'x');
         String blank = new String(none);
-        if (blank == "" || !blank.isEmpty() || blank.concat("") != blank || blank.concat("x") == "x") return false;
+        if (blank == "" || !blank.isEmpty() || blank.concat("") != blank || blank.concat("x") == "x" || new String("") == "") return false;
+        try { new String((String) null); return false; } catch (NullPointerException expected) { }
         try {
             Arrays.fill((char[]) null, 'z');
             return false;

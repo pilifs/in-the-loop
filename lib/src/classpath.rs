@@ -609,13 +609,19 @@ impl ClassPath {
 
     /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
     pub(crate) fn library_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
-        if !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
+        let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
+        if !sublist && !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
             | ("java/util/ArrayList", "<init>", "()V" | "(I)V")
             | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
             | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
             | ("java/util/ArrayList", "clear", "()V")
             | ("java/util/ArrayList", "iterator", "()Ljava/util/Iterator;")
+            | ("java/util/ArrayList", "subList", "(II)Ljava/util/List;")
+            | ("java/util/AbstractList", "subListRangeCheck", "(III)V")
+            | ("java/util/AbstractList", "clear", "()V")
+            | ("java/util/ArrayList", "removeRange", "(II)V")
+            | ("java/util/ArrayList", "shiftTailOverGap", "([Ljava/lang/Object;II)V")
             | ("java/util/ArrayList", "remove", "(I)Ljava/lang/Object;" | "(Ljava/lang/Object;)Z")
             | ("java/util/ArrayList", "fastRemove", "([Ljava/lang/Object;I)V")
             | ("java/util/ArrayList", "elementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;")
@@ -634,7 +640,7 @@ impl ClassPath {
             | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
             | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")) { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
-        if owner == "java/util/ArrayList$Itr" && class.method("<clinit>", "()V").is_some() { return None; }
+        if (sublist || owner == "java/util/ArrayList$Itr") && class.method("<clinit>", "()V").is_some() { return None; }
         let method = class.method(name, descriptor)?.clone();
         method.code.as_ref()?;
         Some((class, method))

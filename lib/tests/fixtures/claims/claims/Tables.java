@@ -22,6 +22,18 @@ final class Tables {
     static final String PREFIX;
     static String LABEL = "label";
     static Object NONE;
+    static class Base {
+        final long offset;
+        Base(long value) { offset = value; }
+    }
+    static final class Fixed extends Base {
+        final int offset;
+        final String name;
+        Fixed(int value, String label) { super(1L << 40); offset = value; name = label; }
+    }
+    static final Fixed FIXED = new Fixed(-3, new String("UTC"));
+    static final Base ALIAS = FIXED;
+    static final Fixed OTHER = new Fixed(-3, FIXED.name);
 
     static {
         WRAPPERS.put(Integer.class, int.class);

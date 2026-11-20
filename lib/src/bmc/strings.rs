@@ -333,13 +333,16 @@ impl Engine<'_> {
 
     /// A fresh String constructed from a char array snapshots its units, including
     /// isolated surrogates. Later writes to the array cannot change the String.
-    pub(super) fn string_from_chars(&mut self, path: &mut Path, object: usize, source: Option<usize>) -> Step {
+    pub(super) fn initialize_string(&mut self, path: &mut Path, object: usize, source: Option<usize>, descriptor: &str) -> Step {
         let Some(a) = source else { return self.raise(path, "java/lang/NullPointerException") };
-        if self.there_before(path, a) { self.reads(path, || "String(char[]) reads an array that existed before the call".into())?; }
         self.keeps(path, Some(object), "initializes a pre-existing String")?;
-        let Some(chars) = path.objects[a].as_array().filter(|a| a.element == Type::Char).cloned() else {
-            return unsupported("String(char[]) needs known UTF-16 array cells");
+        let chars = if descriptor == "([C)V" {
+            if self.there_before(path, a) { self.reads(path, || "String(char[]) reads an array that existed before the call".into())?; }
+            path.objects[a].as_array().filter(|a| a.element == Type::Char)
+        } else {
+            path.objects[a].content()
         };
+        let Some(chars) = chars.cloned() else { return unsupported("String constructor needs known UTF-16 code units"); };
         path.objects[object].array = Some(chars);
         self.advance(path);
         Ok(None)

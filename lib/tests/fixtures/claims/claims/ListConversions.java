@@ -90,8 +90,25 @@ public final class ListConversions {
         return it.next() == "before";
     }
 
+    public static boolean nestedView(boolean invalidate) {
+        List<String> root = new ArrayList<>(3);
+        root.add("x"); root.add("a"); root.add("b");
+        List<String> outer = root.subList(1, 3);
+        List<String> inner = outer.subList(1, 2);
+        if (inner.set(0, "new") != "b" || root.get(2) != "new") return false;
+        root.set(2, "root");
+        if (inner.get(0) != "root") return false;
+        if (invalidate) {
+            root.remove(0);
+            try { inner.size(); return false; } catch (ConcurrentModificationException expected) { return true; }
+        }
+        if (inner.remove(0) != "root" || inner.size() != 0 || outer.size() != 1 || root.size() != 2) return false;
+        try { root.subList(1, 0); return false; } catch (IllegalArgumentException expected) { return true; }
+    }
+
     public static void main(String[] args) {
         if (!snapshots(false) || !snapshots(true) || !storesPrefix() || !shortCircuit(false) || !shortCircuit(true)
-                || !digits(false) || !digits(true) || !liveIterator(false) || !liveIterator(true) || snapshotIterator() || wrong()) throw new AssertionError();
+                || !digits(false) || !digits(true) || !liveIterator(false) || !liveIterator(true) || !nestedView(false) || !nestedView(true)
+                || snapshotIterator() || wrong()) throw new AssertionError();
     }
 }

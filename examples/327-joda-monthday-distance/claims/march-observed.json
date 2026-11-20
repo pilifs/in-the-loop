@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "march",
+  "statement": "Both March dates return their leap-template distance.",
+  "assume": "code >= 0 && code < 25 && code / 5 >= 3 && code % 5 >= 3",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 30,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "jodagrid.Projection#days(I)I",
+    "mapping": "For code 5*i+j the actual ReadablePartial arguments are MonthDay at indices i and j from Feb 27 through March 2, including leap day, using ISOChronology in UTC. The expected signed count uses daily offsets in a leap year.",
+    "correspondence": "finite-oracle",
+    "cases": 25
+  },
+  "observedInitializers": {
+    "org.joda.time.DateTimeZone": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67",
+    "org.joda.time.DateTimeUtils": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13"
+  },
+  "notes": [
+    "The native search starts from the two JVM-observed initializer states named above. The fresh run checks the system properties used to select the zone and name providers. The original task retains its independent startup obligation."
+  ]
+}
