@@ -1,0 +1,727 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/8d0ef3862a20418f33b753cd454cad2e84c176c5/jvmcontract",
+    "equivalence",
+    "--before",
+    "verifier/classes/reference",
+    "--after",
+    "verifier/classes/skipped-write",
+    "--target",
+    "arrays.Update#apply(int[], int[])",
+    "--assume",
+    "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+    "--observe",
+    "{\"kind\": \"array-parameter\", \"parameter\": \"left\"}",
+    "--observe",
+    "{\"kind\": \"array-parameter\", \"parameter\": \"right\"}",
+    "--nullable",
+    "left",
+    "--nullable",
+    "right",
+    "--may-alias",
+    "left,right",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "8",
+    "--max-array-length",
+    "2",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.869,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "violation",
+      "target": "arrays.Update#apply(int[], int[])",
+      "domain": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array",
+      "counterexample": {
+        "input": "apply(left=[0], right=[0])",
+        "before": "array:left=[1], array:right=[0]",
+        "after": "array:left=[0], array:right=[0]",
+        "values": [
+          "left=[0]",
+          "right=[0]"
+        ],
+        "found": "agree(len0=2, cell0_0=0, cell0_1=0, len1=2, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false)",
+        "shrink_runs": 8,
+        "inputs": [
+          {
+            "name": "left",
+            "type": "int[]",
+            "value": [
+              0
+            ]
+          },
+          {
+            "name": "right",
+            "type": "int[]",
+            "value": [
+              0
+            ]
+          }
+        ],
+        "found_inputs": [
+          {
+            "name": "left",
+            "type": "int[]",
+            "value": [
+              0,
+              0
+            ]
+          },
+          {
+            "name": "right",
+            "type": "int[]",
+            "value": [
+              0,
+              0
+            ]
+          }
+        ],
+        "call": {
+          "class": "arrays.Update",
+          "class_file": "arrays/Update.class",
+          "classes": "after",
+          "method": "apply",
+          "descriptor": "([I[I)I",
+          "static": true,
+          "arguments": [
+            {
+              "name": "left",
+              "type": "int[]",
+              "value": [
+                0
+              ]
+            },
+            {
+              "name": "right",
+              "type": "int[]",
+              "value": [
+                0
+              ]
+            }
+          ]
+        },
+        "previous_call": {
+          "class": "arrays.Update",
+          "class_file": "arrays/Update.class",
+          "classes": "before",
+          "method": "apply",
+          "descriptor": "([I[I)I",
+          "static": true,
+          "arguments": [
+            {
+              "name": "left",
+              "type": "int[]",
+              "value": [
+                0
+              ]
+            },
+            {
+              "name": "right",
+              "type": "int[]",
+              "value": [
+                0
+              ]
+            }
+          ]
+        },
+        "differs": [
+          "array:left"
+        ],
+        "replay_observations": [
+          {
+            "kind": "array-parameter",
+            "parameter": "left"
+          },
+          {
+            "kind": "array-parameter",
+            "parameter": "right"
+          }
+        ],
+        "jvm": "21.0.13"
+      },
+      "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as agree(len0=2, cell0_0=0, cell0_1=0, len1=2, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean",
+      "problem": null,
+      "statement": "verifier/work/pair/RegressionPair.java",
+      "findings": [
+        {
+          "rule_id": "property-violated",
+          "message": "Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4):\n  agree(len0=1, cell0_0=0, cell0_1=0, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false)\n    outcome: false",
+          "uri": null,
+          "line": 32
+        }
+      ],
+      "output": "Compared array:left, array:right on two fresh heaps with the same length, cell, null and sharing choices (verifier/work/pair/RegressionPair.java)\n✗ arrays.Update#apply(int[], int[]): the two versions differ on apply(left=[0], right=[0]) (the pair's property, below, returns false on it)\n  JVM before: array:left=[1], array:right=[0]\n  JVM after: array:left=[0], array:right=[0]\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4):\n  agree(len0=1, cell0_0=0, cell0_1=0, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as agree(len0=2, cell0_0=0, cell0_1=0, len1=2, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.008690505,
+        "properties": 1,
+        "unwind": 8,
+        "max_array_length": 2,
+        "stage": "[0:20]",
+        "native": {
+          "paths": 29,
+          "merges": 0,
+          "solver_calls": 36,
+          "solving_seconds": 0.000651473,
+          "gates_evaluated": 487,
+          "evaluating_seconds": 1.833e-05,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 1120,
+          "clauses": 3139,
+          "seconds": 0.007897644,
+          "loading_seconds": 0.000200305,
+          "decoding_seconds": 0.000128503,
+          "encoding_seconds": 0.000681743,
+          "witness_seconds": 2.5568e-05
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 600.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 600.0,
+            "seconds": 0.008,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.006,
+              "encoding": 0.001,
+              "solving": 0.001,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 1120,
+              "clauses": 3139
+            }
+          }
+        ]
+      },
+      "replay": {
+        "by": "jvm",
+        "reproduced": true
+      },
+      "stated": {
+        "kind": "regression",
+        "domain": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "int[]",
+              "kind": "array",
+              "null": true,
+              "max_length": 2
+            },
+            {
+              "name": "right",
+              "type": "int[]",
+              "kind": "array",
+              "null": true,
+              "max_length": 2
+            }
+          ],
+          "shared_arrays": true,
+          "may_alias": [
+            [
+              "left",
+              "right"
+            ]
+          ],
+          "text": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "unselected",
+          "exceptions": "unselected",
+          "arrays": [
+            "left",
+            "right"
+          ]
+        },
+        "bounds": {
+          "unwind": 8,
+          "max_array_length": 2,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+          "classes": 38,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "spec": {
+          "contract": {
+            "subject": "arrays.Update#apply(int[], int[])",
+            "inputs": [
+              {
+                "name": "left",
+                "type": "int[]",
+                "derivation": {
+                  "kind": "identity"
+                }
+              },
+              {
+                "name": "right",
+                "type": "int[]",
+                "derivation": {
+                  "kind": "identity"
+                }
+              }
+            ],
+            "required": [
+              "array:left",
+              "array:right"
+            ]
+          },
+          "observations": [
+            {
+              "kind": "array-parameter",
+              "parameter": "left"
+            },
+            {
+              "kind": "array-parameter",
+              "parameter": "right"
+            }
+          ]
+        }
+      },
+      "pair": {
+        "verdict": "violation",
+        "target": "RegressionPair#agree",
+        "domain": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean",
+        "assume": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": {
+          "input": "agree(len0=1, cell0_0=0, cell0_1=0, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false)",
+          "outcome": "false",
+          "values": [
+            "1",
+            "0",
+            "0",
+            "1",
+            "0",
+            "0",
+            "false",
+            "false",
+            "false"
+          ],
+          "found": "agree(len0=2, cell0_0=0, cell0_1=0, len1=2, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false)",
+          "shrink_runs": 8,
+          "inputs": [
+            {
+              "name": "len0",
+              "type": "int",
+              "value": 1
+            },
+            {
+              "name": "cell0_0",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "cell0_1",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "len1",
+              "type": "int",
+              "value": 1
+            },
+            {
+              "name": "cell1_0",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "cell1_1",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "flag2",
+              "type": "boolean",
+              "value": false
+            },
+            {
+              "name": "flag3",
+              "type": "boolean",
+              "value": false
+            },
+            {
+              "name": "flag4",
+              "type": "boolean",
+              "value": false
+            }
+          ],
+          "found_inputs": [
+            {
+              "name": "len0",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "cell0_0",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "cell0_1",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "len1",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "cell1_0",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "cell1_1",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "flag2",
+              "type": "boolean",
+              "value": false
+            },
+            {
+              "name": "flag3",
+              "type": "boolean",
+              "value": false
+            },
+            {
+              "name": "flag4",
+              "type": "boolean",
+              "value": false
+            }
+          ],
+          "call": {
+            "class": "RegressionPair",
+            "class_file": "RegressionPair.class",
+            "classes": "after",
+            "method": "agree",
+            "descriptor": "(IIIIIIZZZ)Z",
+            "static": true,
+            "arguments": [
+              {
+                "name": "len0",
+                "type": "int",
+                "value": 1,
+                "from": "len0"
+              },
+              {
+                "name": "cell0_0",
+                "type": "int",
+                "value": 0,
+                "from": "cell0_0"
+              },
+              {
+                "name": "cell0_1",
+                "type": "int",
+                "value": 0,
+                "from": "cell0_1"
+              },
+              {
+                "name": "len1",
+                "type": "int",
+                "value": 1,
+                "from": "len1"
+              },
+              {
+                "name": "cell1_0",
+                "type": "int",
+                "value": 0,
+                "from": "cell1_0"
+              },
+              {
+                "name": "cell1_1",
+                "type": "int",
+                "value": 0,
+                "from": "cell1_1"
+              },
+              {
+                "name": "flag2",
+                "type": "boolean",
+                "value": false,
+                "from": "flag2"
+              },
+              {
+                "name": "flag3",
+                "type": "boolean",
+                "value": false,
+                "from": "flag3"
+              },
+              {
+                "name": "flag4",
+                "type": "boolean",
+                "value": false,
+                "from": "flag4"
+              }
+            ]
+          }
+        },
+        "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as agree(len0=2, cell0_0=0, cell0_1=0, len1=2, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean",
+        "problem": null,
+        "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "property-violated",
+            "message": "Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4):\n  agree(len0=1, cell0_0=0, cell0_1=0, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false)\n    outcome: false",
+            "uri": null,
+            "line": 32
+          }
+        ],
+        "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4):\n  agree(len0=1, cell0_0=0, cell0_1=0, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as agree(len0=2, cell0_0=0, cell0_1=0, len1=2, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+        "work": "verifier/work/pair-work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.008690505,
+          "properties": 1,
+          "unwind": 8,
+          "max_array_length": 2,
+          "stage": "[0:20]",
+          "native": {
+            "paths": 29,
+            "merges": 0,
+            "solver_calls": 36,
+            "solving_seconds": 0.000651473,
+            "gates_evaluated": 487,
+            "evaluating_seconds": 1.833e-05,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1120,
+            "clauses": 3139,
+            "seconds": 0.007897644,
+            "loading_seconds": 0.000200305,
+            "decoding_seconds": 0.000128503,
+            "encoding_seconds": 0.000681743,
+            "witness_seconds": 2.5568e-05
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 600.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 600.0,
+              "seconds": 0.008,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.001,
+                "solving": 0.001,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1120,
+                "clauses": 3139
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.432,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.008,
+            "replay": 0.005,
+            "jvm": 0.0,
+            "other": 0.417
+          }
+        },
+        "replay": {
+          "by": "jvm",
+          "reproduced": true
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "len0",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "cell0_0",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "cell0_1",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "len1",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "cell1_0",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "cell1_1",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "flag2",
+                "type": "boolean",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "flag3",
+                "type": "boolean",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "flag4",
+                "type": "boolean",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 8,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+            "classes": 38,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 21001,
+    "sha256": "8f6f3a618bc2cc41fa8f5ff0a97cbd6d75c2acb364134ec0c9179e96d6472854"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}
