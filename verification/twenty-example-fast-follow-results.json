@@ -9279,6 +9279,96 @@
           "20261120-065325-confirm-shared-array-poststates-after-ch"
         ]
       }
+    },
+    {
+      "id": "20261120-094050-verify-monthday-distances-on-observed-ut",
+      "title": "Verify MonthDay distances on observed UTC provider startup",
+      "status": "failed",
+      "wallSeconds": 198.0,
+      "result": "verification/results/20261120-094050-verify-monthday-distances-on-observed-ut/result.json",
+      "links": {
+        "examples": [
+          "327"
+        ],
+        "jobs": [
+          "20261120-081743-recheck-both-partial-date-revisions-alon"
+        ]
+      }
+    },
+    {
+      "id": "20261120-100118-verify-all-partial-date-claims-through-b",
+      "title": "Verify all partial-date claims through boxed exception messages",
+      "status": "passed",
+      "wallSeconds": 195.0,
+      "result": "verification/results/20261120-100118-verify-all-partial-date-claims-through-b/result.json",
+      "links": {
+        "examples": [
+          "327"
+        ],
+        "jobs": [
+          "20261120-094050-verify-monthday-distances-on-observed-ut"
+        ]
+      }
+    },
+    {
+      "id": "20261120-100439-verify-chart-ranges-on-observed-calendar",
+      "title": "Verify chart ranges on observed calendar startup",
+      "status": "passed",
+      "wallSeconds": 215.0,
+      "result": "verification/results/20261120-100439-verify-chart-ranges-on-observed-calendar/result.json",
+      "links": {
+        "examples": [
+          "321"
+        ],
+        "jobs": [
+          "20261120-081134-trace-historical-chart-ranges-through-re"
+        ]
+      }
+    },
+    {
+      "id": "20261120-100812-confirm-array-root-observations-on-the-c",
+      "title": "Confirm array-root observations on the calendar checker",
+      "status": "passed",
+      "wallSeconds": 192.0,
+      "result": "verification/results/20261120-100812-confirm-array-root-observations-on-the-c/result.json",
+      "links": {
+        "examples": [
+          "197"
+        ],
+        "jobs": [
+          "20261120-065325-confirm-shared-array-poststates-after-ch"
+        ]
+      }
+    },
+    {
+      "id": "20261120-100812-recheck-released-lcs-on-the-calendar-che",
+      "title": "Recheck released LCS on the calendar checker",
+      "status": "passed",
+      "wallSeconds": 187.0,
+      "result": "verification/results/20261120-100812-recheck-released-lcs-on-the-calendar-che/result.json",
+      "links": {
+        "examples": [
+          "308"
+        ],
+        "jobs": [
+          "20261120-065325-confirm-commons-text-lcs-after-character"
+        ]
+      }
+    },
+    {
+      "id": "20261120-101603-check-earlier-threeten-chronology-bindin",
+      "title": "Check earlier ThreeTen chronology bindings on the richer observer",
+      "status": "passed",
+      "wallSeconds": 293.0,
+      "result": "verification/results/20261120-101603-check-earlier-threeten-chronology-bindin/result.json",
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261120-012520-publish-five-linked-full-grid-threetenbp"
+        ]
+      }
     }
   ],
   "regressionChecks": {
@@ -9800,6 +9890,71 @@
             ]
           }
         ]
+      },
+      "calendarChecker": {
+        "job": "verification/results/20261120-100812-confirm-array-root-observations-on-the-c/result.json",
+        "tasks": [
+          {
+            "task": "return-only",
+            "verdict": "established",
+            "receipt": "examples/197-shared-int-array-poststates/receipts/return-only/20261120T102132Z-a7066120/result.json",
+            "jvmGridSha256": {
+              "reference": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+              "skipped-write": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3"
+            },
+            "witness": null
+          },
+          {
+            "task": "right-root",
+            "verdict": "refuted",
+            "receipt": "examples/197-shared-int-array-poststates/receipts/right-root/20261120T102136Z-618ac287/result.json",
+            "jvmGridSha256": {
+              "reference": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+              "skipped-write": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3"
+            },
+            "witness": [
+              {
+                "name": "left",
+                "type": "int[]",
+                "value": [
+                  0
+                ]
+              },
+              {
+                "name": "right",
+                "type": "int[]",
+                "value": {
+                  "same": 0
+                }
+              }
+            ]
+          },
+          {
+            "task": "both-roots",
+            "verdict": "refuted",
+            "receipt": "examples/197-shared-int-array-poststates/receipts/both-roots/20261120T102138Z-a61b8001/result.json",
+            "jvmGridSha256": {
+              "reference": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+              "skipped-write": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3"
+            },
+            "witness": [
+              {
+                "name": "left",
+                "type": "int[]",
+                "value": [
+                  0
+                ]
+              },
+              {
+                "name": "right",
+                "type": "int[]",
+                "value": [
+                  0
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     "308": {
@@ -9851,6 +10006,51 @@
         "calibration": "examples/308-commons-text-longest-common-subsequence/records/geometry-checker-transfer.json",
         "seconds": 0.577,
         "peakMiB": 79.2
+      },
+      "calendarChecker": {
+        "job": "verification/results/20261120-100812-recheck-released-lcs-on-the-calendar-che/result.json",
+        "native": "examples/308-commons-text-longest-common-subsequence/records/calendar-checker-native.json",
+        "calibration": "examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json",
+        "seconds": 0.62,
+        "peakMiB": 78.4
+      }
+    },
+    "310": {
+      "calendarChecker": {
+        "job": "verification/results/20261120-101603-check-earlier-threeten-chronology-bindin/result.json",
+        "casesPerRevision": 36864,
+        "tasks": [
+          {
+            "task": "clock-parent-observed",
+            "status": "refuted",
+            "receipt": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T102132Z-a76e3155/result.json",
+            "stateSha256": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+          },
+          {
+            "task": "clock-fix-observed",
+            "status": "established",
+            "receipt": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T102144Z-ca0a6196/result.json",
+            "stateSha256": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+          },
+          {
+            "task": "reversal-parent-observed",
+            "status": "established",
+            "receipt": "examples/310-threeten-complete-hours/receipts/reversal-parent-observed/20261120T102159Z-a3bdfd83/result.json",
+            "stateSha256": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+          },
+          {
+            "task": "reversal-fix-observed",
+            "status": "established",
+            "receipt": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T102215Z-15c5653a/result.json",
+            "stateSha256": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+          },
+          {
+            "task": "same-day-observed",
+            "status": "established",
+            "receipt": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T102240Z-59a4cc56/result.json",
+            "stateSha256": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+          }
+        ]
       }
     }
   },
@@ -9895,5 +10095,683 @@
       "artifactPreparationSecondsAcrossTasks": 6.3345,
       "checkerSecondsAcrossTasks": 8.786
     }
+  },
+  "startupQualifiedNative": {
+    "scope": "Additional claims with recorded JVM initializer or calendar conditions. The original native dispositions remain in counts.native.",
+    "counts": {
+      "refuted": 4,
+      "established": 14
+    },
+    "examples": {
+      "321": {
+        "job": "verification/results/20261120-100439-verify-chart-ranges-on-observed-calendar/result.json",
+        "packetWallSeconds": 31.653,
+        "packetCgroupPeakBytes": 470679552,
+        "largestCheckerProcessRssBytes": 141012992,
+        "preparationSecondsAcrossTasks": 13.7609,
+        "checkerSecondsAcrossTasks": 13.447,
+        "claims": [
+          {
+            "task": "lower-parent-observed",
+            "originalTask": "lower-parent",
+            "revision": "parent",
+            "sourceClaim": "574238e4b5051ea6",
+            "originalSourceClaim": "d48e5e3b84fe7c77",
+            "preparedClaim": "36c7a392f832ea30",
+            "status": "refuted",
+            "independentCases": 30,
+            "admitted": 30,
+            "disagreements": 12,
+            "controlSha256": "df447b9fa4b505db74bfd9d0aaf1ea8fcb66fb6d96e80bb1310cf8c254172057",
+            "observedInitializers": {
+              "org.jfree.data.time.RegularTimePeriod": {
+                "classSha256": "694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe",
+                "stateSha256": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+              }
+            },
+            "additionalEnvironmentAssumptions": [
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              }
+            ],
+            "receipt": "examples/321-jfreechart-empty-series-range/receipts/lower-parent-observed/20261120T102132Z-d80d3e1d/result.json",
+            "execution": "examples/321-jfreechart-empty-series-range/receipts/lower-parent-observed/executions/20261120T102132Z-d80d3e1d/attempt.json",
+            "witness": {
+              "code": 5,
+              "input": {
+                "A": null,
+                "B": 1,
+                "order": "BA",
+                "year": 2012,
+                "zone": "UTC",
+                "includeInterval": false
+              },
+              "observation": "lower",
+              "observed": "NaN",
+              "expected": "1.0",
+              "replay": "examples/321-jfreechart-empty-series-range/receipts/lower-parent-observed/executions/20261120T102132Z-d80d3e1d/replay.json"
+            },
+            "checkerSeconds": 1.175,
+            "peakProcessRssBytes": 131735552,
+            "preparationSeconds": 6.9
+          },
+          {
+            "task": "lower-fix-observed",
+            "originalTask": "lower-fix",
+            "revision": "fix",
+            "sourceClaim": "574238e4b5051ea6",
+            "originalSourceClaim": "d48e5e3b84fe7c77",
+            "preparedClaim": "12a88de02bed3b1e",
+            "status": "established",
+            "independentCases": 30,
+            "admitted": 30,
+            "disagreements": 0,
+            "controlSha256": "3649c3f9da1035bf2cab90e3875607fe1e11ef06ac7da48e979e018a2e5fdcfd",
+            "observedInitializers": {
+              "org.jfree.data.time.RegularTimePeriod": {
+                "classSha256": "694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe",
+                "stateSha256": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+              }
+            },
+            "additionalEnvironmentAssumptions": [
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              }
+            ],
+            "receipt": "examples/321-jfreechart-empty-series-range/receipts/lower-fix-observed/20261120T102141Z-d21250df/result.json",
+            "execution": "examples/321-jfreechart-empty-series-range/receipts/lower-fix-observed/executions/20261120T102141Z-d21250df/attempt.json",
+            "witness": null,
+            "checkerSeconds": 1.168,
+            "peakProcessRssBytes": 128602112,
+            "preparationSeconds": 6.8486
+          },
+          {
+            "task": "upper-parent-observed",
+            "originalTask": "upper-parent",
+            "revision": "parent",
+            "sourceClaim": "b1e307022ad4848f",
+            "originalSourceClaim": "18e135c5a003610b",
+            "preparedClaim": "7e94ace534fe6d7c",
+            "status": "refuted",
+            "independentCases": 30,
+            "admitted": 30,
+            "disagreements": 12,
+            "controlSha256": "df447b9fa4b505db74bfd9d0aaf1ea8fcb66fb6d96e80bb1310cf8c254172057",
+            "observedInitializers": {
+              "org.jfree.data.time.RegularTimePeriod": {
+                "classSha256": "694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe",
+                "stateSha256": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+              }
+            },
+            "additionalEnvironmentAssumptions": [
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              }
+            ],
+            "receipt": "examples/321-jfreechart-empty-series-range/receipts/upper-parent-observed/20261120T102150Z-3829a191/result.json",
+            "execution": "examples/321-jfreechart-empty-series-range/receipts/upper-parent-observed/executions/20261120T102150Z-3829a191/attempt.json",
+            "witness": {
+              "code": 5,
+              "input": {
+                "A": null,
+                "B": 1,
+                "order": "BA",
+                "year": 2012,
+                "zone": "UTC",
+                "includeInterval": false
+              },
+              "observation": "upper",
+              "observed": "NaN",
+              "expected": "1.0",
+              "replay": "examples/321-jfreechart-empty-series-range/receipts/upper-parent-observed/executions/20261120T102150Z-3829a191/replay.json"
+            },
+            "checkerSeconds": 1.245,
+            "peakProcessRssBytes": 127668224,
+            "preparationSeconds": 0.002
+          },
+          {
+            "task": "upper-fix-observed",
+            "originalTask": "upper-fix",
+            "revision": "fix",
+            "sourceClaim": "b1e307022ad4848f",
+            "originalSourceClaim": "18e135c5a003610b",
+            "preparedClaim": "0386f6f75ebf8ebf",
+            "status": "established",
+            "independentCases": 30,
+            "admitted": 30,
+            "disagreements": 0,
+            "controlSha256": "3649c3f9da1035bf2cab90e3875607fe1e11ef06ac7da48e979e018a2e5fdcfd",
+            "observedInitializers": {
+              "org.jfree.data.time.RegularTimePeriod": {
+                "classSha256": "694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe",
+                "stateSha256": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+              }
+            },
+            "additionalEnvironmentAssumptions": [
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              }
+            ],
+            "receipt": "examples/321-jfreechart-empty-series-range/receipts/upper-fix-observed/20261120T102152Z-5afaf33d/result.json",
+            "execution": "examples/321-jfreechart-empty-series-range/receipts/upper-fix-observed/executions/20261120T102152Z-5afaf33d/attempt.json",
+            "witness": null,
+            "checkerSeconds": 1.086,
+            "peakProcessRssBytes": 131788800,
+            "preparationSeconds": 0.002
+          },
+          {
+            "task": "populated-lower-parent-observed",
+            "originalTask": "populated-lower-parent",
+            "revision": "parent",
+            "sourceClaim": "f988bd85db904abb",
+            "originalSourceClaim": "7816e217c49d766a",
+            "preparedClaim": "e54f9c1f613c2937",
+            "status": "established",
+            "independentCases": 30,
+            "admitted": 18,
+            "disagreements": 0,
+            "controlSha256": "df447b9fa4b505db74bfd9d0aaf1ea8fcb66fb6d96e80bb1310cf8c254172057",
+            "observedInitializers": {
+              "org.jfree.data.time.RegularTimePeriod": {
+                "classSha256": "694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe",
+                "stateSha256": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+              }
+            },
+            "additionalEnvironmentAssumptions": [
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              }
+            ],
+            "receipt": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent-observed/20261120T102153Z-cd35509c/result.json",
+            "execution": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent-observed/executions/20261120T102153Z-cd35509c/attempt.json",
+            "witness": null,
+            "checkerSeconds": 2.199,
+            "peakProcessRssBytes": 141000704,
+            "preparationSeconds": 0.002
+          },
+          {
+            "task": "populated-upper-parent-observed",
+            "originalTask": "populated-upper-parent",
+            "revision": "parent",
+            "sourceClaim": "d776730576615787",
+            "originalSourceClaim": "b45adf73e0f62a63",
+            "preparedClaim": "772189bac47a6638",
+            "status": "established",
+            "independentCases": 30,
+            "admitted": 18,
+            "disagreements": 0,
+            "controlSha256": "df447b9fa4b505db74bfd9d0aaf1ea8fcb66fb6d96e80bb1310cf8c254172057",
+            "observedInitializers": {
+              "org.jfree.data.time.RegularTimePeriod": {
+                "classSha256": "694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe",
+                "stateSha256": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+              }
+            },
+            "additionalEnvironmentAssumptions": [
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              }
+            ],
+            "receipt": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent-observed/20261120T102156Z-5c7879a5/result.json",
+            "execution": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent-observed/executions/20261120T102156Z-5c7879a5/attempt.json",
+            "witness": null,
+            "checkerSeconds": 2.281,
+            "peakProcessRssBytes": 138862592,
+            "preparationSeconds": 0.0021
+          },
+          {
+            "task": "populated-lower-fix-observed",
+            "originalTask": "populated-lower-fix",
+            "revision": "fix",
+            "sourceClaim": "f988bd85db904abb",
+            "originalSourceClaim": "7816e217c49d766a",
+            "preparedClaim": "7483ffca00e4cb96",
+            "status": "established",
+            "independentCases": 30,
+            "admitted": 18,
+            "disagreements": 0,
+            "controlSha256": "3649c3f9da1035bf2cab90e3875607fe1e11ef06ac7da48e979e018a2e5fdcfd",
+            "observedInitializers": {
+              "org.jfree.data.time.RegularTimePeriod": {
+                "classSha256": "694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe",
+                "stateSha256": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+              }
+            },
+            "additionalEnvironmentAssumptions": [
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              }
+            ],
+            "receipt": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix-observed/20261120T102159Z-042126c8/result.json",
+            "execution": "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix-observed/executions/20261120T102159Z-042126c8/attempt.json",
+            "witness": null,
+            "checkerSeconds": 2.152,
+            "peakProcessRssBytes": 141012992,
+            "preparationSeconds": 0.0022
+          },
+          {
+            "task": "populated-upper-fix-observed",
+            "originalTask": "populated-upper-fix",
+            "revision": "fix",
+            "sourceClaim": "d776730576615787",
+            "originalSourceClaim": "b45adf73e0f62a63",
+            "preparedClaim": "d8f6e024bcdba4dd",
+            "status": "established",
+            "independentCases": 30,
+            "admitted": 18,
+            "disagreements": 0,
+            "controlSha256": "3649c3f9da1035bf2cab90e3875607fe1e11ef06ac7da48e979e018a2e5fdcfd",
+            "observedInitializers": {
+              "org.jfree.data.time.RegularTimePeriod": {
+                "classSha256": "694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe",
+                "stateSha256": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+              }
+            },
+            "additionalEnvironmentAssumptions": [
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              }
+            ],
+            "receipt": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix-observed/20261120T102201Z-7f7221d2/result.json",
+            "execution": "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix-observed/executions/20261120T102201Z-7f7221d2/attempt.json",
+            "witness": null,
+            "checkerSeconds": 2.141,
+            "peakProcessRssBytes": 140791808,
+            "preparationSeconds": 0.002
+          }
+        ]
+      },
+      "327": {
+        "job": "verification/results/20261120-100118-verify-all-partial-date-claims-through-b/result.json",
+        "packetWallSeconds": 33.272,
+        "packetCgroupPeakBytes": 261853184,
+        "largestCheckerProcessRssBytes": 160210944,
+        "preparationSecondsAcrossTasks": 7.2341,
+        "checkerSecondsAcrossTasks": 19.962,
+        "claims": [
+          {
+            "task": "normal-parent-observed",
+            "originalTask": "normal-parent",
+            "revision": "parent",
+            "sourceClaim": "845f6897603f34b4",
+            "originalSourceClaim": "d1dec15eb0ac8d00",
+            "preparedClaim": "2ffe58cc23b84cee",
+            "status": "refuted",
+            "independentCases": 25,
+            "admitted": 25,
+            "disagreements": 9,
+            "controlSha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T100652Z-0c7ecee2/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/executions/20261120T100652Z-0c7ecee2/attempt.json",
+            "witness": {
+              "code": 17,
+              "input": {
+                "start": "03-01",
+                "end": "02-29",
+                "chronology": "ISO-UTC"
+              },
+              "observation": "normal",
+              "observed": "org.joda.time.IllegalFieldValueException",
+              "expected": null,
+              "replay": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/executions/20261120T100652Z-0c7ecee2/replay.json"
+            },
+            "checkerSeconds": 1.566,
+            "peakProcessRssBytes": 135364608,
+            "preparationSeconds": 3.626
+          },
+          {
+            "task": "normal-fix-observed",
+            "originalTask": "normal-fix",
+            "revision": "fix",
+            "sourceClaim": "845f6897603f34b4",
+            "originalSourceClaim": "d1dec15eb0ac8d00",
+            "preparedClaim": "0513a251841d879e",
+            "status": "established",
+            "independentCases": 25,
+            "admitted": 25,
+            "disagreements": 0,
+            "controlSha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T100658Z-239fd9b6/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/executions/20261120T100658Z-239fd9b6/attempt.json",
+            "witness": null,
+            "checkerSeconds": 1.499,
+            "peakProcessRssBytes": 133435392,
+            "preparationSeconds": 3.5972
+          },
+          {
+            "task": "days-parent-observed",
+            "originalTask": "days-parent",
+            "revision": "parent",
+            "sourceClaim": "08dad4b56cdfd476",
+            "originalSourceClaim": "7f0d488df0e1fab5",
+            "preparedClaim": "6b7f587fb6455211",
+            "status": "refuted",
+            "independentCases": 25,
+            "admitted": 25,
+            "disagreements": 17,
+            "controlSha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T100703Z-b214ddc0/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T100703Z-b214ddc0/attempt.json",
+            "witness": {
+              "code": 17,
+              "input": {
+                "start": "03-01",
+                "end": "02-29",
+                "chronology": "ISO-UTC"
+              },
+              "observation": "days",
+              "observed": null,
+              "expected": -1,
+              "replay": "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T100703Z-b214ddc0/replay.json"
+            },
+            "checkerSeconds": 1.549,
+            "peakProcessRssBytes": 130818048,
+            "preparationSeconds": 0.0014
+          },
+          {
+            "task": "days-fix-observed",
+            "originalTask": "days-fix",
+            "revision": "fix",
+            "sourceClaim": "08dad4b56cdfd476",
+            "originalSourceClaim": "7f0d488df0e1fab5",
+            "preparedClaim": "9b7d4694dab1ccae",
+            "status": "established",
+            "independentCases": 25,
+            "admitted": 25,
+            "disagreements": 0,
+            "controlSha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T100706Z-268a4ad5/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/days-fix-observed/executions/20261120T100706Z-268a4ad5/attempt.json",
+            "witness": null,
+            "checkerSeconds": 1.472,
+            "peakProcessRssBytes": 134746112,
+            "preparationSeconds": 0.0013
+          },
+          {
+            "task": "reversal-parent-observed",
+            "originalTask": "reversal-parent",
+            "revision": "parent",
+            "sourceClaim": "08bd8503eaabc05c",
+            "originalSourceClaim": "efd0b2df900c4814",
+            "preparedClaim": "3874b8c00741b2a0",
+            "status": "established",
+            "independentCases": 25,
+            "admitted": 25,
+            "disagreements": 0,
+            "controlSha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T100708Z-17e03eb3/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/executions/20261120T100708Z-17e03eb3/attempt.json",
+            "witness": null,
+            "checkerSeconds": 1.52,
+            "peakProcessRssBytes": 132861952,
+            "preparationSeconds": 0.0013
+          },
+          {
+            "task": "reversal-fix-observed",
+            "originalTask": "reversal-fix",
+            "revision": "fix",
+            "sourceClaim": "08bd8503eaabc05c",
+            "originalSourceClaim": "efd0b2df900c4814",
+            "preparedClaim": "364516a6cb3307da",
+            "status": "established",
+            "independentCases": 25,
+            "admitted": 25,
+            "disagreements": 0,
+            "controlSha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T100710Z-162f4730/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/executions/20261120T100710Z-162f4730/attempt.json",
+            "witness": null,
+            "checkerSeconds": 1.466,
+            "peakProcessRssBytes": 133763072,
+            "preparationSeconds": 0.0014
+          },
+          {
+            "task": "march-parent-observed",
+            "originalTask": "march-parent",
+            "revision": "parent",
+            "sourceClaim": "98929a9de6e30458",
+            "originalSourceClaim": "2a884fca8116e7a9",
+            "preparedClaim": "000fa6c2b3c48c9b",
+            "status": "established",
+            "independentCases": 25,
+            "admitted": 4,
+            "disagreements": 0,
+            "controlSha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T100712Z-05d74d56/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/march-parent-observed/executions/20261120T100712Z-05d74d56/attempt.json",
+            "witness": null,
+            "checkerSeconds": 1.907,
+            "peakProcessRssBytes": 132694016,
+            "preparationSeconds": 0.0013
+          },
+          {
+            "task": "march-fix-observed",
+            "originalTask": "march-fix",
+            "revision": "fix",
+            "sourceClaim": "98929a9de6e30458",
+            "originalSourceClaim": "2a884fca8116e7a9",
+            "preparedClaim": "4a0ba7fde582eb54",
+            "status": "established",
+            "independentCases": 25,
+            "admitted": 4,
+            "disagreements": 0,
+            "controlSha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T100714Z-6151f85f/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/march-fix-observed/executions/20261120T100714Z-6151f85f/attempt.json",
+            "witness": null,
+            "checkerSeconds": 1.889,
+            "peakProcessRssBytes": 132632576,
+            "preparationSeconds": 0.0013
+          },
+          {
+            "task": "reversal-on-returns-parent-observed",
+            "originalTask": "reversal-on-returns-parent",
+            "revision": "parent",
+            "sourceClaim": "a1811ded99d051ad",
+            "originalSourceClaim": "62fcdf3eecf21061",
+            "preparedClaim": "9d9952a94627c665",
+            "status": "established",
+            "independentCases": 25,
+            "admitted": 16,
+            "disagreements": 0,
+            "controlSha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T100716Z-ba9648da/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/executions/20261120T100716Z-ba9648da/attempt.json",
+            "witness": null,
+            "checkerSeconds": 3.515,
+            "peakProcessRssBytes": 160186368,
+            "preparationSeconds": 0.0015
+          },
+          {
+            "task": "reversal-on-returns-fix-observed",
+            "originalTask": "reversal-on-returns-fix",
+            "revision": "fix",
+            "sourceClaim": "a1811ded99d051ad",
+            "originalSourceClaim": "62fcdf3eecf21061",
+            "preparedClaim": "eb32f2eda1038e4b",
+            "status": "established",
+            "independentCases": 25,
+            "admitted": 25,
+            "disagreements": 0,
+            "controlSha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+            "observedInitializers": {
+              "org.joda.time.DateTimeZone": {
+                "classSha256": "900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d",
+                "stateSha256": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              },
+              "org.joda.time.DateTimeUtils": {
+                "classSha256": "db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b",
+                "stateSha256": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              }
+            },
+            "additionalEnvironmentAssumptions": [],
+            "receipt": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T100720Z-bb2e05f1/result.json",
+            "execution": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/executions/20261120T100720Z-bb2e05f1/attempt.json",
+            "witness": null,
+            "checkerSeconds": 3.579,
+            "peakProcessRssBytes": 160210944,
+            "preparationSeconds": 0.0014
+          }
+        ],
+        "providerSelection": {
+          "propertiesAbsent": [
+            "org.joda.time.DateTimeZone.Provider",
+            "org.joda.time.DateTimeZone.NameProvider"
+          ],
+          "missingClasspathResource": "org/joda/time/tz/data/ZoneInfoMap",
+          "observedProvider": "org.joda.time.tz.UTCProvider"
+        }
+      }
+    },
+    "calendarCalibration": {
+      "source": "lib/src/bmc/calendar.rs",
+      "function": "utc_millis",
+      "sourceSha256": "65996504fc17bc05019a9e57596d31f71712b436cdae90bad95de7e6b03eedc8",
+      "years": [
+        1600,
+        9999
+      ],
+      "monthBase": 0,
+      "dayEnumeration": "ascending valid days in each month, in ascending month and year order",
+      "timeFields": [
+        "(year + day) % 24",
+        "(month * 11 + day) % 60",
+        "(year + month + day) % 60",
+        "(year + month * 31 + day) % 1000"
+      ],
+      "independentOracle": "GregorianCalendar(TimeZone.getTimeZone(\"UTC\"), Locale.US), getActualMaximum(DAY_OF_MONTH), set(year, month, day, hour, minute, second), set(MILLISECOND, millis), getTimeInMillis()",
+      "encoding": "concatenated big-endian signed int64 epoch milliseconds",
+      "inputs": 3068037,
+      "temurinJdks": [
+        "21.0.13+9",
+        "25.0.5+8"
+      ],
+      "matchingRustAndJvmSha256": "b5745eb98ca223927e2c1bb0b26fcbe7c686109b19f193e185aa94e2dd2a32e9"
+    },
+    "executionsIncludingEarlierAttempts": 28,
+    "eligibleReceiptsIncludingEarlierAttempts": 25
   }
 }

@@ -1,0 +1,248 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/29e34d8802decff2c4c91717db160d151b315c9c/jvmcontract",
+    "prove",
+    "rangegrid.Projection#upper(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/slice/fix.jar",
+    "--classpath",
+    "prepare/fix/lib/org.jfree/jcommon-1.0.17.jar",
+    "--classpath",
+    "prepare/fix/lib/javax.servlet/servlet-api-2.5.jar",
+    "--classpath",
+    "prepare/fix/lib/com.lowagie/itext-2.1.5.jar",
+    "--assume",
+    "code >= 0 && code < 30",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--observed-initializer",
+    "org.jfree.data.time.RegularTimePeriod",
+    "--unwind",
+    "30",
+    "--max-array-length",
+    "12",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 1.086,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "rangegrid.Projection#upper(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 30",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 1.0 s; loops unwound 30 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [],
+      "output": "✓ rangegrid.Projection#upper(int) satisfies `result == 1` on every input where code >= 0 && code < 30 (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 1.0 s; loops unwound 30 times with unwinding assertions)\n  not vacuous: upper(code=0) reaches the calls\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (Bitwuzla)",
+        "seconds": 1.033169185,
+        "properties": 1,
+        "unwind": 30,
+        "max_array_length": 12,
+        "stage": null,
+        "native": {
+          "paths": 7,
+          "merges": 0,
+          "solver_calls": 30,
+          "solving_seconds": 0.016897241,
+          "gates_evaluated": 743,
+          "evaluating_seconds": 0.000447464,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "word_operations": 181,
+          "finite_queries": {
+            "diagrams": 22,
+            "bitwuzla": 8
+          },
+          "variables": 7961,
+          "clauses": 1,
+          "seconds": 0.046577691,
+          "loading_seconds": 0.003445858,
+          "decoding_seconds": 0.000435535,
+          "encoding_seconds": 0.012990972,
+          "witness_seconds": 0.0,
+          "assumed": [
+            "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+            "the class initializer of org.jfree.data.time.RegularTimePeriod was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 694273cb6b01), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+          ]
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 30.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 29.021,
+            "seconds": 0.047,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.003,
+              "lowering": 0.0,
+              "symbolic": 0.013,
+              "encoding": 0.013,
+              "solving": 0.017,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 7961,
+              "clauses": 1
+            }
+          },
+          {
+            "checker": "native",
+            "purpose": "probe",
+            "stage": null,
+            "budget_seconds": 28.967,
+            "seconds": 0.007,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.006,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 10,
+              "clauses": 1
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 1.075,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.054,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 1.02
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 30",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+            "basis": "engine",
+            "id": "observed-calendar:gregorian-utc-ad"
+          },
+          {
+            "kind": "library",
+            "text": "the class initializer of org.jfree.data.time.RegularTimePeriod was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 694273cb6b01), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+            "basis": "engine",
+            "id": "observed-initializer:org.jfree.data.time.RegularTimePeriod:694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe:9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 30,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (Bitwuzla)",
+          "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+          "fallback": null,
+          "sat": {
+            "solver": "Bitwuzla",
+            "version": "0.8.2",
+            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+            "configuration": [
+              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+              "sat-solver cadical",
+              "produce-models",
+              "otherwise Bitwuzla's default options",
+              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+              "the run's deadline through Bitwuzla's termination callback",
+              "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found upper(code=0).",
+          "witness": "upper(code=0)"
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 7908,
+    "sha256": "1328523c1ea1cd66a27546da29a69bc157d578489d486530c585907296324c55"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

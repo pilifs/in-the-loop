@@ -1,0 +1,222 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-100812-recheck-released-lcs-on-the-calendar-che",
+  "title": "Recheck released LCS on the calendar checker",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 3.8s, peak 93.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-100812-recheck-released-lcs-on-the-calendar-che.json",
+    "sha256": "7bfbced3211e1b6c95322425abcb8b51f619a63955ad0c9722ac2f6d0306f75b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-100812-recheck-released-lcs-on-the-calendar-che",
+      "title": "Recheck released LCS on the calendar checker",
+      "description": "Repeat the released Commons Text score at length four, unwind 18 and 120 seconds. Check the release, rebuilt sources and shared-row control against all 225 pairs.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "native:arrays"
+      ],
+      "links": {
+        "examples": [
+          "308"
+        ],
+        "jobs": [
+          "20261120-065325-confirm-commons-text-lcs-after-character"
+        ]
+      },
+      "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+      "submitted": {
+        "at": "2026-11-20T10:08:12+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Exercise the frozen claims",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" --native-record examples/308-commons-text-longest-common-subsequence/records/calendar-checker-native.json > examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json",
+          "cwd": "."
+        },
+        {
+          "name": "Check the verdict, raw bound and all three JVM tables",
+          "run": "python3 -c 'import json,sys,hashlib; from pathlib import Path; r=json.loads(Path(sys.argv[1]).read_text()); assert r[\"native\"][\"verdict\"]==\"verified\" and r[\"native\"][\"bounds\"]=={\"maxArrayLength\":4,\"unwind\":18}; assert r[\"native\"][\"outcomeSha256\"]==hashlib.sha256(Path(sys.argv[2]).read_bytes()).hexdigest(); assert {k:(v[\"pairs\"],v[\"disagreements\"]) for k,v in r[\"artifacts\"].items()}=={\"release\":(225,0),\"rebuilt\":(225,0),\"shared-row\":(225,44)}' examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json examples/308-commons-text-longest-common-subsequence/records/calendar-checker-native.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/308-commons-text-longest-common-subsequence/records/calendar-checker-native.json",
+        "examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json"
+      ]
+    }
+  },
+  "sourceCommit": "3667c01a64afea01c0d12461c7d9a3a67685bea1",
+  "startedAt": "2026-11-20T10:18:29+00:00",
+  "finishedAt": "2026-11-20T10:21:36+00:00",
+  "wallSeconds": 187.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1448217,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 98480128,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 6.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" --native-record examples/308-commons-text-longest-common-subsequence/records/calendar-checker-native.json > examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 3.605,
+      "cpuSeconds": 6.235,
+      "cpuThrottledSeconds": 0.413,
+      "peakMemoryBytes": 98480128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-the-frozen-claims.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the verdict, raw bound and all three JVM tables",
+      "run": "python3 -c 'import json,sys,hashlib; from pathlib import Path; r=json.loads(Path(sys.argv[1]).read_text()); assert r[\"native\"][\"verdict\"]==\"verified\" and r[\"native\"][\"bounds\"]=={\"maxArrayLength\":4,\"unwind\":18}; assert r[\"native\"][\"outcomeSha256\"]==hashlib.sha256(Path(sys.argv[2]).read_bytes()).hexdigest(); assert {k:(v[\"pairs\"],v[\"disagreements\"]) for k,v in r[\"artifacts\"].items()}=={\"release\":(225,0),\"rebuilt\":(225,0),\"shared-row\":(225,44)}' examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json examples/308-commons-text-longest-common-subsequence/records/calendar-checker-native.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.035,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 6787072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-verdict-raw-bound-an.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/308-commons-text-longest-common-subsequence/records/calendar-checker-native.json",
+      "change": "added",
+      "bytes": 6716,
+      "sha256": "1f3d1b56e2328983fb249acb12c34d247bdbc238cf7bbf4f1e7945d28e713e98",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json",
+      "change": "added",
+      "bytes": 2081,
+      "sha256": "0e75b587bebb2a1bb81fdc39700fd755800d65b0629ed46299f97227341615f3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T10:21:42+00:00",
+    "applied": [
+      "examples/308-commons-text-longest-common-subsequence/records/calendar-checker-native.json",
+      "examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "29e34d8802decff2c4c91717db160d151b315c9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/29e34d8802decff2c4c91717db160d151b315c9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

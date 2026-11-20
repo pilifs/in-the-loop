@@ -5,6 +5,8 @@ Both return zero. There are 71 input heaps up to renaming objects. Each array ha
 `{0,1}`. The JVM enumeration includes seven shared pairs and 49 distinct non-null pairs, including distinct
 arrays with equal contents.
 
+On the calendar checker the original 71-heap streams retained their hashes. Return preservation was proved, and both distinct poststate counterexamples reproduced on the JVM. [Calendar checker results](../../verification/results/20261120-100812-confirm-array-root-observations-on-the-c/result.json)
+
 | Frozen claim | JVM disagreements | Public native check |
 |---|---:|---|
 | Return value | 0 / 71 | Bounded agreement |

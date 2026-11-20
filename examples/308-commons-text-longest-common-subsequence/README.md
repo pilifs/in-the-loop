@@ -5,6 +5,8 @@ subsequence enumeration on all 225 ordered pairs of strings of length 0–3 over
 source rebuild both reached `algorithmB`. Its bytecode allocates the two score rows with `multianewarray [[I, 2` at
 offset 18. The source JAR and the pinned upstream file have the same Git blob. [Release source](https://github.com/apache/commons-text/blob/a70c34e028ab279bb89565606e1ab09011a41bc2/src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java)
 
+The calendar checker proved the released LCS score at unwind 18 and array bound four in 0.620 s at 78.4 MiB peak process RSS. Release and rebuild agreed on all 225 pairs, and 44 pairs distinguished the shared-row control. [Transfer measurement](../../examples/308-commons-text-longest-common-subsequence/records/calendar-checker-transfer.json)
+
 | Artifact | Disagreements | Score for `("ab", "aa")` |
 |---|---:|---:|
 | Published 1.13.1 JAR | 0 / 225 | 1 |

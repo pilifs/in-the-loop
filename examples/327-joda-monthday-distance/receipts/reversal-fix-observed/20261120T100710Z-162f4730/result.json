@@ -1,0 +1,580 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "364516a6cb3307da",
+    "format": 1,
+    "example": "327",
+    "statement": {
+      "approach": "target",
+      "task": "reversal-fix-observed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "reversal-fix-observed",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+        "file": "claims/reversal-observed.json",
+        "sha256": "8b31b4614f6f735f6740cb2a2abb98fefe38b92dc769c15662d849a97acc747d",
+        "property": "reversal",
+        "claimKind": "property",
+        "statement": "Reversing endpoints negates the signed distance whenever both calls return.",
+        "assume": "code >= 0 && code < 25",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 30,
+          "maxArrayLength": 12
+        },
+        "explicitBounds": {
+          "unwind": 30,
+          "maxArrayLength": 12
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/jodagrid/Cases.java",
+            "sha256": "d7cb20cb938000abf9fd72b7ae67ef328fdc9b5cb81adb13795f6cfff1850c39"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "a8e6c75c250dda60c5a40b703881f9a2f465e4e9b5419bf786ca5d7e5a3ddcc8"
+          }
+        ],
+        "boundEnvironment": {
+          "jdk": "21.0.13"
+        },
+        "adapter": {
+          "entry": "jodagrid.Projection#reversal(I)I",
+          "mapping": "For code 5*i+j the actual ReadablePartial arguments are MonthDay at indices i and j from Feb 27 through March 2, including leap day, using ISOChronology in UTC. The expected signed count uses daily offsets in a leap year.",
+          "correspondence": "finite-oracle",
+          "cases": 25
+        },
+        "observedInitializers": {
+          "org.joda.time.DateTimeZone": "6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67",
+          "org.joda.time.DateTimeUtils": "2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+        },
+        "key": "08bd8503eaabc05c"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 12
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "reversal-fix-observed",
+      "sidecar": "908e82a4e93f3629cce4fbbc9ce73fbd30e3793566ad819ef4d6c20dabfa2314",
+      "revisions": {
+        "fix": "3a413d7844c22dc6ddd50bf5d0d55ff3589e47ac"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "493abd7e27ac201e4ebb281fb637a0d9d84d0e68a093bae8b3d06f1bee40b183"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "c8af8c1de3c6bc77567967049ab591c285ba3ef303573d61f25339e52be6d0e8"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "5d0c9d52c048fda0ab78f6bc7e339e91e2525816247ddd0e02e65ae23cb117ac"
+        },
+        {
+          "revision": "fix",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "5703e1a2ac1969fe90f87076c1f1136822bf31d8948252159c86e6d0535c81a8",
+          "coordinates": "org.joda:joda-convert:1.2"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/jodagrid/Projection.java": "e6ea28fd1061374c760dd64ef828f96a7d9802e0bc5dc37911c5b29a178828c5",
+        "claims/reversal-observed.json": "8b31b4614f6f735f6740cb2a2abb98fefe38b92dc769c15662d849a97acc747d",
+        "controls/table.json": "a8e6c75c250dda60c5a40b703881f9a2f465e4e9b5419bf786ca5d7e5a3ddcc8",
+        "driver/jodagrid/Cases.java": "d7cb20cb938000abf9fd72b7ae67ef328fdc9b5cb81adb13795f6cfff1850c39"
+      },
+      "claimKey": "08bd8503eaabc05c",
+      "scopes": {
+        "fix": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261120T100710Z-162f4730",
+    "claim": "364516a6cb3307da",
+    "startedAt": "2026-11-20T10:07:10+00:00",
+    "seconds": 1.6,
+    "engine": "native",
+    "options": [
+      "prove",
+      "jodagrid.Projection#reversal(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/slice/fix.jar",
+      "--classpath",
+      "prepare/fix/lib/org.joda/joda-convert-1.2.jar",
+      "--assume",
+      "code >= 0 && code < 25",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--observed-initializer",
+      "org.joda.time.DateTimeUtils",
+      "--observed-initializer",
+      "org.joda.time.DateTimeZone",
+      "--unwind",
+      "30",
+      "--max-array-length",
+      "12",
+      "--timeout",
+      "30",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "fb69b5727f48cf1c165a6874ca7caa5ee300ac28a96693b39df0be59c66dd381"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "c0fa74b6069506d7b7a2e9e13995a8199cb30c59897a403f41bdf7c34e953a4b",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-100118-verify-all-partial-date-claims-through-b",
+      "sourceCommit": "a7eecf4f3f39bac5311d4c1403284180cbbac87b",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-100118-verify-all-partial-date-claims-through-b"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.466,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 30,
+      "maxArrayLength": 12,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "364516a6cb3307da",
+    "attempt": "20261120T100710Z-162f4730",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 25",
+          "verdict": "verified",
+          "domain": "code: int",
+          "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 1.4 s; loops unwound 30 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 1.424,
+            "properties": 1,
+            "unwind": 30,
+            "maxArrayLength": 12,
+            "stage": null,
+            "deadlineSeconds": 30.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 28.651,
+                "seconds": 0.072,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.005,
+                  "lowering": 0.001,
+                  "symbolic": 0.053,
+                  "encoding": 0.011,
+                  "solving": 0.002,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 7694,
+                  "clauses": 1
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 28.576,
+                "seconds": 0.004,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 10,
+                  "clauses": 1
+                }
+              }
+            ],
+            "native": {
+              "paths": 22,
+              "merges": 0,
+              "solverCalls": 362,
+              "solvingSeconds": 0.001896534,
+              "gatesEvaluated": 1272,
+              "evaluatingSeconds": 0.000689476,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "wordOperations": 397,
+              "finiteQueries": {
+                "diagrams": 362,
+                "bitwuzla": 0
+              },
+              "variables": 7694,
+              "clauses": 1,
+              "seconds": 0.071783525,
+              "loadingSeconds": 0.004544754,
+              "decodingSeconds": 0.001436716,
+              "encodingSeconds": 0.010816439,
+              "witnessSeconds": 0.0
+            },
+            "modelsAssume": [
+              "the class initializer of org.joda.time.DateTimeUtils was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 db553a737602), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.DateTimeUtils$SystemMillisProvider, org.joda.time.DateTimeZone, org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+              "the class initializer of org.joda.time.DateTimeZone was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 900b54692c17), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+            ],
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 25",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the class initializer of org.joda.time.DateTimeUtils was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 db553a737602), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.DateTimeUtils$SystemMillisProvider, org.joda.time.DateTimeZone, org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                "basis": "engine",
+                "id": "observed-initializer:org.joda.time.DateTimeUtils:db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b:2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+              },
+              {
+                "kind": "library",
+                "text": "the class initializer of org.joda.time.DateTimeZone was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 900b54692c17), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                "basis": "engine",
+                "id": "observed-initializer:org.joda.time.DateTimeZone:900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d:6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 30,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found reversal(code=0).",
+              "witness": "reversal(code=0)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 1.4 s; loops unwound 30 times with unwinding assertions",
+    "problem": null,
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 25"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 25",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.joda.time.DateTimeUtils was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 db553a737602), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.DateTimeUtils$SystemMillisProvider, org.joda.time.DateTimeZone, org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine",
+          "id": "observed-initializer:org.joda.time.DateTimeUtils:db553a737602c133acaa85ab207e49e65fd2988aae45c44115ed0551ec85487b:2203af6f8f13c966fa3bf2ac20f8e75c22b593f4a94c7410b04fc102509f2f4d"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.joda.time.DateTimeZone was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 900b54692c17), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties org.joda.time.DateTimeZone.Provider, not set; org.joda.time.DateTimeZone.NameProvider, not set, and the result holds where each is as it was; it initialized org.joda.time.tz.FixedDateTimeZone, org.joda.time.tz.ZoneInfoProvider, org.joda.time.tz.UTCProvider, org.joda.time.tz.DefaultNameProvider besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine",
+          "id": "observed-initializer:org.joda.time.DateTimeZone:900b54692c17d5607e7c2e15c32a51d98042db85253063c94742f6c77970316d:6f31b9df30dcbadf7025e85e5f67ebb2927d40c900c83b4b125928c641c1bd67"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 30,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found reversal(code=0).",
+        "witness": "reversal(code=0)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "045ff2cc020af3066fbdaf15e24abbc760493a11f445881b3941e01a746a875e",
+        "bytes": 91582
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "8e580954459099e9e53adb79d048b01b2fc1742f43e709644fdebae2cbdc6056",
+        "bytes": 290
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "3d48c46890e8936a9edb25307ea2de7d22e64ff5c105c4ac9aaf98ff07e6fcd3",
+        "bytes": 1951
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+        "bytes": 4700
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+        "bytes": 861
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "74c4116adfcc3ef4cf1025d7ccb6ede9deddc12b95c7f4f0732dc20343d12f7e",
+        "bytes": 14017
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "511017359cacac71bbabcd12622717ba9fe6e5b8ab0c8549408d81a530c98465",
+        "bytes": 11126
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "315ed4e0dfbb8144bce1dd36537658b5a868b6f7ceaf3a91b05d1dcad31fd52c",
+        "bytes": 75649
+      }
+    ]
+  }
+}
