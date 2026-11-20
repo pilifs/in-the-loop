@@ -1,0 +1,187 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "score.LcsScore#score",
+    "domain": "left: int × right: int",
+    "assume": "left >= 0 && left < 15 && right >= 0 && right < 15",
+    "assert": "result == score.ScoreOracle.expected(score.LcsScore.word(left), score.LcsScore.word(right))",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over left: int × right: int in 0.1 s; loops unwound 18 times with unwinding assertions",
+    "problem": null,
+    "statement": "/tmp/tmpp3qbsv98/work/native/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assertion: unknown name \"score\"; the names are left, right, result); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ score.LcsScore#score satisfies `result == score.ScoreOracle.expected(score.LcsScore.word(left), score.LcsScore.word(right))` on every input where left >= 0 && left < 15 && right >= 0 && right < 15 (jvmcontract's own checker (Bitwuzla): 1 properties proved over left: int × right: int in 0.1 s; loops unwound 18 times with unwinding assertions)\n  not vacuous: score(left=0, right=0) reaches the calls\n",
+    "work": "/tmp/tmpp3qbsv98/work/native",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (Bitwuzla)",
+      "seconds": 0.066966667,
+      "properties": 1,
+      "unwind": 18,
+      "max_array_length": 4,
+      "stage": null,
+      "native": {
+        "paths": 227,
+        "merges": 0,
+        "solver_calls": 244,
+        "solving_seconds": 0.000661799,
+        "gates_evaluated": 252,
+        "evaluating_seconds": 0.000056695,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "word_operations": 34,
+        "finite_queries": {
+          "diagrams": 244,
+          "bitwuzla": 0
+        },
+        "variables": 43,
+        "clauses": 1,
+        "seconds": 0.065968555,
+        "loading_seconds": 0.000448432,
+        "decoding_seconds": 0.000084009,
+        "encoding_seconds": 0.008030596,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 0.066,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.057,
+            "encoding": 0.008,
+            "solving": 0.001,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 43,
+            "clauses": 1
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 119.933,
+          "seconds": 0.004,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 18,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.569,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.07,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.498
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "left",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "right",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "left: int × right: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "left >= 0 && left < 15 && right >= 0 && right < 15",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == score.ScoreOracle.expected(score.LcsScore.word(left), score.LcsScore.word(right))",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 18,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found score(left=0, right=0).",
+        "witness": "score(left=0, right=0)"
+      }
+    }
+  }
+]

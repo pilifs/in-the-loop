@@ -1,0 +1,70 @@
+[
+  {
+    "claimKey": "742db80b1d101010",
+    "entry": "cubegrid.Projection#point(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "ae36b399e7e87caf4e3368550eb076f436b5584f57a9c6991d0a0555cbf3659b",
+        "classpath": [
+          "ff99862d479c460cf3ccc95286474376c80b224e5e223a83ff7cfad2cb8c68b7",
+          "9a0aeca97a85c039fdcf62e90a700036467e609676871162a07e5a6f087a345d",
+          "10fe92bffba4d5d0920967db3f9f317e121bd601a9b8278529be53a68bac09f7",
+          "cae25277cb0fbe87496f78b422b5aa8a982130c1ff529da7e28e45de978d277e",
+          "df538a6562c02a9c8dac62f51082ccb171bd8f9f18eeeeca080a2058500d12ab",
+          "654f45af15e005b42e400349bf59a1eb3d128a5a4a7e140cbb3beb8cf4e83cb5"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 6)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = cubegrid.Projection.point(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 0,
+      "input": {
+        "startTimesTwo": [
+          -2,
+          -2,
+          -2
+        ],
+        "direction": [
+          1,
+          1,
+          1
+        ],
+        "tolerance": "1e-10"
+      },
+      "field": "point",
+      "direct": {
+        "parent": {
+          "hit": false,
+          "point": null
+        }
+      },
+      "tableSha256": "0767b1e1d0f01f0a99e5c726bc0d3d549db3c2a8b1413f4fbbf1e074cbcfde38"
+    }
+  }
+]
