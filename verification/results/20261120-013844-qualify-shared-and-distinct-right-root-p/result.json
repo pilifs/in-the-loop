@@ -1,0 +1,323 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-013844-qualify-shared-and-distinct-right-root-p",
+  "title": "Qualify shared and distinct right-root projections on JBMC",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 18.0s, peak 75.0 MiB (estimated 20.0s, 1.0 GiB); 9 output file(s) changed",
+  "attention": [
+    "step 1 (Check shared-right) was held back 4.8s by its 1-CPU quota in 5.8s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Check distinct-right) was held back 4.6s by its 1-CPU quota in 5.6s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (Check distinct-both) was held back 5.8s by its 1-CPU quota in 6.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-013844-qualify-shared-and-distinct-right-root-p.json",
+    "sha256": "7846506f7ae6becf211818e82a6e94c37be3f81a4d1100f07cad1c63dff1a64d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-013844-qualify-shared-and-distinct-right-root-p",
+      "title": "Qualify shared and distinct right-root projections on JBMC",
+      "description": "Check whether JBMC can distinguish the same skipped write by the right root specifically. On the 71 nullable/shared heaps the witnessed right-root change must alias the left root and reproduce on the JVM. On the nine distinct non-null pairs of zero- or one-cell binary arrays, both implementations must preserve the right root, including equal-but-distinct arrays. Recheck the original two-root preserving and distinguishing pair on that distinct profile. Record the checked bounds, nullability, alias group, guard, selected observations, raw checker bytes and proof non-vacuity.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc:arrays",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "197"
+        ],
+        "jobs": [
+          "20261120-005556-recheck-jbmc-preservation-on-all-71-null",
+          "20261119-164549-197-integrated-jbmc-preserving-and-discr"
+        ]
+      },
+      "expected": "Four complete non-vacuous establishments and two independently replayed refutations. The wide right-only witness names a shared root. The nine-heap both-root profile uses the same semantic and subject digests as its earlier handler refusal.",
+      "submitted": {
+        "at": "2026-11-20T01:38:44+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1,
+        "memory": "1G",
+        "memoryLimit": "2G",
+        "duration": "20s",
+        "timeout": "5m"
+      },
+      "steps": [
+        {
+          "name": "Check shared-right",
+          "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --profile nullable-shared-binary-length-2 --observation right-root --records verification/qualified-array-projections > verification/shared-right-array-projection.json"
+        },
+        {
+          "name": "Check distinct-right",
+          "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --profile distinct-binary-length-1 --observation right-root --records verification/qualified-array-projections > verification/distinct-right-array-projection.json"
+        },
+        {
+          "name": "Check distinct-both",
+          "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --profile distinct-binary-length-1 --observation both-roots --records verification/qualified-array-projections > verification/distinct-both-array-projection.json"
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/qualified-array-projections",
+        "verification/shared-right-array-projection.json",
+        "verification/distinct-right-array-projection.json",
+        "verification/distinct-both-array-projection.json"
+      ]
+    }
+  },
+  "sourceCommit": "e8e21cae0c8a452035c6ce6e034b512f4d614580",
+  "startedAt": "2026-11-20T01:39:48+00:00",
+  "finishedAt": "2026-11-20T01:40:07+00:00",
+  "wallSeconds": 19.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2746646,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 2147483648,
+    "timeoutSeconds": 300.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 20.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 78598144,
+    "wallSeconds": 18.0,
+    "cpuSeconds": 17.6,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.9
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check shared-right",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --profile nullable-shared-binary-length-2 --observation right-root --records verification/qualified-array-projections > verification/shared-right-array-projection.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 5.813,
+      "cpuSeconds": 5.635,
+      "cpuThrottledSeconds": 4.845,
+      "peakMemoryBytes": 78598144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-shared-right.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check distinct-right",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --profile distinct-binary-length-1 --observation right-root --records verification/qualified-array-projections > verification/distinct-right-array-projection.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 5.611,
+      "cpuSeconds": 5.496,
+      "cpuThrottledSeconds": 4.577,
+      "peakMemoryBytes": 75952128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-distinct-right.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check distinct-both",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --profile distinct-binary-length-1 --observation both-roots --records verification/qualified-array-projections > verification/distinct-both-array-projection.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 6.617,
+      "cpuSeconds": 6.455,
+      "cpuThrottledSeconds": 5.763,
+      "peakMemoryBytes": 75730944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-distinct-both.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/qualified-array-projections/distinct-binary-length-1-alternative.stdout",
+      "change": "added",
+      "bytes": 14898,
+      "sha256": "5216c5ae0a7aef80086157554498d508980469059ed3d2653b8cf4c91fe67715",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/qualified-array-projections/distinct-binary-length-1-preserving.stdout",
+      "change": "added",
+      "bytes": 12591,
+      "sha256": "bd900df9110a71842a5f2192c0401bbbcd65551c7897f995c3a21047a61e3b76",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/qualified-array-projections/distinct-binary-length-1-right-root-alternative.stdout",
+      "change": "added",
+      "bytes": 12406,
+      "sha256": "97efa0cec2024ffbb281ec000bcd205e9d285fbf8683ac263a25c94eb526454b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/qualified-array-projections/distinct-binary-length-1-right-root-preserving.stdout",
+      "change": "added",
+      "bytes": 12449,
+      "sha256": "c65d2f15cd3620885747b8561a609a9fbd713c8a499f8a65c3d117c015cebc44",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/qualified-array-projections/nullable-shared-binary-length-2-right-root-alternative.stdout",
+      "change": "added",
+      "bytes": 19958,
+      "sha256": "f6b4b481cf8c83cf1fa6bed5b9cbaed172d63b3a396bcb2c48eee8da608b64a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/qualified-array-projections/nullable-shared-binary-length-2-right-root-preserving.stdout",
+      "change": "added",
+      "bytes": 14443,
+      "sha256": "4e1a4c704bf388fda78330d1f09da4a55a101b7b4b4f6f0ed2b8bb294b79c4bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/shared-right-array-projection.json",
+      "change": "added",
+      "bytes": 15437,
+      "sha256": "d5b1d8c7ba5294a5d7074386b8f3a48ef1e3e8439733ce4cbf6f55aee779c910",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/distinct-right-array-projection.json",
+      "change": "added",
+      "bytes": 12508,
+      "sha256": "5761575496cd3b235dc449b9fc5697a2c2cb86b662a309a8846e890560c6e7cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/distinct-both-array-projection.json",
+      "change": "added",
+      "bytes": 14928,
+      "sha256": "fa3a45e227e56485621587066dadd2855ddc58572bdbfad1fae298c68bd6436d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T01:40:27+00:00",
+    "applied": [
+      "verification/qualified-array-projections/distinct-binary-length-1-alternative.stdout",
+      "verification/qualified-array-projections/distinct-binary-length-1-preserving.stdout",
+      "verification/qualified-array-projections/distinct-binary-length-1-right-root-alternative.stdout",
+      "verification/qualified-array-projections/distinct-binary-length-1-right-root-preserving.stdout",
+      "verification/qualified-array-projections/nullable-shared-binary-length-2-right-root-alternative.stdout",
+      "verification/qualified-array-projections/nullable-shared-binary-length-2-right-root-preserving.stdout",
+      "verification/shared-right-array-projection.json",
+      "verification/distinct-right-array-projection.json",
+      "verification/distinct-both-array-projection.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3d38e54ed6f123e8b89a281ca7aac005a1fc821b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3d38e54ed6f123e8b89a281ca7aac005a1fc821b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

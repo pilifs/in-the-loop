@@ -1,0 +1,356 @@
+{
+  "observation": "right-root",
+  "checkerCommit": "e8e21cae0c8a452035c6ce6e034b512f4d614580",
+  "checkerLibTree": "3d38e54ed6f123e8b89a281ca7aac005a1fc821b",
+  "checkerSha256": "c2dd914e701f54bac1690aa01b4eea9800282c81a0f58526fa321ec126909658",
+  "classSha256": {
+    "baseline": "885c57ba5616612a4690cf1ad262b206c1450c932e02fa7069428795569ae907",
+    "alternative": "e7c7163fc629cea47d6055912b66a6e9c9791456c010c06b7a7b162295f928f4",
+    "controls/preserving": "ded55e6e564c5d3433973bd408f5a7280212aa49fc8428bb2efbc2d96e974463"
+  },
+  "rows": [
+    {
+      "profile": "distinct-binary-length-1",
+      "domainAndObservationSha256": "e575dc82b3bdffa3fd4c2a0a841bf8acca2fa3660eef665ab4bd3ed6c8e0801d",
+      "semantics": {
+        "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+        "nullable": [],
+        "mayAlias": [],
+        "bounds": {
+          "maxArrayLength": 1,
+          "unwind": 8
+        },
+        "observations": [
+          {
+            "kind": "array-parameter",
+            "parameter": "right"
+          }
+        ]
+      },
+      "pair": "controls/preserving",
+      "engine": "jbmc",
+      "expected": "verified",
+      "verdict": "verified",
+      "qualified": true,
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3d38e54ed6f123e8b89a281ca7aac005a1fc821b/jvmcontract",
+        "equivalence",
+        "--before",
+        "/tmp/tmp5ryyh3no/baseline",
+        "--after",
+        "/tmp/tmp5ryyh3no/controls/preserving",
+        "--target",
+        "arrays.Update#apply",
+        "--engine",
+        "jbmc",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "8",
+        "--max-array-length",
+        "1",
+        "--assume",
+        "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+        "--timeout",
+        "90",
+        "--json",
+        "--work",
+        "/tmp/tmp5ryyh3no/distinct-binary-length-1/controls/preserving",
+        "--observe",
+        "{\"kind\": \"array-parameter\", \"parameter\": \"right\"}"
+      ],
+      "statement": {
+        "kind": "regression",
+        "domain": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "int[]",
+              "kind": "array",
+              "null": false,
+              "max_length": 1
+            },
+            {
+              "name": "right",
+              "type": "int[]",
+              "kind": "array",
+              "null": false,
+              "max_length": 1
+            }
+          ],
+          "shared_arrays": false,
+          "text": "left: int[] of length \u2264 1, not null \u00d7 right: int[] of length \u2264 1, not null; no two the same array"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+            "basis": "stated"
+          },
+          {
+            "kind": "library",
+            "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "unselected",
+          "exceptions": "unselected",
+          "arrays": [
+            "right"
+          ]
+        },
+        "bounds": {
+          "unwind": 8,
+          "max_array_length": 1,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+          "classes": 38,
+          "jdk": "25.0.5"
+        },
+        "checker": {
+          "engine": "jbmc",
+          "name": "JBMC 6.11.0",
+          "solver": "cadical",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "3.0.0",
+            "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+            "configuration": [
+              "--trace",
+              "--throw-runtime-exceptions",
+              "--unwinding-assertions",
+              "--json-ui",
+              "--timestamp",
+              "monotonic",
+              "--no-refine-strings",
+              "--sat-solver",
+              "cadical"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, len1=0, cell1_0=20).",
+          "witness": "agree(len0=0, cell0_0=20, len1=0, cell1_0=20)"
+        },
+        "spec": {
+          "contract": {
+            "subject": "arrays.Update#apply",
+            "inputs": [
+              {
+                "name": "left",
+                "type": "int[]",
+                "derivation": {
+                  "kind": "identity"
+                }
+              },
+              {
+                "name": "right",
+                "type": "int[]",
+                "derivation": {
+                  "kind": "identity"
+                }
+              }
+            ],
+            "required": [
+              "array:right"
+            ]
+          },
+          "observations": [
+            {
+              "kind": "array-parameter",
+              "parameter": "right"
+            }
+          ]
+        }
+      },
+      "verifierOutput": "distinct-binary-length-1-right-root-preserving.stdout",
+      "verifierOutputSha256": "c65d2f15cd3620885747b8561a609a9fbd713c8a499f8a65c3d117c015cebc44",
+      "problem": null,
+      "replay": null,
+      "witness": null,
+      "seconds": 1.704,
+      "peakMiB": 80.6
+    },
+    {
+      "profile": "distinct-binary-length-1",
+      "domainAndObservationSha256": "e575dc82b3bdffa3fd4c2a0a841bf8acca2fa3660eef665ab4bd3ed6c8e0801d",
+      "semantics": {
+        "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+        "nullable": [],
+        "mayAlias": [],
+        "bounds": {
+          "maxArrayLength": 1,
+          "unwind": 8
+        },
+        "observations": [
+          {
+            "kind": "array-parameter",
+            "parameter": "right"
+          }
+        ]
+      },
+      "pair": "alternative",
+      "engine": "jbmc",
+      "expected": "verified",
+      "verdict": "verified",
+      "qualified": true,
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3d38e54ed6f123e8b89a281ca7aac005a1fc821b/jvmcontract",
+        "equivalence",
+        "--before",
+        "/tmp/tmp5ryyh3no/baseline",
+        "--after",
+        "/tmp/tmp5ryyh3no/alternative",
+        "--target",
+        "arrays.Update#apply",
+        "--engine",
+        "jbmc",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "8",
+        "--max-array-length",
+        "1",
+        "--assume",
+        "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+        "--timeout",
+        "90",
+        "--json",
+        "--work",
+        "/tmp/tmp5ryyh3no/distinct-binary-length-1/alternative",
+        "--observe",
+        "{\"kind\": \"array-parameter\", \"parameter\": \"right\"}"
+      ],
+      "statement": {
+        "kind": "regression",
+        "domain": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "int[]",
+              "kind": "array",
+              "null": false,
+              "max_length": 1
+            },
+            {
+              "name": "right",
+              "type": "int[]",
+              "kind": "array",
+              "null": false,
+              "max_length": 1
+            }
+          ],
+          "shared_arrays": false,
+          "text": "left: int[] of length \u2264 1, not null \u00d7 right: int[] of length \u2264 1, not null; no two the same array"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+            "basis": "stated"
+          },
+          {
+            "kind": "library",
+            "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "unselected",
+          "exceptions": "unselected",
+          "arrays": [
+            "right"
+          ]
+        },
+        "bounds": {
+          "unwind": 8,
+          "max_array_length": 1,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+          "classes": 38,
+          "jdk": "25.0.5"
+        },
+        "checker": {
+          "engine": "jbmc",
+          "name": "JBMC 6.11.0",
+          "solver": "cadical",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "3.0.0",
+            "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+            "configuration": [
+              "--trace",
+              "--throw-runtime-exceptions",
+              "--unwinding-assertions",
+              "--json-ui",
+              "--timestamp",
+              "monotonic",
+              "--no-refine-strings",
+              "--sat-solver",
+              "cadical"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, len1=0, cell1_0=20).",
+          "witness": "agree(len0=0, cell0_0=20, len1=0, cell1_0=20)"
+        },
+        "spec": {
+          "contract": {
+            "subject": "arrays.Update#apply",
+            "inputs": [
+              {
+                "name": "left",
+                "type": "int[]",
+                "derivation": {
+                  "kind": "identity"
+                }
+              },
+              {
+                "name": "right",
+                "type": "int[]",
+                "derivation": {
+                  "kind": "identity"
+                }
+              }
+            ],
+            "required": [
+              "array:right"
+            ]
+          },
+          "observations": [
+            {
+              "kind": "array-parameter",
+              "parameter": "right"
+            }
+          ]
+        }
+      },
+      "verifierOutput": "distinct-binary-length-1-right-root-alternative.stdout",
+      "verifierOutputSha256": "97efa0cec2024ffbb281ec000bcd205e9d285fbf8683ac263a25c94eb526454b",
+      "problem": null,
+      "replay": null,
+      "witness": null,
+      "seconds": 1.527,
+      "peakMiB": 80.3
+    }
+  ],
+  "overlapQualified": true
+}
