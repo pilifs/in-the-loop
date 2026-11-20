@@ -550,6 +550,25 @@ fn compile_writers(name: &str, class: &str, source: &str) -> Option<PathBuf> {
 }
 
 #[test]
+fn native_identity_map_and_boxed_booleans_agree_with_the_jvm() {
+    jvmcontract::tool_tier!();
+    let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/identitymap/IdentityKeys.java");
+    let Some(classes) = compile("identity-map", &[source]) else { return };
+    let direct = Command::new("java").arg("-cp").arg(&classes).arg("fixtures.IdentityKeys").output().unwrap();
+    assert!(direct.status.success(), "{}", String::from_utf8_lossy(&direct.stderr));
+    assert_eq!(String::from_utf8_lossy(&direct.stdout).trim(), "2 3");
+    let mut options = property::Options::new(std::slice::from_ref(&classes), "fixtures.IdentityKeys#bindings");
+    options.engine = jvmcontract::Engine::Native;
+    options.assume = Some("n >= 0 && n < 2".into());
+    for (assertion, expected) in [("result == 2 + n", Verdict::Verified), ("result == 2", Verdict::Violation)] {
+        options.assert = Some(assertion.into());
+        let answer = property::run(&options).unwrap();
+        assert_eq!(answer.verdict, expected, "{}", answer.output);
+        if expected == Verdict::Violation { assert!(answer.replay.unwrap().reproduced); }
+    }
+}
+
+#[test]
 fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
     jvmcontract::tool_tier!();
     let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/floating/FloatingChecks.java");

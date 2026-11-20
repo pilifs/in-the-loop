@@ -213,9 +213,9 @@ fn the_previous_versions_questions_by_name_are_answered_on_its_own_class_path() 
         }
         equivalence::run(&o).unwrap()
     };
-    // The initializer is a gap until it is observed.
+    // The checker can also run this initializer: its identity map has only put and size.
     let unobserved = pair((&entries.0, &with), (&entries.1, &without), "probe-unobserved", false);
-    assert_eq!(unobserved.verdict, Verdict::Unverifiable, "{}", unobserved.output);
+    assert_eq!(unobserved.verdict, Verdict::Verified, "{}", unobserved.output);
 
     for (before, after, work) in [((&entries.0, &with), (&entries.1, &without), "probe-had"), ((&entries.1, &without), (&entries.0, &with), "probe-has")] {
         let o = pair((before.0.as_path(), before.1.as_path()), (after.0.as_path(), after.1.as_path()), work, true);

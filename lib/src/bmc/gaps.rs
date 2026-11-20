@@ -1269,7 +1269,8 @@ mod tests {
         assert_eq!(jdk_static_call("java/lang/Long", "numberOfLeadingZeros", "(J)I"), JdkCall::Exact);
         assert_eq!(jdk_static_call("java/util/Arrays", "fill", "([II)V"), JdkCall::Gap(GapKind::JdkStaticMethod));
         assert_eq!(jdk_static_call("java/lang/Math", "addExact", "(II)I"), JdkCall::Exact);
-        assert_eq!(jdk_static_call("java/lang/Math", "sqrt", "(D)D"), JdkCall::Refused);
+        assert_eq!(jdk_static_call("java/lang/Math", "sqrt", "(D)D"), JdkCall::Exact);
+        assert_eq!(jdk_static_call("java/lang/Math", "sin", "(D)D"), JdkCall::Refused);
         assert_eq!(jdk_static_call("java/util/Arrays", "copyOfRange", "([III)[I"), JdkCall::Refused);
         assert_eq!(jdk_static_call("java/util/Arrays", "copyOf", "([II)[I"), JdkCall::Exact);
         let cp = ClassPath::new().with_default_jdk();

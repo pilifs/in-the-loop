@@ -418,7 +418,7 @@ public final class M {
         }
     }
 
-    /** What the object says is the JDK's call. */
+    /** Unboxing reads the same truth that selected the canonical object. */
     public static boolean truthTold(boolean b) {
         return (b ? Boolean.TRUE : Boolean.FALSE).booleanValue() == b;
     }

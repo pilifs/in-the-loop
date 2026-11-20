@@ -75,10 +75,8 @@
 //!   value afterwards ([`Engine::formatted`]), since a getter may have written it. Formatting calls the record's getters, a subclass's overrides included, so a record of a
 //!   class that could write elsewhere from one of them stays the JDK call. A level, a handler, a filter or a bundle
 //!   set on a Logger is a call of it no model takes, so a check that sets one stops there.
-//! - `getstatic` of `Boolean.TRUE` or `Boolean.FALSE`: the one object each constant is, distinct from the other and
-//!   from every object the run makes, as on a JVM. The object has no content: every method of it is the JDK call it
-//!   was, as is `Boolean.valueOf`. A library stores one where it records a decision (Spring's
-//!   `PropertyValue.conversionNecessary`).
+//! - `getstatic` of `Boolean.TRUE` or `Boolean.FALSE` and `Boolean.valueOf(boolean)` share two
+//!   canonical objects. `booleanValue()` on either returns the corresponding truth.
 //! - `new ArrayList()`: the JDK's no-argument constructor only sets the list's own fields, so the object is made
 //!   as any object with no content is, its methods the JDK calls they were.
 //! - `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)`: likewise (the JDK allocates the table at the first
@@ -103,8 +101,8 @@ pub const PUBLISHING_ASSUMPTION: &str = "a record given to a logger goes to the 
 pub(super) const BOOLEAN: &str = "java/lang/Boolean";
 
 /// Whether the static field is `Boolean.TRUE` or `Boolean.FALSE`, and which: one object each for a run, as each is
-/// one on a JVM, distinct from each other and from any other object. Nothing of it is read here: a call on it
-/// (`booleanValue`, `equals`, ...) is the JDK call it names, and `Boolean.valueOf`, which returns one of them, is too.
+/// one on a JVM, distinct from each other and from any other object. `valueOf` returns one of these objects
+/// and `booleanValue` reads the corresponding truth.
 pub fn truth_constant(owner: &str, name: &str) -> Option<bool> {
     match (owner, name) {
         (BOOLEAN, "TRUE") => Some(true),
@@ -177,7 +175,7 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     if (owner, name, descriptor) == ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;") { return true; }
     matches!(
         (owner, name, descriptor),
-        ("java/lang/reflect/Array", "getLength", "(Ljava/lang/Object;)I") | (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
+        (BOOLEAN, "valueOf", "(Z)Ljava/lang/Boolean;") | ("java/lang/reflect/Array", "getLength", "(Ljava/lang/Object;)I") | (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
     )
 }
 
@@ -186,7 +184,7 @@ pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
     if matches!((owner, name, descriptor), ("java/lang/Integer" | "java/lang/Number", "intValue", "()I")) { return true; }
     matches!(
         (owner, name, descriptor),
-        (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
+        (BOOLEAN, "booleanValue", "()Z") | (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
             | (CLASS, "isArray", "()Z")
             | (CLASS, "getSuperclass", "()Ljava/lang/Class;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
@@ -230,6 +228,12 @@ impl Engine<'_> {
     /// on the object `o`, and `getClass()` on it: see the module's
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
+        if (owner, name, descriptor) == (BOOLEAN, "booleanValue", "()Z") {
+            let truth = [true, false].into_iter().find(|v| path.literals.get(&Literal::Truth(*v)) == Some(&o))?;
+            self.push(path, Val::I(self.b.constant(i64::from(truth), 32)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         if matches!((owner, name, descriptor), ("java/lang/Integer" | "java/lang/Number", "intValue", "()I")) {
             let value = path.literals.iter().find_map(|(literal, &object)| match literal {
                 Literal::CachedIntegral("java/lang/Integer", value) if object == o => Some(*value), _ => None,
@@ -498,6 +502,15 @@ impl Engine<'_> {
     /// the call stays the JDK's.
     pub(super) fn runtime_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
+            (BOOLEAN, "valueOf", [Val::I(word)]) => {
+                let zero = self.b.is_zero(word);
+                let yes = self.literal(path, Literal::Truth(true), BOOLEAN);
+                let no = self.literal(path, Literal::Truth(false), BOOLEAN);
+                let result = choice(&mut self.b, vec![(-zero, Some(yes)), (zero, Some(no))]);
+                self.push(path, result);
+                self.advance(path);
+                Some(Ok(None))
+            }
             ("java/lang/reflect/Array", "getLength", [Val::R(object)]) => {
                 let Some(o) = *object else { return Some(self.raise(path, "java/lang/NullPointerException")) };
                 let obj = &path.objects[o];

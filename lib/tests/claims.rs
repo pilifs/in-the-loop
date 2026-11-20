@@ -485,12 +485,9 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
     assert_eq!(unused.verdict, Verdict::Verified, "{}", unused.output);
     assert!(!unused.stated.as_ref().expect("a statement").assumptions.iter().any(|a| a.text.contains("the tool's model of the class")), "{}", unused.output);
 
-    // `Boolean.TRUE` and `Boolean.FALSE`, which a list's owner may store (Spring's `PropertyValue`): one object each;
-    // what one says is the JDK's call.
+    // Boxing selects the same objects as the two JDK constants, including through a path merge.
     proved(classes, "claims.M#truths", 3);
-    let told = run(&options(classes, "claims.M#truthTold", 3, "M-truthTold"));
-    assert_eq!(told.verdict, Verdict::Unverifiable, "{}", told.output);
-    assert!(told.output.contains("java.lang.Boolean.booleanValue()Z"), "{}", told.output);
+    proved(classes, "claims.M#truthTold", 3);
 
     // A String's class, as Spring's `ClassUtils.getDescriptiveType` names a value (example 286): the literal of
     // `String`, its type name its name, and no proxy class; `Proxy.isProxyClass(null)` throws.
