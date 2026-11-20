@@ -1,0 +1,358 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-180249-build-both-importer-dependency-repairs-a",
+  "title": "Build both importer dependency repairs at their first-parent boundaries",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 1m36s, peak 726.0 MiB (estimated 9m00s, 3.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-180249-build-both-importer-dependency-repairs-a.json",
+    "sha256": "868beb3f8b6627769fbbee3e65e912c737495c9b5bb00815cdc4a3bc07295e18",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-180249-build-both-importer-dependency-repairs-a",
+      "title": "Build both importer dependency repairs at their first-parent boundaries",
+      "description": "Package four full upstream Maven projects from the pinned Commons IO and Commons CSV parent and fix commits. Record checkout, first parent, toolchain, all resolved build files, output JAR hashes and the independently resolved runtime dependencies. These JARs feed the unchanged importer and the two producer examples.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "targets:upstream-build"
+      ],
+      "links": {
+        "examples": [
+          "338",
+          "339",
+          "345"
+        ]
+      },
+      "expected": "Each production JAR and its dependencies are present by content hash, with each fixed revision checked against its recorded first parent.",
+      "submitted": {
+        "at": "2026-11-20T18:02:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "mvn",
+        "git",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "9m",
+        "notes": "Four sequential fresh Apache Maven builds and runtime dependency listings on JDK 21."
+      },
+      "steps": [
+        {
+          "name": "Build Commons IO parent",
+          "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json io-parent examples/345-paged-importer-upgrades/records/builds/io-parent.json",
+          "cwd": "."
+        },
+        {
+          "name": "Build Commons IO fix",
+          "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json io-fix examples/345-paged-importer-upgrades/records/builds/io-fix.json",
+          "cwd": "."
+        },
+        {
+          "name": "Build Commons CSV parent",
+          "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json csv-parent examples/345-paged-importer-upgrades/records/builds/csv-parent.json",
+          "cwd": "."
+        },
+        {
+          "name": "Build Commons CSV fix",
+          "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json csv-fix examples/345-paged-importer-upgrades/records/builds/csv-fix.json",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/345-paged-importer-upgrades/records/builds"
+      ]
+    }
+  },
+  "sourceCommit": "4a3417179e9be0b611535d65e4d7c81deb4ae2f2",
+  "startedAt": "2026-11-20T18:04:42+00:00",
+  "finishedAt": "2026-11-20T18:06:21+00:00",
+  "wallSeconds": 99.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4146000,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2160.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 540.0,
+    "notes": "Four sequential fresh Apache Maven builds and runtime dependency listings on JDK 21."
+  },
+  "usage": {
+    "peakMemoryBytes": 761315328,
+    "wallSeconds": 96.2,
+    "cpuSeconds": 132.4,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.18
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build Commons IO parent",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json io-parent examples/345-paged-importer-upgrades/records/builds/io-parent.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 25.258,
+      "cpuSeconds": 35.097,
+      "cpuThrottledSeconds": 4.612,
+      "peakMemoryBytes": 761315328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-commons-io-parent.log",
+        "lines": 1,
+        "bytes": 111,
+        "sha256": "e95ec0a29ce1c6b791552532430cf047ccb2c761672c29ddeab1473b14b97ab7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "original 5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a built/commons-io-2.23.0-SNAPSHOT.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Build Commons IO fix",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json io-fix examples/345-paged-importer-upgrades/records/builds/io-fix.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 24.855,
+      "cpuSeconds": 35.357,
+      "cpuThrottledSeconds": 5.615,
+      "peakMemoryBytes": 706723840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-build-commons-io-fix.log",
+        "lines": 1,
+        "bytes": 111,
+        "sha256": "7e35f49ec337d27595e86e4b7f8b9b8d27a6195580e5ff7c5e370f4e811fa763",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "original a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4 built/commons-io-2.23.0-SNAPSHOT.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Build Commons CSV parent",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json csv-parent examples/345-paged-importer-upgrades/records/builds/csv-parent.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 23.248,
+      "cpuSeconds": 30.949,
+      "cpuThrottledSeconds": 3.708,
+      "peakMemoryBytes": 738582528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-build-commons-csv-parent.log",
+        "lines": 3,
+        "bytes": 383,
+        "sha256": "a2d1ad10717481ad0943d6ddf34107487d9399b78db913a8f5e45b368ded3f4f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "original 13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe built/commons-csv-1.15.0-SNAPSHOT.jar",
+        "dependency 2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758 lib/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+        "dependency d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4 lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Build Commons CSV fix",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/345-paged-importer-upgrades/controls/libraries.json csv-fix examples/345-paged-importer-upgrades/records/builds/csv-fix.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 22.853,
+      "cpuSeconds": 30.985,
+      "cpuThrottledSeconds": 4.336,
+      "peakMemoryBytes": 738381824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-build-commons-csv-fix.log",
+        "lines": 3,
+        "bytes": 383,
+        "sha256": "d9e8a1b3042acf0f6e89c38011feaa518ab02ba717b435118c9597e37aa57869",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "original 98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701 built/commons-csv-1.15.0-SNAPSHOT.jar",
+        "dependency 2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758 lib/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+        "dependency d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4 lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/345-paged-importer-upgrades/records/builds/csv-fix.json",
+      "change": "added",
+      "bytes": 15613,
+      "sha256": "122404a9a1d98e6f34538294584dcc03c8688f5ce815a256439a9844eb22074f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/builds/csv-fix.resolution.json",
+      "change": "added",
+      "bytes": 872975,
+      "sha256": "b8da0859c221e2c2f451d9b4aeea87cf39d031335f83d2d70aa59aa521141a88",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/builds/csv-parent.json",
+      "change": "added",
+      "bytes": 14648,
+      "sha256": "8b77fecec8fb4fe95f9c7d4185da9de8ac5c2864985f18e2990db79258f50584",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/builds/csv-parent.resolution.json",
+      "change": "added",
+      "bytes": 872975,
+      "sha256": "e17efc95af77f5bce54dd75781caed7a7a61ec0c1e4babd18580fc0022d702b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/builds/io-fix.json",
+      "change": "added",
+      "bytes": 14840,
+      "sha256": "951c131a700d89372b07194cfd9e9329540d00ae6d85dcffb205e0b7a5065aee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/builds/io-fix.resolution.json",
+      "change": "added",
+      "bytes": 731286,
+      "sha256": "fe8dbbe0dcf3e6fcb64a73d5aea0c196a6f4b6074e7c099aa4f336cf528568f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/builds/io-parent.json",
+      "change": "added",
+      "bytes": 13928,
+      "sha256": "8ddbfaedd7f72df988fa2188cd2c7ac533fe32a132d706203dfd18fd0fb4585f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/builds/io-parent.resolution.json",
+      "change": "added",
+      "bytes": 731286,
+      "sha256": "eec1fd0c4b4b45e8013c58cedd43ca2986c0360fb58279191105547298f48862",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T18:18:07+00:00",
+    "applied": [
+      "examples/345-paged-importer-upgrades/records/builds/csv-fix.json",
+      "examples/345-paged-importer-upgrades/records/builds/csv-fix.resolution.json",
+      "examples/345-paged-importer-upgrades/records/builds/csv-parent.json",
+      "examples/345-paged-importer-upgrades/records/builds/csv-parent.resolution.json",
+      "examples/345-paged-importer-upgrades/records/builds/io-fix.json",
+      "examples/345-paged-importer-upgrades/records/builds/io-fix.resolution.json",
+      "examples/345-paged-importer-upgrades/records/builds/io-parent.json",
+      "examples/345-paged-importer-upgrades/records/builds/io-parent.resolution.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1563672,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "changesDiff": "changes.diff.gz"
+}
