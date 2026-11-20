@@ -3,6 +3,8 @@ package java.util.stream;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * The model's sequential stream over an array: what {@code java.util.Arrays.stream(T[])} returns, and each
@@ -21,7 +23,8 @@ import java.util.function.Predicate;
  * {@code ArrayStoreException} for one the array doesn't take). An element may be null. The array's length is the
  * stream's from when it is made; its elements are read when the terminal operation runs.
  *
- * <p>Left out: every other operation ({@code filter}, {@code collect}, {@code forEach}, parallel streams, ...),
+ * <p>Collection uses the supplied collector's callbacks in the sequential JDK pipeline's order.
+ * Left out: every other operation ({@code filter}, {@code forEach}, parallel streams, ...),
  * and the messages of the exceptions, which no check reads.
  */
 final class SequentialArrayStream<T> implements Stream<T> {
@@ -107,6 +110,25 @@ final class SequentialArrayStream<T> implements Stream<T> {
         }
         use();
         return new SequentialArrayStream<R>(source, length, this, (Function<Object, Object>) (Function<?, ?>) mapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <R, A> R collect(Collector<? super T, A, R> collector) {
+        java.util.Objects.requireNonNull(collector);
+        Supplier<A> supplier = collector.supplier();
+        BiConsumer<A, ? super T> accumulator = collector.accumulator();
+        collector.combiner();
+        use();
+        // OpenJDK asks for the operation's order flag before constructing its accumulation sink.
+        collector.characteristics().contains(Collector.Characteristics.UNORDERED);
+        A container = supplier.get();
+        for (int i = 0; i < length; i++) {
+            accumulator.accept(container, (T) element(i));
+        }
+        if (collector.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
+            return (R) container;
+        }
+        return collector.finisher().apply(container);
     }
 
     @SuppressWarnings("unchecked")

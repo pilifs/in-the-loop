@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213850-compare-new-decoder-bytecode-with-auto-c",
+  "title": "Compare new decoder bytecode with auto-confirm",
+  "description": "Repeat the original controls against the decoder, arrays and stream model changes. Retain independent JVM outputs, original bounds and negative controls.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs"
+    ],
+    "jobs": [
+      "20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom",
+      "20261120-100812-confirm-jvm-corpus-results-on-the-calend",
+      "20261120-193914-check-importer-changes-against-auto-conf"
+    ]
+  },
+  "expected": "All auto-confirm checks match each concrete JVM calibration and recorded scope.",
+  "submitted": {
+    "at": "2026-11-20T21:38:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "25m",
+    "memoryLimit": "5G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Check the corpus with auto-confirm",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

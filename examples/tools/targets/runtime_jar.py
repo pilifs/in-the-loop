@@ -138,23 +138,30 @@ def super_class(data):
     return _class_name(pool, index) if index else None
 
 
-def _declarations(data):
+def _declarations(data, with_code=False):
     """The constant pool, declared method access flags, and offset of the class attributes."""
     pool, offset = _pool(data)
     offset += 6  # access, this, super
     interfaces = struct.unpack_from(">H", data, offset)[0]
     offset += 2 + 2 * interfaces
-    for _ in range(2):  # fields, then methods
+    for table in range(2):  # fields, then methods
         count = struct.unpack_from(">H", data, offset)[0]
         offset += 2
         found = {}
         for _ in range(count):
             access, name, desc, attributes = struct.unpack_from(">HHHH", data, offset)
             offset += 8
+            body, handlers = None, None
             for _ in range(attributes):
-                length = struct.unpack_from(">I", data, offset + 2)[0]
+                attribute, length = struct.unpack_from(">HI", data, offset)
+                if with_code and table == 1 and _utf8(pool, attribute) == "Code":
+                    size = struct.unpack_from(">I", data, offset + 10)[0]
+                    if size + 12 > length:
+                        raise ValueError("truncated method Code attribute")
+                    body = data[offset + 14:offset + 14 + size]
+                    handlers = struct.unpack_from(">H", data, offset + 14 + size)[0]
                 offset += 6 + length
-            found[_utf8(pool, name), _utf8(pool, desc)] = access
+            found[_utf8(pool, name), _utf8(pool, desc)] = (access, body, handlers) if with_code else access
     return pool, found, offset
 
 

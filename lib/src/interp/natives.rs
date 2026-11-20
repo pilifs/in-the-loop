@@ -476,7 +476,7 @@ pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
         "java/util/ArrayList" | "java/util/LinkedList" => Native::List { elements: Vec::new(), mutable: true },
         "java/util/HashMap" | "java/util/LinkedHashMap" | "java/util/TreeMap" => Native::Map { entries: Vec::new(), mutable: true },
         "java/util/HashSet" | "java/util/LinkedHashSet" | "java/util/TreeSet" => Native::Set { elements: Vec::new(), mutable: true },
-        "java/lang/Object" => return Ok(Value::Ref(m.alloc(Object::Instance { class: class.into(), fields: Default::default(), base: Base::Object }))),
+        "java/lang/Object" | crate::bmc::runtime::REENTRANT_LOCK => return Ok(Value::Ref(m.alloc(Object::Instance { class: class.into(), fields: Default::default(), base: Base::Object }))),
         _ if m.cp.is_subtype(class, "java/lang/Throwable") => Native::Throwable { class: class.into(), message: None, cause: None, suppressed: None },
         _ => return unsupported(format!("new {}", class.replace('/', "."))),
     };
@@ -637,6 +637,15 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
         Object::Instance { class, base, .. } => (class.clone(), base.clone()),
         _ => return unsupported("inherited call on a non-instance"),
     };
+    if class == crate::bmc::runtime::REENTRANT_LOCK && crate::bmc::runtime::sequential_lock_call(owner, name, descriptor) {
+        let field = crate::bmc::runtime::HOLD_COUNT;
+        let count = if name == "<init>" { 0 } else { m.get_field(Value::Ref(r), field)?.as_int() };
+        let Some((write, returned)) = crate::bmc::runtime::sequential_lock_transition(name, count) else {
+            return unsupported("an unbalanced unlock or excessive recursion on a reentrant lock");
+        };
+        if let Some(next) = write { m.put_field(Value::Ref(r), field, Value::Int(next))?; }
+        return Ok(returned.map(Value::Int));
+    }
     match (name, descriptor) {
         ("getClass", "()Ljava/lang/Class;") => return Ok(Some(m.class_object(&Type::Object(class)))),
         ("equals", "(Ljava/lang/Object;)Z") => return Ok(Some(Value::bool(args[0] == Value::Ref(r)))),

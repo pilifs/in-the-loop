@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213849-341-retry-streaming-utf-8-and-bom-transf",
+  "title": "341 retry streaming UTF-8 and BOM transfer on real reader bytecode",
+  "description": "Re-run the unchanged 5,578-selector obligations for streaming, per-chunk decoding and the historical fixed BOM stream. Record each strict result or next unsupported operation independently from the already exhaustive JVM decisions.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "341"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T21:38:49+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "12m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 341 --tasks units-stream,eof-stream,units-separate,eof-separate,units-bom,eof-bom --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/341-utf8-chunk-boundaries/receipts/units-stream",
+    "examples/341-utf8-chunk-boundaries/receipts/eof-stream",
+    "examples/341-utf8-chunk-boundaries/receipts/units-separate",
+    "examples/341-utf8-chunk-boundaries/receipts/eof-separate",
+    "examples/341-utf8-chunk-boundaries/receipts/units-bom",
+    "examples/341-utf8-chunk-boundaries/receipts/eof-bom"
+  ]
+}

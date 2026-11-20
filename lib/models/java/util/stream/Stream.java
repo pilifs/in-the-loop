@@ -10,7 +10,7 @@ import java.util.function.Predicate;
  * asks of a sequential stream over an array, {@code java.util.Arrays.stream(patterns).anyMatch(p -> ...)}.
  *
  * <p>Kept, as the JDK has them for a sequential stream: {@code allMatch}, {@code anyMatch}, {@code noneMatch},
- * {@code map} and {@code toArray(IntFunction)}, implemented by {@link SequentialArrayStream}. Every other method is
+ * {@code map}, {@code collect(Collector)} and {@code toArray(IntFunction)}, implemented by {@link SequentialArrayStream}. Every other method is
  * left out, so that a call of one is the JDK call it names, a gap the checker refuses by name.
  */
 public interface Stream<T> {
@@ -21,6 +21,8 @@ public interface Stream<T> {
     boolean noneMatch(Predicate<? super T> predicate);
 
     <R> Stream<R> map(Function<? super T, ? extends R> mapper);
+
+    <R, A> R collect(Collector<? super T, A, R> collector);
 
     <A> A[] toArray(IntFunction<A[]> generator);
 }

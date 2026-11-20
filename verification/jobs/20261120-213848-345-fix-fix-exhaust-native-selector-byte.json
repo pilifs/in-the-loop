@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213848-345-fix-fix-exhaust-native-selector-byte",
+  "title": "345 fix-fix exhaust native selector bytecode",
+  "description": "Check every admitted selector by calling the frozen original or projection with a constant on its actual classpath. Verify all compiled call sites and Java-folded guards, bind the real IO/CSV/Codec closure and replay a native violation on the original property. A positive claim requires every admitted selector. Include the different-first consumer from the CSV producer.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:finite-partition",
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "345"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T21:38:48+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "15m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Prove original properties by complete native case analysis",
+      "run": "python3 examples/tools/build.py 345 --native-selectors bytes-fix-fix,count-fix-fix,page-fix-fix,positive-fix-fix --checker-seconds 90 --first 6",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/345-paged-importer-upgrades/records/native-selectors/fix-fix"
+  ]
+}

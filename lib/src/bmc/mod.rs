@@ -3636,6 +3636,9 @@ impl<'a> Engine<'a> {
         let frame = path.frames.last().expect("a frame");
         let insn = frame.code.insns[frame.at].clone();
         let class = frame.class.clone();
+        if matches!(insn, Insn::Load(Kind::Int, _)) {
+            if let Some(step) = self.fill_loop(path) { return step; }
+        }
         match insn {
             Insn::Nop => {}
             Insn::AConstNull => self.push(path, Val::R(None)),
@@ -3924,6 +3927,35 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) ==
+                    ("sun/nio/cs/UTF_8", "JLA", "Ljdk/internal/access/JavaLangAccess;") {
+                    let slot = (declaring.clone(), member.name.clone());
+                    if let Some(v) = path.statics.get(&slot).cloned() {
+                        self.push(path, v);
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                    if let Some(provider) = self.cp.utf8_language_access() {
+                        let object = self.alloc(path, &provider);
+                        let value = Val::R(Some(object));
+                        path.statics.insert(slot, value.clone());
+                        self.push(path, value);
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                }
+                // Only the numeric array-layout constants in the boot image. A raw-memory
+                // operation reached from another buffer implementation still refuses.
+                if ClassPath::heap_buffer_owner(&declaring) && member.descriptor == "J"
+                    && matches!(member.name.as_str(), "ARRAY_BASE_OFFSET" | "ARRAY_INDEX_SCALE")
+                    && self.cp.load(&declaring).ok().flatten().is_some_and(|l| matches!(l.origin, crate::classpath::Origin::Jdk)
+                        && l.class.field(&member.name).is_some_and(|f| f.is_static() && f.is_final() && f.descriptor == "J")) {
+                    let value = path.statics.entry((declaring, member.name)).or_insert_with(|| Val::J(self.b.fresh(64))).clone();
+                    path.unbound_platform_value = Some("the VM's primitive-array layout");
+                    self.push(path, value);
+                    self.advance(path);
+                    return Ok(None);
+                }
                 let setting = match (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) {
                     ("java/io/File", "separatorChar", "C") => Some((16, "the platform file separator")),
                     ("java/util/Arrays$LegacyMergeSort", "userRequested", "Z") => Some((1, "the JDK array sort selection")),
@@ -4746,6 +4778,9 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
+            Literal::Charset(field) if self.cp.charset_name_literal(field).is_some() => {
+                self.alloc(path, &format!("sun/nio/cs/{field}"))
+            }
             Literal::Class(_) | Literal::PrimitiveClass(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap => self.alloc(path, class),
             Literal::Truth(truth) => {
                 let o = self.alloc(path, class);
@@ -4929,6 +4964,23 @@ impl<'a> Engine<'a> {
         }
         if arraycopy::is_call(&member.owner, &member.name, &member.descriptor) {
             return self.array_copy(path);
+        }
+        if caller == "java/nio/ByteOrder" && self.cp.state_image_class(caller).is_some()
+            && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
+                == ("jdk/internal/misc/Unsafe", "getUnsafe", "()Ljdk/internal/misc/Unsafe;") {
+            let frame = path.frames.last().expect("a frame");
+            if frame.method == "<clinit>" && matches!(frame.code.insns.get(frame.at + 1), Some(Insn::InvokeVirtual(i)) if
+                frame.class.pool.member(*i).is_ok_and(|m| m.owner == member.owner && m.name == "isBigEndian" && m.descriptor == "()Z")) {
+                // These adjacent instructions in the bootstrap image observe precisely one machine bit.
+                let value = path.statics.entry(("<VM>".into(), "isBigEndian".into())).or_insert_with(|| {
+                    let bit = self.b.var(); Val::I(self.b.zext(&vec![bit], 32))
+                }).clone();
+                path.unbound_platform_value = Some("the VM's native byte order");
+                self.push(path, value);
+                self.advance(path);
+                self.advance(path);
+                return Ok(None);
+            }
         }
         // The JDK's methods and the intrinsics take known references, but for a call that only stores the
         // reference ([`locale::takes_a_choice`]).
@@ -5180,6 +5232,31 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
+            if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) ==
+                ("jdk/internal/access/JavaLangAccess", "decodeASCII", "([BI[CII)I")
+                && matches!(path.statics.get(&("sun/nio/cs/UTF_8".into(), "JLA".into())), Some(Val::R(Some(r))) if *r == o) {
+                if let Some((cf, method)) = self.cp.find_method(&path.objects[o].class, &member.name, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
+            }
+            if matches!(path.objects[o].class.as_str(), "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
+                && !path.objects[o].assumed && !path.objects[o].given && ClassPath::heap_buffer_owner(&member.owner) {
+                let target = if special { member.owner.clone() } else {
+                    self.cp.find_method(&path.objects[o].class, &member.name, &member.descriptor)
+                        .map(|(cf, _)| cf.name.clone()).unwrap_or_default()
+                };
+                if let Some((cf, method)) = self.cp.heap_buffer_method(&target, &member.name, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &target, cf, method, full);
+                }
+            }
+            if runtime::sequential_lock_call(&member.owner, &member.name, &member.descriptor)
+                && path.objects[o].class == runtime::REENTRANT_LOCK {
+                return self.sequential_lock(path, o, &member.name);
+            }
             if special && self.gap_mode == GapMode::Strict && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/lang/Object", "clone", "()Ljava/lang/Object;")
                 && !path.objects[o].assumed && !path.objects[o].unknown && self.cp.application_object(&path.objects[o].class) {
                 let class = path.objects[o].class.clone();

@@ -20,6 +20,17 @@ class RecipesTest(unittest.TestCase):
         self.assertEqual(envelope("n > -3 && (n == 0 || n == 1) && n <= 2", "n"), (-2, 2))
         self.assertEqual(envelope("n == -7", "n"), (-7, -7))
         self.assertEqual(envelope("n >= 0 && n < 5578", "n", 5578), (0, 5577))
+        from targets.native_selectors import disposition
+        method = "verificationselectors.Calls#p6()"
+        bounds = {"unwind": 96, "maxArrayLength": 96}
+        raw = {"target": method, "assert": "result == 1", "verdict": "verified", "proof": "all paths",
+               "stated": {"gap_mode": "strict", "checker": {"engine": "native"},
+                          "bounds": {"unwind": 96, "complete": True}}}
+        self.assertEqual(disposition(raw, method, bounds, 0)[0], "established")
+        raw["stated"]["bounds"]["complete"] = False
+        self.assertEqual(disposition(raw, method, bounds, 0)[0], "open")
+        raw.update(verdict="violation", counterexample={"inputs": []})
+        self.assertEqual(disposition(raw, method, bounds, 1)[0], "open")
         for guard in ("n >= 0 && n < 5 || n == 9", "n >= 0 && (n < 3 || n == 7)", "n <= 2",
                       "n >= 5 && n < 2", "n >= 0 && n < 5000", "n >= 0 && n < 4 /*x*/"):
             with self.assertRaises(ValueError):

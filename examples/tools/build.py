@@ -43,6 +43,7 @@ Usage: python3 examples/tools/build.py [ID ...]          run constructed example
        python3 examples/tools/build.py --plan ID --task T  the plan of one task of a real-world example with a target sidecar
        python3 examples/tools/build.py ID --task T         one attempt at that task (examples/tools/targets/route.py)
        python3 examples/tools/build.py ID --finite-domain  exhaust the certified integer inputs to each supported task on a JVM
+       python3 examples/tools/build.py ID --native-selectors TASK[,TASK...]  prove constant calls covering a frozen signed-int selector
 
 A real-world example (origin "real-world") is not run, and naming one is a failure: its report is its README.md, and its example.json is what the
 router knows of it. The exception is one with a target sidecar (target.json, llm-dlc/loops/example-targets.md), whose
@@ -226,6 +227,9 @@ def main(argv):
     if len(argv) >= 2 and argv[1] == "--finite-domain":
         from targets import finite_check
         return finite_check.main([argv[0], *argv[2:]])
+    if len(argv) >= 2 and argv[1] == "--native-selectors":
+        from targets import native_selectors
+        return native_selectors.main([argv[0], *argv[2:]])
     checker_seconds = None
     if ("--task" in argv or "--tasks" in argv) and "--checker-seconds" in argv:
         i = argv.index("--checker-seconds")

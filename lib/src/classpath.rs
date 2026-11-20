@@ -709,6 +709,9 @@ impl ClassPath {
             | ("java/util/Arrays", "mergeSort", "([Ljava/lang/Object;[Ljava/lang/Object;III)V" | "([Ljava/lang/Object;[Ljava/lang/Object;IIILjava/util/Comparator;)V")
             | ("java/util/Collections", "reverseOrder", "(Ljava/util/Comparator;)Ljava/util/Comparator;")
             | ("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;")
+            | ("java/util/stream/Stream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")
+            | ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;" | "([Ljava/lang/Object;II)Ljava/util/stream/Stream;")
+            | ("java/util/Arrays", "spliterator", "([Ljava/lang/Object;II)Ljava/util/Spliterator;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
             | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
             | ("java/util/Objects", "toString", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;")
@@ -939,6 +942,7 @@ impl ClassPath {
             | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
             | "java/util/Spliterators$ArraySpliterator" | "java/util/stream/ReferencePipeline$2" | "java/util/stream/ReferencePipeline$2$1"
+            | "java/util/stream/ReferencePipeline$3" | "java/util/stream/ReferencePipeline$3$1"
             | "java/util/stream/ReferencePipeline$StatelessOp" | "java/util/stream/Sink$ChainedReference"
             | "java/util/stream/FindOps" | "java/util/stream/FindOps$FindOp" | "java/util/stream/FindOps$FindSink" | "java/util/stream/FindOps$FindSink$OfRef"
             | "java/util/Spliterators$EmptySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef" | "java/util/Spliterators$EmptySpliterator$OfInt"

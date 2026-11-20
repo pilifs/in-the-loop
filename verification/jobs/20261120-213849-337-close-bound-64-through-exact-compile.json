@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213849-337-close-bound-64-through-exact-compile",
+  "title": "337 close bound 64 through exact compiled fill loops",
+  "description": "Repeat the same generic native proof at length 64, unwind 67 and 120 seconds per task. The accelerated loop executes the actual range check then proves safety and writes each selected cell under its exact bit-vector interval predicate; reassess both original and changed helper/caller.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "337"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T21:38:49+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 337 --tasks frame-64-original,caller-64-original,frame-64-extra,caller-64-extra --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/337-jdk-range-fill-alias/receipts/frame-64-original",
+    "examples/337-jdk-range-fill-alias/receipts/caller-64-original",
+    "examples/337-jdk-range-fill-alias/receipts/frame-64-extra",
+    "examples/337-jdk-range-fill-alias/receipts/caller-64-extra"
+  ]
+}

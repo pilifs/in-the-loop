@@ -98,8 +98,25 @@ public final class ReaderAndListeners {
     }
 
     public static boolean wrong() throws IOException { return new StringReader("ab").read() == 'b'; }
+    public static boolean propertyChanges(boolean choose) {
+        String key = "test.reader.paper";
+        System.clearProperty(key);
+        String selected = choose ? "Letter" : "A4";
+        if (System.getProperty(key, "A4") != "A4" || System.setProperty(key, selected) != null) return false;
+        return System.getProperty(key) == selected && System.clearProperty(key) == selected
+                && System.getProperty(key) == null;
+    }
+    public static boolean nestedLock() {
+        var lock = new java.util.concurrent.locks.ReentrantLock();
+        lock.lock();
+        if (!lock.tryLock() || !lock.isHeldByCurrentThread() || lock.getHoldCount() != 2) return false;
+        lock.unlock();
+        lock.unlock();
+        return !lock.isLocked();
+    }
+    public static boolean unknownProperty() { return System.getProperty("test.reader.initial") == null; }
     public static boolean invalidRange() { "ab".getChars(0, 2, new char[1], 0); return true; }
     public static void main(String[] args) throws IOException {
-        if (!chars(true) || !chars(false) || !buffered() || !listeners(true) || !listeners(false) || !mirrors() || !beans() || !cursor() || wrong()) throw new AssertionError();
+        if (!chars(true) || !chars(false) || !buffered() || !listeners(true) || !listeners(false) || !mirrors() || !beans() || !cursor() || !propertyChanges(true) || !propertyChanges(false) || !nestedLock() || wrong()) throw new AssertionError();
     }
 }

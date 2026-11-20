@@ -443,6 +443,25 @@ impl<'a> Machine<'a> {
         Ok(())
     }
 
+    fn system_property(&mut self, name: &str, args: &[Value], old_discarded: bool) -> Exec<Option<Value>> {
+        let key = self.units_of(args[0]).and_then(|u| u.text())
+            .filter(|key| !key.is_empty()).ok_or_else(|| Fault::Unsupported("system property requires a nonempty text key".into()))?;
+        const OWNER: &str = "<JVM.systemProperties>";
+        let old = self.statics.get(OWNER).and_then(|table| table.get(&key)).copied();
+        if name == "getProperty" {
+            let value = old.ok_or_else(|| Fault::Unsupported("the initial JVM system property is unknown".into()))?;
+            return Ok(Some(if value == Value::Null { args.get(1).copied().unwrap_or(Value::Null) } else { value }));
+        }
+        let value = if name == "clearProperty" { Value::Null } else {
+            if args[1] == Value::Null { return Err(Fault::Unsupported("setting a null system property value".into())); }
+            args[1]
+        };
+        if old.is_none() && !old_discarded { return Err(Fault::Unsupported("the returned initial JVM system property is unknown".into())); }
+        if self.monitor && self.clinit_depth == 0 { return Err(Fault::Impure("changes a JVM system property".into())); }
+        self.statics.entry(OWNER.into()).or_default().insert(key, value);
+        Ok(Some(old.unwrap_or(Value::Null)))
+    }
+
     /// The enum constants of an application enum, in declaration order.
     pub fn enum_constants(&mut self, class: &str) -> Exec<Vec<Value>> {
         self.ensure_initialized(class)?;
@@ -621,6 +640,9 @@ impl<'a> Machine<'a> {
     /// A static call into the JDK: the model's bytecode when the tool has a model that defines the method, else
     /// the interpreter's natives. The model is the definition both engines share, so it comes first.
     fn call_static_jdk(&mut self, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
+        if crate::bmc::runtime::property_call(owner, name, descriptor) {
+            return self.system_property(name, &args, false);
+        }
         if let Some((class, method)) = self.model_method(owner, name, descriptor) {
             self.ensure_initialized(owner)?;
             return self.invoke(&class, &method, args);
@@ -1100,6 +1122,8 @@ impl<'a> Machine<'a> {
                     self.statics.retain(|c, _| c == crate::pairing::CLASS);
                     self.init.retain(|c, _| c == crate::pairing::CLASS);
                     None
+                } else if crate::bmc::runtime::property_call(&member.owner, &member.name, &member.descriptor) {
+                    self.system_property(&member.name, &args, matches!(code.insns.get(*i + 1), Some(Insn::Pop)))?
                 } else if self.cp.is_application(&member.owner) || self.cp.state_image_class(&member.owner).is_some() || self.cp.map_image_class(&member.owner).is_some() {
                     self.call_static(&member.owner, &member.name, &member.descriptor, args)?
                 } else {

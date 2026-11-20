@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213850-327-recover-observed-startup-controls-on",
+  "title": "327 recover observed-startup controls on decoder changes",
+  "description": "Re-run each accepted scoped control on the recorded image, source and observer identity, retaining its startup assumptions.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:history"
+  ],
+  "links": {
+    "examples": [
+      "327"
+    ],
+    "jobs": [
+      "20261120-193913-327-observed-startup-on-the-importer-che"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T21:38:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Run the frozen obligations",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 327 --tasks normal-parent-observed,normal-fix-observed,days-parent-observed,days-fix-observed,reversal-parent-observed,reversal-fix-observed,march-parent-observed,march-fix-observed,reversal-on-returns-parent-observed,reversal-on-returns-fix-observed --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/327-joda-monthday-distance/receipts/normal-parent-observed",
+    "examples/327-joda-monthday-distance/receipts/normal-fix-observed",
+    "examples/327-joda-monthday-distance/receipts/days-parent-observed",
+    "examples/327-joda-monthday-distance/receipts/days-fix-observed",
+    "examples/327-joda-monthday-distance/receipts/reversal-parent-observed",
+    "examples/327-joda-monthday-distance/receipts/reversal-fix-observed",
+    "examples/327-joda-monthday-distance/receipts/march-parent-observed",
+    "examples/327-joda-monthday-distance/receipts/march-fix-observed",
+    "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed",
+    "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed"
+  ]
+}

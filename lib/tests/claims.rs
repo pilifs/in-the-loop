@@ -1362,6 +1362,15 @@ fn jdk_readers_and_listener_lists_execute_their_shared_state() {
     }
     proved(classes, "claims.ReaderAndListeners#buffered", 4);
     assert_eq!(machine.call_static("claims/ReaderAndListeners", "buffered", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    proved(classes, "claims.ReaderAndListeners#propertyChanges", 4);
+    machine.monitor = false;
+    proved(classes, "claims.ReaderAndListeners#nestedLock", 4);
+    assert_eq!(machine.call_static("claims/ReaderAndListeners", "nestedLock", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    for flag in [0, 1] {
+        assert_eq!(machine.call_static("claims/ReaderAndListeners", "propertyChanges", "(Z)Z", vec![Value::Int(flag)]).unwrap(), Some(Value::Int(1)));
+    }
+    let unknown = run(&options(classes, "claims.ReaderAndListeners#unknownProperty", 4, "unbound-property"));
+    assert_eq!(unknown.verdict, Verdict::Unverifiable, "{}", unknown.output);
     let wrong = run(&options(classes, "claims.ReaderAndListeners#wrong", 4, "wrong-first-character"));
     assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
     let bad = run(&options(classes, "claims.ReaderAndListeners#invalidRange", 4, "invalid-char-destination"));
