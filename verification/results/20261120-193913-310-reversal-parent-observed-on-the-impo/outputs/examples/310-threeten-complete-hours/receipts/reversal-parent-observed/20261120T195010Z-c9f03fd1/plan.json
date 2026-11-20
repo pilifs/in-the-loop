@@ -1,0 +1,420 @@
+{
+  "plan": {
+    "example": "310",
+    "task": "reversal-parent-observed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "reversal-parent-observed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "file": "claims/reversal-observed.json",
+      "sha256": "2046dc85610575c467cdb2e6443471f1f28adf898457d170378ce2f3a442726a",
+      "property": "reversal",
+      "claimKind": "property",
+      "statement": "Reversing the endpoints negates the returned whole hours.",
+      "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+      "assert": "result == -civil.Hours.completeHours(endTick, startTick)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 32
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": "reversal-parent",
+      "controls": [
+        {
+          "id": "clock-driver",
+          "kind": "driver",
+          "path": "driver/civil/ClockCases.java",
+          "sha256": "f438b7afc1663077cc9b24cb41983e334654ae1505d841c870eaf0584fab505f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "f0e94343912deba019b0f590e0aa1a110bd5a491529d3a3b63c5f16131d5c081"
+        }
+      ],
+      "boundEnvironment": {
+        "jdk": "21.0.13"
+      },
+      "adapter": {
+        "entry": "civil.Hours#completeHours(II)J",
+        "mapping": "Independent ticks 0 through 191 denote quarter-hours from 2012-06-15 00:00, local civil time on June 15 and 16. The unit is ChronoUnit.HOURS. No zone conversion.",
+        "correspondence": "finite-oracle",
+        "cases": 36864
+      },
+      "namedModels": [
+        "java.util.concurrent.ConcurrentHashMap"
+      ],
+      "observedInitializers": {
+        "org.threeten.bp.chrono.Chronology": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+      },
+      "key": "9a6c8b5c2f2e3a4d"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "source-slice",
+        "repository": "https://github.com/ThreeTen/threetenbp",
+        "commit": "fea38bd81e10d35ef8d991a4463733587e3ee7bc",
+        "published": [],
+        "slice": {
+          "files": [
+            "src/main/java/org/threeten/bp/Clock.java",
+            "src/main/java/org/threeten/bp/DateTimeException.java",
+            "src/main/java/org/threeten/bp/DayOfWeek.java",
+            "src/main/java/org/threeten/bp/Duration.java",
+            "src/main/java/org/threeten/bp/Instant.java",
+            "src/main/java/org/threeten/bp/LocalDate.java",
+            "src/main/java/org/threeten/bp/LocalDateTime.java",
+            "src/main/java/org/threeten/bp/LocalTime.java",
+            "src/main/java/org/threeten/bp/Month.java",
+            "src/main/java/org/threeten/bp/MonthDay.java",
+            "src/main/java/org/threeten/bp/OffsetDateTime.java",
+            "src/main/java/org/threeten/bp/OffsetTime.java",
+            "src/main/java/org/threeten/bp/Period.java",
+            "src/main/java/org/threeten/bp/Ser.java",
+            "src/main/java/org/threeten/bp/Year.java",
+            "src/main/java/org/threeten/bp/YearMonth.java",
+            "src/main/java/org/threeten/bp/ZoneId.java",
+            "src/main/java/org/threeten/bp/ZoneOffset.java",
+            "src/main/java/org/threeten/bp/ZoneRegion.java",
+            "src/main/java/org/threeten/bp/ZonedDateTime.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoDateImpl.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoLocalDate.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoLocalDateTime.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoLocalDateTimeImpl.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoPeriod.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoPeriodImpl.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoZonedDateTime.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoZonedDateTimeImpl.java",
+            "src/main/java/org/threeten/bp/chrono/Chronology.java",
+            "src/main/java/org/threeten/bp/chrono/Era.java",
+            "src/main/java/org/threeten/bp/chrono/HijrahChronology.java",
+            "src/main/java/org/threeten/bp/chrono/HijrahDate.java",
+            "src/main/java/org/threeten/bp/chrono/HijrahEra.java",
+            "src/main/java/org/threeten/bp/chrono/IsoChronology.java",
+            "src/main/java/org/threeten/bp/chrono/IsoEra.java",
+            "src/main/java/org/threeten/bp/chrono/JapaneseChronology.java",
+            "src/main/java/org/threeten/bp/chrono/JapaneseDate.java",
+            "src/main/java/org/threeten/bp/chrono/JapaneseEra.java",
+            "src/main/java/org/threeten/bp/chrono/MinguoChronology.java",
+            "src/main/java/org/threeten/bp/chrono/MinguoDate.java",
+            "src/main/java/org/threeten/bp/chrono/MinguoEra.java",
+            "src/main/java/org/threeten/bp/chrono/Ser.java",
+            "src/main/java/org/threeten/bp/chrono/ThaiBuddhistChronology.java",
+            "src/main/java/org/threeten/bp/chrono/ThaiBuddhistDate.java",
+            "src/main/java/org/threeten/bp/chrono/ThaiBuddhistEra.java",
+            "src/main/java/org/threeten/bp/format/DateTimeBuilder.java",
+            "src/main/java/org/threeten/bp/format/DateTimeFormatStyleProvider.java",
+            "src/main/java/org/threeten/bp/format/DateTimeFormatSymbols.java",
+            "src/main/java/org/threeten/bp/format/DateTimeFormatter.java",
+            "src/main/java/org/threeten/bp/format/DateTimeFormatterBuilder.java",
+            "src/main/java/org/threeten/bp/format/DateTimeParseContext.java",
+            "src/main/java/org/threeten/bp/format/DateTimeParseException.java",
+            "src/main/java/org/threeten/bp/format/DateTimePrintContext.java",
+            "src/main/java/org/threeten/bp/format/DateTimeTextProvider.java",
+            "src/main/java/org/threeten/bp/format/FormatStyle.java",
+            "src/main/java/org/threeten/bp/format/SignStyle.java",
+            "src/main/java/org/threeten/bp/format/SimpleDateTimeFormatStyleProvider.java",
+            "src/main/java/org/threeten/bp/format/SimpleDateTimeTextProvider.java",
+            "src/main/java/org/threeten/bp/format/TextStyle.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceChronoLocalDate.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceChronoLocalDateTime.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceChronoZonedDateTime.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceEra.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceTemporal.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceTemporalAccessor.java",
+            "src/main/java/org/threeten/bp/jdk8/Jdk8Methods.java",
+            "src/main/java/org/threeten/bp/temporal/ChronoField.java",
+            "src/main/java/org/threeten/bp/temporal/ChronoUnit.java",
+            "src/main/java/org/threeten/bp/temporal/IsoFields.java",
+            "src/main/java/org/threeten/bp/temporal/JulianFields.java",
+            "src/main/java/org/threeten/bp/temporal/Temporal.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalAccessor.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalAdjuster.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalAdjusters.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalAmount.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalField.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalQueries.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalQuery.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalUnit.java",
+            "src/main/java/org/threeten/bp/temporal/UnsupportedTemporalTypeException.java",
+            "src/main/java/org/threeten/bp/temporal/ValueRange.java",
+            "src/main/java/org/threeten/bp/temporal/WeekFields.java",
+            "src/main/java/org/threeten/bp/zone/Ser.java",
+            "src/main/java/org/threeten/bp/zone/StandardZoneRules.java",
+            "src/main/java/org/threeten/bp/zone/TzdbZoneRulesCompiler.java",
+            "src/main/java/org/threeten/bp/zone/TzdbZoneRulesProvider.java",
+            "src/main/java/org/threeten/bp/zone/ZoneOffsetTransition.java",
+            "src/main/java/org/threeten/bp/zone/ZoneOffsetTransitionRule.java",
+            "src/main/java/org/threeten/bp/zone/ZoneRules.java",
+            "src/main/java/org/threeten/bp/zone/ZoneRulesBuilder.java",
+            "src/main/java/org/threeten/bp/zone/ZoneRulesException.java",
+            "src/main/java/org/threeten/bp/zone/ZoneRulesProvider.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters",
+            "--add-exports",
+            "java.base/sun.util.calendar=ALL-UNNAMED"
+          ]
+        },
+        "adapters": [
+          "adapter/civil/Hours.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/reversal-parent-observed"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193913-310-reversal-parent-observed-on-the-impo/examples/310-threeten-complete-hours",
+    "network": true
+  },
+  "inputs": {
+    "example": "310",
+    "task": "reversal-parent-observed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "reversal-parent-observed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "file": "claims/reversal-observed.json",
+      "sha256": "2046dc85610575c467cdb2e6443471f1f28adf898457d170378ce2f3a442726a",
+      "property": "reversal",
+      "claimKind": "property",
+      "statement": "Reversing the endpoints negates the returned whole hours.",
+      "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+      "assert": "result == -civil.Hours.completeHours(endTick, startTick)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 32
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": "reversal-parent",
+      "controls": [
+        {
+          "id": "clock-driver",
+          "kind": "driver",
+          "path": "driver/civil/ClockCases.java",
+          "sha256": "f438b7afc1663077cc9b24cb41983e334654ae1505d841c870eaf0584fab505f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "f0e94343912deba019b0f590e0aa1a110bd5a491529d3a3b63c5f16131d5c081"
+        }
+      ],
+      "boundEnvironment": {
+        "jdk": "21.0.13"
+      },
+      "adapter": {
+        "entry": "civil.Hours#completeHours(II)J",
+        "mapping": "Independent ticks 0 through 191 denote quarter-hours from 2012-06-15 00:00, local civil time on June 15 and 16. The unit is ChronoUnit.HOURS. No zone conversion.",
+        "correspondence": "finite-oracle",
+        "cases": 36864
+      },
+      "namedModels": [
+        "java.util.concurrent.ConcurrentHashMap"
+      ],
+      "observedInitializers": {
+        "org.threeten.bp.chrono.Chronology": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+      },
+      "key": "9a6c8b5c2f2e3a4d"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "source-slice",
+        "repository": "https://github.com/ThreeTen/threetenbp",
+        "commit": "fea38bd81e10d35ef8d991a4463733587e3ee7bc",
+        "published": [],
+        "slice": {
+          "files": [
+            "src/main/java/org/threeten/bp/Clock.java",
+            "src/main/java/org/threeten/bp/DateTimeException.java",
+            "src/main/java/org/threeten/bp/DayOfWeek.java",
+            "src/main/java/org/threeten/bp/Duration.java",
+            "src/main/java/org/threeten/bp/Instant.java",
+            "src/main/java/org/threeten/bp/LocalDate.java",
+            "src/main/java/org/threeten/bp/LocalDateTime.java",
+            "src/main/java/org/threeten/bp/LocalTime.java",
+            "src/main/java/org/threeten/bp/Month.java",
+            "src/main/java/org/threeten/bp/MonthDay.java",
+            "src/main/java/org/threeten/bp/OffsetDateTime.java",
+            "src/main/java/org/threeten/bp/OffsetTime.java",
+            "src/main/java/org/threeten/bp/Period.java",
+            "src/main/java/org/threeten/bp/Ser.java",
+            "src/main/java/org/threeten/bp/Year.java",
+            "src/main/java/org/threeten/bp/YearMonth.java",
+            "src/main/java/org/threeten/bp/ZoneId.java",
+            "src/main/java/org/threeten/bp/ZoneOffset.java",
+            "src/main/java/org/threeten/bp/ZoneRegion.java",
+            "src/main/java/org/threeten/bp/ZonedDateTime.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoDateImpl.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoLocalDate.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoLocalDateTime.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoLocalDateTimeImpl.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoPeriod.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoPeriodImpl.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoZonedDateTime.java",
+            "src/main/java/org/threeten/bp/chrono/ChronoZonedDateTimeImpl.java",
+            "src/main/java/org/threeten/bp/chrono/Chronology.java",
+            "src/main/java/org/threeten/bp/chrono/Era.java",
+            "src/main/java/org/threeten/bp/chrono/HijrahChronology.java",
+            "src/main/java/org/threeten/bp/chrono/HijrahDate.java",
+            "src/main/java/org/threeten/bp/chrono/HijrahEra.java",
+            "src/main/java/org/threeten/bp/chrono/IsoChronology.java",
+            "src/main/java/org/threeten/bp/chrono/IsoEra.java",
+            "src/main/java/org/threeten/bp/chrono/JapaneseChronology.java",
+            "src/main/java/org/threeten/bp/chrono/JapaneseDate.java",
+            "src/main/java/org/threeten/bp/chrono/JapaneseEra.java",
+            "src/main/java/org/threeten/bp/chrono/MinguoChronology.java",
+            "src/main/java/org/threeten/bp/chrono/MinguoDate.java",
+            "src/main/java/org/threeten/bp/chrono/MinguoEra.java",
+            "src/main/java/org/threeten/bp/chrono/Ser.java",
+            "src/main/java/org/threeten/bp/chrono/ThaiBuddhistChronology.java",
+            "src/main/java/org/threeten/bp/chrono/ThaiBuddhistDate.java",
+            "src/main/java/org/threeten/bp/chrono/ThaiBuddhistEra.java",
+            "src/main/java/org/threeten/bp/format/DateTimeBuilder.java",
+            "src/main/java/org/threeten/bp/format/DateTimeFormatStyleProvider.java",
+            "src/main/java/org/threeten/bp/format/DateTimeFormatSymbols.java",
+            "src/main/java/org/threeten/bp/format/DateTimeFormatter.java",
+            "src/main/java/org/threeten/bp/format/DateTimeFormatterBuilder.java",
+            "src/main/java/org/threeten/bp/format/DateTimeParseContext.java",
+            "src/main/java/org/threeten/bp/format/DateTimeParseException.java",
+            "src/main/java/org/threeten/bp/format/DateTimePrintContext.java",
+            "src/main/java/org/threeten/bp/format/DateTimeTextProvider.java",
+            "src/main/java/org/threeten/bp/format/FormatStyle.java",
+            "src/main/java/org/threeten/bp/format/SignStyle.java",
+            "src/main/java/org/threeten/bp/format/SimpleDateTimeFormatStyleProvider.java",
+            "src/main/java/org/threeten/bp/format/SimpleDateTimeTextProvider.java",
+            "src/main/java/org/threeten/bp/format/TextStyle.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceChronoLocalDate.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceChronoLocalDateTime.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceChronoZonedDateTime.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceEra.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceTemporal.java",
+            "src/main/java/org/threeten/bp/jdk8/DefaultInterfaceTemporalAccessor.java",
+            "src/main/java/org/threeten/bp/jdk8/Jdk8Methods.java",
+            "src/main/java/org/threeten/bp/temporal/ChronoField.java",
+            "src/main/java/org/threeten/bp/temporal/ChronoUnit.java",
+            "src/main/java/org/threeten/bp/temporal/IsoFields.java",
+            "src/main/java/org/threeten/bp/temporal/JulianFields.java",
+            "src/main/java/org/threeten/bp/temporal/Temporal.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalAccessor.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalAdjuster.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalAdjusters.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalAmount.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalField.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalQueries.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalQuery.java",
+            "src/main/java/org/threeten/bp/temporal/TemporalUnit.java",
+            "src/main/java/org/threeten/bp/temporal/UnsupportedTemporalTypeException.java",
+            "src/main/java/org/threeten/bp/temporal/ValueRange.java",
+            "src/main/java/org/threeten/bp/temporal/WeekFields.java",
+            "src/main/java/org/threeten/bp/zone/Ser.java",
+            "src/main/java/org/threeten/bp/zone/StandardZoneRules.java",
+            "src/main/java/org/threeten/bp/zone/TzdbZoneRulesCompiler.java",
+            "src/main/java/org/threeten/bp/zone/TzdbZoneRulesProvider.java",
+            "src/main/java/org/threeten/bp/zone/ZoneOffsetTransition.java",
+            "src/main/java/org/threeten/bp/zone/ZoneOffsetTransitionRule.java",
+            "src/main/java/org/threeten/bp/zone/ZoneRules.java",
+            "src/main/java/org/threeten/bp/zone/ZoneRulesBuilder.java",
+            "src/main/java/org/threeten/bp/zone/ZoneRulesException.java",
+            "src/main/java/org/threeten/bp/zone/ZoneRulesProvider.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters",
+            "--add-exports",
+            "java.base/sun.util.calendar=ALL-UNNAMED"
+          ]
+        },
+        "adapters": [
+          "adapter/civil/Hours.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/civil/Hours.java",
+        "sha256": "6e31ff7f00294ae0c6ea199da283dcb666d260cc50ba7cbd0c8da03320998974"
+      }
+    ]
+  },
+  "key": "2a13e68f4d2917bfb6ba96c9c7cee7120007a2df000bc52783714b22b2fd2ce7"
+}

@@ -1,0 +1,304 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-193912-310-clock-fix-observed-on-the-importer-c",
+  "title": "310 clock-fix-observed on the importer checker",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 10m07s, peak 960.1 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (Run the frozen obligations) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-193912-310-clock-fix-observed-on-the-importer-c.json",
+    "sha256": "359989f7cbb59c6b5b33551376ccba561e131a7a1f192fcd5f603fd36fc3d6fa",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-193912-310-clock-fix-observed-on-the-importer-c",
+      "title": "310 clock-fix-observed on the importer checker",
+      "description": "Rerun clock-fix-observed on the frozen source identities, bindings, observers, Java image and bounds. Preserve every original native verdict or first blocker, along with the separate observed-startup results and witness material.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:history"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:39:12+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "10m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Run the frozen obligations",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --tasks clock-fix-observed --checker-seconds 600",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/310-threeten-complete-hours/receipts/clock-fix-observed"
+      ]
+    }
+  },
+  "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+  "startedAt": "2026-11-20T19:46:55+00:00",
+  "finishedAt": "2026-11-20T20:00:18+00:00",
+  "wallSeconds": 803.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1224582,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1006698496,
+    "wallSeconds": 607.6,
+    "cpuSeconds": 616.9,
+    "memoryOfEstimate": 0.47,
+    "durationOfEstimate": 1.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the frozen obligations",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --tasks clock-fix-observed --checker-seconds 600",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 607.556,
+      "cpuSeconds": 616.895,
+      "cpuThrottledSeconds": 2.417,
+      "peakMemoryBytes": 1006698496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-frozen-obligations.log",
+        "lines": 2,
+        "bytes": 259,
+        "sha256": "f3450b9c7edb62a7e31e77dd5de25a1f45167dbe740aef43c3188e3e3f94357e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task clock-fix-observed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/result.json",
+          "groups": [
+            "310",
+            "clock-fix-observed",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task clock-fix-observed (target route)",
+        "310-threeten-complete-hours: task clock-fix-observed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7f679688428ec29994d73aeca26b7b989dec4d60255dfd882ec8142718c775a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/plan.json",
+      "change": "added",
+      "bytes": 20449,
+      "sha256": "d2f258d450d85e6908ad6da60d629223c618d58b0e58a7c08e5a7feb57b1a942",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15661,
+      "sha256": "9a41a5fd7b9a5932e6937a5633bacb300e7086c59219381b533c990fa3de4012",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/controls.json",
+      "change": "added",
+      "bytes": 36094,
+      "sha256": "db976b58c3469536fd0130143a1a765f2946aae7a04e04356c3de8ce60ffc57b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/execution.json",
+      "change": "added",
+      "bytes": 67147,
+      "sha256": "cbb2d202ed4f3039a3a2ab64d7d4016008f82f87726f6c746fa8fed99f2b2678",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "50e5859504849a9c9b7048f838aa08b56da0b2b7323064fdefdf65c37fa5468e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 108,
+      "sha256": "761acf865871f1029c2f641c5861febb9d6ee8e1603af0f1a2a67d96156802eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/verifier.json",
+      "change": "added",
+      "bytes": 30626,
+      "sha256": "04fac8797ec660a359f20af2490e93e7a2486a5aec1d334f26d37d6ceeca8138",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7747,
+      "sha256": "e45fac20f074be2a08aed428712a30d60dc5d0583d63ea89cafd70091b976e01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/result.json",
+      "change": "added",
+      "bytes": 17606,
+      "sha256": "5e7067b1e831ba55ac28fa3a8d9eff0b824ad8e2a8cbab0a236a20f6110bd295",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T195010Z-ced6a6b5/attempt.json",
+      "change": "added",
+      "bytes": 29915,
+      "sha256": "a0dbf45a03ca6c9858415b22849bff78e6f1dd05f9bf7e5ec23cfdaed79839b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T195010Z-ced6a6b5/checker.json",
+      "change": "added",
+      "bytes": 9279,
+      "sha256": "20309eebd689b9386d4d9e108a58b1a9be7400609c9a56f3bcbf5de17df43837",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T195010Z-ced6a6b5/correspondence.json",
+      "change": "added",
+      "bytes": 1300,
+      "sha256": "7b4d959c41413173e7183cc5c68e6c695cd73dfd8bb88a73185e4885d0ddfcd0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T20:00:34+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/completion.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/plan.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/control-fix-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/control-fix-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/20261120T195010Z-ced6a6b5/result.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T195010Z-ced6a6b5/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T195010Z-ced6a6b5/checker.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-observed/executions/20261120T195010Z-ced6a6b5/correspondence.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193912-310-clock-fix-observed-on-the-importer-c"
+}
