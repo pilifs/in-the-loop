@@ -1,0 +1,26 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "tiling.Floor#exact",
+    "domain": null,
+    "assume": "n >= 0 && n <= 18",
+    "assert": "result == tiling.Oracle.exact(n)",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the lemma about tiling.Ways#tiles in /home/filip/code/in-the-loop/verification/.state/work/20261120-032650-measure-checked-tiling-summaries-on-iden/examples/331-floor-tiling-proof-reuse/claims/helper.contract is not proved (it is refuted: see above), and the check would rest on it",
+    "statement": null,
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "tiling.Floor#exact cannot be verified: the lemma about tiling.Ways#tiles in /home/filip/code/in-the-loop/verification/.state/work/20261120-032650-measure-checked-tiling-summaries-on-iden/examples/331-floor-tiling-proof-reuse/claims/helper.contract is not proved (it is refuted: see above), and the check would rest on it",
+        "uri": null,
+        "line": 4
+      }
+    ],
+    "output": "lemma: note: javac 21.0.13 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nlemma: note: by induction on `n`: a call tiles makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict\nlemma: ✗ Property of tiling.Ways#tiles violated: `result == tiling.Oracle.exact(n)` where n >= 0 && n <= 18:\nlemma:   tiles(n=0)\nlemma:     outcome: 0\nlemma:   (found by jvmcontract's own checker (Bitwuzla) in 0.8 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain n: int)\nlemma: \nlemma: The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n✗ tiling.Floor#exact cannot be verified: the lemma about tiling.Ways#tiles in /home/filip/code/in-the-loop/verification/.state/work/20261120-032650-measure-checked-tiling-summaries-on-iden/examples/331-floor-tiling-proof-reuse/claims/helper.contract is not proved (it is refuted: see above), and the check would rest on it\n",
+    "work": "/tmp/tiling-reuse-pdtbsiai/base-change-exact-checked-lemma-cold"
+  }
+]
