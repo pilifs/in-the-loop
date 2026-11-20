@@ -1,0 +1,65 @@
+[
+  {
+    "claimKey": "e67571d87352995c",
+    "entry": "arrays.Update#apply([I[I)I",
+    "inputs": [
+      {
+        "name": "left",
+        "type": "int[]",
+        "value": [
+          0
+        ]
+      },
+      {
+        "name": "right",
+        "type": "int[]",
+        "value": {
+          "same": 0
+        }
+      }
+    ],
+    "observations": [
+      {
+        "kind": "array-parameter",
+        "parameter": "right"
+      }
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "reference": {
+        "entryClassSha256": "66c22776e4af997799366e0f023a5161af666867c8aee6e537fb56b13d5e2c6c",
+        "classpath": [
+          "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint[] left = new int[]{0};\nint[] right = left;\nif (!((left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1)))))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = arrays.Update.apply(left, right); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(java.util.Arrays.toString(right));\n} }\n",
+        "admitted": true,
+        "values": [
+          [
+            1
+          ]
+        ]
+      },
+      "skipped-write": {
+        "entryClassSha256": "5aabe777714b613293cd617c0eb987ee110189443534d2996444b81350c3b95e",
+        "classpath": [
+          "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint[] left = new int[]{0};\nint[] right = left;\nif (!((left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1)))))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = arrays.Update.apply(left, right); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(java.util.Arrays.toString(right));\n} }\n",
+        "admitted": true,
+        "values": [
+          [
+            0
+          ]
+        ]
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

@@ -8546,6 +8546,166 @@
           "20261120-023617-check-signed-time-in-each-direction-on-t"
         ]
       }
+    },
+    {
+      "id": "20261120-042933-recheck-both-array-roots-after-the-fast",
+      "title": "Recheck both array roots after the fast-follow engine changes",
+      "status": "passed",
+      "wallSeconds": 166.0,
+      "result": "verification/results/20261120-042933-recheck-both-array-roots-after-the-fast/result.json",
+      "links": {
+        "examples": [
+          "197",
+          "314",
+          "317"
+        ],
+        "jobs": [
+          "20261119-164548-197-paired-array-observation-return-only",
+          "20261119-164549-197-paired-array-observation-right-root",
+          "20261119-164549-197-paired-array-observation-both-roots"
+        ]
+      }
     }
-  ]
+  ],
+  "regressionChecks": {
+    "197": {
+      "job": "verification/results/20261120-042933-recheck-both-array-roots-after-the-fast/result.json",
+      "status": "passed",
+      "domainHeaps": 71,
+      "inputs": "two nullable or aliased int[] roots with binary cells, length 0 through 2",
+      "tasks": [
+        {
+          "task": "return-only",
+          "conclusion": "established",
+          "current": "examples/197-shared-int-array-poststates/receipts/return-only/20261120T043320Z-b5ed1979/result.json",
+          "prior": "examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/result.json",
+          "observations": [
+            {
+              "kind": "result"
+            }
+          ],
+          "bounds": {
+            "unwind": 8,
+            "maxArrayLength": 2
+          },
+          "timeoutSeconds": 600,
+          "directJvm": {
+            "reference": {
+              "stdout": "examples/197-shared-int-array-poststates/receipts/return-only/20261120T043320Z-b5ed1979/records/control-reference-jdk21.stdout",
+              "sha256": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+              "mismatches": 0
+            },
+            "skipped-write": {
+              "stdout": "examples/197-shared-int-array-poststates/receipts/return-only/20261120T043320Z-b5ed1979/records/control-skipped-write-jdk21.stdout",
+              "sha256": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3",
+              "mismatches": 0
+            }
+          }
+        },
+        {
+          "task": "right-root",
+          "conclusion": "refuted",
+          "current": "examples/197-shared-int-array-poststates/receipts/right-root/20261120T043323Z-aadea269/result.json",
+          "prior": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/result.json",
+          "observations": [
+            {
+              "kind": "array-parameter",
+              "parameter": "right"
+            }
+          ],
+          "bounds": {
+            "unwind": 8,
+            "maxArrayLength": 2
+          },
+          "timeoutSeconds": 600,
+          "directJvm": {
+            "reference": {
+              "stdout": "examples/197-shared-int-array-poststates/receipts/right-root/20261120T043323Z-aadea269/records/control-reference-jdk21.stdout",
+              "sha256": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+              "mismatches": 0
+            },
+            "skipped-write": {
+              "stdout": "examples/197-shared-int-array-poststates/receipts/right-root/20261120T043323Z-aadea269/records/control-skipped-write-jdk21.stdout",
+              "sha256": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3",
+              "mismatches": 3
+            }
+          },
+          "counterexample": [
+            {
+              "name": "left",
+              "type": "int[]",
+              "value": [
+                0
+              ]
+            },
+            {
+              "name": "right",
+              "type": "int[]",
+              "value": {
+                "same": 0
+              }
+            }
+          ]
+        },
+        {
+          "task": "both-roots",
+          "conclusion": "refuted",
+          "current": "examples/197-shared-int-array-poststates/receipts/both-roots/20261120T043325Z-8310016e/result.json",
+          "prior": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/result.json",
+          "observations": [
+            {
+              "kind": "array-parameter",
+              "parameter": "left"
+            },
+            {
+              "kind": "array-parameter",
+              "parameter": "right"
+            }
+          ],
+          "bounds": {
+            "unwind": 8,
+            "maxArrayLength": 2
+          },
+          "timeoutSeconds": 600,
+          "directJvm": {
+            "reference": {
+              "stdout": "examples/197-shared-int-array-poststates/receipts/both-roots/20261120T043325Z-8310016e/records/control-reference-jdk21.stdout",
+              "sha256": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+              "mismatches": 0
+            },
+            "skipped-write": {
+              "stdout": "examples/197-shared-int-array-poststates/receipts/both-roots/20261120T043325Z-8310016e/records/control-skipped-write-jdk21.stdout",
+              "sha256": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3",
+              "mismatches": 21
+            }
+          },
+          "counterexample": [
+            {
+              "name": "left",
+              "type": "int[]",
+              "value": [
+                0
+              ]
+            },
+            {
+              "name": "right",
+              "type": "int[]",
+              "value": [
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "308": {
+      "native": "examples/308-commons-text-longest-common-subsequence/records/release-score-native.json",
+      "calibration": "examples/308-commons-text-longest-common-subsequence/records/release-score-transfer.json",
+      "pairsPerArtifact": 225,
+      "releaseDisagreements": 0,
+      "rebuiltDisagreements": 0,
+      "sharedRowDisagreements": 44,
+      "firstProof": "examples/308-commons-text-longest-common-subsequence/records/boxing-transfer.json"
+    }
+  }
 }
