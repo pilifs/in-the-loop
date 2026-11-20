@@ -2875,6 +2875,15 @@ change `toloxstqkszp` · [log `08773679ab9a`](https://terminalvalue.net/raw-trac
 
 Codex's reviewer of approval requests reports its calls as the model codex-auto-review, which had no row in llm-dlc/pricing.json, so its 337 calls in 14 sessions counted as $0 for want of a price and warned in check. Its checks are free and draw no plan usage (OpenAI's Codex rate card, and the user on 2026-11-20), so the row prices it at zero explicitly, with that note. The session metrics were regenerated with it in the commit before this one; check reports no pricing warnings.
 
+### Allow list: Filip Stankovic approved 1bbaf196, d9809595
+
+change `qvolnwlvotls` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+
+Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.
+
+1bbaf196  long-token  sin…0N (41 chars): The masked context uses the public restart watcher decision numbering pattern as a placeholder. Its finding digest matches the recorded decision ID with its last digit replaced by N.
+d9809595  long-token  sin…x7 (40 chars): A made-up value in a unit test of the redaction rules (test_review.py), written in this session's transcript: a decision-id-shaped string with a random tail, deliberately not a real key.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz) has every step in between: reasoning, tool calls and their results.
