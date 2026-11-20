@@ -31,7 +31,7 @@
 //!   a new array of the original's class and of that length, with the original's elements up to the shorter of
 //!   the two, zero (null) after them. The new array has a cell for each of the original's and for each further
 //!   one the new length may ask for, as `newarray` counts them ([`Engine::new_array_cells`]).
-//! - `Integer.parseInt(String)`: an optional `+` or `-` and at least one digit, the value within an int, or
+//! - `Integer.parseInt(String)` and `Long.parseLong(String)`: an optional `+` or `-` and at least one digit, the value within the signed result width, or
 //!   `NumberFormatException` (for null too). The JDK takes every Unicode decimal digit (`Character.digit`); the
 //!   model takes `0` to `9`, and a String with a unit outside ASCII is the JDK call it was (a gap).
 //! - the digits of an int, for `StringBuilder.append(int)` ([`Engine::decimal`]): `Integer.toString`'s, a `-` and
@@ -59,7 +59,7 @@ pub fn charset_constant(owner: &str, name: &str) -> Option<&'static str> {
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
-        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
+        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
     )
 }
 
@@ -256,14 +256,16 @@ impl Engine<'_> {
     /// call stays the JDK's.
     pub(super) fn bytes_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
-            (INTEGER, "parseInt", [Val::R(text)]) => {
+            (INTEGER, "parseInt", [Val::R(text)]) | ("java/lang/Long", "parseLong", [Val::R(text)]) => {
                 let Some(text) = *text else { return Some(self.raise(path, "java/lang/NumberFormatException")) };
                 let s = path.objects[text].content().cloned()?;
-                let (value, bad, beyond_ascii) = self.parsed_int(&s);
+                let wide = owner == "java/lang/Long";
+                let (value, bad, beyond_ascii) = self.parsed_decimal(&s, if wide { 64 } else { 32 });
+                let value = if wide { Val::J(value) } else { Val::I(value) };
                 // On the side that is ASCII the call throws or returns; neither ends a path here.
                 let mut inner: Step = Ok(None);
                 let outer = self.branch_gap_or(path, beyond_ascii, (GapKind::JdkStaticMethod, owner, name, descriptor), |engine, side| {
-                    inner = engine.branch_throw(side, bad, "java/lang/NumberFormatException", Val::I(value));
+                    inner = engine.branch_throw(side, bad, "java/lang/NumberFormatException", value);
                 });
                 Some(inner.and(outer))
             }
@@ -363,10 +365,9 @@ impl Engine<'_> {
         }
     }
 
-    /// What `Integer.parseInt` makes of the content `s`: the value, whether it throws instead, and whether a unit
+    /// Decimal int or long: the signed value, whether it throws instead, and whether a unit
     /// of `s` is outside ASCII, where the model does not say.
-    fn parsed_int(&mut self, s: &Array) -> (Bits, Lit, Lit) {
-        const WIDTH: usize = 40;
+    fn parsed_decimal(&mut self, s: &Array, width: usize) -> (Bits, Lit, Lit) {
         let unit = |engine: &mut Self, c: u8| engine.b.constant(i64::from(c), 16);
         let (minus, plus, zero_digit, nine, ascii) = (unit(self, b'-'), unit(self, b'+'), unit(self, b'0'), unit(self, b'9'), self.b.constant(0x80, 16));
         let zero = self.b.constant(0, 32);
@@ -386,10 +387,12 @@ impl Engine<'_> {
         };
         let mut bad = vec![empty, only_sign];
         let mut outside = Vec::new();
-        let ten = self.b.constant(10, WIDTH);
-        let limit = self.b.constant(1 << 32, WIDTH);
-        let mut value = self.b.constant(0, WIDTH);
-        let mut large = FALSE;
+        let ten = self.b.constant(10, width);
+        let max = if width == 64 { i64::MAX } else { i64::from(i32::MAX) };
+        let cutoff = self.b.constant(max / 10, width);
+        // Both signed widths end in 7 for MAX and 8 for the magnitude of MIN.
+        let last = self.b.ite_bits(negative, &self.b.constant(8, width), &self.b.constant(7, width));
+        let mut value = self.b.constant(0, width);
         for (i, cell) in s.cells.iter().enumerate() {
             let here = self.b.constant(i as i64, 32);
             let inside = self.b.slt(&here, &s.length);
@@ -400,26 +403,20 @@ impl Engine<'_> {
             let above = self.b.ult(&nine, cell);
             let digit = self.b.and(-below, -above);
             bad.push(self.b.and(read, -digit));
-            // The value so far is below 2^32, so ten times it and a digit more is below 2^36.
+            // Test before multiplying so even a value that wraps around more than once stays invalid.
+            let digit_value = self.b.zext(&cell[..4].to_vec(), width);
+            let above = self.b.ult(&cutoff, &value);
+            let at_limit = self.b.eq(&value, &cutoff);
+            let last_over = self.b.ult(&last, &digit_value);
+            let overflow_at_limit = self.b.and(at_limit, last_over);
+            let overflow = self.b.or(above, overflow_at_limit);
+            bad.push(self.b.and(read, overflow));
             let times = self.b.mul(&value, &ten);
-            let digit_value: Bits = cell[..4].iter().copied().chain(std::iter::repeat(FALSE)).take(WIDTH).collect();
             let next = self.b.add(&times, &digit_value);
-            let fits = self.b.ult(&next, &limit);
-            let takes = self.b.all(&[read, digit, -large]);
-            let grows = self.b.and(takes, fits);
-            let overflows = self.b.and(takes, -fits);
-            value = self.b.ite_bits(grows, &next, &value);
-            large = self.b.or(large, overflows);
+            value = self.b.ite_bits(read, &next, &value);
         }
-        // The magnitude is at most 2^31 for a negative number and one less for any other.
-        let most_negative = self.b.constant(1 << 31, WIDTH);
-        let over = self.b.ult(&most_negative, &value);
-        let at_limit = self.b.eq(&value, &most_negative);
-        let positive_over = self.b.and(-negative, at_limit);
-        bad.extend([large, over, positive_over]);
-        let magnitude = self.b.trunc(&value, 32);
-        let negated = self.b.neg(&magnitude);
-        let result = self.b.ite_bits(negative, &negated, &magnitude);
+        let negated = self.b.neg(&value);
+        let result = self.b.ite_bits(negative, &negated, &value);
         (result, self.any(&bad), self.any(&outside))
     }
 

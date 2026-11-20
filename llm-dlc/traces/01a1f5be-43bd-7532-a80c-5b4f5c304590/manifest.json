@@ -12,25 +12,25 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T06:20:39.765Z",
-  "duration_seconds": 31390,
+  "ended": "2026-11-20T06:28:36.505Z",
+  "duration_seconds": 31867,
   "stats": {
     "turns": 8,
-    "api_calls": 1917,
-    "tool_calls": 4915,
-    "tool_errors": 154,
+    "api_calls": 1942,
+    "tool_calls": 4984,
+    "tool_errors": 156,
     "compactions": 7,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 3814238,
-      "output_tokens": 949622,
-      "cache_read_input_tokens": 560867328,
+      "input_tokens": 3855108,
+      "output_tokens": 965782,
+      "cache_read_input_tokens": 567184768,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 2848,
-    "exec": 1841,
+    "Bash": 2893,
+    "exec": 1865,
     "apply_patch": 164,
     "wait": 44,
     "sleep": 18
@@ -241,24 +241,24 @@
     {
       "index": 7,
       "started": "2026-11-20T06:02:44.155Z",
-      "ended": "2026-11-20T06:20:39.765Z",
+      "ended": "2026-11-20T06:28:36.505Z",
       "turns": 1,
-      "api_calls": 71,
+      "api_calls": 96,
       "usage": {
-        "input_tokens": 240285,
-        "output_tokens": 37959,
-        "cache_read_input_tokens": 12051456,
+        "input_tokens": 281155,
+        "output_tokens": 54119,
+        "cache_read_input_tokens": 18368896,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 248944
+      "peak_context_tokens": 288022
     }
   ],
   "log": {
-    "sha256": "a1aeb7fce7561b2a18705696d2cb2e2486525e0ccc8e7969ec331cd798736000",
-    "bytes": 46459274,
-    "lines": 14933,
-    "gzip_bytes": 17503036,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/a1aeb7fce7561b2a18705696d2cb2e2486525e0ccc8e7969ec331cd798736000.jsonl.gz"
+    "sha256": "ecba7902d6cf68bb6521bc99ba619886c090eab40976eaf0793196514f4fd98b",
+    "bytes": 47057051,
+    "lines": 15136,
+    "gzip_bytes": 17738516,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/ecba7902d6cf68bb6521bc99ba619886c090eab40976eaf0793196514f4fd98b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -943,20 +943,28 @@
       "log_sha256": "0d786692d39539c190359c62d25753d47a489a4ae6be557ed3809253ad749855"
     },
     {
-      "change_id": "kzuzmtqypquymnnrwokxtyrssovxwqqk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "a1aeb7fce7561b2a18705696d2cb2e2486525e0ccc8e7969ec331cd798736000"
-    },
-    {
       "change_id": "qswpsvvtlxnmqtwywrrnrykuxtkuxpzt",
       "commit_id": null,
       "immutable": false,
       "summary": "Follow reachable constructors of static object constants (verification pending)",
       "body": "Strict checking executes the real bytecode of straight-line initializers that assemble final object or array constants with application methods. The checker follows the constructors at the values actually passed, including reachable exceptions and erroneous-class reuse. An unsupported call reached by a constructor still stops the proof. Existing observed initializers and advised contracts retain their handling.\n\nThe direct JVM and native controls checked two distinct constants and the first and second use of a class whose constructor throws. A reachable Double.parseDouble stayed open while the same unreachable call did not impede either proof. Changed tests passed. A capped probe on the original Commons Math JARs proved the fixed raw percentage and independently replayed parent input 8. Jobs 20261120-061640-prove-fraction-percentages-through-the-o and 20261120-061640-recheck-partial-dates-through-their-actu run all sixteen original Fraction and MonthDay obligations.",
       "log_sha256": "a1aeb7fce7561b2a18705696d2cb2e2486525e0ccc8e7969ec331cd798736000"
+    },
+    {
+      "change_id": "onnuzluywwllqrsqsvtsuxuoyloyrwpr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "ecba7902d6cf68bb6521bc99ba619886c090eab40976eaf0793196514f4fd98b"
+    },
+    {
+      "change_id": "nvsooltopvpvoxzpsquqpklswqlxvpqz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Prove bounded regex captures and signed-long parsing (verification pending)",
+      "body": "Preserve capture numbering, the previous match outcome and the original String on each matcher. A mandatory capture is observed when its UTF-16 endpoints follow from fixed widths on the matched input. Optional, repeated and ambiguous spans retain an explicit refusal. Share one overflow-before-multiply decimal parser between int and long, including their negative minima and signed zero. Non-ASCII digits keep the JDK gap.\n\nNative and JVM controls covered nested captures, invalid group numbers before and after matching, whole-string identity, both long limits and out-of-range texts. The ambiguous and optional controls are true on the JVM and stayed open natively. An incorrect group claim was refuted. Changed tests passed after one UTF-16 test passed on retry. A capped probe proved the frozen fixed ThreeTen round trip at unwind 24. Job 20261120-062318-verify-canonical-signed-tai-texts-and-in checks all six original claims on the 20 canonical inputs per upstream revision.",
+      "log_sha256": "ecba7902d6cf68bb6521bc99ba619886c090eab40976eaf0793196514f4fd98b"
     }
   ],
   "logs": {
@@ -1222,6 +1230,12 @@
       "bytes": 9662674,
       "lines": 2778,
       "gzip_bytes": 3506430,
+      "url": null
+    },
+    "ecba7902d6cf68bb6521bc99ba619886c090eab40976eaf0793196514f4fd98b": {
+      "bytes": 47057051,
+      "lines": 15136,
+      "gzip_bytes": 17738516,
       "url": null
     },
     "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212": {

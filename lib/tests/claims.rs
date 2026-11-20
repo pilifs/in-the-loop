@@ -1218,3 +1218,21 @@ fn static_value_constructors_keep_reachable_gaps_and_erroneous_state() {
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.output.contains("Double.parseDouble"), "{}", o.output);
 }
+
+#[test]
+fn regex_captures_and_signed_decimal_limits_agree_with_the_jvm() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.CapturedNumbers").output().unwrap();
+    assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
+    for name in ["span", "state", "decimal"] {
+        proved(classes, &format!("claims.CapturedNumbers#{name}"), 24);
+    }
+    for (name, why) in [("ambiguous", "determined boundaries"), ("optional", "determined boundaries"), ("unicodeDigit", "Long.parseLong")] {
+        let o = run(&options(classes, &format!("claims.CapturedNumbers#{name}"), 24, name));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.output.contains(why), "{}", o.output);
+    }
+    let counter = run(&options(classes, "claims.CapturedNumbers#wrong", 24, "wrong-group"));
+    assert_eq!(counter.verdict, Verdict::Violation, "{}", counter.output);
+}

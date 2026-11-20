@@ -60,12 +60,15 @@
 //! begins at the input's beginning or after a unit that is none, which is never inside a pair; from there the rest
 //! of the input is whole code points, a pair is no line terminator, and a surrogate alone is its own code point and
 //! none either, so the rest is `.*` by code point exactly when each of its units is `.` by unit.
-//! Any other method of such a Matcher makes it an object the engine knows nothing of again.
+//! `group(int)` after a full match returns the whole input or a mandatory capture with provable UTF-16
+//! boundaries. Reading an optional or ambiguous capture refuses the observation. Other Matcher methods invalidate its state.
 
 use super::*;
 
 const PATTERN: &str = "java/util/regex/Pattern";
 const MATCHER: &str = "java/util/regex/Matcher";
+const MATCH_INPUT: &str = "java/util/regex/Matcher#input";
+const MATCH_SUCCESS: &str = "java/util/regex/Matcher#matched";
 /// The bits of `Pattern.CASE_INSENSITIVE` (2) and `Pattern.DOTALL` (32) in a flags argument.
 const CASE_INSENSITIVE: usize = 1;
 const DOTALL: usize = 5;
@@ -130,6 +133,7 @@ pub enum Node {
     One(Atom),
     Seq(Vec<Node>),
     Alt(Vec<Node>),
+    Capture(usize, Box<Node>),
     /// At least the first number of times, and at most the second, or any number where there is none.
     Repeat(Box<Node>, u32, Option<u32>),
     /// The input's beginning (`\A`, `^`) and its end (`\z`).
@@ -142,8 +146,58 @@ impl Node {
         match self {
             Node::One(atom) => atom.wide(),
             Node::Seq(nodes) | Node::Alt(nodes) => nodes.iter().any(Node::wide),
-            Node::Repeat(node, _, _) => node.wide(),
+            Node::Repeat(node, _, _) | Node::Capture(_, node) => node.wide(),
             Node::Begin | Node::End => false,
+        }
+    }
+
+    /// A fixed UTF-16 width on successful matches in the supported code-unit fragment.
+    fn width(&self) -> Option<i32> {
+        match self {
+            Node::One(_) => Some(1),
+            Node::Begin | Node::End => Some(0),
+            Node::Capture(_, body) => body.width(),
+            Node::Seq(nodes) => widths(nodes, Some(0)),
+            Node::Alt(nodes) => {
+                let first = nodes.first()?.width()?;
+                nodes.iter().all(|n| n.width() == Some(first)).then_some(first)
+            }
+            Node::Repeat(body, min, max) => {
+                let width = body.width()?;
+                if width == 0 { Some(0) } else if *max == Some(*min) { width.checked_mul(*min as i32) } else { None }
+            }
+        }
+    }
+
+    fn last_group(&self) -> usize {
+        match self {
+            Node::Capture(id, body) => (*id).max(body.last_group()),
+            Node::Seq(nodes) | Node::Alt(nodes) => nodes.iter().map(Node::last_group).max().unwrap_or(0),
+            Node::Repeat(body, _, _) => body.last_group(),
+            _ => 0,
+        }
+    }
+
+    /// Absolute offsets are known from the beginning, from the end, or from a fixed
+    /// group width and one of those boundaries. We require one mandatory occurrence:
+    /// optional, repeated and alternative captures can depend on backtracking history.
+    fn capture(&self, group: usize, prefix: Option<i32>, suffix: Option<i32>) -> Option<(Offset, Offset)> {
+        match self {
+            Node::Capture(id, body) if *id == group => {
+                match (prefix, suffix) {
+                    (Some(a), Some(b)) => Some((Offset::Start(a), Offset::End(b))),
+                    (Some(a), None) => Some((Offset::Start(a), Offset::Start(a.checked_add(body.width()?)?))),
+                    (None, Some(b)) => Some((Offset::End(b.checked_add(body.width()?)?), Offset::End(b))),
+                    _ => None,
+                }
+            }
+            Node::Capture(_, body) => body.capture(group, prefix, suffix),
+            Node::Seq(nodes) => {
+                // Groups are numbered at their opening parenthesis, from left to right.
+                let i = nodes.iter().position(|n| n.last_group() >= group)?;
+                nodes[i].capture(group, widths(&nodes[..i], prefix), widths(&nodes[i + 1..], suffix))
+            }
+            _ => None,
         }
     }
 
@@ -164,6 +218,27 @@ impl Node {
     }
 }
 
+fn widths(nodes: &[Node], offset: Option<i32>) -> Option<i32> {
+    nodes.iter().try_fold(offset?, |sum, n| sum.checked_add(n.width()?))
+}
+
+enum Offset {
+    Start(i32),
+    End(i32),
+}
+
+impl Offset {
+    fn resolve(&self, bits: &mut Blaster, length: &Bits) -> Bits {
+        match *self {
+            Offset::Start(i) => bits.constant(i64::from(i), 32),
+            Offset::End(i) => {
+                let tail = bits.constant(i64::from(i), 32);
+                bits.sub(length, &tail)
+            }
+        }
+    }
+}
+
 /// The most a counted quantifier may count to here.
 const MOST_REPEATS: u32 = 1024;
 
@@ -171,6 +246,7 @@ const MOST_REPEATS: u32 = 1024;
 struct Reader<'a> {
     units: &'a [u16],
     at: usize,
+    groups: usize,
 }
 
 impl Reader<'_> {
@@ -272,14 +348,18 @@ impl Reader<'_> {
                 Node::One(Atom::Class(ranges, negated))
             }
             '(' => {
-                if self.eat('?') && !self.eat(':') {
-                    return None;
-                }
+                let group = if self.eat('?') {
+                    if !self.eat(':') { return None; }
+                    None
+                } else {
+                    self.groups += 1;
+                    Some(self.groups)
+                };
                 let inner = self.alternatives()?;
                 if !self.eat(')') {
                     return None;
                 }
-                inner
+                match group { Some(id) => Node::Capture(id, Box::new(inner)), None => inner }
             }
             c if stands_for_itself(c) => Node::One(Atom::Unit(c as u16)),
             _ => return None,
@@ -388,7 +468,7 @@ fn escaped(e: char) -> Option<u16> {
 
 /// The constant regular expression of these units, in the module's syntax; `None` for any other.
 pub fn parse_constant(units: &[u16]) -> Option<Node> {
-    let mut reader = Reader { units, at: 0 };
+    let mut reader = Reader { units, at: 0, groups: 0 };
     let node = reader.alternatives()?;
     reader.done().then_some(node)
 }
@@ -805,14 +885,25 @@ impl Engine<'_> {
                 let Some(input) = *input else { return Some(self.raise(path, "java/lang/NullPointerException")) };
                 let text = Text::of(path.objects[input].content()?);
                 let matcher = self.regex_object(path, MATCHER, Regex::Matcher(pieces, flags, text));
+                path.objects[matcher].fields.insert(MATCH_INPUT.into(), Val::R(Some(input)));
+                path.objects[matcher].fields.insert(MATCH_SUCCESS.into(), Val::I(self.b.constant(0, 32)));
                 self.push(path, Val::R(Some(matcher)));
                 self.advance(path);
                 Some(Ok(None))
             }
             (Regex::Matcher(pieces, flags, input), "matches", "()Z", []) => {
                 let (truth, surrogate) = self.matches(&pieces, flags, &input);
-                Some(self.branch_gap_or(path, surrogate, (GapKind::JdkReferenceMethod, MATCHER, name, descriptor), move |engine, path| engine.push_truth(path, truth)))
+                if let Err(stop) = self.keeps(path, Some(o), "updates a pre-existing Matcher's match state") { return Some(Err(stop)); }
+                Some(self.branch_gap_or(path, surrogate, (GapKind::JdkReferenceMethod, MATCHER, name, descriptor), move |engine, path| {
+                    let flag = engine.b.zext(&vec![truth], 32);
+                    path.objects[o].fields.insert(MATCH_SUCCESS.into(), Val::I(flag));
+                    engine.push_truth(path, truth);
+                }))
             }
+            (Regex::Matcher(pieces, _, _), "group", "(I)Ljava/lang/String;", [Val::I(index)]) => {
+                Some(self.matched_group(path, o, &pieces, self.b.constant_value(index)))
+            }
+            (Regex::Matcher(pieces, _, _), "group", "()Ljava/lang/String;", []) => Some(self.matched_group(path, o, &pieces, Some(0))),
             (Regex::Matcher(..), _, _, _) => {
                 // Any other method may change what the Matcher matches (its region, its input, its pattern).
                 path.objects[o].regex = None;
@@ -820,6 +911,48 @@ impl Engine<'_> {
             }
             _ => None,
         }
+    }
+
+    fn matched_group(&mut self, path: &mut Path, o: usize, pieces: &[Piece], index: Option<i64>) -> Step {
+        self.reads_field(path, o, MATCHER, "first", "I")?;
+        let Some(Val::I(flag)) = path.objects[o].fields.get(MATCH_SUCCESS) else { return unsupported("Matcher.group without a recorded match attempt") };
+        let failed = self.b.is_zero(flag);
+        // The JDK checks for a preceding successful match before it validates the index.
+        if failed != FALSE && !path.cond.contains(&-failed) {
+            let mut successful = path.cond.clone();
+            successful.push(-failed);
+            if failed == TRUE || !self.solve(&successful)? { return self.raise(path, "java/lang/IllegalStateException"); }
+        }
+        let Some(index) = index else { return unsupported("Matcher.group with a symbolic group number") };
+        let node = match pieces {
+            [Piece { when: TRUE, kind: Kind::Node(node) }] => Some(node),
+            _ => None,
+        };
+        if index > 0 && node.is_none() && pieces.iter().any(|p| matches!(p.kind, Kind::Node(_))) {
+            return unsupported("Matcher.group numbering in a composed pattern");
+        }
+        if index < 0 || index as usize > node.map_or(0, |n| n.last_group()) {
+            let mut invalid = Ok(None);
+            let status = self.branch_throw_or(path, failed, "java/lang/IllegalStateException", |engine, side| {
+                invalid = engine.raise(side, "java/lang/IndexOutOfBoundsException");
+            });
+            return invalid.and(status);
+        }
+        let Some(Val::R(Some(source))) = path.objects[o].fields.get(MATCH_INPUT).cloned() else {
+            return unsupported("Matcher.group on a choice of input String identities");
+        };
+        let value = if index == 0 {
+            Val::R(Some(source))
+        } else {
+            let Some((start, end)) = node.and_then(|n| n.capture(index as usize, Some(0), Some(0))) else {
+                return unsupported(format!("Matcher.group({index}) has an optional, repeated, or variable capture without two determined boundaries"));
+            };
+            let input = path.objects[source].content().expect("matcher on a String").clone();
+            let begin = start.resolve(&mut self.b, &input.length);
+            let end = end.resolve(&mut self.b, &input.length);
+            self.range(path, &input, &begin, &end, Some(source))
+        };
+        self.branch_throw(path, failed, "java/lang/IllegalStateException", value)
     }
 
     /// Whether `pieces`, under `flags`, match the whole of `input`, and whether a surrogate is among the units
@@ -942,6 +1075,7 @@ impl Engine<'_> {
         let either = |engine: &mut Self, a: &[Lit], b: &[Lit]| -> Vec<Lit> { a.iter().zip(b).map(|(x, y)| engine.b.or(*x, *y)).collect() };
         match node {
             Node::One(atom) => self.atom_step(reach, atom, false, flags, input, units),
+            Node::Capture(_, body) => self.node_step(reach, body, flags, input, units),
             Node::Seq(nodes) => nodes.iter().fold(reach.to_vec(), |reach, node| self.node_step(&reach, node, flags, input, units)),
             Node::Alt(nodes) => {
                 let mut any = vec![FALSE; reach.len()];
