@@ -1,0 +1,63 @@
+[
+  {
+    "claimKey": "96106a8edbe810ae",
+    "entry": "multigrid.Projection#total(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "b1d25981f407f4e08d5c298b6b8bd446db2f6d39c8d8f055a1dcb9dbda20753d",
+        "classpath": [
+          "7260fb6e73d7b8febf9fe36c40868ed6d5d18e4f854da6f8fa8e9a741a099c9c",
+          "a68700ece9ad2a546d967b8bbab15bf354823d83c1482e67991b37d112fb56e5"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 18)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = multigrid.Projection.total(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 0,
+      "input": {
+        "A": 1,
+        "B": 1,
+        "view": "unique"
+      },
+      "field": "total",
+      "direct": {
+        "parent": {
+          "removed": "A",
+          "total": 2,
+          "membership": [
+            false,
+            true
+          ],
+          "otherCount": 1
+        }
+      },
+      "tableSha256": "4b3fdf92170728076676c8db8aeadc509d5317d2a2313c49a6577595fe1b61bb"
+    }
+  }
+]
