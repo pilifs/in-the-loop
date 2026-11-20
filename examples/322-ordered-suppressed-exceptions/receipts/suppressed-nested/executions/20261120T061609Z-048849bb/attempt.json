@@ -1,0 +1,340 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T061609Z-048849bb",
+  "task": "suppressed-nested",
+  "claimKey": "c16432554ab2233a",
+  "revisions": [
+    "nested"
+  ],
+  "startedAt": "2026-11-20T06:16:09.018564+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-061145-verify-ordered-resource-failures-with-th",
+  "sourceCommit": "ad9b319374899bbf5fa9654c56be66e5905192da",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0014
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.0668
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.0681
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.0928
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 0.1354
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.228
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "nested": {
+      "revision": "fixture:nested",
+      "target": {
+        "class": "paint.Paint",
+        "method": "run",
+        "descriptor": "(I)Lpaint/Outcome;",
+        "loadedFrom": "nested.jar",
+        "classSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf",
+        "adapterCalls": [
+          "paint.Paint#run(I)Lpaint/Outcome;",
+          "paint.Tagged#getSuppressed()[Ljava/lang/Throwable;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "a807f3569f867b84654b5a309197f135666199eb467598bf24aee951dd78c356",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-nested.jar",
+          "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "nested.jar",
+          "sha256": "cff7a4657f1229e0a2fe978edd1611ef7dbb62318eb6b330e546c831763b6af3",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from nested by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "f803893a3d3153b6c7cb74abecc253c488d28527781a3170731c55d0c1148159",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cf3820826f3bdff62df082c19dd5655f4bd1cdf6/jvmcontract",
+    "prove",
+    "paint.Projection#suppressed(int)",
+    "--classes",
+    "prepare/nested/adapter-nested.jar",
+    "--classpath",
+    "prepare/nested/nested.jar",
+    "--assume",
+    "code >= 0 && code < 8",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "10",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "25ccec7b4591943a6a61c0a5a451a521bd0beeae81cfe19f91e71bf1e5982d74",
+    "commit": "ad9b319374899bbf5fa9654c56be66e5905192da",
+    "libTree": "cf3820826f3bdff62df082c19dd5655f4bd1cdf6",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 10
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+      "method": "paint.Paint#run(I)Lpaint/Outcome;",
+      "revisions": {
+        "nested": {
+          "commit": "fixture:nested",
+          "loadedFrom": "nested.jar",
+          "classSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf",
+          "origin": "built from nested by the fixture recipe",
+          "parameters": {
+            "names": [
+              "mask"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "paint.Projection#suppressed(I)I",
+        "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "correspondence": "finite-oracle",
+        "cases": 8
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "nested": [
+        {
+          "path": "adapter-nested.jar",
+          "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+          "role": "adapter"
+        },
+        {
+          "path": "nested.jar",
+          "sha256": "cff7a4657f1229e0a2fe978edd1611ef7dbb62318eb6b330e546c831763b6af3",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "paint.Projection#suppressed(I)I",
+    "entryBindings": {
+      "nested": {
+        "entry": "paint.Projection#suppressed(I)I",
+        "classSha256": "4331440adb1cd29279a26d56d9fb144af87fe0faf5bbfe1f834736ee4b66329f",
+        "loadedFrom": "adapter-nested.jar",
+        "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+        "subjectClassSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+      "checkedEntry": "paint.Projection#suppressed(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 8"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "10"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "paint.Projection#suppressed(I)I",
+        "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "correspondence": "finite-oracle",
+        "cases": 8
+      }
+    },
+    "commits": {
+      "nested": "fixture:nested"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "nested": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cf3820826f3bdff62df082c19dd5655f4bd1cdf6/jvmcontract",
+          "gaps",
+          "--target",
+          "paint.Projection#suppressed(int)",
+          "--classes",
+          "prepare/nested/adapter-nested.jar",
+          "--classpath",
+          "prepare/nested/nested.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-nested.stdout",
+        "stderr": "verifier/probe-nested.stderr",
+        "gaps": [
+          {
+            "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+            "sites": [
+              "paint.Paint.run:7"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0359,
+      "peakRssBytes": 80195584,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0359,
+    "peakRssBytes": 80195584,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.041,
+  "missing": [],
+  "receipt": "receipts/suppressed-nested/20261120T061609Z-048849bb/result.json",
+  "preparedClaim": "c91ad397c359c37f",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T06:16:09.246604+00:00"
+}
