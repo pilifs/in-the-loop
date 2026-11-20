@@ -1,0 +1,11 @@
+Compared array:right on two fresh heaps with the same length, cell, null and sharing choices (verifier/work/pair/RegressionPair.java)
+✗ arrays.Update#apply(int[], int[]): the two versions differ on apply(left=[0], right={"same":0}) (the pair's property, below, returns false on it)
+  JVM before: array:right=[1]
+  JVM after: array:right=[0]
+note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name "RegressionPair"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target
+✗ Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4):
+  agree(len0=1, cell0_0=0, cell0_1=0, len1=0, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true)
+    outcome: false
+  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as agree(len0=2, cell0_0=0, cell0_1=0, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=true), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

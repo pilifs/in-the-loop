@@ -1,0 +1,1017 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-065325-verify-raw-duration-patterns-through-utf",
+  "title": "Verify raw duration patterns through UTF-16 padding",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 36.7s, peak 338.0 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-065325-verify-raw-duration-patterns-through-utf.json",
+    "sha256": "ff87b121f1553812ff84113df1a08a022b44bafc3aa8d14f0548fff47c3cecb7",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-065325-verify-raw-duration-patterns-through-utf",
+      "title": "Verify raw duration patterns through UTF-16 padding",
+      "description": "Check the parent and fix on every original token and quoting obligation after adding char-array fill, snapshot construction and String.concat. All 78 direct cases per revision, both padding flags, unwind 45 and the 30-second checker deadline are retained. Qualify the parent text witness independently.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "326"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T06:53:25+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 326 --tasks separated-parent,separated-fix,quoting-parent,quoting-fix,adjacent-parent,adjacent-fix --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent",
+        "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix",
+        "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent",
+        "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix",
+        "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent",
+        "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix"
+      ]
+    }
+  },
+  "sourceCommit": "defb4089f3744b1968d38bdcf10cf3c643c75d0d",
+  "startedAt": "2026-11-20T06:58:37+00:00",
+  "finishedAt": "2026-11-20T07:02:15+00:00",
+  "wallSeconds": 218.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3184551,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 354459648,
+    "wallSeconds": 36.7,
+    "cpuSeconds": 45.2,
+    "memoryOfEstimate": 0.17,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 178.66,
+      "cpuSeconds": 178.898,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2127298560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "c6ff34bb7a0ebdd2e4195ceb2b9afd83d9b22fb2454719a6a12546417637f673",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-065325-verify-raw-duration-patterns-through-utf/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 58s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 326 --tasks separated-parent,separated-fix,quoting-parent,quoting-fix,adjacent-parent,adjacent-fix --checker-seconds 30",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 36.683,
+      "cpuSeconds": 45.225,
+      "cpuThrottledSeconds": 4.127,
+      "peakMemoryBytes": 354459648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 12,
+        "bytes": 1547,
+        "sha256": "48a8be61b03dc336958d50f7ae17985fa79ec880fd32751020161f1d603abbc0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "326-commons-lang-separated-duration-tokens: task separated-parent: refuted (completed; as expected), receipt receipts/separated-parent/20261120T070138Z-debb0fa2/result.json",
+          "groups": [
+            "326",
+            "separated-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "326-commons-lang-separated-duration-tokens: task separated-fix: established (completed; as expected), receipt receipts/separated-fix/20261120T070147Z-76283de0/result.json",
+          "groups": [
+            "326",
+            "separated-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "326-commons-lang-separated-duration-tokens: task quoting-parent: established (completed; as expected), receipt receipts/quoting-parent/20261120T070200Z-84c73685/result.json",
+          "groups": [
+            "326",
+            "quoting-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "326-commons-lang-separated-duration-tokens: task quoting-fix: established (completed; as expected), receipt receipts/quoting-fix/20261120T070202Z-98d32fb2/result.json",
+          "groups": [
+            "326",
+            "quoting-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 10,
+          "text": "326-commons-lang-separated-duration-tokens: task adjacent-parent: established (completed; as expected), receipt receipts/adjacent-parent/20261120T070204Z-2a3785d9/result.json",
+          "groups": [
+            "326",
+            "adjacent-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "326-commons-lang-separated-duration-tokens: task adjacent-fix: established (completed; as expected), receipt receipts/adjacent-fix/20261120T070209Z-a96d8081/result.json",
+          "groups": [
+            "326",
+            "adjacent-fix",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "326-commons-lang-separated-duration-tokens: running task separated-parent (target route)",
+        "326-commons-lang-separated-duration-tokens: task separated-parent: refuted (completed; as expected), receipt receipts/separated-parent/20261120T070138Z-debb0fa2/result.json",
+        "326-commons-lang-separated-duration-tokens: running task separated-fix (target route)",
+        "326-commons-lang-separated-duration-tokens: task separated-fix: established (completed; as expected), receipt receipts/separated-fix/20261120T070147Z-76283de0/result.json",
+        "326-commons-lang-separated-duration-tokens: running task quoting-parent (target route)",
+        "326-commons-lang-separated-duration-tokens: task quoting-parent: established (completed; as expected), receipt receipts/quoting-parent/20261120T070200Z-84c73685/result.json",
+        "326-commons-lang-separated-duration-tokens: running task quoting-fix (target route)",
+        "326-commons-lang-separated-duration-tokens: task quoting-fix: established (completed; as expected), receipt receipts/quoting-fix/20261120T070202Z-98d32fb2/result.json",
+        "326-commons-lang-separated-duration-tokens: running task adjacent-parent (target route)",
+        "326-commons-lang-separated-duration-tokens: task adjacent-parent: established (completed; as expected), receipt receipts/adjacent-parent/20261120T070204Z-2a3785d9/result.json",
+        "326-commons-lang-separated-duration-tokens: running task adjacent-fix (target route)",
+        "326-commons-lang-separated-duration-tokens: task adjacent-fix: established (completed; as expected), receipt receipts/adjacent-fix/20261120T070209Z-a96d8081/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6ca9e5c39135690d346129d11d8b655333a02fb7db79ed7bb571c916f71f6538",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/plan.json",
+      "change": "added",
+      "bytes": 50033,
+      "sha256": "9bacc12a2ec5bafee4709efaf528c07b720fa33930eb77fa5255d5784afd543a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 10079,
+      "sha256": "3b75abc56b8fe5b2d54e9f4766f3189b83109b9592d6c5d090b79b517c951517",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/controls.json",
+      "change": "added",
+      "bytes": 28567,
+      "sha256": "63623a50d14bcfed8dc693dada8ed4df45fc8b97460b47853586621a6f649dd2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/execution.json",
+      "change": "added",
+      "bytes": 69411,
+      "sha256": "031abfa5cc609c27d4797ef6239ecc06c7190c3dcc59e9100381cf7c9846cda2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "5f6b6251345bf80710e3d2694f2b2692553654ec30d76e25c7128a5d2de5f961",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 576,
+      "sha256": "9baa586f270004d6573fee191445a1320c4d6c7c78d61284a59139905bac6f1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/verifier.json",
+      "change": "added",
+      "bytes": 38128,
+      "sha256": "b414fc6d28cc7d6bce83d1f1a375fde69cca34a9d4ebb7aec7326bce7c3c62ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6506,
+      "sha256": "10c5256bfb5c7d2be562a12069b539ec19be9ac36bbd3cb691218d14aa303abc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/result.json",
+      "change": "added",
+      "bytes": 18906,
+      "sha256": "f1627f74ab884ce5aa9267bc884944d6fa55711e11794c318d0e70baf39ed4bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/executions/20261120T070138Z-debb0fa2/attempt.json",
+      "change": "added",
+      "bytes": 51511,
+      "sha256": "553c95cbe68b836c7003aeddcd2f9cea2d38e29631bef3609830235f8254783c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/executions/20261120T070138Z-debb0fa2/checker.json",
+      "change": "added",
+      "bytes": 7887,
+      "sha256": "8e6319dea5b7e565d2e3b88c73e7de31da3b11c5c558eb3d037fba3142ba0db6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/executions/20261120T070138Z-debb0fa2/correspondence.json",
+      "change": "added",
+      "bytes": 1282,
+      "sha256": "b07d760d3eb98c3e33abd641dd1e434dd25891c3c7739918dea600a1eaea7a81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/executions/20261120T070138Z-debb0fa2/replay.json",
+      "change": "added",
+      "bytes": 1946,
+      "sha256": "654b07480a1aad7a1c7fb3157827e64e9b29fd8106482f1ba96117788f045fdb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6fb4f10f290e7aa5e26384af3e33ef35287d84d7425ca9b36135a0f7858a7b4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/plan.json",
+      "change": "added",
+      "bytes": 50134,
+      "sha256": "a846b4eb31f0dae045b56b3e4e34730831291451c6fa03fd2c4c064717f4f04f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 10123,
+      "sha256": "379caab9f0cf58f3ab85bfbc4480472504e1e71df08dd43d0a477e9035b62d9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/controls.json",
+      "change": "added",
+      "bytes": 28578,
+      "sha256": "2aac2be9dc8e8c11d43b3aee7eb89f1a074e05342c684f49494f9051633915ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/execution.json",
+      "change": "added",
+      "bytes": 66316,
+      "sha256": "3ba5146486a91606eb8854e60ae458c065366a669269f116ea65ef7c4db28543",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "d2a559f117cd2315b7c56b7a5431eb89f19db9c4b8493bb4e9799726adf77066",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 303,
+      "sha256": "6754bc91fcd2c0135064a489db9e29147c390fc4be96580d4e5f92a0048a9d9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/verifier.json",
+      "change": "added",
+      "bytes": 37462,
+      "sha256": "feb3b492f2bff69c12d715f31130aba77bbf41e8086812713091de4c9ba5c469",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5961,
+      "sha256": "27963f052e3e76d338769845b58b773c934ad777ca6e3762d236749f4e43850c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/result.json",
+      "change": "added",
+      "bytes": 18002,
+      "sha256": "86e38c01dfe847ee28268706e3be004d152e8c8b9dc8cf09071752a14edf43c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/executions/20261120T070147Z-76283de0/attempt.json",
+      "change": "added",
+      "bytes": 51314,
+      "sha256": "85121b0b5a79f01dfc473f4196770708db799ca7d2c6d13457b296f09f290b09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/executions/20261120T070147Z-76283de0/checker.json",
+      "change": "added",
+      "bytes": 7304,
+      "sha256": "cad10a442c628218458d9b113bb5fff5c4bf8f6d70d3ff66f693e3a4496d2df3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/executions/20261120T070147Z-76283de0/correspondence.json",
+      "change": "added",
+      "bytes": 1276,
+      "sha256": "7ef506f3ae29cb662c0084053acaa638c1f3e57138579d34aff1deea3b182026",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "42ca03576d2b1c7d1b2a4f5eee0e22c0549e750522fb93d01a1fd4a4980e61d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/plan.json",
+      "change": "added",
+      "bytes": 50021,
+      "sha256": "b6decd1abdaa2ad171bf0f4daf3f1f1074650153f74fb71515d6807f5c574f79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 10079,
+      "sha256": "3b75abc56b8fe5b2d54e9f4766f3189b83109b9592d6c5d090b79b517c951517",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/controls.json",
+      "change": "added",
+      "bytes": 28563,
+      "sha256": "b5ae2cd3c56f127e386949493f8db4e39c77396fff3072ab62c32ae46f9deaf9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/execution.json",
+      "change": "added",
+      "bytes": 66385,
+      "sha256": "e3ab33458b6804c521f94de70f809d87da8c46b396d5634cd21499900344db72",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "a16158158488dbd465d369dfee10312adffd1b4b6225a4d62cf733fc616d3583",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 309,
+      "sha256": "aa07c5eefa347123878453182c36f2c9aa0b980ed0fc56ebd6ebf1131b864459",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/verifier.json",
+      "change": "added",
+      "bytes": 37556,
+      "sha256": "c73c724e532fe26a0263eeeed428f21a88eb031d46caa51f55bee48002eaec89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5972,
+      "sha256": "11895bfae46c2f4dd4b814bb867d94643ad9b96c05a90956b23df5803ade5f34",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/result.json",
+      "change": "added",
+      "bytes": 18061,
+      "sha256": "4019fae04dcc20facc5086420a4835e5421a092e473b9720392362c4ca645e99",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/executions/20261120T070200Z-84c73685/attempt.json",
+      "change": "added",
+      "bytes": 51407,
+      "sha256": "3e13dc3bb64705a78bcf6234c6f8c49a7bb9e5b3a064f26183ffa34255d8a2be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/executions/20261120T070200Z-84c73685/checker.json",
+      "change": "added",
+      "bytes": 7329,
+      "sha256": "97832dba640838b6561924bb89aacb1d36729db86ad27660d925e14b5afea612",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/executions/20261120T070200Z-84c73685/correspondence.json",
+      "change": "added",
+      "bytes": 1285,
+      "sha256": "4f5de40bb46163fbe2f5585fb7ed78b05090eb57f0822e141388ccc0ec5cc1cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a275ee44399dc93690d4665754bac0a146ce1e3e50c526e97352be1c7d95a5da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/plan.json",
+      "change": "added",
+      "bytes": 50118,
+      "sha256": "721e83608b4b28c9264e60e4535550f655b5d380503e70e25a4ad672ce357528",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 10123,
+      "sha256": "379caab9f0cf58f3ab85bfbc4480472504e1e71df08dd43d0a477e9035b62d9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/controls.json",
+      "change": "added",
+      "bytes": 28574,
+      "sha256": "a2280bb8dcf613725821899a467b2b3e0a68731e2b9a3a7ddf61b30a491fd03e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/execution.json",
+      "change": "added",
+      "bytes": 66346,
+      "sha256": "78dd1150ebc643f5feeed39b5c2256f4cba832ae845ff230da61684bc4a4b133",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "51e38cccf7c8af1ab2b9751a9a3132a7592c1e8c4971262584fc0e4b63396f6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 309,
+      "sha256": "21f1e09bd22b2cde6c885d06c1d4deaa71febedc77cf4cf2e8813f8055161c98",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/verifier.json",
+      "change": "added",
+      "bytes": 37488,
+      "sha256": "d59625f2854d3a08781d65da5f7f1aef78bc4a150cf0c16eef1896427a8a0e56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5972,
+      "sha256": "8e8e301bed6e27c7bd4284f8f2c251088a13cecc280e21d444b29dd7970d17e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/result.json",
+      "change": "added",
+      "bytes": 18002,
+      "sha256": "c3f1a7ffc387a9ea9d042637e3224a453cd1a2e3d0392884e0b5cbaa730f8e52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/executions/20261120T070202Z-98d32fb2/attempt.json",
+      "change": "added",
+      "bytes": 51329,
+      "sha256": "90d29bcd5af05bf26d53d91972f39772dc52d05f4b62f01d821107d6a8b014bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/executions/20261120T070202Z-98d32fb2/checker.json",
+      "change": "added",
+      "bytes": 7318,
+      "sha256": "636e8d194f935f60bf577063eeaf00d48a4c1662c175f4fce1a7d7f1e1e2e0a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/executions/20261120T070202Z-98d32fb2/correspondence.json",
+      "change": "added",
+      "bytes": 1279,
+      "sha256": "3bfcc06e33293d3a99dd6bc38fb37b60c731150afe49c604a0571379ee0d1fb6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "87fba402e6a476244957a5ca73cca3711907dc14393c002ec25cc44a61986f28",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/plan.json",
+      "change": "added",
+      "bytes": 50026,
+      "sha256": "47429be916eca901dc6778fb4132adc82066bb2c22eb1941ab47e242b6893b1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 10079,
+      "sha256": "3b75abc56b8fe5b2d54e9f4766f3189b83109b9592d6c5d090b79b517c951517",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/controls.json",
+      "change": "added",
+      "bytes": 28565,
+      "sha256": "e161cd54a2d927880fa763e8ab2cf5e210d13ba03b6cada770322d3cef8cf03b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/execution.json",
+      "change": "added",
+      "bytes": 66357,
+      "sha256": "677d29d5fb43f0637b0bcad8847135e0fc7d2f168aa9193b0e74a9da94632b12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "fd7103605902002ba91e4db99373dafd4c94f03285b2ebe640480f58faf179ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 304,
+      "sha256": "003f89c13180bfab00234895b7a325fb6cca6524b25b867ce36ce62a9bc839ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/verifier.json",
+      "change": "added",
+      "bytes": 37530,
+      "sha256": "b86768ff5e47371c226f145c3f5e116655e16f901629babf350ad8abe2f1aa74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5963,
+      "sha256": "54c314ad18cd92bae680a2ab5f11ffafbd392e5eaf4ae89e9650d1be04ad0f8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/result.json",
+      "change": "added",
+      "bytes": 18058,
+      "sha256": "1c9b4401dbd94a8a8465ec465b99bd872837be5d1c50c61ef6332b78249d2e36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/executions/20261120T070204Z-2a3785d9/attempt.json",
+      "change": "added",
+      "bytes": 51389,
+      "sha256": "284146b8551537d17d5b6ca7496faaf51ef877c2b01b68ec6f6d7abac667f461",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/executions/20261120T070204Z-2a3785d9/checker.json",
+      "change": "added",
+      "bytes": 7318,
+      "sha256": "bce00f2c269e39210e5cb431b10d080b9334d0ce44ab1b8dc3078ed2e3dcaaa4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/executions/20261120T070204Z-2a3785d9/correspondence.json",
+      "change": "added",
+      "bytes": 1282,
+      "sha256": "b07d760d3eb98c3e33abd641dd1e434dd25891c3c7739918dea600a1eaea7a81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "02171b5e6262861402151f746a009d3ae1e56dc4d39bba4e62cf8907596d09a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/plan.json",
+      "change": "added",
+      "bytes": 50123,
+      "sha256": "031ab3d7d88f89aead2f381dbc948c74ec667489bcc913156d1ab6834dfd6169",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 10123,
+      "sha256": "379caab9f0cf58f3ab85bfbc4480472504e1e71df08dd43d0a477e9035b62d9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/controls.json",
+      "change": "added",
+      "bytes": 28576,
+      "sha256": "ab760a982ad2a61ef40f60b2c0845ff4610a6e23f475aafb99e023839a0b4b9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/execution.json",
+      "change": "added",
+      "bytes": 66318,
+      "sha256": "574856875001c3565954304b2d9811aafa263d2f956534c19319fb7ea5ae77f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "16ffa4e132fe1aa51c9ff249f862b3909c4612ae97c85da139075844939271db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 304,
+      "sha256": "bcc5bb279cb3e24442fec501851652afe7725aa0a84f68b3848099a24e3fc5f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/verifier.json",
+      "change": "added",
+      "bytes": 37462,
+      "sha256": "b7d502477bac02d130aa7c75a151751ad35f754a7c31bb03d59b9374f2bd09de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5964,
+      "sha256": "f122a82078ce46fe02fc280e6798d2163ebd981300c7544caa2d31f826e932be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/result.json",
+      "change": "added",
+      "bytes": 17999,
+      "sha256": "439290b24169b1002694eed6781217df742418c2fb181b1b3ed00f618f4ece62",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/executions/20261120T070209Z-a96d8081/attempt.json",
+      "change": "added",
+      "bytes": 51310,
+      "sha256": "60cca8f23ced2715e010c2fa18b4ee1b296f132e86fc2f230bc3afba8d14ea56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/executions/20261120T070209Z-a96d8081/checker.json",
+      "change": "added",
+      "bytes": 7307,
+      "sha256": "4ded1de28aa301dc319955f8bab28df248bc2085575afd6ca27afef7c2bc0916",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/executions/20261120T070209Z-a96d8081/correspondence.json",
+      "change": "added",
+      "bytes": 1276,
+      "sha256": "7ef506f3ae29cb662c0084053acaa638c1f3e57138579d34aff1deea3b182026",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T07:03:39+00:00",
+    "applied": [
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/completion.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/plan.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/control-parent-jdk21.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/control-parent-jdk21.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/controls.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/execution.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/streams.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/verifier-output.txt",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/verifier.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/verifier.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/records/verifier.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/20261120T070138Z-debb0fa2/result.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/executions/20261120T070138Z-debb0fa2/attempt.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/executions/20261120T070138Z-debb0fa2/checker.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/executions/20261120T070138Z-debb0fa2/correspondence.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-parent/executions/20261120T070138Z-debb0fa2/replay.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/completion.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/plan.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/control-fix-jdk21.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/control-fix-jdk21.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/controls.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/execution.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/streams.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/verifier-output.txt",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/verifier.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/verifier.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/records/verifier.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/20261120T070147Z-76283de0/result.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/executions/20261120T070147Z-76283de0/attempt.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/executions/20261120T070147Z-76283de0/checker.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/separated-fix/executions/20261120T070147Z-76283de0/correspondence.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/completion.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/plan.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/control-parent-jdk21.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/control-parent-jdk21.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/controls.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/execution.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/streams.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/verifier-output.txt",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/verifier.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/verifier.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/records/verifier.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/20261120T070200Z-84c73685/result.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/executions/20261120T070200Z-84c73685/attempt.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/executions/20261120T070200Z-84c73685/checker.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-parent/executions/20261120T070200Z-84c73685/correspondence.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/completion.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/plan.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/control-fix-jdk21.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/control-fix-jdk21.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/controls.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/execution.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/streams.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/verifier-output.txt",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/verifier.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/verifier.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/records/verifier.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/20261120T070202Z-98d32fb2/result.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/executions/20261120T070202Z-98d32fb2/attempt.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/executions/20261120T070202Z-98d32fb2/checker.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/quoting-fix/executions/20261120T070202Z-98d32fb2/correspondence.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/completion.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/plan.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/control-parent-jdk21.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/control-parent-jdk21.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/controls.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/execution.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/streams.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/verifier-output.txt",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/verifier.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/verifier.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/records/verifier.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/20261120T070204Z-2a3785d9/result.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/executions/20261120T070204Z-2a3785d9/attempt.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/executions/20261120T070204Z-2a3785d9/checker.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-parent/executions/20261120T070204Z-2a3785d9/correspondence.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/completion.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/plan.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/control-fix-jdk21.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/control-fix-jdk21.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/controls.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/execution.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/streams.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/verifier-output.txt",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/verifier.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/verifier.stderr",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/records/verifier.stdout",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/20261120T070209Z-a96d8081/result.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/executions/20261120T070209Z-a96d8081/attempt.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/executions/20261120T070209Z-a96d8081/checker.json",
+      "examples/326-commons-lang-separated-duration-tokens/receipts/adjacent-fix/executions/20261120T070209Z-a96d8081/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1730228,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "87086ea8bdaee76cf45937aa16cd2b89701f1461",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/87086ea8bdaee76cf45937aa16cd2b89701f1461/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}
