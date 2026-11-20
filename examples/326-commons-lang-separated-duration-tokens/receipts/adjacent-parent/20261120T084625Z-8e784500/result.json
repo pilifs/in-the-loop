@@ -1,0 +1,532 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "230977646c544499",
+    "format": 1,
+    "example": "326",
+    "statement": {
+      "approach": "target",
+      "task": "adjacent-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.time.DurationFormatUtils#formatDuration(JLjava/lang/String;Z)Ljava/lang/String;",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "adjacent-parent",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.lang3.time.DurationFormatUtils#formatDuration(JLjava/lang/String;Z)Ljava/lang/String;",
+        "file": "claims/adjacent.json",
+        "sha256": "3e3b121a43a7c24cdfc63332c185c0a2f74547e665b635d46cdcfa379cde3b23",
+        "property": "adjacent",
+        "claimKind": "property",
+        "statement": "The returned characters satisfy the adjacent hour-token claim.",
+        "assume": "code >= 0 && code < 78 && code % 3 == 2",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 45,
+          "maxArrayLength": 12
+        },
+        "explicitBounds": {
+          "unwind": 45,
+          "maxArrayLength": 12
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/durationgrid/Cases.java",
+            "sha256": "ae460472aaf71afa919eadf828b5e29ace696ab7520ffca6b4bf1e042a614e18"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "d0808591ea19d10150d8a579f18cfe9f95d23ddd621ba09445345ae004f3ef39"
+          }
+        ],
+        "adapter": {
+          "entry": "durationgrid.Projection#text(I)I",
+          "mapping": "Code enumerates 0 through 12 whole hours, both padding settings and the three raw patterns HxH, H'x'H and HH. The adapter passes each pattern to the public lexer. Quoting compares the two separated patterns on the same hour and padding.",
+          "correspondence": "finite-oracle",
+          "cases": 78
+        },
+        "key": "556a1a4a59b3bc3d"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 12
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "adjacent-parent",
+      "sidecar": "664ab68e10e51fbb99274423ba2fc43dc7e71a4ce0adceacb1187f7992c1bb5d",
+      "revisions": {
+        "parent": "1d3a74622d000b86cd2a9aa5962ffea5c7bc0ff9"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "90720b9655976b0df65a86d99231bebe636b6da986caa7ade491c5e584751c09"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "6be55a9a9d21efc84f0e71569d634cb975c5acd5c17bebc44125974600b02cbd"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "69b2cc257f3393b07cd0f847e853378d83a536bf89c4bb61ecc760cdf9f43ee4"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/durationgrid/Projection.java": "e94bd0230464617220798d562f57e30373783701be0d6bad8e803960b4927001",
+        "claims/adjacent.json": "3e3b121a43a7c24cdfc63332c185c0a2f74547e665b635d46cdcfa379cde3b23",
+        "controls/table.json": "d0808591ea19d10150d8a579f18cfe9f95d23ddd621ba09445345ae004f3ef39",
+        "driver/durationgrid/Cases.java": "ae460472aaf71afa919eadf828b5e29ace696ab7520ffca6b4bf1e042a614e18"
+      },
+      "claimKey": "556a1a4a59b3bc3d",
+      "scopes": {
+        "parent": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261120T084625Z-8e784500",
+    "claim": "230977646c544499",
+    "startedAt": "2026-11-20T08:46:25+00:00",
+    "seconds": 3.5,
+    "engine": "native",
+    "options": [
+      "prove",
+      "durationgrid.Projection#text(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/slice/parent.jar",
+      "--assume",
+      "code >= 0 && code < 78 && code % 3 == 2",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "45",
+      "--max-array-length",
+      "12",
+      "--timeout",
+      "30",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "839479e49d3d5a79c622ed624d1e3a100a20f450989d3af26d018f67365f1e51"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "92cc08e1734f9a2c9e3ccf79c4e5af13b21faeb4cb6d550144e2a06e0d8a3370",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-083146-repeat-the-real-duration-lexer-and-callb",
+      "sourceCommit": "ad84ac4c2aa6105fc936609f2433d3a3dbd70e52",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-083146-repeat-the-real-duration-lexer-and-callb"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 3.449,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 45,
+      "maxArrayLength": 12,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "230977646c544499",
+    "attempt": "20261120T084625Z-8e784500",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 78 && code % 3 == 2",
+          "verdict": "verified",
+          "domain": "code: int",
+          "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 3.2 s; loops unwound 45 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 3.222,
+            "properties": 1,
+            "unwind": 45,
+            "maxArrayLength": 12,
+            "stage": null,
+            "deadlineSeconds": 30.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 30.0,
+                "seconds": 3.143,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.003,
+                  "lowering": 0.0,
+                  "symbolic": 0.175,
+                  "encoding": 0.489,
+                  "solving": 2.476,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 177906,
+                  "clauses": 1
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 26.778,
+                "seconds": 0.185,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.178,
+                  "solving": 0.003,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 102,
+                  "clauses": 1
+                }
+              }
+            ],
+            "native": {
+              "paths": 29,
+              "merges": 0,
+              "solverCalls": 209,
+              "solvingSeconds": 2.47585225,
+              "gatesEvaluated": 102774,
+              "evaluatingSeconds": 0.104580546,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "wordOperations": 5610,
+              "finiteQueries": {
+                "diagrams": 0,
+                "bitwuzla": 209
+              },
+              "variables": 177906,
+              "clauses": 1,
+              "seconds": 3.142567528,
+              "loadingSeconds": 0.002887424,
+              "decodingSeconds": 0.000316413,
+              "encodingSeconds": 0.488524812,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 78 && code % 3 == 2",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 45,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found text(code=20).",
+              "witness": "text(code=20)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 3.2 s; loops unwound 45 times with unwinding assertions",
+    "problem": null,
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 78 && code % 3 == 2"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 78 && code % 3 == 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 45,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found text(code=20).",
+        "witness": "text(code=20)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "126a220263038a2a122d9dd5147ec8ab1ff2e20a9ea4ff38b066563063c744f3",
+        "bytes": 66006
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "22523bb2103b31ef725cfa50b923d2e5dfee921b1384ca4cf14dfabfb3a12b67",
+        "bytes": 304
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "843df00f0434a5a74fbfe14a9e85ebc089a44aef220cd21c8732a52cd9485bbb",
+        "bytes": 1971
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "3b75abc56b8fe5b2d54e9f4766f3189b83109b9592d6c5d090b79b517c951517",
+        "bytes": 10079
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "e6bc3565a104bd41533d7fd2e1d6418544f70dcc1a2784641f8f2a8572eac60c",
+        "bytes": 28565
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "796b561662804319de183b653e01efb79ac963f086425b7d8a67952c1838498c",
+        "bytes": 5964
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "33272f70a0e6c24a9642b3908156e3d42133fe9b321c3383d2713804d3c20b11",
+        "bytes": 37195
+      }
+    ]
+  }
+}

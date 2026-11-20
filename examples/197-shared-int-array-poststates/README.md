@@ -31,3 +31,5 @@ The fast-follow regression repeated the original native tasks at array bound two
 The numerical checker repeated all three original native verdicts. The reference and skipped-write JVM grids had the same digests as the preceding 71-heap run. [Array-root regression](../../verification/results/20261120-053727-confirm-both-array-roots-after-the-numer/result.json)
 
 The language and list changes retained the three original array-root results at unwind eight and array bound two. All 71 direct heaps on each revision have the prior JVM stream digests. Both distinct poststate witnesses reproduced. [Verification job](../../verification/results/20261120-065325-confirm-shared-array-poststates-after-ch/result.json)
+
+After the JDK map, reader and stream changes, all three original 197 outcomes were rechecked at array bound 2 and unwind 8. Both wrong poststates reproduced independently and all 71 direct JVM rows on each side retained their original hashes. [Final three-claim job](../../verification/results/20261120-083146-recheck-the-two-array-roots-after-sequen/result.json)

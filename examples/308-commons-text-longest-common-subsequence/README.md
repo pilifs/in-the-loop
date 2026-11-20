@@ -32,3 +32,5 @@ A second strict release run took 0.997 seconds and 78.7 MiB. The complete checke
 The numerical checker proved the released score in 0.663 s at 78.1 MiB peak RSS. The release and rebuild agreed on all 225 pairs, and the shared-row control disagreed on 44. [Raw checker output](records/numeric-checker-native.json) · [JVM comparison](records/numeric-checker-transfer.json)
 
 The language and list changes retained the strict release-score proof at unwind 18 and array bound four in 0.639 s with 79.1 MiB peak RSS. The release and rebuild agreed on 225 pairs each and the shared-row control disagreed on 44. [Verification job](../../verification/results/20261120-065325-confirm-commons-text-lcs-after-character/result.json)
+
+The stream checker re-proved the released Commons Text score at array bound 4 and unwind 18 in 0.628 s with 77.6 MiB peak RSS. The release and rebuilt source agreed on all 225 pairs and the shared-row control disagreed on 44. [Checker and transfer measurement](records/stream-checker-transfer.json)

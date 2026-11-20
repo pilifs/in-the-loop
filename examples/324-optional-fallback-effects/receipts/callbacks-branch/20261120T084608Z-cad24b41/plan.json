@@ -1,0 +1,190 @@
+{
+  "plan": {
+    "example": "324",
+    "task": "callbacks-branch",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+    "revisions": [
+      "branch"
+    ],
+    "claim": {
+      "task": "callbacks-branch",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "file": "claims/callbacks.json",
+      "sha256": "9630667d2a6c244a484707fb5bfcb8f30072410eecd148a6e4f41ea6c91c5208",
+      "property": "callbacks",
+      "claimKind": "property",
+      "statement": "The concrete fallback runs once for empty and zero times for a present value.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/optionalgrid/Cases.java",
+          "sha256": "b03b82723ab952507506cc62cd524f9fafd0dff34f289b11763019fca16cc92b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d8c14334f1b946ada2729005ec3663a188fbf9b1f0d60a42afdb035224190066"
+        }
+      ],
+      "adapter": {
+        "entry": "optionalgrid.Projection#callbacks(I)I",
+        "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "fd17da09f7be85db"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "branch",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "branch",
+        "adapters": [
+          "adapter/optionalgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/callbacks-branch"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-083146-repeat-lazy-optional-callback-and-eager/examples/324-optional-fallback-effects",
+    "network": false
+  },
+  "inputs": {
+    "example": "324",
+    "task": "callbacks-branch",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+    "revisions": [
+      "branch"
+    ],
+    "claim": {
+      "task": "callbacks-branch",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "file": "claims/callbacks.json",
+      "sha256": "9630667d2a6c244a484707fb5bfcb8f30072410eecd148a6e4f41ea6c91c5208",
+      "property": "callbacks",
+      "claimKind": "property",
+      "statement": "The concrete fallback runs once for empty and zero times for a present value.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/optionalgrid/Cases.java",
+          "sha256": "b03b82723ab952507506cc62cd524f9fafd0dff34f289b11763019fca16cc92b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d8c14334f1b946ada2729005ec3663a188fbf9b1f0d60a42afdb035224190066"
+        }
+      ],
+      "adapter": {
+        "entry": "optionalgrid.Projection#callbacks(I)I",
+        "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "fd17da09f7be85db"
+    },
+    "artifacts": [
+      {
+        "revision": "branch",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "branch",
+        "adapters": [
+          "adapter/optionalgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/optionalgrid/Projection.java",
+        "sha256": "3f11da5f5bfd6e23b151b8c595337811ae76da13e7b6d9943dfc1784b763fc95"
+      }
+    ]
+  },
+  "key": "9e90e7bd8bbb02b78f844f8449b6c6ae2eb658fa42d4e35bc3d9a55b5a9082d9"
+}
