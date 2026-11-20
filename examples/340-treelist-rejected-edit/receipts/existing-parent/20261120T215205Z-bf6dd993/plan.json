@@ -1,0 +1,230 @@
+{
+  "plan": {
+    "example": "340",
+    "task": "existing-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "existing-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "file": "claims/existing.json",
+      "sha256": "13a4f7b72eb91e667350bf5448fc70739d06734c667203e6b6f2efc3f3eb7d41",
+      "property": "existing",
+      "claimKind": "property",
+      "statement": "On a rejected indexed operation the existing iterator returns the original first element.",
+      "assume": "code >= 0 && code < 112",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 16
+      },
+      "explicitBounds": {
+        "unwind": 48,
+        "maxArrayLength": 16
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/trees/TreeCases.java",
+          "sha256": "9819bbc2d7a44d5d62da8acab7ad6ff440d0faf7e43387fc8f2438daf6e382c7"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "a9175b3282dca1e4af1b57d724a8a88c646976192ca7263ab926ed47fc94ac5d"
+        }
+      ],
+      "adapter": {
+        "entry": "trees.Projection#existing(I)I",
+        "cases": 112,
+        "correspondence": "finite-oracle",
+        "mapping": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit."
+      },
+      "key": "a52f59e99bd5329f"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-collections",
+        "commit": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/builds/parent.json",
+          "sha256": "064c272ec7f8d0e82e98ffcb6db7b5e227fe9a90ffe7cd36ef704c6d834aec25"
+        },
+        "adapters": [
+          "adapter/trees/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/existing-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213849-340-recheck-rejected-edits-with-inherite/examples/340-treelist-rejected-edit",
+    "network": true
+  },
+  "inputs": {
+    "example": "340",
+    "task": "existing-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "existing-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "file": "claims/existing.json",
+      "sha256": "13a4f7b72eb91e667350bf5448fc70739d06734c667203e6b6f2efc3f3eb7d41",
+      "property": "existing",
+      "claimKind": "property",
+      "statement": "On a rejected indexed operation the existing iterator returns the original first element.",
+      "assume": "code >= 0 && code < 112",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 16
+      },
+      "explicitBounds": {
+        "unwind": 48,
+        "maxArrayLength": 16
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/trees/TreeCases.java",
+          "sha256": "9819bbc2d7a44d5d62da8acab7ad6ff440d0faf7e43387fc8f2438daf6e382c7"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "a9175b3282dca1e4af1b57d724a8a88c646976192ca7263ab926ed47fc94ac5d"
+        }
+      ],
+      "adapter": {
+        "entry": "trees.Projection#existing(I)I",
+        "cases": 112,
+        "correspondence": "finite-oracle",
+        "mapping": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit."
+      },
+      "key": "a52f59e99bd5329f"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-collections",
+        "commit": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/builds/parent.json",
+          "sha256": "064c272ec7f8d0e82e98ffcb6db7b5e227fe9a90ffe7cd36ef704c6d834aec25"
+        },
+        "adapters": [
+          "adapter/trees/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/trees/Projection.java",
+        "sha256": "effcf2fd5603728001504ef305624693ba20d0f9d3af5d3d77ac58b80394265b"
+      }
+    ]
+  },
+  "key": "8644c32ae8583cee9207ee462468f928c7f56f06526de3042f39d1d4d4f2e2db"
+}

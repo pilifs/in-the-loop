@@ -1,0 +1,1251 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-213849-340-recheck-rejected-edits-with-inherite",
+  "title": "340 recheck rejected edits with inherited AbstractList dispatch",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.4s, peak 154.6 MiB (estimated 4m00s, 2.0 GiB); 121 output file(s) changed; signals: example:task-as-expected×8",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-213849-340-recheck-rejected-edits-with-inherite.json",
+    "sha256": "09098bb88d42b032bd5c6b09eff84ce4788a7b3421176bb306f9f239c153175b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-213849-340-recheck-rejected-edits-with-inherite",
+      "title": "340 recheck rejected edits with inherited AbstractList dispatch",
+      "description": "Run the same 112 rejected add/remove and pre-existing iterator scenarios on the two full TreeList JARs after linking inherited abstract-list operations.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "340"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T21:38:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 340 --tasks exception-parent,contents-parent,existing-parent,fresh-parent,exception-fix,contents-fix,existing-fix,fresh-fix --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/340-treelist-rejected-edit/receipts/exception-parent",
+        "examples/340-treelist-rejected-edit/receipts/contents-parent",
+        "examples/340-treelist-rejected-edit/receipts/existing-parent",
+        "examples/340-treelist-rejected-edit/receipts/fresh-parent",
+        "examples/340-treelist-rejected-edit/receipts/exception-fix",
+        "examples/340-treelist-rejected-edit/receipts/contents-fix",
+        "examples/340-treelist-rejected-edit/receipts/existing-fix",
+        "examples/340-treelist-rejected-edit/receipts/fresh-fix"
+      ]
+    }
+  },
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "startedAt": "2026-11-20T21:51:57+00:00",
+  "finishedAt": "2026-11-20T21:52:12+00:00",
+  "wallSeconds": 15.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1837703,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 162107392,
+    "wallSeconds": 9.4,
+    "cpuSeconds": 12.8,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 340 --tasks exception-parent,contents-parent,existing-parent,fresh-parent,exception-fix,contents-fix,existing-fix,fresh-fix --checker-seconds 90",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 9.416,
+      "cpuSeconds": 12.833,
+      "cpuThrottledSeconds": 0.622,
+      "peakMemoryBytes": 162107392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 16,
+        "bytes": 1796,
+        "sha256": "b77a0c1ba540c9a060e4afdaa422d8ea0477391a5b3103a5b98366d9805aec30",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 8
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "340-treelist-rejected-edit: task exception-parent: established (completed; as expected), receipt receipts/exception-parent/20261120T215202Z-95ad8b93/result.json",
+          "groups": [
+            "340",
+            "exception-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "340-treelist-rejected-edit: task contents-parent: established (completed; as expected), receipt receipts/contents-parent/20261120T215205Z-2d6be2cc/result.json",
+          "groups": [
+            "340",
+            "contents-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "340-treelist-rejected-edit: task existing-parent: refuted (completed; as expected), receipt receipts/existing-parent/20261120T215205Z-bf6dd993/result.json",
+          "groups": [
+            "340",
+            "existing-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "340-treelist-rejected-edit: task fresh-parent: established (completed; as expected), receipt receipts/fresh-parent/20261120T215206Z-dc9938df/result.json",
+          "groups": [
+            "340",
+            "fresh-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 10,
+          "text": "340-treelist-rejected-edit: task exception-fix: established (completed; as expected), receipt receipts/exception-fix/20261120T215207Z-78d44ad7/result.json",
+          "groups": [
+            "340",
+            "exception-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "340-treelist-rejected-edit: task contents-fix: established (completed; as expected), receipt receipts/contents-fix/20261120T215209Z-ed99eb3f/result.json",
+          "groups": [
+            "340",
+            "contents-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 14,
+          "text": "340-treelist-rejected-edit: task existing-fix: established (completed; as expected), receipt receipts/existing-fix/20261120T215210Z-7634f175/result.json",
+          "groups": [
+            "340",
+            "existing-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 16,
+          "text": "340-treelist-rejected-edit: task fresh-fix: established (completed; as expected), receipt receipts/fresh-fix/20261120T215210Z-ea7a520d/result.json",
+          "groups": [
+            "340",
+            "fresh-fix",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "340-treelist-rejected-edit: running task exception-parent (target route)",
+        "340-treelist-rejected-edit: task exception-parent: established (completed; as expected), receipt receipts/exception-parent/20261120T215202Z-95ad8b93/result.json",
+        "340-treelist-rejected-edit: running task contents-parent (target route)",
+        "340-treelist-rejected-edit: task contents-parent: established (completed; as expected), receipt receipts/contents-parent/20261120T215205Z-2d6be2cc/result.json",
+        "340-treelist-rejected-edit: running task existing-parent (target route)",
+        "340-treelist-rejected-edit: task existing-parent: refuted (completed; as expected), receipt receipts/existing-parent/20261120T215205Z-bf6dd993/result.json",
+        "340-treelist-rejected-edit: running task fresh-parent (target route)",
+        "340-treelist-rejected-edit: task fresh-parent: established (completed; as expected), receipt receipts/fresh-parent/20261120T215206Z-dc9938df/result.json",
+        "340-treelist-rejected-edit: running task exception-fix (target route)",
+        "340-treelist-rejected-edit: task exception-fix: established (completed; as expected), receipt receipts/exception-fix/20261120T215207Z-78d44ad7/result.json",
+        "340-treelist-rejected-edit: running task contents-fix (target route)",
+        "340-treelist-rejected-edit: task contents-fix: established (completed; as expected), receipt receipts/contents-fix/20261120T215209Z-ed99eb3f/result.json",
+        "340-treelist-rejected-edit: running task existing-fix (target route)",
+        "340-treelist-rejected-edit: task existing-fix: established (completed; as expected), receipt receipts/existing-fix/20261120T215210Z-7634f175/result.json",
+        "340-treelist-rejected-edit: running task fresh-fix (target route)",
+        "340-treelist-rejected-edit: task fresh-fix: established (completed; as expected), receipt receipts/fresh-fix/20261120T215210Z-ea7a520d/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "da66e1fb3be7c173d23f3646f818004f5eacfdd8dfbdfb5a25ba8888764d0070",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/plan.json",
+      "change": "added",
+      "bytes": 6953,
+      "sha256": "0491a6d67a599d182beff45cd9ee9b1eab59e0fd0dae0a6dae25885edee24a0f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 31298,
+      "sha256": "8436fab70a37220d38de35d90e1632cb5b4a5797d6dabb35cb8b8757bf7968f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/controls.json",
+      "change": "added",
+      "bytes": 74179,
+      "sha256": "7ae7d8dc0954be716048e6dbc2416142472889178a84979462da5d73e8d13b3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/execution.json",
+      "change": "added",
+      "bytes": 89349,
+      "sha256": "b46c44207bf26330d9e818a21db997c19f18cb73cc4200c87f0dae5a378a5fab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "52e9a1bbb646652721e3efa484cc554876a2bbd52aeca42447d956e0553a7b1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "9492cbd5befe414f52d0458dd677afa9b8c842f30099e893c578d013442e90f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/verifier.json",
+      "change": "added",
+      "bytes": 15070,
+      "sha256": "01c12a60a7f45e4efa3dd86e3cc0981bdbb06ab97d5b88e75671c7bdc3c0ee6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5273,
+      "sha256": "60d640fcdf8c5d8996c6be14c31a22fd6a305d24067655947b52f5f1ab93e973",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/result.json",
+      "change": "added",
+      "bytes": 16981,
+      "sha256": "7c98d07292abd9a424359419244d586f662b6d881e360fe35f74dec0130ef001",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/executions/20261120T215202Z-95ad8b93/attempt.json",
+      "change": "added",
+      "bytes": 12602,
+      "sha256": "fecad98da52daa6f89a3f4542627a613422ffaeb46ea167d6912a6988cbef3b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/executions/20261120T215202Z-95ad8b93/checker.json",
+      "change": "added",
+      "bytes": 6728,
+      "sha256": "694c79245dc32617289b1fedf0bb54eb0d91381ee466369560396575067461fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-parent/executions/20261120T215202Z-95ad8b93/correspondence.json",
+      "change": "added",
+      "bytes": 1666,
+      "sha256": "f98a18074dfdca4ed6837f70e87a9cc75fc1a18f97c8af2ea4c12c85c1de30cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e3c538bc9a72c5d9918c099ee8dd55f4633115e08024c7516ff80195acf62ab9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/plan.json",
+      "change": "added",
+      "bytes": 6938,
+      "sha256": "06f9661478a8cb65738c0633f1208a1d04c0d1204aa9d99ae1450097e128ec54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 31298,
+      "sha256": "8436fab70a37220d38de35d90e1632cb5b4a5797d6dabb35cb8b8757bf7968f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/controls.json",
+      "change": "added",
+      "bytes": 74177,
+      "sha256": "559800ee0ce4445fd1a0c9138f59daca8b0ab49ced47a0a665f72f64103839b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/execution.json",
+      "change": "added",
+      "bytes": 89339,
+      "sha256": "e9e6ff3da624157cbd8178e32d6d991c0cc8f95f2e7bc625b2d070ff24b6e7ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "3e281708fb50452f39a29f74e5cb8d8da180111b57c9937dd147e4b62f2e0cea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "7b7d8b0306f59ec18c644432bdd30e739f77935365bc773c409b038fb47738d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/verifier.json",
+      "change": "added",
+      "bytes": 15058,
+      "sha256": "a6538a9ee8dfb7bc982e1af32f0ac57214827e0455888fcda1c62205cb9a5106",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "d09dda819fd708ac15976a5f21144f5f02143930c2470f7432c8f4fcbe01a94c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/result.json",
+      "change": "added",
+      "bytes": 16970,
+      "sha256": "9b67a7c0f656be705598f17640e088964b539e93d51b55376e5d0bf80b5fc4e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/executions/20261120T215205Z-2d6be2cc/attempt.json",
+      "change": "added",
+      "bytes": 12594,
+      "sha256": "fc7bff930ee96419899772adeffdfe43f004a994de235b5c44707f98f79131dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/executions/20261120T215205Z-2d6be2cc/checker.json",
+      "change": "added",
+      "bytes": 6725,
+      "sha256": "4072c53b8ac2f08bb2cb73e8ec1718b7fc41e94f221da1531237856dde998573",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-parent/executions/20261120T215205Z-2d6be2cc/correspondence.json",
+      "change": "added",
+      "bytes": 1665,
+      "sha256": "6b57565cf3dd1231e9ce029ab4d6065ad1b847c0763b41ad0c76ee861e61064a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8cb4617a8547b69c7dbf17e36464672f2e5bf3365c76ad867818deb8f11d8a8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/plan.json",
+      "change": "added",
+      "bytes": 6952,
+      "sha256": "7c5bfd69f01cff1e7f167e759aa1b04ed324c21e5e878ca93da75263d63f51e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 31298,
+      "sha256": "8436fab70a37220d38de35d90e1632cb5b4a5797d6dabb35cb8b8757bf7968f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/controls.json",
+      "change": "added",
+      "bytes": 74177,
+      "sha256": "ceaa677d891f2bbff3fa0c5d4ab921d6718112ad094bcd9a0c8fbb82f4d229ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/execution.json",
+      "change": "added",
+      "bytes": 92925,
+      "sha256": "7eeb9294d7d62c99c2be98964672746c1e6d872b3cdb93e20189bac307f14357",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "d5c51644e014e125e257c3f0fc5db313e9f3054a77a53f8e400e58993394e329",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 594,
+      "sha256": "119d4617e18082cff62174ecaf47e9d2b59bd2dae641b3143b5841a6ff070a43",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/verifier.json",
+      "change": "added",
+      "bytes": 15884,
+      "sha256": "629d4baedc38b72ff44eab88489705600df389c764dc8623d199f5dd93e7c0f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6013,
+      "sha256": "e1a22d1a91d18932eabedf86e7c89dbb3ad5393fbe1b7ae7d485d3bc9218239a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/result.json",
+      "change": "added",
+      "bytes": 18276,
+      "sha256": "41036f8c2f5abd2b7c71c375802c5651ba5f8607ea543460faf4f5c7ed0bc3e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/executions/20261120T215205Z-bf6dd993/attempt.json",
+      "change": "added",
+      "bytes": 12715,
+      "sha256": "bdae0bf8bdf675dfb7b45fe99ef094cf46348e08e929ccdb24e7d3edf13620a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/executions/20261120T215205Z-bf6dd993/checker.json",
+      "change": "added",
+      "bytes": 7509,
+      "sha256": "594cd39ce5bb8f899f5bc99192f678fe5e24be2173469591424d3a5c7ef661aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/executions/20261120T215205Z-bf6dd993/correspondence.json",
+      "change": "added",
+      "bytes": 1665,
+      "sha256": "dc8bfef0baa1129f8cbb728945db29ed1f87a740300a5645aa8757b3790c81c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-parent/executions/20261120T215205Z-bf6dd993/replay.json",
+      "change": "added",
+      "bytes": 2176,
+      "sha256": "4fde5a808141d8ca97070ff1d53b0d7868e58795939578d1ffa0ec2be6b73d1f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "dbf19ff5cc52f7cd189682f37ab7934abf3ce208811f0fca75f2407e53d9e793",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/plan.json",
+      "change": "added",
+      "bytes": 6917,
+      "sha256": "c546d436e1a2094a0b44f4aba5b801e94d8a558cbdaf9603b58b606f966d55a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 31298,
+      "sha256": "8436fab70a37220d38de35d90e1632cb5b4a5797d6dabb35cb8b8757bf7968f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/controls.json",
+      "change": "added",
+      "bytes": 74171,
+      "sha256": "5fe5248e813c59e892e634d8eec6d0b752cfc07083c24f08a2344d87cb293df9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/execution.json",
+      "change": "added",
+      "bytes": 89300,
+      "sha256": "21b171ddb7e425011bb2cc33616a9d3e78c4165de1b524ae887b84ad013e91f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "c899c0922e5bc3f2d57a780bc8189ee9637242fe04a477d0b240bd3d9fd99290",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "12417d3c69fe96da1bb8314931813ce101727c026e2decf8ffdb9c8f8854f01e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/verifier.json",
+      "change": "added",
+      "bytes": 15013,
+      "sha256": "9a635d235d80bfea77920023888371dcd5ee73375cdbf71471e9c9e8fd527244",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5255,
+      "sha256": "96f527d24a0be7c657d04a20a1e7907d05ce5e8c523f4d4972d9b33bbf14dac9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/result.json",
+      "change": "added",
+      "bytes": 16940,
+      "sha256": "e0364e346c9121c62062cbe44d7d045e10cd8bae179206b27b4f5bbd1c0b2a7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/executions/20261120T215206Z-dc9938df/attempt.json",
+      "change": "added",
+      "bytes": 12569,
+      "sha256": "4afa50c5684fe5ae32febaf2867ed178e28e2473bf1144a92888814d742fb873",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/executions/20261120T215206Z-dc9938df/checker.json",
+      "change": "added",
+      "bytes": 6706,
+      "sha256": "66536c9967beb5200aa268c1e79dac816dd81ce97f6559703bad3783cc345e13",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-parent/executions/20261120T215206Z-dc9938df/correspondence.json",
+      "change": "added",
+      "bytes": 1662,
+      "sha256": "aad8e93e2c91ff99603a3d63cf9aa8bbae5193df9f52686e9e1ae35976d0f121",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0b29e2bcf8100190c0d5376409cbd68a3f733315a37831e51a204151094889b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/plan.json",
+      "change": "added",
+      "bytes": 7044,
+      "sha256": "a619d1c734bc86490e4534227e24f294735917f8a10a2759c995073275680616",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 26706,
+      "sha256": "9c5482cf242a10174c45b782066815038077de98e3be833a3a3a84e0e866bf32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/controls.json",
+      "change": "added",
+      "bytes": 69560,
+      "sha256": "1e2cf9e2926bc8c7503e74a4d015bb3d47bba5c9457e936e40b876cff5c7b3e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/execution.json",
+      "change": "added",
+      "bytes": 84688,
+      "sha256": "8e106504a16a5b86948ebe5d6e9626a22f9151d12330538f619ecd541ceaddcd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "e7a68d54ec0755b50ad17549d4edf30021573eae5032591e060d81fed51cc413",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "7093673b69572169505f1036fcb6b9ab549bd84fb684b53a00ad9cfa97bb63ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/verifier.json",
+      "change": "added",
+      "bytes": 15010,
+      "sha256": "36b4f5dbe485914d76afa5f79c4c7262f6869c7d68c114d14fc2670ccc790ef8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5276,
+      "sha256": "772668913163f43a6d0bb8ec13f6776b2098f758a310d39da6bb236c4fe0e409",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/result.json",
+      "change": "added",
+      "bytes": 16924,
+      "sha256": "f3af025a6ef0ca2d38714a619c2c9bb867536074462c5794796da57f50ff40b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/executions/20261120T215207Z-78d44ad7/attempt.json",
+      "change": "added",
+      "bytes": 12535,
+      "sha256": "1bbf8c76e9fa6ed6bc93cc1c6fa921f2a385e5a6e2685ad4bb26dfd400461841",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/executions/20261120T215207Z-78d44ad7/checker.json",
+      "change": "added",
+      "bytes": 6719,
+      "sha256": "522aed6fe288f2c92c7a45474cc2bb14dad8d2b3b942ce8e198b7bb306384a3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/exception-fix/executions/20261120T215207Z-78d44ad7/correspondence.json",
+      "change": "added",
+      "bytes": 1663,
+      "sha256": "7f9cc59f7b87547faf9dfe659830b804dcfca57517b50a2e84ae925c408efcc0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d6fb8ddbe19b3980c106d6bb2933ed45322583f0773e917f774c4c42c49da6e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/plan.json",
+      "change": "added",
+      "bytes": 7029,
+      "sha256": "8539aff19e974c74795d5ad69045aca6f545a31171cd3b40601c01268f353b64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 26706,
+      "sha256": "9c5482cf242a10174c45b782066815038077de98e3be833a3a3a84e0e866bf32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/controls.json",
+      "change": "added",
+      "bytes": 69558,
+      "sha256": "a752fd7b204251160b679a01830983d87bae8a86f291b83799d405fbbffc0848",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/execution.json",
+      "change": "added",
+      "bytes": 84676,
+      "sha256": "679e0b6673aae325c21006b7a63192f44aa122f1e1076feeb7e4f3000abf124f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "3d6f32540722d8514e67124491facad8e6fcf0d55ededcb206fe220655d67085",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "a85d22f49da5b71fdddf9776019d8a912d9bb0a5d79cdf4594ce504c04926f9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/verifier.json",
+      "change": "added",
+      "bytes": 14996,
+      "sha256": "33bb478a4f0d9a15861f782faed1c4780e3bc125bf6246f962e2d4821adf2157",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5271,
+      "sha256": "72dfbc67294fa05dce886150b9dd95e741b12faa64f2e019207366d415ca55a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/result.json",
+      "change": "added",
+      "bytes": 16910,
+      "sha256": "1da2fce260cde2b1bdf95d6e633b83bf5b39b9d6530de48984d5199591f11701",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/executions/20261120T215209Z-ed99eb3f/attempt.json",
+      "change": "added",
+      "bytes": 12528,
+      "sha256": "c7d14612fde27b4bee578a3240b0fe3197fe630f51078bd9b13fdf2d4c37e2dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/executions/20261120T215209Z-ed99eb3f/checker.json",
+      "change": "added",
+      "bytes": 6713,
+      "sha256": "8d108db101cb17abed65a873f75eb8e763a89673097b9a6fb0215f87336ff5b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/contents-fix/executions/20261120T215209Z-ed99eb3f/correspondence.json",
+      "change": "added",
+      "bytes": 1662,
+      "sha256": "b84ef0b93d305c34aa65ae35d03282d86a5c5044b01e1817c614403f5ee7c173",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6de5f0b9d1df5c52fdec7a90bce555f6148131e893b355d6c7cc7d2df40509df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/plan.json",
+      "change": "added",
+      "bytes": 7047,
+      "sha256": "37f6d0da4ad8f69e43c018cef48c28902ada610a218de07f919ab8b4a68fe981",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 26706,
+      "sha256": "9c5482cf242a10174c45b782066815038077de98e3be833a3a3a84e0e866bf32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/controls.json",
+      "change": "added",
+      "bytes": 69558,
+      "sha256": "1cd02417e8235171b757958b93bc807f1fb1b4ef57ef6e4c295de9943013de67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/execution.json",
+      "change": "added",
+      "bytes": 84675,
+      "sha256": "b49ed7e9618aec3c043ac518157fafaececd792933f72d93cdd5df02bebce314",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "3c154b34e801ce39cc0a8003aa5ce9d7efb276ed6c4631d940817ef0773a9892",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "a9419b92b027c6761cb228b80175c5b83d27acb7b1426f1b4d36dc046af3f53c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/verifier.json",
+      "change": "added",
+      "bytes": 14995,
+      "sha256": "338a20ee602d196b9164e9d8df2ba2e011f933335578f1d5d2e8fb4ca3be0d68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5270,
+      "sha256": "20ab2aba55584c578e7cf444ad894b923aff9c86979249e779181329cfd4c981",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/result.json",
+      "change": "added",
+      "bytes": 16918,
+      "sha256": "97275896356418b6abac06429ecb190a38f5b688e05331919079f9fdf06e71c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/executions/20261120T215210Z-7634f175/attempt.json",
+      "change": "added",
+      "bytes": 12530,
+      "sha256": "5d1073be907ed0ea60dfc40fede8dea2a977944e1ff796d1757a38d073c9851c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/executions/20261120T215210Z-7634f175/checker.json",
+      "change": "added",
+      "bytes": 6712,
+      "sha256": "310561a96b300c9099b158f3fffa920bc13b9ad71542dad2b1ba1a69e06d441b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/existing-fix/executions/20261120T215210Z-7634f175/correspondence.json",
+      "change": "added",
+      "bytes": 1662,
+      "sha256": "69d8d1092f5226592d617e2283950c4bcb84a8b37c2c1b1d172c54f464bf9739",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c9a8643fa8abce4615d075a5fa6d926f7520dc8977aaf97c4f5a3d40271b32c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/plan.json",
+      "change": "added",
+      "bytes": 7008,
+      "sha256": "4f2888e01b8842a69582d77f4e99fa773ff9538b347a220972d4bf1531f5db8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 26706,
+      "sha256": "9c5482cf242a10174c45b782066815038077de98e3be833a3a3a84e0e866bf32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/controls.json",
+      "change": "added",
+      "bytes": 69552,
+      "sha256": "a271b12b8f9d46798e1e9e8f99601ceb098a82d5cedf6f6a75c5325665df961e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/execution.json",
+      "change": "added",
+      "bytes": 84635,
+      "sha256": "17f1f41dbb0154c891c2dda34e721fa272d98c2722f5914028b5fe5d2c58ad95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "b0981d1a83f74a398c4a1c9a0beb0f0b422f4b68a2ba79028b9e5bbf67d2e0c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "778afcc093e921e6747105d6255c21fd0f6ceb31c4f19f03947e033c65bb0662",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/verifier.json",
+      "change": "added",
+      "bytes": 14949,
+      "sha256": "41b9f25bf3eb9aca90d154cf42ae4e99e1325b988a5778ee2468df0f352673e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5254,
+      "sha256": "7083c674f3d75c336b2aea677fc4a7ba019a62cda3eac1247556104521236966",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/result.json",
+      "change": "added",
+      "bytes": 16878,
+      "sha256": "1b575f581762deabf28f31d0522fd12e81e83359a5ecaf89d22616e32afce2a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/executions/20261120T215210Z-ea7a520d/attempt.json",
+      "change": "added",
+      "bytes": 12503,
+      "sha256": "4c3d1971014796c2949d64e0252ae1fddd4822a251415645812b678d8326a222",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/executions/20261120T215210Z-ea7a520d/checker.json",
+      "change": "added",
+      "bytes": 6693,
+      "sha256": "07329d252047abad5c683700b7368002c2263520c0706fe70570cf3c8afecbac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/receipts/fresh-fix/executions/20261120T215210Z-ea7a520d/correspondence.json",
+      "change": "added",
+      "bytes": 1659,
+      "sha256": "71ac0b7cba5df276803324b1eda5700a7df26546b7e08f52cddb8f8975cb3b75",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T21:52:17+00:00",
+    "applied": [
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/completion.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/plan.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/control-parent-jdk21.stderr",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/control-parent-jdk21.stdout",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/controls.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/execution.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/streams.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/verifier-output.txt",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/verifier.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/verifier.stderr",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/records/verifier.stdout",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/20261120T215202Z-95ad8b93/result.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/executions/20261120T215202Z-95ad8b93/attempt.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/executions/20261120T215202Z-95ad8b93/checker.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-parent/executions/20261120T215202Z-95ad8b93/correspondence.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/completion.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/plan.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/control-parent-jdk21.stderr",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/control-parent-jdk21.stdout",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/controls.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/execution.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/streams.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/verifier-output.txt",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/verifier.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/verifier.stderr",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/records/verifier.stdout",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/20261120T215205Z-2d6be2cc/result.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/executions/20261120T215205Z-2d6be2cc/attempt.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/executions/20261120T215205Z-2d6be2cc/checker.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-parent/executions/20261120T215205Z-2d6be2cc/correspondence.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/completion.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/plan.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/control-parent-jdk21.stderr",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/control-parent-jdk21.stdout",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/controls.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/execution.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/streams.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/verifier-output.txt",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/verifier.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/verifier.stderr",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/records/verifier.stdout",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/20261120T215205Z-bf6dd993/result.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/executions/20261120T215205Z-bf6dd993/attempt.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/executions/20261120T215205Z-bf6dd993/checker.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/executions/20261120T215205Z-bf6dd993/correspondence.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-parent/executions/20261120T215205Z-bf6dd993/replay.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/completion.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/plan.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/control-parent-jdk21.stderr",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/control-parent-jdk21.stdout",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/controls.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/execution.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/streams.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/verifier-output.txt",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/verifier.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/verifier.stderr",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/records/verifier.stdout",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/20261120T215206Z-dc9938df/result.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/executions/20261120T215206Z-dc9938df/attempt.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/executions/20261120T215206Z-dc9938df/checker.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-parent/executions/20261120T215206Z-dc9938df/correspondence.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/completion.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/plan.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/control-fix-jdk21.stderr",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/control-fix-jdk21.stdout",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/controls.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/execution.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/streams.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/verifier-output.txt",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/verifier.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/verifier.stderr",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/records/verifier.stdout",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/20261120T215207Z-78d44ad7/result.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/executions/20261120T215207Z-78d44ad7/attempt.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/executions/20261120T215207Z-78d44ad7/checker.json",
+      "examples/340-treelist-rejected-edit/receipts/exception-fix/executions/20261120T215207Z-78d44ad7/correspondence.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/completion.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/plan.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/control-fix-jdk21.stderr",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/control-fix-jdk21.stdout",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/controls.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/execution.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/streams.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/verifier-output.txt",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/verifier.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/verifier.stderr",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/records/verifier.stdout",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/20261120T215209Z-ed99eb3f/result.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/executions/20261120T215209Z-ed99eb3f/attempt.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/executions/20261120T215209Z-ed99eb3f/checker.json",
+      "examples/340-treelist-rejected-edit/receipts/contents-fix/executions/20261120T215209Z-ed99eb3f/correspondence.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/completion.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/plan.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/control-fix-jdk21.stderr",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/control-fix-jdk21.stdout",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/controls.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/execution.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/streams.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/verifier-output.txt",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/verifier.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/verifier.stderr",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/records/verifier.stdout",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/20261120T215210Z-7634f175/result.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/executions/20261120T215210Z-7634f175/attempt.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/executions/20261120T215210Z-7634f175/checker.json",
+      "examples/340-treelist-rejected-edit/receipts/existing-fix/executions/20261120T215210Z-7634f175/correspondence.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/completion.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/plan.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/control-fix-jdk21.stderr",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/control-fix-jdk21.stdout",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/controls.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/execution.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/streams.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/verifier-output.txt",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/verifier.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/verifier.stderr",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/records/verifier.stdout",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/20261120T215210Z-ea7a520d/result.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/executions/20261120T215210Z-ea7a520d/attempt.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/executions/20261120T215210Z-ea7a520d/checker.json",
+      "examples/340-treelist-rejected-edit/receipts/fresh-fix/executions/20261120T215210Z-ea7a520d/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2138597,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}

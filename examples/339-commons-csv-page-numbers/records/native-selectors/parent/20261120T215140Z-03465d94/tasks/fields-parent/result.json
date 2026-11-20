@@ -1,0 +1,202 @@
+{
+  "schema": "native-selector-proof/v1",
+  "identity": {
+    "sourceClaim": "bb75b6937a8a45bd",
+    "inputsKey": "0e56fd28d79a4f48e6612523c6cbc6f5133a6c8574b33384f1c2a221ac8d7702",
+    "revisions": [
+      "parent"
+    ],
+    "expected": "refuted",
+    "sourceLocks": {
+      "parent": "7395344da222288f61d8ad2d8f9975c27fadb469e408a8d64e8e80a194210274"
+    }
+  },
+  "task": "fields-parent",
+  "revision": "parent",
+  "entry": "pagination.Projection#fields(I)I",
+  "guard": "code >= 0 && code < 24",
+  "parameter": "code",
+  "assertion": "result == 1",
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 96
+  },
+  "envelope": [
+    0,
+    23
+  ],
+  "admitted": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "JDK": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "checker": {
+    "commit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "sha256": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6"
+  },
+  "classpath": [
+    {
+      "path": "adapter-parent.jar",
+      "sha256": "60d40d3fe5c92474164b2e10fe1677708930e1b456f9152a5ef1734b4e94b093",
+      "role": "adapter"
+    },
+    {
+      "path": "built/commons-csv-1.15.0-SNAPSHOT.jar",
+      "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+      "role": "original"
+    },
+    {
+      "path": "lib/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+      "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+      "role": "dependency"
+    },
+    {
+      "path": "lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+      "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+      "role": "dependency"
+    }
+  ],
+  "correspondence": [
+    {
+      "revision": "parent",
+      "entry": "pagination.Projection#fields(I)I",
+      "adapterSha256": "60d40d3fe5c92474164b2e10fe1677708930e1b456f9152a5ef1734b4e94b093",
+      "adapterClassSha256": "989ff60b5d8ac1ebce2f791eb0b92d4bc690643d7c5dd678b1a3474b6bf8b8d0",
+      "subject": {
+        "class": "org.apache.commons.csv.CSVParser",
+        "method": "iterator",
+        "descriptor": "()Ljava/util/Iterator;",
+        "loadedFrom": "built/commons-csv-1.15.0-SNAPSHOT.jar",
+        "classSha256": "7969efaed0779dfa7ba7377dc3a137b2435e7da904e061984d8d1fc362e88670",
+        "adapterCalls": [
+          "org.apache.commons.csv.CSVFormat#builder()Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVFormat$Builder#get()Lorg/apache/commons/csv/CSVFormat;",
+          "org.apache.commons.csv.CSVFormat$Builder#setMaxRows(J)Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVParser#builder()Lorg/apache/commons/csv/CSVParser$Builder;",
+          "org.apache.commons.csv.CSVParser#close()V",
+          "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+          "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+          "org.apache.commons.csv.CSVParser$Builder#setFormat(Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser$Builder;",
+          "org.apache.commons.csv.CSVParser$Builder#setReader(Ljava/io/Reader;)Lorg/apache/commons/io/build/AbstractOriginSupplier;",
+          "org.apache.commons.csv.CSVParser$Builder#setRecordNumber(J)Lorg/apache/commons/csv/CSVParser$Builder;",
+          "org.apache.commons.csv.CSVRecord#get(I)Ljava/lang/String;",
+          "org.apache.commons.csv.CSVRecord#getRecordNumber()J",
+          "org.apache.commons.csv.CSVRecord#size()I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The selector chooses the number of literal records, starting record number, page limit and whether hasNext is called twice before each next. Observe the records returned by the actual CSV iterator.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 24,
+      "disagreements": 0
+    }
+  ],
+  "ruleSha256": "2eaaf40a13ef1a60007444d27cccb0f6acb1a761795ce35f4fd961db5ec65e45",
+  "admissionClass": "tasks/fields-parent/Admission.jvm-bytecode",
+  "admissionSha256": "51e10c99d2dd96504fe014a469a919c747ed9cefbda818e613b49236d424a6e0",
+  "callsClass": "calls/6b44b9aaf5701e9c953c/Calls.jvm-bytecode",
+  "callsSha256": "1037be977329983657922c96ec9f3db3c29fa59298929fe05b6aeee160717573",
+  "checked": [
+    {
+      "selector": 4,
+      "status": "refuted",
+      "target": "verificationselectors.Calls#p4()",
+      "exit": 1,
+      "wallSeconds": 0.167,
+      "usage": {
+        "cpuSeconds": 0.1761,
+        "peakRssBytes": 78540800,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "b55884cad4101e97d256fb13b788f414bc51eb026a29065661bd7258fa6f58fa",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/6b44b9aaf5701e9c953c/cases/p4/native.json",
+      "reusedInBatch": false
+    }
+  ],
+  "status": "refuted",
+  "originalJVMReplay": {
+    "claimKey": "bb75b6937a8a45bd",
+    "entry": "pagination.Projection#fields(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 4
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "989ff60b5d8ac1ebce2f791eb0b92d4bc690643d7c5dd678b1a3474b6bf8b8d0",
+        "classpath": [
+          "60d40d3fe5c92474164b2e10fe1677708930e1b456f9152a5ef1734b4e94b093",
+          "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+          "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+          "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 4;\nif (!(code >= 0 && code < 24)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = pagination.Projection.fields(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "wallSeconds": 0.85914
+}

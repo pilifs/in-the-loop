@@ -1,0 +1,65 @@
+[
+  {
+    "claimKey": "a52f59e99bd5329f",
+    "entry": "trees.Projection#existing(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "6bfaf9e70316d95014935457a731daa61138630ac37f3b109c53abe072b6d5d8",
+        "classpath": [
+          "3bb5e7b53ad9a747451fa0955f1c88f9e2618127bb0846fae84004a5afec4b87",
+          "f202a9f8e2babe1544a0607cc5ef22835900739be35e9a4114050d3c796a33d4",
+          "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 112)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = trees.Projection.existing(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 0,
+      "input": {
+        "seed": [
+          "A"
+        ],
+        "action": "add",
+        "index": -1
+      },
+      "field": "existing",
+      "direct": {
+        "parent": {
+          "exception": "java.lang.IndexOutOfBoundsException",
+          "contents": [
+            "A"
+          ],
+          "existing": "!java.util.ConcurrentModificationException",
+          "fresh": "A"
+        }
+      },
+      "tableSha256": "a9175b3282dca1e4af1b57d724a8a88c646976192ca7263ab926ed47fc94ac5d"
+    }
+  }
+]

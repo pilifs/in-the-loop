@@ -1,0 +1,421 @@
+{
+  "task": "exception-parent",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+      "prove",
+      "trees.Projection#exception(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/commons-collections4-4.6.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+      "--assume",
+      "code >= 0 && code < 112",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "48",
+      "--max-array-length",
+      "16",
+      "--timeout",
+      "90",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.144,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6",
+      "commit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+      "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 16
+      },
+      "timeout": 90,
+      "scope": {
+        "label": "adapter",
+        "meaning": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit.",
+        "method": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+        "revisions": {
+          "parent": {
+            "commit": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1",
+            "loadedFrom": "built/commons-collections4-4.6.0-SNAPSHOT.jar",
+            "classSha256": "cc50d4ab46a99d932a34b7231c46e2b2cc3f9dfc8aa8806327de436a4520c2a0",
+            "origin": "built by maven from https://github.com/apache/commons-collections at dc4d1c92c2c68d1e7b74d20e73991f751eec64f1: target/commons-collections4-4.6.0-SNAPSHOT.jar",
+            "parameters": {
+              "names": [
+                "index",
+                "obj"
+              ],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "trees.Projection#exception(I)I",
+          "cases": 112,
+          "correspondence": "finite-oracle",
+          "mapping": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit."
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "3bb5e7b53ad9a747451fa0955f1c88f9e2618127bb0846fae84004a5afec4b87",
+            "role": "adapter"
+          },
+          {
+            "path": "built/commons-collections4-4.6.0-SNAPSHOT.jar",
+            "sha256": "f202a9f8e2babe1544a0607cc5ef22835900739be35e9a4114050d3c796a33d4",
+            "role": "original"
+          },
+          {
+            "path": "lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "trees.Projection#exception(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "trees.Projection#exception(I)I",
+          "classSha256": "6bfaf9e70316d95014935457a731daa61138630ac37f3b109c53abe072b6d5d8",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+          "subjectClassSha256": "cc50d4ab46a99d932a34b7231c46e2b2cc3f9dfc8aa8806327de436a4520c2a0"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+        "checkedEntry": "trees.Projection#exception(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 112"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "48"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "16"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "trees.Projection#exception(I)I",
+          "cases": 112,
+          "correspondence": "finite-oracle",
+          "mapping": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit."
+        }
+      },
+      "commits": {
+        "parent": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+            "gaps",
+            "--target",
+            "trees.Projection#exception(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/built/commons-collections4-4.6.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/parent/lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Iterator.next()",
+              "sites": [
+                "trees.Projection.inspect:32"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:org.apache.commons.collections4.list.TreeList.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "org.apache.commons.collections4.list.TreeList.add(java.lang.Object)",
+              "sites": [
+                "trees.Projection.inspect:13"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.136,
+        "peakRssBytes": 68493312,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "trees.Projection#exception(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 112",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 48 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ trees.Projection#exception(int) satisfies `result == 1` on every input where code >= 0 && code < 112 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 48 times with unwinding assertions)\n  not vacuous: exception(code=20) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.111046531,
+          "properties": 1,
+          "unwind": 48,
+          "max_array_length": 16,
+          "stage": null,
+          "native": {
+            "paths": 114,
+            "merges": 0,
+            "solver_calls": 115,
+            "solving_seconds": 0.031636083,
+            "gates_evaluated": 1564,
+            "evaluating_seconds": 0.000145101,
+            "divisions": 2,
+            "divisions_built": 2,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 9319,
+            "clauses": 32224,
+            "seconds": 0.1082658,
+            "loading_seconds": 0.001218432,
+            "decoding_seconds": 0.00021685,
+            "encoding_seconds": 0.036766458,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 90.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 90.0,
+              "seconds": 0.108,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.038,
+                "encoding": 0.037,
+                "solving": 0.032,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 9319,
+                "clauses": 32224
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 89.889,
+              "seconds": 0.006,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 177,
+                "clauses": 491
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.131,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.114,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.016
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 112",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 48,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found exception(code=20).",
+            "witness": "exception(code=20)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213849-340-recheck-rejected-edits-with-inherite/.build-py/examples-qmzpz19b/targets/340/exception-parent/20261120T215202Z-95ad8b93",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213849-340-recheck-rejected-edits-with-inherite/.build-py/examples-qmzpz19b/targets/340/exception-parent/20261120T215202Z-95ad8b93"
+  }
+}
