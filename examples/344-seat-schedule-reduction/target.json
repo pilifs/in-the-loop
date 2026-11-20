@@ -1,0 +1,88 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "seat-schedule-reduction",
+    "family": "seat-schedule-reduction",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "identity": {
+        "fixture": "identity"
+      },
+      "named": {
+        "fixture": "named"
+      }
+    },
+    "pairs": [
+      {
+        "name": "lost-alias",
+        "kind": "mutation",
+        "before": "identity",
+        "after": "named"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "lost-alias",
+      "target": "seats.Reservations#singleOwner(I)I"
+    },
+    {
+      "id": "owners-identity",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Reservations#singleOwner(I)I",
+      "claim": "claims/owners.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "identity"
+    },
+    {
+      "id": "owners-named",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Reservations#singleOwner(I)I",
+      "claim": "claims/owners.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "named"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/seats/SeatCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ],
+  "scheduleReduction": {
+    "bindingTask": "owners-identity",
+    "revision": "identity"
+  }
+}

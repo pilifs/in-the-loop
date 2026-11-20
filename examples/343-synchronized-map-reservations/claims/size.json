@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "size",
+  "statement": "The map contains each of the requested keys exactly once after joining both workers.",
+  "assume": "code >= 0 && code < 6",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 24,
+    "maxArrayLength": 8
+  },
+  "assert": "result == (code >= 3 ? 2 : 1)"
+}

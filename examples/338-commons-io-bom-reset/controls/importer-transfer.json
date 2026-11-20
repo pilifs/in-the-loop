@@ -1,0 +1,20 @@
+{
+  "schema": "finite-io-transfer/v1",
+  "consumer": "345",
+  "source": "importer.PageImporter#remaining([BZZ)[B",
+  "stream": "importer.PageImporter#open([BZZ)Ljava/io/InputStream;",
+  "scope": "24 distinct byte inputs, bulk-read settings and preview/reset choices used by the 96 importer selectors",
+  "precondition": "A fresh owned stream and delegate for each observation. The supplied documents are ASCII, optionally preceded by one UTF-8 BOM.",
+  "postcondition": "The remaining bytes, ordered UTF-16 units read on a separately opened original stream, and repeated EOF are recorded. Every decoded sequence must agree with independent UTF-8 decoding of the byte poststate. Any exception or missing case fails acquisition of the fact.",
+  "dependsOn": [
+    "application bytecode",
+    "IO JAR",
+    "selected runtime image"
+  ],
+  "sourceClaims": [
+    "bytes-parent",
+    "bytes-fix",
+    "eof-parent",
+    "eof-fix"
+  ]
+}

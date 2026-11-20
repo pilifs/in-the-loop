@@ -1,0 +1,311 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T185210Z-7d82cf6a",
+  "task": "caller-8-extra",
+  "claimKey": "fe9eb08c6e619671",
+  "revisions": [
+    "extra"
+  ],
+  "startedAt": "2026-11-20T18:52:10.514092+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-184226-337-check-both-range-fill-roots-at-bound",
+  "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.3446
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.4117
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.4387
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 1.4719
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 1.5827
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "extra": {
+      "revision": "fixture:extra",
+      "target": {
+        "class": "fill.Range",
+        "method": "observe",
+        "descriptor": "([I[IIIII)I",
+        "loadedFrom": "extra.jar",
+        "classSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "614c229ff9f20e7fbe91ff17fec6bab2fed8679e01607385e2febb639e45eba5",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "extra.jar",
+          "sha256": "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from extra by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "2d7cde8c6a46292278a20aefda4ed752371a0f316c22d4b43ff7514ac757c452",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "fill.Range#observe(int[], int[], int, int, int, int)",
+    "--classes",
+    "prepare/extra/extra.jar",
+    "--assume",
+    "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+    "--assert",
+    "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+    "--may-alias",
+    "a,other",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "11",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 11,
+      "maxArrayLength": 8
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "fill.Range#observe([I[IIIII)I",
+      "revisions": {
+        "extra": {
+          "commit": "fixture:extra",
+          "loadedFrom": "extra.jar",
+          "classSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+          "origin": "built from extra by the fixture recipe",
+          "parameters": {
+            "names": [
+              "a",
+              "other",
+              "from",
+              "to",
+              "value",
+              "k"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "extra": [
+        {
+          "path": "extra.jar",
+          "sha256": "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "fill.Range#observe([I[IIIII)I",
+    "entryBindings": {
+      "extra": {
+        "entry": "fill.Range#observe([I[IIIII)I",
+        "classSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+        "loadedFrom": "extra.jar",
+        "subject": "fill.Range#observe([I[IIIII)I",
+        "subjectClassSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "fill.Range#observe([I[IIIII)I",
+      "checkedEntry": "fill.Range#observe([I[IIIII)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == (a == other && from <= k && k < to ? value : \\old(other[k]))"
+        },
+        {
+          "field": "mayAlias",
+          "flag": "--may-alias",
+          "value": "a,other"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "11"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "extra": "fixture:extra"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "extra": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+          "gaps",
+          "--target",
+          "fill.Range#observe(int[], int[], int, int, int, int)",
+          "--classes",
+          "prepare/extra/extra.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-extra.stdout",
+        "stderr": "verifier/probe-extra.stderr",
+        "gaps": [
+          {
+            "id": "jdk-static-method:java.util.Arrays.fill([IIII)V@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Arrays.fill(int[], int, int, int)",
+            "sites": [
+              "fill.Range.observe:12"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0211,
+      "peakRssBytes": 80859136,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0211,
+    "peakRssBytes": 80859136,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.031,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/caller-8-extra/20261120T185210Z-7d82cf6a/result.json",
+  "preparedClaim": "27622aa5ec6b3e6f",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([IIII)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int, int, int) at fill.Range.observe:12). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "endedAt": "2026-11-20T18:52:12.096831+00:00"
+}

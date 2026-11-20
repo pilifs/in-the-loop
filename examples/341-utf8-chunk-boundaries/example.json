@@ -1,0 +1,35 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "341",
+  "title": "A UTF-8 decoder across every byte partition",
+  "summary": "One reader must preserve UTF-16 units across chunk boundaries, including divisions within a four-byte code point. A separate decoder per chunk loses that state.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "dropped-case",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Java InputStreamReader",
+    "file": "stream/chunks/Decoder.java",
+    "symbol": "chunks.Inputs#units(I)I"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "One reader must preserve UTF-16 units across chunk boundaries, including divisions within a four-byte code point. A separate decoder per chunk loses that state."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": []
+}

@@ -1,0 +1,174 @@
+{
+  "plan": {
+    "example": "337",
+    "task": "frame-8-extra",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "fill.Range#apply([I[IIII)I",
+    "revisions": [
+      "extra"
+    ],
+    "claim": {
+      "task": "frame-8-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#apply([I[IIII)I",
+      "file": "claims/frame-8.json",
+      "sha256": "87bde18ee7529cbee8779bad9665cd1bfd0082936524c61a4e8e1cfd3e8d6079",
+      "property": "frame-8",
+      "claimKind": "property",
+      "statement": "Write exactly the selected half-open slice and preserve every other cell, including what the second root observes.",
+      "assume": "0 <= from && from <= to && to <= a.length",
+      "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [
+        "a,other"
+      ],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 11,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 11,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/fill/FillCases.java",
+          "sha256": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653"
+        }
+      ],
+      "key": "c5404afcbb4e8bba"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "extra",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "extra",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/frame-8-extra"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-184226-337-check-both-range-fill-roots-at-bound/examples/337-jdk-range-fill-alias",
+    "network": false
+  },
+  "inputs": {
+    "example": "337",
+    "task": "frame-8-extra",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "fill.Range#apply([I[IIII)I",
+    "revisions": [
+      "extra"
+    ],
+    "claim": {
+      "task": "frame-8-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#apply([I[IIII)I",
+      "file": "claims/frame-8.json",
+      "sha256": "87bde18ee7529cbee8779bad9665cd1bfd0082936524c61a4e8e1cfd3e8d6079",
+      "property": "frame-8",
+      "claimKind": "property",
+      "statement": "Write exactly the selected half-open slice and preserve every other cell, including what the second root observes.",
+      "assume": "0 <= from && from <= to && to <= a.length",
+      "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [
+        "a,other"
+      ],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 11,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 11,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/fill/FillCases.java",
+          "sha256": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653"
+        }
+      ],
+      "key": "c5404afcbb4e8bba"
+    },
+    "artifacts": [
+      {
+        "revision": "extra",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "extra",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "df979beeb00f024c65f089a079bdcb531d3c39e3334221a828012840fbe7eb8b"
+}

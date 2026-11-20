@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "334",
+  "title": "An appointment in a skipped or repeated hour",
+  "summary": "Toronto's missing spring hour has no valid offset. Its repeated autumn hour admits two ordered offsets.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "clocks-and-time",
+    "dropped-case",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Java ZoneRules",
+    "file": "valid/zones/Offsets.java",
+    "symbol": "zones.Offsets#offsets(Ljava/time/ZoneId;Ljava/time/LocalDateTime;)Ljava/util/List;"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Toronto's missing spring hour has no valid offset. Its repeated autumn hour admits two ordered offsets."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "Canada's rules since 2007 select the second March Sunday at 02:00 for the one-hour advance and the first November Sunday at 02:00 for its reversal. Toronto's standard offset is UTC−05. The resulting twelve zone/local-time entries are each run with two different process defaults. Source consulted 2026-11-20: https://github.com/eggert/tz/blob/2024a/northamerica."
+  ]
+}

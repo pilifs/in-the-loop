@@ -1,0 +1,156 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "paper-initialization",
+    "family": "paper-initialization",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "cached": {
+        "fixture": "cached"
+      },
+      "helper": {
+        "fixture": "helper"
+      },
+      "live": {
+        "fixture": "live"
+      }
+    },
+    "pairs": [
+      {
+        "name": "helper",
+        "kind": "positive",
+        "before": "cached",
+        "after": "helper"
+      },
+      {
+        "name": "live",
+        "kind": "mutation",
+        "before": "cached",
+        "after": "live"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "helper",
+      "target": "paper.Scenario#value(I)I"
+    },
+    {
+      "id": "replay-live",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "live",
+      "target": "paper.Scenario#value(I)I"
+    },
+    {
+      "id": "second-cached",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paper.Scenario#value(I)I",
+      "claim": "claims/second.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "cached"
+    },
+    {
+      "id": "init-count-cached",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paper.Scenario#count(I)I",
+      "claim": "claims/init-count.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "cached"
+    },
+    {
+      "id": "second-helper",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paper.Scenario#value(I)I",
+      "claim": "claims/second.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "helper"
+    },
+    {
+      "id": "init-count-helper",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paper.Scenario#count(I)I",
+      "claim": "claims/init-count.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "helper"
+    },
+    {
+      "id": "second-live",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paper.Scenario#value(I)I",
+      "claim": "claims/second.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-live"
+      ],
+      "expected": "refuted",
+      "revision": "live"
+    },
+    {
+      "id": "init-count-live",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paper.Scenario#count(I)I",
+      "claim": "claims/init-count.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-live"
+      ],
+      "expected": "established",
+      "revision": "live"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/paper/PaperCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

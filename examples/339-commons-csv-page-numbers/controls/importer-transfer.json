@@ -1,0 +1,21 @@
+{
+  "schema": "finite-csv-transfer/v1",
+  "consumer": "345",
+  "scope": "Every decoded sequence emitted by an admitted IO configuration, both original start numbers and both row caps.",
+  "precondition": "A fresh, normal reader containing the exact complete UTF-16 sequence from the IO and decoder producer. Record numbers start at one or two; the maximum is one or two.",
+  "postcondition": "Run the selected CSV iterator to completion or its row cap, record the count and all ordered numbered fields. Reconstruct the reader for each input. An exception or mismatched input prevents composition.",
+  "dependsOn": [
+    "CSV JAR",
+    "runtime IO JAR",
+    "Codec JAR",
+    "selected runtime image"
+  ],
+  "sourceClaims": [
+    "count-parent",
+    "count-fix",
+    "labels-parent",
+    "labels-fix",
+    "fields-parent",
+    "fields-fix"
+  ]
+}

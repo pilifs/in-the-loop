@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-192109-340-exhaust-live-treelist-iterators-on-p",
+  "title": "340 exhaust live TreeList iterators on pinned JVMs",
+  "description": "Execute the entire frozen selector domain for live TreeList iterators on the actual original classes, checking guard, typed assertion and every obtained counterexample. The separate direct oracle reconstructs its admitted inputs and observations.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvm:finite-domain",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "340"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:21:09+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Prove each finite selector claim",
+      "run": "python3 examples/tools/build.py 340 --finite-domain --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/340-treelist-rejected-edit/records/finite-proofs"
+  ]
+}

@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T18:58:03.094Z",
-  "duration_seconds": 76833,
+  "ended": "2026-11-20T19:36:45.947Z",
+  "duration_seconds": 79156,
   "stats": {
     "turns": 12,
-    "api_calls": 3170,
-    "tool_calls": 7815,
-    "tool_errors": 243,
-    "compactions": 10,
+    "api_calls": 3291,
+    "tool_calls": 8094,
+    "tool_errors": 253,
+    "compactions": 11,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 5667141,
-      "output_tokens": 1582208,
-      "cache_read_input_tokens": 982991872,
+      "input_tokens": 5948936,
+      "output_tokens": 1668366,
+      "cache_read_input_tokens": 1040786176,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 4349,
-    "exec": 3051,
-    "apply_patch": 318,
+    "Bash": 4463,
+    "exec": 3172,
+    "apply_patch": 362,
     "wait": 53,
     "sleep": 43,
     "send_message_to_user_async": 1
@@ -61,10 +61,17 @@
     "examples/331-floor-tiling-proof-reuse/benchmark.py",
     "examples/331-floor-tiling-proof-reuse/claims/helper.contract",
     "examples/331-floor-tiling-proof-reuse/target.json",
+    "examples/338-commons-io-bom-reset/controls/importer-transfer.json",
+    "examples/339-commons-csv-page-numbers/controls/importer-transfer.json",
+    "examples/345-paged-importer-upgrades/README.md",
     "examples/345-paged-importer-upgrades/adapter/importer/Projection.java",
     "examples/345-paged-importer-upgrades/client/importer/PageImporter.java",
     "examples/345-paged-importer-upgrades/controls/builds.json",
     "examples/345-paged-importer-upgrades/controls/calibrate.py",
+    "examples/345-paged-importer-upgrades/controls/compose.py",
+    "examples/345-paged-importer-upgrades/controls/composition/measure/CSVFact.java",
+    "examples/345-paged-importer-upgrades/controls/composition/measure/IOFact.java",
+    "examples/345-paged-importer-upgrades/controls/composition/measure/Inline.java",
     "examples/345-paged-importer-upgrades/driver/importer/ImportCases.java",
     "examples/approaches.md",
     "examples/schema/result.schema.json",
@@ -82,6 +89,7 @@
     "examples/tools/targets/interfaces.py",
     "examples/tools/targets/java/IsolatedCases.java",
     "examples/tools/targets/java/LoadedClasses.java",
+    "examples/tools/targets/java/MapTransitions.java",
     "examples/tools/targets/java/org/intheloop/controls/Grid.java",
     "examples/tools/targets/monitor_histories.py",
     "examples/tools/targets/original_witness.py",
@@ -91,7 +99,9 @@
     "examples/tools/targets/route.py",
     "examples/tools/targets/runtime.py",
     "examples/tools/targets/runtime_jar.py",
+    "examples/tools/targets/schedule_reduction.py",
     "examples/tools/targets/sidecar.py",
+    "examples/tools/targets/synchronized_map.py",
     "examples/tools/targets/test_acceptance.py",
     "examples/tools/targets/test_claim_history.py",
     "examples/tools/targets/test_gap_inventory.py",
@@ -141,10 +151,12 @@
     "lib/tests/fixtures/claims/claims/CharacterFormats.java",
     "lib/tests/fixtures/claims/claims/Cloned.java",
     "lib/tests/fixtures/claims/claims/EnumOrder.java",
+    "lib/tests/fixtures/claims/claims/IteratorCollection.java",
     "lib/tests/fixtures/claims/claims/L.java",
     "lib/tests/fixtures/claims/claims/ListConversions.java",
     "lib/tests/fixtures/claims/claims/M.java",
     "lib/tests/fixtures/claims/claims/R.java",
+    "lib/tests/fixtures/claims/claims/ReaderAndListeners.java",
     "lib/tests/fixtures/claims/claims/Registries.java",
     "lib/tests/fixtures/claims/claims/Samples.java",
     "lib/tests/fixtures/claims/claims/StringPadding.java",
@@ -167,10 +179,12 @@
     "verification/test_pipeline.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/array.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/collect.py",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/extra-records.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/fill.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/first.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/followjobs.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/jobs.py",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/map_contracts.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/mean.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/monitor_histories.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/332-paper-initialization/both/paper/Scenario.java",
@@ -219,9 +233,23 @@
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/342-two-thread-tickets/driver/tickets/TicketCases.java",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/342-two-thread-tickets/method/tickets/Counter.java",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/342-two-thread-tickets/split/tickets/Counter.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/343-synchronized-map-reservations/both/reservations/Booking.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/343-synchronized-map-reservations/controls/oracle.py",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/343-synchronized-map-reservations/driver/reservations/BookingCases.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/343-synchronized-map-reservations/split/reservations/Slots.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/343-synchronized-map-reservations/whole/reservations/Slots.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/344-seat-schedule-reduction/both/seats/Audit.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/344-seat-schedule-reduction/both/seats/Reservations.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/344-seat-schedule-reduction/both/seats/Seat.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/344-seat-schedule-reduction/controls/oracle.py",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/344-seat-schedule-reduction/driver/seats/SeatCases.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/344-seat-schedule-reduction/identity/seats/Handles.java",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/packets/344-seat-schedule-reduction/named/seats/Handles.java",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/probe-mean.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/probe.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/remaining_packets.py",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/seats.py",
+    "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/secondwave.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/startup_cases.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/submit.py",
     "~/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/next-proof/test_capture.py",
@@ -371,24 +399,38 @@
     {
       "index": 10,
       "started": "2026-11-20T11:06:03.599Z",
-      "ended": "2026-11-20T18:58:03.094Z",
+      "ended": "2026-11-20T19:35:54.925Z",
       "turns": 2,
-      "api_calls": 259,
+      "api_calls": 374,
       "usage": {
-        "input_tokens": 574105,
-        "output_tokens": 160799,
-        "cache_read_input_tokens": 73703680,
+        "input_tokens": 823507,
+        "output_tokens": 245667,
+        "cache_read_input_tokens": 131279744,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 436755
+      "peak_context_tokens": 550449
+    },
+    {
+      "index": 11,
+      "started": "2026-11-20T19:35:54.934Z",
+      "ended": "2026-11-20T19:36:45.947Z",
+      "turns": 0,
+      "api_calls": 6,
+      "usage": {
+        "input_tokens": 32393,
+        "output_tokens": 1290,
+        "cache_read_input_tokens": 218240,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 45495
     }
   ],
   "log": {
-    "sha256": "3de411632c01da6927e155f698e4bfc462cfa823eca3376960d736e591e0e346",
-    "bytes": 73912611,
-    "lines": 24476,
-    "gzip_bytes": 28377571,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/3de411632c01da6927e155f698e4bfc462cfa823eca3376960d736e591e0e346.jsonl.gz"
+    "sha256": "36534cbd71c3a091e8dd7fea627d7dd81ad005784baf6944eeeef69e0df83ca5",
+    "bytes": 76694650,
+    "lines": 25410,
+    "gzip_bytes": 29645381,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/36534cbd71c3a091e8dd7fea627d7dd81ad005784baf6944eeeef69e0df83ca5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1297,20 +1339,28 @@
       "log_sha256": "02f9427576ce65fc3ff60d3ae5118c78b1679d05edcd41f5aad63256cf93fbaa"
     },
     {
-      "change_id": "tuwrxyoszkzyqpxmwnvkukmklptyvvoo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "3de411632c01da6927e155f698e4bfc462cfa823eca3376960d736e591e0e346"
-    },
-    {
       "change_id": "orvotvxlpsokvvvzzttoxktwnsmmoykv",
       "commit_id": null,
       "immutable": false,
       "summary": "Build both TreeList iterator revisions (verification pending)",
       "body": "Prepare complete Maven products and resolution inventories for the historical rejected-add and rejected-remove repair. Upstream Git confirmed dc4d1c92 as the first parent of fe8eb498. The build uses the same tested artifact capture as the four importer dependencies. Job 20261120-185734-340-build-the-rejected-treelist-edit-acr supplies the immutable products for the iterator and list-state observations.",
       "log_sha256": "3de411632c01da6927e155f698e4bfc462cfa823eca3376960d736e591e0e346"
+    },
+    {
+      "change_id": "zrpoxpkvytpyuysvlsututuvxkumqstm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "36534cbd71c3a091e8dd7fea627d7dd81ad005784baf6944eeeef69e0df83ca5"
+    },
+    {
+      "change_id": "rzwsoyqlvmtvzwtyprtmlmouksuyrttl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check startup, iterator, decoder and monitor behavior on real JVM classes (verification pending)",
+      "body": "Register the seven remaining Java subjects and retain original bytecode attempts, independent exhaustive JVM replays, arbitrary-length array proofs and the five original-startup counterexamples. Explore compiled synchronized-map methods and compare exhaustive and identity-aware schedules. Measure the cost of reusing byte and CSV evidence on the same importer class through independent dependency upgrades. Verified all seven packets and router, 44 selected Python test groups, the changed recipe controls, and the job inventory.\n\nVerification jobs: 20261120-192108-332-check-paper-startup-from-compiled-ja, 20261120-192109-332-exhaust-paper-startup-on-pinned-jvms, 20261120-192109-333-check-context-service-providers-from, 20261120-192109-333-exhaust-context-service-providers-on, 20261120-192109-334-check-zone-transitions-from-compiled, 20261120-192109-334-exhaust-zone-transitions-on-pinned-j, 20261120-192109-340-check-live-treelist-iterators-from-c, 20261120-192109-340-exhaust-live-treelist-iterators-on-p, 20261120-192109-341-check-streaming-utf-8-partitions-fro, 20261120-192109-341-exhaust-streaming-utf-8-partitions-o, 20261120-192109-343-check-real-synchronized-reservations, 20261120-192110-343-verify-the-real-synchronized-map-wra, 20261120-192110-344-check-shared-seat-identities-from-co, 20261120-192110-344-compare-exhaustive-and-identity-awar, 20261120-192110-345-measure-inline-and-composed-importer.",
+      "log_sha256": "36534cbd71c3a091e8dd7fea627d7dd81ad005784baf6944eeeef69e0df83ca5"
     }
   ],
   "logs": {
@@ -1433,6 +1483,12 @@
       "lines": 5282,
       "gzip_bytes": 6256232,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/2d1a5591fe6eb2970137df4277cbd8b292513fcad5ddf3b2a75a7a0f5ea3950b.jsonl.gz"
+    },
+    "36534cbd71c3a091e8dd7fea627d7dd81ad005784baf6944eeeef69e0df83ca5": {
+      "bytes": 76694650,
+      "lines": 25410,
+      "gzip_bytes": 29645381,
+      "url": null
     },
     "3de411632c01da6927e155f698e4bfc462cfa823eca3376960d736e591e0e346": {
       "bytes": 73912611,

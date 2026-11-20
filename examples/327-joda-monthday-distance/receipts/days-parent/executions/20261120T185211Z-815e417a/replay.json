@@ -1,0 +1,59 @@
+{
+  "claimKey": "7f0d488df0e1fab5",
+  "entry": "jodagrid.Projection#days(I)I",
+  "inputs": [
+    {
+      "name": "code",
+      "type": "int",
+      "value": 17
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "by": "jvm",
+  "reproduced": true,
+  "sides": {
+    "parent": {
+      "entryClassSha256": "8aaf7142a66aafa8754b28ffc061e4575e8edb15f2e93e0c48fba4b4515c9068",
+      "classpath": [
+        "c8af8c1de3c6bc77567967049ab591c285ba3ef303573d61f25339e52be6d0e8",
+        "05c63f4c83da31556ff6564838c89b47b61be3629bb155b56aa797d30e0a8e31",
+        "5703e1a2ac1969fe90f87076c1f1136822bf31d8948252159c86e6d0535c81a8"
+      ],
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 17;\nif (!(code >= 0 && code < 25)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = jodagrid.Projection.days(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "admitted": true,
+      "values": [
+        0,
+        null
+      ],
+      "satisfies": false
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "finiteObservation": {
+    "id": 17,
+    "input": {
+      "start": "03-01",
+      "end": "02-29",
+      "chronology": "ISO-UTC"
+    },
+    "field": "days",
+    "direct": {
+      "parent": {
+        "normal": "org.joda.time.IllegalFieldValueException",
+        "days": null,
+        "completion": "excluded",
+        "reversal": null
+      }
+    },
+    "tableSha256": "a8e6c75c250dda60c5a40b703881f9a2f465e4e9b5419bf786ca5d7e5a3ddcc8"
+  }
+}

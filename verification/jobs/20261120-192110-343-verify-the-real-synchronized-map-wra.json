@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-192110-343-verify-the-real-synchronized-map-wra",
+  "title": "343 verify the real synchronized Map wrapper and its caller",
+  "description": "Check the actual JDK synchronizedMap factory, stored mutex and complete normal wrapper method bytecodes. Exhaust the private HashMap transitions on all achievable histories up to two writes and enumerate the contended calls, including reentrant locking and real-time ordering. Reproduce the two-success same-slot failure on real JVM threads.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:monitor-histories",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "343"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:21:10+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "whole",
+      "run": "python3 examples/tools/build.py 343 --monitor-histories reservations-whole",
+      "cwd": "."
+    },
+    {
+      "name": "split",
+      "run": "python3 examples/tools/build.py 343 --monitor-histories reservations-split",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/343-synchronized-map-reservations/records/monitor-histories"
+  ]
+}

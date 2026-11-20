@@ -1,0 +1,2024 @@
+{
+  "schema": "java-monitor-histories/v1",
+  "sourceKey": "1793f68a8c87f76ecb3b5b8d46c0f5173c1606d542fe20e710f6ffcf67346bef",
+  "entry": "tickets.Counter#take()I",
+  "revision": "method",
+  "status": "established",
+  "scope": {
+    "memory": "sequentially consistent",
+    "threads": 2,
+    "callsPerThread": 1,
+    "receivers": 1,
+    "initialValue": 0,
+    "completedCalls": 2,
+    "allocation": "one exact receiver and two fixed worker identities",
+    "scheduling": "all enabled compiled instructions plus start and join"
+  },
+  "originalJarSha256": "12bf91cabf783fff837099d6a11ef694d3881ad07f2bf7e1d1ca2efae69b4740",
+  "classSha256": "5f46dd9e4d72b3196cc7c91d06fb228937ec3bfc5216f967770b0b7876583734",
+  "synchronizedMethod": true,
+  "field": "Field issued:I",
+  "jdk": {
+    "feature": "21",
+    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "disassembly": "Compiled from \"Counter.java\"\npublic class tickets.Counter {\n  private int issued;\n    descriptor: I\n\n  public tickets.Counter();\n    descriptor: ()V\n    Code:\n       0: aload_0\n       1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n       4: return\n\n  public synchronized int take();\n    descriptor: ()I\n    Code:\n       0: aload_0\n       1: dup\n       2: getfield      #7                  // Field issued:I\n       5: iconst_1\n       6: iadd\n       7: dup_x1\n       8: putfield      #7                  // Field issued:I\n      11: ireturn\n\n  protected void between();\n    descriptor: ()V\n    Code:\n       0: return\n\n  public int issued();\n    descriptor: ()I\n    Code:\n       0: aload_0\n       1: getfield      #7                  // Field issued:I\n       4: ireturn\n}\n",
+  "explorations": {
+    "ab": {
+      "visited": 27,
+      "transitions": 26,
+      "blockedTerminal": 0,
+      "completed": [
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 1"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        }
+      ]
+    },
+    "ba": {
+      "visited": 27,
+      "transitions": 26,
+      "blockedTerminal": 0,
+      "completed": [
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ],
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 2"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ]
+          ]
+        }
+      ]
+    },
+    "overlap": {
+      "visited": 237,
+      "transitions": 334,
+      "blockedTerminal": 0,
+      "completed": [
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 1"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 1"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 2"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              0
+            ],
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 1"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 1"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            1,
+            2
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 1"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ],
+            [
+              "return",
+              1
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 1"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 2"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 1"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 2"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        },
+        {
+          "history": [
+            [
+              "invoke",
+              1
+            ],
+            [
+              "return",
+              1
+            ],
+            [
+              "invoke",
+              0
+            ],
+            [
+              "return",
+              0
+            ]
+          ],
+          "returns": [
+            2,
+            1
+          ],
+          "field": 2,
+          "linearizable": true,
+          "schedule": [
+            [
+              "main",
+              "start 0"
+            ],
+            [
+              "main",
+              "start 1"
+            ],
+            [
+              1,
+              "invoke"
+            ],
+            [
+              1,
+              "acquire synchronized method"
+            ],
+            [
+              1,
+              "0 aload_0"
+            ],
+            [
+              1,
+              "1 dup"
+            ],
+            [
+              1,
+              "2 getfield"
+            ],
+            [
+              1,
+              "5 iconst_1"
+            ],
+            [
+              1,
+              "6 iadd"
+            ],
+            [
+              1,
+              "7 dup_x1"
+            ],
+            [
+              1,
+              "8 putfield"
+            ],
+            [
+              1,
+              "11 ireturn 1"
+            ],
+            [
+              1,
+              "record response"
+            ],
+            [
+              0,
+              "invoke"
+            ],
+            [
+              0,
+              "acquire synchronized method"
+            ],
+            [
+              0,
+              "0 aload_0"
+            ],
+            [
+              0,
+              "1 dup"
+            ],
+            [
+              0,
+              "2 getfield"
+            ],
+            [
+              0,
+              "5 iconst_1"
+            ],
+            [
+              0,
+              "6 iadd"
+            ],
+            [
+              0,
+              "7 dup_x1"
+            ],
+            [
+              0,
+              "8 putfield"
+            ],
+            [
+              0,
+              "11 ireturn 2"
+            ],
+            [
+              0,
+              "record response"
+            ],
+            [
+              "main",
+              "join 0"
+            ],
+            [
+              "main",
+              "join 1"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "jvmReplays": [
+    {
+      "mode": "ab",
+      "jvm": {
+        "mode": 0,
+        "invoked": [
+          1,
+          3
+        ],
+        "returned": [
+          2,
+          4
+        ],
+        "tickets": [
+          1,
+          2
+        ],
+        "final": 2
+      },
+      "linearizable": true,
+      "matchingSchedule": [
+        [
+          "main",
+          "start 0"
+        ],
+        [
+          0,
+          "invoke"
+        ],
+        [
+          0,
+          "acquire synchronized method"
+        ],
+        [
+          0,
+          "0 aload_0"
+        ],
+        [
+          0,
+          "1 dup"
+        ],
+        [
+          0,
+          "2 getfield"
+        ],
+        [
+          0,
+          "5 iconst_1"
+        ],
+        [
+          0,
+          "6 iadd"
+        ],
+        [
+          0,
+          "7 dup_x1"
+        ],
+        [
+          0,
+          "8 putfield"
+        ],
+        [
+          0,
+          "11 ireturn 1"
+        ],
+        [
+          0,
+          "record response"
+        ],
+        [
+          "main",
+          "join 0"
+        ],
+        [
+          "main",
+          "start 1"
+        ],
+        [
+          1,
+          "invoke"
+        ],
+        [
+          1,
+          "acquire synchronized method"
+        ],
+        [
+          1,
+          "0 aload_0"
+        ],
+        [
+          1,
+          "1 dup"
+        ],
+        [
+          1,
+          "2 getfield"
+        ],
+        [
+          1,
+          "5 iconst_1"
+        ],
+        [
+          1,
+          "6 iadd"
+        ],
+        [
+          1,
+          "7 dup_x1"
+        ],
+        [
+          1,
+          "8 putfield"
+        ],
+        [
+          1,
+          "11 ireturn 2"
+        ],
+        [
+          1,
+          "record response"
+        ],
+        [
+          "main",
+          "join 1"
+        ]
+      ]
+    },
+    {
+      "mode": "ba",
+      "jvm": {
+        "mode": 1,
+        "invoked": [
+          3,
+          1
+        ],
+        "returned": [
+          4,
+          2
+        ],
+        "tickets": [
+          2,
+          1
+        ],
+        "final": 2
+      },
+      "linearizable": true,
+      "matchingSchedule": [
+        [
+          "main",
+          "start 1"
+        ],
+        [
+          1,
+          "invoke"
+        ],
+        [
+          1,
+          "acquire synchronized method"
+        ],
+        [
+          1,
+          "0 aload_0"
+        ],
+        [
+          1,
+          "1 dup"
+        ],
+        [
+          1,
+          "2 getfield"
+        ],
+        [
+          1,
+          "5 iconst_1"
+        ],
+        [
+          1,
+          "6 iadd"
+        ],
+        [
+          1,
+          "7 dup_x1"
+        ],
+        [
+          1,
+          "8 putfield"
+        ],
+        [
+          1,
+          "11 ireturn 1"
+        ],
+        [
+          1,
+          "record response"
+        ],
+        [
+          "main",
+          "join 1"
+        ],
+        [
+          "main",
+          "start 0"
+        ],
+        [
+          0,
+          "invoke"
+        ],
+        [
+          0,
+          "acquire synchronized method"
+        ],
+        [
+          0,
+          "0 aload_0"
+        ],
+        [
+          0,
+          "1 dup"
+        ],
+        [
+          0,
+          "2 getfield"
+        ],
+        [
+          0,
+          "5 iconst_1"
+        ],
+        [
+          0,
+          "6 iadd"
+        ],
+        [
+          0,
+          "7 dup_x1"
+        ],
+        [
+          0,
+          "8 putfield"
+        ],
+        [
+          0,
+          "11 ireturn 2"
+        ],
+        [
+          0,
+          "record response"
+        ],
+        [
+          "main",
+          "join 0"
+        ]
+      ]
+    },
+    {
+      "mode": "overlap",
+      "jvm": {
+        "mode": 2,
+        "invoked": [
+          1,
+          3
+        ],
+        "returned": [
+          2,
+          4
+        ],
+        "tickets": [
+          1,
+          2
+        ],
+        "final": 2
+      },
+      "linearizable": true,
+      "matchingSchedule": [
+        [
+          "main",
+          "start 0"
+        ],
+        [
+          "main",
+          "start 1"
+        ],
+        [
+          0,
+          "invoke"
+        ],
+        [
+          0,
+          "acquire synchronized method"
+        ],
+        [
+          0,
+          "0 aload_0"
+        ],
+        [
+          0,
+          "1 dup"
+        ],
+        [
+          0,
+          "2 getfield"
+        ],
+        [
+          0,
+          "5 iconst_1"
+        ],
+        [
+          0,
+          "6 iadd"
+        ],
+        [
+          0,
+          "7 dup_x1"
+        ],
+        [
+          0,
+          "8 putfield"
+        ],
+        [
+          0,
+          "11 ireturn 1"
+        ],
+        [
+          0,
+          "record response"
+        ],
+        [
+          "main",
+          "join 0"
+        ],
+        [
+          1,
+          "invoke"
+        ],
+        [
+          1,
+          "acquire synchronized method"
+        ],
+        [
+          1,
+          "0 aload_0"
+        ],
+        [
+          1,
+          "1 dup"
+        ],
+        [
+          1,
+          "2 getfield"
+        ],
+        [
+          1,
+          "5 iconst_1"
+        ],
+        [
+          1,
+          "6 iadd"
+        ],
+        [
+          1,
+          "7 dup_x1"
+        ],
+        [
+          1,
+          "8 putfield"
+        ],
+        [
+          1,
+          "11 ireturn 2"
+        ],
+        [
+          1,
+          "record response"
+        ],
+        [
+          "main",
+          "join 1"
+        ]
+      ]
+    }
+  ],
+  "checkerSha256": "81c908dc6d21b993c9309ca4f97fa8ee0b5e1f9da5fcea00ae1d209e9aa72b5e",
+  "wallSeconds": 2.02174,
+  "peakProcessKiB": 59964
+}

@@ -1,0 +1,683 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-183452-336-check-first-match-and-preservation-a",
+  "title": "336 check first-match and preservation at length 8",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.0s, peak 224.2 MiB (estimated 6m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-183452-336-check-first-match-and-preservation-a.json",
+    "sha256": "78672f6adf47312d7d87e80cf4cecd00096e6204b697e8fcc3632e9b2522ae1c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-183452-336-check-first-match-and-preservation-a",
+      "title": "336 check first-match and preservation at length 8",
+      "description": "Use unconstrained signed cells and target on both released forward search and the deliberately reversed helper. Check the complete result, the earlier prefix, normal return and the pre-state of the array.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "336"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T18:34:52+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 336 --tasks first-8-release,frame-8-release,first-8-last,frame-8-last --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/336-guava-first-array-match/receipts/first-8-release",
+        "examples/336-guava-first-array-match/receipts/frame-8-release",
+        "examples/336-guava-first-array-match/receipts/first-8-last",
+        "examples/336-guava-first-array-match/receipts/frame-8-last"
+      ]
+    }
+  },
+  "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+  "startedAt": "2026-11-20T18:51:55+00:00",
+  "finishedAt": "2026-11-20T18:52:13+00:00",
+  "wallSeconds": 18.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 701952,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 235106304,
+    "wallSeconds": 8.0,
+    "cpuSeconds": 10.2,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 336 --tasks first-8-release,frame-8-release,first-8-last,frame-8-last --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 8.011,
+      "cpuSeconds": 10.25,
+      "cpuThrottledSeconds": 0.864,
+      "peakMemoryBytes": 235106304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 8,
+        "bytes": 910,
+        "sha256": "120fe976201c439a9f4a4bda44dbba6e28f0de74dcfa1fdaeb0530710e96257e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261120T185205Z-3b241b48/result.json",
+          "groups": [
+            "336",
+            "first-8-release",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "336-guava-first-array-match: task frame-8-release: established (completed; as expected), receipt receipts/frame-8-release/20261120T185206Z-bb11b16a/result.json",
+          "groups": [
+            "336",
+            "frame-8-release",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "336-guava-first-array-match: task first-8-last: refuted (completed; as expected), receipt receipts/first-8-last/20261120T185207Z-4f678593/result.json",
+          "groups": [
+            "336",
+            "first-8-last",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "336-guava-first-array-match: task frame-8-last: established (completed; as expected), receipt receipts/frame-8-last/20261120T185212Z-59a0d502/result.json",
+          "groups": [
+            "336",
+            "frame-8-last",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "336-guava-first-array-match: running task first-8-release (target route)",
+        "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261120T185205Z-3b241b48/result.json",
+        "336-guava-first-array-match: running task frame-8-release (target route)",
+        "336-guava-first-array-match: task frame-8-release: established (completed; as expected), receipt receipts/frame-8-release/20261120T185206Z-bb11b16a/result.json",
+        "336-guava-first-array-match: running task first-8-last (target route)",
+        "336-guava-first-array-match: task first-8-last: refuted (completed; as expected), receipt receipts/first-8-last/20261120T185207Z-4f678593/result.json",
+        "336-guava-first-array-match: running task frame-8-last (target route)",
+        "336-guava-first-array-match: task frame-8-last: established (completed; as expected), receipt receipts/frame-8-last/20261120T185212Z-59a0d502/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "dc386f7edcde9269b3e7c595fead09f4b9be8be6331181b963213f715b48f3d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/plan.json",
+      "change": "added",
+      "bytes": 6195,
+      "sha256": "beaca4c271248cebfea1e0ac83500d4b7cab63b5732dd195e0adf48ee8e72195",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/control-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/control-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 45026,
+      "sha256": "36e7bd003c4fdb95f44e3bf33ef859bdaaec5bf3a0ae0bd4da5db9debf9dd25e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/controls.json",
+      "change": "added",
+      "bytes": 116163,
+      "sha256": "51a1bf5974ff213d819a95212e339a121d877492b4970aa3d5f1ca531ef7d34e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/execution.json",
+      "change": "added",
+      "bytes": 131459,
+      "sha256": "622e057caee96dafb9c46b7de74825fd75a753ed56b1b975892338ae9cc944ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/streams.json",
+      "change": "added",
+      "bytes": 1981,
+      "sha256": "092bdde31371fcb744661afaf8df2cadc487a645ae0f752b35631c41e16d4922",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 577,
+      "sha256": "19ab79a6e70f9ff67938b9c4169ac68e4ea7139c897e2b682310f8775cd00072",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/verifier.json",
+      "change": "added",
+      "bytes": 15234,
+      "sha256": "adbd447ea55dce081b5296d594e532ddf1dd3f463aef6245e512f2edbb2f8d4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6328,
+      "sha256": "1efd1c4bd92c582730d7981eeef6e084ab31d6abcec8b54a3aaec5a07936602e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/result.json",
+      "change": "added",
+      "bytes": 18718,
+      "sha256": "c153628c31a940376641ea0d0b92806654dac14c6a9de6da9d8adaa20b8f135a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/executions/20261120T185205Z-3b241b48/attempt.json",
+      "change": "added",
+      "bytes": 11070,
+      "sha256": "96f77fd7d664b56923c17f33f09eca23b394370f6059f3c052717a349b478a98",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-release/executions/20261120T185205Z-3b241b48/checker.json",
+      "change": "added",
+      "bytes": 8014,
+      "sha256": "1aa7af28267f872822cab8ed6f6dec1748267ba067d4d3343b0a6ddb0d233e55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "57fdfad21b2b95eaaf7d9b66371026744b22bf31195ec296959331a181822045",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/plan.json",
+      "change": "added",
+      "bytes": 5925,
+      "sha256": "c4c5e652b3e5a481683a2bb67a8df959195cab8757290c1886ac789d10765613",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/control-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/control-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 45026,
+      "sha256": "36e7bd003c4fdb95f44e3bf33ef859bdaaec5bf3a0ae0bd4da5db9debf9dd25e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/controls.json",
+      "change": "added",
+      "bytes": 116163,
+      "sha256": "0d7bc84ce6249257e033c0213d8b1d0e6703784ef6afcc78b6872ee2ccd5efec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/execution.json",
+      "change": "added",
+      "bytes": 130664,
+      "sha256": "23d06d09e70fb9de5f4b7887f2eb220367a0741ff2e7bf7235ab9167739a7fde",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/streams.json",
+      "change": "added",
+      "bytes": 1981,
+      "sha256": "7469cf7a1ac14eda7b9a86c75803fa36628fb26971b70fd0da2ca341c1d15261",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 407,
+      "sha256": "eb2c287d53d5c6466ee3339b1b2c58f199f9e429e7ff938b59700155a513e275",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/verifier.json",
+      "change": "added",
+      "bytes": 14439,
+      "sha256": "b9a6c0418bb5dd3a17191687cb73f0867919a2048372e35ae80585e1fcee176f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5813,
+      "sha256": "6e7adf0ae772b7b6907629d616360c0e495aea0458e71497e95ba2267b05cff8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/result.json",
+      "change": "added",
+      "bytes": 17620,
+      "sha256": "774a1ebb345de462815281217a74878fe43af26df7455a9a5515607f70c4b4e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/executions/20261120T185206Z-bb11b16a/attempt.json",
+      "change": "added",
+      "bytes": 10789,
+      "sha256": "54105598ac0e6d97836e389e7343dd7b18fe43f0e2a65aaf7cbbae482cb24c40",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-release/executions/20261120T185206Z-bb11b16a/checker.json",
+      "change": "added",
+      "bytes": 7359,
+      "sha256": "4d13cf0edae9887ed76873deefcecb592cd7bac202344d244ed33245db34cb79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "185e85351abf5c5a6d141cf0e63e6e32886e5d603a032796715165456ec470db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/plan.json",
+      "change": "added",
+      "bytes": 7508,
+      "sha256": "f51eac95ce4628c7443d57f42df2ed931189a4e6ce6d59e96aa769e1563ddf51",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/control-mutant-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/control-mutant-jdk21.stdout",
+      "change": "added",
+      "bytes": 45026,
+      "sha256": "297a75f86e5ea29e9527a9c623c79c50d05dbf0b3e383b3534f088f628731c19",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/controls.json",
+      "change": "added",
+      "bytes": 116194,
+      "sha256": "5130b134b9b892ba169d5ef3e6d36ff0c1bd0e39aa8d04be84c203363fb7e40b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/execution.json",
+      "change": "added",
+      "bytes": 136932,
+      "sha256": "2dd9378c732a16a1c6afaa3fc0404dd8092fc80c13b5cd8a2132722a3e0be3e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "2ca8637b79a99f9f66884d6c098a8f7c671b0cf3705bee79a038ddf35c985641",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 888,
+      "sha256": "4e9ad4f2a68b029d3c706d28b615cd916999debcb5e34b48f4b709519c46e169",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/verifier.json",
+      "change": "added",
+      "bytes": 17840,
+      "sha256": "a6cc662835334269dffbc4828be69ecbf30a8597f9134669e2accc805c54bca9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7907,
+      "sha256": "c3c8eae6eff20f3b07439ec892d1f1ebecf262921ef786dfb041cd383904cbd9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/result.json",
+      "change": "added",
+      "bytes": 22226,
+      "sha256": "0a28265a887c69540186afd4e872f5378cb909a881b2946643274e848c4eb8aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/executions/20261120T185207Z-4f678593/attempt.json",
+      "change": "added",
+      "bytes": 12204,
+      "sha256": "5df9eea17946549fdc77b057a9451f4fcff94cfe698e2b48f6d5507b46e5a5b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/executions/20261120T185207Z-4f678593/checker.json",
+      "change": "added",
+      "bytes": 9681,
+      "sha256": "f82d11911244439ca8553e78f7a3dc50be3ada996f36dce7267d03e953b4fcbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/first-8-last/executions/20261120T185207Z-4f678593/replay.json",
+      "change": "added",
+      "bytes": 2260,
+      "sha256": "71f396a13b743a36e05823925f66e8b90eb4b0eb2540c068a63774feba9c1657",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f1e69e45579506baf733f13d2d6532e3c6f603bb14f19a3be2554b6fc06007d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/plan.json",
+      "change": "added",
+      "bytes": 7242,
+      "sha256": "204467eefe1da86c9f75cdd6d321982bc802472d7624f0d17da8030f8905bab1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/control-mutant-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/control-mutant-jdk21.stdout",
+      "change": "added",
+      "bytes": 45026,
+      "sha256": "297a75f86e5ea29e9527a9c623c79c50d05dbf0b3e383b3534f088f628731c19",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/controls.json",
+      "change": "added",
+      "bytes": 116194,
+      "sha256": "8196ae963c27ed48f6565c2bcae9a182ef76891b0c1f1adb8eeacda4e4e2168b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/execution.json",
+      "change": "added",
+      "bytes": 131561,
+      "sha256": "d818b8b1374b7038059b56a0a0ebb55472304e799546bb5be66bcbf6da464204",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "338070ddb427250b37b923cb539418f3aa6017b78081c014a47c67a752cbb570",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 407,
+      "sha256": "eb2c287d53d5c6466ee3339b1b2c58f199f9e429e7ff938b59700155a513e275",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/verifier.json",
+      "change": "added",
+      "bytes": 15265,
+      "sha256": "dfcb16a7a499c9b8e636de2a50d93d6b3066d611c3a09a3462714c39b2a2d056",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5823,
+      "sha256": "5e1e2847138f6e2bc91295e058a9e35bffc50ed5727e07159fa394f4a8728521",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/result.json",
+      "change": "added",
+      "bytes": 17871,
+      "sha256": "65a840540ce566ecca7942fe4db6b3667e068a9dcb36f395c68e44643276efbf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/executions/20261120T185212Z-59a0d502/attempt.json",
+      "change": "added",
+      "bytes": 11803,
+      "sha256": "9ea6c736d5e0ed667011a14dacfb00c650a1445911d86cfd6451338ea8fd7a8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/receipts/frame-8-last/executions/20261120T185212Z-59a0d502/checker.json",
+      "change": "added",
+      "bytes": 7352,
+      "sha256": "bf57689afb336a04790325d055117ba53f85de4c953f2c6320348307d38cff16",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T18:52:32+00:00",
+    "applied": [
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/completion.json",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/plan.json",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/control-release-jdk21.stderr",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/control-release-jdk21.stdout",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/controls.json",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/execution.json",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/streams.json",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/verifier-output.txt",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/verifier.json",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/verifier.stderr",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/records/verifier.stdout",
+      "examples/336-guava-first-array-match/receipts/first-8-release/20261120T185205Z-3b241b48/result.json",
+      "examples/336-guava-first-array-match/receipts/first-8-release/executions/20261120T185205Z-3b241b48/attempt.json",
+      "examples/336-guava-first-array-match/receipts/first-8-release/executions/20261120T185205Z-3b241b48/checker.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/completion.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/plan.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/control-release-jdk21.stderr",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/control-release-jdk21.stdout",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/controls.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/execution.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/streams.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/verifier-output.txt",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/verifier.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/verifier.stderr",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/records/verifier.stdout",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/20261120T185206Z-bb11b16a/result.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/executions/20261120T185206Z-bb11b16a/attempt.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-release/executions/20261120T185206Z-bb11b16a/checker.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/completion.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/plan.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/control-mutant-jdk21.stderr",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/control-mutant-jdk21.stdout",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/controls.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/execution.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/streams.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/verifier-output.txt",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/verifier.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/verifier.stderr",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/records/verifier.stdout",
+      "examples/336-guava-first-array-match/receipts/first-8-last/20261120T185207Z-4f678593/result.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/executions/20261120T185207Z-4f678593/attempt.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/executions/20261120T185207Z-4f678593/checker.json",
+      "examples/336-guava-first-array-match/receipts/first-8-last/executions/20261120T185207Z-4f678593/replay.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/completion.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/plan.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/control-mutant-jdk21.stderr",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/control-mutant-jdk21.stdout",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/controls.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/execution.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/streams.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/verifier-output.txt",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/verifier.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/verifier.stderr",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/records/verifier.stdout",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/20261120T185212Z-59a0d502/result.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/executions/20261120T185212Z-59a0d502/attempt.json",
+      "examples/336-guava-first-array-match/receipts/frame-8-last/executions/20261120T185212Z-59a0d502/checker.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1524395,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}

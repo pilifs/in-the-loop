@@ -1,0 +1,140 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "calendar-offset-transitions",
+    "family": "calendar-offset-transitions",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "valid": {
+        "fixture": "valid"
+      },
+      "singleton": {
+        "fixture": "singleton"
+      }
+    },
+    "pairs": [
+      {
+        "name": "singleton",
+        "kind": "mutation",
+        "before": "valid",
+        "after": "singleton"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "singleton",
+      "target": "zones.Appointment#ordered(I)I"
+    },
+    {
+      "id": "count-valid",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "zones.Appointment#count(I)I",
+      "claim": "claims/count.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "valid"
+    },
+    {
+      "id": "ordered-valid",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "zones.Appointment#ordered(I)I",
+      "claim": "claims/ordered.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "valid"
+    },
+    {
+      "id": "ordinary-valid",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "zones.Appointment#ordered(I)I",
+      "claim": "claims/ordinary.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "valid"
+    },
+    {
+      "id": "count-singleton",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "zones.Appointment#count(I)I",
+      "claim": "claims/count.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "singleton"
+    },
+    {
+      "id": "ordered-singleton",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "zones.Appointment#ordered(I)I",
+      "claim": "claims/ordered.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "singleton"
+    },
+    {
+      "id": "ordinary-singleton",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "zones.Appointment#ordered(I)I",
+      "claim": "claims/ordinary.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "singleton"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/zones/ZoneCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

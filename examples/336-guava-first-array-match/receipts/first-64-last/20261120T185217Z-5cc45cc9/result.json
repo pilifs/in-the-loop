@@ -1,0 +1,770 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "0be1741c3b0a5a56",
+    "format": 1,
+    "example": "336",
+    "statement": {
+      "approach": "target",
+      "task": "first-64-last",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.primitives.Ints#indexOf([II)I",
+      "revisions": [
+        "mutant"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "first-64-last",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "com.google.common.primitives.Ints#indexOf([II)I",
+        "file": "claims/first-64.json",
+        "sha256": "c4bfe8488bbcd944da722ac1407ba9bb3e89a6f8a9288b20a294cf9ff72adc91",
+        "property": "first-64",
+        "claimKind": "property",
+        "statement": "The result identifies the first matching cell or proves none exists.",
+        "assume": "true",
+        "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 66,
+          "maxArrayLength": 64
+        },
+        "explicitBounds": {
+          "unwind": 66,
+          "maxArrayLength": 64
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/search/SearchCases.java",
+            "sha256": "ca3f33f95280b2ad59e0dbc7e20a5d4be90d491acfa4f1b4944965d0ae041aaf"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "115202974bd45259790b9f9795ef772fc6802ea283324b5f3abc2542b843f42c"
+          },
+          {
+            "id": "altered-implementation",
+            "kind": "mutation",
+            "path": "controls/last-match.patch",
+            "sha256": "e4bd90aa55f33a73b0991a33a790372bbc0515745bc6af68f23aa38e22847c17"
+          }
+        ],
+        "key": "6b27b8e0f6fa3afe"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 64
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "first-64-last",
+      "sidecar": "a6258c262e5ecfac287c80bb620b34b8fb6e1d7ba13ec085f0a4d84ab45cef80",
+      "revisions": {
+        "mutant": "f06690fa3e874f65515e8fd338a74d636e2c792f"
+      },
+      "dependencies": [
+        {
+          "revision": "mutant",
+          "position": 0,
+          "role": "driver",
+          "sha256": "9aa934d27b747c574646d7cc0c48d4f0d3bec26f28534d76a53cafbf005b11b9"
+        },
+        {
+          "revision": "mutant",
+          "position": 1,
+          "role": "original",
+          "sha256": "13922e86c64b1fa6d60be6002bf50b9dc5574d4f85feb3306a9764dff5845288"
+        },
+        {
+          "revision": "mutant",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+          "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0"
+        },
+        {
+          "revision": "mutant",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+          "coordinates": "org.jspecify:jspecify:1.0.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/first-64.json": "c4bfe8488bbcd944da722ac1407ba9bb3e89a6f8a9288b20a294cf9ff72adc91",
+        "controls/last-match.patch": "e4bd90aa55f33a73b0991a33a790372bbc0515745bc6af68f23aa38e22847c17",
+        "controls/oracle.py": "115202974bd45259790b9f9795ef772fc6802ea283324b5f3abc2542b843f42c",
+        "driver/search/SearchCases.java": "ca3f33f95280b2ad59e0dbc7e20a5d4be90d491acfa4f1b4944965d0ae041aaf"
+      },
+      "claimKey": "6b27b8e0f6fa3afe"
+    }
+  },
+  "attempt": {
+    "id": "20261120T185217Z-5cc45cc9",
+    "claim": "0be1741c3b0a5a56",
+    "startedAt": "2026-11-20T18:52:17+00:00",
+    "seconds": 24.0,
+    "engine": "native",
+    "options": [
+      "prove",
+      "com.google.common.primitives.Ints#indexOf(int[], int)",
+      "--classes",
+      "prepare/mutant/mutant/guava-33.4.8-jre.jar",
+      "--classpath",
+      "prepare/mutant/lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+      "--classpath",
+      "prepare/mutant/lib/org.jspecify/jspecify-1.0.0.jar",
+      "--assume",
+      "true",
+      "--assert",
+      "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "66",
+      "--max-array-length",
+      "64",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "9557c37c424050a1df5d4969ebde7965c85e2eb9aaeb2308fbe21ca149806685",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-183453-336-check-first-match-and-preservation-a",
+      "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-183453-336-check-first-match-and-preservation-a"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control mutant on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-mutant-jdk21.stdout",
+        "stderr": "records/control-mutant-jdk21.stderr"
+      },
+      {
+        "name": "verifier mutant on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 23.88,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 66,
+      "maxArrayLength": 64,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "0be1741c3b0a5a56",
+    "attempt": "20261120T185217Z-5cc45cc9",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+          "assume": "true",
+          "verdict": "violation",
+          "domain": "array: int[] of length ≤ 64, not null × target: int",
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 23.8 s searching inputs in [0:20] as indexOf(array=[16, 16, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20], target=16), shrunk to the input above in 196 interpreter runs, replayed in the interpreter; domain array: int[] of length ≤ 64, not null × target: int",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "indexOf(array=[0, 0], target=0)",
+            "contract": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+            "actual": "1",
+            "found": "indexOf(array=[16, 16, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20], target=16)",
+            "shrinkRuns": 196,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "array",
+                  "type": "int[]",
+                  "value": [
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "name": "target",
+                  "type": "int",
+                  "value": 0
+                }
+              ],
+              "foundInputs": [
+                {
+                  "name": "array",
+                  "type": "int[]",
+                  "value": [
+                    16,
+                    16,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20
+                  ]
+                },
+                {
+                  "name": "target",
+                  "type": "int",
+                  "value": 16
+                }
+              ],
+              "call": {
+                "class": "com.google.common.primitives.Ints",
+                "classFile": "com/google/common/primitives/Ints.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "indexOf",
+                "descriptor": "([II)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "array",
+                    "type": "int[]",
+                    "value": [
+                      0,
+                      0
+                    ],
+                    "from": "array"
+                  },
+                  {
+                    "name": "target",
+                    "type": "int",
+                    "value": 0,
+                    "from": "target"
+                  }
+                ],
+                "revision": "mutant"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 23.829,
+            "properties": 1,
+            "unwind": 66,
+            "maxArrayLength": 64,
+            "stage": "[0:20]",
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 23.798,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.683,
+                  "encoding": 0.519,
+                  "solving": 22.584,
+                  "trace": 0.012,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 275947,
+                  "clauses": 964423
+                }
+              }
+            ],
+            "native": {
+              "paths": 69,
+              "merges": 0,
+              "solverCalls": 6508,
+              "solvingSeconds": 22.583951089,
+              "gatesEvaluated": 344540,
+              "evaluatingSeconds": 0.016137214,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 275947,
+              "clauses": 964423,
+              "seconds": 23.797789196,
+              "loadingSeconds": 0.000408535,
+              "decodingSeconds": 9.8905e-05,
+              "encodingSeconds": 0.518845261,
+              "witnessSeconds": 0.011895803
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "array",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 64
+                },
+                {
+                  "name": "target",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "array: int[] of length ≤ 64, not null × target: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "true",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against (result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 66,
+              "maxArrayLength": 64,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 18,
+      "code": "\"mutant\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "indexOf(array=[0, 0], target=0)",
+        "contract": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+        "actual": "1",
+        "found": "indexOf(array=[16, 16, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20], target=16)",
+        "shrinkRuns": 196,
+        "witness": {
+          "inputs": [
+            {
+              "name": "array",
+              "type": "int[]",
+              "value": [
+                0,
+                0
+              ]
+            },
+            {
+              "name": "target",
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "array",
+              "type": "int[]",
+              "value": [
+                16,
+                16,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20,
+                20
+              ]
+            },
+            {
+              "name": "target",
+              "type": "int",
+              "value": 16
+            }
+          ],
+          "call": {
+            "class": "com.google.common.primitives.Ints",
+            "classFile": "com/google/common/primitives/Ints.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "indexOf",
+            "descriptor": "([II)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "array",
+                "type": "int[]",
+                "value": [
+                  0,
+                  0
+                ],
+                "from": "array"
+              },
+              {
+                "name": "target",
+                "type": "int",
+                "value": 0,
+                "from": "target"
+              }
+            ],
+            "revision": "mutant"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 23.8 s searching inputs in [0:20] as indexOf(array=[16, 16, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20], target=16), shrunk to the input above in 196 interpreter runs, replayed in the interpreter; domain array: int[] of length ≤ 64, not null × target: int",
+    "problem": null,
+    "domain": "array: int[] of length ≤ 64, not null × target: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+      "assume": "true"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "array",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "maxLength": 64
+          },
+          {
+            "name": "target",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "array: int[] of length ≤ 64, not null × target: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "true",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against (result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 66,
+        "maxArrayLength": 64,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "a893f21b352eeefd2b196eb1079f6a1f8f3e91522b3d43faa2589ee20fe6951a",
+        "bytes": 138873
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "d4c8314e365e2a34dae295a3b0e8d0e3b2528e04bac16ec067f18ff2e81216e9",
+        "bytes": 1115
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "ae3d81fe4aa00e62e2cca2ac50bb3a595dbdcd36324db9fd039cc670a35c1920",
+        "bytes": 1973
+      },
+      {
+        "path": "records/control-mutant-jdk21.stdout",
+        "sha256": "297a75f86e5ea29e9527a9c623c79c50d05dbf0b3e383b3534f088f628731c19",
+        "bytes": 45026
+      },
+      {
+        "path": "records/control-mutant-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "119f77b24fe225d39b38ea6138d4c7ad383e1359207e383c7773a84ea93c0fcb",
+        "bytes": 116197
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "983b025af17e551107c32c0cca129d04579801deffec8fda795dbed1954a563f",
+        "bytes": 9505
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "9efcebdfb64126dd14ee5709d9dce58fb682567ee0abadff4f6a44b6edc80d47",
+        "bytes": 19671
+      }
+    ]
+  }
+}

@@ -220,6 +220,9 @@ def main(argv):
     if len(argv) >= 2 and argv[1] == "--monitor-histories":
         from targets import monitor_histories
         return monitor_histories.main([argv[0], *argv[2:]])
+    if len(argv) >= 2 and argv[1] == "--schedule-reduction":
+        from targets import schedule_reduction
+        return schedule_reduction.main([argv[0], *argv[2:]])
     if len(argv) >= 2 and argv[1] == "--finite-domain":
         from targets import finite_check
         return finite_check.main([argv[0], *argv[2:]])

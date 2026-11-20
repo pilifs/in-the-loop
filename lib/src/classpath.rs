@@ -567,12 +567,78 @@ impl ClassPath {
         returns > 0
     }
 
+    /// Follow the selected standard charset to the literal stored in Charset.name.
+    /// A different constructor or getter leaves the identity of the returned String open.
+    pub(crate) fn charset_name_literal(&self, field: &str) -> Option<Vec<u16>> {
+        use crate::classfile::{Insn, Kind};
+        use Insn::*;
+        let image = |name: &str| match self.load(name).ok()?? {
+            Loaded { class, origin: Origin::Jdk } => Some(class), _ => None,
+        };
+        let code = |cf: &ClassFile, name: &str, desc: &str| {
+            let body = cf.method(name, desc)?.code.as_ref()?;
+            if !body.exception_table.is_empty() { return None; }
+            body.instructions().ok()
+        };
+        let charset = "java/nio/charset/Charset";
+        let provider = format!("sun/nio/cs/{field}");
+        let std = image("java/nio/charset/StandardCharsets")?;
+        let init = code(&std, "<clinit>", "()V")?;
+        let write = init.iter().position(|(_, op)| matches!(op, PutStatic(i) if std.pool.member(*i).is_ok_and(|m| m.owner == std.name && m.name == field)))?;
+        let allocates = |cf: &ClassFile, ops: &[(u32, Insn)], at: usize| {
+            matches!(ops.get(at.saturating_sub(3)..at), Some([(_,New(n)),(_,Dup),(_,InvokeSpecial(i))])
+                if cf.pool.class_name(*n).ok() == Some(provider.as_str()) && cf.pool.member(*i).is_ok_and(|m|
+                    m.owner == provider && m.name == "<init>" && m.descriptor == "()V"))
+        };
+        let implementation = image(&provider)?;
+        if !allocates(&std, &init, write) {
+            let GetStatic(i) = init.get(write.checked_sub(1)?)?.1 else { return None };
+            let m = std.pool.member(i).ok()?;
+            if m.owner != provider || m.name != "INSTANCE" { return None; }
+            let init = code(&implementation, "<clinit>", "()V")?;
+            let idx = init.iter().position(|(_, op)| matches!(op, PutStatic(i) if implementation.pool.member(*i).ok().as_ref() == Some(&m)))?;
+            if !allocates(&implementation, &init, idx) { return None; }
+        }
+        let body = code(&implementation, "<init>", "()V")?;
+        let [(_,Load(Kind::Ref,0)),(_,Ldc(name)),(_,InvokeStatic(aliases)),(_,InvokeSpecial(call)),(_,Return(None))] = body.as_slice() else { return None };
+        let aliases = implementation.pool.member(*aliases).ok()?;
+        let call = implementation.pool.member(*call).ok()?;
+        let desc = "(Ljava/lang/String;[Ljava/lang/String;)V";
+        if aliases.descriptor != "()[Ljava/lang/String;" || call.name != "<init>" || call.descriptor != desc { return None; }
+        if call.owner != charset {
+            let parent = image(&call.owner)?;
+            let body = code(&parent, "<init>", desc)?;
+            let [(_,Load(Kind::Ref,0)),(_,Load(Kind::Ref,1)),(_,Load(Kind::Ref,2)),(_,InvokeSpecial(i)),(_,Return(None))] = body.as_slice() else { return None };
+            let c = parent.pool.member(*i).ok()?;
+            if c.owner != charset || c.name != "<init>" || c.descriptor != desc { return None; }
+        }
+        let cf = image(charset)?;
+        let canonical = cf.field("name")?;
+        if !canonical.is_final() || canonical.descriptor != "Ljava/lang/String;" { return None; }
+        let body = code(&cf, "<init>", desc)?;
+        let writes: Vec<_> = body.iter().enumerate().filter(|(_, (_, i))| matches!(i, PutField(f) if cf.pool.member(*f).is_ok_and(|m| m.owner==charset && m.name=="name"))).collect();
+        let [(i,(at,_))] = writes.as_slice() else { return None };
+        let start = i.checked_sub(2)?;
+        if !matches!(body.get(start..*i), Some([(_,Load(Kind::Ref,0)),(_,Load(Kind::Ref,1))]))
+            || body.iter().any(|(pc,op)| matches!(op, Store(_,0 | 1)) || (*pc < *at && matches!(op, Return(_)))
+                || op.targets().iter().any(|target| *target > body[start].0 && *target <= *at || (*pc < *at && *target > *at))) { return None; }
+        let getter = code(&cf, "name", "()Ljava/lang/String;")?;
+        let [(_,Load(Kind::Ref,0)),(_,GetField(i)),(_,Return(Some(Kind::Ref)))] = getter.as_slice() else { return None };
+        let read = cf.pool.member(*i).ok()?;
+        if read.owner != charset || read.name != "name" || read.descriptor != canonical.descriptor { return None; }
+        Some(implementation.pool.loadable(*name).ok()?.string_units()?.into_owned())
+    }
+
     /// Reference-array comparison and hashing call the actual elements' methods.
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
             ("java/util/Arrays", "fill", "([CC)V")
             | ("java/util/Arrays", "fill", "([IIII)V")
             | ("java/util/Arrays", "rangeCheck", "(III)V")
+            | ("java/util/Arrays", "copyOfRange" | "copyOfRangeByte", "([BII)[B")
+            | ("java/util/Arrays", "checkLength", "(II)V")
+            | ("java/util/Arrays", "sort" | "legacyMergeSort", "([Ljava/lang/Object;Ljava/util/Comparator;)V" | "([Ljava/lang/Object;)V")
+            | ("java/util/Arrays", "mergeSort", "([Ljava/lang/Object;[Ljava/lang/Object;III)V" | "([Ljava/lang/Object;[Ljava/lang/Object;IIILjava/util/Comparator;)V")
             | ("java/util/Collections", "reverseOrder", "(Ljava/util/Comparator;)Ljava/util/Comparator;")
             | ("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
@@ -726,6 +792,9 @@ impl ClassPath {
         let interface = match (name, descriptor) {
             ("putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;") if class == "java/util/EnumMap" => "java/util/Map",
             ("end", "()V") if class.starts_with("java/util/stream/ReduceOps$") => "java/util/stream/Sink",
+            ("stream", "()Ljava/util/stream/Stream;") if class == "java/util/Arrays$ArrayList" => "java/util/Collection",
+            ("begin", "(J)V") | ("end", "()V") if class.starts_with("java/util/stream/FindOps$FindSink") => "java/util/stream/Sink",
+            ("getExactSizeIfKnown", "()J") if class == "java/util/Spliterators$ArraySpliterator" => "java/util/Spliterator",
             ("forEachRemaining", "(Ljava/util/function/Consumer;)V") if self.is_application(class) => "java/util/Iterator",
             ("getExactSizeIfKnown", "()J") | ("hasCharacteristics", "(I)Z") if class == "java/util/Spliterators$IteratorSpliterator" => "java/util/Spliterator",
             _ => return None,
@@ -776,9 +845,13 @@ impl ClassPath {
         if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
             | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
             | "java/util/Comparator" | "java/util/Comparators$NaturalOrderComparator"
+            | "java/util/TimSort" | "java/util/ComparableTimSort"
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"
             | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
+            | "java/util/Spliterators$ArraySpliterator" | "java/util/stream/ReferencePipeline$2" | "java/util/stream/ReferencePipeline$2$1"
+            | "java/util/stream/ReferencePipeline$StatelessOp" | "java/util/stream/Sink$ChainedReference"
+            | "java/util/stream/FindOps" | "java/util/stream/FindOps$FindOp" | "java/util/stream/FindOps$FindSink" | "java/util/stream/FindOps$FindSink$OfRef"
             | "java/util/Spliterators$EmptySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef" | "java/util/Spliterators$EmptySpliterator$OfInt"
             | "java/util/Spliterators$EmptySpliterator$OfLong" | "java/util/Spliterators$EmptySpliterator$OfDouble"
             | "java/util/Collections$EmptySet" | "java/util/Collections$UnmodifiableSet" | "java/util/Collections$UnmodifiableCollection"

@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "units",
+  "statement": "The reader returns the original UTF-16 code units exactly for every cut partition.",
+  "assume": "code >= 0 && code < 5578",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 160,
+    "maxArrayLength": 48
+  },
+  "assert": "result == 1"
+}

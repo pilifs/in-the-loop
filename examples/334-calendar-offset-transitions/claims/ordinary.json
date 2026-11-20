@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "ordinary",
+  "statement": "The fixed UTC zone and ordinary Toronto hours preserve their unique offset under both process defaults.",
+  "assume": "code >= 0 && code < 24 && (code < 12 || (((code / 2) % 6) != 1 && ((code / 2) % 6) != 4))",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 32,
+    "maxArrayLength": 24
+  },
+  "assert": "result == (code < 12 ? 1 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)"
+}

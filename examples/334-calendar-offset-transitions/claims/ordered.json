@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "ordered",
+  "statement": "Ordered offsets equal the independently derived Canadian transition table under both process defaults.",
+  "assume": "code >= 0 && code < 24",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 32,
+    "maxArrayLength": 24
+  },
+  "assert": "result == (code < 12 ? 1 : ((code / 2) % 6) == 1 ? 0 : ((code / 2) % 6) == 4 ? 4 : (((code / 2) % 6) == 0 || ((code / 2) % 6) == 5) ? 3 : 2)"
+}

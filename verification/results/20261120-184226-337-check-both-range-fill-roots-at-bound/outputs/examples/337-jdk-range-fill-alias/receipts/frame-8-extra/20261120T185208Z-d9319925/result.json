@@ -1,0 +1,459 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "715d41721684613b",
+    "format": 1,
+    "example": "337",
+    "statement": {
+      "approach": "target",
+      "task": "frame-8-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#apply([I[IIII)I",
+      "revisions": [
+        "extra"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "frame-8-extra",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "fill.Range#apply([I[IIII)I",
+        "file": "claims/frame-8.json",
+        "sha256": "87bde18ee7529cbee8779bad9665cd1bfd0082936524c61a4e8e1cfd3e8d6079",
+        "property": "frame-8",
+        "claimKind": "property",
+        "statement": "Write exactly the selected half-open slice and preserve every other cell, including what the second root observes.",
+        "assume": "0 <= from && from <= to && to <= a.length",
+        "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [
+          "a,other"
+        ],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 11,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 11,
+          "maxArrayLength": 8
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/fill/FillCases.java",
+            "sha256": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653"
+          }
+        ],
+        "key": "c5404afcbb4e8bba"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "0d163c29e187455280b92d8c09aa675aee1e2759c860738f5f23ea172c6e1859",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "frame-8-extra",
+      "sidecar": "3c3994cb95291b7ae6f80aa84b34f87e63258ef696ea2d2244fb9eb450a4c4fb",
+      "revisions": {
+        "extra": "a044051a2a814a0b463d28b9bc72fd0674d7a93c"
+      },
+      "dependencies": [
+        {
+          "revision": "extra",
+          "position": 0,
+          "role": "driver",
+          "sha256": "614c229ff9f20e7fbe91ff17fec6bab2fed8679e01607385e2febb639e45eba5"
+        },
+        {
+          "revision": "extra",
+          "position": 1,
+          "role": "original",
+          "sha256": "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/frame-8.json": "87bde18ee7529cbee8779bad9665cd1bfd0082936524c61a4e8e1cfd3e8d6079",
+        "controls/oracle.py": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653",
+        "driver/fill/FillCases.java": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+      },
+      "claimKey": "c5404afcbb4e8bba"
+    }
+  },
+  "attempt": {
+    "id": "20261120T185208Z-d9319925",
+    "claim": "715d41721684613b",
+    "startedAt": "2026-11-20T18:52:08+00:00",
+    "seconds": 0.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "fill.Range#apply(int[], int[], int, int, int)",
+      "--classes",
+      "prepare/extra/extra.jar",
+      "--assume",
+      "0 <= from && from <= to && to <= a.length",
+      "--assert",
+      "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+      "--may-alias",
+      "a,other",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "11",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "a4841425992fb39e84622143436aa21408de392ad66d2ce32b3945c0508d392c",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-184226-337-check-both-range-fill-roots-at-bound",
+      "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-184226-337-check-both-range-fill-roots-at-bound"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control extra on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-extra-jdk21.stdout",
+        "stderr": "records/control-extra-jdk21.stderr"
+      },
+      {
+        "name": "verifier extra on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.041,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 11,
+      "maxArrayLength": 8,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "715d41721684613b",
+    "attempt": "20261120T185208Z-d9319925",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+          "assume": "0 <= from && from <= to && to <= a.length",
+          "verdict": "unverifiable",
+          "domain": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int; a and other may be the same array",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([IIII)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int, int, int) at fill.Range.apply:7). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.026,
+            "properties": 1,
+            "unwind": 11,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 0.025,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.01,
+                  "encoding": 0.003,
+                  "solving": 0.012,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 2268,
+                  "clauses": 5497
+                }
+              }
+            ],
+            "native": {
+              "paths": 173,
+              "merges": 0,
+              "solverCalls": 542,
+              "solvingSeconds": 0.011693552,
+              "gatesEvaluated": 22812,
+              "evaluatingSeconds": 0.000482467,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 2268,
+              "clauses": 5497,
+              "seconds": 0.02534225,
+              "loadingSeconds": 0.000499847,
+              "decodingSeconds": 0.000114764,
+              "encodingSeconds": 0.003438155,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.util.Arrays.fill([IIII)V@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.Arrays.fill(int[], int, int, int)",
+                "sites": [
+                  "fill.Range.apply:7"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "a",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 8
+                },
+                {
+                  "name": "other",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 8
+                },
+                {
+                  "name": "from",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "to",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "value",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": true,
+              "mayAlias": [
+                [
+                  "a",
+                  "other"
+                ]
+              ],
+              "text": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int; a and other may be the same array"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "0 <= from && from <= to && to <= a.length",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against (\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 11,
+              "maxArrayLength": 8,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"extra\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([IIII)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int, int, int) at fill.Range.apply:7). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int; a and other may be the same array",
+    "replay": null,
+    "property": {
+      "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+      "assume": "0 <= from && from <= to && to <= a.length"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "742e844bf2c9369b25cf70de05dddbd92a299de5a38e70a3a4aa57cb953828de",
+        "bytes": 59380
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "00f28e04595f8a43ea6d82f51a0f51e1c2c7388203164f2a8b7cf381840bfa39",
+        "bytes": 443
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "77d9c33e890afc8418de0a4ad323923bd8ecc033729fcdd85180f258be5d6f06",
+        "bytes": 1963
+      },
+      {
+        "path": "records/control-extra-jdk21.stdout",
+        "sha256": "a49b6f4f8cfbbf791cd32ae714a55177ebda46ea4ed40646a23e4ab665bde172",
+        "bytes": 12048
+      },
+      {
+        "path": "records/control-extra-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "6a21f00fe7a84ff4ab3abcecd186cf2688f34a3e20a1c2ed49ffd63425c50ca2",
+        "bytes": 43776
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "41d8d3a870b554fac70e08ea5105152efba53d8297e8c5deeeda10fb7e9419e8",
+        "bytes": 7368
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "13246983ed60b4820b929203957074ef456f78c5621b197fedc3172ae853cf83",
+        "bytes": 15504
+      }
+    ]
+  }
+}

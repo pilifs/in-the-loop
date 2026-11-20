@@ -1,0 +1,536 @@
+{
+  "task": "histories-block",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "block",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:block.jar",
+        "tickets.TicketCases",
+        "--histories"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.115,
+      "stdout": "controls/control-block-jdk21.stdout",
+      "stderr": "controls/control-block-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:block",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "2570001ca2894daa015dad375ebbdf5f1079c3349016c5d1237fc8f66bf45a01",
+            "role": "driver"
+          },
+          {
+            "path": "block.jar",
+            "sha256": "f43eea3720c46fd21139731dc91a533eb7ffc96639a8f87ad9f600fcd61ce46a",
+            "role": "original"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "tickets.TicketCases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/oracle.py",
+          "oracleSha256": "a7e6d3146c16eb149c745f38bbbdd8822bb96b00bea9a4ace53f16d387c8eb4c"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm",
+        "executionId": "20261120T185207Z-b9a738c5",
+        "startedAt": "2026-11-20T18:52:07.760435+00:00"
+      },
+      "observations": [
+        {
+          "mode": 0,
+          "invoked": [
+            1,
+            3
+          ],
+          "returned": [
+            2,
+            4
+          ],
+          "tickets": [
+            1,
+            2
+          ],
+          "final": 2
+        },
+        {
+          "mode": 1,
+          "invoked": [
+            3,
+            1
+          ],
+          "returned": [
+            4,
+            2
+          ],
+          "tickets": [
+            2,
+            1
+          ],
+          "final": 2
+        },
+        {
+          "mode": 2,
+          "invoked": [
+            1,
+            3
+          ],
+          "returned": [
+            2,
+            4
+          ],
+          "tickets": [
+            1,
+            2
+          ],
+          "final": 2
+        }
+      ],
+      "control": "driver",
+      "record": "controls/controls.json",
+      "reason": null
+    },
+    {
+      "kind": "verifier",
+      "revision": "block",
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+        "prove",
+        "tickets.Projection#linearizable(int)",
+        "--classes",
+        "prepare/block/block.jar",
+        "--assume",
+        "code >= 0 && code < 3",
+        "--assert",
+        "result == 1",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "4",
+        "--timeout",
+        "90",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.021,
+      "stdout": "verifier/verifier.stdout",
+      "stderr": "verifier/verifier.stderr",
+      "identities": {
+        "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+        "commit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+        "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+        "command": "prove",
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "engine": "native",
+        "gaps": "strict",
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 4
+        },
+        "timeout": 90,
+        "scope": {
+          "label": "constructed-fixture",
+          "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+          "method": "tickets.Projection#linearizable(I)I",
+          "revisions": {
+            "block": {
+              "commit": "fixture:block",
+              "loadedFrom": "block.jar",
+              "classSha256": "79ab294fb8e9f30cd2400c0b21cd86054587bfcc826c0caba1ced43ab203dca5",
+              "origin": "built from block by the fixture recipe",
+              "parameters": {
+                "names": [
+                  "code"
+                ],
+                "recordedIn": "MethodParameters"
+              }
+            }
+          },
+          "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+          "models": [],
+          "assumptions": []
+        },
+        "classpath": {
+          "block": [
+            {
+              "path": "block.jar",
+              "sha256": "f43eea3720c46fd21139731dc91a533eb7ffc96639a8f87ad9f600fcd61ce46a",
+              "role": "original"
+            }
+          ]
+        },
+        "checkedEntry": "tickets.Projection#linearizable(I)I",
+        "entryBindings": {
+          "block": {
+            "entry": "tickets.Projection#linearizable(I)I",
+            "classSha256": "79ab294fb8e9f30cd2400c0b21cd86054587bfcc826c0caba1ced43ab203dca5",
+            "loadedFrom": "block.jar",
+            "subject": "tickets.Projection#linearizable(I)I",
+            "subjectClassSha256": "79ab294fb8e9f30cd2400c0b21cd86054587bfcc826c0caba1ced43ab203dca5"
+          }
+        },
+        "recipe": {
+          "kind": "direct-method",
+          "command": "prove",
+          "subject": "tickets.Projection#linearizable(I)I",
+          "checkedEntry": "tickets.Projection#linearizable(I)I",
+          "arguments": [
+            {
+              "field": "assume",
+              "flag": "--assume",
+              "value": "code >= 0 && code < 3"
+            },
+            {
+              "field": "assert",
+              "flag": "--assert",
+              "value": "result == 1"
+            },
+            {
+              "field": "engine",
+              "flag": "--engine",
+              "value": "native"
+            },
+            {
+              "field": "gaps",
+              "flag": "--gaps",
+              "value": "strict"
+            },
+            {
+              "field": "bounds.unwind",
+              "flag": "--unwind",
+              "value": "16"
+            },
+            {
+              "field": "bounds.maxArrayLength",
+              "flag": "--max-array-length",
+              "value": "4"
+            }
+          ],
+          "checkerDefaults": {
+            "observations": {
+              "values": [
+                "result",
+                "exception"
+              ],
+              "evidence": "stated.observations"
+            },
+            "nullable": {
+              "values": [],
+              "evidence": "stated.domain"
+            },
+            "mayAlias": {
+              "values": [],
+              "evidence": "stated.domain"
+            }
+          },
+          "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+        },
+        "commits": {
+          "block": "fixture:block"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC",
+          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+          "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+        },
+        "cwd": "the attempt directory",
+        "probe": {
+          "block": {
+            "argv": [
+              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+              "gaps",
+              "--target",
+              "tickets.Projection#linearizable(int)",
+              "--classes",
+              "prepare/block/block.jar",
+              "--json"
+            ],
+            "status": "exited",
+            "exitCode": 0,
+            "seconds": 0.032,
+            "stdout": "verifier/probe-block.stdout",
+            "stderr": "verifier/probe-block.stderr",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+                "sites": [
+                  "tickets.Projection.history:37"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.lang.Thread.<init>(Ljava/lang/Runnable;Ljava/lang/String;)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.Thread.<init>(java.lang.Runnable, java.lang.String)",
+                "sites": [
+                  "tickets.Projection.history:29"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.CyclicBarrier.<init>(int)",
+                "sites": [
+                  "tickets.Projection.history:14"
+                ]
+              },
+              {
+                "id": "jdk-void-method:java.lang.Thread.join()V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.lang.Thread.join()",
+                "sites": [
+                  "tickets.Projection.history:33",
+                  "tickets.Projection.history:35",
+                  "tickets.Projection.history:36"
+                ]
+              },
+              {
+                "id": "jdk-void-method:java.lang.Thread.start()V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.lang.Thread.start()",
+                "sites": [
+                  "tickets.Projection.history:32",
+                  "tickets.Projection.history:34"
+                ]
+              }
+            ]
+          }
+        },
+        "usage": {
+          "cpuSeconds": 0.0192,
+          "peakRssBytes": 80986112,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        "executionId": "20261120T185207Z-b9a738c5",
+        "startedAt": "2026-11-20T18:52:07.760435+00:00"
+      },
+      "observations": [
+        {
+          "wire_version": 1,
+          "verdict": "unverifiable",
+          "target": "tickets.Projection#linearizable(int)",
+          "domain": "code: int",
+          "assume": "code >= 0 && code < 3",
+          "assert": "result == 1",
+          "throws": [],
+          "throws_checked": [],
+          "counterexample": null,
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13 (java.util.concurrent.CyclicBarrier.<init>(int) at tickets.Projection.history:14). With --gaps assume it assumes instead that java.util.concurrent.CyclicBarrier.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "statement": "verifier/work/harness/PropertyHarness.java",
+          "findings": [
+            {
+              "rule_id": "unverifiable",
+              "message": "tickets.Projection#linearizable(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13 (java.util.concurrent.CyclicBarrier.<init>(int) at tickets.Projection.history:14). With --gaps assume it assumes instead that java.util.concurrent.CyclicBarrier.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+              "uri": null,
+              "line": 43
+            }
+          ],
+          "output": "✗ tickets.Projection#linearizable(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13 (java.util.concurrent.CyclicBarrier.<init>(int) at tickets.Projection.history:14). With --gaps assume it assumes instead that java.util.concurrent.CyclicBarrier.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+          "work": "verifier/work",
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.004904751,
+            "properties": 1,
+            "unwind": 16,
+            "max_array_length": 4,
+            "stage": null,
+            "native": {
+              "paths": 3,
+              "merges": 0,
+              "solver_calls": 2,
+              "solving_seconds": 2.7492e-05,
+              "gates_evaluated": 92,
+              "evaluating_seconds": 4.178e-06,
+              "divisions": 0,
+              "divisions_built": 0,
+              "multiplications": 0,
+              "multiplications_built": 0,
+              "variables": 124,
+              "clauses": 305,
+              "seconds": 0.004319214,
+              "loading_seconds": 0.000100608,
+              "decoding_seconds": 9.7102e-05,
+              "encoding_seconds": 7.1195e-05,
+              "witness_seconds": 0.0
+            },
+            "gap_mode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.CyclicBarrier.<init>(int)",
+                "sites": [
+                  "tickets.Projection.history:14"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "deadline_seconds": 90.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budget_seconds": 90.0,
+                "seconds": 0.004,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 124,
+                  "clauses": 305
+                }
+              }
+            ],
+            "phases": {
+              "seconds": 0.015,
+              "setup": 0.001,
+              "harness": 0.0,
+              "gaps": 0.0,
+              "contracts": 0.0,
+              "runs": 0.004,
+              "replay": 0.0,
+              "jvm": 0.0,
+              "other": 0.01
+            }
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 3",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          }
+        }
+      ],
+      "control": null,
+      "record": "verifier/verifier.json",
+      "reason": null
+    }
+  ]
+}

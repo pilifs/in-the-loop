@@ -19,6 +19,7 @@ class RecipesTest(unittest.TestCase):
         from targets.finite_check import envelope, read_rows
         self.assertEqual(envelope("n > -3 && (n == 0 || n == 1) && n <= 2", "n"), (-2, 2))
         self.assertEqual(envelope("n == -7", "n"), (-7, -7))
+        self.assertEqual(envelope("n >= 0 && n < 5578", "n", 5578), (0, 5577))
         for guard in ("n >= 0 && n < 5 || n == 9", "n >= 0 && (n < 3 || n == 7)", "n <= 2",
                       "n >= 5 && n < 2", "n >= 0 && n < 5000", "n >= 0 && n < 4 /*x*/"):
             with self.assertRaises(ValueError):

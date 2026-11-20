@@ -1,0 +1,158 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "synchronized-map-reservations",
+    "family": "synchronized-map-reservations",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "whole": {
+        "fixture": "whole"
+      },
+      "split": {
+        "fixture": "split"
+      }
+    },
+    "pairs": [
+      {
+        "name": "split",
+        "kind": "mutation",
+        "before": "whole",
+        "after": "split"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "split",
+      "target": "reservations.Booking#history(I)I"
+    },
+    {
+      "id": "history-whole",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#history(I)I",
+      "claim": "claims/history.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "whole"
+    },
+    {
+      "id": "size-whole",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#size(I)I",
+      "claim": "claims/size.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "whole"
+    },
+    {
+      "id": "distinct-whole",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#history(I)I",
+      "claim": "claims/distinct.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "whole"
+    },
+    {
+      "id": "history-split",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#history(I)I",
+      "claim": "claims/history.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "split"
+    },
+    {
+      "id": "size-split",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#size(I)I",
+      "claim": "claims/size.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "split"
+    },
+    {
+      "id": "distinct-split",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "reservations.Booking#history(I)I",
+      "claim": "claims/distinct.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "split"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/reservations/BookingCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ],
+  "monitorContracts": [
+    {
+      "id": "reservations-whole",
+      "revision": "whole",
+      "bindingTask": "history-whole",
+      "entry": "reservations.Slots#reserve(Ljava/lang/String;Ljava/lang/String;)Z",
+      "expected": "established",
+      "model": "synchronized-map"
+    },
+    {
+      "id": "reservations-split",
+      "revision": "split",
+      "bindingTask": "history-split",
+      "entry": "reservations.Slots#reserve(Ljava/lang/String;Ljava/lang/String;)Z",
+      "expected": "refuted",
+      "model": "synchronized-map"
+    }
+  ]
+}

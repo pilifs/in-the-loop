@@ -19,9 +19,10 @@ from targets.finite_oracle import Table, canonical, project
 
 LAUNCHER = Path(__file__).with_name("java") / "IsolatedCases.java"
 LIMIT = 4096
+CHUNK = 1024
 
 
-def envelope(guard, name):
+def envelope(guard, name, limit=LIMIT):
     """Prove a superset using only mandatory top-level conjuncts over a signed int and decimal literals."""
     if not guard or re.search(r"[^A-Za-z0-9_$(). \t\n%*/+<>=!&|-]|//|/\*|->|\+\+|--|(?<![<>=!])=(?!=)", guard):
         raise ValueError("the finite checker cannot certify the Java guard syntax")
@@ -57,8 +58,8 @@ def envelope(guard, name):
             low = max(low, n + (op == ">"))
         if op in ("==", "<=", "<"):
             high = min(high, n - (op == "<"))
-    if low > high or high - low + 1 > LIMIT:
-        raise ValueError(f"no nonempty certified interval of at most {LIMIT} values")
+    if type(limit) is not int or limit < 1 or low > high or high - low + 1 > limit:
+        raise ValueError(f"no nonempty certified interval of at most {limit} values")
     return low, high
 
 
@@ -107,7 +108,7 @@ def grid_problem(plan, table, controls, sides, entry):
                     raise ValueError(f"independent direct observation contradicts the checked projection on {rev}, input {row['value']}")
 
 
-def run_claim(plan, work, shared, launcher_classes, seconds):
+def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
     started = time.monotonic()
     recipe = recipes.translate(plan)
     if isinstance(recipe, interfaces.Unsupported):
@@ -161,7 +162,7 @@ def run_claim(plan, work, shared, launcher_classes, seconds):
             raise ValueError("the checked entry is not static")
         [name], _ = runtime_jar.parameter_names(data, method, desc)
         names[rev] = name
-        low, high = envelope(claim["assume"], name)
+        low, high = envelope(claim["assume"], name, case_limit)
         probe = replay_candidate.source(recipe.entry, claim, [{"type": "int", "name": name, "value": "Integer.parseInt(args[0])"}], [name])
         directory = work / rev
         directory.mkdir(parents=True)
@@ -172,13 +173,36 @@ def run_claim(plan, work, shared, launcher_classes, seconds):
                                   cwd=directory, capture_output=True, text=True, timeout=seconds)
         if compiled.returncode:
             raise ValueError(compiled.stderr[-1200:])
-        usage = {}
-        command = [str(home / "bin/java"), *runtime.CONTROL_FLAGS, "-cp", str(launcher_classes), "IsolatedCases",
-                   str(low), str(high), str(directory), *paths]
-        status, code, elapsed = runtime._run_one(command, directory, directory / "out", directory / "err", seconds,
-                                               env=runtime._verifier_env(jdk), usage=usage)
-        if status != "exited" or code != 0:
-            raise ValueError(f"finite JVM {status} ({code}): {(directory / 'err').read_text()[-1000:]}")
+        usage, chunks = {}, []
+        prefix = [str(home / "bin/java"), *runtime.CONTROL_FLAGS, "-cp", str(launcher_classes), "IsolatedCases"]
+        deadline = time.monotonic() + seconds
+        elapsed = 0.0
+        width = CHUNK if high - low + 1 > 4096 else high - low + 1
+        outs = []
+        for first in range(low, high + 1, width):
+            last = min(high, first + width - 1)
+            stdout = directory / f"out-{first}"
+            stderr = directory / f"err-{first}"
+            command = [*prefix, str(first), str(last), str(directory), *paths]
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise ValueError("finite JVM exhausted its total deadline")
+            measured = {}
+            status, code, took = runtime._run_one(command, directory, stdout, stderr, remaining,
+                                                  env=runtime._verifier_env(jdk), usage=measured)
+            if status != "exited" or code != 0:
+                raise ValueError(f"finite JVM {status} ({code}): {stderr.read_text()[-1000:]}")
+            chunks.append({"interval":[first,last],"seconds":took,**measured})
+            elapsed += took
+            usage.update(measured)
+            outs.append(stdout.read_bytes())
+        (directory / "out").write_bytes(b"".join(outs))
+        if len(chunks) > 1:
+            usage["chunks"] = chunks
+            if all("cpuSeconds" in chunk for chunk in chunks):
+                usage["cpuSeconds"] = sum(chunk["cpuSeconds"] for chunk in chunks)
+            if all("peakRssBytes" in chunk for chunk in chunks):
+                usage["peakRssBytes"] = max(chunk["peakRssBytes"] for chunk in chunks)
         rows = read_rows((directory / "out").read_text(), low, high, claim["observations"], bool(claim["assert"]))
         sides[rev] = {"commit": prepared[rev].commit, "entry": invocation.entries[rev], "classpath": cp, "parameter": name,
                       "program": probe, "probeClassSha256": runtime.sha256(directory / "CandidateReplay.class"),
@@ -211,6 +235,8 @@ def run_claim(plan, work, shared, launcher_classes, seconds):
             raise ValueError(problem)
         result["replay"] = replay
     result["wallSeconds"] = round(time.monotonic() - started, 4)
+    if case_limit != LIMIT:
+        result["caseLimit"] = case_limit
     return result
 
 
@@ -225,7 +251,7 @@ def claim_identity(plan):
             "expected": plan.expected, "sourceLocks": locks}
 
 
-def campaign(folder, example, target, tasks, seconds, retry, stop_after):
+def campaign(folder, example, target, tasks, seconds, retry, stop_after, case_limit=LIMIT):
     plans = [route.resolve(folder, example, target, name) for name in tasks]
     if not tasks or len(set(tasks)) != len(tasks) or any(not isinstance(p, interfaces.TaskPlan) for p in plans):
         raise ValueError("the batch must name distinct plannable tasks")
@@ -244,7 +270,7 @@ def campaign(folder, example, target, tasks, seconds, retry, stop_after):
     directory.mkdir(parents=True)
     journal = {"schema": "finite-jvm-batch/v1", "id": batch_id, "retryOf": retry, "order": tasks, "claims": keys,
                "status": "running", "completed": [], "missing": list(tasks), "secondsPerJvm": seconds,
-               "launcherSha256": runtime.sha256(LAUNCHER), "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."}
+               "launcherSha256": runtime.sha256(LAUNCHER), "scope": "Each integer starts with a fresh application class loader on the pinned runtime and classpath. Intervals above 4096 use consecutive JVM batches on one total deadline."}
     save = lambda: executions.save(directory / "batch.json", journal)
     save()
     shared = {"prepared": {}, "controls": {}}
@@ -266,7 +292,7 @@ def campaign(folder, example, target, tasks, seconds, retry, stop_after):
             return 1
         for p in plans:
             try:
-                record = run_claim(p, work / p.task, shared, launcher, seconds)
+                record = run_claim(p, work / p.task, shared, launcher, seconds, case_limit)
                 if retry and (original := attempts / retry / (p.task + ".json")).is_file():
                     predecessor = json.loads(original.read_text())
                     if "sides" in predecessor and (record["jdkRelease"] != predecessor["jdkRelease"]
@@ -311,7 +337,11 @@ def validate_record(plan, record):
             raise ValueError("missing checked entry or classpath")
         rows = side["rows"]
         name = side["parameter"]
-        low, high = envelope(plan.claim["assume"], name)
+        low, high = envelope(plan.claim["assume"], name, record.get("caseLimit", LIMIT))
+        if high - low + 1 > 4096:
+            expected_chunks = [[start, min(high, start + CHUNK - 1)] for start in range(low, high + 1, CHUNK)]
+            if [chunk["interval"] for chunk in side.get("chunks", [])] != expected_chunks:
+                raise ValueError("the recorded JVM batches do not cover the certified interval exactly")
         if side["interval"] != [low, high] or [r["value"] for r in rows] != list(range(low, high + 1)):
             raise ValueError("the finite evidence does not cover its entire integer envelope")
         program = replay_candidate.source(recipe.entry, plan.claim, [{"type": "int", "name": name, "value": "Integer.parseInt(args[0])"}], [name])
@@ -436,6 +466,8 @@ def main(argv):
     parser.add_argument("number")
     parser.add_argument("--tasks")
     parser.add_argument("--checker-seconds", type=int, default=120)
+    parser.add_argument("--max-cases", type=int, default=LIMIT,
+                        help="maximum certified selector interval; large intervals run in consecutive JVM batches")
     parser.add_argument("--retry-of")
     parser.add_argument("--stop-after", type=int)
     args = parser.parse_args(argv)
@@ -451,6 +483,8 @@ def main(argv):
         parser.error("this example has no target sidecar")
     tasks = args.tasks.split(",") if args.tasks else [t["id"] for t in target["tasks"] if t["kind"] in ("prove", "equivalence")]
     try:
-        return campaign(folder, example, target, tasks, args.checker_seconds, args.retry_of, args.stop_after)
+        if args.max_cases <= 0:
+            parser.error("--max-cases must be positive")
+        return campaign(folder, example, target, tasks, args.checker_seconds, args.retry_of, args.stop_after, args.max_cases)
     except (OSError, ValueError) as error:
         parser.error(str(error))

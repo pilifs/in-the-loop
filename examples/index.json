@@ -13668,6 +13668,344 @@
       }
     },
     {
+      "id": "332",
+      "path": "examples/332-paper-initialization",
+      "title": "A paper setting read before or after initialization",
+      "summary": "A cached or helper-backed paper setting survives a later property change, while a live read can change the printed size.",
+      "origin": "constructed",
+      "system": "Paper setting",
+      "symbol": "paper.Paper#size()Ljava/lang/String;",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "class-initialization"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The independent JVM oracle covered 9 inputs on each revision. cached mismatches were 0 for first, 0 for second, 0 for count. helper mismatches were 0 for first, 0 for second, 0 for count. live mismatches were 0 for first, 4 for second, 0 for count."
+      ],
+      "source": null,
+      "target": {
+        "family": "paper-initialization",
+        "role": "control",
+        "case": "paper-initialization",
+        "tasks": [
+          "replay",
+          "replay-live",
+          "second-cached",
+          "init-count-cached",
+          "second-helper",
+          "init-count-helper",
+          "second-live",
+          "init-count-live"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "replay-live": "scaffolded",
+          "second-cached": "scaffolded",
+          "init-count-cached": "scaffolded",
+          "second-helper": "scaffolded",
+          "init-count-helper": "scaffolded",
+          "second-live": "scaffolded",
+          "init-count-live": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "replay-live": null,
+          "second-cached": "established",
+          "init-count-cached": "established",
+          "second-helper": "established",
+          "init-count-helper": "established",
+          "second-live": "refuted",
+          "init-count-live": "established"
+        },
+        "claims": {
+          "second-cached": null,
+          "init-count-cached": null,
+          "second-helper": null,
+          "init-count-helper": null,
+          "second-live": null,
+          "init-count-live": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T185746Z-085b9467/result.json",
+            "attempt": "20261120T185746Z-085b9467",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-live": {
+            "path": "receipts/replay-live/20261120T185749Z-d4b9a44c/result.json",
+            "attempt": "20261120T185749Z-d4b9a44c",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 332 TASK"
+      }
+    },
+    {
+      "id": "333",
+      "path": "examples/333-service-context-loader",
+      "title": "A service chosen by the thread context loader",
+      "summary": "Two fresh ServiceLoader lookups see only the resources of their separately selected context loaders. The fixed application loader always sees Compact.",
+      "origin": "constructed",
+      "system": "Java ServiceLoader",
+      "symbol": "styles.Lookup#inspect()[Ljava/lang/String;",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "class-files"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": null,
+      "target": {
+        "family": "service-context-loader",
+        "role": "control",
+        "case": "service-context-loader",
+        "tasks": [
+          "replay",
+          "replay-fixed",
+          "orders-default",
+          "selection-default",
+          "lazy-default",
+          "orders-explicit",
+          "selection-explicit",
+          "lazy-explicit",
+          "orders-app",
+          "selection-app",
+          "lazy-app"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "replay-fixed": "scaffolded",
+          "orders-default": "scaffolded",
+          "selection-default": "scaffolded",
+          "lazy-default": "scaffolded",
+          "orders-explicit": "scaffolded",
+          "selection-explicit": "scaffolded",
+          "lazy-explicit": "scaffolded",
+          "orders-app": "scaffolded",
+          "selection-app": "scaffolded",
+          "lazy-app": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "replay-fixed": null,
+          "orders-default": "established",
+          "selection-default": "established",
+          "lazy-default": "established",
+          "orders-explicit": "established",
+          "selection-explicit": "established",
+          "lazy-explicit": "established",
+          "orders-app": "refuted",
+          "selection-app": "refuted",
+          "lazy-app": "established"
+        },
+        "claims": {
+          "orders-default": null,
+          "selection-default": null,
+          "lazy-default": null,
+          "orders-explicit": null,
+          "selection-explicit": null,
+          "lazy-explicit": null,
+          "orders-app": null,
+          "selection-app": null,
+          "lazy-app": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T185746Z-07c7daee/result.json",
+            "attempt": "20261120T185746Z-07c7daee",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-fixed": {
+            "path": "receipts/replay-fixed/20261120T190058Z-700032f5/result.json",
+            "attempt": "20261120T190058Z-700032f5",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 333 TASK"
+      }
+    },
+    {
+      "id": "334",
+      "path": "examples/334-calendar-offset-transitions",
+      "title": "An appointment in a skipped or repeated hour",
+      "summary": "Toronto's missing spring hour has no valid offset. Its repeated autumn hour admits two ordered offsets.",
+      "origin": "constructed",
+      "system": "Java ZoneRules",
+      "symbol": "zones.Offsets#offsets(Ljava/time/ZoneId;Ljava/time/LocalDateTime;)Ljava/util/List;",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Canada's rules since 2007 select the second March Sunday at 02:00 for the one-hour advance and the first November Sunday at 02:00 for its reversal. Toronto's standard offset is UTC−05. The resulting twelve zone/local-time entries are each run with two different process defaults. Source consulted 2026-11-20: https://github.com/eggert/tz/blob/2024a/northamerica."
+      ],
+      "source": null,
+      "target": {
+        "family": "calendar-offset-transitions",
+        "role": "control",
+        "case": "calendar-offset-transitions",
+        "tasks": [
+          "replay",
+          "count-valid",
+          "ordered-valid",
+          "ordinary-valid",
+          "count-singleton",
+          "ordered-singleton",
+          "ordinary-singleton"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "count-valid": "scaffolded",
+          "ordered-valid": "scaffolded",
+          "ordinary-valid": "scaffolded",
+          "count-singleton": "scaffolded",
+          "ordered-singleton": "scaffolded",
+          "ordinary-singleton": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "count-valid": "established",
+          "ordered-valid": "established",
+          "ordinary-valid": "established",
+          "count-singleton": "refuted",
+          "ordered-singleton": "refuted",
+          "ordinary-singleton": "established"
+        },
+        "claims": {
+          "count-valid": null,
+          "ordered-valid": null,
+          "ordinary-valid": null,
+          "count-singleton": null,
+          "ordered-singleton": null,
+          "ordinary-singleton": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T185746Z-0442c266/result.json",
+            "attempt": "20261120T185746Z-0442c266",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 334 TASK"
+      }
+    },
+    {
       "id": "335",
       "path": "examples/335-guava-signed-mean",
       "title": "Guava's signed mean across both full word widths",
@@ -13827,18 +14165,18 @@
           "first-64-last",
           "frame-64-last"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
           "mutant-replay": "scaffolded",
-          "first-8-release": "scaffolded",
-          "frame-8-release": "scaffolded",
-          "first-8-last": "scaffolded",
-          "frame-8-last": "scaffolded",
-          "first-64-release": "scaffolded",
-          "frame-64-release": "scaffolded",
-          "first-64-last": "scaffolded",
-          "frame-64-last": "scaffolded"
+          "first-8-release": "executable",
+          "frame-8-release": "executable",
+          "first-8-last": "executable",
+          "frame-8-last": "executable",
+          "first-64-release": "executable",
+          "frame-64-release": "executable",
+          "first-64-last": "executable",
+          "frame-64-last": "executable"
         },
         "expected": {
           "replay": null,
@@ -13853,14 +14191,14 @@
           "frame-64-last": "established"
         },
         "claims": {
-          "first-8-release": null,
-          "frame-8-release": null,
-          "first-8-last": null,
-          "frame-8-last": null,
-          "first-64-release": null,
-          "frame-64-release": null,
-          "first-64-last": null,
-          "frame-64-last": null
+          "first-8-release": "established",
+          "frame-8-release": "established",
+          "first-8-last": "refuted",
+          "frame-8-last": "established",
+          "first-64-release": "established",
+          "frame-64-release": "established",
+          "first-64-last": "refuted",
+          "frame-64-last": "established"
         },
         "receipts": {
           "replay": {
@@ -13876,6 +14214,70 @@
             "attempt": "20261120T182848Z-29182ec1",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "first-8-release": {
+            "path": "receipts/first-8-release/20261120T185205Z-3b241b48/result.json",
+            "attempt": "20261120T185205Z-3b241b48",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "frame-8-release": {
+            "path": "receipts/frame-8-release/20261120T185206Z-bb11b16a/result.json",
+            "attempt": "20261120T185206Z-bb11b16a",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "first-8-last": {
+            "path": "receipts/first-8-last/20261120T185207Z-4f678593/result.json",
+            "attempt": "20261120T185207Z-4f678593",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "frame-8-last": {
+            "path": "receipts/frame-8-last/20261120T185212Z-59a0d502/result.json",
+            "attempt": "20261120T185212Z-59a0d502",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "first-64-release": {
+            "path": "receipts/first-64-release/20261120T185205Z-3785ba01/result.json",
+            "attempt": "20261120T185205Z-3785ba01",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "frame-64-release": {
+            "path": "receipts/frame-64-release/20261120T185206Z-e55631d2/result.json",
+            "attempt": "20261120T185206Z-e55631d2",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "first-64-last": {
+            "path": "receipts/first-64-last/20261120T185217Z-5cc45cc9/result.json",
+            "attempt": "20261120T185217Z-5cc45cc9",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "frame-64-last": {
+            "path": "receipts/frame-64-last/20261120T185245Z-5df81ebd/result.json",
+            "attempt": "20261120T185245Z-5df81ebd",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -14216,6 +14618,227 @@
       }
     },
     {
+      "id": "340",
+      "path": "examples/340-treelist-rejected-edit",
+      "title": "A TreeList iterator survives a refused indexed edit",
+      "summary": "A rejected indexed add or remove leaves the list unchanged. An iterator made before rejection should return the original first element.",
+      "origin": "real-world",
+      "system": "Apache Commons Collections",
+      "symbol": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "side-effecting-read"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The independent JVM oracle covered 112 inputs on each revision. parent mismatches were 0 for exception, 0 for contents, 112 for existing, 0 for fresh. fix mismatches were 0 for exception, 0 for contents, 0 for existing, 0 for fresh."
+      ],
+      "source": "https://github.com/apache/commons-collections/commit/fe8eb4989392cb436438978b151aa800b70195b9",
+      "target": {
+        "family": "treelist-rejected-edit",
+        "role": "calibration",
+        "case": "treelist-rejected-edit",
+        "tasks": [
+          "replay",
+          "exception-parent",
+          "contents-parent",
+          "existing-parent",
+          "fresh-parent",
+          "exception-fix",
+          "contents-fix",
+          "existing-fix",
+          "fresh-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "exception-parent": "scaffolded",
+          "contents-parent": "scaffolded",
+          "existing-parent": "scaffolded",
+          "fresh-parent": "scaffolded",
+          "exception-fix": "scaffolded",
+          "contents-fix": "scaffolded",
+          "existing-fix": "scaffolded",
+          "fresh-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "exception-parent": "established",
+          "contents-parent": "established",
+          "existing-parent": "refuted",
+          "fresh-parent": "established",
+          "exception-fix": "established",
+          "contents-fix": "established",
+          "existing-fix": "established",
+          "fresh-fix": "established"
+        },
+        "claims": {
+          "exception-parent": null,
+          "contents-parent": null,
+          "existing-parent": null,
+          "fresh-parent": null,
+          "exception-fix": null,
+          "contents-fix": null,
+          "existing-fix": null,
+          "fresh-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T190104Z-9ac6b10f/result.json",
+            "attempt": "20261120T190104Z-9ac6b10f",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/apache/commons-collections/commit/fe8eb4989392cb436438978b151aa800b70195b9",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 340 TASK"
+      }
+    },
+    {
+      "id": "341",
+      "path": "examples/341-utf8-chunk-boundaries",
+      "title": "A UTF-8 decoder across every byte partition",
+      "summary": "One reader must preserve UTF-16 units across chunk boundaries, including divisions within a four-byte code point. A separate decoder per chunk loses that state.",
+      "origin": "constructed",
+      "system": "Java InputStreamReader",
+      "symbol": "chunks.Inputs#units(I)I",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": null,
+      "target": {
+        "family": "utf8-chunk-boundaries",
+        "role": "control",
+        "case": "utf8-chunk-boundaries",
+        "tasks": [
+          "replay",
+          "replay-separate",
+          "units-stream",
+          "eof-stream",
+          "units-separate",
+          "eof-separate",
+          "units-bom",
+          "eof-bom"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "replay-separate": "scaffolded",
+          "units-stream": "scaffolded",
+          "eof-stream": "scaffolded",
+          "units-separate": "scaffolded",
+          "eof-separate": "scaffolded",
+          "units-bom": "scaffolded",
+          "eof-bom": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "replay-separate": null,
+          "units-stream": "established",
+          "eof-stream": "established",
+          "units-separate": "refuted",
+          "eof-separate": "established",
+          "units-bom": "established",
+          "eof-bom": "established"
+        },
+        "claims": {
+          "units-stream": null,
+          "eof-stream": null,
+          "units-separate": null,
+          "eof-separate": null,
+          "units-bom": null,
+          "eof-bom": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T190747Z-eb2d7311/result.json",
+            "attempt": "20261120T190747Z-eb2d7311",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-separate": {
+            "path": "receipts/replay-separate/20261120T190751Z-09703a45/result.json",
+            "attempt": "20261120T190751Z-09703a45",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 341 TASK"
+      }
+    },
+    {
       "id": "342",
       "path": "examples/342-two-thread-tickets",
       "title": "Two real threads request the next ticket",
@@ -14324,6 +14947,191 @@
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 342 TASK"
+      }
+    },
+    {
+      "id": "343",
+      "path": "examples/343-synchronized-map-reservations",
+      "title": "Two reservations on a JDK synchronized map",
+      "summary": "Method-level synchronization can preserve final map size while two callers both report reserving the same slot.",
+      "origin": "constructed",
+      "system": "Synchronized map",
+      "symbol": "reservations.Slots#reserve(Ljava/lang/String;Ljava/lang/String;)Z",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "race-condition"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": null,
+      "target": {
+        "family": "synchronized-map-reservations",
+        "role": "control",
+        "case": "synchronized-map-reservations",
+        "tasks": [
+          "replay",
+          "history-whole",
+          "size-whole",
+          "distinct-whole",
+          "history-split",
+          "size-split",
+          "distinct-split"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "history-whole": "scaffolded",
+          "size-whole": "scaffolded",
+          "distinct-whole": "scaffolded",
+          "history-split": "scaffolded",
+          "size-split": "scaffolded",
+          "distinct-split": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "history-whole": "established",
+          "size-whole": "established",
+          "distinct-whole": "established",
+          "history-split": "refuted",
+          "size-split": "established",
+          "distinct-split": "established"
+        },
+        "claims": {
+          "history-whole": null,
+          "size-whole": null,
+          "distinct-whole": null,
+          "history-split": null,
+          "size-split": null,
+          "distinct-split": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T190248Z-869bb3a3/result.json",
+            "attempt": "20261120T190248Z-869bb3a3",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 343 TASK"
+      }
+    },
+    {
+      "id": "344",
+      "path": "examples/344-seat-schedule-reduction",
+      "title": "Independent schedules with aliases and an ordered audit",
+      "summary": "Two workers reserve shared or distinct seats and append a labeled acknowledgment to separate or shared synchronized audit lists. Reduction must keep every selected winner and audit order.",
+      "origin": "constructed",
+      "system": "Seat allocation",
+      "symbol": "seats.Seat#reserve(ILseats/Audit;)Z",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "aliasing",
+          "race-condition"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": null,
+      "target": {
+        "family": "seat-schedule-reduction",
+        "role": "control",
+        "case": "seat-schedule-reduction",
+        "tasks": [
+          "replay",
+          "owners-identity",
+          "owners-named"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "owners-identity": "scaffolded",
+          "owners-named": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "owners-identity": "established",
+          "owners-named": "refuted"
+        },
+        "claims": {
+          "owners-identity": null,
+          "owners-named": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T191134Z-195f51d2/result.json",
+            "attempt": "20261120T191134Z-195f51d2",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 344 TASK"
       }
     },
     {

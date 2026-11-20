@@ -1,0 +1,198 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "service-context-loader",
+    "family": "service-context-loader",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "default": {
+        "fixture": "default"
+      },
+      "explicit": {
+        "fixture": "explicit"
+      },
+      "app": {
+        "fixture": "app"
+      }
+    },
+    "pairs": [
+      {
+        "name": "explicit",
+        "kind": "positive",
+        "before": "default",
+        "after": "explicit"
+      },
+      {
+        "name": "application",
+        "kind": "mutation",
+        "before": "default",
+        "after": "app"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "explicit",
+      "target": "styles.World#orders(I)I"
+    },
+    {
+      "id": "replay-fixed",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "application",
+      "target": "styles.World#orders(I)I"
+    },
+    {
+      "id": "orders-default",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#orders(I)I",
+      "claim": "claims/orders.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "default"
+    },
+    {
+      "id": "selection-default",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#selection(I)I",
+      "claim": "claims/selection.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "default"
+    },
+    {
+      "id": "lazy-default",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#lazy(I)I",
+      "claim": "claims/lazy.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "default"
+    },
+    {
+      "id": "orders-explicit",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#orders(I)I",
+      "claim": "claims/orders.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "explicit"
+    },
+    {
+      "id": "selection-explicit",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#selection(I)I",
+      "claim": "claims/selection.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "explicit"
+    },
+    {
+      "id": "lazy-explicit",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#lazy(I)I",
+      "claim": "claims/lazy.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "explicit"
+    },
+    {
+      "id": "orders-app",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#orders(I)I",
+      "claim": "claims/orders.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-fixed"
+      ],
+      "expected": "refuted",
+      "revision": "app"
+    },
+    {
+      "id": "selection-app",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#selection(I)I",
+      "claim": "claims/selection.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-fixed"
+      ],
+      "expected": "refuted",
+      "revision": "app"
+    },
+    {
+      "id": "lazy-app",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "styles.World#lazy(I)I",
+      "claim": "claims/lazy.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-fixed"
+      ],
+      "expected": "established",
+      "revision": "app"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/styles/LoaderCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ]
+}

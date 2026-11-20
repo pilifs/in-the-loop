@@ -664,6 +664,11 @@ def handoff(folder, example, target, task):
         return Unsupported("handoff", WORKFLOW, f"example {example.get('id')} has no task {task!r}", stage="handoff")
     from targets import workflow_handoff
     packet = workflow_handoff.packet(folder, example, target, task)
+    if spec := target.get("scheduleReduction"):
+        from targets import schedule_reduction
+        scheduled = plan_task(folder, example, target, task)
+        if isinstance(scheduled, TaskPlan) and (reduction := schedule_reduction.evidence(Path(folder),scheduled,spec)):
+            packet["scheduleReduction"] = reduction
     if target.get("monitorContracts"):
         from targets import monitor_histories
         bounded = plan_task(folder, example, target, task)

@@ -1,0 +1,36 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "344",
+  "title": "Independent schedules with aliases and an ordered audit",
+  "summary": "Two workers reserve shared or distinct seats and append a labeled acknowledgment to separate or shared synchronized audit lists. Reduction must keep every selected winner and audit order.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "aliasing",
+    "race-condition",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Seat allocation",
+    "file": "identity/seats/Handles.java",
+    "symbol": "seats.Seat#reserve(ILseats/Audit;)Z"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Two workers reserve shared or distinct seats and append a labeled acknowledgment to separate or shared synchronized audit lists. Reduction must keep every selected winner and audit order."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": []
+}

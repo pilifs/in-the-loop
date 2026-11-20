@@ -1,5 +1,7 @@
 """Compare a typed source claim with what the verifier and the JVM actually examined."""
 
+import re
+
 
 def alias_groups(pairs):
     groups = []
@@ -31,6 +33,9 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
                 return f"{name} has an alias outside its planned domain"
         elif expected["type"] in ("int", "long"):
             limit = 1 << (63 if expected["type"] == "long" else 31)
+            # The wire format preserves every long as signed decimal text even in JSON readers with binary64 numbers.
+            if expected["type"] == "long" and isinstance(data, str) and len(data) <= 20 and re.fullmatch(r"0|-?[1-9][0-9]*", data):
+                data = int(data)
             if type(data) is not int or not -limit <= data < limit:
                 return f"{name} is outside the planned {expected['type']} domain"
         elif expected["type"] == "int[]":

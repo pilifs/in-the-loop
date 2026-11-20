@@ -194,12 +194,18 @@
         "adapters": { "description": "Adapter sources in the example's folder, compiled separately from the original sources.", "type": "array", "items": { "$ref": "#/$defs/file" } }
       }
     },
+    "scheduleReduction": {
+      "description": "Compare exhaustive and reduced monitor schedules on the same labeled heap and independent history oracle.",
+      "type": "object", "additionalProperties": false, "required": ["bindingTask","revision"],
+      "properties": {"bindingTask":{"$ref":"#/$defs/name"},"revision":{"$ref":"#/$defs/name"}}
+    },
     "monitorContracts": {
       "description": "Completed histories from bounded sequentially consistent exploration of compiled monitor operations.",
       "type": "array", "items": {
         "type": "object", "additionalProperties": false, "required": ["id","revision","bindingTask","entry","expected"],
         "properties": {
           "id": {"$ref":"#/$defs/name"}, "revision": {"$ref":"#/$defs/name"}, "bindingTask": {"$ref":"#/$defs/name"},
+          "model": {"enum":["tickets","synchronized-map"]},
           "entry": {"type":"string","minLength":3}, "expected": {"enum":["established","refuted"]}
         }
       }

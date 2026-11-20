@@ -135,7 +135,7 @@ def check(plan, prepared, inputs, work, entry=None):
     aliases = qualification.alias_groups([p.split(",") for p in claim.get("mayAlias", [])])
     try:
         if not supported(entry, claim):
-            raise ValueError("this independent replay requires int or int[] arguments and an int or long result")
+            raise ValueError("this independent replay requires int, long or int[] arguments and an int or long result")
         jdk = runtime._verifier_jdk(plan, prepared)
         report["jdkRelease"] = jdk["release"]
         work = Path(work)

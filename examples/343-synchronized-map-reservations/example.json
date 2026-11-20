@@ -1,0 +1,35 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "343",
+  "title": "Two reservations on a JDK synchronized map",
+  "summary": "Method-level synchronization can preserve final map size while two callers both report reserving the same slot.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "race-condition",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Synchronized map",
+    "file": "whole/reservations/Slots.java",
+    "symbol": "reservations.Slots#reserve(Ljava/lang/String;Ljava/lang/String;)Z"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Method-level synchronization can preserve final map size while two callers both report reserving the same slot."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": []
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "fresh",
+  "statement": "On a rejected indexed operation the fresh iterator returns the original first element.",
+  "assume": "code >= 0 && code < 112",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 48,
+    "maxArrayLength": 16
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "trees.Projection#fresh(I)I",
+    "cases": 112,
+    "correspondence": "finite-oracle",
+    "mapping": "The selector chooses an ordered seed, an indexed add or remove and one of four invalid positions. A single actual TreeList and its original iterator remain live across the exceptional exit."
+  }
+}

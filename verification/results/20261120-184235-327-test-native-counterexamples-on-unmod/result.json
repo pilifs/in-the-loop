@@ -1,0 +1,283 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-184235-327-test-native-counterexamples-on-unmod",
+  "title": "327 test native counterexamples on unmodified startup",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 11.9s, peak 253.1 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-184235-327-test-native-counterexamples-on-unmod.json",
+    "sha256": "72675bcc8e14ee78d355bc623f8ce70b5bfeca5216629a0693fa1148c40d5a50",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-184235-327-test-native-counterexamples-on-unmod",
+      "title": "327 test native counterexamples on unmodified startup",
+      "description": "For each native counterexample found under observed initialization, construct its concrete input on the original ordered classpath without injecting startup state. Require the original guard, false assertion, identical observed value, class bytes and JDK. Preserve both scope identities.",
+      "kind": "real-world",
+      "capabilities": [
+        "target:history",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "327"
+        ]
+      },
+      "expected": "Each submitted witness is an admitted refutation of the original assertion in a fresh JVM and is linked to its qualifying native source.",
+      "submitted": {
+        "at": "2026-11-20T18:42:35+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "normal-parent on original bytecode",
+          "run": "python3 examples/tools/build.py 327 --original-witness normal-parent --from-task normal-parent-observed",
+          "cwd": "."
+        },
+        {
+          "name": "days-parent on original bytecode",
+          "run": "python3 examples/tools/build.py 327 --original-witness days-parent --from-task days-parent-observed",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/327-joda-monthday-distance/records/original-witnesses",
+        "examples/327-joda-monthday-distance/receipts/normal-parent/executions",
+        "examples/327-joda-monthday-distance/receipts/days-parent/executions"
+      ]
+    }
+  },
+  "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+  "startedAt": "2026-11-20T18:51:55+00:00",
+  "finishedAt": "2026-11-20T18:52:16+00:00",
+  "wallSeconds": 21.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 701952,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 265347072,
+    "wallSeconds": 11.9,
+    "cpuSeconds": 19.7,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "normal-parent on original bytecode",
+      "run": "python3 examples/tools/build.py 327 --original-witness normal-parent --from-task normal-parent-observed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 6.506,
+      "cpuSeconds": 10.842,
+      "cpuThrottledSeconds": 1.385,
+      "peakMemoryBytes": 265347072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-normal-parent-on-original-byte.log",
+        "lines": 1,
+        "bytes": 141,
+        "sha256": "cad795f36ad21d04f19266c01105eaed4b1c3b6b8cbe0749e9a66ff450613eb1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "normal-parent refuted [{'name': 'code', 'type': 'int', 'value': 17}] receipts/normal-parent/executions/20261120T185205Z-1afaa00f/replay.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "days-parent on original bytecode",
+      "run": "python3 examples/tools/build.py 327 --original-witness days-parent --from-task days-parent-observed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 5.411,
+      "cpuSeconds": 8.892,
+      "cpuThrottledSeconds": 1.409,
+      "peakMemoryBytes": 219566080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-days-parent-on-original-byteco.log",
+        "lines": 1,
+        "bytes": 137,
+        "sha256": "d4c123f04b90d5178efc8eaad24da6891007840b420f45da37777a8fb4860c8e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "days-parent refuted [{'name': 'code', 'type': 'int', 'value': 17}] receipts/days-parent/executions/20261120T185211Z-815e417a/replay.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/327-joda-monthday-distance/records/original-witnesses/days-parent/20261120T185211Z-815e417a.json",
+      "change": "added",
+      "bytes": 1868,
+      "sha256": "ea52372cad4a13b7cf202a9561022c6f3bee0403a0459553d7485dd6633d8bc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/original-witnesses/normal-parent/20261120T185205Z-1afaa00f.json",
+      "change": "added",
+      "bytes": 1878,
+      "sha256": "ece1186b3b7a947360a8fb0187844e99c90c3e1352a5edfcf81846df305f41e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent/executions/20261120T185205Z-1afaa00f/attempt.json",
+      "change": "added",
+      "bytes": 12701,
+      "sha256": "e390c337d5ec932ea072d3caefc0a93fee4968315eb21fc14aebd98be83a2eb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent/executions/20261120T185205Z-1afaa00f/candidate.json",
+      "change": "added",
+      "bytes": 188,
+      "sha256": "9487d2e88b84f0f28cdf33a9797a243ec9f8b0033a8f1262d0746f27c8dee825",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent/executions/20261120T185205Z-1afaa00f/correspondence.json",
+      "change": "added",
+      "bytes": 1497,
+      "sha256": "e12034f4a40a0e8502393ab9b4993fed56f4135505180a3be58d7f0a95a56992",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent/executions/20261120T185205Z-1afaa00f/replay.json",
+      "change": "added",
+      "bytes": 1995,
+      "sha256": "ac3d502548120be349adc01256671f531487370c30c68515105feeaed372bfea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent/executions/20261120T185211Z-815e417a/attempt.json",
+      "change": "added",
+      "bytes": 12699,
+      "sha256": "506ae1e84bb030c79e81131c937a18d68c3f2faebfa6465af228565dae8d7fef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent/executions/20261120T185211Z-815e417a/candidate.json",
+      "change": "added",
+      "bytes": 188,
+      "sha256": "1aa7eaa41418405c50bf85de58e120d55f96e8ac82035d8183d6e25ab4f59a66",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent/executions/20261120T185211Z-815e417a/correspondence.json",
+      "change": "added",
+      "bytes": 1495,
+      "sha256": "391f9821a16f708337704c19e8a6c6523607265a54dac4739d907c54633005aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent/executions/20261120T185211Z-815e417a/replay.json",
+      "change": "added",
+      "bytes": 1989,
+      "sha256": "eda98d54922705b6c76b9f52b7e6f7412ab0e6782e5c7c832536d56752448a8b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T18:52:33+00:00",
+    "applied": [
+      "examples/327-joda-monthday-distance/records/original-witnesses/days-parent/20261120T185211Z-815e417a.json",
+      "examples/327-joda-monthday-distance/records/original-witnesses/normal-parent/20261120T185205Z-1afaa00f.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent/executions/20261120T185205Z-1afaa00f/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent/executions/20261120T185205Z-1afaa00f/candidate.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent/executions/20261120T185205Z-1afaa00f/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent/executions/20261120T185205Z-1afaa00f/replay.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent/executions/20261120T185211Z-815e417a/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent/executions/20261120T185211Z-815e417a/candidate.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent/executions/20261120T185211Z-815e417a/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent/executions/20261120T185211Z-815e417a/replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

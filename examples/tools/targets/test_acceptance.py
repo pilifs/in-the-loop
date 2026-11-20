@@ -268,7 +268,7 @@ class A2PreparationIntegrityOnTheReceipts(unittest.TestCase):
                         pinned.update(digest for _, digest in expected)
                     if prep.get("libraryCatalog") and route == "fixture":
                         catalog = json.loads((folder / prep["libraryCatalog"]).read_text())
-                        names = target["history"]["revisions"][base]["runtimeLibraries"]
+                        names = target["history"]["revisions"][base].get("runtimeLibraries", [])
                         got = [d["sha256"] for d in t["dependencies"]
                                if d["revision"] == revision and d["role"] == "dependency"]
                         self.assertEqual(got, [catalog[name]["sha256"] for name in names])

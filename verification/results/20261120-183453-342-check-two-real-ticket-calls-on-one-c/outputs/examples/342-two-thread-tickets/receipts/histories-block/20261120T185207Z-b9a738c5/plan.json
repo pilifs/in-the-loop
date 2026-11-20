@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "342",
+    "task": "histories-block",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "tickets.Projection#linearizable(I)I",
+    "revisions": [
+      "block"
+    ],
+    "claim": {
+      "task": "histories-block",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "file": "claims/histories.json",
+      "sha256": "915a6510d99489bc88162e7f5a9aac5694f76fbdbfcc6ea5aeb0a64f7494587c",
+      "property": "histories",
+      "claimKind": "property",
+      "statement": "Every completed two-call history refines consecutive ticket issuance in an order consistent with invocation intervals, and leaves two issued tickets.",
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/tickets/TicketCases.java",
+          "sha256": "9c6853b924ab2c89e94eedbae04e643e946a8a961b3410dbd3c4195f6a6aca98"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "a7e6d3146c16eb149c745f38bbbdd8822bb96b00bea9a4ace53f16d387c8eb4c"
+        }
+      ],
+      "key": "f481d41da07c8b89"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "block",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "block",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/histories-block"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-183453-342-check-two-real-ticket-calls-on-one-c/examples/342-two-thread-tickets",
+    "network": false
+  },
+  "inputs": {
+    "example": "342",
+    "task": "histories-block",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "tickets.Projection#linearizable(I)I",
+    "revisions": [
+      "block"
+    ],
+    "claim": {
+      "task": "histories-block",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "file": "claims/histories.json",
+      "sha256": "915a6510d99489bc88162e7f5a9aac5694f76fbdbfcc6ea5aeb0a64f7494587c",
+      "property": "histories",
+      "claimKind": "property",
+      "statement": "Every completed two-call history refines consecutive ticket issuance in an order consistent with invocation intervals, and leaves two issued tickets.",
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/tickets/TicketCases.java",
+          "sha256": "9c6853b924ab2c89e94eedbae04e643e946a8a961b3410dbd3c4195f6a6aca98"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "a7e6d3146c16eb149c745f38bbbdd8822bb96b00bea9a4ace53f16d387c8eb4c"
+        }
+      ],
+      "key": "f481d41da07c8b89"
+    },
+    "artifacts": [
+      {
+        "revision": "block",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "block",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "8227423e6fbc9c7ba56754228b6c39a85dcd1506e4e5becd16d08d54ff211e1d"
+}

@@ -1,0 +1,6 @@
+✗ Property of com.google.common.math.LongMath#mean(long, long) violated: `(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))` where true:
+  mean(x=-1, y=0)
+    outcome: 0
+  (found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [-100000:100000] as mean(x=-31095, y=-31072), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain x: long × y: long)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

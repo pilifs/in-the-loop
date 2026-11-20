@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "owners",
+  "statement": "The two handles report the same owner when they designate the same seat. Distinct seats record their own worker.",
+  "assume": "code >= 0 && code < 36",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 32,
+    "maxArrayLength": 8
+  },
+  "assert": "result == 1"
+}

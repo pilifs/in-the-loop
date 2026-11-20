@@ -1,0 +1,6 @@
+✗ Property of com.google.common.primitives.Ints#indexOf(int[], int) violated: `(result == -1 && (\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\forall int i; 0 <= i && i < result; array[i] != target))` where true:
+  indexOf(array=[0, 0], target=0)
+    outcome: 1
+  (found by jvmcontract's own checker (CaDiCaL) in 23.8 s searching inputs in [0:20] as indexOf(array=[16, 16, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20], target=16), shrunk to the input above in 196 interpreter runs, replayed in the interpreter; domain array: int[] of length ≤ 64, not null × target: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

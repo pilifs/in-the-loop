@@ -1,0 +1,312 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-181156-exhaust-the-frozen-observations-for-the",
+  "title": "Exhaust the frozen observations for the unchanged importer",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 45.5s, peak 188.2 MiB (estimated 3m00s, 2.0 GiB); 17 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-181156-exhaust-the-frozen-observations-for-the.json",
+    "sha256": "0e052c09c989a4f993b5b2f8dec75feebcd7d2db3884f6858973dbdc757e2c5e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-181156-exhaust-the-frozen-observations-for-the",
+      "title": "Exhaust the frozen observations for the unchanged importer",
+      "description": "Check all 16 public claims for the unchanged importer on the certified selector envelope. Invoke the real guard, method and assertion with a fresh class loader. Compare every adapter to independently reconstructed JVM objects and replay the first failing selector separately.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "345"
+        ]
+      },
+      "expected": "All cases and controls agree with the independent original JVM observations.",
+      "submitted": {
+        "at": "2026-11-20T18:11:56+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "mvn"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "memoryLimit": "4G",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Exhaust original selector domains",
+          "run": "python3 examples/tools/build.py 345 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/345-paged-importer-upgrades/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "d9d5a28566b1273cf7d15f776c9d69b227ae5b06",
+  "startedAt": "2026-11-20T18:23:51+00:00",
+  "finishedAt": "2026-11-20T18:24:41+00:00",
+  "wallSeconds": 50.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 294682,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 197332992,
+    "wallSeconds": 45.5,
+    "cpuSeconds": 83.9,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.25
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exhaust original selector domains",
+      "run": "python3 examples/tools/build.py 345 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 45.5,
+      "cpuSeconds": 83.863,
+      "cpuThrottledSeconds": 5.278,
+      "peakMemoryBytes": 197332992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exhaust-original-selector-doma.log",
+        "lines": 16,
+        "bytes": 716,
+        "sha256": "92cc2b46934d8fb1f0c723e8027b4e2137f7bdd3331a6a381d7b155750c29274",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "345 bytes-parent-parent refuted 96 admitted ",
+        "345 count-parent-parent refuted 96 admitted ",
+        "345 page-parent-parent refuted 96 admitted ",
+        "345 positive-parent-parent established 24 admitted ",
+        "345 bytes-parent-fix refuted 96 admitted ",
+        "345 count-parent-fix established 96 admitted ",
+        "345 page-parent-fix refuted 96 admitted ",
+        "345 positive-parent-fix established 24 admitted ",
+        "345 bytes-fix-parent established 96 admitted ",
+        "345 count-fix-parent refuted 96 admitted ",
+        "345 page-fix-parent refuted 96 admitted ",
+        "345 positive-fix-parent established 24 admitted ",
+        "345 bytes-fix-fix established 96 admitted ",
+        "345 count-fix-fix established 96 admitted ",
+        "345 page-fix-fix established 96 admitted ",
+        "345 positive-fix-fix established 24 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/batch.json",
+      "change": "added",
+      "bytes": 9214,
+      "sha256": "9f19ed7e1dd33fa55551582985f27420153c9efe3ad5b4e2b50fb2ceec46bb56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/bytes-fix-fix.json",
+      "change": "added",
+      "bytes": 21355,
+      "sha256": "a7fbc484c63ba2cf6fdfcf6531e873031f87436799fb1b04e6c89f8b8831f9bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/bytes-fix-parent.json",
+      "change": "added",
+      "bytes": 21387,
+      "sha256": "d32be0d10848eef3395b64ee2e2db632f3340054ddd17e254c1c700485515eea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/bytes-parent-fix.json",
+      "change": "added",
+      "bytes": 24020,
+      "sha256": "7e1c8713937e6637cbad093472fe372a66823102f9ba75c9bb723f7b01626a35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/bytes-parent-parent.json",
+      "change": "added",
+      "bytes": 24056,
+      "sha256": "e34fbd8409296780542b94257e83d6cf3d522ad48ddf328860d6ef03a335433c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/count-fix-fix.json",
+      "change": "added",
+      "bytes": 21378,
+      "sha256": "d6238308101406c0c1eb8b90efa4b3592b759a80c0c34dbcd0dee8b9edd2eee4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/count-fix-parent.json",
+      "change": "added",
+      "bytes": 23836,
+      "sha256": "bfe1ecb53912319203ed1a9eadea995c286040bb974b9e0b6c3f537e822b4f4d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/count-parent-fix.json",
+      "change": "added",
+      "bytes": 21409,
+      "sha256": "59730c73f4a86d3e07f4523b432d538dda44b8f507e45f2180fa67a7ff87ec6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/count-parent-parent.json",
+      "change": "added",
+      "bytes": 23872,
+      "sha256": "f894e9af47fb1c4e23707f206cd938d2c24ada13a18c4b821e56f024669124c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/page-fix-fix.json",
+      "change": "added",
+      "bytes": 21373,
+      "sha256": "bded35e06bedd1b189061f184bd513ce8881530d135ef1eddfd5e66d90b77f98",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/page-fix-parent.json",
+      "change": "added",
+      "bytes": 23827,
+      "sha256": "8e6035d19219e1252a2f52d56ca83f6c77b67265184a3fa24a5e2712c0c9daf7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/page-parent-fix.json",
+      "change": "added",
+      "bytes": 24033,
+      "sha256": "062d01dd5c55fa8c0d28d0dbbdfc560bd3fc4053d640480ff4084776df8bcee5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/page-parent-parent.json",
+      "change": "added",
+      "bytes": 23891,
+      "sha256": "bc9f7be9c0f6ba5622d5e0cf03aeae357cb1fe0913e60940d6df382776014e16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/positive-fix-fix.json",
+      "change": "added",
+      "bytes": 14124,
+      "sha256": "ad0e8fcf4e3b25cad880184da8b7e142e6fd09d2ccd570e106b89a728abd3c5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/positive-fix-parent.json",
+      "change": "added",
+      "bytes": 14155,
+      "sha256": "36e02519ac1a5f79cc697b71df14122b9ac37bc3d0f8b2fc04e883bc15c6c406",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/positive-parent-fix.json",
+      "change": "added",
+      "bytes": 14154,
+      "sha256": "3f4ab6779114d276b458123fb2eb46526655f001d49a1d91962f9a72cbc9d47a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/positive-parent-parent.json",
+      "change": "added",
+      "bytes": 14185,
+      "sha256": "6becae212925fbdc85e96b29b0b749ea83003ebd1d0c29136df53ecac665b1b3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T18:27:33+00:00",
+    "applied": [
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/batch.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/bytes-fix-fix.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/bytes-fix-parent.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/bytes-parent-fix.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/bytes-parent-parent.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/count-fix-fix.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/count-fix-parent.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/count-parent-fix.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/count-parent-parent.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/page-fix-fix.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/page-fix-parent.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/page-parent-fix.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/page-parent-parent.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/positive-fix-fix.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/positive-fix-parent.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/positive-parent-fix.json",
+      "examples/345-paged-importer-upgrades/records/finite-proofs/20261120T182356Z-67f7b9fd/positive-parent-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

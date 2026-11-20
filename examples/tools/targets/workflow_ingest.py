@@ -853,8 +853,8 @@ def publish(plan, prepared, records, out):
     staging = Path(tempfile.mkdtemp(prefix=f".{attempt_id}.", dir=out))
     try:
         streams, listed, kept = raw_streams(records)
-        bundle = write_bundle(staging, {EXECUTION: json.dumps({"task": plan.task, "records": entries}, indent=2,
-                                                              ensure_ascii=False) + "\n", output: text,
+        from targets.executions import json_text
+        bundle = write_bundle(staging, {EXECUTION: json_text({"task": plan.task, "records": entries}), output: text,
                                         STREAMS: json.dumps({"cap": STREAM_CAP, "streams": listed}, indent=2,
                                                             ensure_ascii=False) + "\n", **streams})
         job = {"jobId": os.environ.get("VERIFY_JOB_ID"), "sourceCommit": os.environ.get("VERIFY_SOURCE_COMMIT"),

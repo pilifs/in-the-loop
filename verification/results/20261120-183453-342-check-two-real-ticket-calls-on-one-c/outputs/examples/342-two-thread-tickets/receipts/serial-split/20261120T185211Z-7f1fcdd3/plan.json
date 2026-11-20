@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "342",
+    "task": "serial-split",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "tickets.Projection#linearizable(I)I",
+    "revisions": [
+      "split"
+    ],
+    "claim": {
+      "task": "serial-split",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "file": "claims/serial.json",
+      "sha256": "037000e6807d168f565eadf2a3e397fec3336093693ae42dffe445530e5cc0d1",
+      "property": "serial",
+      "claimKind": "property",
+      "statement": "Every completed two-call history refines consecutive ticket issuance in an order consistent with invocation intervals, and leaves two issued tickets.",
+      "assume": "code >= 0 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/tickets/TicketCases.java",
+          "sha256": "9c6853b924ab2c89e94eedbae04e643e946a8a961b3410dbd3c4195f6a6aca98"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "a7e6d3146c16eb149c745f38bbbdd8822bb96b00bea9a4ace53f16d387c8eb4c"
+        }
+      ],
+      "key": "3b2b1b2c6cece943"
+    },
+    "prerequisites": [
+      "replay-split"
+    ],
+    "artifacts": [
+      {
+        "revision": "split",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "split",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/serial-split"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-183453-342-check-two-real-ticket-calls-on-one-c/examples/342-two-thread-tickets",
+    "network": false
+  },
+  "inputs": {
+    "example": "342",
+    "task": "serial-split",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "tickets.Projection#linearizable(I)I",
+    "revisions": [
+      "split"
+    ],
+    "claim": {
+      "task": "serial-split",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "file": "claims/serial.json",
+      "sha256": "037000e6807d168f565eadf2a3e397fec3336093693ae42dffe445530e5cc0d1",
+      "property": "serial",
+      "claimKind": "property",
+      "statement": "Every completed two-call history refines consecutive ticket issuance in an order consistent with invocation intervals, and leaves two issued tickets.",
+      "assume": "code >= 0 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/tickets/TicketCases.java",
+          "sha256": "9c6853b924ab2c89e94eedbae04e643e946a8a961b3410dbd3c4195f6a6aca98"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "a7e6d3146c16eb149c745f38bbbdd8822bb96b00bea9a4ace53f16d387c8eb4c"
+        }
+      ],
+      "key": "3b2b1b2c6cece943"
+    },
+    "artifacts": [
+      {
+        "revision": "split",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "split",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "254c624c2a4ec29fe1b121dd35c30de2f86a17b793965eaa23a8bba1719203e0"
+}

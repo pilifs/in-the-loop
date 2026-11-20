@@ -51,6 +51,10 @@ def plan(folder, example, target, task):
     if isinstance(result, Unsupported):
         return {**head, "executable": False, "notExecuted": result.describe(), "unsupported": interfaces.to_dict(result)}
     view = {**head, "executable": True, "notExecuted": None, **result.as_dict()}
+    if spec := target.get("scheduleReduction"):
+        from targets import schedule_reduction
+        if reduction := schedule_reduction.evidence(Path(folder),result,spec):
+            view["scheduleReduction"] = reduction
     if target.get("monitorContracts"):
         from targets import monitor_histories
         if contracts := monitor_histories.evidence(Path(folder), target, result):
