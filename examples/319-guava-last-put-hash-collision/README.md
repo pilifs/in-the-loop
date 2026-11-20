@@ -9,3 +9,5 @@ The table records the direct observations, and each selected adapter field is ch
 [Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)
 
 The parent first differs at length four for each observer. All 40 shorter put traces passed. At length four two traces change the size and entry set, and ten change lookup. [Minimum traces and ordered classpaths](records/finite-grid.json)
+
+The strict native checker proved five original obligations and refuted three. It replayed a four-put JVM witness for each parent disagreement. [Original-scope native checks](../../verification/results/20261120-053726-confirm-every-guava-collision-verdict-on/result.json)

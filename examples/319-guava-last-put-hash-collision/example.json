@@ -33,7 +33,8 @@
   "verdictLabel": "Frozen bounded proof obligations",
   "notes": [
     "The independent JVM oracle covered 121 inputs on each revision. parent mismatches were 2 for size, 10 for lookup, 2 for entries. fix mismatches were 0 for size, 0 for lookup, 0 for entries.",
-    "The parent first differs at length four for each observer. All 40 shorter put traces passed. At length four two traces change the size and entry set, and ten change lookup. [Minimum traces and ordered classpaths](records/finite-grid.json)"
+    "The parent first differs at length four for each observer. All 40 shorter put traces passed. At length four two traces change the size and entry set, and ten change lookup. [Minimum traces and ordered classpaths](records/finite-grid.json)",
+    "The strict native checker decided all eight original obligations on the two pinned revisions. Guava computes its table size with integer bit operations, binary64 multiplication and Java narrowing. The duplicate-entry map uses reference equality, and its Boolean markers keep their canonical identities. In the parent, R&D, QED, R&D, QED produced three entries for two keys. X, R&D, QED, R&D preserved size and entries while losing the QED lookup. Both unique-key controls held."
   ],
   "source": {
     "kind": "commit",

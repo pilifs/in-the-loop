@@ -9,3 +9,5 @@ The table records the direct observations, and each selected adapter field is ch
 [Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)
 
 Both original geometry revisions were compiled with the same immutable Commons Numbers 1.0-beta1 dependencies. Their POM named a mutable 1.0-SNAPSHOT. The first positive intersection was calculated with rational slab intervals for each ray. The comparison permits an absolute coordinate error of 1e-10. The returned facet identities are outside the observation.
+
+All four native checks reach `Math.sin` with input bits `0xbff921fb54442d18`, the binary64 value nearest to −π/2. These obligations remain open on this route. [Original-scope native checks](../../verification/results/20261120-053726-recheck-cube-intersections-with-linked-j/result.json)
