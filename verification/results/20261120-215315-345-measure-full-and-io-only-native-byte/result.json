@@ -1,0 +1,494 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-215315-345-measure-full-and-io-only-native-byte",
+  "title": "345 measure full and IO-only native byte preview",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20.9s, peak 130.5 MiB (estimated 4m00s, 2.0 GiB); 41 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-215315-345-measure-full-and-io-only-native-byte.json",
+    "sha256": "34e4e0bb071982f2540145e192de3e2a5cb403b3a274a9d635d64bfb8dcd100a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-215315-345-measure-full-and-io-only-native-byte",
+      "title": "345 measure full and IO-only native byte preview",
+      "description": "Compile the unchanged PageImporter and Projection for both strategies. Native-check bytes at the complete 96-input guard after each independent IO, CSV, unused-class and joint upgrade. Restrict the byte-preview client to IO alone, verify cache identity and cross-check every result against a fresh native re-execution. Measure cold preparation, native search, fresh original JVM witness, end-to-end wall and process RSS.",
+      "kind": "real-world",
+      "capabilities": [
+        "proof:reuse",
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "345"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T21:53:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Compare six updates on both native classpaths",
+          "run": "python3 examples/345-paged-importer-upgrades/controls/native_preview.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/345-paged-importer-upgrades/records/native-preview"
+      ]
+    }
+  },
+  "sourceCommit": "096e0570c4a00071db8a43a4111a03435cc5a0a2",
+  "startedAt": "2026-11-20T22:05:37+00:00",
+  "finishedAt": "2026-11-20T22:08:56+00:00",
+  "wallSeconds": 199.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1837703,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 136839168,
+    "wallSeconds": 20.9,
+    "cpuSeconds": 26.0,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare six updates on both native classpaths",
+      "run": "python3 examples/345-paged-importer-upgrades/controls/native_preview.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 20.856,
+      "cpuSeconds": 25.968,
+      "cpuThrottledSeconds": 0.84,
+      "peakMemoryBytes": 136839168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-six-updates-on-both-na.log",
+        "lines": 1,
+        "bytes": 69,
+        "sha256": "b511b19f302151431331e8b426175d8018e68e1547ac3f0d85f605cb8cf4d2be",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Twelve native byte-preview dispositions matched clean recomputation."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-clean-control/native.json",
+      "change": "added",
+      "bytes": 5363,
+      "sha256": "fc97d3500e93ef3b56ec548d97e792c693952792ab33615dc1c9a7a9ea9a6c0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-native/native.json",
+      "change": "added",
+      "bytes": 5359,
+      "sha256": "19ea11aebebd4a3c97faf30b9801e8487e50b5b9bda059b00fcd4ade638754aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-native/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-clean-control/native.json",
+      "change": "added",
+      "bytes": 5850,
+      "sha256": "a018ef9da1903c54f9dcca17848e35c374c2a8495e3acff55488d491ff80fd74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-native/native.json",
+      "change": "added",
+      "bytes": 5848,
+      "sha256": "d67a8c2f0c7eed45cc5947c238de8c8ed301f7178525f3b2890b1796c0a4b113",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-native/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/csv-only-clean-control/native.json",
+      "change": "added",
+      "bytes": 5859,
+      "sha256": "1fd76b65b88af1707aa176b2a9fdbd2a49ffa91c2d4030507c451b25d50383c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/csv-only-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-clean-control/native.json",
+      "change": "added",
+      "bytes": 5358,
+      "sha256": "f60f123eafb0b0170f312df00603b78adec881995dcd365a65921401ec05ebd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-native/native.json",
+      "change": "added",
+      "bytes": 5351,
+      "sha256": "9fa49ad0caf00bd9cf8c2871fa3891d42eaeb619aef908c3b301d6719cd81d89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-native/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unchanged-clean-control/native.json",
+      "change": "added",
+      "bytes": 5861,
+      "sha256": "c937d604cea553f6fbe9075513db4ba6dceb19d96b10e5872e885c5d43d8dd15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unchanged-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unused-only-clean-control/native.json",
+      "change": "added",
+      "bytes": 5866,
+      "sha256": "acb9441eeb31e1566294f7cc733239becb4189003ceb38113394489b72273d12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unused-only-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-clean-control/native.json",
+      "change": "added",
+      "bytes": 5361,
+      "sha256": "a67faae4a84404699931addf09496e035bcc221640f53b3c14c8bcbf63dca492",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-native/native.json",
+      "change": "added",
+      "bytes": 5349,
+      "sha256": "96d4ef9d12a2580de49c5998e1d37f2fb5ea5f6e7785d7cc7343981720b47fcb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-native/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-clean-control/native.json",
+      "change": "added",
+      "bytes": 5841,
+      "sha256": "667a9c36762bb3cd543901eb8edbdd36f931d462376eed974d2ce60d811f9383",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-native/native.json",
+      "change": "added",
+      "bytes": 5838,
+      "sha256": "a9b9fcb2988fd1b43ea0fdbdec5585d3cb6872e1353a97914716977678d7df89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-native/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-clean-control/native.json",
+      "change": "added",
+      "bytes": 5850,
+      "sha256": "e190e840bef9a519ddbfbf040d80b4271cefc0580cf8018d26a1c9bd833b298a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-native/native.json",
+      "change": "added",
+      "bytes": 5842,
+      "sha256": "cb345a4bbb999fcfee7a147cb0193b64e46573bdca97984c464a489ff11194ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-native/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-clean-control/native.json",
+      "change": "added",
+      "bytes": 5347,
+      "sha256": "2d960439d2e93a639ca239ea51cfd7cb7ff57d2fde681339687c0961851661fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-native/native.json",
+      "change": "added",
+      "bytes": 5343,
+      "sha256": "36a24ff16c312cb2d15c5a642694e49e46b8f2cc524cf30d376c6c6d9c0f9c11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-native/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unchanged-clean-control/native.json",
+      "change": "added",
+      "bytes": 5852,
+      "sha256": "5854148b03447e98b1b32310c4a20dd0927f4f0e6054a8349c30c65b69493a20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unchanged-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-clean-control/native.json",
+      "change": "added",
+      "bytes": 5855,
+      "sha256": "0b48e74ec7d7e5891a194b7ef7812ef01f43f11f86b656c00a39fd5310216673",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-clean-control/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-native/native.json",
+      "change": "added",
+      "bytes": 5849,
+      "sha256": "43a59357692eee69bc50023c3cba8932a9255c181d603dfcd551a79d4846eadd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-native/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/result.json",
+      "change": "added",
+      "bytes": 33372,
+      "sha256": "9f2d41727cd5c963445a812c2e17535e269cae827c9d0437d6ea8623d095794a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T22:12:18+00:00",
+    "applied": [
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-native/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/both-fixes-native/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-native/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/cold-native/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/csv-only-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/csv-only-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-native/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/io-only-native/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unchanged-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unchanged-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unused-only-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/byte-only/unused-only-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-native/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/both-fixes-native/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-native/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/cold-native/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-native/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/csv-only-native/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-native/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/io-only-native/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unchanged-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unchanged-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-clean-control/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-clean-control/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-native/native.json",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/full/unused-only-native/stderr",
+      "examples/345-paged-importer-upgrades/records/native-preview/20261120T220835Z-91167742/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}
