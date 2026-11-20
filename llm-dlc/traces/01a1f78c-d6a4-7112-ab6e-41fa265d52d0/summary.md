@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Execute ordered Throwable suppression from the selected JDK (verification pending)
 
-change `wkqqtkurmlzw` · [log `89bf6d31e122`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/89bf6d31e122634e4ab93928cd4929c913a231945b1d5c31a890db280963ae79.jsonl.gz)
+[`1aa85ee6b68c`](https://github.com/pilifs/in-the-loop/commit/1aa85ee6b68c3bc32dd948330c73d1953b1b53e6) · [log `89bf6d31e122`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/89bf6d31e122634e4ab93928cd4929c913a231945b1d5c31a890db280963ae79.jsonl.gz)
 
 Run addSuppressed and getSuppressed on the actual exception in both native checking and interpreted replay. The selected image supplies self and null validation, the empty singleton, and the order of appends. The private list retains reference identities and returns detached nonempty arrays. Recognize forwarding four-argument Throwable constructors, keep symbolic suppression flags and distinguish an explicit NullPointerException message from VM-generated stack details.
 
@@ -28,7 +28,7 @@ The direct Java fixture and both engines agreed on enabled and disabled suppress
 
 ### Follow reachable constructors of static object constants (verification pending)
 
-change `qswpsvvtlxnm` · [log `9d9c9f9d4fec`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/9d9c9f9d4fecdd4b3bf766fe770ae2d953eb906c7a07af7808e388c54a254602.jsonl.gz)
+[`c08aca864e63`](https://github.com/pilifs/in-the-loop/commit/c08aca864e63407058f950f6b0703ed30216927c) · [log `9d9c9f9d4fec`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/9d9c9f9d4fecdd4b3bf766fe770ae2d953eb906c7a07af7808e388c54a254602.jsonl.gz)
 
 Strict checking executes the real bytecode of straight-line initializers that assemble final object or array constants with application methods. The checker follows the constructors at the values actually passed, including reachable exceptions and erroneous-class reuse. An unsupported call reached by a constructor still stops the proof. Existing observed initializers and advised contracts retain their handling.
 
@@ -36,7 +36,7 @@ The direct JVM and native controls checked two distinct constants and the first 
 
 ### Prove bounded regex captures and signed-long parsing (verification pending)
 
-change `nvsooltopvpv` · [log `11bda1052cca`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/11bda1052cca1d2463f11ea4dbe271e7ccac595d9507899d9722513a2d1c13b1.jsonl.gz)
+[`bc8d650b58a5`](https://github.com/pilifs/in-the-loop/commit/bc8d650b58a57dc1326348ca9efa020d16dd66d0) · [log `11bda1052cca`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/11bda1052cca1d2463f11ea4dbe271e7ccac595d9507899d9722513a2d1c13b1.jsonl.gz)
 
 Preserve capture numbering, the previous match outcome and the original String on each matcher. A mandatory capture is observed when its UTF-16 endpoints follow from fixed widths on the matched input. Optional, repeated and ambiguous spans retain an explicit refusal. Share one overflow-before-multiply decimal parser between int and long, including their negative minima and signed zero. Non-ASCII digits keep the JDK gap.
 
@@ -44,7 +44,7 @@ Native and JVM controls covered nested captures, invalid group numbers before an
 
 ### Record native TAI, resource closure and Fraction results
 
-change `uzwtmtumouyr` · [log `00841bc13142`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/00841bc131422c433318653f6c28f619a041ab9c9882086017419881ca1ef89d.jsonl.gz)
+[`ba8b13580300`](https://github.com/pilifs/in-the-loop/commit/ba8b1358030067694363f3a3ab002f2ab1fe4520) · [log `00841bc13142`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/00841bc131422c433318653f6c28f619a041ab9c9882086017419881ca1ef89d.jsonl.gz)
 
 The shared runner decided all six ThreeTen claims, all nine resource-observer claims, and all six historical Fraction claims on the frozen domains. Their strict native witnesses replayed on the JDK and matched the independent observation grids. All ten MonthDay claims advanced from class initialization to list use in the formatter and remain open on this checker.
 
@@ -52,7 +52,7 @@ The four result trees and every applied receipt were byte-checked against the co
 
 ### Execute bounded ArrayList operations from the runtime image (verification pending)
 
-change `qwovsntvwpzn` · [log `fa1492990b98`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/fa1492990b985a3b415d41b1958221ddb110130196e05e7d81afe37841bf9805.jsonl.gz)
+[`05ade8c1df32`](https://github.com/pilifs/in-the-loop/commit/05ade8c1df32344bfacc10138cae79c296998c4b) · [log `fa1492990b98`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/fa1492990b985a3b415d41b1958221ddb110130196e05e7d81afe37841bf9805.jsonl.gz)
 
 Use the selected JDK bytecode for a constructed ArrayList's growth, membership, indexed reads and writes, and typed array copies. The checker qualifies the private empty arrays and the actual runtime array class. Copying a typed destination preserves a successful prefix on failure in both engines. Model selection stays explicit. Object arrays can hold array components of other ranks as Java allows. Stream.of(T...) uses the existing sequential array stream and runs the application's predicate. Decimal Long.toString uses the signed conversion path when the image returns fresh Strings.
 
@@ -62,7 +62,7 @@ Jobs 20261120-063346-verify-both-historical-duration-tokenize and 20261120-06334
 
 ### Record the duration, partial-date and list regression runs
 
-change `snvmzxnulsvn` · [log `2858b1aa2667`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/2858b1aa2667d541a863ad91311dec7b4ac8fc8e084bcbdd2bf1d4e97b446c23.jsonl.gz)
+[`f54e14f71f11`](https://github.com/pilifs/in-the-loop/commit/f54e14f71f11df2a45d4d781e045fcd973017bdb) · [log `2858b1aa2667`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/2858b1aa2667d541a863ad91311dec7b4ac8fc8e084bcbdd2bf1d4e97b446c23.jsonl.gz)
 
 The selected JDK list methods preserved every ThreeTen, resource-closure and Fraction verdict. The duration checker refuted the historical separated-field claim and proved the fixed text and quoting observations. Three original claims stopped at Arrays.fill(char[],char). All ten MonthDay checks reached the ambient time-zone provider property. Keep both failed jobs and their partial results.
 
@@ -70,7 +70,7 @@ All seven result trees and their applied receipts matched the collector byte for
 
 ### Check UTF-16 padding through char array fill and String.concat (verification pending)
 
-change `wooykksqoppt` · [log `23262d2a63c3`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/23262d2a63c397d3c9cead93a833295b89f35440f404ace79a6edb155be802b1.jsonl.gz)
+[`da7da2fcfacb`](https://github.com/pilifs/in-the-loop/commit/da7da2fcfacb60a4ba7087e1c6315f8c2741292e) · [log `23262d2a63c3`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/23262d2a63c397d3c9cead93a833295b89f35440f404ace79a6edb155be802b1.jsonl.gz)
 
 The three remaining Commons Lang duration observations reached Arrays.fill(char[],char). Execute its selected JDK loop, snapshot the char array in the constructed String, and execute String.concat with its empty-suffix identity and fresh UTF-16 result. The interpreter follows the same fill and preserves the receiver on empty concatenation. The method conformance inventory records normal and null cases.
 
@@ -78,7 +78,7 @@ The JVM, native checker and interpreter agree on null arguments, empty arrays, i
 
 ### Record 91 native decisions on the Java fast-follow examples
 
-change `splnksqooywl` · [log `1893afe81c9e`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/1893afe81c9ed486ec6e44d2f7c79ab951cf592a303dcf37414a655582219680.jsonl.gz)
+[`b3963f1d6b93`](https://github.com/pilifs/in-the-loop/commit/b3963f1d6b93e7d63e8e1dbac8b1ed516e8e9fdf) · [log `1893afe81c9e`](https://terminalvalue.net/raw-traces/01a1f78c-d6a4-7112-ab6e-41fa265d52d0/1893afe81c9ed486ec6e44d2f7c79ab951cf592a303dcf37414a655582219680.jsonl.gz)
 
 The strict native checker now establishes 66 and refutes 25 of the 125 original source claim and subject pairs, with 34 open. This continuation added 19 proofs and five independently replayed refutations. All native observations for ThreeTen signed seconds, resource closure, Commons Lang duration tokens and Commons Math fractions agree with their original JVM grids. The ten Joda-Time native claims reach the JDK property that selects the default zone provider. The complete independent finite register remains 92 established and 33 refuted, with no contradictions or withdrawals.
 

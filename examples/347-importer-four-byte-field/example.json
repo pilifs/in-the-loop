@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "347",
+  "title": "A four-byte character crosses reads in the unchanged importer",
+  "summary": "The same Commons IO and CSV builds parse a literal U+1F600 field with a forced read boundary inside the character.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "text-encoding",
+    "composition",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Paged importer",
+    "file": "client/importer/PageImporter.java",
+    "symbol": "importer.PageImporter#page([BZZII)Ljava/util/List;"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "One unchanged page importer exposes the effect of each Commons IO and Commons CSV repair on bytes, record counts and numbered fields."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The compiled PageImporter and all selected runtime JARs have the same byte hashes as in example 345. The document starts with four ASCII bytes before the four-byte scalar, beyond IO’s three-byte BOM prefix. The one-byte delegate therefore forces cuts between its UTF-8 continuation bytes.",
+    "Example 341 checks all eight partitions of this scalar and repeated EOF. The importer rechecks the remaining bytes, displayed record numbers and fields through the real CSV parser before and after the historical reset repair.",
+    "All 16 native dispositions agree with the exhaustive JVM runs. Of 32 complete pages, the parent/parent combination returned 24 incorrectly, each single upgrade returned 16 incorrectly, and the double upgrade returned all 32 correctly. The four positive controls also held."
+  ]
+}

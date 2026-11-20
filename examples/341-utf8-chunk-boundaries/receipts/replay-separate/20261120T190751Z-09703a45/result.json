@@ -1,0 +1,251 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "c16d5e52d2a37db9",
+    "format": 1,
+    "example": "341",
+    "statement": {
+      "approach": "target",
+      "task": "replay-separate",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "revisions": [
+        "stream",
+        "separate"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "replay-separate",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "chunks.Inputs#units(I)I",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/chunks/DecodeCases.java",
+            "sha256": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987"
+          }
+        ],
+        "key": "9b1beb277f9e5d8d"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "e0d6b3ce773cefce8812ea5f6fa0990041b7e2338c2f52ad525e6b3372d5dbde",
+        "files": 1
+      },
+      "after": {
+        "sha256": "5277fb5ee7f98e35f148c833ae9a153c48e3b387cb080578e639fc400359c0bb",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-separate",
+      "sidecar": "bc770d4ab0f8365caa81207f01d66b6a8ba76d7883ad1e7ee9df75cbfd80aec8",
+      "revisions": {
+        "stream": "7c5c280f6ecfab3d3ad61d4c1f235e6e860d1fc1",
+        "separate": "3cda2446f5ee0b9f085f5621e6976a05d6a99221"
+      },
+      "dependencies": [
+        {
+          "revision": "stream",
+          "position": 0,
+          "role": "driver",
+          "sha256": "02818b97eef048130069f81534c81d1c03ae4a5dae46645799d101c822831013"
+        },
+        {
+          "revision": "stream",
+          "position": 1,
+          "role": "original",
+          "sha256": "792939bf7432bf6af2a6cebd19b0bdeaf85fba0aff9adf869deef1e766b7272e"
+        },
+        {
+          "revision": "separate",
+          "position": 0,
+          "role": "driver",
+          "sha256": "02818b97eef048130069f81534c81d1c03ae4a5dae46645799d101c822831013"
+        },
+        {
+          "revision": "separate",
+          "position": 1,
+          "role": "original",
+          "sha256": "b537544cdd230b309de2ba2ab224306c3e45453c1d9e6cba4c73a3e1ff3f584d"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/oracle.py": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987",
+        "driver/chunks/DecodeCases.java": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+      },
+      "claimKey": "9b1beb277f9e5d8d"
+    }
+  },
+  "attempt": {
+    "id": "20261120T190751Z-09703a45",
+    "claim": "c16d5e52d2a37db9",
+    "startedAt": "2026-11-20T19:07:51+00:00",
+    "seconds": 0.4,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "ef99467c2a88ca3ebbc4291fd7b37e2b4bbf61796315c17d018b647e2f688572",
+        "files": 1
+      },
+      "after": {
+        "sha256": "b41a4503e6326d83246e708d666c1cc2c32578ec97d8de7ba7fb484311f0caf9",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control stream on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.215,
+        "stdout": "records/control-stream-jdk21.stdout",
+        "stderr": "records/control-stream-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control separate on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "records/control-separate-jdk21.stdout",
+        "stderr": "records/control-separate-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "c16d5e52d2a37db9",
+    "attempt": "20261120T190751Z-09703a45",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: stream holds the oracle; separate violates the oracle at 3, on every JDK named: as the separate pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"stream\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"separate\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "3",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision separate on JDK 21: 5448 partitions differ; first [3, 'é', 1, {'id': 3, 'units': 'fffdfffd', 'eof': True}]"
+      }
+    ],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 2 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "83ca1e9705d5c5601a18d68ef13e111951705edc0eb17817d2b34ef6848441bc",
+        "bytes": 674064
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "6b773f484b4a6da1f53baf768de8fa7dea8e0ed73b6232fc41262314254adc06",
+        "bytes": 410
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "e02dea65dae47a472602eae8de9c78254bfb4475e65bcb84ddc57eb5ccaa76e8",
+        "bytes": 1747
+      },
+      {
+        "path": "records/control-stream-jdk21.stdout",
+        "sha256": "f03aa428a886c27ce6ac2f5461914b678ba686ccda92daf87bcd2e916c08b550",
+        "bytes": 302314
+      },
+      {
+        "path": "records/control-stream-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "ffc7bb25d625aa3f9cac31e74700caf87a568c0b16cb5f943ebbd090c7b9293e",
+        "bytes": 524288
+      },
+      {
+        "path": "records/control-separate-jdk21.stdout",
+        "sha256": "490d86a79c108abfc8af339d6e4cffc3fb654d214238123a8d51f8173512a52e",
+        "bytes": 368182
+      },
+      {
+        "path": "records/control-separate-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    ]
+  }
+}

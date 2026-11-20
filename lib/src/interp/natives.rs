@@ -476,7 +476,7 @@ pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
         "java/util/ArrayList" | "java/util/LinkedList" => Native::List { elements: Vec::new(), mutable: true },
         "java/util/HashMap" | "java/util/LinkedHashMap" | "java/util/TreeMap" => Native::Map { entries: Vec::new(), mutable: true },
         "java/util/HashSet" | "java/util/LinkedHashSet" | "java/util/TreeSet" => Native::Set { elements: Vec::new(), mutable: true },
-        "java/lang/Object" => return Ok(Value::Ref(m.alloc(Object::Instance { class: class.into(), fields: Default::default(), base: Base::Object }))),
+        "java/lang/Object" | crate::bmc::runtime::REENTRANT_LOCK => return Ok(Value::Ref(m.alloc(Object::Instance { class: class.into(), fields: Default::default(), base: Base::Object }))),
         _ if m.cp.is_subtype(class, "java/lang/Throwable") => Native::Throwable { class: class.into(), message: None, cause: None, suppressed: None },
         _ => return unsupported(format!("new {}", class.replace('/', "."))),
     };
@@ -512,6 +512,19 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
         }
         Native::String(_) => {
             let contents = match descriptor {
+                "([BLjava/nio/charset/Charset;)V" | "([BIILjava/nio/charset/Charset;)V" => {
+                    if m.get_static("java/nio/charset/StandardCharsets", "UTF_8")? != *args.last().unwrap() {
+                        return unsupported("String byte slice requires the exact UTF-8 charset");
+                    }
+                    let Some(array) = args[0].as_ref() else { return unsupported("String byte slice of null"); };
+                    let Object::Array { element: Type::Byte, data } = m.heap.get(array) else { return unsupported("String byte slice needs a byte array"); };
+                    let (offset, count) = if args.len() == 2 { (0, data.len() as i32) } else { (args[1].as_int(), args[2].as_int()) };
+                    let (Ok(first), Ok(n)) = (usize::try_from(offset), usize::try_from(count)) else { return unsupported("invalid String byte range"); };
+                    let Some(slice) = data.get(first..first.saturating_add(n)) else { return unsupported("invalid String byte range"); };
+                    let bytes: Vec<u8> = slice.iter().map(|v| v.as_int() as u8).collect();
+                    let Some(units) = crate::bmc::bytes::utf8_slice_units(&bytes) else { return unsupported("interior malformed UTF-8 sequence"); };
+                    JStr::from_units(units)
+                }
                 "()V" => JStr::new(),
                 "(Ljava/lang/String;)V" => string_arg(m, args[0])?,
                 "([C)V" => {
@@ -637,6 +650,15 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
         Object::Instance { class, base, .. } => (class.clone(), base.clone()),
         _ => return unsupported("inherited call on a non-instance"),
     };
+    if class == crate::bmc::runtime::REENTRANT_LOCK && crate::bmc::runtime::sequential_lock_call(owner, name, descriptor) {
+        let field = crate::bmc::runtime::HOLD_COUNT;
+        let count = if name == "<init>" { 0 } else { m.get_field(Value::Ref(r), field)?.as_int() };
+        let Some((write, returned)) = crate::bmc::runtime::sequential_lock_transition(name, count) else {
+            return unsupported("an unbalanced unlock or excessive recursion on a reentrant lock");
+        };
+        if let Some(next) = write { m.put_field(Value::Ref(r), field, Value::Int(next))?; }
+        return Ok(returned.map(Value::Int));
+    }
     match (name, descriptor) {
         ("getClass", "()Ljava/lang/Class;") => return Ok(Some(m.class_object(&Type::Object(class)))),
         ("equals", "(Ljava/lang/Object;)Z") => return Ok(Some(Value::bool(args[0] == Value::Ref(r)))),
@@ -1051,7 +1073,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             "addSuppressed" | "getSuppressed" => invoke_suppression(m, r, name, descriptor, args),
             _ => unsupported(format!("{}.{name}", class.replace('/', "."))),
         },
-        Native::Lambda { sam_name, sam_descriptor, implementation, captured, instantiated, interface } => {
+        Native::Lambda { sam_name, sam_descriptor, implementation, captured, instantiated, interface, .. } => {
             if name == sam_name && sam_descriptor.as_deref().is_none_or(|d| d == descriptor) {
                 call_lambda(m, &implementation, captured, &instantiated, args)
             } else {
@@ -2001,7 +2023,8 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
                 ("metafactory", Some(BootstrapArg::MethodType(d))) => Some(d.clone()),
                 _ => None,
             };
-            let lambda = Native::Lambda { interface, sam_name: name.to_string(), sam_descriptor, implementation, captured: args, instantiated };
+            let serializable = method == "altMetafactory" && matches!(bootstrap.args.get(3), Some(BootstrapArg::Int(flags)) if flags & 1 != 0);
+            let lambda = Native::Lambda { interface, serializable, sam_name: name.to_string(), sam_descriptor, implementation, captured: args, instantiated };
             Ok(Some(Value::Ref(m.alloc_native(lambda))))
         }
         _ => unsupported(format!("invokedynamic with bootstrap {}.{method}", owner.replace('/', "."))),

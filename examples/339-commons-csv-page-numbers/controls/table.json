@@ -1,0 +1,43 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {
+    "count": {
+      "entry": "pagination.Projection#count(I)I",
+      "encoding": "matches"
+    },
+    "labels": {
+      "entry": "pagination.Projection#labels(I)I",
+      "encoding": "matches"
+    },
+    "fields": {
+      "entry": "pagination.Projection#fields(I)I",
+      "encoding": "matches"
+    }
+  },
+  "cases": [
+    {"id": 0, "input": {"rows": 1, "start": 1, "cap": 1, "twice": false}, "expected": {"count": 1, "labels": [1], "fields": [["r", "1"]]}},
+    {"id": 1, "input": {"rows": 1, "start": 1, "cap": 1, "twice": true}, "expected": {"count": 1, "labels": [1], "fields": [["r", "1"]]}},
+    {"id": 2, "input": {"rows": 1, "start": 1, "cap": 2, "twice": false}, "expected": {"count": 1, "labels": [1], "fields": [["r", "1"]]}},
+    {"id": 3, "input": {"rows": 1, "start": 1, "cap": 2, "twice": true}, "expected": {"count": 1, "labels": [1], "fields": [["r", "1"]]}},
+    {"id": 4, "input": {"rows": 1, "start": 2, "cap": 1, "twice": false}, "expected": {"count": 1, "labels": [2], "fields": [["r", "1"]]}},
+    {"id": 5, "input": {"rows": 1, "start": 2, "cap": 1, "twice": true}, "expected": {"count": 1, "labels": [2], "fields": [["r", "1"]]}},
+    {"id": 6, "input": {"rows": 1, "start": 2, "cap": 2, "twice": false}, "expected": {"count": 1, "labels": [2], "fields": [["r", "1"]]}},
+    {"id": 7, "input": {"rows": 1, "start": 2, "cap": 2, "twice": true}, "expected": {"count": 1, "labels": [2], "fields": [["r", "1"]]}},
+    {"id": 8, "input": {"rows": 2, "start": 1, "cap": 1, "twice": false}, "expected": {"count": 1, "labels": [1], "fields": [["r", "1"]]}},
+    {"id": 9, "input": {"rows": 2, "start": 1, "cap": 1, "twice": true}, "expected": {"count": 1, "labels": [1], "fields": [["r", "1"]]}},
+    {"id": 10, "input": {"rows": 2, "start": 1, "cap": 2, "twice": false}, "expected": {"count": 2, "labels": [1, 2], "fields": [["r", "1"], ["r", "2"]]}},
+    {"id": 11, "input": {"rows": 2, "start": 1, "cap": 2, "twice": true}, "expected": {"count": 2, "labels": [1, 2], "fields": [["r", "1"], ["r", "2"]]}},
+    {"id": 12, "input": {"rows": 2, "start": 2, "cap": 1, "twice": false}, "expected": {"count": 1, "labels": [2], "fields": [["r", "1"]]}},
+    {"id": 13, "input": {"rows": 2, "start": 2, "cap": 1, "twice": true}, "expected": {"count": 1, "labels": [2], "fields": [["r", "1"]]}},
+    {"id": 14, "input": {"rows": 2, "start": 2, "cap": 2, "twice": false}, "expected": {"count": 2, "labels": [2, 3], "fields": [["r", "1"], ["r", "2"]]}},
+    {"id": 15, "input": {"rows": 2, "start": 2, "cap": 2, "twice": true}, "expected": {"count": 2, "labels": [2, 3], "fields": [["r", "1"], ["r", "2"]]}},
+    {"id": 16, "input": {"rows": 3, "start": 1, "cap": 1, "twice": false}, "expected": {"count": 1, "labels": [1], "fields": [["r", "1"]]}},
+    {"id": 17, "input": {"rows": 3, "start": 1, "cap": 1, "twice": true}, "expected": {"count": 1, "labels": [1], "fields": [["r", "1"]]}},
+    {"id": 18, "input": {"rows": 3, "start": 1, "cap": 2, "twice": false}, "expected": {"count": 2, "labels": [1, 2], "fields": [["r", "1"], ["r", "2"]]}},
+    {"id": 19, "input": {"rows": 3, "start": 1, "cap": 2, "twice": true}, "expected": {"count": 2, "labels": [1, 2], "fields": [["r", "1"], ["r", "2"]]}},
+    {"id": 20, "input": {"rows": 3, "start": 2, "cap": 1, "twice": false}, "expected": {"count": 1, "labels": [2], "fields": [["r", "1"]]}},
+    {"id": 21, "input": {"rows": 3, "start": 2, "cap": 1, "twice": true}, "expected": {"count": 1, "labels": [2], "fields": [["r", "1"]]}},
+    {"id": 22, "input": {"rows": 3, "start": 2, "cap": 2, "twice": false}, "expected": {"count": 2, "labels": [2, 3], "fields": [["r", "1"], ["r", "2"]]}},
+    {"id": 23, "input": {"rows": 3, "start": 2, "cap": 2, "twice": true}, "expected": {"count": 2, "labels": [2, 3], "fields": [["r", "1"], ["r", "2"]]}}
+  ]
+}

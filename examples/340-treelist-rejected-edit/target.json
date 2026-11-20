@@ -1,0 +1,194 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "treelist-rejected-edit",
+    "family": "treelist-rejected-edit",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-collections",
+    "revisions": {
+      "parent": {
+        "commit": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1"
+      },
+      "fix": {
+        "commit": "fe8eb4989392cb436438978b151aa800b70195b9",
+        "parent": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.test.skip=true",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotbugs.skip=true",
+        "package"
+      ],
+      "jdk": "21"
+    },
+    "adapters": [
+      "adapter/trees/Projection.java"
+    ],
+    "capturedBuilds": {
+      "parent": "records/builds/parent.json",
+      "fix": "records/builds/fix.json"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V"
+    },
+    {
+      "id": "exception-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "claim": "claims/exception.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "contents-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "claim": "claims/contents.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "existing-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "claim": "claims/existing.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "fresh-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "claim": "claims/fresh.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "exception-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "claim": "claims/exception.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "contents-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "claim": "claims/contents.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "existing-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "claim": "claims/existing.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "fresh-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "claim": "claims/fresh.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/trees/TreeCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

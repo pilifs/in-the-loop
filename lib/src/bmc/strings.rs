@@ -671,6 +671,11 @@ impl Engine<'_> {
                 // What is appended: a String's units (`null` for null), a char, or an int's decimal digits.
                 let t = match appended {
                     Val::R(None) => Array { element: Type::Char, length: self.b.constant(4, 32), cells: "null".encode_utf16().map(|u| self.b.constant(i64::from(u), 16)).collect(), refs: Vec::new() },
+                    Val::R(Some(r)) if descriptor.starts_with("(Ljava/lang/Object;)")
+                        && path.objects[*r].class == "java/lang/Character" => {
+                        let Some(Val::I(unit)) = path.objects[*r].fields.get("value") else { return None; };
+                        Array { element: Type::Char, length: self.b.constant(1, 32), cells: vec![self.b.trunc(unit, 16)], refs: Vec::new() }
+                    }
                     // These final wrappers render their initialized signed value in decimal.
                     Val::R(Some(r)) if descriptor.starts_with("(Ljava/lang/Object;)") && matches!(
                         path.objects[*r].class.as_str(), "java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long") => {

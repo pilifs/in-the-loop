@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-194433-344-expose-wrong-monitor-independence-at",
+  "title": "344 expose wrong monitor independence at two workers",
+  "description": "Compare exact labeled terminal sets with an independent sequential oracle. The by-name control selects a single persistent named acquisition and must lose concrete winners or audit orders under aliasing. Keep all 12 matched comparisons and the 36 completed JVM samples.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:schedule-reduction"
+  ],
+  "links": {
+    "examples": [
+      "344"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:44:33+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check two-worker complete labeled sets",
+      "run": "python3 examples/tools/build.py 344 --schedule-reduction --workers 2",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/344-seat-schedule-reduction/records/schedule-reduction/2-workers.json"
+  ]
+}

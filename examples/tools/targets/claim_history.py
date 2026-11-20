@@ -169,8 +169,9 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
     root = folder.parent.parent
     claims, replays = {}, []
     receipts, journals = recorded_evidence(root, folder)
-    from targets import finite_check
+    from targets import finite_check, native_selectors
     finite_batches = finite_check.recorded_batches(folder)
+    selector_roots = native_selectors.evidence_roots(folder)
     jobs, other_jobs = job_history(root, folder, example["id"])
     history = [read_json(path) for path in sorted((folder / "history").glob("*.json"))]
     source = accept.Source(root)
@@ -264,6 +265,16 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
             row["finiteJvm"] = finite_check.evidence(folder, plan, finite_batches)
             finite_answers = {r["status"] for r in row["finiteJvm"]}
             row["overallConclusion"] = disposition(answers | finite_answers)
+        if selector_roots and not isinstance(plan, Unsupported):
+            if checked := native_selectors.evidence(folder, plan, selector_roots):
+                row["nativeSelectors"] = checked
+                row["overallConclusion"] = disposition(answers | {r["status"] for r in row.get("finiteJvm", [])}
+                                                        | {r["status"] for r in checked})
+        if not isinstance(plan, Unsupported) and (folder / "records/original-witnesses" / name).is_dir():
+            from targets import original_witness
+            if lifted := original_witness.evidence(folder, plan):
+                row["originalWitnesses"] = lifted
+                row["overallConclusion"] = disposition({row.get("overallConclusion", row["conclusion"]), "refuted"})
         # Unplannable tasks cannot share a key by virtue of both missing it.
         group = claims.setdefault(key or (file, name), {"claimKey": key, "file": file, "subjects": []})
         if isinstance(plan, Unsupported):
@@ -273,17 +284,21 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
         raise ValueError(f"no claim {claim_filter!r} matches the selected revision of {example['id']}")
     required = {}
     finite = defaultdict(set)
+    additional = defaultdict(set)
     for group in claims.values():
         for subject in group["subjects"]:
             if subject.get("expected") and group["claimKey"]:
                 pair = group["claimKey"], tuple(subject["revisions"])
                 required.setdefault(pair, set()).add(subject["conclusion"])
                 finite[pair].update(r["status"] for r in subject.get("finiteJvm", []))
+                for key in ("nativeSelectors", "originalWitnesses"):
+                    additional[pair].update(r["status"] for r in subject.get(key, []))
     coverage = {"requiredClaimSubjects": len(required), "decidedClaimSubjects": sum(
         len(answers) == 1 and bool(answers & {"established", "refuted"}) for answers in required.values())}
     if finite_batches:
         coverage["exhaustiveJvm"] = disposition_counts(finite.values())
-        coverage["allRoutes"] = disposition_counts(required[pair] | finite[pair] for pair in required)
+    if finite_batches or any(additional.values()):
+        coverage["allRoutes"] = disposition_counts(required[pair] | finite[pair] | additional[pair] for pair in required)
     return {"schema": "example-claim-history/v1", "example": example["id"], "claims": list(claims.values()),
             "coverage": coverage,
             "replays": replays, "otherExampleJobs": other_jobs}
@@ -322,6 +337,12 @@ def markdown(value):
             for proof in subject.get("finiteJvm", []):
                 lines.append(f"- Exhaustive JVM {proof['status']} on {proof.get('inputs') or 0} admitted inputs "
                              f"([finite evidence]({proof['receipt']})).")
+            for proof in subject.get("nativeSelectors", []):
+                lines.append(f"- Native case analysis {proof['status']}, with {proof.get('checked', 0)} of "
+                             f"{proof.get('admitted', 0)} admitted selectors checked. [Native evidence]({proof['record']})")
+            for proof in subject.get("originalWitnesses", []):
+                lines.append(f"- Original startup refuted by a native candidate replayed on the unmodified JVM. "
+                             f"[Original witness]({proof['file']})")
             for record in subject["evidence"]:
                 link = record.get("receipt") or record.get("job")
                 lines.append(f"- {record['answer']} ([evidence]({link}))")

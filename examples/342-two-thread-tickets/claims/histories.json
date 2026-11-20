@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "histories",
+  "statement": "Every completed two-call history refines consecutive ticket issuance in an order consistent with invocation intervals, and leaves two issued tickets.",
+  "assume": "code >= 0 && code < 3",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 4
+  },
+  "assert": "result == 1"
+}

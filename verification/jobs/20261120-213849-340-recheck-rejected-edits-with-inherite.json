@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213849-340-recheck-rejected-edits-with-inherite",
+  "title": "340 recheck rejected edits with inherited AbstractList dispatch",
+  "description": "Run the same 112 rejected add/remove and pre-existing iterator scenarios on the two full TreeList JARs after linking inherited abstract-list operations.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "340"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T21:38:49+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 340 --tasks exception-parent,contents-parent,existing-parent,fresh-parent,exception-fix,contents-fix,existing-fix,fresh-fix --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/340-treelist-rejected-edit/receipts/exception-parent",
+    "examples/340-treelist-rejected-edit/receipts/contents-parent",
+    "examples/340-treelist-rejected-edit/receipts/existing-parent",
+    "examples/340-treelist-rejected-edit/receipts/fresh-parent",
+    "examples/340-treelist-rejected-edit/receipts/exception-fix",
+    "examples/340-treelist-rejected-edit/receipts/contents-fix",
+    "examples/340-treelist-rejected-edit/receipts/existing-fix",
+    "examples/340-treelist-rejected-edit/receipts/fresh-fix"
+  ]
+}

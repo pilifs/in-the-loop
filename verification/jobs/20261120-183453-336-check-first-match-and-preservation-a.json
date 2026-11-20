@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-183453-336-check-first-match-and-preservation-a",
+  "title": "336 check first-match and preservation at length 64",
+  "description": "Use unconstrained signed cells and target on both released forward search and the deliberately reversed helper. Check the complete result, the earlier prefix, normal return and the pre-state of the array.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "336"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T18:34:53+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 336 --tasks first-64-release,frame-64-release,first-64-last,frame-64-last --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/336-guava-first-array-match/receipts/first-64-release",
+    "examples/336-guava-first-array-match/receipts/frame-64-release",
+    "examples/336-guava-first-array-match/receipts/first-64-last",
+    "examples/336-guava-first-array-match/receipts/frame-64-last"
+  ]
+}

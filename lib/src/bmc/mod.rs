@@ -759,6 +759,7 @@ struct Obj {
 #[derive(Debug, Clone, PartialEq)]
 struct Lambda {
     interface: String,
+    serializable: bool,
     name: String,
     handle: crate::classfile::MethodHandle,
     sam_descriptor: String,
@@ -775,6 +776,11 @@ fn captured_key(i: usize) -> String {
 static MADE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
 
 impl Obj {
+    fn is_instance(&self, cp: &ClassPath, target: &str) -> bool {
+        cp.is_subtype(&self.class, target)
+            || (target == "java/io/Serializable" && self.lambda.as_ref().is_some_and(|l| l.serializable))
+    }
+
     fn new(class: &str) -> Obj {
         Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
     }
@@ -2932,7 +2938,7 @@ impl<'a> Engine<'a> {
                     return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
                 };
                 if let Val::R(Some(v)) = value {
-                    if !self.cp.is_subtype(&path.objects[v].class, &class_of(&array.element)) {
+                    if !path.objects[v].is_instance(self.cp, &class_of(&array.element)) {
                         return unsupported(format!("an aastore of a {} into a {}[] (ArrayStoreException)", path.objects[v].class.replace('/', "."), array.element.java_name()));
                     }
                 }
@@ -2954,21 +2960,29 @@ impl<'a> Engine<'a> {
                 if self.there_before(path, o) {
                     self.reads(path, || "reads an array that was there before the call".into())?;
                 }
-                let array = path.objects[o].array.clone().expect("an array");
+                let array = path.objects[o].array.as_ref().expect("an array");
                 check_kind(*kind, &array.element)?;
                 let width = cell_width(&array.element);
                 self.index_used(path, o, &index);
                 // Past a summarized loop a computed index into a large array is not followed ([`loops`]).
-                let loose = path.objects[o].unknown || (path.loose && array.cells.len() > loops::LOOSE_CELLS && self.b.constant_value(&index).is_none());
-                let mut value = if loose { self.loose_read(path, o, &index, width) } else { array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width)) };
-                for (i, cell) in array.cells.iter().enumerate().rev().skip(1) {
-                    if loose {
-                        break;
+                let constant = self.b.constant_value(&index);
+                let loose = path.objects[o].unknown || (path.loose && array.cells.len() > loops::LOOSE_CELLS && constant.is_none());
+                let value = if loose {
+                    self.loose_read(path, o, &index, width)
+                } else if let Some(i) = constant {
+                    let Some(cell) = usize::try_from(i).ok().and_then(|i| array.cells.get(i)) else {
+                        return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
+                    };
+                    cell.clone()
+                } else {
+                    let mut value = array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width));
+                    for (i, cell) in array.cells.iter().enumerate().rev().skip(1) {
+                        let here = self.b.constant(i as i64, 32);
+                        let is = self.b.eq(&index, &here);
+                        value = self.b.ite_bits(is, cell, &value);
                     }
-                    let here = self.b.constant(i as i64, 32);
-                    let is = self.b.eq(&index, &here);
-                    value = self.b.ite_bits(is, cell, &value);
-                }
+                    value
+                };
                 let value = self.b.extend_cell(&array.element, &value);
                 let value = if array.element.slots() == 2 { Val::J(value) } else { Val::I(value) };
                 let in_bounds = self.b.ult(&index, &array.length);
@@ -2996,6 +3010,9 @@ impl<'a> Engine<'a> {
                 if value.len() < width {
                     return unsupported("a store of a narrower value into an array");
                 }
+                if !path.objects[o].unknown && self.b.constant_value(&index).is_some_and(|i| i < 0 || i as usize >= array.cells.len()) {
+                    return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
+                }
                 let stored = self.b.trunc(&value, width);
                 let length = array.length.clone();
                 self.index_used(path, o, &index);
@@ -3014,10 +3031,15 @@ impl<'a> Engine<'a> {
                         return;
                     }
                     let cells = &mut path.objects[o].array.as_mut().expect("an array").cells;
-                    for (i, cell) in cells.iter_mut().enumerate() {
-                        let here = engine.b.constant(i as i64, 32);
-                        let is = engine.b.eq(&index, &here);
-                        *cell = engine.b.ite_bits(is, &stored, cell);
+                    if let Some(i) = engine.b.constant_value(&index) {
+                        // This branch is reached only for an in-bounds index.
+                        cells[i as usize] = stored;
+                    } else {
+                        for (i, cell) in cells.iter_mut().enumerate() {
+                            let here = engine.b.constant(i as i64, 32);
+                            let is = engine.b.eq(&index, &here);
+                            *cell = engine.b.ite_bits(is, &stored, cell);
+                        }
                     }
                     engine.advance(path);
                 })
@@ -3232,7 +3254,7 @@ impl<'a> Engine<'a> {
         let (Some(Val::C(choice)), Some(Val::R(Some(o)))) = (stack.last(), n.checked_sub(3).map(|i| &stack[i])) else { return false };
         let Some(array) = path.objects[*o].as_array().filter(|a| holds_references(&a.element)) else { return false };
         let element = class_of(&array.element);
-        choice.0.iter().all(|(_, t)| t.is_none_or(|v| self.cp.is_subtype(&path.objects[v].class, &element)))
+        choice.0.iter().all(|(_, t)| t.is_none_or(|v| path.objects[v].is_instance(self.cp, &element)))
     }
 
     /// Splits the path per option of the symbolic reference `depth` values below the top of the stack, if it is one
@@ -3614,6 +3636,9 @@ impl<'a> Engine<'a> {
         let frame = path.frames.last().expect("a frame");
         let insn = frame.code.insns[frame.at].clone();
         let class = frame.class.clone();
+        if matches!(insn, Insn::Load(Kind::Int, _)) {
+            if let Some(step) = self.fill_loop(path) { return step; }
+        }
         match insn {
             Insn::Nop => {}
             Insn::AConstNull => self.push(path, Val::R(None)),
@@ -3902,6 +3927,50 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) ==
+                    ("sun/nio/cs/UTF_8", "JLA", "Ljdk/internal/access/JavaLangAccess;") {
+                    let slot = (declaring.clone(), member.name.clone());
+                    if let Some(v) = path.statics.get(&slot).cloned() {
+                        self.push(path, v);
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                    if let Some(provider) = self.cp.utf8_language_access() {
+                        let object = self.alloc(path, &provider);
+                        let value = Val::R(Some(object));
+                        path.statics.insert(slot, value.clone());
+                        self.push(path, value);
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                }
+                // Only the numeric array-layout constants in the boot image. A raw-memory
+                // operation reached from another buffer implementation still refuses.
+                if ClassPath::heap_buffer_owner(&declaring) && member.descriptor == "J"
+                    && matches!(member.name.as_str(), "ARRAY_BASE_OFFSET" | "ARRAY_INDEX_SCALE")
+                    && self.cp.load(&declaring).ok().flatten().is_some_and(|l| matches!(l.origin, crate::classpath::Origin::Jdk)
+                        && l.class.field(&member.name).is_some_and(|f| f.is_static() && f.is_final() && f.descriptor == "J")) {
+                    let value = path.statics.entry((declaring, member.name)).or_insert_with(|| Val::J(self.b.fresh(64))).clone();
+                    path.unbound_platform_value = Some("the VM's primitive-array layout");
+                    self.push(path, value);
+                    self.advance(path);
+                    return Ok(None);
+                }
+                let setting = match (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) {
+                    ("java/io/File", "separatorChar", "C") => Some((16, "the platform file separator")),
+                    ("java/util/Arrays$LegacyMergeSort", "userRequested", "Z") => Some((1, "the JDK array sort selection")),
+                    _ => None,
+                };
+                if let Some((width, reason)) = setting {
+                    let value = path.statics.entry((declaring, member.name)).or_insert_with(|| {
+                        let unit = self.b.fresh(width);
+                        Val::I(self.b.zext(&unit, 32))
+                    }).clone();
+                    path.unbound_platform_value = Some(reason);
+                    self.push(path, value);
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/util/Collections", "EMPTY_SET", "Ljava/util/Set;") && self.cp.collections_empty_singleton("emptySet") {
                     let o = self.literal(path, Literal::CollectionsEmptySet, "java/util/Collections$EmptySet");
                     self.push(path, Val::R(Some(o)));
@@ -4083,11 +4152,17 @@ impl<'a> Engine<'a> {
                 let descriptor = MethodDescriptor::parse(descriptor_text).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 // A lambda or a method reference: an object of the interface, which holds what the site captured.
                 let site = class.bootstrap_methods().ok().and_then(|b| b.into_iter().nth(usize::from(bootstrap)));
-                if let Some(b) = site.as_ref().filter(|b| b.method.member.owner == "java/lang/invoke/LambdaMetafactory" && b.method.member.name == "metafactory") {
+                if let Some(b) = site.as_ref().filter(|b| b.method.member.owner == "java/lang/invoke/LambdaMetafactory"
+                    && matches!(b.method.member.name.as_str(), "metafactory" | "altMetafactory")) {
                     let (_, sam, _) = class.pool.invoke_dynamic(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
-                    let (Type::Object(interface), [BootstrapArg::MethodType(erased), BootstrapArg::MethodHandle(handle), BootstrapArg::MethodType(instantiated)]) = (&descriptor.ret, b.args.as_slice()) else { return unsupported("a lambda site without its three metafactory arguments") };
+                    let (Type::Object(interface), [BootstrapArg::MethodType(erased), BootstrapArg::MethodHandle(handle), BootstrapArg::MethodType(instantiated), flags @ ..]) = (&descriptor.ret, b.args.as_slice()) else { return unsupported("a lambda site without its three metafactory arguments") };
+                    let serializable = match (b.method.member.name.as_str(), flags) {
+                        ("metafactory", []) | ("altMetafactory", [BootstrapArg::Int(0)]) => false,
+                        ("altMetafactory", [BootstrapArg::Int(1)] | [BootstrapArg::Int(5), BootstrapArg::Int(0)]) => true,
+                        _ => return unsupported("a lambda with additional marker interfaces or bridge methods"),
+                    };
                     let instantiated = MethodDescriptor::parse(instantiated).map_err(|e| Stop::Unsupported(e.to_string()))?;
-                    let lambda = Lambda { interface: interface.clone(), name: sam.to_string(), handle: handle.clone(), sam_descriptor: erased.clone(), instantiated, captured: descriptor.params.len() };
+                    let lambda = Lambda { interface: interface.clone(), serializable, name: sam.to_string(), handle: handle.clone(), sam_descriptor: erased.clone(), instantiated, captured: descriptor.params.len() };
                     let captured = self.pop_args(path, descriptor.params.len())?;
                     let r = self.alloc(path, interface);
                     path.objects[r].lambda = Some(Rc::new(lambda));
@@ -4149,7 +4224,7 @@ impl<'a> Engine<'a> {
                 }
                 let r = self.pop_ref(path)?;
                 if let Some(o) = r {
-                    if !self.cp.is_subtype(&path.objects[o].class, &target) {
+                    if !path.objects[o].is_instance(self.cp, &target) {
                         if path.objects[o].assumed {
                             return self.of_unknown_class(path, o, &format!("a cast to {}", target.replace('/', ".")));
                         }
@@ -4162,10 +4237,10 @@ impl<'a> Engine<'a> {
                 let target = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
                 let r = self.pop(path)?;
                 let Some(options) = r.options() else { return unsupported(format!("expected a reference on the stack, found {r:?}")) };
-                if let Some(o) = options.iter().filter_map(|(_, t)| *t).find(|&o| path.objects[o].assumed && !self.cp.is_subtype(&path.objects[o].class, &target)) {
+                if let Some(o) = options.iter().filter_map(|(_, t)| *t).find(|&o| path.objects[o].assumed && !path.objects[o].is_instance(self.cp, &target)) {
                     return self.of_unknown_class(path, o, &format!("an instanceof {}", target.replace('/', ".")));
                 }
-                let guards: Vec<Lit> = options.iter().filter(|(_, t)| t.is_some_and(|o| self.cp.is_subtype(&path.objects[o].class, &target))).map(|(g, _)| *g).collect();
+                let guards: Vec<Lit> = options.iter().filter(|(_, t)| t.is_some_and(|o| path.objects[o].is_instance(self.cp, &target))).map(|(g, _)| *g).collect();
                 let is = self.any(&guards);
                 let (one, zero) = (self.b.constant(1, 32), self.b.constant(0, 32));
                 let c = self.b.ite_bits(is, &one, &zero);
@@ -4703,6 +4778,9 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
+            Literal::Charset(field) if self.cp.charset_name_literal(field).is_some() => {
+                self.alloc(path, &format!("sun/nio/cs/{field}"))
+            }
             Literal::Class(_) | Literal::PrimitiveClass(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap => self.alloc(path, class),
             Literal::Truth(truth) => {
                 let o = self.alloc(path, class);
@@ -4887,6 +4965,23 @@ impl<'a> Engine<'a> {
         if arraycopy::is_call(&member.owner, &member.name, &member.descriptor) {
             return self.array_copy(path);
         }
+        if caller == "java/nio/ByteOrder" && self.cp.state_image_class(caller).is_some()
+            && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
+                == ("jdk/internal/misc/Unsafe", "getUnsafe", "()Ljdk/internal/misc/Unsafe;") {
+            let frame = path.frames.last().expect("a frame");
+            if frame.method == "<clinit>" && matches!(frame.code.insns.get(frame.at + 1), Some(Insn::InvokeVirtual(i)) if
+                frame.class.pool.member(*i).is_ok_and(|m| m.owner == member.owner && m.name == "isBigEndian" && m.descriptor == "()Z")) {
+                // These adjacent instructions in the bootstrap image observe precisely one machine bit.
+                let value = path.statics.entry(("<VM>".into(), "isBigEndian".into())).or_insert_with(|| {
+                    let bit = self.b.var(); Val::I(self.b.zext(&vec![bit], 32))
+                }).clone();
+                path.unbound_platform_value = Some("the VM's native byte order");
+                self.push(path, value);
+                self.advance(path);
+                self.advance(path);
+                return Ok(None);
+            }
+        }
         // The JDK's methods and the intrinsics take known references, but for a call that only stores the
         // reference ([`locale::takes_a_choice`]).
         if !locale::takes_a_choice(&member.owner, &member.name, &member.descriptor) {
@@ -5028,7 +5123,7 @@ impl<'a> Engine<'a> {
         let arguments = &stack[receiver_at + 1..];
         for (v, t) in arguments.iter().zip(&lambda.instantiated.params).chain(arguments.iter().zip(&takes.params[lambda.captured..])) {
             if let (Val::R(Some(a)), Type::Object(_) | Type::Array(_)) = (v, t) {
-                if !self.cp.is_subtype(&path.objects[*a].class, &class_of(t)) {
+                if !path.objects[*a].is_instance(self.cp, &class_of(t)) {
                     if path.objects[*a].assumed {
                         return self.of_unknown_class(path, *a, &format!("a cast to {}", class_of(t).replace('/', ".")));
                     }
@@ -5137,6 +5232,35 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
+            if special && member.owner == STRING && member.name == "<init>"
+                && matches!(member.descriptor.as_str(), "([BLjava/nio/charset/Charset;)V" | "([BIILjava/nio/charset/Charset;)V") {
+                if let Some(step) = self.string_from_utf8(path, o, &args) { return step; }
+            }
+            if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) ==
+                ("jdk/internal/access/JavaLangAccess", "decodeASCII", "([BI[CII)I")
+                && matches!(path.statics.get(&("sun/nio/cs/UTF_8".into(), "JLA".into())), Some(Val::R(Some(r))) if *r == o) {
+                if let Some((cf, method)) = self.cp.find_method(&path.objects[o].class, &member.name, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
+            }
+            if matches!(path.objects[o].class.as_str(), "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
+                && !path.objects[o].assumed && !path.objects[o].given && ClassPath::heap_buffer_owner(&member.owner) {
+                let target = if special { member.owner.clone() } else {
+                    self.cp.find_method(&path.objects[o].class, &member.name, &member.descriptor)
+                        .map(|(cf, _)| cf.name.clone()).unwrap_or_default()
+                };
+                if let Some((cf, method)) = self.cp.heap_buffer_method(&target, &member.name, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &target, cf, method, full);
+                }
+            }
+            if runtime::sequential_lock_call(&member.owner, &member.name, &member.descriptor)
+                && path.objects[o].class == runtime::REENTRANT_LOCK {
+                return self.sequential_lock(path, o, &member.name);
+            }
             if special && self.gap_mode == GapMode::Strict && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/lang/Object", "clone", "()Ljava/lang/Object;")
                 && !path.objects[o].assumed && !path.objects[o].unknown && self.cp.application_object(&path.objects[o].class) {
                 let class = path.objects[o].class.clone();

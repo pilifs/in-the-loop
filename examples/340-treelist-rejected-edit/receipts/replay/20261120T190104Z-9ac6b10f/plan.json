@@ -1,0 +1,263 @@
+{
+  "plan": {
+    "example": "340",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/trees/TreeCases.java",
+          "sha256": "9819bbc2d7a44d5d62da8acab7ad6ff440d0faf7e43387fc8f2438daf6e382c7"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "a9175b3282dca1e4af1b57d724a8a88c646976192ca7263ab926ed47fc94ac5d"
+        }
+      ],
+      "key": "975b9934e0264f2b"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-collections",
+        "commit": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/builds/parent.json",
+          "sha256": "064c272ec7f8d0e82e98ffcb6db7b5e227fe9a90ffe7cd36ef704c6d834aec25"
+        },
+        "adapters": [
+          "adapter/trees/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-collections",
+        "commit": "fe8eb4989392cb436438978b151aa800b70195b9",
+        "parent": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/builds/fix.json",
+          "sha256": "9682247aa8959e05ea92d21771b0f459aee7c06742709f7f760a048a83e64447"
+        },
+        "adapters": [
+          "adapter/trees/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/replay"
+    },
+    "folder": "/home/filip/code/in-the-loop-foundation-domain-streams/examples/340-treelist-rejected-edit",
+    "network": true
+  },
+  "inputs": {
+    "example": "340",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/trees/TreeCases.java",
+          "sha256": "9819bbc2d7a44d5d62da8acab7ad6ff440d0faf7e43387fc8f2438daf6e382c7"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "a9175b3282dca1e4af1b57d724a8a88c646976192ca7263ab926ed47fc94ac5d"
+        }
+      ],
+      "key": "975b9934e0264f2b"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-collections",
+        "commit": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/builds/parent.json",
+          "sha256": "064c272ec7f8d0e82e98ffcb6db7b5e227fe9a90ffe7cd36ef704c6d834aec25"
+        },
+        "adapters": [
+          "adapter/trees/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-collections",
+        "commit": "fe8eb4989392cb436438978b151aa800b70195b9",
+        "parent": "dc4d1c92c2c68d1e7b74d20e73991f751eec64f1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/builds/fix.json",
+          "sha256": "9682247aa8959e05ea92d21771b0f459aee7c06742709f7f760a048a83e64447"
+        },
+        "adapters": [
+          "adapter/trees/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/trees/Projection.java",
+        "sha256": "effcf2fd5603728001504ef305624693ba20d0f9d3af5d3d77ac58b80394265b"
+      }
+    ]
+  },
+  "key": "b3e3e5c80ddf34b0c88aabf24d9f7cb139e5097878e8c9c8fd9fe99f45d687ea"
+}

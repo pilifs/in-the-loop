@@ -26,10 +26,17 @@ def new_id(start):
     return f"{start:%Y%m%dT%H%M%SZ}-{start.microsecond:05x}{os.urandom(2).hex()[:3]}"
 
 
+def json_text(value):
+    pretty = json.dumps(value, indent=2, ensure_ascii=False)
+    # Full per-input observations must fit the repository's one-MiB snapshot limit.
+    if len(pretty.encode()) >= 1024 * 1024:
+        return json.dumps(value, separators=(",", ":"), ensure_ascii=False) + "\n"
+    return pretty + "\n"
+
+
 def save(path, value):
     with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as stream:
-        json.dump(value, stream, indent=2, ensure_ascii=False)
-        stream.write("\n")
+        stream.write(json_text(value))
     os.replace(stream.name, path)
 
 

@@ -1,0 +1,39 @@
+{
+  "claimKey": "2d70922c5336fb65",
+  "entry": "seats.Reservations#singleOwner(I)I",
+  "inputs": [
+    {
+      "name": "code",
+      "type": "int",
+      "value": 12
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "by": "jvm",
+  "reproduced": true,
+  "sides": {
+    "named": {
+      "entryClassSha256": "4f022101e24f11ed67ed84e627caf8e575d653c644aa7dc7b6120e57de5320ca",
+      "classpath": [
+        "01f8680a12d62e8e35fb8e5644a67d82ab27c3775cee0f57d0ba13d170fa042e"
+      ],
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 12;\nif (!(code >= 0 && code < 36)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = seats.Reservations.singleOwner(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "admitted": true,
+      "values": [
+        0,
+        null
+      ],
+      "satisfies": false
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  }
+}

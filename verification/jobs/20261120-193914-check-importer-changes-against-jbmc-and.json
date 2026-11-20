@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-193914-check-importer-changes-against-jbmc-and",
+  "title": "Check importer changes against JBMC and auto",
+  "description": "Repeat the historical controls with the same bounds, JVM, checker budget and observations after extending native Java stream, comparator, array and reference semantics. Keep expected negative controls and all divergences visible.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs"
+    ],
+    "jobs": [
+      "20261120-075435-check-map-and-wrapper-conformance-under",
+      "20261120-100759-check-array-view-and-platform-conformanc"
+    ]
+  },
+  "expected": "The ignored conformance test passes with every bounded result reconciled against its JVM oracle.",
+  "submitted": {
+    "at": "2026-11-20T19:39:14+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "17m",
+    "memoryLimit": "5G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "the_corpus_agrees_with_the_jvm_under_jbmc_and_auto",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --exact --test-threads=1",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

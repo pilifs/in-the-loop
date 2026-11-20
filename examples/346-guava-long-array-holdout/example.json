@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "346",
+  "title": "First matching 64-bit element in a released Guava array",
+  "summary": "Transfer the checked first-index rule from signed int cells to signed long cells on the same Guava artifact.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Guava",
+    "file": "guava/src/com/google/common/primitives/Longs.java",
+    "symbol": "com.google.common.primitives.Longs#indexOf([JJ)I"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Compare the released search with a deliberately constructed last-match traversal."
+  },
+  "target": "target.json",
+  "verdictLabel": "First-index holdout at two bounds and every legal length",
+  "notes": [
+    "This holdout uses the exact Guava 33.4.8-jre JAR from example 336. Array lengths, returned indexes and the decreasing measure stay signed 32-bit. Each element and the target occupy 64 bits. The initial public induction attempt is retained before extending the rule.",
+    "All eight strict native claims were decided at bounds 8 and 64. Both first-match claims for the reversed control were refuted. The released traversal also passed all eleven arbitrary-length solver checks, including one that admits distinct values with identical low halves."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/google/guava",
+    "url": "https://github.com/google/guava/commit/f06690fa3e874f65515e8fd338a74d636e2c792f"
+  }
+}

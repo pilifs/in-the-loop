@@ -1,0 +1,758 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "b7366fb7bd7f82c0",
+    "format": 1,
+    "example": "335",
+    "statement": {
+      "approach": "target",
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "com.google.common.math.IntMath#mean(II)I",
+      "revisions": [
+        "release",
+        "mutant"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "mutant-replay",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "com.google.common.math.IntMath#mean(II)I",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/mean/MeanCases.java",
+            "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+          },
+          {
+            "id": "altered-implementation",
+            "kind": "mutation",
+            "path": "controls/overflow.patch",
+            "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+          }
+        ],
+        "key": "5b1815186453c5d1"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "mutant-replay",
+      "sidecar": "b6abf95fa971ab6d69415584c5d4f4e5296761b3c904c030fb5b06394183b040",
+      "revisions": {
+        "release": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "mutant": "f06690fa3e874f65515e8fd338a74d636e2c792f"
+      },
+      "dependencies": [
+        {
+          "revision": "release",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ccde79b194e7dc4c2708415ed128e7e19481b96b359c6fa2ba3fb90db72acacf"
+        },
+        {
+          "revision": "release",
+          "position": 1,
+          "role": "original",
+          "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+          "coordinates": "com.google.guava:guava:33.4.8-jre"
+        },
+        {
+          "revision": "mutant",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ccde79b194e7dc4c2708415ed128e7e19481b96b359c6fa2ba3fb90db72acacf"
+        },
+        {
+          "revision": "mutant",
+          "position": 1,
+          "role": "original",
+          "sha256": "d895693b47636f7c6a2992fd37e7bb80b0aeb40891991ae5836bae45e2330c64"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/oracle.py": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1",
+        "controls/overflow.patch": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8",
+        "driver/mean/MeanCases.java": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+      },
+      "claimKey": "5b1815186453c5d1"
+    }
+  },
+  "attempt": {
+    "id": "20261120T182843Z-5bf9c9f4",
+    "claim": "b7366fb7bd7f82c0",
+    "startedAt": "2026-11-20T18:28:43+00:00",
+    "seconds": 0.2,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "048ef38bf4710ea653213f77e5edeeb3a6c2a930d85f64bd308a8e30b3e3049a",
+        "files": 1
+      },
+      "after": {
+        "sha256": "ca1de9c61c175ad0c51d511441a6e9d8b91dc694a525c9d392542ae55f7a1f67",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control release on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-release-jdk21.stdout",
+        "stderr": "records/control-release-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control mutant on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-mutant-jdk21.stdout",
+        "stderr": "records/control-mutant-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "b7366fb7bd7f82c0",
+    "attempt": "20261120T182843Z-5bf9c9f4",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: release holds the oracle; mutant violates the oracle at [32, -1, -1073741824], [32, -1, -2147483648], [32, -1, -2], [32, -1, 0], [32, -1073741824, -1], [32, -1073741824, -2147483647], [32, -1073741824, -2147483648], [32, -1073741824, 1], [32, -2, -1], [32, -2, -2147483647], [32, -2, -2147483648], [32, -2, 1], [32, -2147483647, -1073741824], [32, -2147483647, -2147483647], [32, -2147483647, -2147483648], [32, -2147483647, -2], [32, -2147483647, 0], [32, -2147483647, 1073741824], [32, -2147483647, 2147483646], [32, -2147483647, 2], [32, -2147483648, -1073741824], [32, -2147483648, -1], [32, -2147483648, -2147483647], [32, -2147483648, -2147483648], [32, -2147483648, -2], [32, -2147483648, 1], [32, -2147483648, 2147483647], [32, 0, -1], [32, 0, -2147483647], [32, 1, -1073741824], [32, 1, -2147483648], [32, 1, -2], [32, 1, 2147483647], [32, 1073741824, -2147483647], [32, 1073741824, 1073741824], [32, 1073741824, 2147483646], [32, 1073741824, 2147483647], [32, 2, -2147483647], [32, 2, 2147483646], [32, 2, 2147483647], [32, 2147483646, -2147483647], [32, 2147483646, 1073741824], [32, 2147483646, 2147483646], [32, 2147483646, 2147483647], [32, 2147483646, 2], [32, 2147483647, -2147483648], [32, 2147483647, 1073741824], [32, 2147483647, 1], [32, 2147483647, 2147483646], [32, 2147483647, 2147483647], [32, 2147483647, 2], [64, -1, -2], [64, -1, -4611686018427387904], [64, -1, -9223372036854775808], [64, -1, 0], [64, -2, -1], [64, -2, -9223372036854775807], [64, -2, -9223372036854775808], [64, -2, 1], [64, -4611686018427387904, -1], [64, -4611686018427387904, -9223372036854775807], [64, -4611686018427387904, -9223372036854775808], [64, -4611686018427387904, 1], [64, -9223372036854775807, -2], [64, -9223372036854775807, -4611686018427387904], [64, -9223372036854775807, -9223372036854775807], [64, -9223372036854775807, -9223372036854775808], [64, -9223372036854775807, 0], [64, -9223372036854775807, 2], [64, -9223372036854775807, 4611686018427387904], [64, -9223372036854775807, 9223372036854775806], [64, -9223372036854775808, -1], [64, -9223372036854775808, -2], [64, -9223372036854775808, -4611686018427387904], [64, -9223372036854775808, -9223372036854775807], [64, -9223372036854775808, -9223372036854775808], [64, -9223372036854775808, 1], [64, -9223372036854775808, 9223372036854775807], [64, 0, -1], [64, 0, -9223372036854775807], [64, 1, -2], [64, 1, -4611686018427387904], [64, 1, -9223372036854775808], [64, 1, 9223372036854775807], [64, 2, -9223372036854775807], [64, 2, 9223372036854775806], [64, 2, 9223372036854775807], [64, 4611686018427387904, -9223372036854775807], [64, 4611686018427387904, 4611686018427387904], [64, 4611686018427387904, 9223372036854775806], [64, 4611686018427387904, 9223372036854775807], [64, 9223372036854775806, -9223372036854775807], [64, 9223372036854775806, 2], [64, 9223372036854775806, 4611686018427387904], [64, 9223372036854775806, 9223372036854775806], [64, 9223372036854775806, 9223372036854775807], [64, 9223372036854775807, -9223372036854775808], [64, 9223372036854775807, 1], [64, 9223372036854775807, 2], [64, 9223372036854775807, 4611686018427387904], [64, 9223372036854775807, 9223372036854775806], [64, 9223372036854775807, 9223372036854775807], on every JDK named: as the mutation pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"release\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 18,
+      "code": "\"mutant\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "[32, -2147483648, -2147483648]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -2147483648"
+      },
+      {
+        "input": "[32, -2147483648, -2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -2147483648"
+      },
+      {
+        "input": "[32, -2147483648, -1073741824]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 536870912, expected -1610612736"
+      },
+      {
+        "input": "[32, -2147483648, -2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 1073741823, expected -1073741825"
+      },
+      {
+        "input": "[32, -2147483648, -1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 1073741823, expected -1073741825"
+      },
+      {
+        "input": "[32, -2147483648, 1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741823, expected -1073741824"
+      },
+      {
+        "input": "[32, -2147483648, 2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[32, -2147483647, -2147483648]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -2147483648"
+      },
+      {
+        "input": "[32, -2147483647, -2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 1, expected -2147483647"
+      },
+      {
+        "input": "[32, -2147483647, -1073741824]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 536870912, expected -1610612736"
+      },
+      {
+        "input": "[32, -2147483647, -2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 1073741823, expected -1073741825"
+      },
+      {
+        "input": "[32, -2147483647, 0]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741823, expected -1073741824"
+      },
+      {
+        "input": "[32, -2147483647, 2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741822, expected -1073741823"
+      },
+      {
+        "input": "[32, -2147483647, 1073741824]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870911, expected -536870912"
+      },
+      {
+        "input": "[32, -2147483647, 2147483646]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[32, -1073741824, -2147483648]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 536870912, expected -1610612736"
+      },
+      {
+        "input": "[32, -1073741824, -2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 536870912, expected -1610612736"
+      },
+      {
+        "input": "[32, -1073741824, -1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870912, expected -536870913"
+      },
+      {
+        "input": "[32, -1073741824, 1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870911, expected -536870912"
+      },
+      {
+        "input": "[32, -2, -2147483648]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 1073741823, expected -1073741825"
+      },
+      {
+        "input": "[32, -2, -2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 1073741823, expected -1073741825"
+      },
+      {
+        "input": "[32, -2, -1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected -2"
+      },
+      {
+        "input": "[32, -2, 1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[32, -1, -2147483648]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 1073741823, expected -1073741825"
+      },
+      {
+        "input": "[32, -1, -1073741824]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870912, expected -536870913"
+      },
+      {
+        "input": "[32, -1, -2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected -2"
+      },
+      {
+        "input": "[32, -1, 0]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[32, 0, -2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741823, expected -1073741824"
+      },
+      {
+        "input": "[32, 0, -1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[32, 1, -2147483648]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741823, expected -1073741824"
+      },
+      {
+        "input": "[32, 1, -1073741824]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870911, expected -536870912"
+      },
+      {
+        "input": "[32, 1, -2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[32, 1, 2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741824, expected 1073741824"
+      },
+      {
+        "input": "[32, 2, -2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741822, expected -1073741823"
+      },
+      {
+        "input": "[32, 2, 2147483646]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741824, expected 1073741824"
+      },
+      {
+        "input": "[32, 2, 2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741823, expected 1073741824"
+      },
+      {
+        "input": "[32, 1073741824, -2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870911, expected -536870912"
+      },
+      {
+        "input": "[32, 1073741824, 1073741824]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741824, expected 1073741824"
+      },
+      {
+        "input": "[32, 1073741824, 2147483646]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870913, expected 1610612735"
+      },
+      {
+        "input": "[32, 1073741824, 2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870912, expected 1610612735"
+      },
+      {
+        "input": "[32, 2147483646, -2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[32, 2147483646, 2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741824, expected 1073741824"
+      },
+      {
+        "input": "[32, 2147483646, 1073741824]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870913, expected 1610612735"
+      },
+      {
+        "input": "[32, 2147483646, 2147483646]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2, expected 2147483646"
+      },
+      {
+        "input": "[32, 2147483646, 2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected 2147483646"
+      },
+      {
+        "input": "[32, 2147483647, -2147483648]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[32, 2147483647, 1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741824, expected 1073741824"
+      },
+      {
+        "input": "[32, 2147483647, 2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1073741823, expected 1073741824"
+      },
+      {
+        "input": "[32, 2147483647, 1073741824]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -536870912, expected 1610612735"
+      },
+      {
+        "input": "[32, 2147483647, 2147483646]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected 2147483646"
+      },
+      {
+        "input": "[32, 2147483647, 2147483647]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected 2147483647"
+      },
+      {
+        "input": "[64, -9223372036854775808, -9223372036854775808]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -9223372036854775808"
+      },
+      {
+        "input": "[64, -9223372036854775808, -9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -9223372036854775808"
+      },
+      {
+        "input": "[64, -9223372036854775808, -4611686018427387904]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 2305843009213693952, expected -6917529027641081856"
+      },
+      {
+        "input": "[64, -9223372036854775808, -2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 4611686018427387903, expected -4611686018427387905"
+      },
+      {
+        "input": "[64, -9223372036854775808, -1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 4611686018427387903, expected -4611686018427387905"
+      },
+      {
+        "input": "[64, -9223372036854775808, 1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387903, expected -4611686018427387904"
+      },
+      {
+        "input": "[64, -9223372036854775808, 9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[64, -9223372036854775807, -9223372036854775808]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -9223372036854775808"
+      },
+      {
+        "input": "[64, -9223372036854775807, -9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 1, expected -9223372036854775807"
+      },
+      {
+        "input": "[64, -9223372036854775807, -4611686018427387904]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 2305843009213693952, expected -6917529027641081856"
+      },
+      {
+        "input": "[64, -9223372036854775807, -2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 4611686018427387903, expected -4611686018427387905"
+      },
+      {
+        "input": "[64, -9223372036854775807, 0]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387903, expected -4611686018427387904"
+      },
+      {
+        "input": "[64, -9223372036854775807, 2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387902, expected -4611686018427387903"
+      },
+      {
+        "input": "[64, -9223372036854775807, 4611686018427387904]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693951, expected -2305843009213693952"
+      },
+      {
+        "input": "[64, -9223372036854775807, 9223372036854775806]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[64, -4611686018427387904, -9223372036854775808]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 2305843009213693952, expected -6917529027641081856"
+      },
+      {
+        "input": "[64, -4611686018427387904, -9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 2305843009213693952, expected -6917529027641081856"
+      },
+      {
+        "input": "[64, -4611686018427387904, -1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693952, expected -2305843009213693953"
+      },
+      {
+        "input": "[64, -4611686018427387904, 1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693951, expected -2305843009213693952"
+      },
+      {
+        "input": "[64, -2, -9223372036854775808]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 4611686018427387903, expected -4611686018427387905"
+      },
+      {
+        "input": "[64, -2, -9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 4611686018427387903, expected -4611686018427387905"
+      },
+      {
+        "input": "[64, -2, -1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected -2"
+      },
+      {
+        "input": "[64, -2, 1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[64, -1, -9223372036854775808]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 4611686018427387903, expected -4611686018427387905"
+      },
+      {
+        "input": "[64, -1, -4611686018427387904]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693952, expected -2305843009213693953"
+      },
+      {
+        "input": "[64, -1, -2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected -2"
+      },
+      {
+        "input": "[64, -1, 0]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[64, 0, -9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387903, expected -4611686018427387904"
+      },
+      {
+        "input": "[64, 0, -1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[64, 1, -9223372036854775808]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387903, expected -4611686018427387904"
+      },
+      {
+        "input": "[64, 1, -4611686018427387904]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693951, expected -2305843009213693952"
+      },
+      {
+        "input": "[64, 1, -2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[64, 1, 9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387904, expected 4611686018427387904"
+      },
+      {
+        "input": "[64, 2, -9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387902, expected -4611686018427387903"
+      },
+      {
+        "input": "[64, 2, 9223372036854775806]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387904, expected 4611686018427387904"
+      },
+      {
+        "input": "[64, 2, 9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387903, expected 4611686018427387904"
+      },
+      {
+        "input": "[64, 4611686018427387904, -9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693951, expected -2305843009213693952"
+      },
+      {
+        "input": "[64, 4611686018427387904, 4611686018427387904]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387904, expected 4611686018427387904"
+      },
+      {
+        "input": "[64, 4611686018427387904, 9223372036854775806]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693953, expected 6917529027641081855"
+      },
+      {
+        "input": "[64, 4611686018427387904, 9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693952, expected 6917529027641081855"
+      },
+      {
+        "input": "[64, 9223372036854775806, -9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[64, 9223372036854775806, 2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387904, expected 4611686018427387904"
+      },
+      {
+        "input": "[64, 9223372036854775806, 4611686018427387904]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693953, expected 6917529027641081855"
+      },
+      {
+        "input": "[64, 9223372036854775806, 9223372036854775806]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2, expected 9223372036854775806"
+      },
+      {
+        "input": "[64, 9223372036854775806, 9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected 9223372036854775806"
+      },
+      {
+        "input": "[64, 9223372036854775807, -9223372036854775808]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean 0, expected -1"
+      },
+      {
+        "input": "[64, 9223372036854775807, 1]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387904, expected 4611686018427387904"
+      },
+      {
+        "input": "[64, 9223372036854775807, 2]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -4611686018427387903, expected 4611686018427387904"
+      },
+      {
+        "input": "[64, 9223372036854775807, 4611686018427387904]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -2305843009213693952, expected 6917529027641081855"
+      },
+      {
+        "input": "[64, 9223372036854775807, 9223372036854775806]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected 9223372036854775806"
+      },
+      {
+        "input": "[64, 9223372036854775807, 9223372036854775807]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: mean -1, expected 9223372036854775807"
+      }
+    ],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 2 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "d731726a2b6e2f5066a57fa13d7e7a871f10ceb7b4aa76173042a2586cbcb6a7",
+        "bytes": 99472
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "d02fb11da8752a749eb51a1e2b27a8f5003746f20334792195d8251bdc167a20",
+        "bytes": 11197
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "7d5c36f5507a324db5cd80e06e3bccf1e530de984813c5eaecabd9f12ac4ef01",
+        "bytes": 1735
+      },
+      {
+        "path": "records/control-release-jdk21.stdout",
+        "sha256": "8b98fb9d2424af7934f85c46080fff1f981c0896ae9167fa2edb044b6dc4e6d1",
+        "bytes": 19256
+      },
+      {
+        "path": "records/control-release-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "020d0f254c087e976f311b88987475b7efe815f1b974c07414943334f1de9ed3",
+        "bytes": 81767
+      },
+      {
+        "path": "records/control-mutant-jdk21.stdout",
+        "sha256": "f0e7805ea077066300da6ff26b87dac122dc617517534ee4ffcdafe6f6793b27",
+        "bytes": 19018
+      },
+      {
+        "path": "records/control-mutant-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    ]
+  }
+}

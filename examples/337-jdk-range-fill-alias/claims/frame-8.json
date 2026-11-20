@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "frame-8",
+  "statement": "Write exactly the selected half-open slice and preserve every other cell, including what the second root observes.",
+  "assume": "0 <= from && from <= to && to <= a.length",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 11,
+    "maxArrayLength": 8
+  },
+  "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+  "mayAlias": [
+    "a,other"
+  ]
+}

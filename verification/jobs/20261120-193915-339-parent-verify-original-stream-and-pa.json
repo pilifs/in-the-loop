@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-193915-339-parent-verify-original-stream-and-pa",
+  "title": "339 parent verify original stream and page bytecode",
+  "description": "Run the strict native checker on the actual pinned application and runtime dependencies after extending Java initialization, sorting, streams and bounded byte operations. Preserve every raw outcome and independently qualify a concrete failure on the JVM.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "339"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:39:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "8m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 339 --tasks count-parent,labels-parent,fields-parent,start-one-parent --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/339-commons-csv-page-numbers/receipts/count-parent",
+    "examples/339-commons-csv-page-numbers/receipts/labels-parent",
+    "examples/339-commons-csv-page-numbers/receipts/fields-parent",
+    "examples/339-commons-csv-page-numbers/receipts/start-one-parent"
+  ]
+}

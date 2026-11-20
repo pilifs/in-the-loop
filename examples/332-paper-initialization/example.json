@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "332",
+  "title": "A paper setting read before or after initialization",
+  "summary": "A cached or helper-backed paper setting survives a later property change, while a live read can change the printed size.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "class-initialization",
+    "configuration-drift",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Paper setting",
+    "file": "cached/paper/Paper.java",
+    "symbol": "paper.Paper#size()Ljava/lang/String;"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "A cached or helper-backed paper setting survives a later property change, while a live read can change the printed size."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 9 inputs on each revision. cached mismatches were 0 for first, 0 for second, 0 for count. helper mismatches were 0 for first, 0 for second, 0 for count. live mismatches were 0 for first, 4 for second, 0 for count."
+  ]
+}

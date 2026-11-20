@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-183453-336-prove-first-match-for-any-allocated",
+  "title": "336 prove first match for any allocated Java int array",
+  "description": "Rebuild the transition proof from the released Guava method and its forwarding helper. Check all base, return, heap, safe access, signed overflow and ranking obligations. Preserve the self-contained SMT query and disassembly.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:array-invariant",
+    "target:prove"
+  ],
+  "links": {
+    "examples": [
+      "336"
+    ]
+  },
+  "expected": "The domain including maximum signed length is satisfiable. Every counterexample formula for the invariant, frame, exits and variant is unsatisfiable.",
+  "submitted": {
+    "at": "2026-11-20T18:34:53+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "z3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Prove the compiled traversal by array induction",
+      "run": "python3 examples/tools/build.py 336 --array-induction first-any-length --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/336-guava-first-array-match/records/array-induction/first-any-length"
+  ]
+}

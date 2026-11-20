@@ -1,0 +1,193 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "jdk-range-fill-alias",
+    "family": "jdk-range-fill-alias",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "original": {
+        "fixture": "original"
+      },
+      "extra": {
+        "fixture": "extra"
+      }
+    },
+    "pairs": [
+      {
+        "name": "extra-cell",
+        "kind": "mutation",
+        "before": "original",
+        "after": "extra"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "extra-cell",
+      "target": "fill.Range#apply([I[IIII)I"
+    },
+    {
+      "id": "frame-8-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#apply([I[IIII)I",
+      "claim": "claims/frame-8.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "original"
+    },
+    {
+      "id": "caller-8-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#observe([I[IIIII)I",
+      "claim": "claims/caller-8.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "original"
+    },
+    {
+      "id": "frame-8-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#apply([I[IIII)I",
+      "claim": "claims/frame-8.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "extra"
+    },
+    {
+      "id": "caller-8-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#observe([I[IIIII)I",
+      "claim": "claims/caller-8.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "extra"
+    },
+    {
+      "id": "frame-64-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#apply([I[IIII)I",
+      "claim": "claims/frame-64.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "original"
+    },
+    {
+      "id": "caller-64-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#observe([I[IIIII)I",
+      "claim": "claims/caller-64.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "original"
+    },
+    {
+      "id": "frame-64-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#apply([I[IIII)I",
+      "claim": "claims/frame-64.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "extra"
+    },
+    {
+      "id": "caller-64-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#observe([I[IIIII)I",
+      "claim": "claims/caller-64.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "extra"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/fill/FillCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ],
+  "arrayContracts": [
+    {
+      "id": "fill-any-length",
+      "rule": "range-fill",
+      "entry": "java.util.Arrays#fill([IIII)V",
+      "revision": "original",
+      "bindingTask": "frame-64-original"
+    },
+    {
+      "id": "caller-any-length",
+      "rule": "range-fill",
+      "entry": "java.util.Arrays#fill([IIII)V",
+      "caller": "fill.Range#observe([I[IIIII)I",
+      "revision": "original",
+      "bindingTask": "caller-64-original"
+    },
+    {
+      "id": "caller-extra-any-length",
+      "rule": "range-fill",
+      "entry": "java.util.Arrays#fill([IIII)V",
+      "caller": "fill.Range#observe([I[IIIII)I",
+      "revision": "extra",
+      "bindingTask": "caller-64-extra"
+    }
+  ]
+}

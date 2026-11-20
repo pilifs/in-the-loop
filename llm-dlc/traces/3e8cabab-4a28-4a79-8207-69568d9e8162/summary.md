@@ -2826,6 +2826,12 @@ change `vkykystwxmkn` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-trac
 
 The generated Markdown view of single-next-proof-campaign.jsonl, left out of the previous commit.
 
+### Merge the single-agent run next-proof-campaign into the line
+
+change `ormsxnzyqtlq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The single-agent run next-proof-campaign (session 0cea9d0e-0fe8-427e-8e71-96614b084e11) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz) has every step in between: reasoning, tool calls and their results.

@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "335",
+  "title": "Guava's signed mean across both full word widths",
+  "summary": "Compute the floor of the exact signed sum divided by two, including sums outside the input word and negative odd sums.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "integer-overflow",
+    "rounding",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Guava",
+    "file": "guava/src/com/google/common/math/IntMath.java",
+    "symbol": "com.google.common.math.IntMath#mean(II)I"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "The release is the subject. The overflow and rounding change is a deliberately constructed control."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "Both arguments range independently over their entire signed width. The independent JVM control uses BigInteger. The 64-bit predicate constructs the signed 65-bit sum from its low word and a sign bit that includes unsigned carry. The array and unwind bounds constrain neither argument."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/google/guava",
+    "url": "https://github.com/google/guava/commit/f06690fa3e874f65515e8fd338a74d636e2c792f"
+  }
+}

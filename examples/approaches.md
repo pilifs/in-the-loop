@@ -33,6 +33,10 @@ riscv64 binary is not documented publicly. That open question shapes several app
 
 Each task writes its own observations, timings and byte identities under the batch in `records/finite-proofs`. A separate fresh JVM must reproduce a refutation on the named entry. `python3 examples/tools/targets/workflow_handoff.py handoff ID --markdown` shows this bounded JVM evidence alongside the native search. Examples 314, 319 and 325 exercise exceptional array state, operation histories and compiler lowering.
 
+`python3 examples/tools/build.py ID --native-selectors TASK[,TASK...]` checks a static `(int) -> int` property with the assertion `result == 1` on its original prepared classpath. The checker derives a covering signed interval from the guard. It inspects the compiled admission predicates and verifies that each specialized method passes its exact constant directly to the frozen entry. Every admitted selector must have a complete strict native proof to establish the claim. One native counterexample suffices when it also reproduces on the original JVM entry. The handoff links the checker output, bytecode and coverage for each result. Examples 339 and 345 use this route on upstream library JARs.
+
+`--array-induction CONTRACT` checks a compiled loop's entry, back edge, frame, return and termination obligations for every legal Java array length. Its retained SMT query includes the signed index arithmetic and an arbitrary heap observation. `--monitor-histories CONTRACT` explores the selected synchronized Java operations and compares all completed two-thread histories to a sequential oracle. Examples 336–337 and 342–343 record their array and scheduling bounds.
+
 For a native property task, `checkedLemmas` names a local helper contract. The run binds its digest and checks the helper at the caller's bounds. A caller proof using it must state the proved summary. This permits comparing strategies for the same source claim and revision. [Measured recursive callers](331-floor-tiling-proof-reuse/records/reuse/comparison.json)
 
 ## What "crash" means for Java

@@ -1,0 +1,11 @@
+--- a/guava/src/com/google/common/primitives/Longs.java
++++ b/guava/src/com/google/common/primitives/Longs.java
+@@ -128,7 +128,7 @@
+ 
+   // TODO(kevinb): consider making this public
+   private static int indexOf(long[] array, long target, int start, int end) {
+-    for (int i = start; i < end; i++) {
++    for (int i = end - 1; i >= start; i--) {
+       if (array[i] == target) {
+         return i;
+       }

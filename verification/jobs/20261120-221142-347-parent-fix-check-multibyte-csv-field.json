@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-221142-347-parent-fix-check-multibyte-csv-field",
+  "title": "347 parent-fix check multibyte CSV fields with native code",
+  "description": "Prove the full 32-selector Unicode-field domain on unchanged importer application bytes and the two historical library versions. The one-byte delegate splits all four UTF-8 octets of U+1F600 and the literal oracle expects one field with two UTF-16 units.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:finite-partition",
+    "jvm:unicode",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "347"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T22:11:42+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check all observations on the original parser and stream",
+      "run": "python3 examples/tools/build.py 347 --native-selectors bytes-parent-fix,count-parent-fix,page-parent-fix,positive-parent-fix --first 14 --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/347-importer-four-byte-field/records/native-selectors/parent-fix"
+  ]
+}

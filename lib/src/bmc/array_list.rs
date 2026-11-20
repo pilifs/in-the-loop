@@ -35,6 +35,17 @@ impl Engine<'_> {
     pub(super) fn image_list_call(&mut self, path: &mut Path, o: usize, special: bool, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
         if self.cp.runs_model(LIST) { return None; }
         let class = path.objects[o].class.as_str();
+        if !special && !path.objects[o].assumed && self.cp.is_application(class)
+            && (member.name.as_str(), member.descriptor.as_str()) == ("add", "(Ljava/lang/Object;)Z") {
+            if let Some((declaring, _)) = self.cp.find_method(class, &member.name, &member.descriptor) {
+                if declaring.name == "java/util/AbstractList" {
+                    let (cf, method) = self.cp.library_image_method(&declaring.name, &member.name, &member.descriptor)?;
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend_from_slice(args);
+                    return Some(self.enter_method(path, &member.owner, cf, method, full));
+                }
+            }
+        }
         let iterator = class == "java/util/ArrayList$Itr";
         let view = class == SUBLIST;
         if class != LIST && !iterator && !view && class != VIEW_ITERATOR { return None; }

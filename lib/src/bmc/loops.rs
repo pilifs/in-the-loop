@@ -419,6 +419,49 @@ impl<'a> Terms<'a> {
 }
 
 impl Engine<'_> {
+    /// Summarize a compiled half-open int fill at its loop head. With
+    /// 0 <= cursor <= end <= array.length, each iteration writes one cell and
+    /// increments a signed index strictly below MAX_VALUE. The final cursor
+    /// is end and all earlier or later cells retain their entry values.
+    pub(super) fn fill_loop(&mut self, path: &mut Path) -> Option<Step> {
+        use Insn::*;
+        if !self.invariants || path.probing.is_some() || path.loose || self.pure.is_some() || self.frame.is_some() { return None; }
+        let frame = path.frames.last()?;
+        let at = frame.at;
+        let [Load(Kind::Int, cursor), Load(Kind::Int, end), IfICmp(Cond::Ge, exit),
+            Load(Kind::Ref, array), Load(Kind::Int, index), Load(Kind::Int, value),
+            ArrayStore(ArrayKind::Int), IInc(changed, 1), Goto(head)] = frame.code.insns.get(at..at + 9)? else { return None };
+        if cursor != index || cursor != changed || cursor == end || cursor == value
+            || *head != frame.pc() || Some(exit) != frame.code.pcs.get(at + 9) { return None; }
+        let local = |i: u16| frame.locals.get(usize::from(i))?.as_ref();
+        let (Val::I(start), Val::I(end), Val::R(Some(object)), Val::I(value)) =
+            (local(*cursor)?, local(*end)?, local(*array)?, local(*value)?) else { return None };
+        let object = *object;
+        let contents = path.objects[object].as_array()?;
+        if contents.element != Type::Int { return None; }
+        let bad = [self.b.negative(start), self.b.slt(end, start), self.b.slt(&contents.length, end)];
+        let mut outside = path.cond.clone();
+        outside.push(self.any(&bad));
+        match self.solve(&outside) {
+            Ok(false) => {}
+            Ok(true) => return None,
+            Err(reason) => return Some(Err(reason)),
+        }
+        let (start, end, value, cursor) = (start.clone(), end.clone(), value.clone(), usize::from(*cursor));
+        let cells = &mut path.objects[object].array.as_mut()?.cells;
+        for (i, cell) in cells.iter_mut().enumerate() {
+            let index = self.b.constant(i as i64, 32);
+            let before = self.b.slt(&index, &start);
+            let below = self.b.slt(&index, &end);
+            let inside = self.b.and(-before, below);
+            *cell = self.b.ite_bits(inside, &value, cell);
+        }
+        let frame = path.frames.last_mut()?;
+        frame.locals[cursor] = Some(Val::I(end));
+        frame.at = at + 9;
+        Some(Ok(None))
+    }
+
     /// Notes that the array `o` of `path` is read or written at `index`, while an iteration is run to find an
     /// invariant and the index is no constant.
     pub(super) fn index_used(&mut self, path: &Path, o: usize, index: &Bits) {

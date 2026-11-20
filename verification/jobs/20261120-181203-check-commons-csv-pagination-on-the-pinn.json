@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-181203-check-commons-csv-pagination-on-the-pinn",
+  "title": "Check Commons CSV pagination on the pinned full Maven builds",
+  "description": "Strict native checking of all 8 frozen Commons CSV pagination obligations. Retain the actual upstream artifact, exact guard, parameters, allocations, checker and classpath for every result. Qualify any counterexample on an independent JVM; retain the first unsupported operation for each open claim.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "339"
+    ]
+  },
+  "expected": "Each original claim meets its own frozen expectation, recording an independently replayed witness for a refutation.",
+  "submitted": {
+    "at": "2026-11-20T18:12:03+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "mvn",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "memoryLimit": "4G",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Run strict native checking on the real dependencies",
+      "run": "python3 examples/tools/build.py 339 --tasks count-parent,labels-parent,fields-parent,start-one-parent,count-fix,labels-fix,fields-fix,start-one-fix --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/339-commons-csv-page-numbers/receipts/count-parent",
+    "examples/339-commons-csv-page-numbers/receipts/labels-parent",
+    "examples/339-commons-csv-page-numbers/receipts/fields-parent",
+    "examples/339-commons-csv-page-numbers/receipts/start-one-parent",
+    "examples/339-commons-csv-page-numbers/receipts/count-fix",
+    "examples/339-commons-csv-page-numbers/receipts/labels-fix",
+    "examples/339-commons-csv-page-numbers/receipts/fields-fix",
+    "examples/339-commons-csv-page-numbers/receipts/start-one-fix"
+  ]
+}

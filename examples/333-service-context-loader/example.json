@@ -1,0 +1,35 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "333",
+  "title": "A service chosen by the thread context loader",
+  "summary": "Two fresh ServiceLoader lookups see only the resources of their separately selected context loaders. The fixed application loader always sees Compact.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "class-files",
+    "configuration-drift",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Java ServiceLoader",
+    "file": "default/styles/Lookup.java",
+    "symbol": "styles.Lookup#inspect()[Ljava/lang/String;"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Two fresh ServiceLoader lookups see only the resources of their separately selected context loaders. The fixed application loader always sees Compact."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": []
+}

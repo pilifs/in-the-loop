@@ -18,6 +18,10 @@ public final class StringPadding {
     }
 
     public static boolean boundaries() {
+        Object quote = Character.valueOf('"');
+        Object surrogate = Character.valueOf((char) 0xd83d);
+        String boxed = new StringBuilder().append(quote).append(surrogate).toString();
+        if (boxed.length() != 2 || boxed.charAt(0) != '"' || boxed.charAt(1) != 0xd83d) return false;
         Object a = Integer.valueOf(-27);
         Object b = Long.valueOf(42L);
         if (!new StringBuilder().append(a).append(b).toString().equals("-2742")) return false;

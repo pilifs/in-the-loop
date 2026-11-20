@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "eof",
+  "statement": "Reading after the last byte returns EOF.",
+  "assume": "code >= 0 && code < 36",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 96
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "bom.Projection#eof(I)I",
+    "mapping": "Index the ordered product of payload, BOM, inclusion and reset mode. Open distinct wrapper and delegate objects. Read the remaining bytes and then read at EOF.",
+    "cases": 36,
+    "correspondence": "finite-oracle"
+  }
+}

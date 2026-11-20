@@ -1,0 +1,247 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "utf8-chunk-boundaries",
+    "family": "utf8-chunk-boundaries",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "stream": {
+        "fixture": "stream"
+      },
+      "separate": {
+        "fixture": "separate"
+      },
+      "bom": {
+        "fixture": "bom",
+        "compileLibraries": [
+          "io-fix"
+        ],
+        "runtimeLibraries": [
+          "io-fix"
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "name": "bom-transfer",
+        "kind": "positive",
+        "before": "stream",
+        "after": "bom"
+      },
+      {
+        "name": "separate",
+        "kind": "mutation",
+        "before": "stream",
+        "after": "separate"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "bom-transfer",
+      "target": "chunks.Inputs#units(I)I"
+    },
+    {
+      "id": "replay-separate",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "separate",
+      "target": "chunks.Inputs#units(I)I"
+    },
+    {
+      "id": "units-stream",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "claim": "claims/units.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "stream"
+    },
+    {
+      "id": "eof-stream",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "claim": "claims/eof.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "stream"
+    },
+    {
+      "id": "units-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "claim": "claims/units.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-separate"
+      ],
+      "expected": "refuted",
+      "revision": "separate"
+    },
+    {
+      "id": "eof-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "claim": "claims/eof.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-separate"
+      ],
+      "expected": "established",
+      "revision": "separate"
+    },
+    {
+      "id": "units-bom",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "claim": "claims/units.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "bom"
+    },
+    {
+      "id": "eof-bom",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "claim": "claims/eof.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "bom"
+    },
+    {
+      "id": "four-byte-units-stream",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "claim": "claims/four-byte-units.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "stream"
+    },
+    {
+      "id": "four-byte-units-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "claim": "claims/four-byte-units.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-separate"
+      ],
+      "expected": "refuted",
+      "revision": "separate"
+    },
+    {
+      "id": "four-byte-units-bom",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "claim": "claims/four-byte-units.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "bom"
+    },
+    {
+      "id": "four-byte-eof-stream",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "claim": "claims/four-byte-eof.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "stream"
+    },
+    {
+      "id": "four-byte-eof-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "claim": "claims/four-byte-eof.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-separate"
+      ],
+      "expected": "established",
+      "revision": "separate"
+    },
+    {
+      "id": "four-byte-eof-bom",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#eof(I)I",
+      "claim": "claims/four-byte-eof.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "bom"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/chunks/DecodeCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ]
+}

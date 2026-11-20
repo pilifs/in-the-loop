@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-215635-345-close-the-old-io-fixed-csv-row-count",
+  "title": "345 close the old-IO fixed-CSV row count across all 96 selectors",
+  "description": "Recheck the complete frozen row count on the unchanged importer with old IO and repaired CSV. One reachable old-IO reset reintroduces a UTF-8 BOM character; the strict checker now executes actual Character surrogate arithmetic. Visit the previous first blocker (selector 20) first, then exhaust all admitted cases.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:finite-partition",
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "345"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T21:56:35+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "7m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the complete native partition",
+      "run": "python3 examples/tools/build.py 345 --native-selectors count-parent-fix --first 20 --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix"
+  ]
+}

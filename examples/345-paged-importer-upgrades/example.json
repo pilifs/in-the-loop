@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "345",
+  "title": "An unchanged importer across two dependency upgrades",
+  "summary": "One unchanged page importer exposes the effect of each Commons IO and Commons CSV repair on bytes, record counts and numbered fields.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "composition",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Paged importer",
+    "file": "client/importer/PageImporter.java",
+    "symbol": "importer.PageImporter#page([BZZII)Ljava/util/List;"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "One unchanged page importer exposes the effect of each Commons IO and Commons CSV repair on bytes, record counts and numbered fields."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 96 inputs on each revision. parent-parent mismatches were 48 for bytes, 40 for count, 68 for page. fix-fix mismatches were 0 for bytes, 0 for count, 0 for page. parent-fix mismatches were 48 for bytes, 0 for count, 48 for page. fix-parent mismatches were 0 for bytes, 40 for count, 40 for page."
+  ]
+}

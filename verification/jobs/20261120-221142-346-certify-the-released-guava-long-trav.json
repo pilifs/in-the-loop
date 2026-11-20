@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-221142-346-certify-the-released-guava-long-trav",
+  "title": "346 certify the released Guava long traversal for every legal length",
+  "description": "The previous public rule refused the long descriptor. Re-extract the unchanged release JAR bytecode and verify lload, laload and lcmp over signed 64-bit values, leaving the 32-bit cursor invariant, pre-state array, exit and ranking checks intact. Admit unequal elements with identical low 32 bits.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:array-invariant",
+    "target:prove"
+  ],
+  "links": {
+    "examples": [
+      "346"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T22:11:42+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "z3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Prove each compiled control-flow obligation",
+      "run": "python3 examples/tools/build.py 346 --array-induction first-any-length --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/346-guava-long-array-holdout/records/array-induction/first-any-length"
+  ]
+}

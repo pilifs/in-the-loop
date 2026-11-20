@@ -236,7 +236,7 @@ pub enum Native {
     Throwable { class: String, message: Option<Ref>, cause: Option<Ref>, suppressed: Option<Value> },
     /// A lambda or method reference: the functional interface and its method, the implementation method and the
     /// captured arguments, and the instantiated method type (for boxing adaptations).
-    Lambda { interface: String, sam_name: String, sam_descriptor: Option<String>, implementation: crate::classfile::MethodHandle, captured: Vec<Value>, instantiated: String },
+    Lambda { interface: String, serializable: bool, sam_name: String, sam_descriptor: Option<String>, implementation: crate::classfile::MethodHandle, captured: Vec<Value>, instantiated: String },
     /// `java.util.Optional`.
     Optional(Option<Value>),
 }

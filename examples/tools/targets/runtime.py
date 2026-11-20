@@ -83,7 +83,7 @@ from pathlib import Path
 
 from checker_output import decode as _outcomes
 from targets import recipes
-from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime_upstream, sidecar
+from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime_upstream, sidecar, upstream_artifact
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
 
 HERE = Path(__file__).resolve().parent
@@ -267,6 +267,9 @@ def _lock_fixture(plan, revision, entry, folder):
         source["orderedClasses"] = entry["orderedClasses"]
     if entry.get("fixtureCompiler"):
         source["fixtureCompiler"] = entry["fixtureCompiler"]
+    if "libraries" in entry:
+        for key in ("libraries", "compileLibraries", "runtimeLibraries"):
+            source[key] = entry[key]
     return f"fixture:{entry['fixture']}", source
 
 
@@ -350,6 +353,8 @@ def _lock_upstream(plan, revision, entry, folder):
         "recipe": {"tool": "javac", "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; "
                                           "the original is built by the upstream recipe", **_fixture_recipe()},
     }
+    if captured := entry.get("capturedBuild"):
+        source["capturedBuild"] = captured
     return recipe["commit"], source
 
 
@@ -857,6 +862,25 @@ def _prepare_fixture(plan, revision, locked, workdir):
             dependencies.append(dep)
             if _hashed(folder, _java_files(folder, folder / component["root"])) != component["files"]:
                 raise Refused("lock", f"fixture dependency {component['root']} changed during preparation")
+        jars = {}
+        for name, item in source.get("libraries", {}).items():
+            if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", name):
+                raise Refused("lock", f"invalid library name {name!r}")
+            relative = f"libraries/{name}.jar"
+            path = workdir / relative
+            path.parent.mkdir(exist_ok=True)
+            try:
+                origin = upstream_artifact.acquire(item, path, plan.network)
+            except runtime_maven.Blocked as exc:
+                raise Refused.blocked(exc) from None
+            build.artifacts.append(Artifact(relative, sha256(path), "dependency", origin=origin,
+                                            coordinates=item.get("coordinates")))
+            jars[name] = relative
+        compile_path = dependencies + [jars[name] for name in source.get("compileLibraries", [])]
+        dependencies += [jars[name] for name in source.get("runtimeLibraries", [])]
+        if jars:
+            source["clientCompileClasspath"] = list(compile_path)
+            source["clientRuntimeClasspath"] = list(dependencies)
         compiler = None
         if fixed := source.get("fixtureCompiler"):
             home = runtime_jdk.home(fixed["jdk"])
@@ -864,7 +888,7 @@ def _prepare_fixture(plan, revision, locked, workdir):
                 raise Refused("toolchain", f"fixture {revision} needs the compiler of JDK {fixed['jdk']}")
             compiler = Path(home), fixed["flags"]
             toolchain["originalCompiler"] = {"jdk": runtime_jdk.identity(home), "flags": fixed["flags"]}
-        original = build.jar("original", build.compile("original", sources, dependencies, compiler), f"{revision}.jar", "original", how)
+        original = build.jar("original", build.compile("original", sources, compile_path, compiler), f"{revision}.jar", "original", how)
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *dependencies])
         source["target"] = _check_classpath(plan, workdir, classpath, original, adapter,
                                             ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies)
@@ -1086,8 +1110,23 @@ def _prepare_upstream(plan, revision, locked, workdir):
         if "mutant" in source:
             patch = (_mutant_patch(source, folder, workdir), source["mutant"]["files"])
         try:
-            built = runtime_upstream.build(recipe, workdir, runtime_jar.internal(cls), build.logs, upstream,
-                                           network=plan.network, patch=patch)
+            captured = source.get("capturedBuild")
+            expected = None
+            if captured:
+                record_path = _inside(folder, captured["path"], "captured upstream build")
+                if sha256(record_path) != captured["sha256"]:
+                    raise Refused("lock", "the upstream build record changed after planning")
+                record = json.loads(record_path.read_text())
+                expected = upstream_artifact.products(record, recipe)
+            if expected and upstream_artifact.restore(expected, workdir):
+                upstream.update(record["build"])
+                built = expected
+                source["restoredBuildRecord"] = captured["sha256"]
+            else:
+                built = runtime_upstream.build(recipe, workdir, runtime_jar.internal(cls), build.logs, upstream,
+                                               network=plan.network, patch=patch)
+                if expected and built != expected:
+                    raise Refused("build", "the rebuilt original or ordered dependencies differ from the captured products")
         except runtime_maven.Blocked as b:
             raise Refused.blocked(b) from None
         finally:

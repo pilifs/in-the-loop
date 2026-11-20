@@ -176,7 +176,36 @@ pub(super) fn cached_wrapper(owner: &str, name: &str, descriptor: &str) -> Optio
 }
 
 /// Whether the engine models the static call here, where its arguments let it.
+pub fn property_call(owner: &str, name: &str, descriptor: &str) -> bool {
+    const ONE: &str = "(Ljava/lang/String;)Ljava/lang/String;";
+    const TWO: &str = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;";
+    owner == "java/lang/System" && matches!((name, descriptor),
+        ("getProperty" | "clearProperty", ONE) | ("getProperty" | "setProperty", TWO))
+}
+
+pub const REENTRANT_LOCK: &str = "java/util/concurrent/locks/ReentrantLock";
+pub const HOLD_COUNT: &str = "<JVM.reentrantHoldCount>";
+
+pub fn sequential_lock_call(owner: &str, name: &str, descriptor: &str) -> bool {
+    owner == REENTRANT_LOCK && matches!((name, descriptor),
+        ("<init>" | "lock" | "unlock", "()V") | ("tryLock" | "isHeldByCurrentThread" | "isLocked", "()Z") | ("getHoldCount", "()I"))
+}
+
+/// The hold-count write and primitive return in a completed single-thread operation.
+pub fn sequential_lock_transition(name: &str, count: i32) -> Option<(Option<i32>, Option<i32>)> {
+    Some(match name {
+        "<init>" => (Some(0), None),
+        "lock" => (Some(count.checked_add(1)?), None),
+        "tryLock" => (Some(count.checked_add(1)?), Some(1)),
+        "unlock" if count > 0 => (Some(count - 1), None),
+        "getHoldCount" => (None, Some(count)),
+        "isHeldByCurrentThread" | "isLocked" => (None, Some(i32::from(count != 0))),
+        _ => return None,
+    })
+}
+
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
+    if property_call(owner, name, descriptor) { return true; }
     if (owner, name, descriptor) == ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;") { return true; }
     matches!(
         (owner, name, descriptor),
@@ -187,6 +216,35 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
 
 fn canonical_truth(path: &Path, object: usize) -> Option<bool> {
     [true, false].into_iter().find(|v| path.literals.get(&Literal::Truth(*v)) == Some(&object))
+}
+
+/// If a property read starts a static initializer, its value can sometimes be
+/// observed only by null, emptiness and equality to literals. Check the whole
+/// suffix, including every branch and write, before choosing representatives.
+fn property_comparisons(frame: &Frame) -> Option<std::collections::BTreeSet<Vec<u16>>> {
+    use Insn::*;
+    let [Ldc(_), InvokeStatic(_), Store(Kind::Ref, slot), tail @ ..] = frame.code.insns.as_slice() else { return None };
+    if frame.at != 1 || frame.method != "<clinit>" || !frame.code.handlers.is_empty() { return None; }
+    let mut literals = std::collections::BTreeSet::from([Vec::new()]);
+    for (i, insn) in tail.iter().enumerate() {
+        if insn.targets().iter().any(|pc| *pc <= frame.code.pcs[i + 3]) { return None; }
+        match insn {
+            Load(Kind::Ref, local) if local == slot => {}
+            Ldc(index) => { literals.insert(frame.class.pool.loadable(*index).ok()?.string_units()?.into_owned()); }
+            InvokeVirtual(index) => {
+                let call = frame.class.pool.member(*index).ok()?;
+                if call.owner != STRING || !matches!((call.name.as_str(), call.descriptor.as_str()),
+                    ("isEmpty", "()Z") | ("equals", "(Ljava/lang/Object;)Z")) { return None; }
+            }
+            PutStatic(index) => {
+                let field = frame.class.pool.member(*index).ok()?;
+                if field.owner != frame.class.name || field.descriptor != "Z" { return None; }
+            }
+            IConst(0 | 1) | IfNull(_) | IfNonNull(_) | If(_, _) | Goto(_) | Return(None) => {}
+            _ => return None,
+        }
+    }
+    Some(literals)
 }
 
 /// Whether the engine models the instance call here, on a class literal, or `getClass()` on an object it made.
@@ -219,6 +277,90 @@ pub fn capacity_constructor(owner: &str, descriptor: &str) -> bool {
 }
 
 impl Engine<'_> {
+    /// An exact freshly created lock on the native engine's single executing thread.
+    /// Thread starts stay outside this rule. Nonstandard receivers, symbolic
+    /// exceptional states and unsupported operations keep their own diagnostics.
+    pub(super) fn sequential_lock(&mut self, path: &mut Path, o: usize, name: &str) -> Step {
+        if path.objects[o].class != REENTRANT_LOCK || path.objects[o].assumed {
+            return unsupported("a reentrant lock without a known implementation");
+        }
+        let count = if name == "<init>" { 0 } else {
+            match path.objects[o].fields.get(HOLD_COUNT) {
+                Some(Val::I(word)) => self.b.constant_value(word).ok_or_else(|| Stop::Unsupported("a symbolic reentrant hold count".into()))?,
+                _ => return unsupported("a lock whose initial hold count is unknown"),
+            }
+        };
+        if name != "<init>" && self.there_before(path, o) { self.reads(path, || "reads a pre-existing lock's hold count".into())?; }
+        let Some((write, returned)) = sequential_lock_transition(name, count as i32) else {
+            return unsupported("an unbalanced unlock or excessive recursion on a reentrant lock");
+        };
+        if let Some(next) = write {
+            self.keeps(path, Some(o), "changes a reentrant lock's hold count")?;
+            path.objects[o].fields.insert(HOLD_COUNT.into(), Val::I(self.b.constant(i64::from(next), 32)));
+        }
+        if let Some(v) = returned { self.push(path, Val::I(self.b.constant(i64::from(v), 32))); }
+        self.advance(path);
+        Ok(None)
+    }
+    fn compared_property(&mut self, path: &mut Path, key: &str) -> Option<Val> {
+        let literals = property_comparisons(path.frames.last()?)?;
+        let owner = format!("<JVM.propertyComparisons>{key}");
+        let slot = (owner.clone(), serde_json::to_string(&literals).ok()?);
+        if let Some(value) = path.statics.get(&slot) { return Some(value.clone()); }
+        // A second, different partition would require refinement of its earlier representative.
+        if path.statics.keys().any(|(domain, _)| domain == &owner) { return None; }
+        let mut other = vec![0u16];
+        while literals.contains(&other) { other.push(0); }
+        let mut options = vec![];
+        let mut remaining = TRUE;
+        for units in literals.into_iter().chain([other]) {
+            let selected = self.b.var();
+            let guard = self.b.and(remaining, selected);
+            let string = self.literal(path, Literal::Str(units), STRING);
+            options.push((guard, Some(string)));
+            remaining = self.b.and(remaining, -selected);
+        }
+        options.push((remaining, None));
+        let value = choice(&mut self.b, options);
+        path.statics.insert(slot, value.clone());
+        path.unbound_platform_value = Some("an initially unspecified JVM system property");
+        Some(value)
+    }
+    /// A property explicitly set or cleared on this path has a known reference
+    /// (possibly null). Application code may ignore the old value on its first
+    /// write. An unobserved initial setting never becomes an invented String.
+    fn property_call(&mut self, path: &mut Path, name: &str, args: &[Val]) -> Option<Step> {
+        let Val::R(key) = args.first()? else { return None };
+        let key = (*key)?;
+        let units = self.constant_units(path, key)?;
+        if units.is_empty() { return None; }
+        let slot = ("<JVM.systemProperties>".to_owned(), String::from_utf16(&units).ok()?);
+        let previous = path.statics.get(&slot).cloned();
+        let result = if name == "getProperty" {
+            let value = previous.or_else(|| (args.len() == 1).then(|| self.compared_property(path, &slot.1)).flatten())?;
+            if let Err(stop) = self.reads(path, || "reads a mutable system property".into()) { return Some(Err(stop)); }
+            if let Some(Val::R(fallback)) = args.get(1) {
+                let options = value.options()?.into_iter().map(|(guard, v)| (guard, v.or(*fallback))).collect();
+                choice(&mut self.b, options)
+            } else { value }
+        } else {
+            let value = match (name, args.get(1)) {
+                ("clearProperty", None) => Val::R(None),
+                ("setProperty", Some(v @ Val::R(Some(_)))) => v.clone(),
+                _ => return None,
+            };
+            let frame = path.frames.last()?;
+            let ignored = frame.discard_result || matches!(frame.code.insns.get(frame.at + 1), Some(Insn::Pop));
+            if previous.is_none() && !ignored { return None; }
+            if let Err(stop) = self.keeps(path, None, "changes a JVM system property") { return Some(Err(stop)); }
+            path.statics.insert(slot, value);
+            previous.unwrap_or(Val::R(None))
+        };
+        self.assumed.insert("system properties use the standard JVM Properties table and the running JVM permits this property access".into());
+        self.push(path, result);
+        self.advance(path);
+        Some(Ok(None))
+    }
     /// Materialize only a range the solver proves contains every possible value on this path.
     /// Outside the mandatory cache the selected JDK's factory decides what it constructs.
     pub(super) fn cached_integral(&mut self, path: &mut Path, class: &'static str, word: &Bits) -> Option<Step> {
@@ -287,6 +429,29 @@ impl Engine<'_> {
     /// on the object `o`, and `getClass()` on it: see the module's
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
+        if (owner, name, descriptor) == (super::bytes::CHARSET, "newDecoder", "()Ljava/nio/charset/CharsetDecoder;")
+            && path.literals.get(&Literal::Charset("UTF_8")) == Some(&o) && path.objects[o].class == "sun/nio/cs/UTF_8" {
+            let loaded = self.cp.load("sun/nio/cs/UTF_8").ok()??;
+            if !matches!(loaded.origin, crate::classpath::Origin::Jdk) { return None; }
+            let method = loaded.class.method(name, descriptor)?.clone();
+            let body = method.code.as_ref()?;
+            let insns = body.instructions().ok()?;
+            let [(_, Insn::New(c)), (_, Insn::Dup), (_, Insn::Load(Kind::Ref, 0)), (_, Insn::InvokeSpecial(m)), (_, Insn::Return(Some(Kind::Ref)))] = insns.as_slice() else { return None };
+            let target = loaded.class.pool.member(*m).ok()?;
+            if !body.exception_table.is_empty() || loaded.class.pool.class_name(*c).ok()? != "sun/nio/cs/UTF_8$Decoder"
+                || (target.owner.as_str(), target.name.as_str(), target.descriptor.as_str()) != ("sun/nio/cs/UTF_8$Decoder", "<init>", "(Ljava/nio/charset/Charset;)V") { return None; }
+            return Some(self.enter_method(path, owner, loaded.class, method, vec![Val::R(Some(o))]));
+        }
+        if (owner, name, descriptor) == (super::bytes::CHARSET, "name", "()Ljava/lang/String;") {
+            let field = path.literals.iter().find_map(|(key, &r)| match key {
+                Literal::Charset(field) if r == o => Some(*field), _ => None,
+            })?;
+            let units = self.cp.charset_name_literal(field)?;
+            let text = self.literal(path, Literal::Str(units), "java/lang/String");
+            self.push(path, Val::R(Some(text)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         if (owner, name, descriptor) == (BOOLEAN, "booleanValue", "()Z") {
             let truth = canonical_truth(path, o)?;
             self.push(path, Val::I(self.b.constant(i64::from(truth), 32)));
@@ -304,7 +469,10 @@ impl Engine<'_> {
         if (owner, name, descriptor) == (CLASS, "desiredAssertionStatus", "()Z") {
             let class = self.class_named(path, o)?;
             let frame = path.frames.last()?;
-            if frame.method != "<clinit>" || self.cp.state_image_class(&frame.class.name).is_none() || self.cp.state_image_class(&class).is_none() { return None; }
+            let image_host = self.cp.state_image_class(&class).is_some()
+                || (frame.class.name.starts_with(&format!("{class}$")) && self.cp.load(&class).ok().flatten()
+                    .is_some_and(|loaded| matches!(loaded.origin, crate::classpath::Origin::Jdk)));
+            if frame.method != "<clinit>" || self.cp.state_image_class(&frame.class.name).is_none() || !image_host { return None; }
             let flag = path.statics.entry((class, "<VM.desiredAssertionStatus>".into())).or_insert_with(|| {
                 let bit = self.b.var(); Val::I(self.b.zext(&vec![bit], 32))
             }).clone();
@@ -628,6 +796,9 @@ impl Engine<'_> {
     /// `Class.forName(name, false, loader)` and `Logger.getLogger(name)`: see the module's notes. `None` where
     /// the call stays the JDK's.
     pub(super) fn runtime_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Option<Step> {
+        if owner == "java/lang/System" && matches!(name, "getProperty" | "setProperty" | "clearProperty") {
+            return self.property_call(path, name, args);
+        }
         match (owner, name, args) {
             ("java/lang/System", "lineSeparator", []) => {
                 // Identity across calls is visible in the image: both load the same startup field.

@@ -1,0 +1,59 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213850-331-recheck-compiler-and-downstream-help",
+  "title": "331 recheck compiler and downstream helper identities",
+  "description": "Repeat the original controls against the decoder, arrays and stream model changes. Retain independent JVM outputs, original bounds and negative controls.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "331"
+    ],
+    "jobs": [
+      "20261120-032648-native-331-floor-tiling-counts-and-two-d",
+      "20261120-193914-331-recheck-counts-and-both-downstream-c"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T21:38:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "11m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 331 --tasks exact-recursive,exact-iterative,exact-one-tile,exact-base-change,parity-recursive,parity-iterative,parity-one-tile,parity-base-change,helper-preservation,caller-exact-preservation,caller-parity-preservation --checker-seconds 25",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive",
+    "examples/331-floor-tiling-proof-reuse/receipts/exact-iterative",
+    "examples/331-floor-tiling-proof-reuse/receipts/exact-one-tile",
+    "examples/331-floor-tiling-proof-reuse/receipts/exact-base-change",
+    "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive",
+    "examples/331-floor-tiling-proof-reuse/receipts/parity-iterative",
+    "examples/331-floor-tiling-proof-reuse/receipts/parity-one-tile",
+    "examples/331-floor-tiling-proof-reuse/receipts/parity-base-change",
+    "examples/331-floor-tiling-proof-reuse/receipts/helper-preservation",
+    "examples/331-floor-tiling-proof-reuse/receipts/caller-exact-preservation",
+    "examples/331-floor-tiling-proof-reuse/receipts/caller-parity-preservation"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-192109-333-check-context-service-providers-from",
+  "title": "333 check context service providers from compiled Java",
+  "description": "Run every frozen context service providers property and its preserving or distinguishing controls. On a strict refusal keep the first unsupported operation. Counterexamples require an independent original JVM observation.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "333"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:21:09+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 333 --tasks orders-default,selection-default,lazy-default,orders-explicit,selection-explicit,lazy-explicit,orders-app,selection-app,lazy-app --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/333-service-context-loader/receipts/orders-default",
+    "examples/333-service-context-loader/receipts/selection-default",
+    "examples/333-service-context-loader/receipts/lazy-default",
+    "examples/333-service-context-loader/receipts/orders-explicit",
+    "examples/333-service-context-loader/receipts/selection-explicit",
+    "examples/333-service-context-loader/receipts/lazy-explicit",
+    "examples/333-service-context-loader/receipts/orders-app",
+    "examples/333-service-context-loader/receipts/selection-app",
+    "examples/333-service-context-loader/receipts/lazy-app"
+  ]
+}

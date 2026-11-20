@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Check IEEE comparisons and signed-zero witnesses (verification pending)
 
-change `toxzullsuwsy` · [log `c259e9bdf72a`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/c259e9bdf72aa0395a4263bc795a2a6da9ab940486feabec6a28a8a0a1adf1b0.jsonl.gz)
+[`b744b84d2631`](https://github.com/pilifs/in-the-loop/commit/b744b84d26311e01ed2a48b76c05448b3028556d) · [log `c259e9bdf72a`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/c259e9bdf72aa0395a4263bc795a2a6da9ab940486feabec6a28a8a0a1adf1b0.jsonl.gz)
 
 Carry binary32 and binary64 words through locals, fields and arrays. Compare them with JVM NaN bias, preserve signed zeros in extrema, and qualify raw-bit observations. Load numeric factories and constructors from the selected JDK, preserve mandatory cache identities, and handle reflective array length including its exceptional exits.
 
@@ -30,7 +30,7 @@ At the original budgets, jobs 20261120-045612-verify-both-signed-zero-maxima-wit
 
 ### Retry the comparison checks under systemd (verification pending)
 
-change `tqnsxtyukynw` · [log `2411c3648e18`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/2411c3648e1872792ef416c6eac3044982c89f2650ac012039c944b95b3b8491.jsonl.gz)
+[`7f9eaacaface`](https://github.com/pilifs/in-the-loop/commit/7f9eaacaface3fdd0060012a56f6203399fe3ef8) · [log `2411c3648e18`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/2411c3648e1872792ef416c6eac3044982c89f2650ac012039c944b95b3b8491.jsonl.gz)
 
 The first runner selected isolation none inside the sandbox. It was stopped while compiling the checker, before any of the three example checks ran. The pipeline retained the three build error records. The retries use the same comparison commit, original deadlines and domains.
 
@@ -38,7 +38,7 @@ Jobs 20261120-050759-recheck-cube-intersections-after-native, 20261120-050759-re
 
 ### Prove coverage of bounded IEEE arithmetic (verification pending)
 
-change `yruukuovwqwz` · [log `ab63b5efcead`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/ab63b5efcead163de0006cf9b644ff29f2f7fef86af2e25c9ab6cff98c0a11ed.jsonl.gz)
+[`48804d791a2a`](https://github.com/pilifs/in-the-loop/commit/48804d791a2adfcaf07405a72cf4873e6635e436) · [log `ab63b5efcead`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/ab63b5efcead163de0006cf9b644ff29f2f7fef86af2e25c9ab6cff98c0a11ed.jsonl.gz)
 
 Widen every signed int to binary64 with an exact bit-vector circuit. For other numeric conversions and floating arithmetic, enumerate reachable operand tuples under the path condition, preserving their correlations. Each accepted operation ends with an unsatisfiable complement. A 65th tuple or an unspecified NaN payload leaves a named refusal. The profile includes square root, sign-preserving zero arithmetic, Java narrowing and Guava's highest-bit and rotate operations.
 
@@ -48,7 +48,7 @@ Original campaigns continue in 20261120-051056-repeat-signed-zero-proofs-on-the-
 
 ### Record all four strict Commons Lang signed-zero verdicts
 
-change `plmlxlkyqyuy` · [log `c1a0474d2126`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/c1a0474d2126a72d3cb0605c3e3d4d67539c2ac68bd3977dc6f96313ff60c425.jsonl.gz)
+[`227bae9c9bb7`](https://github.com/pilifs/in-the-loop/commit/227bae9c9bb70edc69edadb7cabedb612a10cb8b) · [log `c1a0474d2126`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/c1a0474d2126a72d3cb0605c3e3d4d67539c2ac68bd3977dc6f96313ff60c425.jsonl.gz)
 
 Import the shared systemd collector's six completed records and their applied receipts byte for byte. Its two Commons Lang runs each established numeric agreement on both revisions and raw-bit agreement on the fix. Both refuted the parent's raw bits. The direct JVM grid shows seven discrepancies in 84 arrays and the native witness reproduces independently.
 
@@ -56,7 +56,7 @@ Each Guava attempt reached Integer.highestOneBit. Each cube attempt reached doub
 
 ### Check identity-key replacement and boxed booleans (verification pending)
 
-change `uxnkltnolnyt` · [log `33811aee8179`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/33811aee8179c88f7da0f5670cadf70bb4c7fd5a9eb21016b1b98a8f1a04817e.jsonl.gz)
+[`9b488412b005`](https://github.com/pilifs/in-the-loop/commit/9b488412b005a92b8f33a1bf16a8a7a63cc176c1) · [log `33811aee8179`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/33811aee8179c88f7da0f5670cadf70bb4c7fd5a9eb21016b1b98a8f1a04817e.jsonl.gz)
 
 Use a native checker model for IdentityHashMap construction, get, put, containsKey and size. It compares references directly, preserves null keys and values and returns the displaced value. Boolean boxing shares the JDK's TRUE and FALSE objects and unboxing reads them. Other identity-map operations keep their prior gaps.
 
@@ -66,7 +66,7 @@ Jobs 20261120-052129-prove-guava-duplicate-entry-handling-wit and 20261120-05212
 
 ### Record strict arithmetic results on four historical Java repairs
 
-change `vvqpktvwnpwt` · [log `73bd80aac2ea`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/73bd80aac2ea7c4eaa6f259269aa62ab826a5a7f3c163a26c680e0030bfff466.jsonl.gz)
+[`337a4550d80b`](https://github.com/pilifs/in-the-loop/commit/337a4550d80b3f31b4f66ce4206c1006c704a59e) · [log `73bd80aac2ea`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/73bd80aac2ea7c4eaa6f259269aa62ab826a5a7f3c163a26c680e0030bfff466.jsonl.gz)
 
 All four signed-zero claims repeated on the arithmetic checker. Guava's all-unique traces are now proved on both revisions. The other six Guava claims stopped at identity-map construction. Cube construction reached Boolean.booleanValue, and the six Fraction claims still report the class initializer. The mixed Guava job's two non-vacuous proofs remain independently eligible in its archived outputs.
 
@@ -74,7 +74,7 @@ Copied the collector's exact reports and applied receipt bytes, validated all jo
 
 ### Record every Guava collision claim on the strict native checker
 
-change `owyvsqpupulu` · [log `46f2997bf4d3`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/46f2997bf4d3890c6bad7defc21d094bc83c78e96efdfb82e7c251a2f3a55bca.jsonl.gz)
+[`c0818894d66f`](https://github.com/pilifs/in-the-loop/commit/c0818894d66fa0f89c1e1a5f57b47f8fb5706d3e) · [log `46f2997bf4d3`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/46f2997bf4d3890c6bad7defc21d094bc83c78e96efdfb82e7c251a2f3a55bca.jsonl.gz)
 
 The collector proved all four fixed-revision obligations and the parent's unique-key control, and refuted the parent's size, lookup and unordered entry claims. Each witness belonged to the independent 121-trace grid and reproduced on the pinned JVM. The batch finished in 25.3 seconds with a measured peak of 609.6 MiB.
 
@@ -82,7 +82,7 @@ The Geometry job reached Math.hypot on both revisions and both observers. Import
 
 ### Execute selected JDK geometry arithmetic (verification pending)
 
-change `xloopkonnywr` · [log `501b13a26b9c`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/501b13a26b9c274e3d896f72ad260f8a9d27d8196af3f444b9e225026e627ddf.jsonl.gz)
+[`2f1d5e2bcbaa`](https://github.com/pilifs/in-the-loop/commit/2f1d5e2bcbaafa5466f8c3bffad2c6d452ec8a37) · [log `501b13a26b9c`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/501b13a26b9c274e3d896f72ad260f8a9d27d8196af3f444b9e225026e627ddf.jsonl.gz)
 
 Run Math.hypot through the selected JDK's StrictMath and FdLibm bytecode, including scaling for huge and subnormal coordinates. Check both states of its synthetic assertion switches. Implement exact nonzero-axis atan2, signed-zero sine and cosine, floor and ceiling, and Boolean.equals on canonical BSP labels through erased Object calls. A nonzero sine or cosine records its reachable raw argument instead of fixing a VM-dependent rounded value.
 
@@ -92,7 +92,7 @@ Jobs 20261120-053726-recheck-cube-intersections-with-linked-j, 20261120-053726-c
 
 ### Report 67 native decisions across the Java fast-follow campaign
 
-change `xpmrwztlnnqm` · [log `383e14f134bf`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/383e14f134bf89914e065d3107047b3a03f7d4879f983b62edce7d59e9b39bf5.jsonl.gz)
+[`a6c7cc1623bd`](https://github.com/pilifs/in-the-loop/commit/a6c7cc1623bd7739acb502c596c60e63ae11b041) · [log `383e14f134bf`](https://terminalvalue.net/raw-traces/01a1f747-9d56-73f1-8af1-082d4f2024c5/383e14f134bf89914e065d3107047b3a03f7d4879f983b62edce7d59e9b39bf5.jsonl.gz)
 
 Advance strict native coverage from 55 to 67 of the original 125 claim and subject pairs. All four Commons Lang signed-zero claims and all eight Guava collision claims are now decided by the native checker and independently by the JVM. The native totals are 47 established, 20 refuted and 58 open. The exhaustive JVM totals remain 92 established and 33 refuted with no withdrawals or contradictions.
 

@@ -718,8 +718,14 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
                 .is_some_and(|l| l.class.field(&m.name).is_some_and(|f| f.is_static() && f.is_final()))),
         Insn::New(i) => cf.pool.class_name(*i).is_ok_and(|class| cp.is_application(class)
             || (class == "java/util/HashMap" && cp.map_image_class(class).is_some())),
+        Insn::InvokeDynamic(i) => cf.pool.invoke_dynamic(*i).ok().and_then(|(index, _, _)|
+            cf.bootstrap_methods().ok()?.into_iter().nth(usize::from(index))).is_some_and(|b|
+            b.method.member.owner == "java/lang/invoke/LambdaMetafactory"
+                && matches!(b.method.member.name.as_str(), "metafactory" | "altMetafactory")),
         Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) =>
             cf.pool.member(*i).is_ok_and(|m| cp.is_application(&m.owner)
+                || cp.checked_image_class(&m.owner).is_some()
+                || (m.owner == super::bytes::CHARSET && m.name == "name" && m.descriptor == "()Ljava/lang/String;")
                 || (matches!(m.owner.as_str(), "java/util/Map" | "java/util/HashMap")
                     && cp.map_image_method("java/util/HashMap", &m.name, &m.descriptor).is_some())),
         Insn::PutStatic(i) => {
@@ -1119,6 +1125,8 @@ impl<'a> Walker<'a> {
     fn static_field(&mut self, owner: &str, name: &str, descriptor: &str, put: bool, site: &Site) {
         let declaring = self.cp.resolve_field(owner, name, descriptor).unwrap_or_else(|| owner.to_string());
         if !put && (self.cp.numeric_assertion_flag(&declaring, name, descriptor)
+            || (declaring.as_str(), name, descriptor) == ("java/io/File", "separatorChar", "C")
+            || (declaring.as_str(), name, descriptor) == ("java/util/Arrays$LegacyMergeSort", "userRequested", "Z")
             || (name == "TYPE" && descriptor == "Ljava/lang/Class;" && Type::for_wrapper(&declaring).is_some())
             || ((declaring.as_str(), name, descriptor) == ("java/util/Collections", "EMPTY_LIST", "Ljava/util/List;") && self.cp.collections_empty_singleton("emptyList"))) { return; }
         let what = format!("{}.{name}", declaring.replace('/', "."));
@@ -1176,7 +1184,11 @@ impl<'a> Walker<'a> {
                     // follows an application's there. The one that decides an initializer does not: making the
                     // object runs nothing, and a method it names for a class path that has another library (a
                     // logging adapter's, one for each library it looks for) is never called on this one.
-                    let lambda = cf.bootstrap_methods().ok().and_then(|b| b.into_iter().nth(usize::from(bootstrap))).filter(|b| b.method.member.owner == "java/lang/invoke/LambdaMetafactory" && b.method.member.name == "metafactory");
+                    let lambda = cf.bootstrap_methods().ok().and_then(|b| b.into_iter().nth(usize::from(bootstrap))).filter(|b| {
+                        use crate::classfile::BootstrapArg::Int;
+                        b.method.member.owner == "java/lang/invoke/LambdaMetafactory" && (b.method.member.name == "metafactory"
+                            || (b.method.member.name == "altMetafactory" && matches!(b.args.get(3..), Some([Int(0)] | [Int(1)] | [Int(5), Int(0)]))))
+                    });
                     if let Some(lambda) = lambda {
                         if let (false, Some(crate::classfile::BootstrapArg::MethodHandle(handle))) = (self.deciding, lambda.args.get(1)) {
                             if self.cp.is_application(&handle.member.owner) {

@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "first-8",
+  "statement": "The result identifies the first matching cell or proves none exists.",
+  "assume": "true",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 10,
+    "maxArrayLength": 8
+  },
+  "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))"
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "count",
+  "statement": "The count is the smaller of supplied rows and the cap.",
+  "assume": "code >= 0 && code < 96",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 96
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "importer.Projection#count(I)I",
+    "mapping": "Bits 4 through 0 select BOM, one-byte reads, preview/reset, start minus one and cap minus one. The high bits select one of three literal documents. A fresh input stream is used for each observer.",
+    "cases": 96,
+    "correspondence": "finite-oracle"
+  }
+}

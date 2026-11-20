@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "340",
+  "title": "A TreeList iterator survives a refused indexed edit",
+  "summary": "A rejected indexed add or remove leaves the list unchanged. An iterator made before rejection should return the original first element.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "side-effecting-read",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Collections",
+    "file": "src/main/java/org/apache/commons/collections4/list/TreeList.java",
+    "symbol": "org.apache.commons.collections4.list.TreeList#add(ILjava/lang/Object;)V"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A rejected indexed add or remove leaves the list unchanged. An iterator made before rejection should return the original first element."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 112 inputs on each revision. parent mismatches were 0 for exception, 0 for contents, 112 for existing, 0 for fresh. fix mismatches were 0 for exception, 0 for contents, 0 for existing, 0 for fresh."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-collections",
+    "url": "https://github.com/apache/commons-collections/commit/fe8eb4989392cb436438978b151aa800b70195b9"
+  }
+}

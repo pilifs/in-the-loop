@@ -19,6 +19,29 @@ class RecipesTest(unittest.TestCase):
         from targets.finite_check import envelope, read_rows
         self.assertEqual(envelope("n > -3 && (n == 0 || n == 1) && n <= 2", "n"), (-2, 2))
         self.assertEqual(envelope("n == -7", "n"), (-7, -7))
+        self.assertEqual(envelope("n >= 0 && n < 5578", "n", 5578), (0, 5577))
+        from targets.native_selectors import disposition
+        method = "verificationselectors.Calls#p6()"
+        bounds = {"unwind": 96, "maxArrayLength": 96}
+        raw = {"target": method, "assert": "result == 1", "verdict": "verified", "proof": "all paths",
+               "stated": {"gap_mode": "strict", "checker": {"engine": "native"},
+                          "bounds": {"unwind": 96, "complete": True}}}
+        raw["stated"].update(domain={"parameters":[]}, observations={"exceptions":"none may be thrown"},
+                             vacuity={"status": "non-vacuous"})
+        raw["search"]={"properties":1,"max_array_length":96}
+        self.assertEqual(disposition(raw, method, bounds, 0)[0], "established")
+        raw["stated"]["vacuity"]["status"] = "unknown"
+        self.assertEqual(disposition(raw, method, bounds, 0)[0], "open")
+        raw["stated"]["vacuity"]["status"] = "non-vacuous"
+        raw["stated"]["bounds"]["complete"] = False
+        self.assertEqual(disposition(raw, method, bounds, 0)[0], "open")
+        raw.update(verdict="violation", counterexample={"inputs": []})
+        self.assertEqual(disposition(raw, method, bounds, 1)[0], "open")
+        params = [{"name": "a", "type": "long[]"}]
+        values = [{"name": "a", "type": "long[]", "value": [str(-(1 << 63)), str((1 << 63) - 1)]}]
+        self.assertIsNone(qualification.witness_problem(values, params, set(), [], 2))
+        for bad in (str(1 << 63), "01", "7L", True):
+            self.assertIsNotNone(qualification.witness_problem([{**values[0], "value": [bad]}], params, set(), [], 2))
         for guard in ("n >= 0 && n < 5 || n == 9", "n >= 0 && (n < 3 || n == 7)", "n <= 2",
                       "n >= 5 && n < 2", "n >= 0 && n < 5000", "n >= 0 && n < 4 /*x*/"):
             with self.assertRaises(ValueError):
@@ -49,6 +72,39 @@ class RecipesTest(unittest.TestCase):
         record["replay"]["finiteObservation"]["input"] = {"source": []}
         with self.assertRaisesRegex(ValueError, "semantic input"):
             finite_check.validate_record(plan, record)
+
+    def test_native_selector_receipt_binds_the_guard_replay_and_assumptions(self):
+        from copy import deepcopy
+        from targets import native_selectors
+        plan = self.plan("345", "page-parent-fix")
+        folder = Path(plan.folder)
+        receipt = folder / "records/native-selectors/parent-fix/20261120T213550Z-d07309cd"
+        task_dir = Path("tasks") / plan.task
+        original = json.loads((receipt / task_dir / "result.json").read_text())
+        with tempfile.TemporaryDirectory() as scratch:
+            target = Path(scratch)
+            result = target / task_dir / "result.json"
+            for name in (original["admissionClass"], original["callsClass"], original["checked"][0]["raw"],
+                         task_dir / "Admission.java"):
+                dest = target / name
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_bytes(native_selectors.archived_bytes(receipt, name).read_bytes())
+            result.write_text(json.dumps(original))
+            self.assertEqual(native_selectors.validate_result(folder, plan, result)["status"], "refuted")
+            modified = deepcopy(original)
+            modified["originalJVMReplay"]["sides"]["parent-fix"]["program"] = "class Different {}"
+            result.write_text(json.dumps(modified))
+            with self.assertRaisesRegex(ValueError, "replay binding"):
+                native_selectors.validate_result(folder, plan, result)
+            modified = deepcopy(original)
+            modified["checked"][0]["assumptions"] = []
+            result.write_text(json.dumps(modified))
+            with self.assertRaisesRegex(ValueError, "retained checker record"):
+                native_selectors.validate_result(folder, plan, result)
+            result.write_text(json.dumps(original))
+            (target / task_dir / "Admission.java").write_text("class Different {}")
+            with self.assertRaisesRegex(ValueError, "full guard"):
+                native_selectors.validate_result(folder, plan, result)
 
     def test_invoice_preparation_rejects_the_other_order_with_identical_client_bytes(self):
         from targets import runtime, workflow_ingest

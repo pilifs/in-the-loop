@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213850-197-recheck-all-71-heaps-with-the-decode",
+  "title": "197 recheck all 71 heaps with the decoder",
+  "description": "Repeat the original controls against the decoder, arrays and stream model changes. Retain independent JVM outputs, original bounds and negative controls.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:array-alias",
+    "target:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "197"
+    ],
+    "jobs": [
+      "20261120-065325-confirm-shared-array-poststates-after-ch",
+      "20261120-100812-confirm-array-root-observations-on-the-c",
+      "20261120-193914-197-preserve-the-original-71-alias-heaps"
+    ]
+  },
+  "expected": "The return-only property is established, the right-root and both-root properties are refuted with qualified JVM witnesses, and every public task exits as expected.",
+  "submitted": {
+    "at": "2026-11-20T21:38:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Check the three original array observations",
+      "run": "python3 examples/tools/build.py 197 --tasks return-only,right-root,both-roots --checker-seconds 600",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/197-shared-int-array-poststates/receipts/return-only",
+    "examples/197-shared-int-array-poststates/receipts/right-root",
+    "examples/197-shared-int-array-poststates/receipts/both-roots"
+  ]
+}

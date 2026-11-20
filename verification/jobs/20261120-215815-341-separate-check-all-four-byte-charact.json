@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-215815-341-separate-check-all-four-byte-charact",
+  "title": "341 separate check all four-byte character partitions natively",
+  "description": "Run the unchanged decoder on each of the eight ways to partition U+1F600, including four one-byte reads. Check both UTF-16 code units and repeated EOF on the original stream, deliberately separate per-chunk strings, and the fixed BOM stream. The full 5,578-selector claim remains separately frozen.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:finite-partition",
+    "jvm:unicode",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "341"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T21:58:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check exact scalar, UTF-16 and EOF on compiled classes",
+      "run": "python3 examples/tools/build.py 341 --native-selectors four-byte-units-separate,four-byte-eof-separate --first 11 --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/341-utf8-chunk-boundaries/records/native-selectors/separate"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "338",
+  "title": "A BOM stream rewinds its prefetched bytes",
+  "summary": "The wrapper and its delegate can have different positions after a one-byte preview. Reset must restore the correct remaining bytes and EOF.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "side-effecting-read",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons IO",
+    "file": "src/main/java/org/apache/commons/io/input/BOMInputStream.java",
+    "symbol": "org.apache.commons.io.input.BOMInputStream#reset()V"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The wrapper and its delegate can have different positions after a one-byte preview. Reset must restore the correct remaining bytes and EOF."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 36 inputs on each revision. parent mismatches were 10 for bytes, 0 for eof. fix mismatches were 0 for bytes, 0 for eof."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-io",
+    "url": "https://github.com/apache/commons-io/commit/4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce"
+  }
+}

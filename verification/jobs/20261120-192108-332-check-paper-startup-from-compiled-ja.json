@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-192108-332-check-paper-startup-from-compiled-ja",
+  "title": "332 check paper startup from compiled Java",
+  "description": "Run every frozen paper startup property and its preserving or distinguishing controls. On a strict refusal keep the first unsupported operation. Counterexamples require an independent original JVM observation.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "332"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:21:08+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 332 --tasks second-cached,init-count-cached,second-helper,init-count-helper,second-live,init-count-live --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/332-paper-initialization/receipts/second-cached",
+    "examples/332-paper-initialization/receipts/init-count-cached",
+    "examples/332-paper-initialization/receipts/second-helper",
+    "examples/332-paper-initialization/receipts/init-count-helper",
+    "examples/332-paper-initialization/receipts/second-live",
+    "examples/332-paper-initialization/receipts/init-count-live"
+  ]
+}

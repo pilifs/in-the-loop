@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213850-compare-new-decoder-bytecode-with-jbmc-a",
+  "title": "Compare new decoder bytecode with JBMC and auto",
+  "description": "Repeat the original controls against the decoder, arrays and stream model changes. Retain independent JVM outputs, original bounds and negative controls.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs"
+    ],
+    "jobs": [
+      "20261120-075435-check-map-and-wrapper-conformance-under",
+      "20261120-100759-check-array-view-and-platform-conformanc",
+      "20261120-193914-check-importer-changes-against-jbmc-and"
+    ]
+  },
+  "expected": "The ignored conformance test passes with every bounded result reconciled against its JVM oracle.",
+  "submitted": {
+    "at": "2026-11-20T21:38:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "17m",
+    "memoryLimit": "5G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "the_corpus_agrees_with_the_jvm_under_jbmc_and_auto",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --exact --test-threads=1",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

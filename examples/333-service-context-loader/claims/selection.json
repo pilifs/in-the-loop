@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "selection",
+  "statement": "The first selected implementation matches the first provider visible on each context lookup.",
+  "assume": "code >= 0 && code < 16",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 32,
+    "maxArrayLength": 16
+  },
+  "assert": "result == 3 * ((code / 4) == 0 ? 0 : (code / 4) == 3 ? 2 : 1) + ((code % 4) == 0 ? 0 : (code % 4) == 3 ? 2 : 1)"
+}

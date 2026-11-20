@@ -1,0 +1,94 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T185552Z-2acc84a6",
+  "task": "mean-64-mutant",
+  "claimKey": "a1a38ec51be2119d",
+  "revisions": [
+    "mutant"
+  ],
+  "startedAt": "2026-11-20T18:55:52.175304+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "jvmSecondsPerRevision": 30
+  },
+  "strategy": {
+    "engine": "jvm",
+    "operation": "review-witness"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": null,
+  "sourceCommit": null,
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "witness-supplied",
+      "elapsedSeconds": 0.0002
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 3.5524
+    },
+    {
+      "stage": "witness-replayed",
+      "elapsedSeconds": 4.042
+    }
+  ],
+  "status": "witness-reproduced",
+  "lastCompletedStage": "witness-replayed",
+  "witnessFile": "mean-candidate.json",
+  "witnessSha256": "022c7d93080d5df15df70f17b93abda71c267fc4a3043db717c288b44fe30b33",
+  "bindings": {
+    "mutant": {
+      "revision": "mutant:f06690fa3e874f65515e8fd338a74d636e2c792f+103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8",
+      "target": {
+        "class": "com.google.common.math.LongMath",
+        "method": "mean",
+        "descriptor": "(JJ)J",
+        "loadedFrom": "mutant/guava-33.4.8-jre.jar",
+        "classSha256": "129883f030ee77626b634b3d9e24dad1b3e27cbcb4256960e8e8e4867ed2b55a"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "ccde79b194e7dc4c2708415ed128e7e19481b96b359c6fa2ba3fb90db72acacf",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "mutant/guava-33.4.8-jre.jar",
+          "sha256": "d895693b47636f7c6a2992fd37e7bb80b0aeb40891991ae5836bae45e2330c64",
+          "role": "original",
+          "coordinates": null,
+          "origin": "constructed: lib/com.google.guava/guava-33.4.8-jre.jar with 7 class(es) recompiled from guava/src/com/google/common/math/IntMath.java, guava/src/com/google/common/math/LongMath.java at f06690fa3e874f65515e8fd338a74d636e2c792f, after the patch controls/overflow.patch (sha256 103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8)"
+        }
+      ]
+    }
+  },
+  "bindingId": "00d774e263d71ca3d4738745b648e0c387b68502bef8825a5647d623a65d5f5f",
+  "firstBlocker": null,
+  "replayEvidence": "replay.json",
+  "endedAt": "2026-11-20T18:55:56.217368+00:00",
+  "missing": []
+}

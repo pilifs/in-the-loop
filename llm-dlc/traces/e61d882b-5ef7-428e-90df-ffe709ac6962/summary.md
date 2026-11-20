@@ -3026,6 +3026,82 @@ change `zovxmlltrowv` · [log `79b996cec9ed`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-193914-check-importer-changes-against-auto-conf: passed: 1 passed step(s) in 24m43s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
+### Build the four importer dependency revisions (verification pending)
+
+change `kvxwmvylnzqv` · [log `79b996cec9ed`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz)
+
+Capture full Maven builds of the Commons IO and Commons CSV historical repairs. Preserve their first-parent boundaries, toolchains, resolved inputs and ordered output JAR hashes. Store each artifact by content hash so the unchanged client can use the declared compile-time dependencies and swap the two runtime libraries independently.
+
+Both first parents were checked from upstream Git. A stand-in Maven build checked first-parent provenance, original and dependency JAR restoration, and the resolution inventory digest. The changed-test selector had no additional tests. Job 20261120-180249-build-both-importer-dependency-repairs-a packages all four production JARs on JDK 21.
+
+### Bind the importer to four full Maven builds (verification pending)
+
+change `sorznoxxzmqs` · [log `79b996cec9ed`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz)
+
+Compile one unchanged paged CSV client and verify its runtime class origins across both Commons IO and Commons CSV repair boundaries. Over 96 cases per configuration the bytes/count/page error triples were 48/40/68, 0/40/40, 48/0/48 and 0/0/0. All four sets of 24 positive controls passed. Independent producer examples cover 36 BOM stream configurations and 24 pagination configurations. The public planner now binds separately ordered compile and runtime paths and can restore the exact products of a recorded full Maven build.
+
+Each frozen adapter matched its independent direct JVM observations. The four canonical upstream builds passed, both parent links were checked, all three examples validated, and all 43 selected groups passed after rechecking the two discovery-dependent groups on the stable router. A strict fixed-page probe reached boxed-character string construction. Its original diagnostic and the preliminary replay-pair correction are preserved.
+
+The native and independent exhaustive jobs are 20261120-181156-exhaust-the-frozen-observations-for-the, 20261120-181157-check-commons-io-prefix-and-eof-on-the-p, 20261120-181157-check-the-unchanged-importer-on-the-pinn, 20261120-181157-exhaust-the-frozen-observations-for-comm, 20261120-181203-check-commons-csv-pagination-on-the-pinn, 20261120-181203-exhaust-the-frozen-observations-for-comm.
+
+### Check Java array invariants and thread histories (verification pending)
+
+change `qpqqozypovsn` · [log `79b996cec9ed`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz)
+
+Freeze the full-width Guava mean, first-match, JDK range-fill and two-worker ticket cases. The array strategy reads the selected bytecode, checks the entry, each back edge and return, all heap observations and a decreasing Java-int variant. A caller can consume the checked range frame through an aliased or separate root. The ticket explorer runs compiled monitor operations with contended acquisition, invocation intervals and start/join. A separate evidence route replays native startup candidates against their original guard on an unmodified JVM.
+
+The selected release mean proved over all 2^128 long pairs in a capped probe. The JDK BigInteger checks and independent Python oracle agreed on all 242 boundary queries, and an exhaustive reduced-width carry check covered 87,376 pairs. The first-index and fill-caller probes proved their obligations with maximum signed length admitted. The changed ticket counter had 14 completed labeled outcomes in the overlap schedule and both return values of one replayed on real JVM threads. All four examples validated. All 45 selected test groups passed after restoring the exact Java replay text for older receipts and rechecking the two affected groups.
+
+Queued jobs: 20261120-183452-335-prove-guava-signed-means-over-both-e, 20261120-183452-336-check-first-match-and-preservation-a, 20261120-183453-336-check-first-match-and-preservation-a, 20261120-183453-336-prove-first-match-for-any-allocated, 20261120-183453-342-check-two-real-ticket-calls-on-one-c, 20261120-184226-337-check-both-range-fill-roots-at-bound, 20261120-184234-337-bound-64-check-both-range-fill-roots, 20261120-184234-337-certify-caller-any-length-on-the-sel, 20261120-184234-337-certify-fill-any-length-on-the-selec, 20261120-184235-310-test-native-counterexamples-on-unmod, 20261120-184235-321-test-native-counterexamples-on-unmod, 20261120-184235-327-test-native-counterexamples-on-unmod, 20261120-184923-342-explore-compiled-ticket-monitors-wit.
+
+### Build both TreeList iterator revisions (verification pending)
+
+change `orvotvxlpsok` · [log `79b996cec9ed`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz)
+
+Prepare complete Maven products and resolution inventories for the historical rejected-add and rejected-remove repair. Upstream Git confirmed dc4d1c92 as the first parent of fe8eb498. The build uses the same tested artifact capture as the four importer dependencies. Job 20261120-185734-340-build-the-rejected-treelist-edit-acr supplies the immutable products for the iterator and list-state observations.
+
+### Check startup, iterator, decoder and monitor behavior on real JVM classes (verification pending)
+
+change `rzwsoyqlvmtv` · [log `79b996cec9ed`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz)
+
+Register the seven remaining Java subjects and retain original bytecode attempts, independent exhaustive JVM replays, arbitrary-length array proofs and the five original-startup counterexamples. Explore compiled synchronized-map methods and compare exhaustive and identity-aware schedules. Measure the cost of reusing byte and CSV evidence on the same importer class through independent dependency upgrades. Verified all seven packets and router, 44 selected Python test groups, the changed recipe controls, and the job inventory.
+
+Verification jobs: 20261120-192108-332-check-paper-startup-from-compiled-ja, 20261120-192109-332-exhaust-paper-startup-on-pinned-jvms, 20261120-192109-333-check-context-service-providers-from, 20261120-192109-333-exhaust-context-service-providers-on, 20261120-192109-334-check-zone-transitions-from-compiled, 20261120-192109-334-exhaust-zone-transitions-on-pinned-j, 20261120-192109-340-check-live-treelist-iterators-from-c, 20261120-192109-340-exhaust-live-treelist-iterators-on-p, 20261120-192109-341-check-streaming-utf-8-partitions-fro, 20261120-192109-341-exhaust-streaming-utf-8-partitions-o, 20261120-192109-343-check-real-synchronized-reservations, 20261120-192110-343-verify-the-real-synchronized-map-wra, 20261120-192110-344-check-shared-seat-identities-from-co, 20261120-192110-344-compare-exhaustive-and-identity-awar, 20261120-192110-345-measure-inline-and-composed-importer.
+
+### Verify Commons IO and CSV using native Java stream semantics (verification pending)
+
+change `ppsrszntmqxx` · [log `79b996cec9ed`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz)
+
+Follow the real BOM stream, selected comparator and sort, buffered mark/reset, boxed character, serializable lambda and bounded array bytecode in the native verifier. The fixed importer byte obligation and the isolated fixed CSV count both have non-vacuous strict native proofs in capped probes. The page probe reaches the actual InputStreamReader. The changed test selection passed all 26 groups including 58 Rust test binaries and the new JVM controls. Recheck all 23 original startup obligations, their observed-startup controls and the 197, 308 and 331 regressions on the changed checker.
+
+Verification jobs: 20261120-193912-310-clock-fix-observed-on-the-importer-c, 20261120-193912-310-clock-parent-observed-on-the-importe, 20261120-193912-310-original-startup-on-the-importer-che, 20261120-193913-310-reversal-fix-observed-on-the-importe, 20261120-193913-310-reversal-parent-observed-on-the-impo, 20261120-193913-310-same-day-observed-on-the-importer-ch, 20261120-193913-321-observed-startup-on-the-importer-che, 20261120-193913-321-original-startup-on-the-importer-che, 20261120-193913-327-observed-startup-on-the-importer-che, 20261120-193913-327-original-startup-on-the-importer-che, 20261120-193914-197-preserve-the-original-71-alias-heaps, 20261120-193914-308-recheck-release-rebuilt-and-shared-r, 20261120-193914-331-recheck-counts-and-both-downstream-c, 20261120-193914-335-recheck-both-full-width-signed-means, 20261120-193914-337-range-fill-after-linking-arrays-at-6, 20261120-193914-337-range-fill-after-linking-arrays-at-8, 20261120-193914-338-parent-verify-original-stream-and-pa, 20261120-193914-check-importer-changes-against-auto-conf, 20261120-193914-check-importer-changes-against-jbmc-and, 20261120-193915-338-fix-verify-original-stream-and-page, 20261120-193915-339-fix-verify-original-stream-and-page, 20261120-193915-339-parent-verify-original-stream-and-pa, 20261120-193915-345-fix-fix-verify-original-stream-and-p, 20261120-193915-345-fix-parent-verify-original-stream-an, 20261120-193915-345-parent-fix-verify-original-stream-an, 20261120-193915-345-parent-parent-verify-original-stream.
+
+### Measure importer proof reuse and check changed helper call sites (verification pending)
+
+change `wnrutuxlyvxo` · [log `79b996cec9ed`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz)
+
+The two clean strategies returned all 96 identical observations after each of six changes. The single CSV update reused all 24 byte/decoding facts and changing an unused class reused both producers. The actual JDK synchronized-map positive and split-transaction negative both met their predictions at two threads. Add a bytecode interpretation of the range arguments at every path to a certified fill helper and require the widened write to fail its caller postcondition. Publish fresh JVM counterexamples for the duplicate Guava match, overflowing signed mean and extra aliased write. The four edited packets, changed tests and small exhaustive/independent schedule comparison all passed.
+
+Verification jobs: 20261120-194432-336-validate-array-induction-and-caller, 20261120-194432-337-validate-array-induction-and-caller, 20261120-194432-342-retain-every-compiled-monitor-histor, 20261120-194432-343-retain-every-compiled-monitor-histor, 20261120-194433-344-expose-wrong-monitor-independence-at.
+
+### Retain native IO, CSV and schedule-reduction results (verification pending)
+
+change `zsxmmtkwtqxt` · [log `79b996cec9ed`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz)
+
+All six IO and eight CSV producer claims met their frozen expectations on the full upstream artifacts. Native checking decided the byte observation in every importer cell. All four Guava signed-mean tasks passed. The induction proof accepted the original range-fill caller and produced a satisfiable failing postcondition on its widened write, confirmed by a fresh JVM alias replay. Across twelve two-worker corpora, exhaustive exploration, identity-aware reduction and an independent linearization oracle produced identical labeled outcome sets, including all 36 direct Java histories. The intentionally incorrect by-name reduction lost four of ten outcomes even with just one call per worker sharing a seat. Queue the three-worker transfer after validating that agreement.
+
+Verification job 20261120-195445-344-check-three-single-call-java-workers. The corpus comparison, JVM checks, job validation and public collected receipts are retained with the examples.
+
+### Prove finite Java inputs through the compiled reader, parser and collector (verification pending)
+
+change `tsokxxottsyz` · [log `79b996cec9ed`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz)
+
+Preserve the original Java class and ordered JARs while compiling one constant call per possible selector. Check every call site and the folded full guard from its class file, run the strict native engine on each admitted case and replay any counterexample separately on the original JVM entry. The fixed importer returned the correct complete page at the two-row witness; the single CSV upgrade reproduced the corrupted complete page on the original class. Native execution now follows the selected JDK UTF-8 reader, heap buffers, decoder callback and sequential collector. Also bind explicit JVM properties, inherited list calls and the exact heap effect of a checked compiled int-fill loop. The fixed TreeList old-iterator probe passed; the 64-cell aliased fill probe completed in 29 seconds.
+
+The changed selection ran 41 groups. The regenerated example index passed all 15 acceptance tests. A timing-sensitive encoding estimate passed on its retry and in isolation. Targeted collector, reader, Java property, binary-validation and history checks passed; validate found zero invalid job files. Confirm all original and scoped startup tasks with the historically successful solver configuration, regressions 197/308/331 and both cross-engine corpus controls.
+
+Verification jobs: 20261120-213848-339-parent-exhaust-native-selector-bytec, 20261120-213848-345-fix-fix-exhaust-native-selector-byte, 20261120-213848-345-fix-parent-exhaust-native-selector-b, 20261120-213848-345-parent-fix-exhaust-native-selector-b, 20261120-213848-345-parent-parent-exhaust-native-selecto, 20261120-213849-310-reproduce-the-five-finite-solver-sta, 20261120-213849-310-retry-unchanged-startup-after-proper, 20261120-213849-321-retry-unchanged-startup-after-proper, 20261120-213849-327-retry-unchanged-startup-after-proper, 20261120-213849-332-check-explicit-jvm-property-writes-v, 20261120-213849-337-close-bound-64-through-exact-compile, 20261120-213849-340-recheck-rejected-edits-with-inherite, 20261120-213849-341-retry-streaming-utf-8-and-bom-transf, 20261120-213850-197-recheck-all-71-heaps-with-the-decode, 20261120-213850-321-recover-observed-startup-controls-on, 20261120-213850-327-recover-observed-startup-controls-on, 20261120-213850-331-recheck-compiler-and-downstream-help, 20261120-213850-345-fix-fix-recheck-monolithic-native-im, 20261120-213850-345-fix-parent-recheck-monolithic-native, 20261120-213850-345-parent-fix-recheck-monolithic-native, 20261120-213850-345-parent-parent-recheck-monolithic-nat, 20261120-213850-compare-new-decoder-bytecode-with-auto-c, 20261120-213850-compare-new-decoder-bytecode-with-jbmc-a, 20261120-213851-308-rerun-release-source-and-225-lcs-pai.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/79b996cec9ed03d43bd63f1a5b40004d05b5d6e554fa29ba78e57976f9d6cacd.jsonl.gz) has every step in between: reasoning, tool calls and their results.

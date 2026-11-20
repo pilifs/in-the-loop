@@ -1,0 +1,499 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "repository": "https://github.com/apache/commons-csv",
+    "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+    "parent": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+    "class": "org.apache.commons.csv.CSVParser",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.test.skip=true",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotbugs.skip=true",
+        "package"
+      ],
+      "jdk": "21"
+    }
+  },
+  "artifacts": [
+    {
+      "role": "original",
+      "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+      "path": "built/commons-csv-1.15.0-SNAPSHOT.jar",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/apache/commons-csv at 7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac: target/commons-csv-1.15.0-SNAPSHOT.jar"
+    },
+    {
+      "role": "dependency",
+      "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+      "path": "lib/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+      "coordinates": "commons-io:commons-io:2.22.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "role": "dependency",
+      "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+      "path": "lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+      "coordinates": "commons-codec:commons-codec:1.22.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    }
+  ],
+  "build": {
+    "steps": [
+      {
+        "step": "git-init",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "init",
+          "-q",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout"
+        ],
+        "exit": 0,
+        "seconds": 0.005
+      },
+      {
+        "step": "git-fetch",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "-C",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout",
+          "fetch",
+          "--no-tags",
+          "--no-recurse-submodules",
+          "--depth=2",
+          "https://github.com/apache/commons-csv",
+          "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac"
+        ],
+        "exit": 0,
+        "seconds": 0.974
+      },
+      {
+        "step": "git-checkout",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "-C",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout",
+          "checkout",
+          "-q",
+          "--detach",
+          "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac"
+        ],
+        "exit": 0,
+        "seconds": 0.069
+      },
+      {
+        "step": "git-head",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "-C",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit": 0,
+        "seconds": 0.002
+      },
+      {
+        "step": "git-tree",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "-C",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout",
+          "rev-parse",
+          "HEAD^{tree}"
+        ],
+        "exit": 0,
+        "seconds": 0.002
+      },
+      {
+        "step": "git-version",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "-C",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout",
+          "--version"
+        ],
+        "exit": 0,
+        "seconds": 0.001
+      },
+      {
+        "step": "git-parents",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "-C",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout",
+          "rev-list",
+          "--parents",
+          "-n",
+          "1",
+          "HEAD"
+        ],
+        "exit": 0,
+        "seconds": 0.002
+      },
+      {
+        "step": "git-status-before",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "-C",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout",
+          "status",
+          "--porcelain",
+          "--untracked-files=no"
+        ],
+        "exit": 0,
+        "seconds": 0.147
+      },
+      {
+        "step": "maven-version",
+        "argv": [
+          "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+          "--version"
+        ],
+        "exit": 0,
+        "seconds": 0.258
+      },
+      {
+        "step": "build",
+        "argv": [
+          "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+          "-s",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/settings.xml",
+          "-gs",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/settings.xml",
+          "-Dmaven.repo.local=/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/repository",
+          "--strict-checksums",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.test.skip=true",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotbugs.skip=true",
+          "package"
+        ],
+        "exit": 0,
+        "seconds": 18.188
+      },
+      {
+        "step": "git-status-after",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "-C",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout",
+          "status",
+          "--porcelain",
+          "--untracked-files=no"
+        ],
+        "exit": 0,
+        "seconds": 0.147
+      },
+      {
+        "step": "git-untracked",
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "transfer.fsckObjects=true",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "advice.detachedHead=false",
+          "-c",
+          "init.defaultBranch=checkout",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.https.allow=always",
+          "-C",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout",
+          "ls-files",
+          "-z",
+          "--others"
+        ],
+        "exit": 0,
+        "seconds": 0.003
+      },
+      {
+        "step": "dependencies",
+        "argv": [
+          "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+          "-s",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/settings.xml",
+          "-gs",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/settings.xml",
+          "-Dmaven.repo.local=/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/repository",
+          "--strict-checksums",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-f",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/checkout/pom.xml",
+          "-Dmaven.test.skip=true",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotbugs.skip=true",
+          "org.apache.maven.plugins:maven-dependency-plugin:3.9.0:build-classpath",
+          "-Dmdep.outputFile=/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/classpath.txt",
+          "-DincludeScope=runtime"
+        ],
+        "exit": 0,
+        "seconds": 2.458
+      }
+    ],
+    "checkout": {
+      "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+      "tree": "288a37cc762a943a0f3ae82d94abf074dbf76024",
+      "fetchedFrom": "https://github.com/apache/commons-csv",
+      "depth": 2,
+      "git": "git version 2.53.0",
+      "parents": [
+        "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+        "966b38519e45c1fd85c76fbbdc47cb5bb1905238"
+      ],
+      "parentChecked": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+      "submodules": "none declared",
+      "changedByBuild": []
+    },
+    "toolchain": {
+      "tool": "maven",
+      "jdk": {
+        "feature": "21",
+        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "maven": {
+        "path": "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+        "version": [
+          "Apache Maven 3.10.0 (c43a36b8d67be7e0805a411bc0898af1a51f5472)",
+          "Maven home: /home/filip/.sdkman/candidates/maven/3.10.0",
+          "Java version: 21.0.13, vendor: Eclipse Adoptium, runtime: /home/filip/.sdkman/candidates/java/21.0.13.0+9-tem"
+        ]
+      },
+      "argv": {
+        "recorded": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.test.skip=true",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotbugs.skip=true",
+          "package"
+        ],
+        "run": [
+          "/home/filip/.sdkman/candidates/maven/3.10.0/bin/mvn",
+          "-s",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/settings.xml",
+          "-gs",
+          "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/settings.xml",
+          "-Dmaven.repo.local=/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/maven/repository",
+          "--strict-checksums",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.test.skip=true",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotbugs.skip=true",
+          "package"
+        ]
+      },
+      "env": {
+        "PATH": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin:/usr/bin:/bin",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "HOME": "/home/filip/.cache/in-the-loop/tmp/upstream-jar-qvyecyee/home",
+        "MAVEN_SKIP_RC": "1",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC"
+      },
+      "settings": {
+        "path": "maven/settings.xml",
+        "sha256": "21f24d086ed266f7d448d495f7d00a4d0ff580830c70bc6852e3527e1ff8328a",
+        "meaning": "Maven Central the one repository (a mirror of every other), a fresh local repository, strict checksums, no user settings (HOME is the work directory's, MAVEN_SKIP_RC)"
+      },
+      "resolution": {
+        "path": "maven/resolution.json",
+        "sha256": "b8da0859c221e2c2f451d9b4aeea87cf39d031335f83d2d70aa59aa521141a88",
+        "files": 4684,
+        "versionLookups": [],
+        "meaning": "a version lookup is metadata Maven read to choose a version: recorded, and the bytes it chose are hashed, but a later build may choose differently"
+      }
+    },
+    "outputs": {
+      "jars": [
+        {
+          "path": "target/commons-csv-1.15.0-SNAPSHOT-sources.jar",
+          "sha256": "1ffff36babdff5bd0218416233da4e8c408e963651a2deb5e581c9aca2784229",
+          "auxiliary": true
+        },
+        {
+          "path": "target/commons-csv-1.15.0-SNAPSHOT-test-sources.jar",
+          "sha256": "ab9bf10f949af471775f515ecc4e85cb1c0c0f73213e0cde396f963cb93994e5",
+          "auxiliary": true
+        },
+        {
+          "path": "target/commons-csv-1.15.0-SNAPSHOT.jar",
+          "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+          "auxiliary": false
+        }
+      ],
+      "original": "target/commons-csv-1.15.0-SNAPSHOT.jar",
+      "dependencies": {
+        "order": "Maven's runtime classpath order (dependency:build-classpath)",
+        "command": "org.apache.maven.plugins:maven-dependency-plugin:3.9.0:build-classpath -DincludeScope=runtime",
+        "scope": "runtime: the compile and runtime scopes, no test or provided",
+        "passed": [
+          "-Dmaven.test.skip=true",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotbugs.skip=true"
+        ]
+      }
+    }
+  },
+  "resolutionFile": "csv-fix.resolution.json"
+}

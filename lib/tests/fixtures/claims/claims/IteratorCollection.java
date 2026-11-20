@@ -43,6 +43,12 @@ public final class IteratorCollection {
     }
 
     public static boolean collected() {
+        String[] values = {"old", null, "z"};
+        Stream<String> arrayStream = Stream.of(values).map(value -> value == null ? "empty" : value);
+        values[0] = "new";
+        List<String> taken = arrayStream.collect(Collectors.toList());
+        if (taken.size() != 3 || !"new".equals(taken.get(0)) || !"empty".equals(taken.get(1)) || !"z".equals(taken.get(2))) return false;
+        try { arrayStream.collect(Collectors.toList()); return false; } catch (IllegalStateException expected) { }
         Feed it = new Feed();
         Spliterator<String> source = Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED);
         Stream<String> stream = StreamSupport.stream(source, false);
@@ -74,6 +80,11 @@ public final class IteratorCollection {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static boolean erased() {
+        java.util.function.IntUnaryOperator marked =
+                (java.util.function.IntUnaryOperator & java.io.Serializable) (n -> n + 1);
+        java.util.function.IntUnaryOperator plain = n -> n + 1;
+        if (!(marked instanceof java.io.Serializable) || plain instanceof java.io.Serializable
+                || marked.applyAsInt(4) != 5 || plain.applyAsInt(4) != 5) return false;
         Visit state = new Visit();
         Consumer<String> typed = state::any;
         try { ((Consumer) typed).accept(Integer.valueOf(1)); return false; }

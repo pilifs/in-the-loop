@@ -1,0 +1,179 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "two-thread-tickets",
+    "family": "two-thread-tickets",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "method": {
+        "fixture": "method"
+      },
+      "block": {
+        "fixture": "block"
+      },
+      "split": {
+        "fixture": "split"
+      }
+    },
+    "pairs": [
+      {
+        "name": "block",
+        "kind": "positive",
+        "before": "method",
+        "after": "block"
+      },
+      {
+        "name": "split",
+        "kind": "mutation",
+        "before": "method",
+        "after": "split"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "block",
+      "target": "tickets.Projection#linearizable(I)I"
+    },
+    {
+      "id": "replay-split",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "split",
+      "target": "tickets.Projection#linearizable(I)I"
+    },
+    {
+      "id": "histories-method",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "claim": "claims/histories.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "method"
+    },
+    {
+      "id": "serial-method",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "claim": "claims/serial.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "method"
+    },
+    {
+      "id": "histories-block",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "claim": "claims/histories.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "block"
+    },
+    {
+      "id": "serial-block",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "claim": "claims/serial.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "block"
+    },
+    {
+      "id": "histories-split",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "claim": "claims/histories.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-split"
+      ],
+      "expected": "refuted",
+      "revision": "split"
+    },
+    {
+      "id": "serial-split",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "claim": "claims/serial.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-split"
+      ],
+      "expected": "established",
+      "revision": "split"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/tickets/TicketCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ],
+  "monitorContracts": [
+    {
+      "id": "tickets-method",
+      "bindingTask": "histories-method",
+      "revision": "method",
+      "entry": "tickets.Counter#take()I",
+      "expected": "established"
+    },
+    {
+      "id": "tickets-block",
+      "bindingTask": "histories-block",
+      "revision": "block",
+      "entry": "tickets.Counter#take()I",
+      "expected": "established"
+    },
+    {
+      "id": "tickets-split",
+      "bindingTask": "histories-split",
+      "revision": "split",
+      "entry": "tickets.Counter#take()I",
+      "expected": "refuted"
+    }
+  ]
+}

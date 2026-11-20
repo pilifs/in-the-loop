@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-192109-334-check-zone-transitions-from-compiled",
+  "title": "334 check zone transitions from compiled Java",
+  "description": "Run every frozen zone transitions property and its preserving or distinguishing controls. On a strict refusal keep the first unsupported operation. Counterexamples require an independent original JVM observation.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "334"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:21:09+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 334 --tasks count-valid,ordered-valid,ordinary-valid,count-singleton,ordered-singleton,ordinary-singleton --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/334-calendar-offset-transitions/receipts/count-valid",
+    "examples/334-calendar-offset-transitions/receipts/ordered-valid",
+    "examples/334-calendar-offset-transitions/receipts/ordinary-valid",
+    "examples/334-calendar-offset-transitions/receipts/count-singleton",
+    "examples/334-calendar-offset-transitions/receipts/ordered-singleton",
+    "examples/334-calendar-offset-transitions/receipts/ordinary-singleton"
+  ]
+}

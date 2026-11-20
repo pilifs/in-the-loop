@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Certify Java sine and cosine rounding bounds (verification pending)
 
-change `tpxuxtmvttso` · [log `e98f1371ad71`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/e98f1371ad71fd8fd656fd94d1e520e016caa87bf452b30b2267df8210389550.jsonl.gz)
+[`091fc8f6e090`](https://github.com/pilifs/in-the-loop/commit/091fc8f6e090be27de329c901f71787b61216f6d) · [log `e98f1371ad71`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/e98f1371ad71fd8fd656fd94d1e520e016caa87bf452b30b2267df8210389550.jsonl.gz)
 
 Strict native checks enclose each reachable angle with exact rational Taylor sums and consider both adjacent binary64 values permitted by Java. The host approximation only suggests a bracket. A counterexample must hold across all rounding choices, and arguments without a certificate stay open. This carries the original cube construction beyond the rounded value of negative pi over two.
 
@@ -28,7 +28,7 @@ The selected tests passed 17 of 17. Public floating-point controls passed on Tem
 
 ### Follow live ArrayList iterators through BSP nodes (verification pending)
 
-change `uosonqlmlprm` · [log `999449a2322b`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/999449a2322bb6fe373661bfa50106580e9d1aee9d0f8caa319df1c56ef62f11.jsonl.gz)
+[`001e9bc80a1e`](https://github.com/pilifs/in-the-loop/commit/001e9bc80a1ebfbd1aeea4fcc47da94eeca223ac) · [log `999449a2322b`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/999449a2322bb6fe373661bfa50106580e9d1aee9d0f8caa319df1c56ef62f11.jsonl.gz)
 
 Traverse the selected JDK ArrayList and its real cursor on one checker heap, including structural removal and fail-fast checks. The concrete interpreter keeps the backing list, cursor and modification count of an exact ArrayList so set, remove and stale traversal are observable through aliases. Explicitly requested list models retain their own layout.
 
@@ -36,7 +36,7 @@ The affected Rust suite passed. Native proofs, interpreter calls and direct JVM 
 
 ### Record the native cube proof and both missing-hit witnesses
 
-change `wmurtpqtpskn` · [log `11ef4a2706e3`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/11ef4a2706e37579415307cd048fcd79b1e19527056b6f7caf42da7aa0c7c1a6.jsonl.gz)
+[`8170d1b46912`](https://github.com/pilifs/in-the-loop/commit/8170d1b469128672f94f0efd5b83497f93e55166) · [log `11ef4a2706e3`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/11ef4a2706e37579415307cd048fcd79b1e19527056b6f7caf42da7aa0c7c1a6.jsonl.gz)
 
 The two fixed Commons Geometry claims hold for the four diagonals and two face controls. The parent misses all four diagonals. Both native counterexamples independently reproduced on code 0, with a missing facet where exact rational intersection gives the origin. The four original geometry decisions bring strict native coverage to 107 of 125. The complete packet took 17.641 seconds, with 152 MiB peak native process RSS. The 197 array roots and published 308 LCS regressions both passed.
 
@@ -44,7 +44,7 @@ All 189 stored collector files for the four jobs match the committed results. Th
 
 ### Check Joda-Time against captured UTC startup (verification pending)
 
-change `nmzrxxsorwtw` · [log `5ce4cc2ab349`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/5ce4cc2ab349d6439b9e069bc67780ebbb4a888ef03e90df5ecce8e15e2f3785.jsonl.gz)
+[`54fc63e3f842`](https://github.com/pilifs/in-the-loop/commit/54fc63e3f842fdc851eb96b74d94f4856f547da8) · [log `5ce4cc2ab349`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/5ce4cc2ab349d6439b9e069bc67780ebbb4a888ef03e90df5ecce8e15e2f3785.jsonl.gz)
 
 The initializer observer now carries immutable application values with all final scalar and String fields, validates the bytes and full layout of every declaring class, and restores aliases, hidden fields and distinct objects. The checker follows the actual JDK string copy, nested ArrayList sublists and historical chronology caches. The concrete interpreter keeps sublists backed by their root array list and detects stale views. Ten additional source claims bind the observed DateTimeZone and DateTimeUtils states while keeping the ten original startup obligations intact.
 
@@ -52,7 +52,7 @@ The 25 selected test groups passed. A JBMC process-status stand-in failed once a
 
 ### Check integral objects in exception messages (verification pending)
 
-change `mrktmzqrosok` · [log `5497a49b2d22`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/5497a49b2d22fc8b1a287b222f271825bd004a8dd73a9d7128ebf5bf3a40237a.jsonl.gz)
+[`b53619f04373`](https://github.com/pilifs/in-the-loop/commit/b53619f04373a2280551e129d0b01ddb5b444e5a) · [log `5497a49b2d22`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/5497a49b2d22fc8b1a287b222f271825bd004a8dd73a9d7128ebf5bf3a40237a.jsonl.gz)
 
 StringBuilder.append(Object) renders the initialized signed value of final Byte, Short, Integer and Long wrappers with the same decimal conversion used for their primitive overloads. This preserves the actual Joda-Time exception construction reached on leap-day inputs.
 
@@ -60,7 +60,7 @@ The typed string fixture and direct JVM controls passed, including a negative bo
 
 ### Check chart endpoints under observed UTC calendars (verification pending)
 
-change `nrnvkxrtqrqk` · [log `d6c79e9aa15d`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/d6c79e9aa15dc5a656816c962fd85b294aea2d97c9d62068a02e92319b247b17.jsonl.gz)
+[`3c76f30ceb8a`](https://github.com/pilifs/in-the-loop/commit/3c76f30ceb8a1a114221f10618aaa93adb5d3472) · [log `d6c79e9aa15d`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/d6c79e9aa15dc5a656816c962fd85b294aea2d97c9d62068a02e92319b247b17.jsonl.gz)
 
 Check the complete civil fields used by JFreeChart against an independently identified JDK calendar environment. The observer checks the default and explicit UTC factories, their concrete Gregorian calendar and zone types, era, leniency and cutover. Strict checking computes epoch milliseconds for canonical years 1600 through 9999, preserves the Date snapshot, and refuses incomplete dates or a changed locale. Eight companion claims require the observed startup digest and exact calendar assumption, alongside the original unmodified claims.
 
@@ -70,7 +70,7 @@ Job 20261120-100439-verify-chart-ranges-on-observed-calendar checks all eight ne
 
 ### Record eighteen native results with their JVM startup conditions
 
-change `pvnwnzxznooq` · [log `c12286421465`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/c12286421465e3299a15726e066700872c9bf1368b5122dfb5c8c0be3d1e7e6d.jsonl.gz)
+[`0d343be200f3`](https://github.com/pilifs/in-the-loop/commit/0d343be200f368b9d4d6dfce4fd908c94d4c4918) · [log `c12286421465`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/c12286421465e3299a15726e066700872c9bf1368b5122dfb5c8c0be3d1e7e6d.jsonl.gz)
 
 The original campaign has 78 native proofs, 29 independently replayed refutations and 18 open startup obligations. The eight chart and ten partial-date companion claims add 14 proofs and four replayed counterexamples on explicitly captured JDK 21 startup states. Together these outcomes agree with all 125 exhaustive JVM dispositions. Keep both scopes in the public register, including each subject, assumption, admitted count, witness, duration and peak process RSS.
 
@@ -78,7 +78,7 @@ All six affected examples validated and all 43 selected test groups passed. Each
 
 ### Pair original startup checks with observed runs (verification pending)
 
-change `mkmmssxnmnst` · [log `c12286421465`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/c12286421465e3299a15726e066700872c9bf1368b5122dfb5c8c0be3d1e7e6d.jsonl.gz)
+[`dd7b8674c12d`](https://github.com/pilifs/in-the-loop/commit/dd7b8674c12d6167c58515e4ef512061bf58c2f4) · [log `c12286421465`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/c12286421465e3299a15726e066700872c9bf1368b5122dfb5c8c0be3d1e7e6d.jsonl.gz)
 
 Recheck all eight original chart tasks and all ten original partial-date tasks on exactly the respective binary that decided their observed-startup companions. These negative controls require the original strict query to run, to name the ambient initializer call and to publish an unresolved receipt. They reject an unrelated error, changed binary or hidden observed-initializer assumption.
 

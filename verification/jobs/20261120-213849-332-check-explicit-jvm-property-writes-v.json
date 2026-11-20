@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-213849-332-check-explicit-jvm-property-writes-v",
+  "title": "332 check explicit JVM property writes versus initialization",
+  "description": "Check the complete nine property-event pairs on cached, helper and live definitions. Verify an unbound initial property is distinguished from an explicitly cleared one. Run the original classes and guards on the named JVM.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "332"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T21:38:49+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 332 --tasks second-cached,init-count-cached,second-helper,init-count-helper,second-live,init-count-live --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/332-paper-initialization/receipts/second-cached",
+    "examples/332-paper-initialization/receipts/init-count-cached",
+    "examples/332-paper-initialization/receipts/second-helper",
+    "examples/332-paper-initialization/receipts/init-count-helper",
+    "examples/332-paper-initialization/receipts/second-live",
+    "examples/332-paper-initialization/receipts/init-count-live"
+  ]
+}

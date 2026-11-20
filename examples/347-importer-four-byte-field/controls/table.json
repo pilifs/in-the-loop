@@ -1,0 +1,1347 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {
+    "bytes": {
+      "entry": "importer.Projection#bytes(I)I",
+      "encoding": "matches"
+    },
+    "count": {
+      "entry": "importer.Projection#count(I)I",
+      "encoding": "matches"
+    },
+    "page": {
+      "entry": "importer.Projection#page(I)I",
+      "encoding": "matches"
+    }
+  },
+  "cases": [
+    {
+      "id": 0,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": false,
+        "preview": false,
+        "start": 1,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": false,
+        "preview": false,
+        "start": 1,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            2,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": false,
+        "preview": false,
+        "start": 2,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": false,
+        "preview": false,
+        "start": 2,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            3,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": false,
+        "preview": true,
+        "start": 1,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": false,
+        "preview": true,
+        "start": 1,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            2,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": false,
+        "preview": true,
+        "start": 2,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": false,
+        "preview": true,
+        "start": 2,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            3,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": true,
+        "preview": false,
+        "start": 1,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": true,
+        "preview": false,
+        "start": 1,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            2,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": true,
+        "preview": false,
+        "start": 2,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": true,
+        "preview": false,
+        "start": 2,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            3,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": true,
+        "preview": true,
+        "start": 1,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": true,
+        "preview": true,
+        "start": 1,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            2,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": true,
+        "preview": true,
+        "start": 2,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": false,
+        "oneByte": true,
+        "preview": true,
+        "start": 2,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            3,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": false,
+        "preview": false,
+        "start": 1,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": false,
+        "preview": false,
+        "start": 1,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            2,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": false,
+        "preview": false,
+        "start": 2,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": false,
+        "preview": false,
+        "start": 2,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            3,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": false,
+        "preview": true,
+        "start": 1,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": false,
+        "preview": true,
+        "start": 1,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            2,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": false,
+        "preview": true,
+        "start": 2,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": false,
+        "preview": true,
+        "start": 2,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            3,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": true,
+        "preview": false,
+        "start": 1,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": true,
+        "preview": false,
+        "start": 1,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            2,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": true,
+        "preview": false,
+        "start": 2,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": true,
+        "preview": false,
+        "start": 2,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            3,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": true,
+        "preview": true,
+        "start": 1,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": true,
+        "preview": true,
+        "start": 1,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            1,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            2,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": true,
+        "preview": true,
+        "start": 2,
+        "cap": 1
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 1,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "input": {
+        "doc": "abc,😀\nc,d\n",
+        "bom": true,
+        "oneByte": true,
+        "preview": true,
+        "start": 2,
+        "cap": 2
+      },
+      "expected": {
+        "bytes": [
+          97,
+          98,
+          99,
+          44,
+          240,
+          159,
+          152,
+          128,
+          10,
+          99,
+          44,
+          100,
+          10
+        ],
+        "count": 2,
+        "page": [
+          [
+            2,
+            [
+              "abc",
+              "😀"
+            ]
+          ],
+          [
+            3,
+            [
+              "c",
+              "d"
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

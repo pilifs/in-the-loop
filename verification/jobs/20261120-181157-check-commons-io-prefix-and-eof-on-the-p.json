@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-181157-check-commons-io-prefix-and-eof-on-the-p",
+  "title": "Check Commons IO prefix and EOF on the pinned full Maven builds",
+  "description": "Strict native checking of all 6 frozen Commons IO prefix and EOF obligations. Retain the actual upstream artifact, exact guard, parameters, allocations, checker and classpath for every result. Qualify any counterexample on an independent JVM; retain the first unsupported operation for each open claim.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "338"
+    ]
+  },
+  "expected": "Each original claim meets its own frozen expectation, recording an independently replayed witness for a refutation.",
+  "submitted": {
+    "at": "2026-11-20T18:11:57+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "mvn",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "memoryLimit": "4G",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Run strict native checking on the real dependencies",
+      "run": "python3 examples/tools/build.py 338 --tasks bytes-parent,eof-parent,explicit-mark-parent,bytes-fix,eof-fix,explicit-mark-fix --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/338-commons-io-bom-reset/receipts/bytes-parent",
+    "examples/338-commons-io-bom-reset/receipts/eof-parent",
+    "examples/338-commons-io-bom-reset/receipts/explicit-mark-parent",
+    "examples/338-commons-io-bom-reset/receipts/bytes-fix",
+    "examples/338-commons-io-bom-reset/receipts/eof-fix",
+    "examples/338-commons-io-bom-reset/receipts/explicit-mark-fix"
+  ]
+}

@@ -51,6 +51,8 @@ pub fn charset_constant(owner: &str, name: &str) -> Option<&'static str> {
     match (owner, name) {
         (STANDARD_CHARSETS, "UTF_8") => Some("UTF_8"),
         (STANDARD_CHARSETS, "US_ASCII") => Some("US_ASCII"),
+        (STANDARD_CHARSETS, "UTF_16BE") => Some("UTF_16BE"),
+        (STANDARD_CHARSETS, "UTF_16LE") => Some("UTF_16LE"),
         _ => None,
     }
 }
@@ -60,7 +62,9 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
         ("java/lang/String", "valueOf", "(C)Ljava/lang/String;") |
-        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J") | ("java/lang/Long", "toString", "(J)Ljava/lang/String;") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
+        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J") | ("java/lang/Long", "toString", "(J)Ljava/lang/String;") |
+        (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "equals", "([B[B)Z") |
+        (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
     )
 }
 
@@ -78,7 +82,55 @@ fn names_utf8(units: &[u16]) -> bool {
     UTF8_NAMES.iter().any(|name| name.to_ascii_lowercase().encode_utf16().eq(lower.iter().copied()))
 }
 
+/// A slice of a well-formed UTF-8 stream can start inside one character and
+/// end inside another. OpenJDK replaces each stray continuation at the front
+/// and the one incomplete scalar at the end. Interior malformed sequences
+/// outside this language retain the original unsupported-operation diagnostic.
+pub fn utf8_slice_units(bytes: &[u8]) -> Option<Vec<u16>> {
+    let leading = bytes.iter().take_while(|&&b| (0x80..0xc0).contains(&b)).count();
+    let mut units = vec![0xfffd; leading];
+    let tail = &bytes[leading..];
+    match std::str::from_utf8(tail) {
+        Ok(text) => units.extend(text.encode_utf16()),
+        Err(error) if error.error_len().is_none() => {
+            units.extend(std::str::from_utf8(&tail[..error.valid_up_to()]).ok()?.encode_utf16());
+            units.push(0xfffd);
+        }
+        Err(_) => return None,
+    }
+    Some(units)
+}
+
 impl Engine<'_> {
+    /// Constant-fold a known byte slice and exact standard charset. All bounds,
+    /// pre-existing heap reads and freshness checks precede the content update.
+    pub(super) fn string_from_utf8(&mut self, path: &mut Path, object: usize, args: &[Val]) -> Option<Step> {
+        let (source, range, charset) = match args {
+            [Val::R(Some(a)), Val::R(Some(c))] => (*a, None, *c),
+            [Val::R(Some(a)), Val::I(off), Val::I(len), Val::R(Some(c))] => (*a, Some((off, len)), *c),
+            _ => return None,
+        };
+        if path.literals.get(&Literal::Charset("UTF_8")) != Some(&charset) { return None; }
+        let array = path.objects[source].as_array().filter(|a| a.element == Type::Byte)?;
+        let length = usize::try_from(self.b.constant_value(&array.length)?).ok()?;
+        let (start, size) = match range {
+            None => (0, length),
+            Some((off, n)) => (usize::try_from(self.b.constant_value(off)?).ok()?, usize::try_from(self.b.constant_value(n)?).ok()?),
+        };
+        let end = start.checked_add(size)?;
+        if end > length { return None; }
+        let bytes: Vec<u8> = array.cells.get(start..end)?.iter().map(|b| self.b.constant_value(b).map(|n| n as u8)).collect::<Option<_>>()?;
+        let units = utf8_slice_units(&bytes)?;
+        if size > 0 && self.there_before(path, source) {
+            if let Err(stop) = self.reads(path, || "String reads a pre-existing UTF-8 byte slice".into()) { return Some(Err(stop)); }
+        }
+        if let Err(stop) = self.keeps(path, Some(object), "initializes a pre-existing String") { return Some(Err(stop)); }
+        let length = self.b.constant(units.len() as i64, 32);
+        let cells = units.into_iter().map(|c| self.b.constant(i64::from(c), 16)).collect();
+        path.objects[object].array = Some(Array { element: Type::Char, length, cells, refs: Vec::new() });
+        self.advance(path);
+        Some(Ok(None))
+    }
     /// `String.getBytes(Charset)` and `String.getBytes(String)` on a String of content `s`: see the module's notes.
     /// `None` where the call stays the JDK's.
     pub(super) fn string_bytes(&mut self, path: &mut Path, s: &Array, descriptor: &str, args: &[Val]) -> Option<Step> {
@@ -283,24 +335,26 @@ impl Engine<'_> {
                 });
                 Some(inner.and(outer))
             }
-            (DIGEST, "isEqual", [Val::R(a), Val::R(b)]) => {
+            (DIGEST, "isEqual", [Val::R(a), Val::R(b)]) | (ARRAYS, "equals", [Val::R(a), Val::R(b)]) => {
                 let truth = match (*a, *b) {
                     (None, None) => TRUE,
                     (None, _) | (_, None) => FALSE,
                     (Some(a), Some(b)) if a == b => TRUE,
                     (Some(a), Some(b)) => {
-                        if path.objects[a].given || path.objects[b].given {
-                            if let Err(stop) = self.reads(path, || "reads an array that was there before the call (isEqual)".into()) {
+                        if self.there_before(path, a) || self.there_before(path, b) {
+                            if let Err(stop) = self.reads(path, || format!("reads an array that was there before the call ({name})")) {
                                 return Some(Err(stop));
                             }
                         }
-                        let (x, y) = (path.objects[a].as_array()?.clone(), path.objects[b].as_array()?.clone());
+                        let (x, y) = (path.objects[a].as_array()?, path.objects[b].as_array()?);
+                        if x.element != Type::Byte || y.element != Type::Byte { return None; }
                         let mut same = vec![self.b.eq(&x.length, &y.length)];
-                        let zero = self.b.constant(0, 8);
-                        for i in 0..x.cells.len().max(y.cells.len()) {
+                        // Each backing vector covers every legal index. If lengths are equal,
+                        // only the common capacity can contain an observable byte.
+                        for (i, (left, right)) in x.cells.iter().zip(&y.cells).enumerate() {
                             let here = self.b.constant(i as i64, 32);
                             let inside = self.b.slt(&here, &x.length);
-                            let equal = self.b.eq(x.cells.get(i).unwrap_or(&zero), y.cells.get(i).unwrap_or(&zero));
+                            let equal = self.b.eq(left, right);
                             same.push(self.b.or(-inside, equal));
                         }
                         self.b.all(&same)

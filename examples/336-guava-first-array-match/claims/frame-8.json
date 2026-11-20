@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "frame-8",
+  "statement": "The method returns normally and every input cell retains its entry value.",
+  "assume": "true",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 10,
+    "maxArrayLength": 8
+  },
+  "assert": "(\\forall int i; 0 <= i && i < array.length; array[i] == \\old(array[i]))"
+}
