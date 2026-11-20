@@ -1,0 +1,854 @@
+{
+  "schema": "native-selector-proof/v1",
+  "identity": {
+    "sourceClaim": "3e0020fe820bb626",
+    "inputsKey": "e74adecf016861b2175241774aed81bb4512d5097a0a528d4c91a681a4baa200",
+    "revisions": [
+      "fix-parent"
+    ],
+    "expected": "established",
+    "sourceLocks": {
+      "fix-parent": "fee7259ef49ec8aa3132021cf4c2fab5a59526989bc00e40818d8d09f159668f"
+    }
+  },
+  "task": "bytes-fix-parent",
+  "revision": "fix-parent",
+  "entry": "importer.Projection#bytes(I)I",
+  "guard": "code >= 0 && code < 32",
+  "parameter": "code",
+  "assertion": "result == 1",
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 96
+  },
+  "envelope": [
+    0,
+    31
+  ],
+  "maxCases": 4096,
+  "admitted": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "JDK": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "checker": {
+    "commit": "aa042b39d8ccdaadc1e69f953d3899acd1b11250",
+    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+    "sha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18"
+  },
+  "classpath": [
+    {
+      "path": "adapter-fix-parent.jar",
+      "sha256": "a98b313d677b23044299e76008cfccd47ab71e28a4fd7f3c2dba0b6ed7d9c817",
+      "role": "adapter"
+    },
+    {
+      "path": "fix-parent.jar",
+      "sha256": "5d0a2eefe440fc7795a177e2fc37c8c1cce0d4c77ce5c08128d3f5e9410713cc",
+      "role": "original"
+    },
+    {
+      "path": "libraries/io-fix.jar",
+      "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/csv-parent.jar",
+      "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/codec.jar",
+      "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+      "role": "dependency"
+    }
+  ],
+  "correspondence": [
+    {
+      "revision": "fix-parent",
+      "entry": "importer.Projection#bytes(I)I",
+      "adapterSha256": "a98b313d677b23044299e76008cfccd47ab71e28a4fd7f3c2dba0b6ed7d9c817",
+      "adapterClassSha256": "3afa595dc83f6925b82a5a553f38c1e54c8001dca87ae9daf08cb3546d3a8152",
+      "subject": {
+        "class": "importer.PageImporter",
+        "method": "remaining",
+        "descriptor": "([BZZ)[B",
+        "loadedFrom": "fix-parent.jar",
+        "classSha256": "b00740383acd7e63b1af061e0101518780826b8625f9576ef040191bfb3f1585",
+        "adapterCalls": [
+          "importer.PageImporter#page([BZZII)Ljava/util/List;",
+          "importer.PageImporter#remaining([BZZ)[B",
+          "importer.PageImporter$Row#fields()Ljava/util/List;",
+          "importer.PageImporter$Row#number()J"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The five selector bits choose BOM, one-byte delegate, preview/reset, starting number minus one and page cap minus one for the literal two-row document with a U+1F600 field.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 32,
+      "disagreements": 0
+    }
+  ],
+  "ruleSha256": "b89514960728f920e57ecc034ef3cc46e1489d5899795eb6810f9f470d9c3d88",
+  "admissionClass": "tasks/bytes-fix-parent/Admission.jvm-bytecode",
+  "admissionSha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+  "callsClass": "calls/c7e1eaa6d2c7c212a219/Calls.jvm-bytecode",
+  "callsSha256": "2a5c1ed7b777ab248d9e2f5138ee3f9b97cf224373ff9505bd9728d134b17ba9",
+  "checked": [
+    {
+      "selector": 14,
+      "status": "established",
+      "target": "verificationselectors.Calls#p14()",
+      "exit": 0,
+      "wallSeconds": 0.103,
+      "usage": {
+        "cpuSeconds": 0.0998,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "63a08c261f2bf0152697431a41274d8c13e3bac9cf3a5a7d3c1d4e9e95bf3305",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p14/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 0,
+      "status": "established",
+      "target": "verificationselectors.Calls#p0()",
+      "exit": 0,
+      "wallSeconds": 0.082,
+      "usage": {
+        "cpuSeconds": 0.0804,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "af67c527fb0d1e8192290e90ed79707a58449e7c68fd8a943525de02815ae780",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p0/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 1,
+      "status": "established",
+      "target": "verificationselectors.Calls#p1()",
+      "exit": 0,
+      "wallSeconds": 0.092,
+      "usage": {
+        "cpuSeconds": 0.0865,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "cf5564ec5e549ce2de10d1f225e50d79b7fb24dba342840fccb06b818213a51d",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p1/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 2,
+      "status": "established",
+      "target": "verificationselectors.Calls#p2()",
+      "exit": 0,
+      "wallSeconds": 0.092,
+      "usage": {
+        "cpuSeconds": 0.0837,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "28b08140fb8261f4be00669a8c609bd7fed5f63437e9e8539e026cd9a400869c",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p2/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 3,
+      "status": "established",
+      "target": "verificationselectors.Calls#p3()",
+      "exit": 0,
+      "wallSeconds": 0.112,
+      "usage": {
+        "cpuSeconds": 0.1035,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "5a3aa28bf86625e406984c87c1ff33902e56864d9aa9f051ea43774e8e0ec5f8",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p3/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 4,
+      "status": "established",
+      "target": "verificationselectors.Calls#p4()",
+      "exit": 0,
+      "wallSeconds": 0.082,
+      "usage": {
+        "cpuSeconds": 0.0795,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "59a9839622c321720fab8ebd181f568a3d3ed473d472e1e2ef268c7ffd3ebc0e",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p4/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 5,
+      "status": "established",
+      "target": "verificationselectors.Calls#p5()",
+      "exit": 0,
+      "wallSeconds": 0.122,
+      "usage": {
+        "cpuSeconds": 0.1169,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "c30fe0ec10c27352cee4d4642d2c40f8e4f429641de9f3112cf7377c8e049049",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p5/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 6,
+      "status": "established",
+      "target": "verificationselectors.Calls#p6()",
+      "exit": 0,
+      "wallSeconds": 0.102,
+      "usage": {
+        "cpuSeconds": 0.0987,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "dbbe34b996e13da30a7eb3a822759cbea166fd8a978c20dd68062a5090906353",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p6/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 7,
+      "status": "established",
+      "target": "verificationselectors.Calls#p7()",
+      "exit": 0,
+      "wallSeconds": 0.102,
+      "usage": {
+        "cpuSeconds": 0.0981,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "03b45dba8392ffddd68c91d88fcc7f891b22f8e3276d7cc339d62f35185bbaa1",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p7/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 8,
+      "status": "established",
+      "target": "verificationselectors.Calls#p8()",
+      "exit": 0,
+      "wallSeconds": 0.092,
+      "usage": {
+        "cpuSeconds": 0.0814,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "fc638098e431a99eefd90492d06e43da8eceed0eba53b56a1c1ffefa38e9540c",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p8/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 9,
+      "status": "established",
+      "target": "verificationselectors.Calls#p9()",
+      "exit": 0,
+      "wallSeconds": 0.112,
+      "usage": {
+        "cpuSeconds": 0.1023,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "d88e40aad0c46aa6c846b52ecfd5a07eb5369b086f2a5bd4064b762a8c7ec18b",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p9/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 10,
+      "status": "established",
+      "target": "verificationselectors.Calls#p10()",
+      "exit": 0,
+      "wallSeconds": 0.102,
+      "usage": {
+        "cpuSeconds": 0.0988,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "02d25a6062c246bfd0ff9d687b952a38fb8e91a876ae67700cbddc1136817a5e",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p10/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 11,
+      "status": "established",
+      "target": "verificationselectors.Calls#p11()",
+      "exit": 0,
+      "wallSeconds": 0.102,
+      "usage": {
+        "cpuSeconds": 0.1012,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "e7fd793644ddbdadd59b28b96eeea9bf77b4c89ffd16a66795617366f26bd738",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p11/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 12,
+      "status": "established",
+      "target": "verificationselectors.Calls#p12()",
+      "exit": 0,
+      "wallSeconds": 0.115,
+      "usage": {
+        "cpuSeconds": 0.1105,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "d9d30a5090580df55a94fdb2dc997618eda641386faa117c53aabf956046d2fa",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p12/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 13,
+      "status": "established",
+      "target": "verificationselectors.Calls#p13()",
+      "exit": 0,
+      "wallSeconds": 0.143,
+      "usage": {
+        "cpuSeconds": 0.136,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "10a6fcf74d73124e4b624590ff19dd605d4e5eaca2be17df9db5e8b7a0869494",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p13/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 15,
+      "status": "established",
+      "target": "verificationselectors.Calls#p15()",
+      "exit": 0,
+      "wallSeconds": 0.122,
+      "usage": {
+        "cpuSeconds": 0.117,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "e042ea90e8e36afe142af7e8cc06d95944442476d91dd316cd4c7278b4df8f50",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p15/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 16,
+      "status": "established",
+      "target": "verificationselectors.Calls#p16()",
+      "exit": 0,
+      "wallSeconds": 0.102,
+      "usage": {
+        "cpuSeconds": 0.0993,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "c532e34d87ec9a489e2cabdbc1b5e3a217e456d150d8006639d8a29d725cbe0c",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p16/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 17,
+      "status": "established",
+      "target": "verificationselectors.Calls#p17()",
+      "exit": 0,
+      "wallSeconds": 0.092,
+      "usage": {
+        "cpuSeconds": 0.09,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "f48a54da106ff8026be40659d2b0f55bdd102f3c65fededb3e09cf8c9dda184c",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p17/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 18,
+      "status": "established",
+      "target": "verificationselectors.Calls#p18()",
+      "exit": 0,
+      "wallSeconds": 0.102,
+      "usage": {
+        "cpuSeconds": 0.0929,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "e915434dd669cbef41af8de078d71fcce356617dd820fe7e76cc9b6311fdd530",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p18/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 19,
+      "status": "established",
+      "target": "verificationselectors.Calls#p19()",
+      "exit": 0,
+      "wallSeconds": 0.115,
+      "usage": {
+        "cpuSeconds": 0.1116,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "0facd0f4b5dff97dae281d0488ba8d9765987ac342a5ce571ea109605224b70d",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p19/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 20,
+      "status": "established",
+      "target": "verificationselectors.Calls#p20()",
+      "exit": 0,
+      "wallSeconds": 0.133,
+      "usage": {
+        "cpuSeconds": 0.1222,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "ffdf23e959aefcf594a675f279244d0c0de60a89c45d1d12effec06d831590eb",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p20/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 21,
+      "status": "established",
+      "target": "verificationselectors.Calls#p21()",
+      "exit": 0,
+      "wallSeconds": 0.123,
+      "usage": {
+        "cpuSeconds": 0.1168,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "617eb1018be96c9ab58d508cee34efacd6a5b22aa9209b6adc2800fa1b71663d",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p21/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 22,
+      "status": "established",
+      "target": "verificationselectors.Calls#p22()",
+      "exit": 0,
+      "wallSeconds": 0.124,
+      "usage": {
+        "cpuSeconds": 0.1144,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "3188d4c2f7705045768341499a87ec9f65dbdcdbeea80fedf0e65f2035e40a31",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p22/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 23,
+      "status": "established",
+      "target": "verificationselectors.Calls#p23()",
+      "exit": 0,
+      "wallSeconds": 0.112,
+      "usage": {
+        "cpuSeconds": 0.1051,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "3cfe95a413ad5e0801ee72009ef7ef333f6536e769e6754addf45974f3da0e98",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p23/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 24,
+      "status": "established",
+      "target": "verificationselectors.Calls#p24()",
+      "exit": 0,
+      "wallSeconds": 0.123,
+      "usage": {
+        "cpuSeconds": 0.1193,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "f559650ee4fae8f59cee8586c58111c7ab50867a54a0c3b72a93f8ee46c4e964",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p24/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 25,
+      "status": "established",
+      "target": "verificationselectors.Calls#p25()",
+      "exit": 0,
+      "wallSeconds": 0.112,
+      "usage": {
+        "cpuSeconds": 0.1114,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "3b28c4303139ae8a66bfb12178760138a846dc52556042d205829be59c6c1364",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p25/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 26,
+      "status": "established",
+      "target": "verificationselectors.Calls#p26()",
+      "exit": 0,
+      "wallSeconds": 0.102,
+      "usage": {
+        "cpuSeconds": 0.1003,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "19f7a60fd59561d244eda2941242b46fb29e12b0f66b5b984d4d5dc8caf51fb9",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p26/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 27,
+      "status": "established",
+      "target": "verificationselectors.Calls#p27()",
+      "exit": 0,
+      "wallSeconds": 0.112,
+      "usage": {
+        "cpuSeconds": 0.1078,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "91b001323ee05b069189e32350e66cec7110f9c28263ffa73ae90b256b45c4db",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p27/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 28,
+      "status": "established",
+      "target": "verificationselectors.Calls#p28()",
+      "exit": 0,
+      "wallSeconds": 0.133,
+      "usage": {
+        "cpuSeconds": 0.1234,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "fc77736b8cc1c56fc6690b1a23f8f0dcd40e11f79f3d36577ecb11a63b2b4941",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p28/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 29,
+      "status": "established",
+      "target": "verificationselectors.Calls#p29()",
+      "exit": 0,
+      "wallSeconds": 0.133,
+      "usage": {
+        "cpuSeconds": 0.1288,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "18b91d9a6e61549a77bd7e29c9e46dd91ab56f87657521d7c06afec5c738f1f2",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p29/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 30,
+      "status": "established",
+      "target": "verificationselectors.Calls#p30()",
+      "exit": 0,
+      "wallSeconds": 0.133,
+      "usage": {
+        "cpuSeconds": 0.1252,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "5e3d8f3dc2c7da7868b2383c7e7eb459b2b5badd4e00e5be9a2488386f6d6cf7",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p30/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 31,
+      "status": "established",
+      "target": "verificationselectors.Calls#p31()",
+      "exit": 0,
+      "wallSeconds": 0.155,
+      "usage": {
+        "cpuSeconds": 0.1533,
+        "peakRssBytes": 78950400,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "5676af7271871aac3003fc83b844cb3176aa0f6640aeec835c91d96170a5c4a5",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/c7e1eaa6d2c7c212a219/cases/p31/native.json",
+      "reusedInBatch": false
+    }
+  ],
+  "status": "established",
+  "wallSeconds": 3.60389,
+  "cost": {
+    "preparationAndCorrespondenceSeconds": 3.76566,
+    "checkerWallSeconds": 3.583,
+    "originalWitnessReplaySeconds": 0.0,
+    "endToEndSeconds": 7.36958,
+    "peakNativeRssBytes": 78950400
+  }
+}

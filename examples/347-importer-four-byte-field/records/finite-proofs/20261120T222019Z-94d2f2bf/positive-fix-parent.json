@@ -1,0 +1,288 @@
+{
+  "status": "established",
+  "entry": "importer.Projection#page(I)I",
+  "inputs": 8,
+  "differences": 0,
+  "sides": {
+    "fix-parent": {
+      "commit": "fixture:client",
+      "entry": {
+        "entry": "importer.Projection#page(I)I",
+        "classSha256": "3afa595dc83f6925b82a5a553f38c1e54c8001dca87ae9daf08cb3546d3a8152",
+        "loadedFrom": "adapter-fix-parent.jar",
+        "subject": "importer.PageImporter#page([BZZII)Ljava/util/List;",
+        "subjectClassSha256": "b00740383acd7e63b1af061e0101518780826b8625f9576ef040191bfb3f1585"
+      },
+      "classpath": [
+        {
+          "path": "adapter-fix-parent.jar",
+          "sha256": "a98b313d677b23044299e76008cfccd47ab71e28a4fd7f3c2dba0b6ed7d9c817",
+          "role": "adapter"
+        },
+        {
+          "path": "fix-parent.jar",
+          "sha256": "5d0a2eefe440fc7795a177e2fc37c8c1cce0d4c77ce5c08128d3f5e9410713cc",
+          "role": "original"
+        },
+        {
+          "path": "libraries/io-fix.jar",
+          "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+          "role": "dependency"
+        },
+        {
+          "path": "libraries/csv-parent.jar",
+          "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+          "role": "dependency"
+        },
+        {
+          "path": "libraries/codec.jar",
+          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 32 && (code & 6) == 0)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = importer.Projection.page(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "2f9cb8a70ce743ed7dd6c24a132a00ad1a2f6c5cfc1a3b5a4d317accdbe12c16",
+      "stdoutSha256": "6cbfaa1d3994c32d4b136eb13e2d44ca7f8ffe6ad4defbdbf1b9c82e54a2a191",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        31
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": false
+        },
+        {
+          "value": 3,
+          "admitted": false
+        },
+        {
+          "value": 4,
+          "admitted": false
+        },
+        {
+          "value": 5,
+          "admitted": false
+        },
+        {
+          "value": 6,
+          "admitted": false
+        },
+        {
+          "value": 7,
+          "admitted": false
+        },
+        {
+          "value": 8,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 9,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 10,
+          "admitted": false
+        },
+        {
+          "value": 11,
+          "admitted": false
+        },
+        {
+          "value": 12,
+          "admitted": false
+        },
+        {
+          "value": 13,
+          "admitted": false
+        },
+        {
+          "value": 14,
+          "admitted": false
+        },
+        {
+          "value": 15,
+          "admitted": false
+        },
+        {
+          "value": 16,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 17,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 18,
+          "admitted": false
+        },
+        {
+          "value": 19,
+          "admitted": false
+        },
+        {
+          "value": 20,
+          "admitted": false
+        },
+        {
+          "value": 21,
+          "admitted": false
+        },
+        {
+          "value": 22,
+          "admitted": false
+        },
+        {
+          "value": 23,
+          "admitted": false
+        },
+        {
+          "value": 24,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 25,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 26,
+          "admitted": false
+        },
+        {
+          "value": 27,
+          "admitted": false
+        },
+        {
+          "value": 28,
+          "admitted": false
+        },
+        {
+          "value": 29,
+          "admitted": false
+        },
+        {
+          "value": 30,
+          "admitted": false
+        },
+        {
+          "value": 31,
+          "admitted": false
+        }
+      ],
+      "seconds": 0.253,
+      "cpuSeconds": 0.4397,
+      "peakRssBytes": 68395008,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "fix-parent",
+      "entry": "importer.Projection#page(I)I",
+      "adapterSha256": "a98b313d677b23044299e76008cfccd47ab71e28a4fd7f3c2dba0b6ed7d9c817",
+      "adapterClassSha256": "3afa595dc83f6925b82a5a553f38c1e54c8001dca87ae9daf08cb3546d3a8152",
+      "subject": {
+        "class": "importer.PageImporter",
+        "method": "page",
+        "descriptor": "([BZZII)Ljava/util/List;",
+        "loadedFrom": "fix-parent.jar",
+        "classSha256": "b00740383acd7e63b1af061e0101518780826b8625f9576ef040191bfb3f1585",
+        "adapterCalls": [
+          "importer.PageImporter#page([BZZII)Ljava/util/List;",
+          "importer.PageImporter#remaining([BZZ)[B",
+          "importer.PageImporter$Row#fields()Ljava/util/List;",
+          "importer.PageImporter$Row#number()J"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The five selector bits choose BOM, one-byte delegate, preview/reset, starting number minus one and page cap minus one for the literal two-row document with a U+1F600 field.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 32,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0046,
+  "controlSeconds": 0.0049,
+  "wallSeconds": 0.7945,
+  "task": "positive-fix-parent",
+  "sourceClaim": "01be26d06c1628f5",
+  "inputsKey": "0b51b5923d5c3d2e628d6d96756033f6900ea6cff78cdeaf349d04acdde59980",
+  "revisions": [
+    "fix-parent"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "fix-parent": "fee7259ef49ec8aa3132021cf4c2fab5a59526989bc00e40818d8d09f159668f"
+  }
+}

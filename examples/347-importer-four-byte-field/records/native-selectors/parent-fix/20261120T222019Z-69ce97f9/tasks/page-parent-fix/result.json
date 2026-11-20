@@ -1,0 +1,220 @@
+{
+  "schema": "native-selector-proof/v1",
+  "identity": {
+    "sourceClaim": "33d6d73e0e92e0e9",
+    "inputsKey": "1ff6689b9d110050d7206005a3366d74c787ba4dd9f302c1ad1814594a4dc4cc",
+    "revisions": [
+      "parent-fix"
+    ],
+    "expected": "refuted",
+    "sourceLocks": {
+      "parent-fix": "f9e2d8e08a6d1e02eea61416319d0e533075d54cdfdb6e76ee1bef12563f8358"
+    }
+  },
+  "task": "page-parent-fix",
+  "revision": "parent-fix",
+  "entry": "importer.Projection#page(I)I",
+  "guard": "code >= 0 && code < 32",
+  "parameter": "code",
+  "assertion": "result == 1",
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 96
+  },
+  "envelope": [
+    0,
+    31
+  ],
+  "maxCases": 4096,
+  "admitted": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "JDK": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "checker": {
+    "commit": "aa042b39d8ccdaadc1e69f953d3899acd1b11250",
+    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+    "sha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18"
+  },
+  "classpath": [
+    {
+      "path": "adapter-parent-fix.jar",
+      "sha256": "a98b313d677b23044299e76008cfccd47ab71e28a4fd7f3c2dba0b6ed7d9c817",
+      "role": "adapter"
+    },
+    {
+      "path": "parent-fix.jar",
+      "sha256": "5d0a2eefe440fc7795a177e2fc37c8c1cce0d4c77ce5c08128d3f5e9410713cc",
+      "role": "original"
+    },
+    {
+      "path": "libraries/io-parent.jar",
+      "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/csv-fix.jar",
+      "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/codec.jar",
+      "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+      "role": "dependency"
+    }
+  ],
+  "correspondence": [
+    {
+      "revision": "parent-fix",
+      "entry": "importer.Projection#page(I)I",
+      "adapterSha256": "a98b313d677b23044299e76008cfccd47ab71e28a4fd7f3c2dba0b6ed7d9c817",
+      "adapterClassSha256": "3afa595dc83f6925b82a5a553f38c1e54c8001dca87ae9daf08cb3546d3a8152",
+      "subject": {
+        "class": "importer.PageImporter",
+        "method": "page",
+        "descriptor": "([BZZII)Ljava/util/List;",
+        "loadedFrom": "parent-fix.jar",
+        "classSha256": "b00740383acd7e63b1af061e0101518780826b8625f9576ef040191bfb3f1585",
+        "adapterCalls": [
+          "importer.PageImporter#page([BZZII)Ljava/util/List;",
+          "importer.PageImporter#remaining([BZZ)[B",
+          "importer.PageImporter$Row#fields()Ljava/util/List;",
+          "importer.PageImporter$Row#number()J"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The five selector bits choose BOM, one-byte delegate, preview/reset, starting number minus one and page cap minus one for the literal two-row document with a U+1F600 field.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 32,
+      "disagreements": 0
+    }
+  ],
+  "ruleSha256": "b89514960728f920e57ecc034ef3cc46e1489d5899795eb6810f9f470d9c3d88",
+  "admissionClass": "tasks/page-parent-fix/Admission.jvm-bytecode",
+  "admissionSha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+  "callsClass": "calls/fcf26d337471cb2bd074/Calls.jvm-bytecode",
+  "callsSha256": "c79e74195ac01d2728b67fd53c84b9da70e7807513a6b8be0e60fdacf02ec4ba",
+  "checked": [
+    {
+      "selector": 14,
+      "status": "refuted",
+      "target": "verificationselectors.Calls#p14()",
+      "exit": 1,
+      "wallSeconds": 5.591,
+      "usage": {
+        "cpuSeconds": 5.6183,
+        "peakRssBytes": 77844480,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "346fe08a1ee34fbd805e8c10279000ea6dd19fadc43195a35552098fae9e0555",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/fcf26d337471cb2bd074/cases/p14/native.json",
+      "reusedInBatch": false
+    }
+  ],
+  "status": "refuted",
+  "originalJVMReplay": {
+    "claimKey": "33d6d73e0e92e0e9",
+    "entry": "importer.Projection#page(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 14
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent-fix": {
+        "entryClassSha256": "3afa595dc83f6925b82a5a553f38c1e54c8001dca87ae9daf08cb3546d3a8152",
+        "classpath": [
+          "a98b313d677b23044299e76008cfccd47ab71e28a4fd7f3c2dba0b6ed7d9c817",
+          "5d0a2eefe440fc7795a177e2fc37c8c1cce0d4c77ce5c08128d3f5e9410713cc",
+          "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+          "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+          "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 14;\nif (!(code >= 0 && code < 32)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = importer.Projection.page(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "wallSeconds": 6.1511,
+  "cost": {
+    "preparationAndCorrespondenceSeconds": 0.82392,
+    "checkerWallSeconds": 5.591,
+    "originalWitnessReplaySeconds": 0.55916,
+    "endToEndSeconds": 6.97504,
+    "peakNativeRssBytes": 77844480
+  }
+}

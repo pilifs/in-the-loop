@@ -1,0 +1,209 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+    "prove",
+    "importer.Projection#page(int)",
+    "--classes",
+    "prepare/fix-fix/adapter-fix-fix.jar",
+    "--classpath",
+    "prepare/fix-fix/fix-fix.jar",
+    "--classpath",
+    "prepare/fix-fix/libraries/io-fix.jar",
+    "--classpath",
+    "prepare/fix-fix/libraries/csv-fix.jar",
+    "--classpath",
+    "prepare/fix-fix/libraries/codec.jar",
+    "--assume",
+    "code >= 0 && code < 32",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "96",
+    "--max-array-length",
+    "96",
+    "--timeout",
+    "90",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 90.664,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "importer.Projection#page(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 32",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the engine did not finish within the time limit",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "importer.Projection#page(int) cannot be verified: the engine did not finish within the time limit",
+          "uri": null,
+          "line": 45
+        }
+      ],
+      "output": "✗ importer.Projection#page(int) cannot be verified: the engine did not finish within the time limit\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 90.53330507,
+        "properties": 1,
+        "unwind": 96,
+        "max_array_length": 96,
+        "stage": null,
+        "native": {
+          "paths": 1014,
+          "merges": 477,
+          "solver_calls": 3474,
+          "solving_seconds": 76.610851916,
+          "gates_evaluated": 437893,
+          "evaluating_seconds": 0.020619187,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 3313000,
+          "clauses": 11166488,
+          "seconds": 90.006235463,
+          "loading_seconds": 0.010028956,
+          "decoding_seconds": 0.002540654,
+          "encoding_seconds": 10.290738314,
+          "witness_seconds": 0.0,
+          "assumed": [
+            "system properties use the standard JVM Properties table and the running JVM permits this property access"
+          ]
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 90.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 90.0,
+            "seconds": 90.006,
+            "ended": "out-of-time",
+            "ending": "timeout",
+            "phases": {
+              "loading": 0.01,
+              "lowering": 0.003,
+              "symbolic": 3.092,
+              "encoding": 10.291,
+              "solving": 76.611,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 3313000,
+              "clauses": 11166488
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 90.546,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 90.006,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.538
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 32",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 96,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 4800,
+    "sha256": "23d729c65dd0149032d28afa1a33169b155efd712264c199dafe229da17288b6"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

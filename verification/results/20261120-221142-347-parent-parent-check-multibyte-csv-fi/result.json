@@ -1,0 +1,489 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-221142-347-parent-parent-check-multibyte-csv-fi",
+  "title": "347 parent-parent check multibyte CSV fields with native code",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 45.7s, peak 147.0 MiB (estimated 6m00s, 2.0 GiB); 40 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-221142-347-parent-parent-check-multibyte-csv-fi.json",
+    "sha256": "dc6f8529042e85f1d90b42a521ae007540696d9fe515111d6151bb56d28d6768",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-221142-347-parent-parent-check-multibyte-csv-fi",
+      "title": "347 parent-parent check multibyte CSV fields with native code",
+      "description": "Prove the full 32-selector Unicode-field domain on unchanged importer application bytes and the two historical library versions. The one-byte delegate splits all four UTF-8 octets of U+1F600 and the literal oracle expects one field with two UTF-16 units.",
+      "kind": "real-world",
+      "capabilities": [
+        "native:finite-partition",
+        "jvm:unicode",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "347"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T22:11:42+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check all observations on the original parser and stream",
+          "run": "python3 examples/tools/build.py 347 --native-selectors bytes-parent-parent,count-parent-parent,page-parent-parent,positive-parent-parent --first 14 --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/347-importer-four-byte-field/records/native-selectors/parent-parent"
+      ]
+    }
+  },
+  "sourceCommit": "aa042b39d8ccdaadc1e69f953d3899acd1b11250",
+  "startedAt": "2026-11-20T22:20:07+00:00",
+  "finishedAt": "2026-11-20T22:21:05+00:00",
+  "wallSeconds": 58.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2445690,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 154177536,
+    "wallSeconds": 45.7,
+    "cpuSeconds": 54.2,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check all observations on the original parser and stream",
+      "run": "python3 examples/tools/build.py 347 --native-selectors bytes-parent-parent,count-parent-parent,page-parent-parent,positive-parent-parent --first 14 --checker-seconds 90",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 45.691,
+      "cpuSeconds": 54.16,
+      "cpuThrottledSeconds": 1.601,
+      "peakMemoryBytes": 154177536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-all-observations-on-the.log",
+        "lines": 4,
+        "bytes": 217,
+        "sha256": "e654fe117ba84a81eb1c97a59b5c707d6586b6b3aceba9533245bfb721bca6c0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "bytes-parent-parent refuted, 1/32 admitted selectors",
+        "count-parent-parent refuted, 1/32 admitted selectors",
+        "page-parent-parent refuted, 1/32 admitted selectors",
+        "positive-parent-parent established, 8/8 admitted selectors"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/a2ae81da8431936fb0e8/Calls.java",
+      "change": "added",
+      "bytes": 2696,
+      "sha256": "876e07ba3fd0f8b905c419af0a0860d4aacb1868e5a9291ecd92f1d57ce867c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/a2ae81da8431936fb0e8/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1756,
+      "sha256": "ed92eb12570640b5abb55612680bbd458fb72772fa5a4b2e47df5a6af7f8391d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/a2ae81da8431936fb0e8/cases/p14/native.json",
+      "change": "added",
+      "bytes": 5535,
+      "sha256": "c87c0e49acb5d193810bc8ac6d28fe68d4b6ef77535a6010d086fa7003d6c30e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/a2ae81da8431936fb0e8/cases/p14/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/Calls.java",
+      "change": "added",
+      "bytes": 2664,
+      "sha256": "f6a774f1c3853a341954bfa6b813bc2fab89d9907715ef02af496be9afe70771",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1755,
+      "sha256": "c79e74195ac01d2728b67fd53c84b9da70e7807513a6b8be0e60fdacf02ec4ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p0/native.json",
+      "change": "added",
+      "bytes": 4719,
+      "sha256": "10eba5843db891197d70d10aa76bcd04b867e415e0ec47dacebf3210e5613bf7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p0/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p1/native.json",
+      "change": "added",
+      "bytes": 4718,
+      "sha256": "f26df0b112d0a55d939ee909e254cdd0d30c420a277f7a346edb8929315f2617",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p1/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p14/native.json",
+      "change": "added",
+      "bytes": 5532,
+      "sha256": "56cea74d17a7d27ce1b55589b06c268e8df97ac930162a3e182df2bbd72a2548",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p14/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p16/native.json",
+      "change": "added",
+      "bytes": 4723,
+      "sha256": "88d661c36dfbbc1ad03315bcb51e5ef8be8ece16a2801d1602190c4b53da7b69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p16/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p17/native.json",
+      "change": "added",
+      "bytes": 4722,
+      "sha256": "d157c5d700492c8cd7e36dbdb91ce677f44ee1153e6135489c043be1b954533b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p17/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p24/native.json",
+      "change": "added",
+      "bytes": 4723,
+      "sha256": "12d0641324be7bb7397aa0db234717149bf6994fe9ff42850d2a7fec0fde545c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p24/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p25/native.json",
+      "change": "added",
+      "bytes": 4723,
+      "sha256": "3d98a55c87be31011c99bfd3a81b82edb0bb7f04da4574f74c981696e7aebb60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p25/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p8/native.json",
+      "change": "added",
+      "bytes": 4719,
+      "sha256": "700d1b46e583dcfda3c898083fe0ea1ea8e3e249fa4a0c1a0e32e0f9c5a899e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p8/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p9/native.json",
+      "change": "added",
+      "bytes": 4719,
+      "sha256": "38ecabd14b8fba4b25b59461cdf1d34600d8db1b030e6d6f32232e5e30a5662a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p9/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/f442b99168a0573e17eb/Calls.java",
+      "change": "added",
+      "bytes": 2696,
+      "sha256": "1c8103311f879e1a66c87b40675b21f4a6b3f84842d697d8b779a888d342cd7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/f442b99168a0573e17eb/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1756,
+      "sha256": "2a5c1ed7b777ab248d9e2f5138ee3f9b97cf224373ff9505bd9728d134b17ba9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/f442b99168a0573e17eb/cases/p14/native.json",
+      "change": "added",
+      "bytes": 5167,
+      "sha256": "37deb6cc87483b668a1d3313ec36ecd2a57aee00b5d983cd43ad195ad8425484",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/f442b99168a0573e17eb/cases/p14/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/bytes-parent-parent/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/bytes-parent-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/bytes-parent-parent/result.json",
+      "change": "added",
+      "bytes": 6809,
+      "sha256": "b21b8c58cebc0367fa4bee29666b5e2554a682b10255cf02927e30496e3592c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/count-parent-parent/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/count-parent-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/count-parent-parent/result.json",
+      "change": "added",
+      "bytes": 7027,
+      "sha256": "44b7318c98aaef6bc2ca53c3b3232a7e19df6f91cce7946493a0cc98f11f40ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/page-parent-parent/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/page-parent-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/page-parent-parent/result.json",
+      "change": "added",
+      "bytes": 7021,
+      "sha256": "e45e099c43090fb68df5c61109981a25a70eadae135f20d88074bbe49e208f8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/positive-parent-parent/Admission.java",
+      "change": "added",
+      "bytes": 2840,
+      "sha256": "faa143c710851559bcd9e69b9c59f5a23cf32a278563d77b9cdd7b9ee38125e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/positive-parent-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c58ecd541a9d39e264b4955e7323d2c3b8b43e0b3f8697497dda9f746eb98249",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/positive-parent-parent/result.json",
+      "change": "added",
+      "bytes": 11785,
+      "sha256": "03de432d9cbfdcba47513b63d8602b23958ae5e728dfc5c7cb423319176afe24",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T22:24:31+00:00",
+    "applied": [
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/a2ae81da8431936fb0e8/Calls.java",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/a2ae81da8431936fb0e8/Calls.jvm-bytecode",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/a2ae81da8431936fb0e8/cases/p14/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/a2ae81da8431936fb0e8/cases/p14/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/Calls.java",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/Calls.jvm-bytecode",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p0/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p0/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p1/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p1/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p14/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p14/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p16/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p16/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p17/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p17/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p24/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p24/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p25/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p25/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p8/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p8/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p9/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/c85a23517e4ab926f1c2/cases/p9/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/f442b99168a0573e17eb/Calls.java",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/f442b99168a0573e17eb/Calls.jvm-bytecode",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/f442b99168a0573e17eb/cases/p14/native.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/calls/f442b99168a0573e17eb/cases/p14/stderr",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/bytes-parent-parent/Admission.java",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/bytes-parent-parent/Admission.jvm-bytecode",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/bytes-parent-parent/result.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/count-parent-parent/Admission.java",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/count-parent-parent/Admission.jvm-bytecode",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/count-parent-parent/result.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/page-parent-parent/Admission.java",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/page-parent-parent/Admission.jvm-bytecode",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/page-parent-parent/result.json",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/positive-parent-parent/Admission.java",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/positive-parent-parent/Admission.jvm-bytecode",
+      "examples/347-importer-four-byte-field/records/native-selectors/parent-parent/20261120T222019Z-e095f703/tasks/positive-parent-parent/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "eb6e139244595c7174c992df962f66b168dc1d1d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

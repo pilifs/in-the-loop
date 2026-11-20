@@ -1,0 +1,198 @@
+{
+  "plan": {
+    "example": "346",
+    "task": "frame-64-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "frame-64-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "file": "claims/frame-64.json",
+      "sha256": "174e8a06451d3a1f00f036ff434db730bb5a21b03914261e735d67ae54649cb7",
+      "property": "frame-64",
+      "claimKind": "property",
+      "statement": "The method returns normally and every 64-bit input cell retains its entry value.",
+      "assume": "true",
+      "assert": "(\\forall int i; 0 <= i && i < array.length; array[i] == \\old(array[i]))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 66,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 66,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/search/SearchCases.java",
+          "sha256": "64c17385031ce98cbd40b8199a2cdd9eb86aec27ec69ab5b973514bde679a525"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c54cca578a9f2c07b963252441475fb6f8ac69721ec38f85ad4ce9da2fa09500"
+        }
+      ],
+      "key": "b098b9cca2481db0"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          },
+          {
+            "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+            "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+          },
+          {
+            "coordinates": "org.jspecify:jspecify:1.0.0",
+            "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+          }
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/frame-64-release"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-221141-346-bound-64-transfer-first-match-and-fr/examples/346-guava-long-array-holdout",
+    "network": true
+  },
+  "inputs": {
+    "example": "346",
+    "task": "frame-64-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "frame-64-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "file": "claims/frame-64.json",
+      "sha256": "174e8a06451d3a1f00f036ff434db730bb5a21b03914261e735d67ae54649cb7",
+      "property": "frame-64",
+      "claimKind": "property",
+      "statement": "The method returns normally and every 64-bit input cell retains its entry value.",
+      "assume": "true",
+      "assert": "(\\forall int i; 0 <= i && i < array.length; array[i] == \\old(array[i]))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 66,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 66,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/search/SearchCases.java",
+          "sha256": "64c17385031ce98cbd40b8199a2cdd9eb86aec27ec69ab5b973514bde679a525"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c54cca578a9f2c07b963252441475fb6f8ac69721ec38f85ad4ce9da2fa09500"
+        }
+      ],
+      "key": "b098b9cca2481db0"
+    },
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          },
+          {
+            "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+            "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+          },
+          {
+            "coordinates": "org.jspecify:jspecify:1.0.0",
+            "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+          }
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "b74b8a5e38899366526c5fa9372bbb242fe16df821fab50a320f9e05ebfbdeeb"
+}
