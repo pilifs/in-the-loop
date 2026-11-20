@@ -68,7 +68,7 @@
 //! | `invokestatic` of `BigInteger.valueOf(long)` with a JDK image | runs the selected JDK's factory and allocation bytecode, including the constructors and the magnitude array. A path reading an initialized JDK cache field stops at that field. Without the image the factory is a `jdk-static-method` gap |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
-//! | `java.lang.Enum` construction, accessors and ordering ([`ClassPath::checker_method`]) | The Enum model sets and reads the name and ordinal. The native checker runs the selected JDK image's `compareTo` and `getDeclaringClass` bytecode, including type checks for constants with their own class bodies. For hashCode the JDK cache reads one universally quantified int per object. A potential violation on a path that used a JVM-chosen identity hash stays open. |
+//! | `java.lang.Enum` construction, accessors and ordering ([`ClassPath::checker_method`]) | The Enum model sets and reads the name and ordinal. The native checker runs the selected JDK image's `compareTo` and `getDeclaringClass` bytecode, including type checks for constants with their own class bodies. For hashCode the JDK cache reads one universally quantified int per object. A counterexample that uses a JVM-chosen value needs a scalar input for which the failing paths cover every platform choice. |
 //! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
 //! | Exact, freshly constructed `new HashMap()` and its key and entry views with a JDK image | Runs the runtime's table, collision chains, entry nodes, iterators and removal on one heap ([`map_views`]). Model-backed and observed maps keep the portable HashMap and its own fields. |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor that only passes its arguments up to `Throwable`'s ([`gaps::exact_jdk_call`]) | modelled exactly: the first two change nothing a proof observes, and an exception's keeps its message and cause ([`throwables`]), refused on a class whose application override of `fillInStackTrace()` the constructor would run |
@@ -113,6 +113,7 @@ pub mod bitwuzla;
 mod arraycopy;
 mod array_list;
 mod map_views;
+mod enum_universe;
 pub mod bits;
 mod finite_words;
 mod floating;
@@ -756,6 +757,8 @@ struct Lambda {
     interface: String,
     name: String,
     handle: crate::classfile::MethodHandle,
+    sam_descriptor: String,
+    instantiated: MethodDescriptor,
     captured: usize,
 }
 
@@ -859,6 +862,8 @@ struct Frame {
     at: usize,
     locals: Vec<Option<Val>>,
     stack: Vec<Val>,
+    /// A void functional interface discards its target's value only on normal return.
+    discard_result: bool,
     /// The class whose `<clinit>` the frame runs: when it returns the class is initialized, and when an exception
     /// leaves it the class is erroneous (JVMS §5.5, steps 10 and 11).
     initializes: Option<String>,
@@ -877,7 +882,7 @@ struct Frame {
 
 impl Frame {
     fn new(class: Rc<ClassFile>, method: String, code: Rc<Decoded>, locals: Vec<Option<Val>>) -> Frame {
-        Frame { class, method, code, at: 0, locals, stack: Vec::new(), initializes: None, entered: Vec::new(), back_edges: BTreeMap::new(), summarized: Default::default() }
+        Frame { class, method, code, at: 0, locals, stack: Vec::new(), discard_result: false, initializes: None, entered: Vec::new(), back_edges: BTreeMap::new(), summarized: Default::default() }
     }
 
     fn pc(&self) -> u32 {
@@ -935,8 +940,8 @@ struct Path {
     /// Whether the path is past a loop an invariant covers: its state then stands for more than the states a run
     /// reaches, and a computed index into a large array is not followed ([`loops`]).
     loose: bool,
-    /// A JVM-chosen hash was universally quantified on this path. Its value cannot supply a concrete witness.
-    unbound_identity_hash: bool,
+    /// A platform value was universally quantified. A witness must remain valid across its choices.
+    unbound_platform_value: Option<&'static str>,
     /// In a pair of versions, the loops (by class, a previous version's copy by its own name, method and head) an
     /// invariant covered on this path since the version it runs began ([`loops`]): one entered again is given its
     /// invariant at once ([`Engine::summarize_at_entry`]). A run's own history, and not the check's, so that two
@@ -985,6 +990,7 @@ enum Literal {
     /// The one map `Collections.emptyMap()` returns ([`runtime`]).
     EmptyMap,
     CollectionsEmptyList,
+    CollectionsEmptySet,
     EmptySuppressedArray,
     ListEmptyStorage(bool),
     /// The private Character cache as read by valueOf on its ASCII branch.
@@ -1084,7 +1090,7 @@ fn frames_alike(a: &Path, b: &Path) -> bool {
     };
     a.frames.len() == b.frames.len()
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
-        && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
+        && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.discard_result == g.discard_result && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
         && a.classes == b.classes
         && a.statics.len() == b.statics.len()
         && a.statics.iter().zip(&b.statics).all(|((k, x), (l, y))| k == l && mergeable(x, y))
@@ -1306,7 +1312,7 @@ enum End {
     /// The path condition cannot be satisfied.
     Infeasible,
     /// The harness's assertion failed on a path of this condition, which the solver found satisfiable.
-    Violation(Vec<Lit>),
+    Violation(Vec<Lit>, Option<&'static str>),
     /// A loop needed more iterations than the bound.
     Unwound(String),
     /// The path reached a gap under `--gaps strict`, which refuses it: what lies beyond it is not known.
@@ -1743,7 +1749,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_identity_hash: false, loose: false, summarized: Default::default(), calls: Default::default() };
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -1751,6 +1757,8 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         // overflow and the second a rounding. The search for a better one is given as much work again as the first
         // took (`witness_budget`), within the deadline; the violation stands whatever the remaining paths do.
         let mut best: Option<(usize, Input)> = None;
+        let mut platform_failures = FALSE;
+        let mut unqualified = None;
         let violation = |engine: &Engine, best: Option<(usize, Input)>| {
             let (stage, input) = best.expect("a violation");
             let stage = STAGES.get(stage).map(|(lo, hi)| format!("[{lo}:{hi}]"));
@@ -1772,7 +1780,14 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
             }
             match engine.run(path) {
                 Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) | Ok(End::Gap) | Ok(End::Back(..)) | Ok(End::Left) => {}
-                Ok(End::Violation(cond)) => {
+                Ok(End::Violation(mut cond, platform)) => {
+                    if let Some(why) = platform {
+                        match engine.qualify_platform_failure(&mut cond, &mut platform_failures) {
+                            Ok(true) => {}
+                            Ok(false) => { unqualified = Some(why); continue; }
+                            Err(stop) => break 'search Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop))) }),
+                        }
+                    }
                     let (stage, input) = match engine.staged_input(&cond) {
                         Ok(found) => found,
                         Err(stop) if best.is_some() => {
@@ -1813,6 +1828,10 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         if !engine.met.is_empty() && (engine.gap_mode.refuses() || engine.met.keys().any(|g| !g.kind.assumable())) {
             let refused: BTreeMap<Gap, std::collections::BTreeSet<Site>> = engine.met.iter().filter(|(g, _)| engine.gap_mode.refuses() || !g.kind.assumable()).map(|(g, s)| (g.clone(), s.clone())).collect();
             let problem = refused_gaps(&gaps::records(&refused, jdk.as_deref(), None), engine.gap_mode);
+            break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(problem)));
+        }
+        if let Some(why) = unqualified {
+            let problem = format!("a candidate counterexample on a path with {why} requires an independent JVM observation");
             break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(problem)));
         }
         Ok(outcome(&engine, Verdict::Verified, Input::default(), None, None))
@@ -2478,6 +2497,7 @@ impl<'a> Engine<'a> {
                         Literal::Thread => "java/lang/Thread",
                         Literal::EmptyMap => runtime::EMPTY_MAP,
                         Literal::CollectionsEmptyList => throwables::EMPTY_LIST,
+                        Literal::CollectionsEmptySet => "java/util/Collections$EmptySet",
                         Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
                         Literal::ListEmptyStorage(_) => array_list::OBJECT_ARRAY,
                         Literal::AsciiBoxes => "[Ljava/lang/Character;",
@@ -2563,7 +2583,7 @@ impl<'a> Engine<'a> {
 
     fn absorb(b: &mut Blaster, into: &mut Path, other: &Path) {
         into.loose |= other.loose;
-        into.unbound_identity_hash |= other.unbound_identity_hash;
+        into.unbound_platform_value = into.unbound_platform_value.or(other.unbound_platform_value);
         if into.summarized != other.summarized {
             into.summarized = Rc::new(into.summarized.intersection(&other.summarized).cloned().collect());
         }
@@ -3451,7 +3471,9 @@ impl<'a> Engine<'a> {
     }
 
     fn advance(&self, path: &mut Path) {
-        path.frames.last_mut().expect("a frame").at += 1;
+        let frame = path.frames.last_mut().expect("a frame");
+        if std::mem::take(&mut frame.discard_result) { frame.stack.pop().expect("adapted method result"); }
+        frame.at += 1;
     }
 
     fn push(&self, path: &mut Path, v: Val) {
@@ -3536,6 +3558,7 @@ impl<'a> Engine<'a> {
             let handler = frame.code.handlers.iter().find(|h| u32::from(h.start_pc) <= pc && pc < u32::from(h.end_pc) && h.catch_type.as_deref().is_none_or(|t| self.cp.is_subtype(&class, t))).cloned();
             if let Some(h) = handler {
                 let to = *frame.code.index.get(&u32::from(h.handler_pc)).ok_or_else(|| Stop::Unsupported("handler at no instruction".into()))?;
+                frame.discard_result = false;
                 frame.stack.clear();
                 frame.stack.push(Val::R(Some(obj)));
                 frame.at = to;
@@ -3551,10 +3574,7 @@ impl<'a> Engine<'a> {
         }
         if self.cp.is_subtype(&class, "java/lang/AssertionError") {
             let feasible = self.solve(&path.cond.clone())?;
-            if feasible && path.unbound_identity_hash {
-                return unsupported("a candidate counterexample on a path with a JVM-chosen identity hash requires an independent JVM observation");
-            }
-            return Ok(Some(if feasible { End::Violation(std::mem::take(&mut path.cond)) } else { End::Infeasible }));
+            return Ok(Some(if feasible { End::Violation(std::mem::take(&mut path.cond), path.unbound_platform_value) } else { End::Infeasible }));
         }
         unsupported(format!("an uncaught {} leaves the harness", class.replace('/', ".")))
     }
@@ -3564,6 +3584,22 @@ impl<'a> Engine<'a> {
             Some(o) => Ok(Some(o)),
             None => Err(self.raise(path, "java/lang/NullPointerException")),
         }
+    }
+
+    /// Collect failing conditions from complete execution paths. Fix only scalar harness
+    /// inputs from this SAT model. If their complement is unsatisfiable, every platform
+    /// assignment fails somewhere, even when different assertion settings take different
+    /// bytecode paths. A partial failure cover can never establish a property.
+    fn qualify_platform_failure(&mut self, cond: &mut Vec<Lit>, covered: &mut Lit) -> Result<bool, Stop> {
+        let mut fixed: Vec<Lit> = self.params.iter().flat_map(|(_, _, word)| word).copied()
+            .filter(|bit| bit.abs() > TRUE).map(|bit| if self.b.value(bit) { bit } else { -bit }).collect();
+        let here = self.b.all(cond);
+        *covered = self.b.or(*covered, here);
+        fixed.push(-*covered);
+        if self.solve(&fixed)? { return Ok(false); }
+        fixed.pop();
+        cond.extend(fixed);
+        Ok(true)
     }
 
     /// Executes the instruction at the top frame's `at`.
@@ -3859,8 +3895,14 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/util/Collections", "EMPTY_SET", "Ljava/util/Set;") && self.cp.collections_empty_singleton("emptySet") {
+                    let o = self.literal(path, Literal::CollectionsEmptySet, "java/util/Collections$EmptySet");
+                    self.push(path, Val::R(Some(o)));
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/util/Collections", "EMPTY_LIST", "Ljava/util/List;")
-                    && self.cp.collections_empty_list() {
+                    && self.cp.collections_empty_singleton("emptyList") {
                     let o = self.literal(path, Literal::CollectionsEmptyList, throwables::EMPTY_LIST);
                     self.push(path, Val::R(Some(o)));
                     self.advance(path);
@@ -4036,8 +4078,9 @@ impl<'a> Engine<'a> {
                 let site = class.bootstrap_methods().ok().and_then(|b| b.into_iter().nth(usize::from(bootstrap)));
                 if let Some(b) = site.as_ref().filter(|b| b.method.member.owner == "java/lang/invoke/LambdaMetafactory" && b.method.member.name == "metafactory") {
                     let (_, sam, _) = class.pool.invoke_dynamic(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
-                    let (Type::Object(interface), Some(BootstrapArg::MethodHandle(handle))) = (&descriptor.ret, b.args.get(1)) else { return unsupported("a lambda site with no method to call") };
-                    let lambda = Lambda { interface: interface.clone(), name: sam.to_string(), handle: handle.clone(), captured: descriptor.params.len() };
+                    let (Type::Object(interface), [BootstrapArg::MethodType(erased), BootstrapArg::MethodHandle(handle), BootstrapArg::MethodType(instantiated)]) = (&descriptor.ret, b.args.as_slice()) else { return unsupported("a lambda site without its three metafactory arguments") };
+                    let instantiated = MethodDescriptor::parse(instantiated).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                    let lambda = Lambda { interface: interface.clone(), name: sam.to_string(), handle: handle.clone(), sam_descriptor: erased.clone(), instantiated, captured: descriptor.params.len() };
                     let captured = self.pop_args(path, descriptor.params.len())?;
                     let r = self.alloc(path, interface);
                     path.objects[r].lambda = Some(Rc::new(lambda));
@@ -4659,7 +4702,7 @@ impl<'a> Engine<'a> {
                 path.objects[o].fields.insert("value".into(), Val::I(self.b.constant(i64::from(*truth), 32)));
                 o
             }
-            Literal::CollectionsEmptyList => self.alloc(path, class),
+            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet => self.alloc(path, class),
             Literal::LineSeparator => {
                 let o = self.alloc(path, STRING);
                 path.objects[o].limit = Some(runtime::LINE_SEPARATOR.into());
@@ -4792,6 +4835,9 @@ impl<'a> Engine<'a> {
             self.advance(path);
             return Ok(None);
         }
+        if self.cp.enum_universe_lookup(&member.owner, &member.name, &member.descriptor) {
+            return self.enum_universe(path);
+        }
         if self.cp.is_map_image(&path.frames.last().expect("a frame").class) {
             if let Some((cf, m)) = self.cp.map_image_method(&member.owner, &member.name, &member.descriptor).filter(|(_, m)| m.is_static()) {
                 let args = self.pop_args(path, descriptor.params.len())?;
@@ -4893,7 +4939,7 @@ impl<'a> Engine<'a> {
                 // Every int is permitted, including zero or another object's hash. The value is stable
                 // for this object even if the JDK's cached hash still contains its zero sentinel.
                 let value = path.objects[*o].fields.entry("<JVM.identityHashCode>".into()).or_insert_with(|| Val::I(self.b.fresh(32))).clone();
-                path.unbound_identity_hash = true;
+                path.unbound_platform_value = Some("a JVM-chosen identity hash");
                 self.push(path, value);
                 self.advance(path);
                 return Ok(None);
@@ -4926,9 +4972,8 @@ impl<'a> Engine<'a> {
     /// method it stands for is invoked as the instruction for its kind would (JVMS §5.4.3.5), so that an
     /// application method runs, a JDK method is modelled, a gap or refused, as anywhere else. The class of a
     /// static method is initialized first, the stack still as the interface call left it, since the instruction
-    /// runs again once an initializer returns. A call that would convert between a primitive and its box, or
-    /// drop a result, is refused; the cast the JVM's own lambda class makes of a reference argument is made where
-    /// the object is known.
+    /// runs again once an initializer returns. The erased call checks its instantiated argument types. A void
+    /// interface discards the normal result. Boxing conversions outside the fragment are refused.
     fn lambda_call(&mut self, path: &mut Path, caller: &str, o: usize, receiver_at: usize, lambda: &Lambda, called: &MethodDescriptor) -> Step {
         let target = &lambda.handle.member;
         let Ok(mut takes) = MethodDescriptor::parse(&target.descriptor) else { return unsupported("a lambda's method with no descriptor") };
@@ -4941,15 +4986,15 @@ impl<'a> Engine<'a> {
         if matches!(kind, 5 | 7 | 9) {
             takes.params.insert(0, Type::Object(target.owner.clone()));
         }
-        if !matches!(kind, 5..=9) || takes.params.len() != lambda.captured + called.params.len() {
+        if !matches!(kind, 5..=9) || takes.params.len() != lambda.captured + called.params.len() || lambda.instantiated.params.len() != called.params.len() {
             return unsupported(format!("a lambda that stands for {}.{} in a way the engine does not run (method handle kind {kind})", target.owner.replace('/', "."), target.name));
         }
         let fits = |from: &Type, to: &Type| match (from, to) {
             (Type::Object(_) | Type::Array(_), Type::Object(_) | Type::Array(_)) => true,
             (a, b) => a == b,
         };
-        if !called.params.iter().zip(&takes.params[lambda.captured..]).all(|(a, b)| fits(a, b)) || !fits(&returns, &called.ret) {
-            return unsupported(format!("a lambda whose call of {}.{} converts between a primitive and its box, or drops its result", target.owner.replace('/', "."), target.name));
+        if !called.params.iter().zip(&takes.params[lambda.captured..]).all(|(a, b)| fits(a, b)) || (called.ret != Type::Void && !fits(&returns, &called.ret)) {
+            return unsupported(format!("a lambda whose call of {}.{} needs an unsupported argument or result conversion", target.owner.replace('/', "."), target.name));
         }
         if kind == 6 || kind == 8 {
             let declaring = self.cp.bytecode_method(&target.owner, &target.name, &target.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| target.owner.clone());
@@ -4967,7 +5012,8 @@ impl<'a> Engine<'a> {
         }
         // The cast of each reference argument to the type the method takes.
         let stack = &path.frames.last().expect("a frame").stack;
-        for (v, t) in stack[receiver_at + 1..].iter().zip(&takes.params[lambda.captured..]) {
+        let arguments = &stack[receiver_at + 1..];
+        for (v, t) in arguments.iter().zip(&lambda.instantiated.params).chain(arguments.iter().zip(&takes.params[lambda.captured..])) {
             if let (Val::R(Some(a)), Type::Object(_) | Type::Array(_)) = (v, t) {
                 if !self.cp.is_subtype(&path.objects[*a].class, &class_of(t)) {
                     if path.objects[*a].assumed {
@@ -4986,7 +5032,9 @@ impl<'a> Engine<'a> {
             return unsupported(format!("a lambda that stands for {}.{} and captured a reference that is one of several objects", target.owner.replace('/', "."), target.name));
         }
         let made = (kind == 8).then(|| self.alloc(path, &target.owner));
-        let stack = &mut path.frames.last_mut().expect("a frame").stack;
+        let frame = path.frames.last_mut().expect("a frame");
+        frame.discard_result |= returns != Type::Void && called.ret == Type::Void;
+        let stack = &mut frame.stack;
         let mut replaced: Vec<Val> = Vec::new();
         if let Some(r) = made {
             // `new`, `dup`: the object stays under the constructor's receiver and is the call's result.
@@ -5015,7 +5063,7 @@ impl<'a> Engine<'a> {
         };
         // A lambda's object, called by its interface's method: the method it stands for runs ([`Lambda`]).
         if let Val::R(Some(o)) = path.frames.last().expect("a frame").stack[receiver_at] {
-            if let Some(lambda) = path.objects[o].lambda.clone().filter(|l| !special && l.name == member.name) {
+            if let Some(lambda) = path.objects[o].lambda.clone().filter(|l| !special && l.name == member.name && l.sam_descriptor == member.descriptor) {
                 return self.lambda_call(path, caller, o, receiver_at, &lambda, &descriptor);
             }
         }
@@ -5078,6 +5126,13 @@ impl<'a> Engine<'a> {
         if !contracted {
             if special && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == (STRING, "<init>", "([C)V") {
                 if let [Val::R(source)] = args.as_slice() { return self.string_from_chars(path, o, *source); }
+            }
+            if !special {
+                if let Some((cf, method)) = self.cp.image_default_method(&path.objects[o].class, &member.name, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
             }
             if let Some(step) = self.image_map_call(path, o, special, member, &args) { return step; }
             if let Some(step) = self.image_list_call(path, o, special, member, &args) { return step; }
@@ -5923,7 +5978,7 @@ mod tests {
     /// object's now. Before, the records kept the old numbers: the first named the array that moved into its place.
     #[test]
     fn a_calls_record_names_its_result_by_the_number_a_merge_gives_it() {
-        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_identity_hash: false, loose: false, summarized: Default::default(), calls: Default::default() };
+        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
         // The state reaches the third object alone; the first was a call's result and nothing holds it now.
         path.statics.insert(("app/A".into(), "kept".into()), Val::R(Some(2)));
         path.calls = Rc::new(vec![ties::Call::returning(1, Val::R(Some(0))), ties::Call::returning(2, Val::R(Some(2)))]);
@@ -5943,7 +5998,7 @@ mod tests {
             let mut path = Path {
                 frames: Vec::new(), cond: vec![condition], models: Vec::new(), undecided: false,
                 resumed: false, objects: vec![string.clone(), string], literals: BTreeMap::new(),
-                classes: BTreeMap::new(), probing: None, unbound_identity_hash: false, loose: false, summarized: Default::default(),
+                classes: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(),
                 statics: BTreeMap::from([
                     (("app/Caller".into(), "a".into()), Val::R(Some(first))),
                     (("app/Caller".into(), "b".into()), Val::R(Some(second))),

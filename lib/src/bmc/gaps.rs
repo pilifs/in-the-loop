@@ -1117,7 +1117,7 @@ impl<'a> Walker<'a> {
         let declaring = self.cp.resolve_field(owner, name, descriptor).unwrap_or_else(|| owner.to_string());
         if !put && (self.cp.numeric_assertion_flag(&declaring, name, descriptor)
             || (name == "TYPE" && descriptor == "Ljava/lang/Class;" && Type::for_wrapper(&declaring).is_some())
-            || ((declaring.as_str(), name, descriptor) == ("java/util/Collections", "EMPTY_LIST", "Ljava/util/List;") && self.cp.collections_empty_list())) { return; }
+            || ((declaring.as_str(), name, descriptor) == ("java/util/Collections", "EMPTY_LIST", "Ljava/util/List;") && self.cp.collections_empty_singleton("emptyList"))) { return; }
         let what = format!("{}.{name}", declaring.replace('/', "."));
         let constant = !put && self.constant(&declaring, name);
         if !self.cp.checker_statics(&declaring) {

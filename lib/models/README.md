@@ -83,6 +83,8 @@ Do not put real JDK classes (`java.lang.Character` and its `CharacterData` table
 interpreter would run their static initializers and stop at the first native they need, and JBMC's reading of the
 tables is not reliable either.
 
+For a sequential stream made by `StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, flags), false)`, the native checker and interpreter execute the selected runtime's stream flags, pipeline, reduction and `Collectors.toList()` callback bytecode. This preserves an iterator's override of `forEachRemaining`, including its effects, exceptions and encounter order. EnumMap and EnumSet use the ordered constant objects from a checked `values()` method. A shared enum constants array and each public clone have separate identities. The Commons CSV read-limit claims exercise this route on both historical revisions.
+
 ## The contract library
 
 [`contracts/`](contracts/README.md) is not a model of any class. It holds contracts for calls the tool's own checker

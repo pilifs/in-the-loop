@@ -78,7 +78,7 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
     owner == BUILDER
         && matches!(
             (name, descriptor),
-            ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("setCharAt", "(IC)V")
+            ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("setCharAt", "(IC)V") | ("setLength", "(I)V")
                 | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
                 | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
@@ -617,6 +617,40 @@ impl Engine<'_> {
                         *cell = engine.b.ite_bits(selected, &unit, cell);
                     }
                     engine.advance(path);
+                })
+            }
+            ("setLength", [Val::I(length)]) => {
+                let room = if let Some(n) = self.b.constant_value(length) {
+                    if n < 0 { return Some(self.raise(path, "java/lang/StringIndexOutOfBoundsException")); }
+                    if n > MOST_BUILDER_CONTENT as i64 { return Some(unsupported("StringBuilder.setLength exceeds the bounded content")); }
+                    n as usize
+                } else {
+                    let mut room = None;
+                    for limit in [(self.max_array_length as usize).min(MOST_BUILDER_CONTENT), MOST_BUILDER_CONTENT] {
+                        let mut beyond = path.cond.clone();
+                        beyond.push(self.b.slt(&self.b.constant(limit as i64, 32), length));
+                        match self.solve(&beyond) {
+                            Ok(false) => { room = Some(limit); break; }
+                            Ok(true) => {}
+                            Err(stop) => return Some(Err(stop)),
+                        }
+                    }
+                    let Some(room) = room else { return Some(unsupported("StringBuilder.setLength exceeds the bounded content")) };
+                    room
+                };
+                let negative = self.b.negative(length);
+                self.branch_throw_or(path, negative, "java/lang/StringIndexOutOfBoundsException", |engine, side| {
+                    let zero = engine.b.constant(0, 16);
+                    let mut cells = Vec::with_capacity(room);
+                    for i in 0..room {
+                        let cell = if let Some(old) = s.cells.get(i) {
+                            let kept = engine.b.ult(&engine.b.constant(i as i64, 32), &s.length);
+                            engine.b.ite_bits(kept, old, &zero)
+                        } else { zero.clone() };
+                        cells.push(cell);
+                    }
+                    side.objects[o].array = Some(Array { element: Type::Char, length: length.clone(), cells, refs: Vec::new() });
+                    engine.advance(side);
                 })
             }
             ("appendCodePoint", [Val::I(ch)]) => {

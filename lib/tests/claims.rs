@@ -1356,3 +1356,23 @@ fn jdk_readers_and_listener_lists_execute_their_shared_state() {
     assert_eq!(bad.verdict, Verdict::Unverifiable, "{}", bad.output);
     assert!(bad.output.contains("destination range"), "{}", bad.output);
 }
+
+#[test]
+fn enum_tables_and_sequential_collectors_use_the_actual_iterator() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.IteratorCollection").status().unwrap().success());
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    for name in ["enums", "collected", "erased", "erroneous"] {
+        proved(classes, &format!("claims.IteratorCollection#{name}"), 4);
+        assert_eq!(machine.call_static("claims/IteratorCollection", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    }
+    for name in ["discard", "reset"] {
+        proved(classes, &format!("claims.IteratorCollection#{name}"), 4);
+        for n in [0, 1] { assert_eq!(machine.call_static("claims/IteratorCollection", name, "(Z)Z", vec![Value::Int(n)]).unwrap(), Some(Value::Int(1))); }
+    }
+    let wrong = run(&options(classes, "claims.IteratorCollection#wrong", 4, "iterator-bulk-override"));
+    assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
+}

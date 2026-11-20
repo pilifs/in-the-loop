@@ -650,7 +650,7 @@ impl Engine<'_> {
                 Ok(End::Back(_, Some(back))) => backs.push(*back),
                 // A path back at the head of a loop inside this one is covered there.
                 Ok(End::Back(_, None) | End::Left | End::Infeasible | End::Parked | End::Returned) => {}
-                Ok(End::Gap | End::Violation(_) | End::Unwound(_)) => break Ok(false),
+                Ok(End::Gap | End::Violation(..) | End::Unwound(_)) => break Ok(false),
                 Err(stop) => break Err(stop),
             }
         };

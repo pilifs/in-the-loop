@@ -18,7 +18,7 @@ impl Engine<'_> {
         let nested = constructor && image_caller && class.starts_with("java/util/HashMap$") && class == owner;
         // The Commons Collections view itself extends AbstractSet. These two JDK constructors
         // just chain to Object; their actual bodies run on the application's receiver as well.
-        let base = constructor && descriptor == "()V" && matches!(owner, "java/util/AbstractCollection" | "java/util/AbstractSet");
+        let base = constructor && descriptor == "()V" && matches!(owner, "java/util/AbstractCollection" | "java/util/AbstractSet" | "java/util/AbstractMap");
         if !(marked || new_map || nested || base) { return None; }
         let lookup = if special { owner } else { class.as_str() };
         let Some((cf, method)) = self.cp.map_image_method(lookup, name, descriptor) else {

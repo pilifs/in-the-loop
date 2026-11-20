@@ -1306,7 +1306,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 25);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 27);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

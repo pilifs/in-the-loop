@@ -392,7 +392,13 @@ impl<'a> Machine<'a> {
 
     /// Reads a static field: the class that declares it is initialised first, and only that one (JVMS §5.5).
     pub fn get_static(&mut self, class: &str, name: &str) -> Exec<Value> {
-        if class == "java/util/Collections" && name == "EMPTY_LIST" && self.cp.collections_empty_list() {
+        if class == "java/util/Collections" && name == "EMPTY_SET" && self.cp.collections_empty_singleton("emptySet") {
+            if let Some(v) = self.statics.get(class).and_then(|s| s.get(name)) { return Ok(*v); }
+            let v = self.new_instance("java/util/Collections$EmptySet")?;
+            self.statics.entry(class.into()).or_default().insert(name.into(), v);
+            return Ok(v);
+        }
+        if class == "java/util/Collections" && name == "EMPTY_LIST" && self.cp.collections_empty_singleton("emptyList") {
             return self.get_static(crate::bmc::throwables::THROWABLE, "SUPPRESSED_SENTINEL");
         }
         if class == crate::bmc::throwables::THROWABLE && matches!(name, "SUPPRESSED_SENTINEL" | "EMPTY_THROWABLE_ARRAY") {
@@ -403,7 +409,7 @@ impl<'a> Machine<'a> {
             self.clinit_depth += 1;
             let value = if name == "EMPTY_THROWABLE_ARRAY" {
                 self.new_array_of(Type::object(class), Vec::new())
-            } else if self.cp.collections_empty_list() {
+            } else if self.cp.collections_empty_singleton("emptyList") {
                 self.new_instance(crate::bmc::throwables::EMPTY_LIST)?
             } else {
                 Value::Ref(self.alloc_native(Native::List { elements: Vec::new(), mutable: false }))
@@ -586,6 +592,20 @@ impl<'a> Machine<'a> {
     /// Calls a static method of an application class (or a model) by name. The class is initialised first.
     pub fn call_static(&mut self, class: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         self.ensure_initialized(class)?;
+        if self.cp.enum_universe_lookup(class, name, descriptor) {
+            let Some(mirror) = args.first().and_then(|v| v.as_ref()) else { return Err(Fault::Unsupported("enum universe needs a Class literal".into())) };
+            let Object::Native(Native::Class(Type::Object(owner))) = self.heap.get(mirror) else { return Err(Fault::Unsupported("enum universe needs an enum class".into())) };
+            let owner = owner.clone();
+            let field = self.cp.enum_values_field(&owner).ok_or_else(|| Fault::Unsupported(format!("enum universe of {owner} needs a checked values() array clone")))?;
+            self.ensure_initialized(&owner)?;
+            const KEY: &str = "<Class.enumConstantsShared>";
+            if let Some(v) = self.statics.get(&owner).and_then(|m| m.get(KEY)) { return Ok(Some(*v)); }
+            let raw = self.get_static(&owner, &field)?.as_ref().ok_or_else(|| Fault::Unsupported("enum constants have not been initialized".into()))?;
+            let Object::Array { element, data } = self.heap.get(raw) else { return Err(Fault::Unsupported("unknown enum constants array".into())) };
+            let copy = self.new_array_of(element.clone(), data.clone());
+            self.statics.entry(owner).or_default().insert(KEY.into(), copy);
+            return Ok(Some(copy));
+        }
         if self.cp.bytecode(class).map_err(|e| Fault::Unsupported(e.to_string()))?.is_none() {
             return Err(Fault::Unsupported(format!("class not found: {class}")));
         }
@@ -600,7 +620,10 @@ impl<'a> Machine<'a> {
             self.ensure_initialized(owner)?;
             return self.invoke(&class, &method, args);
         }
-        if (owner, name, descriptor) == ("java/util/Collections", "emptyList", "()Ljava/util/List;") && self.cp.collections_empty_list() {
+        if (owner, name, descriptor) == ("java/util/Collections", "emptySet", "()Ljava/util/Set;") && self.cp.collections_empty_singleton("emptySet") {
+            return self.get_static(owner, "EMPTY_SET").map(Some);
+        }
+        if (owner, name, descriptor) == ("java/util/Collections", "emptyList", "()Ljava/util/List;") && self.cp.collections_empty_singleton("emptyList") {
             return self.get_static(owner, "EMPTY_LIST").map(Some);
         }
         if self.cp.collection_static(owner, name, descriptor) {
@@ -663,6 +686,11 @@ impl<'a> Machine<'a> {
                             }
                         }
                     }
+                }
+                if let Some((cf, method)) = self.cp.image_default_method(&class, name, descriptor) {
+                    let mut full = vec![receiver];
+                    full.extend(args);
+                    return self.invoke(&cf, &method, full);
                 }
                 natives::invoke_inherited(self, r, owner, name, descriptor, args)
             }

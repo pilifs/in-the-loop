@@ -180,7 +180,7 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     if (owner, name, descriptor) == ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;") { return true; }
     matches!(
         (owner, name, descriptor),
-        ("java/lang/System", "lineSeparator", "()Ljava/lang/String;") | (COLLECTIONS, "emptyList", "()Ljava/util/List;") |
+        ("java/lang/System", "lineSeparator", "()Ljava/lang/String;") | (COLLECTIONS, "emptyList", "()Ljava/util/List;") | (COLLECTIONS, "emptySet", "()Ljava/util/Set;") |
         (BOOLEAN, "valueOf", "(Z)Ljava/lang/Boolean;") | ("java/lang/reflect/Array", "getLength", "(Ljava/lang/Object;)I") | (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
     )
 }
@@ -298,6 +298,18 @@ impl Engine<'_> {
                 Literal::CachedIntegral("java/lang/Integer", value) if object == o => Some(*value), _ => None,
             })?;
             self.push(path, Val::I(self.b.constant(i64::from(value), 32)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
+        if (owner, name, descriptor) == (CLASS, "desiredAssertionStatus", "()Z") {
+            let class = self.class_named(path, o)?;
+            let frame = path.frames.last()?;
+            if frame.method != "<clinit>" || self.cp.state_image_class(&frame.class.name).is_none() || self.cp.state_image_class(&class).is_none() { return None; }
+            let flag = path.statics.entry((class, "<VM.desiredAssertionStatus>".into())).or_insert_with(|| {
+                let bit = self.b.var(); Val::I(self.b.zext(&vec![bit], 32))
+            }).clone();
+            path.unbound_platform_value = Some("a JVM-chosen assertion setting");
+            self.push(path, flag);
             self.advance(path);
             return Some(Ok(None));
         }
@@ -716,7 +728,13 @@ impl Engine<'_> {
                 self.advance(path);
                 Some(Ok(None))
             }
-            (COLLECTIONS, "emptyList", []) if self.cp.collections_empty_list() => {
+            (COLLECTIONS, "emptySet", []) if self.cp.collections_empty_singleton("emptySet") => {
+                let o = self.literal(path, Literal::CollectionsEmptySet, "java/util/Collections$EmptySet");
+                self.push(path, Val::R(Some(o)));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            (COLLECTIONS, "emptyList", []) if self.cp.collections_empty_singleton("emptyList") => {
                 let o = self.literal(path, Literal::CollectionsEmptyList, throwables::EMPTY_LIST);
                 self.push(path, Val::R(Some(o)));
                 self.advance(path);

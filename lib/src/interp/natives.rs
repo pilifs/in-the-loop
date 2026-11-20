@@ -941,8 +941,8 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             "addSuppressed" | "getSuppressed" => invoke_suppression(m, r, name, descriptor, args),
             _ => unsupported(format!("{}.{name}", class.replace('/', "."))),
         },
-        Native::Lambda { sam_name, implementation, captured, instantiated, interface } => {
-            if name == sam_name {
+        Native::Lambda { sam_name, sam_descriptor, implementation, captured, instantiated, interface } => {
+            if name == sam_name && sam_descriptor.as_deref().is_none_or(|d| d == descriptor) {
                 call_lambda(m, &implementation, captured, &instantiated, args)
             } else {
                 unsupported(format!("{}.{name} on a lambda (only its functional method {sam_name} is modelled)", interface.replace('/', ".")))
@@ -1694,10 +1694,17 @@ fn optional_method(m: &mut Machine, value: Option<Value>, name: &str, descriptor
 // Lambdas
 
 fn call_lambda(m: &mut Machine, handle: &MethodHandle, captured: Vec<Value>, instantiated: &str, args: Vec<Value>) -> Exec<Option<Value>> {
-    let mut full = captured;
-    full.extend(args);
     let target = MethodDescriptor::parse(&handle.member.descriptor).map_err(|e| Fault::Unsupported(e.to_string()))?;
     let instantiated = MethodDescriptor::parse(instantiated).map_err(|e| Fault::Unsupported(e.to_string()))?;
+    if args.len() != instantiated.params.len() { return unsupported("a lambda called through an incompatible argument descriptor"); }
+    for (arg, ty) in args.iter().zip(&instantiated.params) {
+        if let (Value::Ref(r), true) = (*arg, ty.is_reference()) {
+            let name = match ty { Type::Object(c) => c.clone(), _ => ty.descriptor() };
+            if !m.is_instance(r, &name) { return Err(m.throw("java/lang/ClassCastException", None)); }
+        }
+    }
+    let mut full = captured;
+    full.extend(args);
     let owner = handle.member.owner.clone();
     let name = handle.member.name.clone();
     let descriptor = handle.member.descriptor.clone();
@@ -1857,7 +1864,11 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
                 _ => implementation.member.descriptor.clone(),
             };
             let interface = descriptor.ret.class_name().unwrap_or("java/lang/Object").to_string();
-            let lambda = Native::Lambda { interface, sam_name: name.to_string(), implementation, captured: args, instantiated };
+            let sam_descriptor = match (method, bootstrap.args.first()) {
+                ("metafactory", Some(BootstrapArg::MethodType(d))) => Some(d.clone()),
+                _ => None,
+            };
+            let lambda = Native::Lambda { interface, sam_name: name.to_string(), sam_descriptor, implementation, captured: args, instantiated };
             Ok(Some(Value::Ref(m.alloc_native(lambda))))
         }
         _ => unsupported(format!("invokedynamic with bootstrap {}.{method}", owner.replace('/', "."))),
