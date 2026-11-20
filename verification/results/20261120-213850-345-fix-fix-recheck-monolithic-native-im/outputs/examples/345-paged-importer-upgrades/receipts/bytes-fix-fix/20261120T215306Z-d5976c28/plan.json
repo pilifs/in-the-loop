@@ -1,0 +1,338 @@
+{
+  "plan": {
+    "example": "345",
+    "task": "bytes-fix-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "importer.PageImporter#remaining([BZZ)[B",
+    "revisions": [
+      "fix-fix"
+    ],
+    "claim": {
+      "task": "bytes-fix-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#remaining([BZZ)[B",
+      "file": "claims/bytes.json",
+      "sha256": "bd5db34b4efce829702155ae7d71d49bfbea00dc7f4fbc188581c0c07186e972",
+      "property": "bytes",
+      "claimKind": "property",
+      "statement": "An independently opened stream returns the supplied document bytes after BOM stripping.",
+      "assume": "code >= 0 && code < 96",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/importer/ImportCases.java",
+          "sha256": "2043f0f8fe6c4eaf0530c4e61daff47e1a3fb9d75cd7f1828f5eccb2c1009a18"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "adb9160876b33fc23376fe4c171e138c5ef8a9c90b335c9cab559d325ba248e0"
+        }
+      ],
+      "adapter": {
+        "entry": "importer.Projection#bytes(I)I",
+        "mapping": "Bits 4 through 0 select BOM, one-byte reads, preview/reset, start minus one and cap minus one. The high bits select one of three literal documents. A fresh input stream is used for each observer.",
+        "cases": 96,
+        "correspondence": "finite-oracle"
+      },
+      "key": "26dd8caec33692e1"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix-fix",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-fix",
+          "csv-fix",
+          "codec"
+        ],
+        "libraries": {
+          "csv-fix": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+            "parent": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701"
+          },
+          "io-api": {
+            "coordinates": "commons-io:commons-io:2.22.0",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+          },
+          "codec": {
+            "coordinates": "commons-codec:commons-codec:1.22.0",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+          },
+          "io-fix": {
+            "repository": "https://github.com/apache/commons-io",
+            "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+            "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+            "class": "org.apache.commons.io.input.BOMInputStream",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
+          }
+        },
+        "adapters": [
+          "adapter/importer/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/bytes-fix-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213850-345-fix-fix-recheck-monolithic-native-im/examples/345-paged-importer-upgrades",
+    "network": true
+  },
+  "inputs": {
+    "example": "345",
+    "task": "bytes-fix-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "importer.PageImporter#remaining([BZZ)[B",
+    "revisions": [
+      "fix-fix"
+    ],
+    "claim": {
+      "task": "bytes-fix-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "importer.PageImporter#remaining([BZZ)[B",
+      "file": "claims/bytes.json",
+      "sha256": "bd5db34b4efce829702155ae7d71d49bfbea00dc7f4fbc188581c0c07186e972",
+      "property": "bytes",
+      "claimKind": "property",
+      "statement": "An independently opened stream returns the supplied document bytes after BOM stripping.",
+      "assume": "code >= 0 && code < 96",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/importer/ImportCases.java",
+          "sha256": "2043f0f8fe6c4eaf0530c4e61daff47e1a3fb9d75cd7f1828f5eccb2c1009a18"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "adb9160876b33fc23376fe4c171e138c5ef8a9c90b335c9cab559d325ba248e0"
+        }
+      ],
+      "adapter": {
+        "entry": "importer.Projection#bytes(I)I",
+        "mapping": "Bits 4 through 0 select BOM, one-byte reads, preview/reset, start minus one and cap minus one. The high bits select one of three literal documents. A fresh input stream is used for each observer.",
+        "cases": 96,
+        "correspondence": "finite-oracle"
+      },
+      "key": "26dd8caec33692e1"
+    },
+    "artifacts": [
+      {
+        "revision": "fix-fix",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "csv-fix",
+          "io-api",
+          "codec"
+        ],
+        "runtimeLibraries": [
+          "io-fix",
+          "csv-fix",
+          "codec"
+        ],
+        "libraries": {
+          "csv-fix": {
+            "repository": "https://github.com/apache/commons-csv",
+            "commit": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac",
+            "parent": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+            "class": "org.apache.commons.csv.CSVParser",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701"
+          },
+          "io-api": {
+            "coordinates": "commons-io:commons-io:2.22.0",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+          },
+          "codec": {
+            "coordinates": "commons-codec:commons-codec:1.22.0",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+          },
+          "io-fix": {
+            "repository": "https://github.com/apache/commons-io",
+            "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+            "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+            "class": "org.apache.commons.io.input.BOMInputStream",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "--batch-mode",
+                "--no-transfer-progress",
+                "-Dmaven.test.skip=true",
+                "-Dmaven.javadoc.skip=true",
+                "-Drat.skip=true",
+                "-Dcheckstyle.skip=true",
+                "-Dspotbugs.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4"
+          }
+        },
+        "adapters": [
+          "adapter/importer/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/importer/Projection.java",
+        "sha256": "c269a10eb814e3c14a72e28de2d2ff18bfb5e6cde8c81912cf578cb54744a7c0"
+      }
+    ]
+  },
+  "key": "4e5a3c2482af6691241818808bb1fdd2b3d7cac0bf25b04a710732243f5b3916"
+}
