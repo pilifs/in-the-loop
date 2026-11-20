@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-20 00:01 UTC (3564 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -2098,6 +2098,12 @@ Verification pending for 20261120-000226-threetenbp-clock-fix-with-observed-chro
 change `nxytvllqoupt` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 The foundation-and-python-restart run added Vacuity.outside to the checker's statement (lib/src/statement.rs, nwkovvmp: the allowed change a regression witness is known to lie outside) and a qualification that requires it, but examples/schema/result.schema.json still forbids extra vacuity fields, so a receipt from a current build fails check_result. The run's own default run did not see it: its workspace has no release build, so test_targets_contract's fixture calibration skipped there; this checkout's release binary predated the change until it was rebuilt. The schema now admits the field. test_targets_contract passes on the rebuilt binary, and test_costs.py run --changed passed 10 of 10.
+
+### Record verification results for 3 job(s)
+
+change `syuprottmwot` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+
+Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-041029-prove-both-recursive-tiling-callers-with: passed: 1 passed step(s) in 6.6s, peak 165.3 MiB (estimated 2m00s, 2.0 GiB); 28 output file(s) changed; signals: example:task-as-expected×2 Applied 28 output(s). 20261120-041029-run-optional-suppliers-through-the-selec: passed: 1 passed step(s) in 7.2s, peak 143.2 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-041223-recheck-both-signed-tai-round-trips-afte: failed: 1 failed step(s) in 7.0s, peak 330.4 MiB (estimated 2m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-unexpected×2 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ## Conversation
 

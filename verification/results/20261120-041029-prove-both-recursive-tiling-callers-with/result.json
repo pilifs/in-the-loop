@@ -1,0 +1,421 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-041029-prove-both-recursive-tiling-callers-with",
+  "title": "Prove both recursive tiling callers with the checked helper",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.6s, peak 165.3 MiB (estimated 2m00s, 2.0 GiB); 28 output file(s) changed; signals: example:task-as-expected×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-041029-prove-both-recursive-tiling-callers-with.json",
+    "sha256": "59fa60af6dedd5472ba4e77cef474500fa3557473a6a8bea8e8504eeaf372b70",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-041029-prove-both-recursive-tiling-callers-with",
+      "title": "Prove both recursive tiling callers with the checked helper",
+      "description": "Recheck the two original recursive callers using the measured bounded helper declaration. Bind its digest, verify its induction before use and require a proved summary in each public statement. Keep the earlier inline proof and the changed-helper controls.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "331"
+        ],
+        "jobs": [
+          "20261120-032648-native-331-floor-tiling-counts-and-two-d"
+        ]
+      },
+      "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+      "submitted": {
+        "at": "2026-11-20T04:10:29+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Exercise the frozen claims",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 331 --tasks exact-recursive,parity-recursive --retry-of 20261120T034901Z-0762e97b,20261120T034940Z-49449625 --checker-seconds 25",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive",
+        "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive"
+      ]
+    }
+  },
+  "sourceCommit": "8b8f31a94200cba2efe829a7072c97e8bf4eb611",
+  "startedAt": "2026-11-20T04:17:45+00:00",
+  "finishedAt": "2026-11-20T04:20:32+00:00",
+  "wallSeconds": 167.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1147970,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 173359104,
+    "wallSeconds": 6.6,
+    "cpuSeconds": 10.0,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 331 --tasks exact-recursive,parity-recursive --retry-of 20261120T034901Z-0762e97b,20261120T034940Z-49449625 --checker-seconds 25",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 6.61,
+      "cpuSeconds": 10.03,
+      "cpuThrottledSeconds": 0.342,
+      "peakMemoryBytes": 173359104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-the-frozen-claims.log",
+        "lines": 4,
+        "bytes": 473,
+        "sha256": "dea41022cbbdf45bcf0d9c9dd49be948c64ae6aa817843f254bdcf2a16ef5af5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 2
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "331-floor-tiling-proof-reuse: task exact-recursive: established (completed; as expected), receipt receipts/exact-recursive/20261120T042026Z-0444e2d7/result.json",
+          "groups": [
+            "331",
+            "exact-recursive",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "331-floor-tiling-proof-reuse: task parity-recursive: established (completed; as expected), receipt receipts/parity-recursive/20261120T042029Z-46548055/result.json",
+          "groups": [
+            "331",
+            "parity-recursive",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "331-floor-tiling-proof-reuse: running task exact-recursive (target route)",
+        "331-floor-tiling-proof-reuse: task exact-recursive: established (completed; as expected), receipt receipts/exact-recursive/20261120T042026Z-0444e2d7/result.json",
+        "331-floor-tiling-proof-reuse: running task parity-recursive (target route)",
+        "331-floor-tiling-proof-reuse: task parity-recursive: established (completed; as expected), receipt receipts/parity-recursive/20261120T042029Z-46548055/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "bdeb8a70f0d0895bf5e27c6abe0bd7f9ee6f02c9607fbb6de3bfac667d67733a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/plan.json",
+      "change": "added",
+      "bytes": 4685,
+      "sha256": "4a73ef87e899798196d0cf64a86270aff7dfd8d6d4eb22667fe0d5cbd2074232",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/control-recursive-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/control-recursive-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/controls.json",
+      "change": "added",
+      "bytes": 6726,
+      "sha256": "bd00f03d56afc8a41b8aae1a3d74149785c34bcb0226a6316b824001070d163f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/execution.json",
+      "change": "added",
+      "bytes": 22178,
+      "sha256": "72182565f7cce642bd7bedbb2309421052ea77a89ca08c68f9f90177b136cb56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/streams.json",
+      "change": "added",
+      "bytes": 1991,
+      "sha256": "1d638b74132c36509098c5bcc9ce44b19d98bd9f999517e625abd94a92abba09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1658,
+      "sha256": "bce4a78cde9e24d1a54b47a930a3423ee88b2466577caac53af57e34b3fe0487",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/verifier.json",
+      "change": "added",
+      "bytes": 15390,
+      "sha256": "1fdc93ad8d4209c9c12d20518ee5b056daadceea3035ff461c2ec56f82eb91b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7645,
+      "sha256": "04d6300e64c257b65fb7ff0551e80676d4633ba429ddc66d86aa8be78d4c34b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/result.json",
+      "change": "added",
+      "bytes": 17955,
+      "sha256": "2dc69d8314fa37f7ae267260f197baf6064d4065402ffe572b4947777fe797db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/executions/20261120T042026Z-0444e2d7/attempt.json",
+      "change": "added",
+      "bytes": 9141,
+      "sha256": "eeb8462cb04751619d3fdffeeb994f64bc3bb30c3d1bf55ebfb5982400f059f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/executions/20261120T042026Z-0444e2d7/checker.json",
+      "change": "added",
+      "bytes": 8991,
+      "sha256": "7cbdb16839531874f82b826c4f6597dea6685c6c6181a3e70c895f49a6bb7a61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ebfb8c168048834af491a32caadbe4aa9d118000c979a28c9fdad297f32cfb73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/plan.json",
+      "change": "added",
+      "bytes": 4702,
+      "sha256": "30a7c8506c278f6a565cfe82e94fc516457f6e7a8d968515f71522d37e20de42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/control-recursive-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/control-recursive-jdk21.stdout",
+      "change": "added",
+      "bytes": 1372,
+      "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/controls.json",
+      "change": "added",
+      "bytes": 6729,
+      "sha256": "e98fdf025d205281947a9a3071f2067d053c7583220fff904525fd02a8452e88",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/execution.json",
+      "change": "added",
+      "bytes": 22197,
+      "sha256": "b096c87129892adbdda52701dae415a7aa30274a148a70e5c374fd21174d3d84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/streams.json",
+      "change": "added",
+      "bytes": 1991,
+      "sha256": "fbd476cdcab74c0ca230569db644c965c8378e00dc617491f7f7ae1ca208fe56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1661,
+      "sha256": "9edee6f21839d187061cea00174e26b72dd1fb61ddcbdd1ead2f193da979424d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/verifier.json",
+      "change": "added",
+      "bytes": 15411,
+      "sha256": "d91c43b3e18d1d2dfa9f9b404ac3b7e053cedca4d591414d1f87fae7a3125285",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7653,
+      "sha256": "b0b88ea04320f3f63b621c977ac690ffc23c23318b99255d5bb029f5bfabdf11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/result.json",
+      "change": "added",
+      "bytes": 17976,
+      "sha256": "ea4653d7ffa0afb40aea36e42493e22fc3695f3b30c6f4212ab59938dea16e77",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/executions/20261120T042029Z-46548055/attempt.json",
+      "change": "added",
+      "bytes": 9155,
+      "sha256": "cfed2d3e5193fd33df443d5c15f3984a204018d494f1e28d00abdfe99be483bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/executions/20261120T042029Z-46548055/checker.json",
+      "change": "added",
+      "bytes": 9001,
+      "sha256": "f0029107cd07a49c0a841e9f5b934c08ecbdca252b14385cfa1b93d3e651c9cc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T04:20:57+00:00",
+    "applied": [
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/control-recursive-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/control-recursive-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/20261120T042026Z-0444e2d7/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/executions/20261120T042026Z-0444e2d7/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/exact-recursive/executions/20261120T042026Z-0444e2d7/checker.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/completion.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/plan.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/control-recursive-jdk21.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/control-recursive-jdk21.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/controls.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/execution.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/streams.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/verifier-output.txt",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/verifier.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/verifier.stderr",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/records/verifier.stdout",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/20261120T042029Z-46548055/result.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/executions/20261120T042029Z-46548055/attempt.json",
+      "examples/331-floor-tiling-proof-reuse/receipts/parity-recursive/executions/20261120T042029Z-46548055/checker.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3ac1aa44d8c9ebfc32542c0c00246edf21465eca",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3ac1aa44d8c9ebfc32542c0c00246edf21465eca/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

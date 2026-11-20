@@ -1,0 +1,190 @@
+{
+  "plan": {
+    "example": "324",
+    "task": "value-eager",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+    "revisions": [
+      "eager"
+    ],
+    "claim": {
+      "task": "value-eager",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "file": "claims/value.json",
+      "sha256": "b8bd7f81a6b4ce95248d032aebab53e62453d1c806d391ae210b2d6dfcbd76ef",
+      "property": "value",
+      "claimKind": "property",
+      "statement": "The selected value is present or is seven for empty.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/optionalgrid/Cases.java",
+          "sha256": "b03b82723ab952507506cc62cd524f9fafd0dff34f289b11763019fca16cc92b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d8c14334f1b946ada2729005ec3663a188fbf9b1f0d60a42afdb035224190066"
+        }
+      ],
+      "adapter": {
+        "entry": "optionalgrid.Projection#value(I)I",
+        "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "c733a973a31e0ee8"
+    },
+    "prerequisites": [
+      "replay-eager"
+    ],
+    "artifacts": [
+      {
+        "revision": "eager",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "eager",
+        "adapters": [
+          "adapter/optionalgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/value-eager"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-041029-run-optional-suppliers-through-the-selec/examples/324-optional-fallback-effects",
+    "network": false
+  },
+  "inputs": {
+    "example": "324",
+    "task": "value-eager",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+    "revisions": [
+      "eager"
+    ],
+    "claim": {
+      "task": "value-eager",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "file": "claims/value.json",
+      "sha256": "b8bd7f81a6b4ce95248d032aebab53e62453d1c806d391ae210b2d6dfcbd76ef",
+      "property": "value",
+      "claimKind": "property",
+      "statement": "The selected value is present or is seven for empty.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/optionalgrid/Cases.java",
+          "sha256": "b03b82723ab952507506cc62cd524f9fafd0dff34f289b11763019fca16cc92b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d8c14334f1b946ada2729005ec3663a188fbf9b1f0d60a42afdb035224190066"
+        }
+      ],
+      "adapter": {
+        "entry": "optionalgrid.Projection#value(I)I",
+        "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "c733a973a31e0ee8"
+    },
+    "artifacts": [
+      {
+        "revision": "eager",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "eager",
+        "adapters": [
+          "adapter/optionalgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/optionalgrid/Projection.java",
+        "sha256": "3f11da5f5bfd6e23b151b8c595337811ae76da13e7b6d9943dfc1784b763fc95"
+      }
+    ]
+  },
+  "key": "470a32c4891a7c291a5612bc9e4d58dab5c5dfbffcca57651c688236f5ce3b58"
+}

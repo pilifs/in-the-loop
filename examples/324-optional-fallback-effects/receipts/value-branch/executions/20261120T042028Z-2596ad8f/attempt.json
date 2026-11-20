@@ -1,0 +1,332 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T042028Z-2596ad8f",
+  "task": "value-branch",
+  "claimKey": "c733a973a31e0ee8",
+  "revisions": [
+    "branch"
+  ],
+  "startedAt": "2026-11-20T04:20:28.153962+00:00",
+  "retryOf": "20261120T034846Z-e538579f",
+  "retryBinding": "52b36195b804b1ad3e0e0fa57bd598624e2e8ce88226a150b3e83208669e3590",
+  "budget": {
+    "checkerSeconds": 30
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-041029-run-optional-suppliers-through-the-selec",
+  "sourceCommit": "8b8f31a94200cba2efe829a7072c97e8bf4eb611",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.5643
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.6297
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 1.6309
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.6596
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 1.7128
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 1.8064
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "branch": {
+      "revision": "fixture:branch",
+      "target": {
+        "class": "optionalgrid.Choice",
+        "method": "choose",
+        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+        "loadedFrom": "branch.jar",
+        "classSha256": "19152af2be123470a61510241076d64a3f7d50c960327b8e46d81d064bf3b51b",
+        "adapterCalls": [
+          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+          "optionalgrid.Fallback#<init>()V"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "d6a74ecc3c0ae0d3cbecdd1f3b8c1879da33b8c9542bc7844f18c97d8c3f6bbc",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-branch.jar",
+          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "branch.jar",
+          "sha256": "4c8e91c4af4bff44108bfbe0f7b6de8cf53052644582190064cec102b1d0d4cf",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from branch by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "52b36195b804b1ad3e0e0fa57bd598624e2e8ce88226a150b3e83208669e3590",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3ac1aa44d8c9ebfc32542c0c00246edf21465eca/jvmcontract",
+    "prove",
+    "optionalgrid.Projection#value(int)",
+    "--classes",
+    "prepare/branch/adapter-branch.jar",
+    "--classpath",
+    "prepare/branch/branch.jar",
+    "--assume",
+    "code >= 0 && code < 4",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "10",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "ac3c69ba8f9adbe2eaed7eb4a005fe21c1668ac9ede0161b4f86ab1995a1a776",
+    "commit": "8b8f31a94200cba2efe829a7072c97e8bf4eb611",
+    "libTree": "3ac1aa44d8c9ebfc32542c0c00246edf21465eca",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 10
+    },
+    "timeout": 30,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+      "method": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "revisions": {
+        "branch": {
+          "commit": "fixture:branch",
+          "loadedFrom": "branch.jar",
+          "classSha256": "19152af2be123470a61510241076d64a3f7d50c960327b8e46d81d064bf3b51b",
+          "origin": "built from branch by the fixture recipe",
+          "parameters": {
+            "names": [
+              "value",
+              "fallback"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "optionalgrid.Projection#value(I)I",
+        "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "branch": [
+        {
+          "path": "adapter-branch.jar",
+          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+          "role": "adapter"
+        },
+        {
+          "path": "branch.jar",
+          "sha256": "4c8e91c4af4bff44108bfbe0f7b6de8cf53052644582190064cec102b1d0d4cf",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "optionalgrid.Projection#value(I)I",
+    "entryBindings": {
+      "branch": {
+        "entry": "optionalgrid.Projection#value(I)I",
+        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
+        "loadedFrom": "adapter-branch.jar",
+        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+        "subjectClassSha256": "19152af2be123470a61510241076d64a3f7d50c960327b8e46d81d064bf3b51b"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+      "checkedEntry": "optionalgrid.Projection#value(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 4"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "10"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "optionalgrid.Projection#value(I)I",
+        "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      }
+    },
+    "commits": {
+      "branch": "fixture:branch"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "branch": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3ac1aa44d8c9ebfc32542c0c00246edf21465eca/jvmcontract",
+          "gaps",
+          "--target",
+          "optionalgrid.Projection#value(int)",
+          "--classes",
+          "prepare/branch/adapter-branch.jar",
+          "--classpath",
+          "prepare/branch/branch.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-branch.stdout",
+        "stderr": "verifier/probe-branch.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0415,
+      "peakRssBytes": 80855040,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0415,
+    "peakRssBytes": 80855040,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.051,
+  "missing": [],
+  "receipt": "receipts/value-branch/20261120T042028Z-2596ad8f/result.json",
+  "preparedClaim": "e069f0e682bd68ae",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T04:20:29.960435+00:00"
+}
