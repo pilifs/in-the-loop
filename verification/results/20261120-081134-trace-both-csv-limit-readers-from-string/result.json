@@ -1,0 +1,1018 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-081134-trace-both-csv-limit-readers-from-string",
+  "title": "Trace both CSV limit readers from StringReader to the original stream",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 24.8s, peak 670.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×4; example:task-unexpected×2",
+  "attention": [
+    "step 1 (Check the frozen obligations on their prepared bytes) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-081134-trace-both-csv-limit-readers-from-string.json",
+    "sha256": "c9b2eebfa50f9dcb8da6f025e29d7202d9c24377145563829fae6c2c5a63611a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-081134-trace-both-csv-limit-readers-from-string",
+      "title": "Trace both CSV limit readers from StringReader to the original stream",
+      "description": "Repeat all six original CSV checks. Track StringReader and reader cursor effects on selected JDK bytecode, immutable empty headers, the bounded character copy, stable enum hashes and reference-array equality. Preserve every qualified claim and the first operation reached separately on each parser revision.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "316"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T08:11:34+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 316 --tasks equals-parent,equals-fix,hash-contract-parent,hash-contract-fix,rows-parent,rows-fix --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/316-commons-csv-row-limit-equality/receipts/equals-parent",
+        "examples/316-commons-csv-row-limit-equality/receipts/equals-fix",
+        "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent",
+        "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix",
+        "examples/316-commons-csv-row-limit-equality/receipts/rows-parent",
+        "examples/316-commons-csv-row-limit-equality/receipts/rows-fix"
+      ]
+    }
+  },
+  "sourceCommit": "ddf77b2e1673895ef1874faae091521a0b8ac5d8",
+  "startedAt": "2026-11-20T08:19:08+00:00",
+  "finishedAt": "2026-11-20T08:22:28+00:00",
+  "wallSeconds": 200.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4178968,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 702644224,
+    "wallSeconds": 24.8,
+    "cpuSeconds": 36.6,
+    "memoryOfEstimate": 0.33,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 171.252,
+      "cpuSeconds": 171.512,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2125565952,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "ed5e773592f088991cbd2e4cf5567b12ea539151984f12a9b5078920b72e944a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-081134-trace-both-csv-limit-readers-from-string/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 51s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 316 --tasks equals-parent,equals-fix,hash-contract-parent,hash-contract-fix,rows-parent,rows-fix --checker-seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 24.846,
+      "cpuSeconds": 36.558,
+      "cpuThrottledSeconds": 4.792,
+      "peakMemoryBytes": 702644224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 12,
+        "bytes": 1479,
+        "sha256": "914cc37ada0251c0e27ee279bba4d76d71f08f4877b88eb5c416138811a2249a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4,
+        "example:task-unexpected": 2
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "316-commons-csv-row-limit-equality: task equals-parent: refuted (completed; as expected), receipt receipts/equals-parent/20261120T082203Z-870bdfc0/result.json",
+          "groups": [
+            "316",
+            "equals-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "316-commons-csv-row-limit-equality: task equals-fix: established (completed; as expected), receipt receipts/equals-fix/20261120T082208Z-70ffa51a/result.json",
+          "groups": [
+            "316",
+            "equals-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "316-commons-csv-row-limit-equality: task hash-contract-parent: established (completed; as expected), receipt receipts/hash-contract-parent/20261120T082212Z-89534ddc/result.json",
+          "groups": [
+            "316",
+            "hash-contract-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "316-commons-csv-row-limit-equality: task hash-contract-fix: established (completed; as expected), receipt receipts/hash-contract-fix/20261120T082216Z-b0afde4d/result.json",
+          "groups": [
+            "316",
+            "hash-contract-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "316-commons-csv-row-limit-equality: task rows-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/rows-parent/20261120T082220Z-540abe32/result.json",
+          "groups": [
+            "316",
+            "rows-parent",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "316-commons-csv-row-limit-equality: task rows-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/rows-fix/20261120T082224Z-1f727071/result.json",
+          "groups": [
+            "316",
+            "rows-fix",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "316-commons-csv-row-limit-equality: running task equals-parent (target route)",
+        "316-commons-csv-row-limit-equality: task equals-parent: refuted (completed; as expected), receipt receipts/equals-parent/20261120T082203Z-870bdfc0/result.json",
+        "316-commons-csv-row-limit-equality: running task equals-fix (target route)",
+        "316-commons-csv-row-limit-equality: task equals-fix: established (completed; as expected), receipt receipts/equals-fix/20261120T082208Z-70ffa51a/result.json",
+        "316-commons-csv-row-limit-equality: running task hash-contract-parent (target route)",
+        "316-commons-csv-row-limit-equality: task hash-contract-parent: established (completed; as expected), receipt receipts/hash-contract-parent/20261120T082212Z-89534ddc/result.json",
+        "316-commons-csv-row-limit-equality: running task hash-contract-fix (target route)",
+        "316-commons-csv-row-limit-equality: task hash-contract-fix: established (completed; as expected), receipt receipts/hash-contract-fix/20261120T082216Z-b0afde4d/result.json",
+        "316-commons-csv-row-limit-equality: running task rows-parent (target route)",
+        "316-commons-csv-row-limit-equality: task rows-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/rows-parent/20261120T082220Z-540abe32/result.json",
+        "316-commons-csv-row-limit-equality: running task rows-fix (target route)",
+        "316-commons-csv-row-limit-equality: task rows-fix: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/rows-fix/20261120T082224Z-1f727071/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c44ba16b784a11b230a75e035e4ebed6df4c794d364b7e0b80171ad1cd43e56a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/plan.json",
+      "change": "added",
+      "bytes": 9119,
+      "sha256": "6781901676a4af452cc25eaab66638261c844a2632b5e171997ffe0b674a184d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1158,
+      "sha256": "b88555e8d85c103b8f0737db2021552a7bc94b917776061bd1151bc7452e169b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/controls.json",
+      "change": "added",
+      "bytes": 7037,
+      "sha256": "ee4bbefce7fc81f1733ee974924cfd7f3a1ebd396cf06687acc48389ac3c8d67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/execution.json",
+      "change": "added",
+      "bytes": 29629,
+      "sha256": "7d2133f9b8030ae830777bd2b78957cc1cd41a6a8ef2e3820eeb1f972cc3a4d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "508ae259a63806c70c1b342e5a39af3476ac61c5601594153104f99789435b5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 544,
+      "sha256": "648bbaa2419762d313f358e8fbc596821789fc7e94339fe8d6c508323fc3fd40",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/verifier.json",
+      "change": "added",
+      "bytes": 19692,
+      "sha256": "14bfa591cb3326b4803262940ae734cb436fda465ba2595bcb39b4b2f2ccc368",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6348,
+      "sha256": "c3488b08a0cae91a24433eeaa50c5909147177b56694da8217be84f6d6de1938",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/result.json",
+      "change": "added",
+      "bytes": 19310,
+      "sha256": "fdaedd25102fbbfc7c1c641611369335c8156bbe6a2f7ef837fb1eaf38b4cb57",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/executions/20261120T082203Z-870bdfc0/attempt.json",
+      "change": "added",
+      "bytes": 17081,
+      "sha256": "d50377b02f0513212740f7a93395937d23ef6c6afbba9c965325e8da98fdc0c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/executions/20261120T082203Z-870bdfc0/checker.json",
+      "change": "added",
+      "bytes": 7868,
+      "sha256": "67b2055bd0e34598e28221dc3eed2c9d0d2effc0be097b0bec5edb3c9f28c34e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/executions/20261120T082203Z-870bdfc0/correspondence.json",
+      "change": "added",
+      "bytes": 1816,
+      "sha256": "072a9aaddb6896e79f46040148c31b9feae4a31e411f5686721563c66f4b9b5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/executions/20261120T082203Z-870bdfc0/replay.json",
+      "change": "added",
+      "bytes": 2093,
+      "sha256": "f91cb204a125a767af0ec70493932da7d380c40edd9b021c92ab6ef41f069c9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b4c548167c1e785aa5a80c4f3ceb6ea55b861068316db988175735811e4c7110",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/plan.json",
+      "change": "added",
+      "bytes": 9220,
+      "sha256": "7562d05c58007f42f1de3eaf9ae479dfd6eb502c705ae38d97d9b093c0f21733",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1164,
+      "sha256": "f063de6425f005fe80c15e5cd8e2f292c6e67368c4185a1c6e7a3efb3f672468",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/controls.json",
+      "change": "added",
+      "bytes": 7010,
+      "sha256": "f65cda2452a53f4d7745cba8dbb04f4f2e05a51a6b551065bce57f91b7a603b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/execution.json",
+      "change": "added",
+      "bytes": 26368,
+      "sha256": "c238ad1b39210bc89de4f8757196cd859fbdf38ffabfa42b07da5844b962a352",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "cd886270b7b7b1737fbd920010e4f3c4c06a4d6703a3bb8ca829981a4b306c7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "cbe69fc48411381a01d0b0859d957655f22bcaf89ef4d60f16cf9bac34f7a7b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/verifier.json",
+      "change": "added",
+      "bytes": 19085,
+      "sha256": "b7e909a620c58a0f79ca9cff83f36f86469aa95b8040c61627cfaa641da16e0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5875,
+      "sha256": "4cb25d4169bea1b15ad26a278d4b74d153bd1f4950c10f3340d11be752cbcfde",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/result.json",
+      "change": "added",
+      "bytes": 18453,
+      "sha256": "5570b5261c4fce74312a511708e9aca0c5c1984b621edec80eb1226b269b1c95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/executions/20261120T082208Z-70ffa51a/attempt.json",
+      "change": "added",
+      "bytes": 16871,
+      "sha256": "caa10f60e933c0e6845ea305dbead600a8d5dbcee389a93ebc3d099189a7666e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/executions/20261120T082208Z-70ffa51a/checker.json",
+      "change": "added",
+      "bytes": 7350,
+      "sha256": "d7f0ef154acc55e3e886ad9d7ce5be889908b7d03935de1fa6181a3413729422",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/executions/20261120T082208Z-70ffa51a/correspondence.json",
+      "change": "added",
+      "bytes": 1810,
+      "sha256": "0071bc1d0ae63a9c686aeb8eb911e2c15b745b2e432c97157ba70abc92441136",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "116d2d6d324d4db8c09076e6c548b1be19960f9a220f487b3cdeb9a37f5babff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/plan.json",
+      "change": "added",
+      "bytes": 9116,
+      "sha256": "fae1c984c4c3c7572c00c65e80149cccb25654404be80170ff421909ce773bcd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1158,
+      "sha256": "b88555e8d85c103b8f0737db2021552a7bc94b917776061bd1151bc7452e169b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/controls.json",
+      "change": "added",
+      "bytes": 7058,
+      "sha256": "62895c2d60e6402c5f547ebb39918ee434302072a8b31487086204b360768bf0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/execution.json",
+      "change": "added",
+      "bytes": 26793,
+      "sha256": "0212b014d123587ee2b3036effcf6e161496fbf32776bb4a26982fc68f2e5df0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "3d2715021cb38e5ce224718cf6db0f06d39b95c1a7cf60122d721aa868006351",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 296,
+      "sha256": "2708a7c18cca652c7325004f9dc67f441ad9c9ab2b79d6371b225f5f29781b00",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/verifier.json",
+      "change": "added",
+      "bytes": 19503,
+      "sha256": "a4ee4cb6627df49b41cc23c5888402fde74db8c9db9dfb46cab80df228cc7404",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5921,
+      "sha256": "219cf672ecdc7d5e67fa481aedec8a0c20b873a7f10a8307717be3cca2bde7ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/result.json",
+      "change": "added",
+      "bytes": 18581,
+      "sha256": "7cadbbe57071ea0dcfbf86c317dc3d96d67342cb85c5ca0ea25715b136a9e780",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/executions/20261120T082212Z-89534ddc/attempt.json",
+      "change": "added",
+      "bytes": 17215,
+      "sha256": "df52b7b8ed9506252c48f692fed68a71dc9e2d1d6f72f0b4acaa595d65d4a4e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/executions/20261120T082212Z-89534ddc/checker.json",
+      "change": "added",
+      "bytes": 7422,
+      "sha256": "931da3e9675d7e5b17a770f9b01f598f132b6247bc2d307bc7b179f61834cb10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/executions/20261120T082212Z-89534ddc/correspondence.json",
+      "change": "added",
+      "bytes": 1807,
+      "sha256": "799d73c01f3ec66ad13737ea4c8a16fd90936794cd88593e9cac0af403da7370",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "89b302368913864224f1344dcf6031b12a76f353f30a38fd9b57abd747cf3528",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/plan.json",
+      "change": "added",
+      "bytes": 9213,
+      "sha256": "d7909ee4e8e6f167247b8b864a5ae81285c930a871045dfaaa56b7cc91a4f54a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1164,
+      "sha256": "f063de6425f005fe80c15e5cd8e2f292c6e67368c4185a1c6e7a3efb3f672468",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/controls.json",
+      "change": "added",
+      "bytes": 7031,
+      "sha256": "0e93b08a9dc56cef6dbc43102222daf784083cb298b937574ae9128a8d1566ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/execution.json",
+      "change": "added",
+      "bytes": 26700,
+      "sha256": "6ff654346676449d9ddbd05d116307693f36d6b98e2ad3c1329dbe1ed638ccb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "146b0171617aaed5492fc9cf720bc7b58803327c8420b745c3347ceac2a7cee3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 296,
+      "sha256": "2708a7c18cca652c7325004f9dc67f441ad9c9ab2b79d6371b225f5f29781b00",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/verifier.json",
+      "change": "added",
+      "bytes": 19419,
+      "sha256": "e4a513faafa909f1b73ab71e55855c32d6697d24836a943eb2c82453a29c52d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5918,
+      "sha256": "bda1bfd12d010b0d03c31ecbeba72fbe9a55324e5cc663b7869f68b681728d65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/result.json",
+      "change": "added",
+      "bytes": 18505,
+      "sha256": "1533174a032ddd6edaec05017c7816ff0c429871479d702520822d246421bfe0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/executions/20261120T082216Z-b0afde4d/attempt.json",
+      "change": "added",
+      "bytes": 17125,
+      "sha256": "253c677cca180b11915fd78c08b0ec9e2431639ec0b50d3d7362caa3bd43a3ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/executions/20261120T082216Z-b0afde4d/checker.json",
+      "change": "added",
+      "bytes": 7401,
+      "sha256": "b61482294aefa911911580d6169ea4eb40ab6aac482708fee91d36f4ca842cbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/executions/20261120T082216Z-b0afde4d/correspondence.json",
+      "change": "added",
+      "bytes": 1801,
+      "sha256": "d5cbe7d480b3ffe41d3341fca35461c83f5580ced5964cdfaf07cb393fe986b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8094fc142a69b451a03c8c5e47953a9f5026f936a7758c2c86eef1eea3fd9010",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/plan.json",
+      "change": "added",
+      "bytes": 9251,
+      "sha256": "ddeea906de18a09967deec93a418743ee761b21f75f7a253a978f5dace8ead1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1158,
+      "sha256": "b88555e8d85c103b8f0737db2021552a7bc94b917776061bd1151bc7452e169b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/controls.json",
+      "change": "added",
+      "bytes": 7031,
+      "sha256": "76d58d2656a4087de99065cc5f37b4bfbf8b54f5e951331438506a796f691185",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/execution.json",
+      "change": "added",
+      "bytes": 40138,
+      "sha256": "2a140984494838075b9c04356f34f83ce1f0f83058012cb0983e5afd191739e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "03ae42a043135136eee806d76b1154f6bdd2513afa6eb657585753e4a4ec0e18",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 536,
+      "sha256": "43bac8e8e6fb93a9df8860ddd5ab63f97dd97685fe76069c24029956af7be331",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/verifier.json",
+      "change": "added",
+      "bytes": 32354,
+      "sha256": "aba9fa50079b1664db0fcd7c1f0d8f815b93b8658835c6bc75bfbc911769b0a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6952,
+      "sha256": "bdbb5a7ab1843d402f32cb702b1e4e9747b66daffcf5aa20dd8ad634b424bd7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/result.json",
+      "change": "added",
+      "bytes": 16355,
+      "sha256": "4eb25f19f65555bed49b53457f126d02d13bde6f68f50a349f9807da926faea9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/executions/20261120T082220Z-540abe32/attempt.json",
+      "change": "added",
+      "bytes": 29138,
+      "sha256": "4cc8e47ce7f8c4ae1434f88170c1bf213449fa6b208e94322c619409b25ce6db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/executions/20261120T082220Z-540abe32/checker.json",
+      "change": "added",
+      "bytes": 8430,
+      "sha256": "ffaf0aa0a8c86c9fa9fdc74c968d1f790b6ce714db97a6889be9bf8979bc2787",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/executions/20261120T082220Z-540abe32/correspondence.json",
+      "change": "added",
+      "bytes": 1845,
+      "sha256": "cf1532ef842c0d6568896543f9127a73b1e8b4f38979a92374cf882710aa5789",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "90ac71533a37e52ff255705750d5e0b852228db5b46d5813810d7fe2932c155e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/plan.json",
+      "change": "added",
+      "bytes": 9348,
+      "sha256": "21e6d2e38639776191ae515aee0349715852b7178266be0a0876e05e0ad173ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1164,
+      "sha256": "f063de6425f005fe80c15e5cd8e2f292c6e67368c4185a1c6e7a3efb3f672468",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/controls.json",
+      "change": "added",
+      "bytes": 7004,
+      "sha256": "bbfd86eb1a2904ed784b3bd74623b330459262de60102a00b0f22618eea9784c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/execution.json",
+      "change": "added",
+      "bytes": 40050,
+      "sha256": "0bbe1d749a89041c3c0a2c901cb4f5187469244e82d541b858e06ab22b4dab93",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "eec2a01461ed3ea445ba9aadd3ee33e900a09fdb7e1ae15edcf4fe9dfb7ddbfb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 536,
+      "sha256": "43bac8e8e6fb93a9df8860ddd5ab63f97dd97685fe76069c24029956af7be331",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/verifier.json",
+      "change": "added",
+      "bytes": 32275,
+      "sha256": "2a92b1260ed9e0af17a2be041720f45a4ad87dba29641bcba84140b00c7230c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6956,
+      "sha256": "c59e85825d27b4b4e421113b81734fcd26c00fb7d83ba9218ea7291c5d006974",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/result.json",
+      "change": "added",
+      "bytes": 16285,
+      "sha256": "aad645514282cf9087f7325aefea5a162e4f3615597da9ffcb4a787943f349a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/executions/20261120T082224Z-1f727071/attempt.json",
+      "change": "added",
+      "bytes": 29049,
+      "sha256": "4782e4b4d888ab1412901f74dcbe492447d6532bd28e25547ca41b52e3d21af9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/executions/20261120T082224Z-1f727071/checker.json",
+      "change": "added",
+      "bytes": 8414,
+      "sha256": "b994a8be325f42903c828b48cdbca92c3e5a194f5e221390fbf429082c022f5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/executions/20261120T082224Z-1f727071/correspondence.json",
+      "change": "added",
+      "bytes": 1839,
+      "sha256": "a47b1d8ceb25ad3df3aa7f3ce2b0ef3717ee772fd07526dd8269084c0a5e776b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T08:25:28+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/completion.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/plan.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/control-parent-jdk21.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/control-parent-jdk21.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/controls.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/execution.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/streams.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/verifier-output.txt",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/verifier.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/verifier.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/records/verifier.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/20261120T082203Z-870bdfc0/result.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/executions/20261120T082203Z-870bdfc0/attempt.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/executions/20261120T082203Z-870bdfc0/checker.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/executions/20261120T082203Z-870bdfc0/correspondence.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-parent/executions/20261120T082203Z-870bdfc0/replay.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/completion.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/plan.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/control-fix-jdk21.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/control-fix-jdk21.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/controls.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/execution.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/streams.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/verifier-output.txt",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/verifier.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/verifier.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/records/verifier.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/20261120T082208Z-70ffa51a/result.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/executions/20261120T082208Z-70ffa51a/attempt.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/executions/20261120T082208Z-70ffa51a/checker.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/equals-fix/executions/20261120T082208Z-70ffa51a/correspondence.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/completion.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/plan.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/control-parent-jdk21.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/control-parent-jdk21.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/controls.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/execution.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/streams.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/verifier-output.txt",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/verifier.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/verifier.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/records/verifier.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/20261120T082212Z-89534ddc/result.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/executions/20261120T082212Z-89534ddc/attempt.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/executions/20261120T082212Z-89534ddc/checker.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-parent/executions/20261120T082212Z-89534ddc/correspondence.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/completion.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/plan.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/control-fix-jdk21.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/control-fix-jdk21.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/controls.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/execution.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/streams.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/verifier-output.txt",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/verifier.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/verifier.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/records/verifier.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/20261120T082216Z-b0afde4d/result.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/executions/20261120T082216Z-b0afde4d/attempt.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/executions/20261120T082216Z-b0afde4d/checker.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/hash-contract-fix/executions/20261120T082216Z-b0afde4d/correspondence.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/completion.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/plan.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/control-parent-jdk21.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/control-parent-jdk21.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/controls.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/execution.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/streams.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/verifier-output.txt",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/verifier.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/verifier.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/records/verifier.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/20261120T082220Z-540abe32/result.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/executions/20261120T082220Z-540abe32/attempt.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/executions/20261120T082220Z-540abe32/checker.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-parent/executions/20261120T082220Z-540abe32/correspondence.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/completion.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/plan.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/control-fix-jdk21.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/control-fix-jdk21.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/controls.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/execution.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/streams.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/verifier-output.txt",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/verifier.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/verifier.stderr",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/records/verifier.stdout",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/20261120T082224Z-1f727071/result.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/executions/20261120T082224Z-1f727071/attempt.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/executions/20261120T082224Z-1f727071/checker.json",
+      "examples/316-commons-csv-row-limit-equality/receipts/rows-fix/executions/20261120T082224Z-1f727071/correspondence.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "411cfec96d3cae2e9195010505411126f6921e67",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/411cfec96d3cae2e9195010505411126f6921e67/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-081134-trace-both-csv-limit-readers-from-string"
+}
