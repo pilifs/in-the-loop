@@ -1,0 +1,9 @@
+# Resource close order and suppressed exceptions
+
+Reversing resource acquisition changes the primary or suppressed tags while every tagged failure has the same exception class.
+
+The independent JVM oracle covered 8 inputs on each revision. original mismatches were 0 for primary, 0 for suppressed, 0 for close. nested mismatches were 0 for primary, 0 for suppressed, 0 for close. reversed mismatches were 1 for primary, 2 for suppressed, 8 for close.
+
+The table records the direct observations, and each selected adapter field is checked on the full table. The public proof tasks have their own artifact-bound statements and execution histories.
+
+[Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)

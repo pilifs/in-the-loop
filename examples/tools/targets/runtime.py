@@ -265,6 +265,8 @@ def _lock_fixture(plan, revision, entry, folder):
         source["dependencies"] = dependencies
     if entry.get("orderedClasses"):
         source["orderedClasses"] = entry["orderedClasses"]
+    if entry.get("fixtureCompiler"):
+        source["fixtureCompiler"] = entry["fixtureCompiler"]
     return f"fixture:{entry['fixture']}", source
 
 
@@ -395,6 +397,7 @@ def _lock_slice(plan, revision, entry, folder):
                       "and a narrower scope than it",
         "history": {"commit": commit, **({"parent": parent} if parent else {})},
         "slice": {"files": list(files), "jdk": jdk, "flags": list(flags), **({"matches": matches} if matches else {}),
+                  **({"companionClasses": recipe["companionClasses"]} if recipe.get("companionClasses") else {}),
                   "scope": SCOPES["extracted-source-slice"]},
         "published": items,
         **_controls_source(folder, entry),
@@ -631,11 +634,11 @@ class _Build:
             raise Refused("build", f"{step} failed (exit {code}): {' '.join(argv)}\n{tail}", command=" ".join(argv))
         return out
 
-    def compile(self, step, sources, classpath):
+    def compile(self, step, sources, classpath, compiler=None):
         classes = self.workdir / "classes" / step
         classes.mkdir(parents=True)
-        argv = [str(self.home / "bin/javac"), "--release", self.recipe["release"], "-encoding", "UTF-8",
-                "-implicit:none", *self.recipe.get("flags", ()), "-d", str(classes)]
+        home, flags = compiler or (self.home, ["--release", self.recipe["release"], "-encoding", "UTF-8", *self.recipe.get("flags", ())])
+        argv = [str(home / "bin/javac"), *flags, "-implicit:none", "-d", str(classes)]
         if classpath:
             argv += ["-cp", ":".join(str(self.workdir / c) for c in classpath)]
         self.run(f"javac-{step}", argv + [str(s) for s in sorted(sources)])
@@ -701,6 +704,20 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
                 if o in originals:
                     refs.add((o, n, d))
         calls_target = any(o == name and n == method and (descriptor is None or d == descriptor) for o, n, d in refs)
+        # javac emits an invokeinterface for a generic erased call. On a freshly constructed final
+        # receiver the JVM can dispatch it to a synthetic bridge declared by that class.
+        if (not calls_target and descriptor and runtime_jar.class_flags(data) & 0x0010
+                and (runtime_jar.method_flags(data, method, descriptor) or 0) & 0x0040):
+            declarations = set(runtime_jar.interfaces(data))
+            interfaces = sorted(o for o, n, d in refs if o in declarations and n == method and d == descriptor)
+            constructed = any(o == name and n == "<init>" for o, n, _ in refs)
+            providers = {c for c in holders if interfaces and (loaded := look(c)) is not None
+                         and set(interfaces).intersection(runtime_jar.interfaces(loaded))}
+            if interfaces and constructed and providers == {name}:
+                found["bridgeDispatch"] = {"receiver": cls, "descriptor": descriptor,
+                                           "interfaces": [i.replace("/", ".") for i in interfaces],
+                                           "accessFlags": runtime_jar.method_flags(data, method, descriptor)}
+                calls_target = True
         if not calls_target and plan.kind == "replay":
             raise Refused("adapter", f"the adapter {adapter} never references {plan.target}: it does not call the "
                                      f"selected original method")
@@ -840,7 +857,14 @@ def _prepare_fixture(plan, revision, locked, workdir):
             dependencies.append(dep)
             if _hashed(folder, _java_files(folder, folder / component["root"])) != component["files"]:
                 raise Refused("lock", f"fixture dependency {component['root']} changed during preparation")
-        original = build.jar("original", build.compile("original", sources, dependencies), f"{revision}.jar", "original", how)
+        compiler = None
+        if fixed := source.get("fixtureCompiler"):
+            home = runtime_jdk.home(fixed["jdk"])
+            if home is None:
+                raise Refused("toolchain", f"fixture {revision} needs the compiler of JDK {fixed['jdk']}")
+            compiler = Path(home), fixed["flags"]
+            toolchain["originalCompiler"] = {"jdk": runtime_jdk.identity(home), "flags": fixed["flags"]}
+        original = build.jar("original", build.compile("original", sources, dependencies, compiler), f"{revision}.jar", "original", how)
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *dependencies])
         source["target"] = _check_classpath(plan, workdir, classpath, original, adapter,
                                             ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies)
@@ -1160,9 +1184,25 @@ def _prepare_slice(plan, revision, locked, workdir):
             package = PACKAGE.search((dest / f).read_text(errors="replace"))
             tops.append("/".join([*(package.group(1).split(".") if package else []), Path(f).stem]))
         made = {c.relative_to(classes).as_posix()[:-6]: c for c in sorted(classes.rglob("*.class"))}
-        stray = sorted(n for n in made if not any(n == t or n.startswith(t + "$") for t in tops))
+        companions = {runtime_jar.internal(n) for n in recipe.get("companionClasses", [])}
+        origins = {}
+        stray = []
+        for name, path in made.items():
+            if any(name == t or name.startswith(t + "$") for t in tops):
+                continue
+            # A source file can also declare package-private top-level classes.
+            source_name = runtime_jar.source_file(path.read_bytes())
+            package = name.rpartition("/")[0]
+            if (name not in companions or not source_name or Path(source_name).name != source_name
+                    or not source_name.endswith(".java") or runtime_jar.class_flags(path.read_bytes()) & 0x0001
+                    or "/".join(filter(None, [package, Path(source_name).stem])) not in tops):
+                stray.append(name)
+            else:
+                origins[name] = source_name
         if stray:
             raise Refused("build", f"javac wrote {', '.join(stray)}, which no file of the slice declares")
+        if companions != set(origins):
+            raise Refused("build", "a declared companion class was not emitted from an included source")
         # javac may emit no class for a package-info.java containing only documentation.
         missing = sorted(t for t in tops if t not in made and t.rsplit("/", 1)[-1] != "package-info")
         if missing:
@@ -1180,7 +1220,8 @@ def _prepare_slice(plan, revision, locked, workdir):
         identity = runtime_jdk.identity(jdk)
         toolchain["slice"] = {"jdk": identity, "javac": argv, "flags": list(recipe["flags"]),
                               "classes": {n: sha256(c) for n, c in made.items()}}
-        source["slice"] = {**recipe, "compiled": compiled, "jar": name, **({"matched": matched} if matched else {})}
+        source["slice"] = {**recipe, "compiled": compiled, "jar": name, **({"matched": matched} if matched else {}),
+                           **({"companionSources": origins} if origins else {})}
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *acquired])
         source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
     except Refused as e:

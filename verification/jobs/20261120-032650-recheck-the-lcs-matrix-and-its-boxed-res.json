@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-032650-recheck-the-lcs-matrix-and-its-boxed-res",
+  "title": "Recheck the LCS matrix and its boxed result",
+  "description": "Revisit the identical Commons Text release and original LCS score bound after adding small Integer cache identities and unboxing. Preserve the preceding refusal at Integer.valueOf.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "native:arrays"
+  ],
+  "links": {
+    "examples": [
+      "308",
+      "314"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T03:26:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" > examples/308-commons-text-longest-common-subsequence/records/boxing-transfer.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/308-commons-text-longest-common-subsequence/records/boxing-transfer.json"
+  ]
+}

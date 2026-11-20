@@ -2136,21 +2136,33 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
             "arraycopy" => {
                 let (Some(src), Some(dst)) = (a[0].as_ref(), a[2].as_ref()) else { return Err(m.npe()) };
                 let (src_pos, dst_pos, length) = (a[1].as_int(), a[3].as_int(), a[4].as_int());
-                let data = match m.heap.get(src) {
-                    Object::Array { data, .. } => data.clone(),
+                let (source_type, source_len) = match m.heap.get(src) {
+                    Object::Array { element, data } => (element.clone(), data.len()),
                     _ => return Err(m.throw("java/lang/ArrayStoreException", Some("arraycopy: source type is not an array"))),
                 };
-                m.check_write(dst, "an array element")?;
-                let dst_len = match m.heap.get(dst) {
-                    Object::Array { data, .. } => data.len() as i32,
+                let (dest_type, dest_len) = match m.heap.get(dst) {
+                    Object::Array { element, data } => (element.clone(), data.len()),
                     _ => return Err(m.throw("java/lang/ArrayStoreException", Some("arraycopy: destination type is not an array"))),
                 };
-                if src_pos < 0 || dst_pos < 0 || length < 0 || src_pos + length > data.len() as i32 || dst_pos + length > dst_len {
+                if source_type != dest_type && !(source_type.is_reference() && dest_type.is_reference()) {
+                    return Err(m.throw("java/lang/ArrayStoreException", None));
+                }
+                if src_pos < 0 || dst_pos < 0 || length < 0 || i64::from(src_pos) + i64::from(length) > source_len as i64
+                    || i64::from(dst_pos) + i64::from(length) > dest_len as i64 {
                     return Err(m.throw("java/lang/ArrayIndexOutOfBoundsException", Some("arraycopy: last source index out of bounds")));
                 }
-                let slice = data[src_pos as usize..(src_pos + length) as usize].to_vec();
+                let Object::Array { data, .. } = m.heap.get(src) else { unreachable!() };
+                let slice = data[src_pos as usize..src_pos as usize + length as usize].to_vec();
+                let dest_class = match &dest_type { Type::Object(name) => name.clone(), other => other.descriptor() };
+                let copied = if source_type == dest_type { slice.len() } else {
+                    slice.iter().position(|v| v.as_ref().is_some_and(|r| !m.is_instance(r, &dest_class))).unwrap_or(slice.len())
+                };
+                if copied != 0 { m.check_write(dst, "an array element")?; }
                 if let Object::Array { data, .. } = m.heap.get_mut(dst) {
-                    data[dst_pos as usize..(dst_pos + length) as usize].copy_from_slice(&slice);
+                    data[dst_pos as usize..dst_pos as usize + copied].copy_from_slice(&slice[..copied]);
+                }
+                if copied != slice.len() {
+                    return Err(m.throw("java/lang/ArrayStoreException", None));
                 }
                 return Ok(None);
             }

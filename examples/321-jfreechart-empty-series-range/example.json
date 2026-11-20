@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "321",
+  "title": "JFreeChart range endpoints with an empty series",
+  "summary": "An empty series carries NaN endpoints into a range which still has finite observations.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "special-values",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "JFreeChart",
+    "file": "source/org/jfree/data/time/TimeSeriesCollection.java",
+    "symbol": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "An empty series carries NaN endpoints into a range which still has finite observations."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 30 inputs on each revision. parent mismatches were 12 for lower, 12 for upper. fix mismatches were 0 for lower, 0 for upper."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/jfree/jfreechart",
+    "url": "https://github.com/jfree/jfreechart/commit/3b1283db18f530478ea8b71310d713014e7e126a"
+  }
+}

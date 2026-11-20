@@ -1,0 +1,392 @@
+{
+  "task": "rate-three-first",
+  "record": {
+    "kind": "verifier",
+    "revision": "three-first",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+      "prove",
+      "invoice.Invoice#total(int)",
+      "--classes",
+      "prepare/three-first/three-first.jar",
+      "--classpath",
+      "prepare/three-first/lib/rates/three.jar",
+      "--classpath",
+      "prepare/three-first/lib/rates/two.jar",
+      "--assume",
+      "q >= -2 && q <= 2",
+      "--assert",
+      "result == q * 3",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "10",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.031,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5",
+      "commit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+      "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "invoice.Invoice#total(I)I",
+        "revisions": {
+          "three-first": {
+            "commit": "fixture:client",
+            "loadedFrom": "three-first.jar",
+            "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
+            "origin": "built from client by the fixture recipe",
+            "parameters": {
+              "names": [
+                "q"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "three-first": [
+          {
+            "path": "three-first.jar",
+            "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
+            "role": "original"
+          },
+          {
+            "path": "lib/rates/three.jar",
+            "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/rates/two.jar",
+            "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "invoice.Invoice#total(I)I",
+      "entryBindings": {
+        "three-first": {
+          "entry": "invoice.Invoice#total(I)I",
+          "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
+          "loadedFrom": "three-first.jar",
+          "subject": "invoice.Invoice#total(I)I",
+          "subjectClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2"
+        }
+      },
+      "recipe": {
+        "kind": "direct-method",
+        "command": "prove",
+        "subject": "invoice.Invoice#total(I)I",
+        "checkedEntry": "invoice.Invoice#total(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "q >= -2 && q <= 2"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == q * 3"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "10"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "3"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+      },
+      "commits": {
+        "three-first": "fixture:client"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "three-first": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+            "gaps",
+            "--target",
+            "invoice.Invoice#total(int)",
+            "--classes",
+            "prepare/three-first/three-first.jar",
+            "--classpath",
+            "prepare/three-first/lib/rates/three.jar",
+            "--classpath",
+            "prepare/three-first/lib/rates/two.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-three-first.stdout",
+          "stderr": "verifier/probe-three-first.stderr",
+          "gaps": []
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0228,
+        "peakRssBytes": 80900096,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "invoice.Invoice#total(int)",
+        "domain": "q: int",
+        "assume": "q >= -2 && q <= 2",
+        "assert": "result == q * 3",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over q: int in 0.0 s; loops unwound 10 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ invoice.Invoice#total(int) satisfies `result == q * 3` on every input where q >= -2 && q <= 2 (jvmcontract's own checker (CaDiCaL): 1 properties proved over q: int in 0.0 s; loops unwound 10 times with unwinding assertions)\n  not vacuous: total(q=0) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.004877856,
+          "properties": 1,
+          "unwind": 10,
+          "max_array_length": 3,
+          "stage": null,
+          "native": {
+            "paths": 3,
+            "merges": 0,
+            "solver_calls": 2,
+            "solving_seconds": 6.3128e-05,
+            "gates_evaluated": 66,
+            "evaluating_seconds": 3.697e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 307,
+            "clauses": 943,
+            "seconds": 0.004191048,
+            "loading_seconds": 3.9364e-05,
+            "decoding_seconds": 5.1286e-05,
+            "encoding_seconds": 0.000199055,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.004,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.004,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 307,
+                "clauses": 943
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.995,
+              "seconds": 0.002,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 223,
+                "clauses": 662
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.02,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.006,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.012
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "q",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "q: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "q >= -2 && q <= 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == q * 3",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 10,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+            "classes": 38,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found total(q=0).",
+            "witness": "total(q=0)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-025230-replay-the-paired-invoice-witness-on-eac/.build-py/examples-s4zr17az/targets/312/rate-three-first/20261120T030137Z-1b2451f1",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-025230-replay-the-paired-invoice-witness-on-eac/.build-py/examples-s4zr17az/targets/312/rate-three-first/20261120T030137Z-1b2451f1"
+  }
+}

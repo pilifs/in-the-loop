@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "326",
+  "title": "Commons Lang duration fields separated by a literal",
+  "summary": "A second H after a literal can incorrectly extend the width of an earlier hour token.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "parser-differential",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Lang",
+    "file": "src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java",
+    "symbol": "org.apache.commons.lang3.time.DurationFormatUtils#formatDuration(JLjava/lang/String;Z)Ljava/lang/String;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A second H after a literal can incorrectly extend the width of an earlier hour token."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 78 inputs on each revision. parent mismatches were 52 for text, 0 for quoting. fix mismatches were 0 for text, 0 for quoting."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-lang",
+    "url": "https://github.com/apache/commons-lang/commit/3f0c0fd5cb8af9f2ae6d7f869d7e87c66985ab90"
+  }
+}

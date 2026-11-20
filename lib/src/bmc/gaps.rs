@@ -53,7 +53,7 @@
 //! Nor is an application class's initializer the engine runs, as the JVM does, since Phase 5 of
 //! `llm-dlc/loops/engine-priorities.md`: one whose code, and the application methods it calls, are in the fragment.
 //! The scan counts those it relied on. A construct the engine refuses (floating point, a static field of the JDK
-//! written, a multi-dimensional array, a floating-point or array result of a JDK method, ...) is not a gap either: it ends the proof
+//! written, an unsupported floating-point operation or array result of a JDK method, ...) is not a gap either: it ends the proof
 //! with no verdict, as it should, in either mode. The scan lists those reasons too, since a method that has one is
 //! outside the engine whatever its gaps. `monitorenter` and `monitorexit` are implemented: they throw
 //! `NullPointerException` on null and otherwise do nothing, which is all they do in a run of one thread.
@@ -595,7 +595,8 @@ pub fn jdk_static_call(owner: &str, name: &str, descriptor: &str) -> JdkCall {
     let Ok(d) = MethodDescriptor::parse(descriptor) else { return JdkCall::Refused };
     let floating = |t: &Type| matches!(t, Type::Float | Type::Double);
     // A model that makes an array (`Arrays.copyOf`) is one before an array result is refused.
-    if super::bytes::models_static(owner, name, descriptor) || super::strings::models_static(owner, name, descriptor) {
+    if super::bytes::models_static(owner, name, descriptor) || super::strings::models_static(owner, name, descriptor)
+        || super::arraycopy::is_call(owner, name, descriptor) {
         return JdkCall::Exact;
     }
     if d.params.iter().any(floating) || matches!(d.ret, Type::Float | Type::Double | Type::Array(_)) {

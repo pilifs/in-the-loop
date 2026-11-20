@@ -1,0 +1,56 @@
+[
+  {
+    "claimKey": "a3277271b04b82e9",
+    "entry": "invoice.Invoice#total(I)I",
+    "inputs": [
+      {
+        "name": "q",
+        "type": "int",
+        "value": 1
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "two-first": {
+        "entryClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
+        "classpath": [
+          "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
+          "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
+          "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint q = 1;\nif (!(q >= -2 && q <= 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          2,
+          null
+        ]
+      },
+      "three-first": {
+        "entryClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
+        "classpath": [
+          "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
+          "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
+          "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint q = 1;\nif (!(q >= -2 && q <= 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = invoice.Invoice.total(q); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          3,
+          null
+        ]
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

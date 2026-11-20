@@ -6,6 +6,7 @@ an exact integer, a finite alphabet index, or agreement with a per-input value.
 """
 
 import json
+import math
 from pathlib import Path
 
 
@@ -13,10 +14,24 @@ def canonical(value):
     return json.dumps(value, sort_keys=True, ensure_ascii=False, allow_nan=False, separators=(",", ":"))
 
 
+def agrees(value, expected, field):
+    if "absoluteTolerance" not in field or value is None or expected is None:
+        return canonical(value) == canonical(expected)
+    tolerance = field["absoluteTolerance"]
+    if type(tolerance) not in (int, float) or not math.isfinite(tolerance) or tolerance < 0:
+        raise ValueError("a coordinate tolerance must be finite and nonnegative")
+    if not isinstance(value, list) or not isinstance(expected, list) or len(value) != len(expected):
+        return False
+    if any(type(v) not in (int, float, str) for v in [*value, *expected]):
+        return False
+    return all(math.isfinite(float(x)) and math.isfinite(float(y)) and abs(float(x) - float(y)) <= tolerance
+               for x, y in zip(value, expected))
+
+
 def project(value, expected, field):
     encoding = field["encoding"]
     if encoding == "matches":
-        return int(canonical(value) == canonical(expected))
+        return int(agrees(value, expected, field))
     if encoding == "integer" and type(value) is int:
         return value
     if encoding in ("index", "digits"):
@@ -74,7 +89,7 @@ class Table:
 
     def problems(self, rows):
         return [[case["id"], name] for case, row in self.observations(rows) for name in self.fields
-                if canonical(row["direct"][name]) != canonical(self.expected(case, row, name))]
+                if not agrees(row["direct"][name], self.expected(case, row, name), self.fields[name])]
 
     def correspondence(self, rows, entry):
         fields = [(name, field) for name, field in self.fields.items() if field.get("entry") == entry]

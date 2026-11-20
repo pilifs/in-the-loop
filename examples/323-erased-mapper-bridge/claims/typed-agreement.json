@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "typed-agreement",
+  "statement": "On their shared admissible inputs the typed and erased entries return the same value and enter the body once.",
+  "assume": "code >= 0 && code < 4",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 10,
+    "maxArrayLength": 3
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "bridgegrid.Projection#typedAgreement(I)I",
+    "mapping": "The first four codes are null or actual Integers; code four is String one and only the erased call admits it.",
+    "correspondence": "finite-oracle",
+    "cases": 5
+  }
+}

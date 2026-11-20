@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-032650-retry-three-array-copy-claims-with-exact",
+  "title": "Retry three array-copy claims with exact JVM prefix semantics",
+  "description": "Revisit each original candidate on its closed source and prepared bytes after adding the native checked array copy and the standard Integer cache.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "314"
+    ],
+    "jobs": [
+      "20261120-023617-check-partial-copy-state-through-arrayst"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T03:26:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 314 --tasks exception-class,exceptional-poststate,assignable-poststate --retry-of 20261120T024332Z-321a69ab,20261120T024336Z-5aace6c3,20261120T024337Z-25d04026 --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/314-arraycopy-exceptional-prefix/receipts/exception-class",
+    "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate",
+    "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate"
+  ]
+}

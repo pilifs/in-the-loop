@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "329",
+  "title": "Commons Geometry intersects a unit cube at a shared vertex",
+  "summary": "A line reaching a boundary edge or vertex can lose the first intersection with the polyhedron.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "rounding",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Geometry",
+    "file": "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/PolyhedronsSet.java",
+    "symbol": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A line reaching a boundary edge or vertex can lose the first intersection with the polyhedron."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 6 inputs on each revision. parent mismatches were 4 for hit, 4 for point. fix mismatches were 0 for hit, 0 for point.",
+    "Both original geometry revisions were compiled with the same immutable Commons Numbers 1.0-beta1 dependencies. Their POM named a mutable 1.0-SNAPSHOT. The first positive intersection was calculated with rational slab intervals for each ray. The comparison permits an absolute coordinate error of 1e-10. The returned facet identities are outside the observation."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-geometry",
+    "url": "https://github.com/apache/commons-geometry/commit/17833efe2b8f1b563e8c261a28d26af441a3778c"
+  }
+}

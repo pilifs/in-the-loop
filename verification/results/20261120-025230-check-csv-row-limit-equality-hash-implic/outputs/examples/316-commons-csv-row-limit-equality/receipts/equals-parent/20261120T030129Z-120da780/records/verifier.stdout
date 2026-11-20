@@ -1,0 +1,172 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "csvgrid.Projection#equal(int)",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 9",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.valueOf(C)Ljava/lang/Character;@jdk-21.0.13 (java.lang.Character.valueOf(char) at org.apache.commons.csv.Constants.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "csvgrid.Projection#equal(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.valueOf(C)Ljava/lang/Character;@jdk-21.0.13 (java.lang.Character.valueOf(char) at org.apache.commons.csv.Constants.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "uri": null,
+        "line": 17
+      }
+    ],
+    "output": "✗ csvgrid.Projection#equal(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.valueOf(C)Ljava/lang/Character;@jdk-21.0.13 (java.lang.Character.valueOf(char) at org.apache.commons.csv.Constants.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (Bitwuzla)",
+      "seconds": 0.00915745,
+      "properties": 1,
+      "unwind": 24,
+      "max_array_length": 12,
+      "stage": null,
+      "native": {
+        "paths": 2,
+        "merges": 0,
+        "solver_calls": 2,
+        "solving_seconds": 5.541e-6,
+        "gates_evaluated": 6,
+        "evaluating_seconds": 2.674e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "word_operations": 4,
+        "finite_queries": {
+          "diagrams": 2,
+          "bitwuzla": 0
+        },
+        "variables": 71,
+        "clauses": 1,
+        "seconds": 0.007772574,
+        "loading_seconds": 0.001609881,
+        "decoding_seconds": 0.000105738,
+        "encoding_seconds": 0.000117902,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.lang.Character.valueOf(C)Ljava/lang/Character;@jdk-21.0.13",
+          "kind": "jdk-static-method",
+          "call": "java.lang.Character.valueOf(char)",
+          "sites": [
+            "org.apache.commons.csv.Constants.<clinit>:43"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.008,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.002,
+            "lowering": 0.0,
+            "symbolic": 0.006,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 71,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.04,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.008,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.031
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 9",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 24,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

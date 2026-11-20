@@ -1,0 +1,22 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {
+    "hit": {
+      "entry": "cubegrid.Projection#hit(I)I",
+      "encoding": "matches"
+    },
+    "point": {
+      "entry": "cubegrid.Projection#point(I)I",
+      "encoding": "matches",
+      "absoluteTolerance": 1e-10
+    }
+  },
+  "cases": [
+    {"id": 0, "input": {"startTimesTwo": [-2, -2, -2], "direction": [1, 1, 1], "tolerance": "1e-10"}, "expected": {"hit": true, "point": [0.0, 0.0, 0.0]}},
+    {"id": 1, "input": {"startTimesTwo": [1, 1, 1], "direction": [1, 1, 1], "tolerance": "1e-10"}, "expected": {"hit": true, "point": [1.0, 1.0, 1.0]}},
+    {"id": 2, "input": {"startTimesTwo": [4, 4, 4], "direction": [-1, -1, -1], "tolerance": "1e-10"}, "expected": {"hit": true, "point": [1.0, 1.0, 1.0]}},
+    {"id": 3, "input": {"startTimesTwo": [1, 1, 1], "direction": [-1, -1, -1], "tolerance": "1e-10"}, "expected": {"hit": true, "point": [0.0, 0.0, 0.0]}},
+    {"id": 4, "input": {"startTimesTwo": [-2, 1, 1], "direction": [1, 0, 0], "tolerance": "1e-10"}, "expected": {"hit": true, "point": [0.0, 0.5, 0.5]}},
+    {"id": 5, "input": {"startTimesTwo": [1, 4, 1], "direction": [0, -1, 0], "tolerance": "1e-10"}, "expected": {"hit": true, "point": [0.5, 1.0, 0.5]}}
+  ]
+}

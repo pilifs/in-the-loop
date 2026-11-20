@@ -1,0 +1,1393 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-025230-verify-independently-allocated-and-share",
+  "title": "Verify independently allocated and shared theatre seat rows",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.8s, peak 139.6 MiB (estimated 2m00s, 2.0 GiB); 137 output file(s) changed; signals: example:task-as-expected×9",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-025230-verify-independently-allocated-and-share.json",
+    "sha256": "86da8604ef398f21b1dd25ae3e4b63db82ed64b613818980a93a2215cb2b5dde",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-025230-verify-independently-allocated-and-share",
+      "title": "Verify independently allocated and shared theatre seat rows",
+      "description": "Check shape, exact marked cells and row identity separately for rectangular, separately allocated and shared implementations. All eighteen direct JVM configurations must agree with the checked projection.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "317"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T02:52:30+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "18m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 317 --tasks shape-matrix,shape-separate,shape-shared,cells-matrix,cells-separate,cells-shared,identity-matrix,identity-separate,identity-shared --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/317-theatre-seat-matrix/receipts/shape-matrix",
+        "examples/317-theatre-seat-matrix/receipts/shape-separate",
+        "examples/317-theatre-seat-matrix/receipts/shape-shared",
+        "examples/317-theatre-seat-matrix/receipts/cells-matrix",
+        "examples/317-theatre-seat-matrix/receipts/cells-separate",
+        "examples/317-theatre-seat-matrix/receipts/cells-shared",
+        "examples/317-theatre-seat-matrix/receipts/identity-matrix",
+        "examples/317-theatre-seat-matrix/receipts/identity-separate",
+        "examples/317-theatre-seat-matrix/receipts/identity-shared"
+      ]
+    }
+  },
+  "sourceCommit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+  "startedAt": "2026-11-20T02:58:47+00:00",
+  "finishedAt": "2026-11-20T03:01:37+00:00",
+  "wallSeconds": 170.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3945086,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1080.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 146415616,
+    "wallSeconds": 8.8,
+    "cpuSeconds": 13.8,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 317 --tasks shape-matrix,shape-separate,shape-shared,cells-matrix,cells-separate,cells-shared,identity-matrix,identity-separate,identity-shared --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1080.0,
+      "cancelled": false,
+      "wallSeconds": 8.815,
+      "cpuSeconds": 13.828,
+      "cpuThrottledSeconds": 0.586,
+      "peakMemoryBytes": 146415616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 18,
+        "bytes": 1981,
+        "sha256": "303d6611b4551813aee39ce8323cc62069f16b32a1909e030f3ceeb2df1f0117",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 9
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "317-theatre-seat-matrix: task shape-matrix: established (completed; as expected), receipt receipts/shape-matrix/20261120T030129Z-22d73d5c/result.json",
+          "groups": [
+            "317",
+            "shape-matrix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "317-theatre-seat-matrix: task shape-separate: established (completed; as expected), receipt receipts/shape-separate/20261120T030131Z-5fcd36d9/result.json",
+          "groups": [
+            "317",
+            "shape-separate",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "317-theatre-seat-matrix: task shape-shared: established (completed; as expected), receipt receipts/shape-shared/20261120T030133Z-6517c6a9/result.json",
+          "groups": [
+            "317",
+            "shape-shared",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "317-theatre-seat-matrix: task cells-matrix: established (completed; as expected), receipt receipts/cells-matrix/20261120T030135Z-3c67f20c/result.json",
+          "groups": [
+            "317",
+            "cells-matrix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 10,
+          "text": "317-theatre-seat-matrix: task cells-separate: established (completed; as expected), receipt receipts/cells-separate/20261120T030135Z-775b0bc5/result.json",
+          "groups": [
+            "317",
+            "cells-separate",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "317-theatre-seat-matrix: task cells-shared: refuted (completed; as expected), receipt receipts/cells-shared/20261120T030135Z-b5e0f983/result.json",
+          "groups": [
+            "317",
+            "cells-shared",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 14,
+          "text": "317-theatre-seat-matrix: task identity-matrix: established (completed; as expected), receipt receipts/identity-matrix/20261120T030136Z-5bba76b1/result.json",
+          "groups": [
+            "317",
+            "identity-matrix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 16,
+          "text": "317-theatre-seat-matrix: task identity-separate: established (completed; as expected), receipt receipts/identity-separate/20261120T030136Z-9bf84491/result.json",
+          "groups": [
+            "317",
+            "identity-separate",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 18,
+          "text": "317-theatre-seat-matrix: task identity-shared: refuted (completed; as expected), receipt receipts/identity-shared/20261120T030136Z-d6a577cb/result.json",
+          "groups": [
+            "317",
+            "identity-shared",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "317-theatre-seat-matrix: running task shape-matrix (target route)",
+        "317-theatre-seat-matrix: task shape-matrix: established (completed; as expected), receipt receipts/shape-matrix/20261120T030129Z-22d73d5c/result.json",
+        "317-theatre-seat-matrix: running task shape-separate (target route)",
+        "317-theatre-seat-matrix: task shape-separate: established (completed; as expected), receipt receipts/shape-separate/20261120T030131Z-5fcd36d9/result.json",
+        "317-theatre-seat-matrix: running task shape-shared (target route)",
+        "317-theatre-seat-matrix: task shape-shared: established (completed; as expected), receipt receipts/shape-shared/20261120T030133Z-6517c6a9/result.json",
+        "317-theatre-seat-matrix: running task cells-matrix (target route)",
+        "317-theatre-seat-matrix: task cells-matrix: established (completed; as expected), receipt receipts/cells-matrix/20261120T030135Z-3c67f20c/result.json",
+        "317-theatre-seat-matrix: running task cells-separate (target route)",
+        "317-theatre-seat-matrix: task cells-separate: established (completed; as expected), receipt receipts/cells-separate/20261120T030135Z-775b0bc5/result.json",
+        "317-theatre-seat-matrix: running task cells-shared (target route)",
+        "317-theatre-seat-matrix: task cells-shared: refuted (completed; as expected), receipt receipts/cells-shared/20261120T030135Z-b5e0f983/result.json",
+        "317-theatre-seat-matrix: running task identity-matrix (target route)",
+        "317-theatre-seat-matrix: task identity-matrix: established (completed; as expected), receipt receipts/identity-matrix/20261120T030136Z-5bba76b1/result.json",
+        "317-theatre-seat-matrix: running task identity-separate (target route)",
+        "317-theatre-seat-matrix: task identity-separate: established (completed; as expected), receipt receipts/identity-separate/20261120T030136Z-9bf84491/result.json",
+        "317-theatre-seat-matrix: running task identity-shared (target route)",
+        "317-theatre-seat-matrix: task identity-shared: refuted (completed; as expected), receipt receipts/identity-shared/20261120T030136Z-d6a577cb/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3e72f5ff6f6a799615b8afe9e26b57137824bbb57239e7d23b8d33fa18075ca4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/plan.json",
+      "change": "added",
+      "bytes": 5349,
+      "sha256": "4161b54f384f5d04918b7d1ca5581fac6eedfa76dd2d00c27ce28f9daa882aa4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/control-matrix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/control-matrix-jdk21.stdout",
+      "change": "added",
+      "bytes": 2524,
+      "sha256": "b8904b06c46b5d8f05f46369f641337d75dfa8496f426bfbd60b56213d094d30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/controls.json",
+      "change": "added",
+      "bytes": 14494,
+      "sha256": "461abc93e9dfac0102ecec621e1839da68ffad2f30503f2e5fa044932e346787",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/execution.json",
+      "change": "added",
+      "bytes": 28708,
+      "sha256": "fff6f4ab86c3a52b824ad4c5bcb78226b533de6cd0637f45b59c34758332f59a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "b12e83de4a89b9c25652441350e039b9dc12c26e02ac937afda7b30e6a034dfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 281,
+      "sha256": "2b3cc503b5566f8eb6686c62e837292f942116b9dfd5ff3adefbfc5a3f4a7ee7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/verifier.json",
+      "change": "added",
+      "bytes": 14122,
+      "sha256": "8dead248403f8998fa88a0bd1126f9ad24dc9b345c7463575fdbd6aff6d9cec1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5876,
+      "sha256": "83e72d51ab44a9c0b3798db34e6fcaecc547aaeb61ac2d2ce210bb24341652a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/result.json",
+      "change": "added",
+      "bytes": 17682,
+      "sha256": "2a6b7226d4580daaf06a9b3ad3281b4daf62f14666e97139ce786bedff6c1c77",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/executions/20261120T030129Z-22d73d5c/attempt.json",
+      "change": "added",
+      "bytes": 9889,
+      "sha256": "17aa4911781b238c642c887dae1bee3efee2b11acff774eb2e5274c0c80e598a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/executions/20261120T030129Z-22d73d5c/checker.json",
+      "change": "added",
+      "bytes": 7198,
+      "sha256": "f5bb294c7c2f750ccb400dfc4fee2502ebe5c6830a2f4889d09b9a35a536351a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-matrix/executions/20261120T030129Z-22d73d5c/correspondence.json",
+      "change": "added",
+      "bytes": 1040,
+      "sha256": "7b87c79b604a355c3ec08d1a1f19b11036d8526a4ac87dcb9beb1846011e3634",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3823bf253b7eaaaf1f0b31f058dc5641fc080c46f9fd16367e7e0e192cbfbf91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/plan.json",
+      "change": "added",
+      "bytes": 5371,
+      "sha256": "58aba2aa66f38e53fd850e440dda24358bbad777a971d91158c448cfecdf8c92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/control-separate-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/control-separate-jdk21.stdout",
+      "change": "added",
+      "bytes": 2524,
+      "sha256": "b8904b06c46b5d8f05f46369f641337d75dfa8496f426bfbd60b56213d094d30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/controls.json",
+      "change": "added",
+      "bytes": 14518,
+      "sha256": "84c41aa4939250790d214e55d4b90a052f65cc9dada8301f214d1ca8ede11e69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/execution.json",
+      "change": "added",
+      "bytes": 28772,
+      "sha256": "22212bd6b273d131e17eced36e03a70d2092d5262e7fda4b33a39bfbc89e10c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/streams.json",
+      "change": "added",
+      "bytes": 1985,
+      "sha256": "add5ae00481ef3477d6e129f6aa6706bfa4f5a547911d6d57463b4c71e96fde6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 281,
+      "sha256": "2b3cc503b5566f8eb6686c62e837292f942116b9dfd5ff3adefbfc5a3f4a7ee7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/verifier.json",
+      "change": "added",
+      "bytes": 14174,
+      "sha256": "a7d37bcbeae2b0dba94c03b5b274a81dcb4a54ca9c4a1b80b00e57d51f35a17d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5876,
+      "sha256": "c094cdd66edb80676fc6bbe963a02f1090f0cf68659de948c4206a0cc78ab47c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/result.json",
+      "change": "added",
+      "bytes": 17720,
+      "sha256": "fb699da6f72bd6c2ffa5e29cac9594d79c7b49c1e6776150dbac4583ac681edb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/executions/20261120T030131Z-5fcd36d9/attempt.json",
+      "change": "added",
+      "bytes": 9952,
+      "sha256": "c250203c06a5905de20a596830ff450af084b16baa2796a7eae854cb5e0b737c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/executions/20261120T030131Z-5fcd36d9/checker.json",
+      "change": "added",
+      "bytes": 7206,
+      "sha256": "ad4fa9c7e526b29e5b5e6e8c4a4358e35c7b329239d08c493bf81e2bc2891b72",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-separate/executions/20261120T030131Z-5fcd36d9/correspondence.json",
+      "change": "added",
+      "bytes": 1044,
+      "sha256": "9aee56188e57e4e96d0550c10c6ceead560708d61e54c028892b9e971125f831",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "83fb675ecf9682f9154e078455ff9d2db619e1100fad10097fd7ae31f69c07a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/plan.json",
+      "change": "added",
+      "bytes": 5356,
+      "sha256": "d158d68b4078de5d7276bdc045937a0df1a50808dec549a82c68c9d70c7ff1ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/control-shared-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/control-shared-jdk21.stdout",
+      "change": "added",
+      "bytes": 2524,
+      "sha256": "2df2da7401c6e2cb803debd31d28f841d2c8e91acb01e2c85513d68bd419dffa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/controls.json",
+      "change": "added",
+      "bytes": 14494,
+      "sha256": "5750394de4e19f524a880fff83608059473ea9fead803845cfbf9e5a63bdf790",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/execution.json",
+      "change": "added",
+      "bytes": 28708,
+      "sha256": "ac1e4367b26d377b37e8e778fc8a9d666d15e07ab0ff427ac2b1e05d896ce6e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "98b720518d08082068584e80f4d0ec6dabb9d5496f05fd74ba19a0261889a457",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 281,
+      "sha256": "2b3cc503b5566f8eb6686c62e837292f942116b9dfd5ff3adefbfc5a3f4a7ee7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/verifier.json",
+      "change": "added",
+      "bytes": 14122,
+      "sha256": "84152926247241a2f90827f5f7a267d60174fba62253359012c4bd2c92237340",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5877,
+      "sha256": "5975f10bd97ea264de22b4a3c8736879abd9e0eb9fe187ed8feb9a88198f182d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/result.json",
+      "change": "added",
+      "bytes": 17682,
+      "sha256": "149a574a48fc3a7af9126bd3b44ed2d0c82948ab107de47ec417026cc3139e20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/executions/20261120T030133Z-6517c6a9/attempt.json",
+      "change": "added",
+      "bytes": 9889,
+      "sha256": "025cc7f0570abea407784bac1f966fd5bbddd8cb91c840199c6754d2bb7a0669",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/executions/20261120T030133Z-6517c6a9/checker.json",
+      "change": "added",
+      "bytes": 7198,
+      "sha256": "b1d867eeab9d92fc95460d1f767c4f6be0f66c60603b908e2b3eae3ceee67815",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/shape-shared/executions/20261120T030133Z-6517c6a9/correspondence.json",
+      "change": "added",
+      "bytes": 1040,
+      "sha256": "186a1089557e7a0e61ec450b872d5e7d7091b40eb1b23cbf4ec507e0910019f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ae51556c8d1e2177319e1ab47a9b3a39facf65d0bda9087877740eb0d64c3f95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/plan.json",
+      "change": "added",
+      "bytes": 5305,
+      "sha256": "6b8a7e093d2c14ef0f885a7dbcd1cee246e5cda72d5bc4862bf9d224259f06e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/control-matrix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/control-matrix-jdk21.stdout",
+      "change": "added",
+      "bytes": 2524,
+      "sha256": "b8904b06c46b5d8f05f46369f641337d75dfa8496f426bfbd60b56213d094d30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/controls.json",
+      "change": "added",
+      "bytes": 14494,
+      "sha256": "b5bd97de32ae63d1552345d0bff6281d10e9f3609702e1045c2cb3955a4a779c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/execution.json",
+      "change": "added",
+      "bytes": 28712,
+      "sha256": "5ee599e57ed0a6df54bae1b07116528945f66daa7b0b12d7966d8dee5aa44111",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "a10b8bdab955926bea15113b43020d156cba9f913fe95e58dd673ceb71535325",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 281,
+      "sha256": "62bbf9510e314a81c7980718dcf3ee000ac5128180d5a89788fa3823ceb9c5d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/verifier.json",
+      "change": "added",
+      "bytes": 14126,
+      "sha256": "fc9590228288a2784ab90c037fed04f827048763c14849944e55be0e281c1f83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5880,
+      "sha256": "d53293bb17c0f6bd25d6ca616972846026501ada3a238312b09d1e3cbfd44de9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/result.json",
+      "change": "added",
+      "bytes": 17664,
+      "sha256": "fefc2ecbfac9a700bebd6d65fd2114ec31fd8c2fec96525f1f0df810560738cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/executions/20261120T030135Z-3c67f20c/attempt.json",
+      "change": "added",
+      "bytes": 9890,
+      "sha256": "2d02ca1f36b8665228123bc85e8f8870ff3efb0926fe113358ab36f413bb6806",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/executions/20261120T030135Z-3c67f20c/checker.json",
+      "change": "added",
+      "bytes": 7202,
+      "sha256": "75433fbf2624b63e7edc3becd78050746fca6bae37d5e913c0f53e3fe51089c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-matrix/executions/20261120T030135Z-3c67f20c/correspondence.json",
+      "change": "added",
+      "bytes": 1040,
+      "sha256": "23a575d1b874b5df9e01d7d8b3da8641fd1c59ab0767064641362c6286cc625c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "55df915d077a216d628d74b66e080dca3f205f2cd20679ad5e6204b2ff72fc7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/plan.json",
+      "change": "added",
+      "bytes": 5327,
+      "sha256": "671fed81ebed111e3833b27fc3f24b0459536620e417713538b4f765b1dfcd74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/control-separate-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/control-separate-jdk21.stdout",
+      "change": "added",
+      "bytes": 2524,
+      "sha256": "b8904b06c46b5d8f05f46369f641337d75dfa8496f426bfbd60b56213d094d30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/controls.json",
+      "change": "added",
+      "bytes": 14518,
+      "sha256": "bbf172727a33724004a55436f06f1a16451b1f50b8821419ed2c13554eaac3b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/execution.json",
+      "change": "added",
+      "bytes": 28772,
+      "sha256": "ed765f60e4cfeba5c00efef153ce5ed901b49d4577e640056a6a46d29e18c190",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/streams.json",
+      "change": "added",
+      "bytes": 1985,
+      "sha256": "fbf76e576063f044dd41b515d86e8d499c04f16dceccaa59568121d32f8291e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 281,
+      "sha256": "62bbf9510e314a81c7980718dcf3ee000ac5128180d5a89788fa3823ceb9c5d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/verifier.json",
+      "change": "added",
+      "bytes": 14174,
+      "sha256": "c983b1727ff2756429932bcdbc04669b8ad9a103c5dd6a5a8363dce3fb395246",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5876,
+      "sha256": "898f4ee7e075100e9e1e3b4550bd34f0f30f23724ed96f9c50e5bba2a38b1b78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/result.json",
+      "change": "added",
+      "bytes": 17700,
+      "sha256": "269c62d62f7aed3c0f96779a44b330ab1f6f01d78c26c0dbc12514fc606aa0c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/executions/20261120T030135Z-775b0bc5/attempt.json",
+      "change": "added",
+      "bytes": 9951,
+      "sha256": "42eba2f9d1d2202735a042f081d48285ada9f65d0ff6bd2d6e4cf78aa7fd4f20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/executions/20261120T030135Z-775b0bc5/checker.json",
+      "change": "added",
+      "bytes": 7206,
+      "sha256": "fc71c4d2240f5aa82c257d344b7cbce98716db788d1967f72ee2c4bf42c79bcd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-separate/executions/20261120T030135Z-775b0bc5/correspondence.json",
+      "change": "added",
+      "bytes": 1044,
+      "sha256": "56f5f66f12a9adf2ed7aa7f7e1ad6aae85d6778abb0a47f19909bcedabb43f09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4451f858bc7ec6f9793be6b10c7c8bea32427932daa2de07a22cad02af2697e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/plan.json",
+      "change": "added",
+      "bytes": 5308,
+      "sha256": "56b993006a33d075f4349ce999f7ecac4484984d4fb32f7870d918d685b7dbfb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/control-shared-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/control-shared-jdk21.stdout",
+      "change": "added",
+      "bytes": 2524,
+      "sha256": "2df2da7401c6e2cb803debd31d28f841d2c8e91acb01e2c85513d68bd419dffa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/controls.json",
+      "change": "added",
+      "bytes": 14494,
+      "sha256": "19e641837220fd93fbd849a9ddbba8b02259ff69c325c0d4f7e712471f343084",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/execution.json",
+      "change": "added",
+      "bytes": 31440,
+      "sha256": "f5b300c7bb7c0b66792955c15ac83581ee8584f805d1e3144e49526ea6fa5453",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "3e7d44c4df5c61e4f80dd6c364696a348ead00bcfdd677f771cb1b1ce5f5ce39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 575,
+      "sha256": "9c17d537515b2930c32306bc58b5523cde08c56ffe15c4964faa95ba7055c739",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/verifier.json",
+      "change": "added",
+      "bytes": 14904,
+      "sha256": "e3986082921bef4cb307db50e469e99c6aa9dd5851d217234b99fd167f224dd5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6575,
+      "sha256": "749ddd4d57ca3ee274c13c627c9a535fa12978467db2189540822f1624884b11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/result.json",
+      "change": "added",
+      "bytes": 18917,
+      "sha256": "15ac97ebc3a514b1784670e72afacd3f893e183f6319ee0cea99387077d59fd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/executions/20261120T030135Z-b5e0f983/attempt.json",
+      "change": "added",
+      "bytes": 10011,
+      "sha256": "51608420efa92ab1f75ec157578379605666fa7b8272580aab88ecf865125a63",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/executions/20261120T030135Z-b5e0f983/checker.json",
+      "change": "added",
+      "bytes": 7938,
+      "sha256": "8b0d91ad8c9e2e6a14979e747592a09a25d8bc107d3ae71fda7db8c3f1801bdf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/executions/20261120T030135Z-b5e0f983/correspondence.json",
+      "change": "added",
+      "bytes": 1040,
+      "sha256": "50ec948551c7883ac3d4a6ed9ab9f6c5b851993237b02fddd44e138910045b8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/cells-shared/executions/20261120T030135Z-b5e0f983/replay.json",
+      "change": "added",
+      "bytes": 1550,
+      "sha256": "c0aba6aa957d59b5879f328055d31960da2d4521c705b21909a32dc705ece68a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7927eb6686fc54253371962094fd25414011d6d31e50cbabf204a569d465807e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/plan.json",
+      "change": "added",
+      "bytes": 5330,
+      "sha256": "1c32e0dc30f38704456680c146f5edc913a78456874182b3e7c7abc599161d09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/control-matrix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/control-matrix-jdk21.stdout",
+      "change": "added",
+      "bytes": 2524,
+      "sha256": "b8904b06c46b5d8f05f46369f641337d75dfa8496f426bfbd60b56213d094d30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/controls.json",
+      "change": "added",
+      "bytes": 14500,
+      "sha256": "be3fba83fb740468dd1ef96767c53b50f94526f503874df5d8ce58fea46bca27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/execution.json",
+      "change": "added",
+      "bytes": 28747,
+      "sha256": "b65ffdd0693beac653369dc5a30501085b5a53f186c7d853617beddb2f292ee0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "4aac473b8e00a21ce71ee61c74091ec9be25e0c06b28fff629506a24d6a6f8f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 287,
+      "sha256": "43d5e1ce080638d2964232fe69b2db7e0ee1c98964b9cd86a9cf5b15d637df50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/verifier.json",
+      "change": "added",
+      "bytes": 14167,
+      "sha256": "c684370022f765a2e1d8bc4c57f955c86419a227dc32e445208113b7e1a2169b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5891,
+      "sha256": "1d57703f7633a50387e09567e639817f8ef6aa321f6cd2f31a3f31aebe77a097",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/result.json",
+      "change": "added",
+      "bytes": 17692,
+      "sha256": "f75a76c63a7fe16240eb7bfbc7a4b13daae59c948e56fec5a716db4b86fc05c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/executions/20261120T030136Z-5bba76b1/attempt.json",
+      "change": "added",
+      "bytes": 9916,
+      "sha256": "b03ed5513a46e0ece1438bc453a154f042901ea1ab1ce8df860422163fccdb52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/executions/20261120T030136Z-5bba76b1/checker.json",
+      "change": "added",
+      "bytes": 7216,
+      "sha256": "724bb38786584c0fec239532364bb5846acd53da04824923fd0416131a026039",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-matrix/executions/20261120T030136Z-5bba76b1/correspondence.json",
+      "change": "added",
+      "bytes": 1043,
+      "sha256": "18d537ce3fd6bdb8e0179f92a1c80d3c518eb23eb58ddfba74a551aaf18ff98c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6bab8cc18ca400c353a5767fb74a485d0fcbc045cbf2b93e6d9a0ef9117fbbff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/plan.json",
+      "change": "added",
+      "bytes": 5352,
+      "sha256": "795ff23fdb9df15a9b248931a6bfc8ee2e5b274c5134d2707c4e9801af7adcd7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/control-separate-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/control-separate-jdk21.stdout",
+      "change": "added",
+      "bytes": 2524,
+      "sha256": "b8904b06c46b5d8f05f46369f641337d75dfa8496f426bfbd60b56213d094d30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/controls.json",
+      "change": "added",
+      "bytes": 14524,
+      "sha256": "8d419489a110a25849e93c17deb392248c1e7590aa34f484efb29d5495fc7f89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/execution.json",
+      "change": "added",
+      "bytes": 28813,
+      "sha256": "fce8a9d362dc20bf4644b7da092b4700781a893ce51f034599560fabdd332106",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/streams.json",
+      "change": "added",
+      "bytes": 1985,
+      "sha256": "62b8ee54094bef01871f0c31cef715c334ee5bfb871cf5f24adc5624fcd72585",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 287,
+      "sha256": "43d5e1ce080638d2964232fe69b2db7e0ee1c98964b9cd86a9cf5b15d637df50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/verifier.json",
+      "change": "added",
+      "bytes": 14221,
+      "sha256": "b7e1b2339f80e0af55c5946ee1d6b5cf59f58558b5a26a2e63074da55e880ed0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5893,
+      "sha256": "5c4e6048dbef587bbf4b583abc312c84c92c6230cff6b479fada22eed285771a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/result.json",
+      "change": "added",
+      "bytes": 17732,
+      "sha256": "5d94f2c29e8dd757ce6602d495d7510e40f4511cd5c3a25d99bc83a489a47890",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/executions/20261120T030136Z-9bf84491/attempt.json",
+      "change": "added",
+      "bytes": 9978,
+      "sha256": "88409223628aa7d980102f98b8993e25d1de04b8cd55b87c46d8fa9eee057cdd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/executions/20261120T030136Z-9bf84491/checker.json",
+      "change": "added",
+      "bytes": 7226,
+      "sha256": "5e1f26bac9b959ac3d7e160eed99dceb8d25e8895e4afad8bc635d6b132a6c73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-separate/executions/20261120T030136Z-9bf84491/correspondence.json",
+      "change": "added",
+      "bytes": 1047,
+      "sha256": "6925d1c2e490f58cba2419ca110a39947d327bf89cfa3f2b38bbbe6550507e28",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5c4741cf002c0ca3b5de307d5420db7616b8ceee19aa76fa6acefe1ad7dcac16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/plan.json",
+      "change": "added",
+      "bytes": 5333,
+      "sha256": "c41a1bbb7aa593215b85d7fd4e0e5336d0c8ca9453b71f8190bb0ab6f372e18f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/control-shared-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/control-shared-jdk21.stdout",
+      "change": "added",
+      "bytes": 2524,
+      "sha256": "2df2da7401c6e2cb803debd31d28f841d2c8e91acb01e2c85513d68bd419dffa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/controls.json",
+      "change": "added",
+      "bytes": 14500,
+      "sha256": "3bd67f34f87e0e9c655d27a6bd1fa604e4296c3886d898699ac060943bd4a327",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/execution.json",
+      "change": "added",
+      "bytes": 31500,
+      "sha256": "76c8afbfd2405270b41bddae10a4988e63d9d1d07e01bbe18b272714f7ee8aa6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "f385f27edc3d08484f2eea6b289b5c05f540e1f1daa2f024d4d03f9d6ba08c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 584,
+      "sha256": "2818c3538dfcaae5d396e64ee2a4f535be82a84951a6c42e5e77c58729e6cad4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/verifier.json",
+      "change": "added",
+      "bytes": 14964,
+      "sha256": "b8e136408227d2a94431c4e297f225fa08c6fa8d57b07ed4e1247d0a399801dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6603,
+      "sha256": "a918a847fb230808e4bdbe13ec9d184fce710d2f23db8bcbc021f9f1d9e35041",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/result.json",
+      "change": "added",
+      "bytes": 18962,
+      "sha256": "64413b4fa87997f4b46048f154ba50d9fb0ce6dc3a75193b3bfdb4a2b99ab13c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/executions/20261120T030136Z-d6a577cb/attempt.json",
+      "change": "added",
+      "bytes": 10038,
+      "sha256": "3a507ea4ed3a4269691c15fe3adafea6dee8b2b87834c433efb46c4e4ab39f2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/executions/20261120T030136Z-d6a577cb/checker.json",
+      "change": "added",
+      "bytes": 7971,
+      "sha256": "ac4a96b22ddbf0cc658c26861f03d759ba426b175713697b16e05b7efcfc5495",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/executions/20261120T030136Z-d6a577cb/correspondence.json",
+      "change": "added",
+      "bytes": 1043,
+      "sha256": "1b663a954e415b6ff48bfb11700cedfb260302bfc89c8995b107a49d680c68ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/317-theatre-seat-matrix/receipts/identity-shared/executions/20261120T030136Z-d6a577cb/replay.json",
+      "change": "added",
+      "bytes": 1556,
+      "sha256": "c41857cf599f8588af73c1deee3837ae9349ebe1d68d0b68cc1a375d1475e50c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:01:59+00:00",
+    "applied": [
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/completion.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/plan.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/control-matrix-jdk21.stderr",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/control-matrix-jdk21.stdout",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/controls.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/execution.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/streams.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/verifier-output.txt",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/verifier.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/verifier.stderr",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/records/verifier.stdout",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/20261120T030129Z-22d73d5c/result.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/executions/20261120T030129Z-22d73d5c/attempt.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/executions/20261120T030129Z-22d73d5c/checker.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-matrix/executions/20261120T030129Z-22d73d5c/correspondence.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/completion.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/plan.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/control-separate-jdk21.stderr",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/control-separate-jdk21.stdout",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/controls.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/execution.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/streams.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/verifier-output.txt",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/verifier.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/verifier.stderr",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/records/verifier.stdout",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/20261120T030131Z-5fcd36d9/result.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/executions/20261120T030131Z-5fcd36d9/attempt.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/executions/20261120T030131Z-5fcd36d9/checker.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-separate/executions/20261120T030131Z-5fcd36d9/correspondence.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/completion.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/plan.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/control-shared-jdk21.stderr",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/control-shared-jdk21.stdout",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/controls.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/execution.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/streams.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/verifier-output.txt",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/verifier.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/verifier.stderr",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/records/verifier.stdout",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/20261120T030133Z-6517c6a9/result.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/executions/20261120T030133Z-6517c6a9/attempt.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/executions/20261120T030133Z-6517c6a9/checker.json",
+      "examples/317-theatre-seat-matrix/receipts/shape-shared/executions/20261120T030133Z-6517c6a9/correspondence.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/completion.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/plan.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/control-matrix-jdk21.stderr",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/control-matrix-jdk21.stdout",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/controls.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/execution.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/streams.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/verifier-output.txt",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/verifier.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/verifier.stderr",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/records/verifier.stdout",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/20261120T030135Z-3c67f20c/result.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/executions/20261120T030135Z-3c67f20c/attempt.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/executions/20261120T030135Z-3c67f20c/checker.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-matrix/executions/20261120T030135Z-3c67f20c/correspondence.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/completion.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/plan.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/control-separate-jdk21.stderr",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/control-separate-jdk21.stdout",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/controls.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/execution.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/streams.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/verifier-output.txt",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/verifier.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/verifier.stderr",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/records/verifier.stdout",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/20261120T030135Z-775b0bc5/result.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/executions/20261120T030135Z-775b0bc5/attempt.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/executions/20261120T030135Z-775b0bc5/checker.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-separate/executions/20261120T030135Z-775b0bc5/correspondence.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/completion.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/plan.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/control-shared-jdk21.stderr",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/control-shared-jdk21.stdout",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/controls.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/execution.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/streams.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/verifier-output.txt",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/verifier.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/verifier.stderr",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/records/verifier.stdout",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/20261120T030135Z-b5e0f983/result.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/executions/20261120T030135Z-b5e0f983/attempt.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/executions/20261120T030135Z-b5e0f983/checker.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/executions/20261120T030135Z-b5e0f983/correspondence.json",
+      "examples/317-theatre-seat-matrix/receipts/cells-shared/executions/20261120T030135Z-b5e0f983/replay.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/completion.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/plan.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/control-matrix-jdk21.stderr",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/control-matrix-jdk21.stdout",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/controls.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/execution.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/streams.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/verifier-output.txt",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/verifier.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/verifier.stderr",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/records/verifier.stdout",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/20261120T030136Z-5bba76b1/result.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/executions/20261120T030136Z-5bba76b1/attempt.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/executions/20261120T030136Z-5bba76b1/checker.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-matrix/executions/20261120T030136Z-5bba76b1/correspondence.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/completion.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/plan.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/control-separate-jdk21.stderr",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/control-separate-jdk21.stdout",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/controls.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/execution.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/streams.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/verifier-output.txt",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/verifier.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/verifier.stderr",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/records/verifier.stdout",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/20261120T030136Z-9bf84491/result.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/executions/20261120T030136Z-9bf84491/attempt.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/executions/20261120T030136Z-9bf84491/checker.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-separate/executions/20261120T030136Z-9bf84491/correspondence.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/completion.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/plan.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/control-shared-jdk21.stderr",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/control-shared-jdk21.stdout",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/controls.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/execution.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/streams.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/verifier-output.txt",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/verifier.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/verifier.stderr",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/records/verifier.stdout",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/20261120T030136Z-d6a577cb/result.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/executions/20261120T030136Z-d6a577cb/attempt.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/executions/20261120T030136Z-d6a577cb/checker.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/executions/20261120T030136Z-d6a577cb/correspondence.json",
+      "examples/317-theatre-seat-matrix/receipts/identity-shared/executions/20261120T030136Z-d6a577cb/replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1053151,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}

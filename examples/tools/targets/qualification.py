@@ -171,6 +171,45 @@ def statement_problem(plan, outcome, entry, initializer_classes=None):
     return check(claim, {"target": entry}, outcome, bounds.get("maxArrayLength"))
 
 
+def attach_observations(plan, controls, replay):
+    """Bind an encoded adapter witness back to the direct input and caller-visible observations."""
+    from targets import runtime
+    from targets.finite_oracle import Table, project
+    from pathlib import Path
+
+    adapter = plan.claim.get("adapter")
+    if (not adapter or not replay.get("sides") or set(replay["sides"]) != set(plan.revisions)
+            or not all(s.get("admitted") and "values" in s for s in replay["sides"].values())):
+        return replay
+    oracle = next((c for c in plan.claim["controls"] if c["id"] == adapter["correspondence"] and c["path"].endswith(".json")), None)
+    if not oracle:
+        return replay
+    try:
+        path = Path(plan.folder) / oracle["path"]
+        if runtime.sha256(path) != oracle["sha256"]:
+            raise ValueError("the frozen observation table changed")
+        table = Table(path)
+        [root] = replay["inputs"]
+        if root.get("type") != "int" or type(root.get("value")) is not int:
+            raise ValueError("this table uses one integer case ID")
+        index = root["value"]
+        [(name, field)] = [(k, v) for k, v in table.fields.items() if v.get("entry") == replay["entry"]]
+        data = {}
+        for rev, side in replay["sides"].items():
+            record = next(r for r in controls if r.kind == "jvm-control" and r.revision == rev and r.identities.get("jdkRelease") == replay["jdkRelease"])
+            rows = {case["id"]: (case, raw) for case, raw in table.observations(record.observations)}
+            case, raw = rows[index]
+            expected = table.expected(case, raw, name)
+            if side["values"] != [project(raw["direct"][name], expected, field), None]:
+                raise ValueError("fresh witness result disagrees with the selected direct observation")
+            data[rev] = raw["direct"]
+        replay["finiteObservation"] = {"id": index, "input": table.cases[index]["input"], "field": name, "direct": data,
+                                       "tableSha256": oracle["sha256"]}
+    except (ValueError, KeyError, TypeError, OSError, StopIteration) as error:
+        replay.update(reproduced=False, reason=f"finite witness qualification: {error}")
+    return replay
+
+
 def correspondence(plan, prepared, records):
     """Re-evaluate the pinned oracle on all the recorded JVM rows of both prepared classpaths."""
     import hashlib

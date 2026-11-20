@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "normal",
+  "statement": "Each admitted pair returns normally.",
+  "assume": "code >= 0 && code < 25",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 30,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "jodagrid.Projection#normal(I)I",
+    "mapping": "For code 5*i+j the actual ReadablePartial arguments are MonthDay at indices i and j from Feb 27 through March 2, including leap day, using ISOChronology in UTC. The expected signed count uses daily offsets in a leap year.",
+    "correspondence": "finite-oracle",
+    "cases": 25
+  }
+}

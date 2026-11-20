@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "normal",
+  "statement": "The specified fraction returns normally.",
+  "assume": "code >= 0 && code < 13",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 30,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "fractiongrid.Projection#normal(I)I",
+    "mapping": "Code 0 to 9 selects both signs of 21474836 plus offsets -2 through 2. Codes 10 to 12 select -1, 0 and 1. Denominator is one. Each exact integer product 100L*n is representable as double; the observer uses all 64 raw bits.",
+    "correspondence": "finite-oracle",
+    "cases": 13
+  }
+}

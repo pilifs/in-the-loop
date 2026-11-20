@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "325",
+  "title": "One label method compiled to two bytecode targets",
+  "summary": "The same source lowers to StringBuilder or invokedynamic. A control drops the slash only before a null argument.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "compilers",
+    "dropped-case",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "One label method compiled to two bytecode targets",
+    "file": "legacy/labelgrid/Label.java",
+    "symbol": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "The same source lowers to StringBuilder or invokedynamic. A control drops the slash only before a null argument."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 9 inputs on each revision. legacy mismatches were 0 for label. modern mismatches were 0 for label. changed mismatches were 3 for label.",
+    "The same Label.java produced class-file major 52 with javac 21 -source 8 -target 8 and major 65 with default JDK 21 targeting. Disassembly shows StringBuilder.append in the former and invokedynamic in the latter. Both ran on the same JDK 21 JVM. [Compiler flags, bytes and disassembly](records/bytecode.json)"
+  ]
+}

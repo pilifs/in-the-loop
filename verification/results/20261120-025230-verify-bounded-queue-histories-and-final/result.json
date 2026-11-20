@@ -1,0 +1,718 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-025230-verify-bounded-queue-histories-and-final",
+  "title": "Verify bounded queue histories and final contents",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.2s, peak 132.0 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-025230-verify-bounded-queue-histories-and-final.json",
+    "sha256": "023ee1cdccd9685079c8746afdd8d849902a49b92d80b5dbfac8a52381efc06d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-025230-verify-bounded-queue-histories-and-final",
+      "title": "Verify bounded queue histories and final contents",
+      "description": "Check all 121 bounded command words on both queue implementations. Return histories and final contents have independent finite oracles and four frozen claims.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "318"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T02:52:30+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 318 --tasks history-reject,history-evict,contents-reject,contents-evict --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/318-bounded-queue-histories/receipts/history-reject",
+        "examples/318-bounded-queue-histories/receipts/history-evict",
+        "examples/318-bounded-queue-histories/receipts/contents-reject",
+        "examples/318-bounded-queue-histories/receipts/contents-evict"
+      ]
+    }
+  },
+  "sourceCommit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+  "startedAt": "2026-11-20T02:58:47+00:00",
+  "finishedAt": "2026-11-20T03:01:35+00:00",
+  "wallSeconds": 168.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3945086,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 138432512,
+    "wallSeconds": 6.2,
+    "cpuSeconds": 9.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 318 --tasks history-reject,history-evict,contents-reject,contents-evict --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 6.213,
+      "cpuSeconds": 9.604,
+      "cpuThrottledSeconds": 0.39,
+      "peakMemoryBytes": 138432512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 8,
+        "bytes": 912,
+        "sha256": "4bb16b457f9a0d6d2f68333a7ab50c792f6d6c5d2afe66a5e3bf9f8f77a57b08",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "318-bounded-queue-histories: task history-reject: established (completed; as expected), receipt receipts/history-reject/20261120T030128Z-f3987814/result.json",
+          "groups": [
+            "318",
+            "history-reject",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "318-bounded-queue-histories: task history-evict: refuted (completed; as expected), receipt receipts/history-evict/20261120T030131Z-467bd917/result.json",
+          "groups": [
+            "318",
+            "history-evict",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "318-bounded-queue-histories: task contents-reject: established (completed; as expected), receipt receipts/contents-reject/20261120T030133Z-ae022f0d/result.json",
+          "groups": [
+            "318",
+            "contents-reject",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "318-bounded-queue-histories: task contents-evict: refuted (completed; as expected), receipt receipts/contents-evict/20261120T030134Z-12f69504/result.json",
+          "groups": [
+            "318",
+            "contents-evict",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "318-bounded-queue-histories: running task history-reject (target route)",
+        "318-bounded-queue-histories: task history-reject: established (completed; as expected), receipt receipts/history-reject/20261120T030128Z-f3987814/result.json",
+        "318-bounded-queue-histories: running task history-evict (target route)",
+        "318-bounded-queue-histories: task history-evict: refuted (completed; as expected), receipt receipts/history-evict/20261120T030131Z-467bd917/result.json",
+        "318-bounded-queue-histories: running task contents-reject (target route)",
+        "318-bounded-queue-histories: task contents-reject: established (completed; as expected), receipt receipts/contents-reject/20261120T030133Z-ae022f0d/result.json",
+        "318-bounded-queue-histories: running task contents-evict (target route)",
+        "318-bounded-queue-histories: task contents-evict: refuted (completed; as expected), receipt receipts/contents-evict/20261120T030134Z-12f69504/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "633701f7b2da362b6fe08fc49f4a5ae1428ec7c527e92c723e864a8ccb275140",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/plan.json",
+      "change": "added",
+      "bytes": 5543,
+      "sha256": "8a60fe08ea89424f36a5f278f8e607bdd5e2f7ab0e83c9377dd9efcfa89660ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/control-reject-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/control-reject-jdk21.stdout",
+      "change": "added",
+      "bytes": 16453,
+      "sha256": "3996915908aebbe8bd6287a49b68064d5e9260fec92013324c1baa8af1a5e90a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/controls.json",
+      "change": "added",
+      "bytes": 61156,
+      "sha256": "c7a91baea6326b18908ea2924874091b621c4f08071e133e9efca2778976856c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/execution.json",
+      "change": "added",
+      "bytes": 75547,
+      "sha256": "48b1564f6169bd125edf61faccd7bde1826aa51fa4ea15d33531891006ef6998",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "6cae30073440d2f98794e52ee4fe307568dc7f80f60bf41165ca8050a5be66e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "37ee2eb3dc1c69baedb8aeb6b1ad88aac3fae627809ec291c8682d90174031d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/verifier.json",
+      "change": "added",
+      "bytes": 14315,
+      "sha256": "c7fe8bef2e2eb823738f5028cc4be6c90776753126fbd21f8956d165e99b654f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5906,
+      "sha256": "ce27674b3cd8f87108ac2de10a66eb46dd3e3d7b08567af025ff7818029861c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/result.json",
+      "change": "added",
+      "bytes": 17818,
+      "sha256": "9f67eda0099b712f82e96debb01d0b5c62402179bbc18f125c5610ad197a6f70",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/executions/20261120T030128Z-f3987814/attempt.json",
+      "change": "added",
+      "bytes": 10201,
+      "sha256": "23b2ca6a663697a8ab8b3cc6e5426c82b13c34acf0150912839f820a7b590ee9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/executions/20261120T030128Z-f3987814/checker.json",
+      "change": "added",
+      "bytes": 7239,
+      "sha256": "6a5fdbe0afc0b510ec7c78ce6e90b391b36b5db30a334ccd12d4f23284404f79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-reject/executions/20261120T030128Z-f3987814/correspondence.json",
+      "change": "added",
+      "bytes": 1237,
+      "sha256": "044aecfda787395e47b27e1fcc90b187d9185454c9c3ba27e0fc95e0a3b095f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cbfe9843b4750876eee4d9654a3cfd7bc7de64702a7ab379c7b8aae090612ba4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/plan.json",
+      "change": "added",
+      "bytes": 5528,
+      "sha256": "af66bd17b753d1e4b476ebd08ce4f60d3504fb56f0f653e1113ba490cca18732",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/control-evict-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/control-evict-jdk21.stdout",
+      "change": "added",
+      "bytes": 16453,
+      "sha256": "4b5c4cc7fda05af1e7d156f671cb834f79bd34db6c747d94849fbf1c156d2f8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/controls.json",
+      "change": "added",
+      "bytes": 61144,
+      "sha256": "bb5d2e56a0177ed9022aa7089aee0d076fab78f8e587b6abc0662c7b270e8e03",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/execution.json",
+      "change": "added",
+      "bytes": 78290,
+      "sha256": "89eda665cf0327b81fb02ab5d079e14e1ddc75394545bfc5247383f5919eee7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/streams.json",
+      "change": "added",
+      "bytes": 1963,
+      "sha256": "d998e3cfd5fd08a8b36171cb75ba2f092589363fec44c8a10ef20bcdb668926c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 587,
+      "sha256": "065bef29b17d26295b57747ed7d43c76db552ef29728a4e7c6bb7cdab649fe0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/verifier.json",
+      "change": "added",
+      "bytes": 15100,
+      "sha256": "b9d2703fed6a67e6a1d1ab3298be87713be56e9166efc886e2f5561306f7ecab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6633,
+      "sha256": "41a37c415da9ee86374c2e364ff80f001258847c1ec0affdce86f805aa478798",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/result.json",
+      "change": "added",
+      "bytes": 19083,
+      "sha256": "b04409f019f7d19fc9a6db1745808fde9dd661f32a6e15bb72ace8023aa4a4ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/executions/20261120T030131Z-467bd917/attempt.json",
+      "change": "added",
+      "bytes": 10291,
+      "sha256": "161df299402d8d72744b7343d2f767f286829e526f61d50cb06658ae1c059b22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/executions/20261120T030131Z-467bd917/checker.json",
+      "change": "added",
+      "bytes": 8004,
+      "sha256": "5de9f20a0f5f15a2ee4502cb482be6d69f3c218b77ea460fd5e133cb5b57e05a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/executions/20261120T030131Z-467bd917/correspondence.json",
+      "change": "added",
+      "bytes": 1235,
+      "sha256": "bc3068a01d7a2b0f7f0a582e64773005508582c3a7d4f29adaecca9355aa52a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/history-evict/executions/20261120T030131Z-467bd917/replay.json",
+      "change": "added",
+      "bytes": 1564,
+      "sha256": "4058969acb6268c2c2fcd90c308048fc596e13fedbe93c8dfcffba4a27a8e295",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "113b1b9968e5d975bc787445f9fd5bc73f75a7fc554d7833bc7f1fd6e06a49a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/plan.json",
+      "change": "added",
+      "bytes": 5524,
+      "sha256": "ade5368e715b58db9041cf3036a8a11b741e627621323ab3a6d7716523c47797",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/control-reject-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/control-reject-jdk21.stdout",
+      "change": "added",
+      "bytes": 16453,
+      "sha256": "3996915908aebbe8bd6287a49b68064d5e9260fec92013324c1baa8af1a5e90a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/controls.json",
+      "change": "added",
+      "bytes": 61158,
+      "sha256": "849fcdb238b0050a5204edb4a42cdd373ee329abeaa778bb36da20ecf614eb15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/execution.json",
+      "change": "added",
+      "bytes": 75560,
+      "sha256": "02f6c1ef09f1e9ff481d5dd7b217ba85671d2b0c5f9c9ccfff6e67c014eff8bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "3e7bba0d218ebc5fcd0194da4ffe2f678973cad0e5e5cc40d37390e879e6a044",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 292,
+      "sha256": "3071225fe8d616f3b54100a5539f57190638e5065e65ce61df7a7cfa42a1b69a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/verifier.json",
+      "change": "added",
+      "bytes": 14330,
+      "sha256": "458e13a79433d0c87d72dc7425f8232a282a1eadb82a19bd1ab453f39bef7250",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5913,
+      "sha256": "6f8dff75261cbb0b59f255309bd88144a1db9a3632d6b2fb16bf21b1c48dcc48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/result.json",
+      "change": "added",
+      "bytes": 17816,
+      "sha256": "a1bf9cdcd537af154bade7dd9b83f5ba3a631520291d4935cdb4741e20b2599e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/executions/20261120T030133Z-ae022f0d/attempt.json",
+      "change": "added",
+      "bytes": 10205,
+      "sha256": "1825005d091b89dde13bd4ba7ff6b465cc8d68bcb51ada72df94e3b6863751f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/executions/20261120T030133Z-ae022f0d/checker.json",
+      "change": "added",
+      "bytes": 7246,
+      "sha256": "c2d04b2e962858fac9478151b9c5d80311b520009bba4c78a5732a0df9fb7ce8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-reject/executions/20261120T030133Z-ae022f0d/correspondence.json",
+      "change": "added",
+      "bytes": 1238,
+      "sha256": "f0bc8ae0ddefb30b2213592fc6000592ea05515f2bfc63955d6d65917a3734a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7c8739fb926796c4977c1a2fd4bfc966f8fb3c76742a0230f23123d3aaadfbde",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/plan.json",
+      "change": "added",
+      "bytes": 5509,
+      "sha256": "61fb03be48a069063b7057c4bd1049c67210472bb330dfc0ac7519e002efe09d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/control-evict-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/control-evict-jdk21.stdout",
+      "change": "added",
+      "bytes": 16453,
+      "sha256": "4b5c4cc7fda05af1e7d156f671cb834f79bd34db6c747d94849fbf1c156d2f8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/controls.json",
+      "change": "added",
+      "bytes": 61146,
+      "sha256": "f3fb36dbfdc5c1d1945cb9fe02ac34ecf02fc9589ea1c273af1b235def4076d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/execution.json",
+      "change": "added",
+      "bytes": 78307,
+      "sha256": "e381662fecec0d66b5e0f9de99ab45bdd12def55fa26aff2530e444c0efb27cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/streams.json",
+      "change": "added",
+      "bytes": 1963,
+      "sha256": "9efd06f0430e8d4c5ce8d4e0f4f589a7ca05e690e9367655f270075784038a00",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 589,
+      "sha256": "147954276736c0cd1a4eddc9f50360499055437f2c9190fab4494c5c7f0827e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/verifier.json",
+      "change": "added",
+      "bytes": 15117,
+      "sha256": "148718187e7640a802452e379fd82f7960c353150180121217e75893ca60b3d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6640,
+      "sha256": "511fb4c557bc18c07b295cf340c1f9c4cb03a38c566162e2ece23d4ca4299702",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/result.json",
+      "change": "added",
+      "bytes": 19080,
+      "sha256": "78e724f0dc707a7b184ec012c9647db242c98aede155f23016c12858d3ebaf62",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/executions/20261120T030134Z-12f69504/attempt.json",
+      "change": "added",
+      "bytes": 10299,
+      "sha256": "b61fdc3d7240c36486a480b99a133532d8fae2af8130b6f7abb98bb4087611bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/executions/20261120T030134Z-12f69504/checker.json",
+      "change": "added",
+      "bytes": 8012,
+      "sha256": "5f8d15af6fcd8e623d4df628b38c8ca69df8ef42137d6f866073108ab97c2d9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/executions/20261120T030134Z-12f69504/correspondence.json",
+      "change": "added",
+      "bytes": 1236,
+      "sha256": "5807ce2805236a678ad872c74dfdb9c3f70d30ee9f440cb086fa4c29e134a86d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/318-bounded-queue-histories/receipts/contents-evict/executions/20261120T030134Z-12f69504/replay.json",
+      "change": "added",
+      "bytes": 1566,
+      "sha256": "5223b7e04f14b4d8f103075134643bbe26eedea3794e14d823719e7e8f347b3e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:01:58+00:00",
+    "applied": [
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/completion.json",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/plan.json",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/control-reject-jdk21.stderr",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/control-reject-jdk21.stdout",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/controls.json",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/execution.json",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/streams.json",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/verifier-output.txt",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/verifier.json",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/verifier.stderr",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/records/verifier.stdout",
+      "examples/318-bounded-queue-histories/receipts/history-reject/20261120T030128Z-f3987814/result.json",
+      "examples/318-bounded-queue-histories/receipts/history-reject/executions/20261120T030128Z-f3987814/attempt.json",
+      "examples/318-bounded-queue-histories/receipts/history-reject/executions/20261120T030128Z-f3987814/checker.json",
+      "examples/318-bounded-queue-histories/receipts/history-reject/executions/20261120T030128Z-f3987814/correspondence.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/completion.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/plan.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/control-evict-jdk21.stderr",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/control-evict-jdk21.stdout",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/controls.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/execution.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/streams.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/verifier-output.txt",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/verifier.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/verifier.stderr",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/records/verifier.stdout",
+      "examples/318-bounded-queue-histories/receipts/history-evict/20261120T030131Z-467bd917/result.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/executions/20261120T030131Z-467bd917/attempt.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/executions/20261120T030131Z-467bd917/checker.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/executions/20261120T030131Z-467bd917/correspondence.json",
+      "examples/318-bounded-queue-histories/receipts/history-evict/executions/20261120T030131Z-467bd917/replay.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/completion.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/plan.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/control-reject-jdk21.stderr",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/control-reject-jdk21.stdout",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/controls.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/execution.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/streams.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/verifier-output.txt",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/verifier.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/verifier.stderr",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/records/verifier.stdout",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/20261120T030133Z-ae022f0d/result.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/executions/20261120T030133Z-ae022f0d/attempt.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/executions/20261120T030133Z-ae022f0d/checker.json",
+      "examples/318-bounded-queue-histories/receipts/contents-reject/executions/20261120T030133Z-ae022f0d/correspondence.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/completion.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/plan.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/control-evict-jdk21.stderr",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/control-evict-jdk21.stdout",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/controls.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/execution.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/streams.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/verifier-output.txt",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/verifier.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/verifier.stderr",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/records/verifier.stdout",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/20261120T030134Z-12f69504/result.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/executions/20261120T030134Z-12f69504/attempt.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/executions/20261120T030134Z-12f69504/checker.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/executions/20261120T030134Z-12f69504/correspondence.json",
+      "examples/318-bounded-queue-histories/receipts/contents-evict/executions/20261120T030134Z-12f69504/replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

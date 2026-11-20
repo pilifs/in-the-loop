@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "324",
+  "title": "Lazy Optional fallback has observable calls",
+  "summary": "Calling the supplier eagerly preserves all returned integers and invokes the supplier on present values.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "side-effecting-read",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Lazy Optional fallback has observable calls",
+    "file": "lazy/optionalgrid/Choice.java",
+    "symbol": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Calling the supplier eagerly preserves all returned integers and invokes the supplier on present values."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 4 inputs on each revision. lazy mismatches were 0 for value, 0 for callbacks. branch mismatches were 0 for value, 0 for callbacks. eager mismatches were 0 for value, 3 for callbacks.",
+    "The concrete Fallback class implements Supplier<Integer>. The lazy and explicit-branch subjects each call it once for empty. The eager subject makes one extra call for each of the three present inputs. The prepared class disassembly identifies the Optional entry and supplier. [Bytecode evidence](records/bytecode.json)"
+  ]
+}

@@ -393,8 +393,15 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
                             # witness: 197's paired array roots are replayed there by pairing.rs. Otherwise the
                             # interpreter replays it.
                             claimed = doc["claim"]["statement"]["claim"]
+                            executions = json.loads((directory / "records/execution.json").read_text())["records"]
+                            verifier = next(r for r in executions if r["kind"] == "verifier")
+                            independent = verifier["identities"].get("independentReplay", [])
+                            if independent:
+                                self.assertTrue(all(r["by"] == "jvm" and r["reproduced"] and
+                                                    set(r["sides"]) == set(doc["claim"]["target"]["revisions"])
+                                                    for r in independent))
                             qualified = claimed.get("boundEnvironment") or any(
-                                isinstance(o, dict) for o in claimed.get("observations") or [])
+                                isinstance(o, dict) for o in claimed.get("observations") or []) or independent
                             self.assertEqual(e["replay"], {"by": "jvm" if qualified else "interpreter",
                                                            "reproduced": True})
                 slices = {r for r, a in target["history"]["revisions"].items()
@@ -411,8 +418,10 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
             with self.subTest(str(directory.relative_to(EXAMPLES))):
                 with offline():
                     packet = workflow.handoff(folder, example, target, task)
-                self.assertIn(directory.name, [r["attempt"] for r in packet["receipts"]])
-                self.assertEqual(packet["staleReceipts"], [])
+                current = workflow.inputs_key(workflow.plan_task(folder, example, target, task))
+                frozen = json.loads((directory / "plan.json").read_text())["key"]
+                self.assertEqual(directory.name in [r["attempt"] for r in packet["receipts"]], current == frozen)
+                self.assertEqual(directory.name in [r["attempt"] for r in packet["staleReceipts"]], current != frozen)
 
 
 # A pipeline step that runs one task: `build.py N --task T`, or workflow_refusal.py's rerun of a recorded refusal,

@@ -7,7 +7,7 @@ controls and the checker, qualifies candidates, and publishes each receipt under
 from dataclasses import replace
 from pathlib import Path
 
-from targets import executions, interfaces, recipes, runtime, workflow
+from targets import executions, interfaces, qualification, recipes, runtime, workflow
 from checker_output import solver_candidate
 from targets.interfaces import Unsupported
 
@@ -120,7 +120,6 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
     records.extend(controls)
     execution.stage("controls-returned")
     if p.claim.get("adapter"):
-        from targets import qualification
         comparisons, problem = qualification.correspondence(p, prepared, controls)
         executions.save(execution.directory / "correspondence.json", comparisons)
         if problem:
@@ -142,6 +141,7 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
                 qualified = [replay_candidate.check(p, prepared, witness.get("inputs"),
                                                     workdir / "qualification" / str(i), entry)
                              for i, o in enumerate(verifier.observations) if (witness := solver_candidate(o))]
+                qualified = [qualification.attach_observations(p, controls, replay) for replay in qualified]
                 verifier = replace(verifier, identities={**verifier.identities, "independentReplay": qualified})
                 executions.save(execution.directory / "replay.json", qualified)
                 execution.stage("witness-qualification", replayEvidence="replay.json", missing=["receipt"])
@@ -190,8 +190,8 @@ def review_witness(folder, example, target, task, witness, workdir):
             return run.refuse(Unsupported("prepare", interfaces.RUNTIME, p.diagnostic or p.stage, stage=p.failedStage))
         prepared[revision] = p
         run.prepared(prepared, complete=len(prepared) == len(plan.revisions))
+    controls = []
     if recipe.correspondence:
-        from targets import qualification
         controls = runtime.run_controls(plan, prepared, work / "controls")
         if isinstance(controls, Unsupported):
             return run.refuse(controls)
@@ -200,6 +200,7 @@ def review_witness(folder, example, target, task, witness, workdir):
         if problem:
             return run.refuse(Unsupported("replay-witness", interfaces.RUNTIME, problem, stage="adapter-correspondence"))
     report = replay_candidate.check(plan, prepared, inputs, work / "replay", recipe.entry)
+    report = qualification.attach_observations(plan, controls, report)
     executions.save(run.directory / "replay.json", report)
     run.stage("witness-replayed", status="witness-reproduced" if report["reproduced"] else "replay-rejected",
               firstBlocker=report.get("reason"), replayEvidence="replay.json", endedAt=executions.now().isoformat(),

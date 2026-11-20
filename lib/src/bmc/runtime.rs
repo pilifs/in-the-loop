@@ -163,6 +163,7 @@ const PROXY: &str = "java/lang/reflect/Proxy";
 
 /// Whether the engine models the static call here, where its arguments let it.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
+    if (owner, name, descriptor) == ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;") { return true; }
     matches!(
         (owner, name, descriptor),
         (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
@@ -171,6 +172,7 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
 
 /// Whether the engine models the instance call here, on a class literal, or `getClass()` on an object it made.
 pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
+    if matches!((owner, name, descriptor), ("java/lang/Integer" | "java/lang/Number", "intValue", "()I")) { return true; }
     matches!(
         (owner, name, descriptor),
         (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
@@ -217,6 +219,14 @@ impl Engine<'_> {
     /// on the object `o`, and `getClass()` on it: see the module's
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
+        if matches!((owner, name, descriptor), ("java/lang/Integer" | "java/lang/Number", "intValue", "()I")) {
+            let value = path.literals.iter().find_map(|(literal, &object)| match literal {
+                Literal::SmallInteger(value) if object == o => Some(*value), _ => None,
+            })?;
+            self.push(path, Val::I(self.b.constant(i64::from(value), 32)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
             let class = path.objects[o].class.clone();
             // An exception the run made (with `new`, or the engine for the JVM or a model of a JDK method), and no JDK
@@ -477,6 +487,37 @@ impl Engine<'_> {
     /// the call stays the JDK's.
     pub(super) fn runtime_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
+            ("java/lang/Integer", "valueOf", [Val::I(bits)]) => {
+                let boxed = if let Some(value) = self.b.constant_value(bits) {
+                    Val::R(Some(self.literal(path, Literal::SmallInteger(i8::try_from(value).ok()?), owner)))
+                } else {
+                    // Outside the mandated cache a JVM can choose a larger cache. Keep that path a gap.
+                    let mut range = None;
+                    for (lo, hi) in [(0i8, 3i8), (-1, 7), (i8::MIN, i8::MAX)] {
+                        let low = self.b.constant(i64::from(lo), 32);
+                        let high = self.b.constant(i64::from(hi), 32);
+                        let below = self.b.slt(bits, &low);
+                        let above = self.b.slt(&high, bits);
+                        let mut assumptions = path.cond.clone();
+                        assumptions.push(self.b.or(below, above));
+                        match self.solve(&assumptions) {
+                            Ok(false) => { range = Some(lo..=hi); break; }
+                            Ok(true) => {}
+                            Err(stop) => return Some(Err(stop)),
+                        }
+                    }
+                    let mut options = Vec::new();
+                    for value in range? {
+                        let k = self.b.constant(i64::from(value), 32);
+                        let guard = self.b.eq(bits, &k);
+                        options.push((guard, Some(self.literal(path, Literal::SmallInteger(value), owner))));
+                    }
+                    choice(&mut self.b, options)
+                };
+                self.push(path, boxed);
+                self.advance(path);
+                Some(Ok(None))
+            }
             (CLASS, "forName", [Val::R(named), rest @ ..]) => {
                 // With a loader and no initialization, or by the caller's loader and with it.
                 let initializes = match rest {

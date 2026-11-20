@@ -1,0 +1,8 @@
+note: checked as a property of the pair of versions: RegressionPair.agree (verifier/work/pair/RegressionPair.java) calls the previous version's invoice.Invoice#total(int), relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale
+✗ invoice.Invoice#total(int): the two versions differ on total(q=1) (the pair's property, below, returns false on it)
+✗ Property of RegressionPair#agree violated: `result` where q >= -2 && q <= 2:
+  agree(q=1)
+    outcome: false
+  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as agree(q=2), shrunk to the input above in 3 interpreter runs, replayed in the interpreter; domain q: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

@@ -8,7 +8,7 @@ import sys
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 from targets import route, workflow
-from targets.finite_oracle import Table, canonical
+from targets.finite_oracle import Table, agrees
 
 
 def report(folder):
@@ -43,7 +43,7 @@ def report(folder):
             observations = {}
             for name, field in table.fields.items():
                 different = [(case, row) for case, row in data
-                             if canonical(row["direct"][name]) != canonical(table.expected(case, row, name))]
+                             if not agrees(row["direct"][name], table.expected(case, row, name), field)]
                 result = {"mismatches": len(different)}
                 if different:
                     case, row = different[0]

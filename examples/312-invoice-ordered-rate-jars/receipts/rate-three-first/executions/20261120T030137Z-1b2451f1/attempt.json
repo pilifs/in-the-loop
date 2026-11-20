@@ -1,0 +1,342 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T030137Z-1b2451f1",
+  "task": "rate-three-first",
+  "claimKey": "53397215b1ac6f04",
+  "revisions": [
+    "three-first"
+  ],
+  "startedAt": "2026-11-20T03:01:37.111173+00:00",
+  "retryOf": "20261120T024339Z-dc65caa2",
+  "retryBinding": "df43bb5ccfac865bc0fc87d93202b6d58380b490ebe4a632845277e971762bad",
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-025230-replay-the-paired-invoice-witness-on-eac",
+  "sourceCommit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0014
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.1176
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.1435
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 0.176
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.2758
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "three-first": {
+      "revision": "fixture:client",
+      "target": {
+        "class": "invoice.Invoice",
+        "method": "total",
+        "descriptor": "(I)I",
+        "loadedFrom": "three-first.jar",
+        "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
+        "orderedClasses": {
+          "invoice.Rate": [
+            {
+              "path": "lib/rates/three.jar",
+              "classSha256": "298654084aa8ef3d17a824e7fd773b03b391b74185f4934cbefc3d090a39adb5"
+            },
+            {
+              "path": "lib/rates/two.jar",
+              "classSha256": "14eaba6474c850481c23722b1de911137c1f5a3f1329376a2ee141536081b1a3"
+            }
+          ]
+        },
+        "jvmClassOrigins": {
+          "invoice.Rate": {
+            "path": "lib/rates/three.jar",
+            "classSha256": "298654084aa8ef3d17a824e7fd773b03b391b74185f4934cbefc3d090a39adb5"
+          }
+        }
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "bb8b7b2e08dfa634c8ea338dcd294258aee1a21f5fa000dcf442692f6dafc1b9",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "three-first.jar",
+          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from client by the fixture recipe"
+        },
+        {
+          "path": "lib/rates/three.jar",
+          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
+          "role": "dependency",
+          "coordinates": null,
+          "origin": "built from rates/three"
+        },
+        {
+          "path": "lib/rates/two.jar",
+          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
+          "role": "dependency",
+          "coordinates": null,
+          "origin": "built from rates/two"
+        }
+      ]
+    }
+  },
+  "bindingId": "df43bb5ccfac865bc0fc87d93202b6d58380b490ebe4a632845277e971762bad",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+    "prove",
+    "invoice.Invoice#total(int)",
+    "--classes",
+    "prepare/three-first/three-first.jar",
+    "--classpath",
+    "prepare/three-first/lib/rates/three.jar",
+    "--classpath",
+    "prepare/three-first/lib/rates/two.jar",
+    "--assume",
+    "q >= -2 && q <= 2",
+    "--assert",
+    "result == q * 3",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "10",
+    "--max-array-length",
+    "3",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5",
+    "commit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+    "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 10,
+      "maxArrayLength": 3
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "invoice.Invoice#total(I)I",
+      "revisions": {
+        "three-first": {
+          "commit": "fixture:client",
+          "loadedFrom": "three-first.jar",
+          "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
+          "origin": "built from client by the fixture recipe",
+          "parameters": {
+            "names": [
+              "q"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "three-first": [
+        {
+          "path": "three-first.jar",
+          "sha256": "cb67992e53316546b5209240ab28ed14194ae8e189c61707f26cd299354bcfda",
+          "role": "original"
+        },
+        {
+          "path": "lib/rates/three.jar",
+          "sha256": "3444cceedda4fbe0e837dde453fe0f04f843307064dc7eecdeb2161465bbd4f3",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/rates/two.jar",
+          "sha256": "e84f214c40d7808f0cf8e075fdd772b9701dcfc4cd09985b493e56ceb4b13ae1",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "invoice.Invoice#total(I)I",
+    "entryBindings": {
+      "three-first": {
+        "entry": "invoice.Invoice#total(I)I",
+        "classSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2",
+        "loadedFrom": "three-first.jar",
+        "subject": "invoice.Invoice#total(I)I",
+        "subjectClassSha256": "733caf4a99e6da48cb81008077b9c89d1ede039df99f0fdc5f3c521a54106ed2"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "invoice.Invoice#total(I)I",
+      "checkedEntry": "invoice.Invoice#total(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "q >= -2 && q <= 2"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == q * 3"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "10"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "3"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "three-first": "fixture:client"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "three-first": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+          "gaps",
+          "--target",
+          "invoice.Invoice#total(int)",
+          "--classes",
+          "prepare/three-first/three-first.jar",
+          "--classpath",
+          "prepare/three-first/lib/rates/three.jar",
+          "--classpath",
+          "prepare/three-first/lib/rates/two.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-three-first.stdout",
+        "stderr": "verifier/probe-three-first.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0228,
+      "peakRssBytes": 80900096,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0228,
+    "peakRssBytes": 80900096,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.031,
+  "missing": [],
+  "receipt": "receipts/rate-three-first/20261120T030137Z-1b2451f1/result.json",
+  "preparedClaim": "eaf32d8063b2e37c",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T03:01:37.387066+00:00"
+}

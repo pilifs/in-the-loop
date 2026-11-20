@@ -202,6 +202,11 @@ def bound_revisions(plan, prepared):
                                                                   if stray else "is empty"))
         if not any(a.role == "original" for a in p.artifacts if a.path in p.classpath):
             raise Refused(f"revision {revision}'s classpath has no original artifact")
+        if expected_compiler := entry.get("fixtureCompiler"):
+            actual = p.toolchain.get("originalCompiler") or {}
+            if (p.source.get("fixtureCompiler") != expected_compiler or actual.get("flags") != expected_compiler["flags"]
+                    or str((actual.get("jdk") or {}).get("feature")) != expected_compiler["jdk"]):
+                raise Refused(f"revision {revision} was prepared with a different fixture compiler")
         if entry.get("fixtureClasspath"):
             dependencies = {a.path for a in p.artifacts if a.role == "dependency"}
             ordered = [path for path in p.classpath if path in dependencies]

@@ -1,0 +1,36 @@
+{
+  "claimKey": "9414822dc57fa73d",
+  "entry": "copy.Projection#state(I)I",
+  "inputs": [
+    {
+      "name": "code",
+      "type": "int",
+      "value": 11
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "by": "jvm",
+  "reproduced": false,
+  "sides": {
+    "reference": {
+      "entryClassSha256": "935b07629756be4c089f7eddc6e3976636f94059d30c2f934153407a2f6af191",
+      "classpath": [
+        "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca",
+        "978747c97c2cb0c8b440abfe278fb79cd7ceb6ff12204dcddd8a93c6236cadfb"
+      ],
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 11;\nif (!(code >= 0 && code < 40 && copy.Projection.assignable(code))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = copy.Projection.state(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "admitted": false
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "reason": "domain mismatch: the frozen precondition rejects this input"
+}

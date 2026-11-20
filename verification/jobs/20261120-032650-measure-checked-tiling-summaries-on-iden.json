@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-032650-measure-checked-tiling-summaries-on-iden",
+  "title": "Measure checked tiling summaries on identical callers",
+  "description": "Measure inlining and a checked recursive helper lemma at identical bounds and budgets on the exact and parity consumers. Measure the independent exact-cache control cold and warm, then change only the helper base case and check both consumers again.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "proof:reuse"
+  ],
+  "links": {
+    "examples": [
+      "331"
+    ]
+  },
+  "expected": "Recorded artifact hashes, costs, non-vacuity or first blocker and cache origin for each caller, strategy, and logical cache condition.",
+  "submitted": {
+    "at": "2026-11-20T03:26:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m",
+    "memoryLimit": "4G",
+    "timeout": "22m"
+  },
+  "steps": [
+    {
+      "name": "Measure two dependent proofs and invalidate their helper",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/331-floor-tiling-proof-reuse/benchmark.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/331-floor-tiling-proof-reuse/records/reuse"
+  ]
+}

@@ -109,9 +109,12 @@ class Execution:
             by_path = {a.path: a for a in p.artifacts}
             bindings[rev] = {"revision": p.commit, "target": p.source.get("target"), "jdk": p.toolchain.get("jdk"),
                              "classpath": [asdict(by_path[path]) for path in p.classpath]}
+            if "originalCompiler" in p.toolchain:
+                bindings[rev]["originalCompiler"] = p.toolchain["originalCompiler"]
         identity = [{"revision": name, "commit": item["revision"], "target": item["target"],
                      "jdkRelease": (item["jdk"] or {}).get("release"),
-                     "classpath": [(a["role"], a["sha256"]) for a in item["classpath"]]}
+                     "classpath": [(a["role"], a["sha256"]) for a in item["classpath"]],
+                     **({"originalCompiler": item["originalCompiler"]} if "originalCompiler" in item else {})}
                     for name, item in bindings.items()]
         self.stage("artifacts-ready" if complete else "revision-prepared", bindings=bindings,
                    bindingId=workflow.canonical_digest([self.state["claimKey"], identity]) if complete else None)

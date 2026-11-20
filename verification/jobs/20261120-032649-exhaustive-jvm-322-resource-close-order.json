@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-032649-exhaustive-jvm-322-resource-close-order",
+  "title": "Exhaustive JVM 322 Resource close order and suppressed exceptions",
+  "description": "Reversing resource acquisition changes the primary or suppressed tags while every tagged failure has the same exception class. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvm:finite-domain",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "322"
+    ]
+  },
+  "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+  "submitted": {
+    "at": "2026-11-20T03:26:49+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 322 --finite-domain --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/322-ordered-suppressed-exceptions/records/finite-proofs"
+  ]
+}

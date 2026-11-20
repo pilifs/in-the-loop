@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "320",
+  "title": "Commons Collections views update multiset size",
+  "summary": "Removing a key through a live iterator can remove its membership while leaving aggregate size stale.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "aliasing",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Collections",
+    "file": "src/main/java/org/apache/commons/collections4/multiset/AbstractMapMultiSet.java",
+    "symbol": "org.apache.commons.collections4.multiset.AbstractMapMultiSet#size()I"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Removing a key through a live iterator can remove its membership while leaving aggregate size stale."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 18 inputs on each revision. parent mismatches were 18 for total, 0 for membership, 0 for otherCount. fix mismatches were 0 for total, 0 for membership, 0 for otherCount."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-collections",
+    "url": "https://github.com/apache/commons-collections/commit/e218502f9f82237404bbce8e8ba5f81ffb467198"
+  }
+}

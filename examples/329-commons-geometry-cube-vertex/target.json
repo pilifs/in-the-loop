@@ -1,0 +1,338 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-geometry-cube-vertex",
+    "family": "commons-geometry-cube-vertex",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-geometry",
+    "revisions": {
+      "parent": {
+        "commit": "f57f82bea38dcf8646edb3c7f5f70818281a4c77"
+      },
+      "fix": {
+        "commit": "17833efe2b8f1b563e8c261a28d26af441a3778c",
+        "parent": "f57f82bea38dcf8646edb3c7f5f70818281a4c77"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "source-slice",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/cubegrid/Projection.java"
+    ],
+    "slice": {
+      "jdk": "21",
+      "flags": [
+        "--release",
+        "21",
+        "-g",
+        "-parameters"
+      ],
+      "files": {
+        "parent": [
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Geometry.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Point.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Spatial.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Vector.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/exception/GeometryException.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/exception/IllegalNormException.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/exception/package-info.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/DoubleFunction1N.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/DoubleFunction2N.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/DoubleFunction3N.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/GeometryInternalError.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/SimpleTupleFormat.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/package-info.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/package-info.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/AbstractRegion.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/AbstractSubHyperplane.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BSPTree.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BSPTreeVisitor.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryAttribute.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryBuilder.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryProjection.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryProjector.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundarySizeVisitor.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Characterization.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Embedding.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Hyperplane.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/InsideFinder.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/NodesSet.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Region.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/RegionFactory.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Side.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/SubHyperplane.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Transform.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/AffineTransformMatrix.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/EuclideanVector.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/MultiDimensionalEuclideanVector.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/exception/NonInvertibleTransformException.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/exception/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/internal/Matrices.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/internal/Vectors.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/internal/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/AffineTransformMatrix1D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/Interval.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/IntervalsSet.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/OrientedPoint.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/SubOrientedPoint.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/Vector1D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/AffineTransformMatrix3D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Line.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/OutlineExtractor.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Plane.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/PolyhedronsSet.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Segment.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/SphericalCoordinates.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/SubLine.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/SubPlane.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Vector3D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisAngleSequence.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisReferenceFrame.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisSequence.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisSequenceType.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/QuaternionRotation.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/Rotation3D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/AffineTransformMatrix2D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/Line.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/NestedLoops.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/PolarCoordinates.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/PolygonsSet.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/Segment.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/SubLine.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/Vector2D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/package-info.java"
+        ],
+        "fix": [
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Geometry.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Point.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Spatial.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/Vector.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/exception/GeometryException.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/exception/IllegalNormException.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/exception/package-info.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/DoubleFunction1N.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/DoubleFunction2N.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/DoubleFunction3N.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/GeometryInternalError.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/SimpleTupleFormat.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/internal/package-info.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/package-info.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/AbstractRegion.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/AbstractSubHyperplane.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BSPTree.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BSPTreeVisitor.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryAttribute.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryBuilder.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryProjection.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundaryProjector.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/BoundarySizeVisitor.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Characterization.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Embedding.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Hyperplane.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/InsideFinder.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/NodesSet.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Region.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/RegionFactory.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Side.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/SubHyperplane.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/Transform.java",
+          "commons-geometry-core/src/main/java/org/apache/commons/geometry/core/partitioning/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/AffineTransformMatrix.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/EuclideanVector.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/MultiDimensionalEuclideanVector.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/exception/NonInvertibleTransformException.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/exception/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/internal/Matrices.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/internal/Vectors.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/internal/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/AffineTransformMatrix1D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/Interval.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/IntervalsSet.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/OrientedPoint.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/SubOrientedPoint.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/Vector1D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/oned/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/AffineTransformMatrix3D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Line.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/OutlineExtractor.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Plane.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/PolyhedronsSet.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Segment.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/SphericalCoordinates.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/SubLine.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/SubPlane.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/Vector3D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisAngleSequence.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisReferenceFrame.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisSequence.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/AxisSequenceType.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/QuaternionRotation.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/Rotation3D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/threed/rotation/package-info.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/AffineTransformMatrix2D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/Line.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/NestedLoops.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/PolarCoordinates.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/PolygonsSet.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/Segment.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/SubLine.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/Vector2D.java",
+          "commons-geometry-euclidean/src/main/java/org/apache/commons/geometry/euclidean/twod/package-info.java"
+        ]
+      }
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "coordinates": "org.apache.commons:commons-numbers-core:1.0-beta1",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-numbers-core/1.0-beta1/commons-numbers-core-1.0-beta1.jar",
+        "sha256": "10fe92bffba4d5d0920967db3f9f317e121bd601a9b8278529be53a68bac09f7"
+      },
+      {
+        "revision": "parent",
+        "coordinates": "org.apache.commons:commons-numbers-angle:1.0-beta1",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-numbers-angle/1.0-beta1/commons-numbers-angle-1.0-beta1.jar",
+        "sha256": "cae25277cb0fbe87496f78b422b5aa8a982130c1ff529da7e28e45de978d277e"
+      },
+      {
+        "revision": "parent",
+        "coordinates": "org.apache.commons:commons-numbers-arrays:1.0-beta1",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-numbers-arrays/1.0-beta1/commons-numbers-arrays-1.0-beta1.jar",
+        "sha256": "df538a6562c02a9c8dac62f51082ccb171bd8f9f18eeeeca080a2058500d12ab"
+      },
+      {
+        "revision": "parent",
+        "coordinates": "org.apache.commons:commons-numbers-quaternion:1.0-beta1",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-numbers-quaternion/1.0-beta1/commons-numbers-quaternion-1.0-beta1.jar",
+        "sha256": "654f45af15e005b42e400349bf59a1eb3d128a5a4a7e140cbb3beb8cf4e83cb5"
+      },
+      {
+        "revision": "fix",
+        "coordinates": "org.apache.commons:commons-numbers-core:1.0-beta1",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-numbers-core/1.0-beta1/commons-numbers-core-1.0-beta1.jar",
+        "sha256": "10fe92bffba4d5d0920967db3f9f317e121bd601a9b8278529be53a68bac09f7"
+      },
+      {
+        "revision": "fix",
+        "coordinates": "org.apache.commons:commons-numbers-angle:1.0-beta1",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-numbers-angle/1.0-beta1/commons-numbers-angle-1.0-beta1.jar",
+        "sha256": "cae25277cb0fbe87496f78b422b5aa8a982130c1ff529da7e28e45de978d277e"
+      },
+      {
+        "revision": "fix",
+        "coordinates": "org.apache.commons:commons-numbers-arrays:1.0-beta1",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-numbers-arrays/1.0-beta1/commons-numbers-arrays-1.0-beta1.jar",
+        "sha256": "df538a6562c02a9c8dac62f51082ccb171bd8f9f18eeeeca080a2058500d12ab"
+      },
+      {
+        "revision": "fix",
+        "coordinates": "org.apache.commons:commons-numbers-quaternion:1.0-beta1",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-numbers-quaternion/1.0-beta1/commons-numbers-quaternion-1.0-beta1.jar",
+        "sha256": "654f45af15e005b42e400349bf59a1eb3d128a5a4a7e140cbb3beb8cf4e83cb5"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;"
+    },
+    {
+      "id": "presence-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+      "claim": "claims/presence.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "presence-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+      "claim": "claims/presence.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "point-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+      "claim": "claims/point.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "point-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+      "claim": "claims/point.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/cubegrid/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

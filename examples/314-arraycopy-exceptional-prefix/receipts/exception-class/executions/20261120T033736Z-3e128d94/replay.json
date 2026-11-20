@@ -1,0 +1,82 @@
+{
+  "claimKey": "417c9f288204be81",
+  "entry": "copy.Projection#thrown(I)I",
+  "inputs": [
+    {
+      "name": "code",
+      "type": "int",
+      "value": 11
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "by": "jvm",
+  "reproduced": false,
+  "sides": {
+    "reference": {
+      "entryClassSha256": "935b07629756be4c089f7eddc6e3976636f94059d30c2f934153407a2f6af191",
+      "classpath": [
+        "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca",
+        "978747c97c2cb0c8b440abfe278fb79cd7ceb6ff12204dcddd8a93c6236cadfb"
+      ],
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 11;\nif (!(code >= 0 && code < 40)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = copy.Projection.thrown(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "admitted": true,
+      "values": [
+        1,
+        null
+      ]
+    },
+    "precheck": {
+      "entryClassSha256": "935b07629756be4c089f7eddc6e3976636f94059d30c2f934153407a2f6af191",
+      "classpath": [
+        "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca",
+        "01c403190988a64969b18075e2846aa130e3e1b7e38714856721e8db60f0ab6b"
+      ],
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 11;\nif (!(code >= 0 && code < 40)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = copy.Projection.thrown(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "admitted": true,
+      "values": [
+        1,
+        null
+      ]
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "reason": "the admitted input satisfies the property or agrees on every selected observation",
+  "finiteObservation": {
+    "id": 11,
+    "input": {
+      "sourceType": "[Ljava.lang.Object;",
+      "destinationType": "[Ljava.lang.String;",
+      "source": [
+        "A",
+        1
+      ]
+    },
+    "field": "exception",
+    "direct": {
+      "reference": {
+        "exception": "java.lang.ArrayStoreException",
+        "state": [
+          "A",
+          "x"
+        ]
+      },
+      "precheck": {
+        "exception": "java.lang.ArrayStoreException",
+        "state": [
+          "x",
+          "x"
+        ]
+      }
+    },
+    "tableSha256": "3e45a3502dda068dccc872b35b49ee6a0c65c36972a9824c1dea885bca9b956a"
+  }
+}

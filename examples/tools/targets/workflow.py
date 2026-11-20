@@ -15,6 +15,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from targets import sidecar
 from targets.interfaces import TaskPlan, WORKFLOW, Unsupported
 
 CLAIM_SCHEMA = Path(__file__).resolve().parents[2] / "schema" / "target-claim.schema.json"
@@ -151,6 +152,11 @@ def artifact_sources(folder, target, revisions):
                 if route != "fixture":
                     return f"revision {source}: {key} requires a fixture"
                 entry[key] = list(defined[source][key])
+        if "fixtureCompiler" in defined[source]:
+            compiler = defined[source]["fixtureCompiler"]
+            if route != "fixture" or sidecar.slice_flag_problems(compiler["flags"]):
+                return f"revision {source} has an invalid fixture compiler recipe"
+            entry["fixtureCompiler"] = compiler
         if entry.get("fixtureClasspath"):
             trees = []
             for relative in entry["fixtureClasspath"]:
@@ -177,6 +183,8 @@ def artifact_sources(folder, target, revisions):
                 if not files:
                     return f"revision {source}: the source-slice route names no files for it"
                 where["slice"] = {"files": list(files), "jdk": recipe["jdk"], "flags": list(recipe["flags"])}
+                if recipe.get("companionClasses"):
+                    where["slice"]["companionClasses"] = recipe["companionClasses"]
                 matches = (recipe.get("matches") or {}).get(source) if source == name else None
                 if matches:
                     where["slice"]["matches"] = [dict(m) for m in matches]

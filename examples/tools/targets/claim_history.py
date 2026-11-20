@@ -258,6 +258,9 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
         row["latestEligible"] = row["evidence"][-1] if row["evidence"] else None
         answers = {e["answer"] for e in row["evidence"]}
         row["conclusion"] = "disputed" if len(answers) > 1 else next(iter(answers), "open")
+        if not isinstance(plan, Unsupported) and (folder / "records/finite-proofs").is_dir():
+            from targets import finite_check
+            row["finiteJvm"] = finite_check.evidence(folder, plan)
         # Unplannable tasks cannot share a key by virtue of both missing it.
         group = claims.setdefault(key or (file, name), {"claimKey": key, "file": file, "subjects": []})
         if isinstance(plan, Unsupported):
@@ -291,6 +294,9 @@ def markdown(value):
                 if last.get("missing"):
                     lines.append("Missing evidence: " + ", ".join(last["missing"]) + ".")
             lines.append("")
+            for proof in subject.get("finiteJvm", []):
+                lines.append(f"- Exhaustive JVM {proof['status']} on {proof.get('inputs') or 0} admitted inputs "
+                             f"([finite evidence]({proof['receipt']})).")
             for record in subject["evidence"]:
                 link = record.get("receipt") or record.get("job")
                 lines.append(f"- {record['answer']} ([evidence]({link}))")

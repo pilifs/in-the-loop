@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-033506-check-the-fast-follow-boxing-change-with",
+  "title": "Check the fast-follow boxing change with the corpus agrees with the jvm under jbmc and auto",
+  "description": "The native checker now decides the two listIterate conformance claims through Integer boxing and unboxing. Run the affected ignored corpus test on the pinned checker, including its cross-backend or confirmation obligations and JVM comparisons.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs"
+    ]
+  },
+  "expected": "The ignored conformance test passes with every bounded result reconciled against its JVM oracle.",
+  "submitted": {
+    "at": "2026-11-20T03:35:06+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "12m",
+    "memoryLimit": "5G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "the_corpus_agrees_with_the_jvm_under_jbmc_and_auto",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --exact --test-threads=1",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

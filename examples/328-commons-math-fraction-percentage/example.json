@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "328",
+  "title": "Commons Math fraction percentages across integer overflow",
+  "summary": "Multiplying a numerator by 100 in its integer representation changes the percentage near the signed 32-bit boundary.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "integer-overflow",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Math",
+    "file": "src/main/java/org/apache/commons/math3/fraction/Fraction.java",
+    "symbol": "org.apache.commons.math3.fraction.Fraction#percentageValue()D"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Multiplying a numerator by 100 in its integer representation changes the percentage near the signed 32-bit boundary."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 13 inputs on each revision. parent mismatches were 4 for bits, 0 for normal. fix mismatches were 0 for bits, 0 for normal."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-math",
+    "url": "https://github.com/apache/commons-math/commit/63a48705a496bf2506121dcddbd8cac2a78f877c"
+  }
+}

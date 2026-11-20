@@ -1,0 +1,338 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T030135Z-b5e0f983",
+  "task": "cells-shared",
+  "claimKey": "c31694e13505beab",
+  "revisions": [
+    "shared"
+  ],
+  "startedAt": "2026-11-20T03:01:35.744975+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-025230-verify-independently-allocated-and-share",
+  "sourceCommit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0013
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.0671
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.0683
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.0935
+    },
+    {
+      "stage": "candidate-recorded",
+      "elapsedSeconds": 0.1363
+    },
+    {
+      "stage": "witness-qualification",
+      "elapsedSeconds": 0.5257
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.6155
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "shared": {
+      "revision": "fixture:shared",
+      "target": {
+        "class": "seats.Seats",
+        "method": "mark",
+        "descriptor": "(IIII)[[I",
+        "loadedFrom": "shared.jar",
+        "classSha256": "cc7c89e1f98c6cf6eed02e3d82728a39729e2470d346ce1872cde7a3ad090adf",
+        "adapterCalls": [
+          "seats.Seats#mark(IIII)[[I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "7fcfcafadb3e4d61c788e97104d14843734103f6bbc62a6f98f8455d0b4311fb",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-shared.jar",
+          "sha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "shared.jar",
+          "sha256": "8422ccfd873330382ab01caf6acb537d4d797594691a643f747f858ed8563ec6",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from shared by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "35a43b590a761ec913c8fe19047b8afd3962ccdafcdd9ac7baecc48b229edcc9",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+    "prove",
+    "seats.Projection#cells(int)",
+    "--classes",
+    "prepare/shared/adapter-shared.jar",
+    "--classpath",
+    "prepare/shared/shared.jar",
+    "--assume",
+    "code >= 0 && code < 18",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "4",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5",
+    "commit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+    "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 4
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+      "method": "seats.Seats#mark(IIII)[[I",
+      "revisions": {
+        "shared": {
+          "commit": "fixture:shared",
+          "loadedFrom": "shared.jar",
+          "classSha256": "cc7c89e1f98c6cf6eed02e3d82728a39729e2470d346ce1872cde7a3ad090adf",
+          "origin": "built from shared by the fixture recipe",
+          "parameters": {
+            "names": [
+              "rows",
+              "cols",
+              "y",
+              "x"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "seats.Projection#cells(I)I",
+        "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+        "correspondence": "finite-oracle",
+        "cases": 18
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "shared": [
+        {
+          "path": "adapter-shared.jar",
+          "sha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+          "role": "adapter"
+        },
+        {
+          "path": "shared.jar",
+          "sha256": "8422ccfd873330382ab01caf6acb537d4d797594691a643f747f858ed8563ec6",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "seats.Projection#cells(I)I",
+    "entryBindings": {
+      "shared": {
+        "entry": "seats.Projection#cells(I)I",
+        "classSha256": "db12d501b7f54fb694dcc127ac230dcf933648539da92a2b97b050c96b2c8ceb",
+        "loadedFrom": "adapter-shared.jar",
+        "subject": "seats.Seats#mark(IIII)[[I",
+        "subjectClassSha256": "cc7c89e1f98c6cf6eed02e3d82728a39729e2470d346ce1872cde7a3ad090adf"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "seats.Seats#mark(IIII)[[I",
+      "checkedEntry": "seats.Projection#cells(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 18"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "4"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "seats.Projection#cells(I)I",
+        "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+        "correspondence": "finite-oracle",
+        "cases": 18
+      }
+    },
+    "commits": {
+      "shared": "fixture:shared"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "shared": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+          "gaps",
+          "--target",
+          "seats.Projection#cells(int)",
+          "--classes",
+          "prepare/shared/adapter-shared.jar",
+          "--classpath",
+          "prepare/shared/shared.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-shared.stdout",
+        "stderr": "verifier/probe-shared.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0389,
+      "peakRssBytes": 80097280,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0389,
+    "peakRssBytes": 80097280,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.041,
+  "missing": [],
+  "replayEvidence": "replay.json",
+  "receipt": "receipts/cells-shared/20261120T030135Z-b5e0f983/result.json",
+  "preparedClaim": "c5d16040fcbdef53",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T03:01:36.360579+00:00"
+}

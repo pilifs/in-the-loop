@@ -1,0 +1,333 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T030129Z-22d73d5c",
+  "task": "shape-matrix",
+  "claimKey": "cf687ba95903304b",
+  "revisions": [
+    "matrix"
+  ],
+  "startedAt": "2026-11-20T03:01:29.142707+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-025230-verify-independently-allocated-and-share",
+  "sourceCommit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.846
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.9448
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 1.9489
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.9958
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.0506
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.2333
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "matrix": {
+      "revision": "fixture:matrix",
+      "target": {
+        "class": "seats.Seats",
+        "method": "mark",
+        "descriptor": "(IIII)[[I",
+        "loadedFrom": "matrix.jar",
+        "classSha256": "02098e9dabe53c591675220eb1ff92fc79a5e41943597cc8420aa2953586f57c",
+        "adapterCalls": [
+          "seats.Seats#mark(IIII)[[I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "7fcfcafadb3e4d61c788e97104d14843734103f6bbc62a6f98f8455d0b4311fb",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-matrix.jar",
+          "sha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "matrix.jar",
+          "sha256": "eb160cc9d5525dcdf5e0fe74ae594ef87f724b46d7748c72e7c423e9184cff9f",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from matrix by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "05a9ecc89ca2437353bdedb6a961a1e01d08e1d84700451cc74bfc88d46e138b",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+    "prove",
+    "seats.Projection#shape(int)",
+    "--classes",
+    "prepare/matrix/adapter-matrix.jar",
+    "--classpath",
+    "prepare/matrix/matrix.jar",
+    "--assume",
+    "code >= 0 && code < 18",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "4",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5",
+    "commit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+    "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 4
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+      "method": "seats.Seats#mark(IIII)[[I",
+      "revisions": {
+        "matrix": {
+          "commit": "fixture:matrix",
+          "loadedFrom": "matrix.jar",
+          "classSha256": "02098e9dabe53c591675220eb1ff92fc79a5e41943597cc8420aa2953586f57c",
+          "origin": "built from matrix by the fixture recipe",
+          "parameters": {
+            "names": [
+              "rows",
+              "cols",
+              "y",
+              "x"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "seats.Projection#shape(I)I",
+        "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+        "correspondence": "finite-oracle",
+        "cases": 18
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "matrix": [
+        {
+          "path": "adapter-matrix.jar",
+          "sha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+          "role": "adapter"
+        },
+        {
+          "path": "matrix.jar",
+          "sha256": "eb160cc9d5525dcdf5e0fe74ae594ef87f724b46d7748c72e7c423e9184cff9f",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "seats.Projection#shape(I)I",
+    "entryBindings": {
+      "matrix": {
+        "entry": "seats.Projection#shape(I)I",
+        "classSha256": "db12d501b7f54fb694dcc127ac230dcf933648539da92a2b97b050c96b2c8ceb",
+        "loadedFrom": "adapter-matrix.jar",
+        "subject": "seats.Seats#mark(IIII)[[I",
+        "subjectClassSha256": "02098e9dabe53c591675220eb1ff92fc79a5e41943597cc8420aa2953586f57c"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "seats.Seats#mark(IIII)[[I",
+      "checkedEntry": "seats.Projection#shape(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 18"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "4"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "seats.Projection#shape(I)I",
+        "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+        "correspondence": "finite-oracle",
+        "cases": 18
+      }
+    },
+    "commits": {
+      "matrix": "fixture:matrix"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "matrix": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+          "gaps",
+          "--target",
+          "seats.Projection#shape(int)",
+          "--classes",
+          "prepare/matrix/adapter-matrix.jar",
+          "--classpath",
+          "prepare/matrix/matrix.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-matrix.stdout",
+        "stderr": "verifier/probe-matrix.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0411,
+      "peakRssBytes": 64614400,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0411,
+    "peakRssBytes": 64614400,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.052,
+  "missing": [],
+  "receipt": "receipts/shape-matrix/20261120T030129Z-22d73d5c/result.json",
+  "preparedClaim": "c59050791f56f00f",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T03:01:31.376091+00:00"
+}

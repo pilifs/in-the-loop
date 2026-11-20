@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "parity",
+  "statement": "For n from zero to eighteen the parity caller agrees with the binomial tiling count.",
+  "assume": "n >= 0 && n <= 18",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 24,
+    "maxArrayLength": 0
+  },
+  "assert": "result == tiling.Oracle.parity(n)"
+}

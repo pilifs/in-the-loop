@@ -1,0 +1,333 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T030128Z-f3987814",
+  "task": "history-reject",
+  "claimKey": "f3d3b70d1ca5e34f",
+  "revisions": [
+    "reject"
+  ],
+  "startedAt": "2026-11-20T03:01:28.997767+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-025230-verify-bounded-queue-histories-and-final",
+  "sourceCommit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.8106
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.9534
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 1.9599
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.0082
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.0927
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.2725
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "reject": {
+      "revision": "fixture:reject",
+      "target": {
+        "class": "queuegrid.BoundedQueue",
+        "method": "apply",
+        "descriptor": "(I)I",
+        "loadedFrom": "reject.jar",
+        "classSha256": "582fcd24615a5f353e29480e344d7fabb63ddf5980932bf62232d3df33fbb83f",
+        "adapterCalls": [
+          "queuegrid.BoundedQueue#<init>()V",
+          "queuegrid.BoundedQueue#apply(I)I",
+          "queuegrid.BoundedQueue#at(I)I",
+          "queuegrid.BoundedQueue#size()I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "4c466593119e2bd02d2d2b09921ca9fa4a5460b4188bc605c2127d8aa77c5c36",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-reject.jar",
+          "sha256": "d4f9033af339c5946c6a10e7f69fe712bc43562f08b9b6448917cf08b4e02d81",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "reject.jar",
+          "sha256": "98db7b3117822c71e9994d6bbcf1666a877da7f85b2353fb42565c8b3b4880da",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from reject by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "a1436d62c1304b9bf975aafefadc2175be45f67503fdc37a7811c46ddb690e72",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+    "prove",
+    "queuegrid.Projection#history(int)",
+    "--classes",
+    "prepare/reject/adapter-reject.jar",
+    "--classpath",
+    "prepare/reject/reject.jar",
+    "--assume",
+    "code >= 0 && code < 121",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "10",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5",
+    "commit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+    "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 10
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Code is the bijective base-three command word read least-significant digit first. Commands 0/1 offer A/B, 2 polls. Responses 0/1 reject/accept and 2/3/4 return A/B/empty. Each word starts with a fresh empty queue.",
+      "method": "queuegrid.BoundedQueue#apply(I)I",
+      "revisions": {
+        "reject": {
+          "commit": "fixture:reject",
+          "loadedFrom": "reject.jar",
+          "classSha256": "582fcd24615a5f353e29480e344d7fabb63ddf5980932bf62232d3df33fbb83f",
+          "origin": "built from reject by the fixture recipe",
+          "parameters": {
+            "names": [
+              "command"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "queuegrid.Projection#history(I)I",
+        "mapping": "Code is the bijective base-three command word read least-significant digit first. Commands 0/1 offer A/B, 2 polls. Responses 0/1 reject/accept and 2/3/4 return A/B/empty. Each word starts with a fresh empty queue.",
+        "correspondence": "finite-oracle",
+        "cases": 121
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "reject": [
+        {
+          "path": "adapter-reject.jar",
+          "sha256": "d4f9033af339c5946c6a10e7f69fe712bc43562f08b9b6448917cf08b4e02d81",
+          "role": "adapter"
+        },
+        {
+          "path": "reject.jar",
+          "sha256": "98db7b3117822c71e9994d6bbcf1666a877da7f85b2353fb42565c8b3b4880da",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "queuegrid.Projection#history(I)I",
+    "entryBindings": {
+      "reject": {
+        "entry": "queuegrid.Projection#history(I)I",
+        "classSha256": "005b41e7f6cf64347bec169ab2f1c31bf3c0e18b291f5e3d22b90c1ad5a6d103",
+        "loadedFrom": "adapter-reject.jar",
+        "subject": "queuegrid.BoundedQueue#apply(I)I",
+        "subjectClassSha256": "582fcd24615a5f353e29480e344d7fabb63ddf5980932bf62232d3df33fbb83f"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "queuegrid.BoundedQueue#apply(I)I",
+      "checkedEntry": "queuegrid.Projection#history(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 121"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "10"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "queuegrid.Projection#history(I)I",
+        "mapping": "Code is the bijective base-three command word read least-significant digit first. Commands 0/1 offer A/B, 2 polls. Responses 0/1 reject/accept and 2/3/4 return A/B/empty. Each word starts with a fresh empty queue.",
+        "correspondence": "finite-oracle",
+        "cases": 121
+      }
+    },
+    "commits": {
+      "reject": "fixture:reject"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "reject": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+          "gaps",
+          "--target",
+          "queuegrid.Projection#history(int)",
+          "--classes",
+          "prepare/reject/adapter-reject.jar",
+          "--classpath",
+          "prepare/reject/reject.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-reject.stdout",
+        "stderr": "verifier/probe-reject.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0747,
+      "peakRssBytes": 64663552,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0747,
+    "peakRssBytes": 64663552,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.083,
+  "missing": [],
+  "receipt": "receipts/history-reject/20261120T030128Z-f3987814/result.json",
+  "preparedClaim": "eef92c921070b64f",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T03:01:31.270412+00:00"
+}

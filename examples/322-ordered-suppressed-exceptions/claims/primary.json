@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "primary",
+  "statement": "The primary failure tag is the first failed action.",
+  "assume": "code >= 0 && code < 8",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 10
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "paint.Projection#primary(I)I",
+    "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+    "correspondence": "finite-oracle",
+    "cases": 8
+  }
+}

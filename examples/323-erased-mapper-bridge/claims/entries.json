@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "entries",
+  "statement": "The bridge enters the typed body exactly on the four admissible values.",
+  "assume": "code >= 0 && code < 5",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 10
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "bridgegrid.Projection#entries(I)I",
+    "mapping": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+    "correspondence": "finite-oracle",
+    "cases": 5
+  }
+}

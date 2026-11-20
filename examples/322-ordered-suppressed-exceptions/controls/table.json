@@ -1,0 +1,27 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {
+    "primary": {
+      "entry": "paint.Projection#primary(I)I",
+      "encoding": "matches"
+    },
+    "suppressed": {
+      "entry": "paint.Projection#suppressed(I)I",
+      "encoding": "matches"
+    },
+    "close": {
+      "entry": "paint.Projection#close(I)I",
+      "encoding": "matches"
+    }
+  },
+  "cases": [
+    {"id": 0, "input": {"left": false, "right": false, "body": false}, "expected": {"primary": null, "suppressed": [], "close": ["R", "L"]}},
+    {"id": 1, "input": {"left": true, "right": false, "body": false}, "expected": {"primary": "L", "suppressed": [], "close": ["R", "L"]}},
+    {"id": 2, "input": {"left": false, "right": true, "body": false}, "expected": {"primary": "R", "suppressed": [], "close": ["R", "L"]}},
+    {"id": 3, "input": {"left": true, "right": true, "body": false}, "expected": {"primary": "R", "suppressed": ["L"], "close": ["R", "L"]}},
+    {"id": 4, "input": {"left": false, "right": false, "body": true}, "expected": {"primary": "B", "suppressed": [], "close": ["R", "L"]}},
+    {"id": 5, "input": {"left": true, "right": false, "body": true}, "expected": {"primary": "B", "suppressed": ["L"], "close": ["R", "L"]}},
+    {"id": 6, "input": {"left": false, "right": true, "body": true}, "expected": {"primary": "B", "suppressed": ["R"], "close": ["R", "L"]}},
+    {"id": 7, "input": {"left": true, "right": true, "body": true}, "expected": {"primary": "B", "suppressed": ["R", "L"], "close": ["R", "L"]}}
+  ]
+}

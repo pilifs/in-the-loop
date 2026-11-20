@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T02:58:06.005Z",
-  "duration_seconds": 19236,
+  "ended": "2026-11-20T03:44:00.973Z",
+  "duration_seconds": 21991,
   "stats": {
     "turns": 6,
-    "api_calls": 1180,
-    "tool_calls": 3025,
-    "tool_errors": 97,
+    "api_calls": 1321,
+    "tool_calls": 3341,
+    "tool_errors": 111,
     "compactions": 4,
-    "peak_context_tokens": 478319,
+    "peak_context_tokens": 484079,
     "usage": {
-      "input_tokens": 2193300,
-      "output_tokens": 569572,
-      "cache_read_input_tokens": 324008320,
+      "input_tokens": 2349776,
+      "output_tokens": 657819,
+      "cache_read_input_tokens": 382785408,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1750,
-    "exec": 1129,
-    "apply_patch": 104,
+    "Bash": 1889,
+    "exec": 1270,
+    "apply_patch": 140,
     "wait": 42
   },
   "files_touched": [
@@ -55,24 +55,32 @@
     "examples/314-arraycopy-exceptional-prefix/driver/copy/CopyCases.java",
     "examples/314-arraycopy-exceptional-prefix/precheck/copy/Copy.java",
     "examples/314-arraycopy-exceptional-prefix/reference/copy/Copy.java",
+    "examples/331-floor-tiling-proof-reuse/benchmark.py",
+    "examples/331-floor-tiling-proof-reuse/claims/helper.contract",
+    "examples/approaches.md",
     "examples/schema/result.schema.json",
     "examples/schema/target-claim.schema.json",
     "examples/schema/target.schema.json",
     "examples/tools/build.py",
     "examples/tools/checker_output.py",
+    "examples/tools/targets/bytecode_evidence.py",
     "examples/tools/targets/claim_history.py",
     "examples/tools/targets/executions.py",
+    "examples/tools/targets/finite_check.py",
     "examples/tools/targets/finite_oracle.py",
     "examples/tools/targets/finite_report.py",
+    "examples/tools/targets/java/IsolatedCases.java",
     "examples/tools/targets/java/LoadedClasses.java",
     "examples/tools/targets/java/org/intheloop/controls/Grid.java",
     "examples/tools/targets/qualification.py",
     "examples/tools/targets/recipes.py",
     "examples/tools/targets/route.py",
     "examples/tools/targets/runtime.py",
+    "examples/tools/targets/runtime_jar.py",
     "examples/tools/targets/test_acceptance.py",
     "examples/tools/targets/test_gap_inventory.py",
     "examples/tools/targets/test_recipes.py",
+    "examples/tools/targets/test_runtime_upstream.py",
     "examples/tools/targets/test_workflow_refusal.py",
     "examples/tools/targets/workflow.py",
     "examples/tools/targets/workflow_ingest.py",
@@ -82,6 +90,7 @@
     "lib/models/build.sh",
     "lib/models/java/util/concurrent/ConcurrentHashMap.java",
     "lib/solvers/README.md",
+    "lib/src/bmc/arraycopy.rs",
     "lib/src/bmc/bits.rs",
     "lib/src/bmc/finite_words.rs",
     "lib/src/bmc/gaps.rs",
@@ -102,6 +111,7 @@
     "lib/src/property.rs",
     "lib/src/statement.rs",
     "lib/tests/claims.rs",
+    "lib/tests/conformance.rs",
     "lib/tests/fixtures/claims/claims/EnumOrder.java",
     "lib/tests/fixtures/claims/claims/R.java",
     "lib/tests/fixtures/claims/claims/Registries.java",
@@ -176,24 +186,24 @@
     {
       "index": 4,
       "started": "2026-11-20T01:54:43.523Z",
-      "ended": "2026-11-20T02:58:06.005Z",
+      "ended": "2026-11-20T03:44:00.973Z",
       "turns": 2,
-      "api_calls": 132,
+      "api_calls": 273,
       "usage": {
-        "input_tokens": 332213,
-        "output_tokens": 84318,
-        "cache_read_input_tokens": 30045568,
+        "input_tokens": 488689,
+        "output_tokens": 172565,
+        "cache_read_input_tokens": 88822656,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 338024
+      "peak_context_tokens": 484079
     }
   ],
   "log": {
-    "sha256": "0ed873a51089ed9f1e90506fc1af029351b9cfa8e7daefaf7ae8ce8f970e936e",
-    "bytes": 28825165,
-    "lines": 9201,
-    "gzip_bytes": 10815383,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/0ed873a51089ed9f1e90506fc1af029351b9cfa8e7daefaf7ae8ce8f970e936e.jsonl.gz"
+    "sha256": "adc9df7b1abe6444d11d83e6a8cbca9f7bb051b363a62850c09f4c681bc008c4",
+    "bytes": 31736031,
+    "lines": 10275,
+    "gzip_bytes": 12032918,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/adc9df7b1abe6444d11d83e6a8cbca9f7bb051b363a62850c09f4c681bc008c4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -652,6 +662,22 @@
       "summary": "Check bounded matrix allocation on real bytecode (verification pending)",
       "body": "The native checker now allocates independent nested arrays, including symbolic row lengths, partial dimensions and Java negative-size behavior. An independently checked finite JVM report shows seven signed-zero errors among 84 Commons Lang arrays, six incorrect CSV equalities among nine pairs, fifteen shared-row errors among eighteen theatre seats, and forty queue histories versus twenty-eight final queues among 121 command words. The public paired route can qualify a generated harness candidate on both original dependency closures. Eight example validators and all 43 changed test groups passed.\n\nJobs 20261120-025230-check-signed-zero-maximum-on-raw-and-num, 20261120-025230-check-csv-row-limit-equality-hash-implic, 20261120-025230-verify-independently-allocated-and-share and 20261120-025230-verify-bounded-queue-histories-and-final check the frozen subjects. Jobs 20261120-025230-replay-the-paired-invoice-witness-on-eac and 20261120-025231-recheck-the-commons-text-lcs-score-after revisit the original invoice candidates and the released LCS matrix. All three initial solver batches remain archived.",
       "log_sha256": "0ed873a51089ed9f1e90506fc1af029351b9cfa8e7daefaf7ae8ce8f970e936e"
+    },
+    {
+      "change_id": "kulpoouzrmkwmwpmynxoqxsvxuwtuzmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 6 job(s)",
+      "body": "Outputs applied for 4 of the 6 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-025230-check-csv-row-limit-equality-hash-implic: failed: 1 failed step(s) in 21.8s, peak 679.9 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-025230-check-signed-zero-maximum-on-raw-and-num: failed: 1 failed step(s) in 13.1s, peak 298.3 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-025230-replay-the-paired-invoice-witness-on-eac: passed: 1 passed step(s) in 8.8s, peak 122.6 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-025230-verify-bounded-queue-histories-and-final: passed: 1 passed step(s) in 6.2s, peak 132.0 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4 Applied 62 output(s). 20261120-025230-verify-independently-allocated-and-share: passed: 1 passed step(s) in 8.8s, peak 139.6 MiB (estimated 2m00s, 2.0 GiB); 137 output file(s) changed; signals: example:task-as-expected×9 Applied 137 output(s). 20261120-025231-recheck-the-commons-text-lcs-score-after: passed: 1 passed step(s) in 3.8s, peak 93.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "adc9df7b1abe6444d11d83e6a8cbca9f7bb051b363a62850c09f4c681bc008c4"
+    },
+    {
+      "change_id": "tykvyrvvpvzswsyzwpszurmmrvktpqts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check frozen Java domains on fresh class loaders (verification pending)",
+      "body": "The twenty examples now declare 123 separate claim and subject pairs. They include ten historical repairs with parent-checked Git revisions and independent direct JVM calibrations. The public finite-domain strategy exhausts a certified Java integer envelope, runs the complete guard and observer on each revision, records per-input evidence, and separately JVM-replays its first counterexample. Class-loader, bridge, compiler, source-provenance, and concrete operation-history evidence accompanies each relevant packet. Replaying a three-offer queue witness refutes its response history and preserves its final contents.\n\nThe native checker and interpreter now copy the assignable prefix before an ArrayStoreException. Native checks also model required boxed Integer cache identities and unboxing. A full-domain native probe refuted the array poststate as the real JVM did. The checker advanced two preexisting list conformance claims to the expected proof and reproduced exception. The conformance benchmark inventory, complete target acceptance suite, changed Rust regressions, and all twenty example plans and JVM calibrations were checked. The historical JFreeChart build expressly binds its two additional package-private classes.\n\nNative and exhaustive verification, the interrupted batch, the like-for-like tiling benchmark and the two affected proof-tier corpus tests are queued in 20261120-032646-native-319-guava-keeps-the-last-put-acro, 20261120-032646-native-320-commons-collections-views-upd, 20261120-032646-native-321-jfreechart-range-endpoints-wi, 20261120-032646-native-322-resource-close-order-and-supp, 20261120-032647-native-323-an-erased-mapper-bridge-rejec, 20261120-032647-native-324-lazy-optional-fallback-has-ob, 20261120-032647-native-325-one-label-method-compiled-to, 20261120-032647-native-326-commons-lang-duration-fields, 20261120-032647-native-327-joda-time-distances-between-l, 20261120-032647-native-328-commons-math-fraction-percent, 20261120-032647-native-329-commons-geometry-intersects-a, 20261120-032647-native-330-two-editors-increment-the-sam, 20261120-032648-exhaustive-jvm-312-one-invoice-class-wit, 20261120-032648-exhaustive-jvm-313-commons-lang-maximum, 20261120-032648-exhaustive-jvm-314-array-copy-leaves-a-p, 20261120-032648-exhaustive-jvm-315-threeten-extra-format, 20261120-032648-exhaustive-jvm-316-commons-csv-row-limit, 20261120-032648-exhaustive-jvm-317-marking-one-seat-in-a, 20261120-032648-exhaustive-jvm-318-bounded-queue-respons, 20261120-032648-exhaustive-jvm-319-guava-keeps-the-last, 20261120-032648-exhaustive-jvm-320-commons-collections-v, 20261120-032648-native-331-floor-tiling-counts-and-two-d, 20261120-032649-exhaustive-jvm-321-jfreechart-range-endp, 20261120-032649-exhaustive-jvm-322-resource-close-order, 20261120-032649-exhaustive-jvm-323-an-erased-mapper-brid, 20261120-032649-exhaustive-jvm-324-lazy-optional-fallbac, 20261120-032649-exhaustive-jvm-325-one-label-method-comp, 20261120-032649-exhaustive-jvm-326-commons-lang-duration, 20261120-032649-exhaustive-jvm-327-joda-time-distances-b, 20261120-032649-exhaustive-jvm-328-commons-math-fraction, 20261120-032649-exhaustive-jvm-329-commons-geometry-inte, 20261120-032649-exhaustive-jvm-330-two-editors-increment, 20261120-032649-exhaustive-jvm-331-floor-tiling-counts-a, 20261120-032650-interrupt-a-reordered-three-claim-tai-ba, 20261120-032650-measure-checked-tiling-summaries-on-iden, 20261120-032650-recheck-the-lcs-matrix-and-its-boxed-res, 20261120-032650-retry-three-array-copy-claims-with-exact, 20261120-033506-check-the-fast-follow-boxing-change-with, 20261120-033516-confirm-jvm-corpus-results-after-fast-fo.",
+      "log_sha256": "adc9df7b1abe6444d11d83e6a8cbca9f7bb051b363a62850c09f4c681bc008c4"
     }
   ],
   "logs": {
@@ -785,6 +811,12 @@
       "bytes": 10921003,
       "lines": 3326,
       "gzip_bytes": 4026124,
+      "url": null
+    },
+    "adc9df7b1abe6444d11d83e6a8cbca9f7bb051b363a62850c09f4c681bc008c4": {
+      "bytes": 31736031,
+      "lines": 10275,
+      "gzip_bytes": 12032918,
       "url": null
     },
     "b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b": {

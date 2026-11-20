@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "330",
+  "title": "Two editors increment the same revision",
+  "summary": "Four of six legal read/write interleavings lose one increment when a write uses its saved value.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "replicated-data",
+    "race-condition",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Two editors increment the same revision",
+    "file": "current/editgrid/Editor.java",
+    "symbol": "editgrid.Editor#execute([I)I"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Four of six legal read/write interleavings lose one increment when a write uses its saved value."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 6 inputs on each revision. current mismatches were 0 for revision. saved mismatches were 4 for revision.",
+    "The six inputs are exactly the linear extensions of the two per-editor read-before-write constraints. Each operation is a deterministic transition in this model. Live Java threads and JVM memory ordering require separate evidence."
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-032646-native-321-jfreechart-range-endpoints-wi",
+  "title": "Native 321 JFreeChart range endpoints with an empty series",
+  "description": "An empty series carries NaN endpoints into a range which still has finite observations. Run each original claim on its declared subject, preserve all stages and require the independently calibrated observation.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "321"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T03:26:46+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 321 --tasks lower-parent,lower-fix,upper-parent,upper-fix,populated-lower-parent,populated-upper-parent,populated-lower-fix,populated-upper-fix --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/321-jfreechart-empty-series-range/receipts/lower-parent",
+    "examples/321-jfreechart-empty-series-range/receipts/lower-fix",
+    "examples/321-jfreechart-empty-series-range/receipts/upper-parent",
+    "examples/321-jfreechart-empty-series-range/receipts/upper-fix",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-lower-parent",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-upper-parent",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-lower-fix",
+    "examples/321-jfreechart-empty-series-range/receipts/populated-upper-fix"
+  ]
+}

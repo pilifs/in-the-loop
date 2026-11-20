@@ -106,6 +106,7 @@
 //! The outcome names every gap a contract closed, with the contract (treatment `contract`).
 
 pub mod bitwuzla;
+mod arraycopy;
 pub mod bits;
 mod finite_words;
 pub mod gaps;
@@ -974,6 +975,8 @@ enum Literal {
     EmptyMap,
     /// `Boolean.TRUE` or `Boolean.FALSE` ([`runtime::truth_constant`]).
     Truth(bool),
+    /// The JDK-mandated Integer.valueOf cache from -128 through 127.
+    SmallInteger(i8),
 }
 
 /// Where a path waits at a join point: for each frame, outermost first, where it is in the method, then the class
@@ -2457,6 +2460,7 @@ impl<'a> Engine<'a> {
                         Literal::Thread => "java/lang/Thread",
                         Literal::EmptyMap => runtime::EMPTY_MAP,
                         Literal::Truth(_) => runtime::BOOLEAN,
+                        Literal::SmallInteger(_) => "java/lang/Integer",
                     };
                     self.literal(path, literal.clone(), class);
                 }
@@ -4535,7 +4539,7 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
-            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap | Literal::Truth(_) => self.alloc(path, class),
+            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap | Literal::Truth(_) | Literal::SmallInteger(_) => self.alloc(path, class),
         };
         path.literals.insert(literal, o);
         o
@@ -4671,6 +4675,9 @@ impl<'a> Engine<'a> {
             }
             let args = self.pop_args(path, descriptor.params.len())?;
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
+        }
+        if arraycopy::is_call(&member.owner, &member.name, &member.descriptor) {
+            return self.array_copy(path);
         }
         // The JDK's methods and the intrinsics take known references, but for a call that only stores the
         // reference ([`locale::takes_a_choice`]).
@@ -5825,7 +5832,7 @@ mod tests {
 
     /// A harness-shaped class: `static void check(int a, int b)` whose body `build` writes, failing by throwing an
     /// `AssertionError` at the label `fail`.
-    fn harness(descriptor: &str, build: impl FnOnce(&mut CodeBuilder, &mut ClassWriter, crate::classfile::writer::Label)) -> ClassPath {
+    pub(super) fn harness(descriptor: &str, build: impl FnOnce(&mut CodeBuilder, &mut ClassWriter, crate::classfile::writer::Label)) -> ClassPath {
         let mut writer = ClassWriter::new("Check");
         writer.default_constructor();
         let mut code = CodeBuilder::new();
@@ -5850,7 +5857,7 @@ mod tests {
         cp
     }
 
-    fn run(cp: &ClassPath) -> Outcome {
+    pub(super) fn run(cp: &ClassPath) -> Outcome {
         check(cp, "Check", "check", &Options::default()).unwrap()
     }
 

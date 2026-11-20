@@ -1,0 +1,407 @@
+{
+  "task": "identity-separate",
+  "record": {
+    "kind": "verifier",
+    "revision": "separate",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+      "prove",
+      "seats.Projection#identity(int)",
+      "--classes",
+      "prepare/separate/adapter-separate.jar",
+      "--classpath",
+      "prepare/separate/separate.jar",
+      "--assume",
+      "code >= 0 && code < 18",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "4",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.041,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "b943dd2ce2d336c69fcdbb2daa20fff3d22e76a9f90351cf9f74ef09583bc0a5",
+      "commit": "b584c21cd1fce49ddc64738179a46185dfb3aff3",
+      "libTree": "b803c39bd8ed827853804bc7e779137b4f1470de",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 4
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+        "method": "seats.Seats#mark(IIII)[[I",
+        "revisions": {
+          "separate": {
+            "commit": "fixture:separate",
+            "loadedFrom": "separate.jar",
+            "classSha256": "78e94b639dd82042b75101616597897f2697bcf19a8b1536fb8ef98572462eb0",
+            "origin": "built from separate by the fixture recipe",
+            "parameters": {
+              "names": [
+                "rows",
+                "cols",
+                "y",
+                "x"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "seats.Projection#identity(I)I",
+          "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+          "correspondence": "finite-oracle",
+          "cases": 18
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "separate": [
+          {
+            "path": "adapter-separate.jar",
+            "sha256": "e204105bab07040878d42d5718d9bcd1708e455c96e475995403e3b0795c4749",
+            "role": "adapter"
+          },
+          {
+            "path": "separate.jar",
+            "sha256": "1ee06b8186b1db282265acafebeabf5eb90424380b2930fad046eae4b5e8f3da",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "seats.Projection#identity(I)I",
+      "entryBindings": {
+        "separate": {
+          "entry": "seats.Projection#identity(I)I",
+          "classSha256": "db12d501b7f54fb694dcc127ac230dcf933648539da92a2b97b050c96b2c8ceb",
+          "loadedFrom": "adapter-separate.jar",
+          "subject": "seats.Seats#mark(IIII)[[I",
+          "subjectClassSha256": "78e94b639dd82042b75101616597897f2697bcf19a8b1536fb8ef98572462eb0"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "seats.Seats#mark(IIII)[[I",
+        "checkedEntry": "seats.Projection#identity(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 18"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "16"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "4"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "seats.Projection#identity(I)I",
+          "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+          "correspondence": "finite-oracle",
+          "cases": 18
+        }
+      },
+      "commits": {
+        "separate": "fixture:separate"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "separate": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b803c39bd8ed827853804bc7e779137b4f1470de/jvmcontract",
+            "gaps",
+            "--target",
+            "seats.Projection#identity(int)",
+            "--classes",
+            "prepare/separate/adapter-separate.jar",
+            "--classpath",
+            "prepare/separate/separate.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-separate.stdout",
+          "stderr": "verifier/probe-separate.stderr",
+          "gaps": []
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0354,
+        "peakRssBytes": 80097280,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "seats.Projection#identity(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 18",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ seats.Projection#identity(int) satisfies `result == 1` on every input where code >= 0 && code < 18 (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: identity(code=0) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 0.005334221,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 4,
+          "stage": null,
+          "native": {
+            "paths": 13,
+            "merges": 0,
+            "solver_calls": 32,
+            "solving_seconds": 0.000105982,
+            "gates_evaluated": 93,
+            "evaluating_seconds": 3.3371e-05,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 67,
+            "finite_queries": {
+              "diagrams": 32,
+              "bitwuzla": 0
+            },
+            "variables": 879,
+            "clauses": 1,
+            "seconds": 0.004679484,
+            "loading_seconds": 4.4142e-05,
+            "decoding_seconds": 5.6566e-05,
+            "encoding_seconds": 0.000672549,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.005,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.004,
+                "encoding": 0.001,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 879,
+                "clauses": 1
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.995,
+              "seconds": 0.002,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 10,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.033,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.007,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.024
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 18",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+            "classes": 38,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found identity(code=0).",
+            "witness": "identity(code=0)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-025230-verify-independently-allocated-and-share/.build-py/examples-tq3gzfot/targets/317/identity-separate/20261120T030136Z-9bf84491",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-025230-verify-independently-allocated-and-share/.build-py/examples-tq3gzfot/targets/317/identity-separate/20261120T030136Z-9bf84491"
+  }
+}
