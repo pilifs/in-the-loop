@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "sub-hour-midnight-crossings",
+  "kind": "property",
+  "statement": "Intervals shorter than an hour that cross midnight have zero complete hours in either direction.",
+  "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191 && startTick >= 93 && startTick <= 98 && endTick >= 93 && endTick <= 98 && ((startTick < 96 && endTick >= 96) || (endTick < 96 && startTick >= 96)) && endTick - startTick > -4 && endTick - startTick < 4",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 32
+  },
+  "adapter": {
+    "entry": "civil.Hours#completeHours(II)J",
+    "mapping": "Independent ticks 0 through 191 denote quarter-hours from 2012-06-15 00:00, local civil time on June 15 and 16. The unit is ChronoUnit.HOURS. No zone conversion.",
+    "correspondence": "finite-oracle",
+    "cases": 36864
+  },
+  "assert": "result == 0",
+  "namedModels": [
+    "java.util.concurrent.ConcurrentHashMap"
+  ],
+  "observedInitializers": {
+    "org.threeten.bp.chrono.Chronology": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13"
+  }
+}

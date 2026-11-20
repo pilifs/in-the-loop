@@ -390,6 +390,36 @@
         "replay"
       ],
       "parent": "same-day"
+    },
+    {
+      "id": "clock-parent-short-crossings",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "revision": "parent",
+      "claim": "claims/clock-short-crossings.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ],
+      "parent": "clock-parent-observed"
+    },
+    {
+      "id": "clock-fix-short-crossings",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "revision": "fix",
+      "claim": "claims/clock-short-crossings.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ],
+      "parent": "clock-fix-observed"
     }
   ],
   "controls": [

@@ -12,30 +12,31 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T00:04:04.219Z",
-  "duration_seconds": 8794,
+  "ended": "2026-11-20T00:10:37.688Z",
+  "duration_seconds": 9188,
   "stats": {
     "turns": 3,
-    "api_calls": 606,
-    "tool_calls": 1674,
-    "tool_errors": 63,
+    "api_calls": 632,
+    "tool_calls": 1732,
+    "tool_errors": 65,
     "compactions": 2,
     "peak_context_tokens": 410632,
     "usage": {
-      "input_tokens": 1090102,
-      "output_tokens": 289978,
-      "cache_read_input_tokens": 163232384,
+      "input_tokens": 1133239,
+      "output_tokens": 303741,
+      "cache_read_input_tokens": 171272064,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1040,
-    "exec": 583,
-    "apply_patch": 32,
+    "Bash": 1072,
+    "exec": 608,
+    "apply_patch": 33,
     "wait": 19
   },
   "files_touched": [
     "examples/310-threeten-complete-hours/README.md",
+    "examples/310-threeten-complete-hours/controls/ShortCrossings.java",
     "examples/310-threeten-complete-hours/controls/check_retries.py",
     "examples/310-threeten-complete-hours/records/midnight-witness.json",
     "examples/schema/result.schema.json",
@@ -107,24 +108,24 @@
     {
       "index": 2,
       "started": "2026-11-19T23:41:41.585Z",
-      "ended": "2026-11-20T00:04:04.219Z",
+      "ended": "2026-11-20T00:10:37.688Z",
       "turns": 1,
-      "api_calls": 93,
+      "api_calls": 119,
       "usage": {
-        "input_tokens": 293868,
-        "output_tokens": 45880,
-        "cache_read_input_tokens": 19752320,
+        "input_tokens": 337005,
+        "output_tokens": 59643,
+        "cache_read_input_tokens": 27792000,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 301092
+      "peak_context_tokens": 342337
     }
   ],
   "log": {
-    "sha256": "5a675c140f87b787dbeb5719df34cc0fc155d7874fa4b4f8672b732eb6216065",
-    "bytes": 15781641,
-    "lines": 4859,
-    "gzip_bytes": 5768697,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/5a675c140f87b787dbeb5719df34cc0fc155d7874fa4b4f8672b732eb6216065.jsonl.gz"
+    "sha256": "d2d1e15888046da0e5dad33d3a0e92a08f96621346ba9af2ca203dac4a462b51",
+    "bytes": 16357999,
+    "lines": 5057,
+    "gzip_bytes": 5986504,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/d2d1e15888046da0e5dad33d3a0e92a08f96621346ba9af2ca203dac4a462b51.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -359,6 +360,14 @@
       "summary": "Queue each qualified ThreeTenBP obligation at its tested revision (verification pending)",
       "body": "Five independent jobs pin the tested implementation at 0dc25164 and preserve each receipt separately. The word-level solver receives 600 seconds per obligation. Jobs 20261120-000226-threetenbp-clock-fix-with-observed-chron and 20261120-000226-threetenbp-clock-parent-with-observed-ch check elapsed whole hours. Jobs 20261120-000226-threetenbp-reversal-fix-with-observed-ch and 20261120-000227-threetenbp-reversal-parent-with-observed check sign reversal. Job 20261120-000227-threetenbp-same-day-with-observed-chrono compares the two revisions on same-day intervals. All five definitions passed submission validation.",
       "log_sha256": "5a675c140f87b787dbeb5719df34cc0fc155d7874fa4b4f8672b732eb6216065"
+    },
+    {
+      "change_id": "wuornlumkuuswwplpksouklwzwtrntzo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check every sub-hour crossing of midnight on both revisions (verification pending)",
+      "body": "The independent JVM driver enumerates the two-date grid and finds twelve signed sub-hour intervals that cross midnight. The production parent returns one hour in magnitude on all twelve and the fix returns zero. Two separately required public tasks freeze these inputs and the sampled chronology binding, with the same compiled subject and adapter as the full-grid tasks. A fixed-clock native probe established agreement with elapsed minutes on this subset. The example validator and all 24 selected test groups passed. Job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t checks both zero-hour claims and publishes their receipts.",
+      "log_sha256": "d2d1e15888046da0e5dad33d3a0e92a08f96621346ba9af2ca203dac4a462b51"
     }
   ],
   "logs": {
@@ -438,6 +447,12 @@
       "bytes": 10921003,
       "lines": 3326,
       "gzip_bytes": 4026124,
+      "url": null
+    },
+    "d2d1e15888046da0e5dad33d3a0e92a08f96621346ba9af2ca203dac4a462b51": {
+      "bytes": 16357999,
+      "lines": 5057,
+      "gzip_bytes": 5986504,
       "url": null
     },
     "de82592d43248306fb5aeec85c294457d2c2d4194def2e0b0bd2814462f66794": {
