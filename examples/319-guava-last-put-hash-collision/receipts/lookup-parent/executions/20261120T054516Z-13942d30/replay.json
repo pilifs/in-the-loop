@@ -1,0 +1,85 @@
+[
+  {
+    "claimKey": "cca230c3e68b0f36",
+    "entry": "mapgrid.Projection#lookup(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 72
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "f3c673978b2eb65aa789395b89700a761bf005b0b2e9d23833cc2aaf8996c277",
+        "classpath": [
+          "109089022129950bd6d5f29e0307c59b878c294821e23441f75a3f35ab32b325",
+          "4a455d91c2bfb94c1cdbfc89db444923c723abcab5a5dc92126b8624a7ba2d1f",
+          "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+          "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+          "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb",
+          "cd5257c08a246cf8628817ae71cb822be192ef91f6881ca4a3fcff4f1de1cff3",
+          "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 72;\nif (!(code >= 0 && code < 121)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = mapgrid.Projection.lookup(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 72,
+      "input": {
+        "initial": [],
+        "keys": [
+          "X",
+          "R&D",
+          "QED",
+          "R&D"
+        ]
+      },
+      "field": "lookup",
+      "direct": {
+        "parent": {
+          "size": 3,
+          "lookup": [
+            0,
+            4,
+            1
+          ],
+          "entries": [
+            [
+              "QED",
+              3
+            ],
+            [
+              "R&D",
+              4
+            ],
+            [
+              "X",
+              1
+            ]
+          ]
+        }
+      },
+      "tableSha256": "18fd747ec4d77a586fddd00ede65c1c711e9a61fdf5481c45707647f668e69c3"
+    }
+  }
+]

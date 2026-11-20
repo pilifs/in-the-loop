@@ -1,0 +1,403 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T054455Z-c6b321ab",
+  "task": "return-only",
+  "claimKey": "bb7a6542bb91c33a",
+  "revisions": [
+    "reference",
+    "skipped-write"
+  ],
+  "startedAt": "2026-11-20T05:44:55.813874+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 600
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-053727-confirm-both-array-roots-after-the-numer",
+  "sourceCommit": "67166a7bd34da5f9efea3446f455f8c914bb83b3",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "revision-prepared",
+      "elapsedSeconds": 1.098
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 2.2484
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.4552
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.5056
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 3.4718
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 3.6708
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "reference": {
+      "revision": "fixture:baseline",
+      "target": {
+        "class": "arrays.Update",
+        "method": "apply",
+        "descriptor": "([I[I)I",
+        "loadedFrom": "reference.jar",
+        "classSha256": "66c22776e4af997799366e0f023a5161af666867c8aee6e537fb56b13d5e2c6c"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "reference.jar",
+          "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from baseline by the fixture recipe"
+        }
+      ]
+    },
+    "skipped-write": {
+      "revision": "fixture:alternative",
+      "target": {
+        "class": "arrays.Update",
+        "method": "apply",
+        "descriptor": "([I[I)I",
+        "loadedFrom": "skipped-write.jar",
+        "classSha256": "5aabe777714b613293cd617c0eb987ee110189443534d2996444b81350c3b95e"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "skipped-write.jar",
+          "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from alternative by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "f593511ecb9a9289d5806ee9462d601c686f3118f5aed46ff378e5e1f952fc72",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3a4c65279c2a1c20d71fc669a4a2a91585631ada/jvmcontract",
+    "equivalence",
+    "--before",
+    "verifier/classes/reference",
+    "--after",
+    "verifier/classes/skipped-write",
+    "--target",
+    "arrays.Update#apply(int[], int[])",
+    "--assume",
+    "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+    "--observe",
+    "{\"kind\": \"result\"}",
+    "--nullable",
+    "left",
+    "--nullable",
+    "right",
+    "--may-alias",
+    "left,right",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "8",
+    "--max-array-length",
+    "2",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "5c449445239c1599827a18661dd3ef7a5a39d531b7c14d7ca8395066eb05c4e0",
+    "commit": "67166a7bd34da5f9efea3446f455f8c914bb83b3",
+    "libTree": "3a4c65279c2a1c20d71fc669a4a2a91585631ada",
+    "command": "equivalence",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 8,
+      "maxArrayLength": 2
+    },
+    "timeout": 600,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "arrays.Update#apply([I[I)I",
+      "revisions": {
+        "reference": {
+          "commit": "fixture:baseline",
+          "loadedFrom": "reference.jar",
+          "classSha256": "66c22776e4af997799366e0f023a5161af666867c8aee6e537fb56b13d5e2c6c",
+          "origin": "built from baseline by the fixture recipe",
+          "parameters": {
+            "names": [
+              "left",
+              "right"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        },
+        "skipped-write": {
+          "commit": "fixture:alternative",
+          "loadedFrom": "skipped-write.jar",
+          "classSha256": "5aabe777714b613293cd617c0eb987ee110189443534d2996444b81350c3b95e",
+          "origin": "built from alternative by the fixture recipe",
+          "parameters": {
+            "names": [
+              "left",
+              "right"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "reference": [
+        {
+          "path": "reference.jar",
+          "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826",
+          "role": "original"
+        }
+      ],
+      "skipped-write": [
+        {
+          "path": "skipped-write.jar",
+          "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "arrays.Update#apply([I[I)I",
+    "entryBindings": {
+      "reference": {
+        "entry": "arrays.Update#apply([I[I)I",
+        "classSha256": "66c22776e4af997799366e0f023a5161af666867c8aee6e537fb56b13d5e2c6c",
+        "loadedFrom": "reference.jar",
+        "subject": "arrays.Update#apply([I[I)I",
+        "subjectClassSha256": "66c22776e4af997799366e0f023a5161af666867c8aee6e537fb56b13d5e2c6c"
+      },
+      "skipped-write": {
+        "entry": "arrays.Update#apply([I[I)I",
+        "classSha256": "5aabe777714b613293cd617c0eb987ee110189443534d2996444b81350c3b95e",
+        "loadedFrom": "skipped-write.jar",
+        "subject": "arrays.Update#apply([I[I)I",
+        "subjectClassSha256": "5aabe777714b613293cd617c0eb987ee110189443534d2996444b81350c3b95e"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "equivalence",
+      "subject": "arrays.Update#apply([I[I)I",
+      "checkedEntry": "arrays.Update#apply([I[I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))"
+        },
+        {
+          "field": "observations",
+          "flag": "--observe",
+          "value": "{\"kind\": \"result\"}"
+        },
+        {
+          "field": "nullable",
+          "flag": "--nullable",
+          "value": "left"
+        },
+        {
+          "field": "nullable",
+          "flag": "--nullable",
+          "value": "right"
+        },
+        {
+          "field": "mayAlias",
+          "flag": "--may-alias",
+          "value": "left,right"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "8"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "2"
+        }
+      ],
+      "checkerDefaults": {},
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "reference": "fixture:baseline",
+      "skipped-write": "fixture:alternative"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "classes": {
+      "reference": {
+        "dir": "verifier/classes/reference",
+        "from": "prepare/reference/reference.jar",
+        "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826",
+        "entries": 1
+      },
+      "skipped-write": {
+        "dir": "verifier/classes/skipped-write",
+        "from": "prepare/skipped-write/skipped-write.jar",
+        "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3",
+        "entries": 1
+      }
+    },
+    "probe": {
+      "reference": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3a4c65279c2a1c20d71fc669a4a2a91585631ada/jvmcontract",
+          "gaps",
+          "--target",
+          "arrays.Update#apply(int[], int[])",
+          "--classes",
+          "prepare/reference/reference.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-reference.stdout",
+        "stderr": "verifier/probe-reference.stderr",
+        "gaps": []
+      },
+      "skipped-write": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3a4c65279c2a1c20d71fc669a4a2a91585631ada/jvmcontract",
+          "gaps",
+          "--target",
+          "arrays.Update#apply(int[], int[])",
+          "--classes",
+          "prepare/skipped-write/skipped-write.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-skipped-write.stdout",
+        "stderr": "verifier/probe-skipped-write.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 1.7373,
+      "peakRssBytes": 87060480,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 1.7373,
+    "peakRssBytes": 87060480,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.963,
+  "missing": [],
+  "receipt": "receipts/return-only/20261120T054455Z-c6b321ab/result.json",
+  "preparedClaim": "9ff6c97d2aae8061",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T05:44:59.484805+00:00"
+}

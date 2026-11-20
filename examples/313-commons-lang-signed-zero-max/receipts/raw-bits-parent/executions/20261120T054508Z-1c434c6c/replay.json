@@ -1,0 +1,57 @@
+[
+  {
+    "claimKey": "20a716a332f22c7e",
+    "entry": "maxgrid.Projection#bits(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 13
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "37c6399c5bcd96310aee63ebf8723ded43630d8cccac65a552c6dc697c700fbf",
+        "classpath": [
+          "4478351bd1625aef9a657ac2a3f9e529a73cbef068c58a286d096e2d1d055dca",
+          "3857cf28bb5900d9b493242c17fb6d76eab3848a1166fe2d5408ecb478e6dc2c"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 13;\nif (!(code >= 0 && code < 84)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = maxgrid.Projection.bits(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 13,
+      "input": [
+        "8000000000000000",
+        "0000000000000000"
+      ],
+      "field": "rawBits",
+      "direct": {
+        "parent": {
+          "numeric": "0000000000000000",
+          "rawBits": "8000000000000000"
+        }
+      },
+      "tableSha256": "3b83f4695e39948f2185106e724c17a200272c405c831ecc7f4a93d7b42f2488"
+    }
+  }
+]

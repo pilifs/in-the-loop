@@ -1,0 +1,211 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3a4c65279c2a1c20d71fc669a4a2a91585631ada/jvmcontract",
+    "prove",
+    "cubegrid.Projection#hit(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/slice/parent.jar",
+    "--classpath",
+    "prepare/parent/lib/org.apache.commons/commons-numbers-core-1.0-beta1.jar",
+    "--classpath",
+    "prepare/parent/lib/org.apache.commons/commons-numbers-angle-1.0-beta1.jar",
+    "--classpath",
+    "prepare/parent/lib/org.apache.commons/commons-numbers-arrays-1.0-beta1.jar",
+    "--classpath",
+    "prepare/parent/lib/org.apache.commons/commons-numbers-quaternion-1.0-beta1.jar",
+    "--assume",
+    "code >= 0 && code < 6",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "30",
+    "--max-array-length",
+    "16",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.072,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "cubegrid.Projection#hit(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 6",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "outside the fragment: java.lang.Math.sin(D)D beyond signed zero, reachable argument 0xbff921fb54442d18",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "cubegrid.Projection#hit(int) cannot be verified: outside the fragment: java.lang.Math.sin(D)D beyond signed zero, reachable argument 0xbff921fb54442d18",
+          "uri": null,
+          "line": 24
+        }
+      ],
+      "output": "✗ cubegrid.Projection#hit(int) cannot be verified: outside the fragment: java.lang.Math.sin(D)D beyond signed zero, reachable argument 0xbff921fb54442d18\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (Bitwuzla)",
+        "seconds": 0.027150519,
+        "properties": 1,
+        "unwind": 30,
+        "max_array_length": 16,
+        "stage": null,
+        "native": {
+          "paths": 1,
+          "merges": 0,
+          "solver_calls": 9,
+          "solving_seconds": 2.2191e-05,
+          "gates_evaluated": 12,
+          "evaluating_seconds": 4.718e-06,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "word_operations": 8,
+          "finite_queries": {
+            "diagrams": 9,
+            "bitwuzla": 0
+          },
+          "variables": 13,
+          "clauses": 1,
+          "seconds": 0.025536823,
+          "loading_seconds": 0.002064535,
+          "decoding_seconds": 0.000636318,
+          "encoding_seconds": 0.000549779,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 30.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 30.0,
+            "seconds": 0.026,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.002,
+              "lowering": 0.001,
+              "symbolic": 0.022,
+              "encoding": 0.001,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 13,
+              "clauses": 1
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.059,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.026,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.031
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 6",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 30,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (Bitwuzla)",
+          "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+          "fallback": null,
+          "sat": {
+            "solver": "Bitwuzla",
+            "version": "0.8.2",
+            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+            "configuration": [
+              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+              "sat-solver cadical",
+              "produce-models",
+              "otherwise Bitwuzla's default options",
+              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+              "the run's deadline through Bitwuzla's termination callback",
+              "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 5207,
+    "sha256": "ad76b15696987affab9f006a31de61d0e2b2b1d97f10559b77743bd250c163fc"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}
