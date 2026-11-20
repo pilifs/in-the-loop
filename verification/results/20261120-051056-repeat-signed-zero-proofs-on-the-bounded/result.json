@@ -1,0 +1,749 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-051056-repeat-signed-zero-proofs-on-the-bounded",
+  "title": "Repeat signed-zero proofs on the bounded arithmetic checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 13.3s, peak 386.8 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-051056-repeat-signed-zero-proofs-on-the-bounded.json",
+    "sha256": "f54b93273948ff092960136f67e30cead55616ab62ffee975ae2b967e1bdbe49",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-051056-repeat-signed-zero-proofs-on-the-bounded",
+      "title": "Repeat signed-zero proofs on the bounded arithmetic checker",
+      "description": "Check all four previously frozen Commons Lang numeric and raw-bit comparisons on both pinned revisions after adding arithmetic. Bind the full 84-array independent calibration and a separate JVM replay of the original parent violation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "313"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T05:10:56+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 313 --tasks numeric-parent,numeric-fix,raw-bits-parent,raw-bits-fix --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent",
+        "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix",
+        "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent",
+        "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix"
+      ]
+    }
+  },
+  "sourceCommit": "4c8e920b699b687045b1d5d8b860f4bcb09e79d5",
+  "startedAt": "2026-11-20T05:14:07+00:00",
+  "finishedAt": "2026-11-20T05:17:00+00:00",
+  "wallSeconds": 173.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1944788,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 405573632,
+    "wallSeconds": 13.3,
+    "cpuSeconds": 21.2,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 157.633,
+      "cpuSeconds": 157.976,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2120069120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "aa709df4a51d49ca747f6c414f033a77e875d09ee0ab38aba04b1b23c51672fa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-051056-repeat-signed-zero-proofs-on-the-bounded/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 37s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 313 --tasks numeric-parent,numeric-fix,raw-bits-parent,raw-bits-fix --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 13.257,
+      "cpuSeconds": 21.221,
+      "cpuThrottledSeconds": 3.799,
+      "peakMemoryBytes": 405573632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 8,
+        "bytes": 944,
+        "sha256": "c38a6d7cd949b76371a56b908dca123a98f729128344242299a60b74d5e23ebe",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "313-commons-lang-signed-zero-max: task numeric-parent: established (completed; as expected), receipt receipts/numeric-parent/20261120T051647Z-5f8b1152/result.json",
+          "groups": [
+            "313",
+            "numeric-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "313-commons-lang-signed-zero-max: task numeric-fix: established (completed; as expected), receipt receipts/numeric-fix/20261120T051653Z-98d53196/result.json",
+          "groups": [
+            "313",
+            "numeric-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "313-commons-lang-signed-zero-max: task raw-bits-parent: refuted (completed; as expected), receipt receipts/raw-bits-parent/20261120T051659Z-290333bd/result.json",
+          "groups": [
+            "313",
+            "raw-bits-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "313-commons-lang-signed-zero-max: task raw-bits-fix: established (completed; as expected), receipt receipts/raw-bits-fix/20261120T051659Z-dc5ac570/result.json",
+          "groups": [
+            "313",
+            "raw-bits-fix",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "313-commons-lang-signed-zero-max: running task numeric-parent (target route)",
+        "313-commons-lang-signed-zero-max: task numeric-parent: established (completed; as expected), receipt receipts/numeric-parent/20261120T051647Z-5f8b1152/result.json",
+        "313-commons-lang-signed-zero-max: running task numeric-fix (target route)",
+        "313-commons-lang-signed-zero-max: task numeric-fix: established (completed; as expected), receipt receipts/numeric-fix/20261120T051653Z-98d53196/result.json",
+        "313-commons-lang-signed-zero-max: running task raw-bits-parent (target route)",
+        "313-commons-lang-signed-zero-max: task raw-bits-parent: refuted (completed; as expected), receipt receipts/raw-bits-parent/20261120T051659Z-290333bd/result.json",
+        "313-commons-lang-signed-zero-max: running task raw-bits-fix (target route)",
+        "313-commons-lang-signed-zero-max: task raw-bits-fix: established (completed; as expected), receipt receipts/raw-bits-fix/20261120T051659Z-dc5ac570/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "67cd73e3d1538d8de5410c3b45254cdf9561831678edfd19bdcdb2a38b9f623c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/plan.json",
+      "change": "added",
+      "bytes": 49808,
+      "sha256": "bea918d8b2c739db89ce90290edf0ea4ca6ece89755cec6520a0d2c92263bbc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 14822,
+      "sha256": "d8c63ed968d3a60596d0d8ecb1c602d78a872ede4503b53dd023c36dd58a0e8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/controls.json",
+      "change": "added",
+      "bytes": 33918,
+      "sha256": "b4337dc363869b5581c259f7c3083e113de58e2b1229f4ad94b967d5dc3c2946",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/execution.json",
+      "change": "added",
+      "bytes": 67175,
+      "sha256": "b274983d8b2ba6dcdc88f254cf9a83fe5f039fe48b91785027a2a63a9a94db5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "ed7da9e72f5b5df995dcbe96d24abec5a47c8bd817396cb7519713e233f41440",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 287,
+      "sha256": "0c96b670f8242cfd49f118095bbb2b5029bf234dd8e360bac9401bb5afc24f61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/verifier.json",
+      "change": "added",
+      "bytes": 33163,
+      "sha256": "3c393670cea9fc7067ea7f1db186dfc3096d9f4e2a29e767259193102f44103f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5898,
+      "sha256": "4593c1a09304277314ed0f3c9cf7b3dc37aee944538698f7bfe8fc114805c070",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/result.json",
+      "change": "added",
+      "bytes": 17858,
+      "sha256": "f306883b1f1fac4ac7b5a1e44f9867c1467f808cef08446fd82857e8f210c395",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/executions/20261120T051647Z-5f8b1152/attempt.json",
+      "change": "added",
+      "bytes": 47153,
+      "sha256": "78f1401656fe92011f19b73a076e08bcb53e22e43ae2bd761bfc265b0df4d07a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/executions/20261120T051647Z-5f8b1152/checker.json",
+      "change": "added",
+      "bytes": 7234,
+      "sha256": "64453cb1d5620cea9304114a143919fffc2bc2c8533c53b24242ed5da7ab0e31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/executions/20261120T051647Z-5f8b1152/correspondence.json",
+      "change": "added",
+      "bytes": 1203,
+      "sha256": "4ea687319a85e5f7542cbb894170dcf66e8178270079b0f05c664ae3227da977",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "1680010aaee7748e3111354cbf13c987052f743d633cb7b637710c9381b880af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/plan.json",
+      "change": "added",
+      "bytes": 49905,
+      "sha256": "57355feb1e4d02297fc06567c04b092fe2d8a30f499c868f9016832fa8f57c12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 14822,
+      "sha256": "733e540cbaafbb24ae5da7809c2ca8d8bde10a2b8789c2b1b6861b75acb99aa9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/controls.json",
+      "change": "added",
+      "bytes": 33885,
+      "sha256": "a585d159338a78309ff0bc8e76c58474b6abb71f21096bc8fb00de9714c4c8bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/execution.json",
+      "change": "added",
+      "bytes": 67086,
+      "sha256": "feabf2bf15a91979f3a7acacae890e67e93bbea0967a70c8406ee75864c573c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "957c971c210db1d06601ac1979df4c59c7f8fcce272a2fe8202fc594edb17bff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 287,
+      "sha256": "0c96b670f8242cfd49f118095bbb2b5029bf234dd8e360bac9401bb5afc24f61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/verifier.json",
+      "change": "added",
+      "bytes": 33089,
+      "sha256": "8e7d687c7d4c8ec92dccdefd6014ec84198e8203559aa2b5590efb495dd367cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5894,
+      "sha256": "1ceb3b6992ae88bf309487fc7c8129c97a9ca412542522c7079e0e0151063386",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/result.json",
+      "change": "added",
+      "bytes": 17793,
+      "sha256": "9c65d19fc15312a9d831049475b2e503a1961d3980784dbb318428cf19fb46d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/executions/20261120T051653Z-98d53196/attempt.json",
+      "change": "added",
+      "bytes": 47075,
+      "sha256": "73887c231b3369669b2296e7c653d092eebffdf876477be8c3f0732544eb1297",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/executions/20261120T051653Z-98d53196/checker.json",
+      "change": "added",
+      "bytes": 7217,
+      "sha256": "893581c759472dbd8c4de0b6033b49e793ad1c5501d75d565786db8661c99a05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/executions/20261120T051653Z-98d53196/correspondence.json",
+      "change": "added",
+      "bytes": 1197,
+      "sha256": "45f6bd1b302a8b13d6707241057c5a8a947d3f75568ffa3caec200fe88a2d32b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5b7e2cf84e424dfb0eaeb86700ef07b603b97839c91b8721c05f3d622491a637",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/plan.json",
+      "change": "added",
+      "bytes": 49825,
+      "sha256": "4a655a582234cd8e69255f3c26c55aef4d0155b6a8835db05aa027cf214c09e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 14822,
+      "sha256": "d8c63ed968d3a60596d0d8ecb1c602d78a872ede4503b53dd023c36dd58a0e8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/controls.json",
+      "change": "added",
+      "bytes": 33920,
+      "sha256": "fd7d3da71adc8567b3ee55b2ef67dae2b44c907a7bfc130b43bd6f228a5cfd0f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/execution.json",
+      "change": "added",
+      "bytes": 70044,
+      "sha256": "71db604985f28b756e78762c3d14bf72ee1dab4ca32cf9f389aa37cfd9ad03db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "bf936a014aaaa048ecc343d7587ca254a1d8e72551e91ecf4cdd1bda0759c9d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 508,
+      "sha256": "96af4158a6f00d0ec96d4435f905a3971073645c9b45536ffbc25ea9da3b50cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/verifier.json",
+      "change": "added",
+      "bytes": 33593,
+      "sha256": "7c0cfc1688203e8bb642024cc550a1d0558a11ac1c45c7148f79dd9f210f3011",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6295,
+      "sha256": "66854cfd8505d24067f5751846077f6531d70a22b81927a4ae9ca3337e7da065",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/result.json",
+      "change": "added",
+      "bytes": 18580,
+      "sha256": "9bcce5da9649dda0487ae2bef24468a8ca1ea1cd54574e5b41e2855f2039f176",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/executions/20261120T051659Z-290333bd/attempt.json",
+      "change": "added",
+      "bytes": 47252,
+      "sha256": "78c8125e1e8fc72e5436d068c64421dece5e9e3eedbc630af756a91031fefed0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/executions/20261120T051659Z-290333bd/checker.json",
+      "change": "added",
+      "bytes": 7653,
+      "sha256": "e4a66dc979375dbafd5adb97513b93bedfe175002d4aa3a1ee33905cf248250b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/executions/20261120T051659Z-290333bd/correspondence.json",
+      "change": "added",
+      "bytes": 1200,
+      "sha256": "987096091f46280c54560674938a90a3801ac50bebe1204d6d43bb21ba555233",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/executions/20261120T051659Z-290333bd/replay.json",
+      "change": "added",
+      "bytes": 1937,
+      "sha256": "f97d62b03107f1195c36b89e28aef6e29691273db5d0cc543f2a8ab4d58d5476",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f838aa142d44e4f8e90a005ca1a1a70b517d733f40dc0a40ee49b3b6e9ecbdf7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/plan.json",
+      "change": "added",
+      "bytes": 49926,
+      "sha256": "d097451eeb7bc28c121d532dade4048f69464e931788709ad135f809eca5c5dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 14822,
+      "sha256": "733e540cbaafbb24ae5da7809c2ca8d8bde10a2b8789c2b1b6861b75acb99aa9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/controls.json",
+      "change": "added",
+      "bytes": 33887,
+      "sha256": "5729285efb9528e019ca59c1ede5b7d75dedca459b71dbde88a76c540e2df69b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/execution.json",
+      "change": "added",
+      "bytes": 67054,
+      "sha256": "6cd5796bdaa5f513b5f40ddf6241e9a0c8eaf068cf6b3d8ac068d4b7cf63c399",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "73872396e9a1c3c9920fa7583b2651406a91a0da2270710fbe7d3c88d23332f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 281,
+      "sha256": "3812600478fd122755941838f87959c9b7df465aa1bd9e23285c962a2eb306ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/verifier.json",
+      "change": "added",
+      "bytes": 33059,
+      "sha256": "eac3c4fbaf758e4a6f5a28f06889fdf5e56bb2b5e802c8de60b06f9454bbb46d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5882,
+      "sha256": "c78651530c4f1f50106bbe56f6ea4af10e8f7d0a042d1492157db0437d4b9832",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/result.json",
+      "change": "added",
+      "bytes": 17793,
+      "sha256": "d9938f829801d5169ae87426efde04eefd84a43d4c7a7c43d9559b24086e9cd2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/executions/20261120T051659Z-dc5ac570/attempt.json",
+      "change": "added",
+      "bytes": 47056,
+      "sha256": "6fd14a0adabfa98afa97275bbb1350733bf3e3f9e43a4a17dafc692cf50ad298",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/executions/20261120T051659Z-dc5ac570/checker.json",
+      "change": "added",
+      "bytes": 7202,
+      "sha256": "6fb36bb761aab4428fca1799b299dcdcfa6119c91dc1196537ae25978e4ff0f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/executions/20261120T051659Z-dc5ac570/correspondence.json",
+      "change": "added",
+      "bytes": 1194,
+      "sha256": "4a2548af3ca85aad76980876b9d22da5df9bd408c1130e9c39211a79a013765a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T05:17:18+00:00",
+    "applied": [
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/completion.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/plan.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/control-parent-jdk21.stderr",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/control-parent-jdk21.stdout",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/controls.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/execution.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/streams.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/verifier-output.txt",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/verifier.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/verifier.stderr",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/records/verifier.stdout",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/20261120T051647Z-5f8b1152/result.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/executions/20261120T051647Z-5f8b1152/attempt.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/executions/20261120T051647Z-5f8b1152/checker.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-parent/executions/20261120T051647Z-5f8b1152/correspondence.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/completion.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/plan.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/control-fix-jdk21.stderr",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/control-fix-jdk21.stdout",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/controls.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/execution.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/streams.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/verifier-output.txt",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/verifier.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/verifier.stderr",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/records/verifier.stdout",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/20261120T051653Z-98d53196/result.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/executions/20261120T051653Z-98d53196/attempt.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/executions/20261120T051653Z-98d53196/checker.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/numeric-fix/executions/20261120T051653Z-98d53196/correspondence.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/completion.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/plan.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/control-parent-jdk21.stderr",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/control-parent-jdk21.stdout",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/controls.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/execution.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/streams.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/verifier-output.txt",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/verifier.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/verifier.stderr",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/records/verifier.stdout",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/20261120T051659Z-290333bd/result.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/executions/20261120T051659Z-290333bd/attempt.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/executions/20261120T051659Z-290333bd/checker.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/executions/20261120T051659Z-290333bd/correspondence.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-parent/executions/20261120T051659Z-290333bd/replay.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/completion.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/plan.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/control-fix-jdk21.stderr",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/control-fix-jdk21.stdout",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/controls.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/execution.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/streams.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/verifier-output.txt",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/verifier.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/verifier.stderr",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/records/verifier.stdout",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/20261120T051659Z-dc5ac570/result.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/executions/20261120T051659Z-dc5ac570/attempt.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/executions/20261120T051659Z-dc5ac570/checker.json",
+      "examples/313-commons-lang-signed-zero-max/receipts/raw-bits-fix/executions/20261120T051659Z-dc5ac570/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1160454,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "31727281bca74c956ccff72ca78a2c7bf7eb7412",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/31727281bca74c956ccff72ca78a2c7bf7eb7412/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}

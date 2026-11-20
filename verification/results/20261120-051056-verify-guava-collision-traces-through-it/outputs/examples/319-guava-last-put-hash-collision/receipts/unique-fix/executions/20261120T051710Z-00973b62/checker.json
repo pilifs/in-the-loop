@@ -1,0 +1,234 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/31727281bca74c956ccff72ca78a2c7bf7eb7412/jvmcontract",
+    "prove",
+    "mapgrid.Projection#lookup(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/slice/fix.jar",
+    "--classpath",
+    "prepare/fix/lib/com.google.guava/failureaccess-1.0.1.jar",
+    "--classpath",
+    "prepare/fix/lib/com.google.code.findbugs/jsr305-3.0.2.jar",
+    "--classpath",
+    "prepare/fix/lib/org.checkerframework/checker-qual-3.12.0.jar",
+    "--classpath",
+    "prepare/fix/lib/com.google.errorprone/error_prone_annotations-2.7.1.jar",
+    "--classpath",
+    "prepare/fix/lib/com.google.j2objc/j2objc-annotations-1.3.jar",
+    "--assume",
+    "code >= 0 && code < 121 && mapgrid.Projection.unique(code)",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "30",
+    "--max-array-length",
+    "12",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 0.932,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "mapgrid.Projection#lookup(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 121 && mapgrid.Projection.unique(code)",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.3 s; loops unwound 30 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [],
+      "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"mapgrid\"; the names are code); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ mapgrid.Projection#lookup(int) satisfies `result == 1` on every input where code >= 0 && code < 121 && mapgrid.Projection.unique(code) (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.3 s; loops unwound 30 times with unwinding assertions)\n  not vacuous: lookup(code=0) reaches the calls\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (Bitwuzla)",
+        "seconds": 0.265750636,
+        "properties": 1,
+        "unwind": 30,
+        "max_array_length": 12,
+        "stage": null,
+        "native": {
+          "paths": 21,
+          "merges": 0,
+          "solver_calls": 109,
+          "solving_seconds": 0.045497729,
+          "gates_evaluated": 447,
+          "evaluating_seconds": 0.000237351,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "word_operations": 81,
+          "finite_queries": {
+            "diagrams": 0,
+            "bitwuzla": 109
+          },
+          "variables": 1168,
+          "clauses": 1,
+          "seconds": 0.261818824,
+          "loading_seconds": 0.001261876,
+          "decoding_seconds": 0.0002128,
+          "encoding_seconds": 0.202255634,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 30.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 30.0,
+            "seconds": 0.262,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.001,
+              "lowering": 0.0,
+              "symbolic": 0.013,
+              "encoding": 0.202,
+              "solving": 0.045,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 1168,
+              "clauses": 1
+            }
+          },
+          {
+            "checker": "native",
+            "purpose": "probe",
+            "stage": null,
+            "budget_seconds": 29.734,
+            "seconds": 0.211,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.004,
+              "encoding": 0.205,
+              "solving": 0.001,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 38,
+              "clauses": 1
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.926,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.473,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.452
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 121 && mapgrid.Projection.unique(code)",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 30,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+          "classes": 38,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (Bitwuzla)",
+          "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+          "fallback": null,
+          "sat": {
+            "solver": "Bitwuzla",
+            "version": "0.8.2",
+            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+            "configuration": [
+              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+              "sat-solver cadical",
+              "produce-models",
+              "otherwise Bitwuzla's default options",
+              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+              "the run's deadline through Bitwuzla's termination callback",
+              "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found lookup(code=0).",
+          "witness": "lookup(code=0)"
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6264,
+    "sha256": "c17b61ca1460aa5f7e8de114ea020d78100969abe0d8c4c4e02dd42f2ffdd666"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}
