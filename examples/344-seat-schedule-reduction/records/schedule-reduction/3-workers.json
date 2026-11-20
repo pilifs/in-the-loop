@@ -1,0 +1,435 @@
+{
+  "schema": "java-seat-reduction/v1",
+  "sourceKey": "e30a04ce3d535f29c3c2dab88ed681e6efd71d57549b78b5bbc329cb899ae4bb",
+  "workers": 3,
+  "exactOutcomeAgreement": true,
+  "scope": "completed calls under sequential consistency; fixed objects, monitors and audit capacity",
+  "bytecode": {
+    "classes": {
+      "seats/Seat": "d2ef4caf5e15156783e24eb25e07e9dc553c077cfe0170bd77d0ec59f72317f8",
+      "seats/Audit": "58556d5e00dfef0021e404fcb5b05c6a0044b5e04aab40a27b8403b88a228aef",
+      "seats/Handles": "5586a34b74923b3fa52ca8444640a566507c283e07fcf00a111f1c869285a736"
+    },
+    "seat": [
+      {
+        "pc": 0,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 1,
+        "op": "getfield",
+        "arg": "#7",
+        "member": "Field owner:I"
+      },
+      {
+        "pc": 4,
+        "op": "ifeq",
+        "arg": "15",
+        "member": ""
+      },
+      {
+        "pc": 7,
+        "op": "aload_2",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 8,
+        "op": "iload_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 9,
+        "op": "ineg",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 10,
+        "op": "invokevirtual",
+        "arg": "#13",
+        "member": "Method seats/Audit.append:(I)V"
+      },
+      {
+        "pc": 13,
+        "op": "iconst_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 14,
+        "op": "ireturn",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 15,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 16,
+        "op": "iload_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 17,
+        "op": "putfield",
+        "arg": "#7",
+        "member": "Field owner:I"
+      },
+      {
+        "pc": 20,
+        "op": "aload_2",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 21,
+        "op": "iload_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 22,
+        "op": "invokevirtual",
+        "arg": "#13",
+        "member": "Method seats/Audit.append:(I)V"
+      },
+      {
+        "pc": 25,
+        "op": "iconst_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 26,
+        "op": "ireturn",
+        "arg": "",
+        "member": ""
+      }
+    ],
+    "audit": [
+      {
+        "pc": 0,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 1,
+        "op": "getfield",
+        "arg": "#7",
+        "member": "Field events:[I"
+      },
+      {
+        "pc": 4,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 5,
+        "op": "getfield",
+        "arg": "#13",
+        "member": "Field used:I"
+      },
+      {
+        "pc": 8,
+        "op": "iload_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 9,
+        "op": "iastore",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 10,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 11,
+        "op": "dup",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 12,
+        "op": "getfield",
+        "arg": "#13",
+        "member": "Field used:I"
+      },
+      {
+        "pc": 15,
+        "op": "iconst_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 16,
+        "op": "iadd",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 17,
+        "op": "putfield",
+        "arg": "#13",
+        "member": "Field used:I"
+      },
+      {
+        "pc": 20,
+        "op": "return",
+        "arg": "",
+        "member": ""
+      }
+    ],
+    "fact": "The seat stays locked from the first owner read until after the synchronized audit append. Audit methods acquire no seat monitor."
+  },
+  "originalJarSha256": "2e289f59bf2b414e4e48d573b42f926b91366ed645728b34ed2417353ec0cbe8",
+  "jdk": {
+    "feature": "21",
+    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "checkerSha256": "54a381e59df864cda2e0aedced08e9e5737ed8e1bfcca5bd36eca3225e8b9b9d",
+  "JVMHistoriesMatched": 0,
+  "cases": [
+    {
+      "shape": "distinct",
+      "calls": [
+        1,
+        1,
+        1
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 5005,
+          "transitions": 11556,
+          "sleepSetPruned": 0,
+          "outcomes": 90,
+          "outcomesSha256": "88eb06c8f1f2c2c2b30232191a6c647336c4b98ebced1b404b61041812ecd715",
+          "wallSeconds": 0.046509,
+          "peakProcessKiB": 52936
+        },
+        "identity": {
+          "visitedStates": 5005,
+          "transitions": 5004,
+          "sleepSetPruned": 6552,
+          "outcomes": 90,
+          "outcomesSha256": "88eb06c8f1f2c2c2b30232191a6c647336c4b98ebced1b404b61041812ecd715",
+          "wallSeconds": 0.088915,
+          "peakProcessKiB": 52936
+        },
+        "sequential": {
+          "visitedStates": 550,
+          "transitions": 801,
+          "outcomes": 90,
+          "outcomesSha256": "88eb06c8f1f2c2c2b30232191a6c647336c4b98ebced1b404b61041812ecd715",
+          "wallSeconds": 0.003363,
+          "peakProcessKiB": 51976
+        },
+        "by-name": {
+          "visitedStates": 3575,
+          "transitions": 3621,
+          "sleepSetPruned": 4309,
+          "outcomes": 90,
+          "outcomesSha256": "88eb06c8f1f2c2c2b30232191a6c647336c4b98ebced1b404b61041812ecd715",
+          "wallSeconds": 0.034442,
+          "peakProcessKiB": 52696
+        }
+      },
+      "byNameMissing": 0,
+      "firstMissing": null
+    },
+    {
+      "shape": "alias",
+      "calls": [
+        1,
+        1,
+        1
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 3367,
+          "transitions": 5130,
+          "sleepSetPruned": 0,
+          "outcomes": 198,
+          "outcomesSha256": "3a2c62c7fd26b740cc64564ff2d5de0b3df15977a7cb23142e1ff1b878311c6b",
+          "wallSeconds": 0.022117,
+          "peakProcessKiB": 52696
+        },
+        "identity": {
+          "visitedStates": 3427,
+          "transitions": 3540,
+          "sleepSetPruned": 1728,
+          "outcomes": 198,
+          "outcomesSha256": "3a2c62c7fd26b740cc64564ff2d5de0b3df15977a7cb23142e1ff1b878311c6b",
+          "wallSeconds": 0.035479,
+          "peakProcessKiB": 52696
+        },
+        "sequential": {
+          "visitedStates": 982,
+          "transitions": 1305,
+          "outcomes": 198,
+          "outcomesSha256": "3a2c62c7fd26b740cc64564ff2d5de0b3df15977a7cb23142e1ff1b878311c6b",
+          "wallSeconds": 0.006813,
+          "peakProcessKiB": 51976
+        },
+        "by-name": {
+          "visitedStates": 1180,
+          "transitions": 1179,
+          "sleepSetPruned": 577,
+          "outcomes": 96,
+          "outcomesSha256": "7cd6fb54bd632a24c0b4565df7b8a97d4280b4b43b961d2423a9cb1461dac32d",
+          "wallSeconds": 0.008004,
+          "peakProcessKiB": 51976
+        }
+      },
+      "byNameMissing": 102,
+      "firstMissing": [
+        [
+          1,
+          2,
+          -1,
+          -2,
+          3,
+          -3
+        ],
+        [
+          [
+            -1
+          ],
+          [
+            1
+          ],
+          [
+            -1
+          ]
+        ],
+        [
+          2,
+          2,
+          2
+        ],
+        [
+          [
+            -1
+          ],
+          [
+            2
+          ],
+          [
+            -3
+          ]
+        ]
+      ]
+    },
+    {
+      "shape": "shared-log",
+      "calls": [
+        1,
+        1,
+        1
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 7105,
+          "transitions": 14100,
+          "sleepSetPruned": 0,
+          "outcomes": 342,
+          "outcomesSha256": "9387fa1758bc215cd9a5ecbe7f12fef35039d7b4ae7e5c34bfbbae455e30172a",
+          "wallSeconds": 0.079622,
+          "peakProcessKiB": 54376
+        },
+        "identity": {
+          "visitedStates": 7105,
+          "transitions": 7104,
+          "sleepSetPruned": 6996,
+          "outcomes": 342,
+          "outcomesSha256": "9387fa1758bc215cd9a5ecbe7f12fef35039d7b4ae7e5c34bfbbae455e30172a",
+          "wallSeconds": 0.10091,
+          "peakProcessKiB": 54376
+        },
+        "sequential": {
+          "visitedStates": 1360,
+          "transitions": 1647,
+          "outcomes": 342,
+          "outcomesSha256": "9387fa1758bc215cd9a5ecbe7f12fef35039d7b4ae7e5c34bfbbae455e30172a",
+          "wallSeconds": 0.007603,
+          "peakProcessKiB": 51976
+        },
+        "by-name": {
+          "visitedStates": 2582,
+          "transitions": 2602,
+          "sleepSetPruned": 2680,
+          "outcomes": 96,
+          "outcomesSha256": "14be04e1382d142569ec87e7945243fee07e3127aaa2e2817ef56264529ff46a",
+          "wallSeconds": 0.022789,
+          "peakProcessKiB": 52696
+        }
+      },
+      "byNameMissing": 246,
+      "firstMissing": [
+        [
+          1,
+          -1,
+          2,
+          3,
+          -2,
+          -3
+        ],
+        [
+          [
+            1
+          ],
+          [
+            1
+          ],
+          [
+            1
+          ]
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          [
+            1,
+            3,
+            2
+          ],
+          [
+            1,
+            3,
+            2
+          ],
+          [
+            1,
+            3,
+            2
+          ]
+        ]
+      ]
+    }
+  ]
+}
