@@ -1,0 +1,986 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-063346-recheck-all-signed-tai-observations-on-t",
+  "title": "Recheck all signed TAI observations on the shared library checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.2s, peak 500.5 MiB (estimated 2m00s, 2.0 GiB); 92 output file(s) changed; signals: example:task-as-expected×6",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-063346-recheck-all-signed-tai-observations-on-t.json",
+    "sha256": "5c80c9f52d87c942bdd0007e59189152d030d61257e6eb8abd1a1266d7d3cc33",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-063346-recheck-all-signed-tai-observations-on-t",
+      "title": "Recheck all signed TAI observations on the shared library checker",
+      "description": "Independently prove or refute formatting, canonical text parsing, and object round trips for both ThreeTen revisions on the original 20 inputs, retaining distinct prepared bindings and a JVM replay for each failing claim.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "315"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T06:33:46+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 315 --tasks format-parent,format-fix,parse-parent,parse-fix,round-trip-parent,round-trip-fix --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/315-tai-signed-fraction/receipts/format-parent",
+        "examples/315-tai-signed-fraction/receipts/format-fix",
+        "examples/315-tai-signed-fraction/receipts/parse-parent",
+        "examples/315-tai-signed-fraction/receipts/parse-fix",
+        "examples/315-tai-signed-fraction/receipts/round-trip-parent",
+        "examples/315-tai-signed-fraction/receipts/round-trip-fix"
+      ]
+    }
+  },
+  "sourceCommit": "c938ffc598f7cd20489b9edb557285a3229dc1e7",
+  "startedAt": "2026-11-20T06:45:45+00:00",
+  "finishedAt": "2026-11-20T06:49:07+00:00",
+  "wallSeconds": 202.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3184551,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 524767232,
+    "wallSeconds": 19.2,
+    "cpuSeconds": 26.6,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 315 --tasks format-parent,format-fix,parse-parent,parse-fix,round-trip-parent,round-trip-fix --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 19.24,
+      "cpuSeconds": 26.563,
+      "cpuThrottledSeconds": 2.025,
+      "peakMemoryBytes": 524767232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 12,
+        "bytes": 1297,
+        "sha256": "1f8ba027377e5e5986c0e756e6626704de9f17130b61612d49f8032c9502b881",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "315-tai-signed-fraction: task format-parent: refuted (completed; as expected), receipt receipts/format-parent/20261120T064847Z-a3ad1fa5/result.json",
+          "groups": [
+            "315",
+            "format-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "315-tai-signed-fraction: task format-fix: established (completed; as expected), receipt receipts/format-fix/20261120T064852Z-378a0b90/result.json",
+          "groups": [
+            "315",
+            "format-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "315-tai-signed-fraction: task parse-parent: refuted (completed; as expected), receipt receipts/parse-parent/20261120T064856Z-65218ebe/result.json",
+          "groups": [
+            "315",
+            "parse-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "315-tai-signed-fraction: task parse-fix: established (completed; as expected), receipt receipts/parse-fix/20261120T064859Z-ba0ae847/result.json",
+          "groups": [
+            "315",
+            "parse-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 10,
+          "text": "315-tai-signed-fraction: task round-trip-parent: established (completed; as expected), receipt receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/result.json",
+          "groups": [
+            "315",
+            "round-trip-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "315-tai-signed-fraction: task round-trip-fix: established (completed; as expected), receipt receipts/round-trip-fix/20261120T064903Z-e539a2cd/result.json",
+          "groups": [
+            "315",
+            "round-trip-fix",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "315-tai-signed-fraction: running task format-parent (target route)",
+        "315-tai-signed-fraction: task format-parent: refuted (completed; as expected), receipt receipts/format-parent/20261120T064847Z-a3ad1fa5/result.json",
+        "315-tai-signed-fraction: running task format-fix (target route)",
+        "315-tai-signed-fraction: task format-fix: established (completed; as expected), receipt receipts/format-fix/20261120T064852Z-378a0b90/result.json",
+        "315-tai-signed-fraction: running task parse-parent (target route)",
+        "315-tai-signed-fraction: task parse-parent: refuted (completed; as expected), receipt receipts/parse-parent/20261120T064856Z-65218ebe/result.json",
+        "315-tai-signed-fraction: running task parse-fix (target route)",
+        "315-tai-signed-fraction: task parse-fix: established (completed; as expected), receipt receipts/parse-fix/20261120T064859Z-ba0ae847/result.json",
+        "315-tai-signed-fraction: running task round-trip-parent (target route)",
+        "315-tai-signed-fraction: task round-trip-parent: established (completed; as expected), receipt receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/result.json",
+        "315-tai-signed-fraction: running task round-trip-fix (target route)",
+        "315-tai-signed-fraction: task round-trip-fix: established (completed; as expected), receipt receipts/round-trip-fix/20261120T064903Z-e539a2cd/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f607a049bf59df6be3afaded7fca2f68b6c9e43f09213483145cfe108fc941de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/plan.json",
+      "change": "added",
+      "bytes": 8292,
+      "sha256": "1a13509c56bc0b43055969d93c5eab7fa7a117d164374b178df0f746c047039b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 4127,
+      "sha256": "a3ad35fd9becbfbcff43c921377a2218458ed1dfdf8a93f94c70a44e7ca6ecc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/controls.json",
+      "change": "added",
+      "bytes": 13942,
+      "sha256": "485d0bc5caedcc46fdd60b5d6755f44c7ac430be99d0c917c8ab2cb1401494e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/execution.json",
+      "change": "added",
+      "bytes": 33135,
+      "sha256": "0c1b94a810c31d346bc69aa5a1b2e1f1d059c15b96658c319ead766b39d28b41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "be3900c2cf93c8cadb132de321f85666ab2482294412eb0db5572d24e1833de7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 547,
+      "sha256": "26dd3738932d5e8adafb977e1041647edd2695dbd204a7a1d9e2aa9d8b64bb85",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/verifier.json",
+      "change": "added",
+      "bytes": 16266,
+      "sha256": "983007786192a4190cf0cda2b534cd746675606aa9eaf825fe34c1257a8690be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6381,
+      "sha256": "3a8199dbb026ed401595a74dfa817ae1146986dd71da8720fde1419114a14344",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/result.json",
+      "change": "added",
+      "bytes": 19336,
+      "sha256": "bca9b38f2f8012cc6daaa82d56add72ba933912a9d34b6d6ca404c95b2fa1528",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/executions/20261120T064847Z-a3ad1fa5/attempt.json",
+      "change": "added",
+      "bytes": 13179,
+      "sha256": "3a66e7b2f8499281741df4a5de6f4488bb9266238c9064a0fd3a3726f9288f22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/executions/20261120T064847Z-a3ad1fa5/checker.json",
+      "change": "added",
+      "bytes": 7894,
+      "sha256": "4b63df46ceeae43f65abb1e5d6cd346cf5c45de9644543be1d0cb04b3a5e4783",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/executions/20261120T064847Z-a3ad1fa5/correspondence.json",
+      "change": "added",
+      "bytes": 1560,
+      "sha256": "715a2e01d7ea31d208de2acd2a190a6bd7bfe5088c510ccc2204c32c75bf253f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-parent/executions/20261120T064847Z-a3ad1fa5/replay.json",
+      "change": "added",
+      "bytes": 2230,
+      "sha256": "f5f353cc72f292fbe2910d656e3522f89eb744acf876e89219d536583f7cfbdc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8c22406d70c6b2408738915e2da51ad35180913e6eaf0a3528be94a136947889",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/plan.json",
+      "change": "added",
+      "bytes": 8393,
+      "sha256": "a2416a348085f09363c160caed7bdb77990d952e02650604190fd7c6eddc749b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 4130,
+      "sha256": "745982a9fe71d5f06887177daf6b187025bd4a9ecb6e9daec591336dc5d5c60d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/controls.json",
+      "change": "added",
+      "bytes": 13912,
+      "sha256": "90edff2bca0045a4ce134f81350685468f4b39451d63679e8a3880a6f7cc4af3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/execution.json",
+      "change": "added",
+      "bytes": 29700,
+      "sha256": "5684726e54f5257bd03cd46953c5802a728ea6b5be644970943c6627c54f35fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "daad8e9415170eab352a3cc857912239a7cf0ce5c7828c06b64754cf1e5327c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 285,
+      "sha256": "04df09baa360e76abf26479eb8885a39e37defae48f03312088d2c51eff6f2fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/verifier.json",
+      "change": "added",
+      "bytes": 15657,
+      "sha256": "8e6773e3e8979842c91553c0b457f0bae6318376b334a465f502153f17af5709",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5904,
+      "sha256": "3b616323c359e7216398acbe6fbd6551b3d1aa2db44614546f6b5876ffffed1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/result.json",
+      "change": "added",
+      "bytes": 18482,
+      "sha256": "23d50a45e23747e6765bbc79bfaebfe207f1914c80117f9bb6f36d279f3cc5b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/executions/20261120T064852Z-378a0b90/attempt.json",
+      "change": "added",
+      "bytes": 12968,
+      "sha256": "2e32063e689fb66a12135d2b13af9c2b1a9b414b65dc26d6c06c2bb37cb26af0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/executions/20261120T064852Z-378a0b90/checker.json",
+      "change": "added",
+      "bytes": 7374,
+      "sha256": "0059c56c6ef0e53da44fe4bfc3f8373b97d3834c70a67401bfa2f2246705323d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/format-fix/executions/20261120T064852Z-378a0b90/correspondence.json",
+      "change": "added",
+      "bytes": 1554,
+      "sha256": "25ca8c0a65dd1f5df463fd2695e51d6eb91ce3746ccdc29032fa5f759b2b6bca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9099a485eca58c53aecda79a74c99277a4b10024fae5e22fa065ce7db43c2d5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/plan.json",
+      "change": "added",
+      "bytes": 8417,
+      "sha256": "41308c7df0c7958829192e6f0aae35a04d2fb59627b873620f351a571b928ec3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 4127,
+      "sha256": "a3ad35fd9becbfbcff43c921377a2218458ed1dfdf8a93f94c70a44e7ca6ecc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/controls.json",
+      "change": "added",
+      "bytes": 13939,
+      "sha256": "4ea3e97aba2fed90bcde0b83ceb6cbf77de1da33867a8498f07c28bb0c21d8b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/execution.json",
+      "change": "added",
+      "bytes": 35416,
+      "sha256": "f4bf20e31f9b1cae2a473e303d737c162588d3b2d4ad7a62a39250e9187c8c1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "7ac18e18fd6f9126c64fbba94741d9e537169bc5a5dff144c907dff487e845fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 545,
+      "sha256": "dbf11621592e5c9fbb83542cb5750da860959f1a044b241abc80d78581ca76c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/verifier.json",
+      "change": "added",
+      "bytes": 18460,
+      "sha256": "93897c68f5c123723a163cfaa7906564fda3978d24080fcccd0132f1211cfa8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6361,
+      "sha256": "2d994795687091f9be3f025c24b00b240a6e746ef5f4812c7ae06ca9d88d9901",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/result.json",
+      "change": "added",
+      "bytes": 19378,
+      "sha256": "9c3e28b3152f358ac3ae264e4c0f382c2d4e657995dd4fe134d815d354622b57",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/executions/20261120T064856Z-65218ebe/attempt.json",
+      "change": "added",
+      "bytes": 15347,
+      "sha256": "5da46b4967318acfa8e1ea120f7f401de830e0f19bd330c0e605242c518ee9d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/executions/20261120T064856Z-65218ebe/checker.json",
+      "change": "added",
+      "bytes": 7872,
+      "sha256": "73f42e48c30f5765bf9df2bd50b03bcbcd6f21ec5205ac6321d4bca6d55a27a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/executions/20261120T064856Z-65218ebe/correspondence.json",
+      "change": "added",
+      "bytes": 1599,
+      "sha256": "8528e3848ffbb2573f557c06b248e13484a61e596be8394307e44f3dbdcf13e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-parent/executions/20261120T064856Z-65218ebe/replay.json",
+      "change": "added",
+      "bytes": 2227,
+      "sha256": "950f5c401b9da423b41aa79cd1ca6706a2ba25b25c54aad057398652c10c494b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "81317786d1d17f2e6fbf1e5054044f33144d65c820b3d07dd815fefa5882dfb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/plan.json",
+      "change": "added",
+      "bytes": 8518,
+      "sha256": "3d04bc7786fcf298b80a83d4676bc82a4c913c426b6274905a09f98c2bb88315",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 4130,
+      "sha256": "745982a9fe71d5f06887177daf6b187025bd4a9ecb6e9daec591336dc5d5c60d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/controls.json",
+      "change": "added",
+      "bytes": 13909,
+      "sha256": "06ea7bc164d7c5ed49b8a4eca9e1ec5744defde49fdbd9715d13c61af4790562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/execution.json",
+      "change": "added",
+      "bytes": 32052,
+      "sha256": "1880df7e1a6989754d5d80e27a80c1da86c3dec48719abacdcae6dd0cc0a0a74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "fa7cb9a607d3dc2d5a91eae978dd835f52d8d56b7d141ded22b333b41cdd48f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 283,
+      "sha256": "af491be8c7d770fa33a5983cf24c4a83eeb75ee275b5cc5c551edec53a868082",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/verifier.json",
+      "change": "added",
+      "bytes": 17917,
+      "sha256": "477fb0b699b2bf0dd00edfa52c0093b1db5e8573cd882e2a9c85470626a0dc8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5885,
+      "sha256": "5ce25e80962aef900b62f9f598330033db45c843ef0d723b64b162750f6172e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/result.json",
+      "change": "added",
+      "bytes": 18522,
+      "sha256": "82f1edd977b8de9f6688f3fc2e1aa9cd269c7e04b1d2fca479fd88bb53133c57",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/executions/20261120T064859Z-ba0ae847/attempt.json",
+      "change": "added",
+      "bytes": 15199,
+      "sha256": "e6c70e6281d158a55d9833627a0e07b969c111b170a26e800e019d69e8998f85",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/executions/20261120T064859Z-ba0ae847/checker.json",
+      "change": "added",
+      "bytes": 7353,
+      "sha256": "2241c296cd6a9fb521d70ea6e0089ab894275d4fda5d27d37486d8d8ebec44f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/parse-fix/executions/20261120T064859Z-ba0ae847/correspondence.json",
+      "change": "added",
+      "bytes": 1593,
+      "sha256": "f53a38d63f8dc4c82f58d82265c0370dff2bfecbed1ee36acbc948ab0f07e167",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "455767d1974e4fdb6d6316b435694b5588015618f4ff8c0228cd8df45cb73e61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/plan.json",
+      "change": "added",
+      "bytes": 8300,
+      "sha256": "5f4bfbe662557c1a303140d98d55ea9df2f68d05a9b21205258f353e5bb74811",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 4127,
+      "sha256": "a3ad35fd9becbfbcff43c921377a2218458ed1dfdf8a93f94c70a44e7ca6ecc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/controls.json",
+      "change": "added",
+      "bytes": 13950,
+      "sha256": "e79a7c77f20d533748fe06f0eb6a5ed9cf53d715918d3e57c5d603a264d1d9a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/execution.json",
+      "change": "added",
+      "bytes": 31984,
+      "sha256": "c41f66d654e5a1f15ea24d704c6a02424a3e0ab9e366d032cb178f58a1223715",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "2c613eca2cfba0fde4e6a96f2fe2babf7f550de05bd8ae01c931ce52e9812108",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 291,
+      "sha256": "b9dbf6e8403df2f0dbb83d0c5ae415e69027c20c3bf9223825164bee99f8b940",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/verifier.json",
+      "change": "added",
+      "bytes": 17853,
+      "sha256": "f55b72b591887b6ad52e7ab664d59cd5f7fdf33c8de38c73f8905fed3622981d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5915,
+      "sha256": "ab7c719ee081d285e93b941112f9e778d38f5b1271434b66b4801438ff47a07a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/result.json",
+      "change": "added",
+      "bytes": 18573,
+      "sha256": "a9a6557ea84ab291998189ef17025ce3914fe50b52951cf1180e7e5d8f22e58d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/executions/20261120T064902Z-8b5e3fe4/attempt.json",
+      "change": "added",
+      "bytes": 15074,
+      "sha256": "1fb1391a69a565329ad5bdb2afd649ee704cb829c5c147578b598c511f3be1ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/executions/20261120T064902Z-8b5e3fe4/checker.json",
+      "change": "added",
+      "bytes": 7407,
+      "sha256": "28af82be3e247cc671aa790c2aefa757538377427d41e56565e4f72aa14243f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-parent/executions/20261120T064902Z-8b5e3fe4/correspondence.json",
+      "change": "added",
+      "bytes": 1563,
+      "sha256": "e7b613681c91a4c65dfd0ab47c6d7afa4f87b1e79a3e15b096a46462523426d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "01a857579b038f3da597bc2ec5fb0fcc28815da08b4f8ef15c7c0aa9f225fd9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/plan.json",
+      "change": "added",
+      "bytes": 8397,
+      "sha256": "b236204ecb12978f07f6a29ba274a4277eb9ba99a68f334adc8faeab7d36cc6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 4130,
+      "sha256": "745982a9fe71d5f06887177daf6b187025bd4a9ecb6e9daec591336dc5d5c60d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/controls.json",
+      "change": "added",
+      "bytes": 13920,
+      "sha256": "700631c2e6f4ef13e7ab4c32852e29ab4e6089c61c577bd3750aeb142dc6ec5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/execution.json",
+      "change": "added",
+      "bytes": 31957,
+      "sha256": "d6f1f770c87bc550063afd3031aa861d648e6405b9596d6bf44fc897b2d0d6db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "c6ce1fa2eba3d48943ea8d7b32b85e43c2c2c1005ffdaf051de0205c52e68669",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 291,
+      "sha256": "0770908250bf8ce35870172ce88acc95ceb041f3f870cb34dbeea17f6c69113c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/verifier.json",
+      "change": "added",
+      "bytes": 17836,
+      "sha256": "300d40f067715f0244780e4a46812e022af9e4934b9bbb1482b4df6656025d64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5916,
+      "sha256": "35d2e6c92275e28afd59f6d72b4b734e44473470c6b9a2eee142afac05a60be2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/result.json",
+      "change": "added",
+      "bytes": 18503,
+      "sha256": "2bc4198b1450e92fb68db20aae3ab0a7b4eb4b2c556cd287f0f72775a37e08ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/executions/20261120T064903Z-e539a2cd/attempt.json",
+      "change": "added",
+      "bytes": 15045,
+      "sha256": "0870994344e3820c5d08aeb16c58f0f4c43aa9dd9faeb7b72162d77fb2544d9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/executions/20261120T064903Z-e539a2cd/checker.json",
+      "change": "added",
+      "bytes": 7389,
+      "sha256": "81a9848077c1206237127acb685d91006448c7057c9bd15342b5511cafc070b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/receipts/round-trip-fix/executions/20261120T064903Z-e539a2cd/correspondence.json",
+      "change": "added",
+      "bytes": 1557,
+      "sha256": "0b9cd670ef434304857e3b4cb8d48461c29a66399d63fa776be68ec942e74682",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T06:52:13+00:00",
+    "applied": [
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/completion.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/plan.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/control-parent-jdk21.stderr",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/control-parent-jdk21.stdout",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/controls.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/execution.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/streams.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/verifier-output.txt",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/verifier.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/verifier.stderr",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/records/verifier.stdout",
+      "examples/315-tai-signed-fraction/receipts/format-parent/20261120T064847Z-a3ad1fa5/result.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/executions/20261120T064847Z-a3ad1fa5/attempt.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/executions/20261120T064847Z-a3ad1fa5/checker.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/executions/20261120T064847Z-a3ad1fa5/correspondence.json",
+      "examples/315-tai-signed-fraction/receipts/format-parent/executions/20261120T064847Z-a3ad1fa5/replay.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/completion.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/plan.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/control-fix-jdk21.stderr",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/control-fix-jdk21.stdout",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/controls.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/execution.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/streams.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/verifier-output.txt",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/verifier.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/verifier.stderr",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/records/verifier.stdout",
+      "examples/315-tai-signed-fraction/receipts/format-fix/20261120T064852Z-378a0b90/result.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/executions/20261120T064852Z-378a0b90/attempt.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/executions/20261120T064852Z-378a0b90/checker.json",
+      "examples/315-tai-signed-fraction/receipts/format-fix/executions/20261120T064852Z-378a0b90/correspondence.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/completion.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/plan.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/control-parent-jdk21.stderr",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/control-parent-jdk21.stdout",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/controls.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/execution.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/streams.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/verifier-output.txt",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/verifier.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/verifier.stderr",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/records/verifier.stdout",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/20261120T064856Z-65218ebe/result.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/executions/20261120T064856Z-65218ebe/attempt.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/executions/20261120T064856Z-65218ebe/checker.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/executions/20261120T064856Z-65218ebe/correspondence.json",
+      "examples/315-tai-signed-fraction/receipts/parse-parent/executions/20261120T064856Z-65218ebe/replay.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/completion.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/plan.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/control-fix-jdk21.stderr",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/control-fix-jdk21.stdout",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/controls.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/execution.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/streams.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/verifier-output.txt",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/verifier.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/verifier.stderr",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/records/verifier.stdout",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/20261120T064859Z-ba0ae847/result.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/executions/20261120T064859Z-ba0ae847/attempt.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/executions/20261120T064859Z-ba0ae847/checker.json",
+      "examples/315-tai-signed-fraction/receipts/parse-fix/executions/20261120T064859Z-ba0ae847/correspondence.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/completion.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/plan.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/control-parent-jdk21.stderr",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/control-parent-jdk21.stdout",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/controls.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/execution.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/streams.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/verifier-output.txt",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/verifier.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/verifier.stderr",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/records/verifier.stdout",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/20261120T064902Z-8b5e3fe4/result.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/executions/20261120T064902Z-8b5e3fe4/attempt.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/executions/20261120T064902Z-8b5e3fe4/checker.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-parent/executions/20261120T064902Z-8b5e3fe4/correspondence.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/completion.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/plan.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/control-fix-jdk21.stderr",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/control-fix-jdk21.stdout",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/controls.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/execution.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/streams.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/verifier-output.txt",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/verifier.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/verifier.stderr",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/records/verifier.stdout",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/20261120T064903Z-e539a2cd/result.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/executions/20261120T064903Z-e539a2cd/attempt.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/executions/20261120T064903Z-e539a2cd/checker.json",
+      "examples/315-tai-signed-fraction/receipts/round-trip-fix/executions/20261120T064903Z-e539a2cd/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "335a22e6e80e41aa92a70769dbe0c550df5af0e1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/335a22e6e80e41aa92a70769dbe0c550df5af0e1/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

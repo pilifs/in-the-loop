@@ -1,0 +1,532 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "ae8b39fbf57f1931",
+    "format": 1,
+    "example": "328",
+    "statement": {
+      "approach": "target",
+      "task": "small-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math3.fraction.Fraction#percentageValue()D",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "small-parent",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.math3.fraction.Fraction#percentageValue()D",
+        "file": "claims/small.json",
+        "sha256": "3de76c3e23a99524a14e07b855a1a6bdace46689b6631609da117af2711a52b1",
+        "property": "small",
+        "claimKind": "property",
+        "statement": "The three small numerator values preserve their exact percentage bits.",
+        "assume": "code >= 10 && code < 13",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 30,
+          "maxArrayLength": 12
+        },
+        "explicitBounds": {
+          "unwind": 30,
+          "maxArrayLength": 12
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/fractiongrid/Cases.java",
+            "sha256": "b0ed43957ab214992f750831c562f500ac3df4ff734ef0f7248587bc9b576f6e"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "058257ce18dbf4de81d9b80fecdaf974aeb5a2b7452fe6bf818d60baa2085d4a"
+          }
+        ],
+        "adapter": {
+          "entry": "fractiongrid.Projection#bits(I)I",
+          "mapping": "Code 0 to 9 selects both signs of 21474836 plus offsets -2 through 2. Codes 10 to 12 select -1, 0 and 1. Denominator is one. Each exact integer product 100L*n is representable as double; the observer uses all 64 raw bits.",
+          "correspondence": "finite-oracle",
+          "cases": 13
+        },
+        "key": "1cb81567d9bc538a"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 12
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "small-parent",
+      "sidecar": "58f7a020cfd5bb4247418ba88fad4f0d965f46ccecc5070d6dad666a7e76c9f3",
+      "revisions": {
+        "parent": "a49e443c44766df45d254e13bea377d4133f5ee6"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "5e62490c4edca6c6486ecee4c45b80b18633c7c38cdc94f239a30594d6ae04bb"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "c13cc69d5031e8497a65dfba8bf99e63b7af66c6be0be23691743b1442cfb215"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/fractiongrid/Projection.java": "99d28f16cccd293441097840551744564faa6818c3b7c3667d86a2ebe71a7218",
+        "claims/small.json": "3de76c3e23a99524a14e07b855a1a6bdace46689b6631609da117af2711a52b1",
+        "controls/table.json": "058257ce18dbf4de81d9b80fecdaf974aeb5a2b7452fe6bf818d60baa2085d4a",
+        "driver/fractiongrid/Cases.java": "b0ed43957ab214992f750831c562f500ac3df4ff734ef0f7248587bc9b576f6e"
+      },
+      "claimKey": "1cb81567d9bc538a",
+      "scopes": {
+        "parent": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261120T064903Z-26fcf9de",
+    "claim": "ae8b39fbf57f1931",
+    "startedAt": "2026-11-20T06:49:03+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "fractiongrid.Projection#bits(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/slice/parent.jar",
+      "--assume",
+      "code >= 10 && code < 13",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "30",
+      "--max-array-length",
+      "12",
+      "--timeout",
+      "30",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "0ff976342fcca72a1260b9e143eb70376e4139e3f5080ea62f2aa69e2a164eb0"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "7054ca0df7b3a929f3ef3b5e5bf2e18110c0bb468c113dbd395ccc123e2ce338",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-063347-repeat-fraction-overflow-checks-on-the-s",
+      "sourceCommit": "c938ffc598f7cd20489b9edb557285a3229dc1e7",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-063347-repeat-fraction-overflow-checks-on-the-s"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.071,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 30,
+      "maxArrayLength": 12,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "ae8b39fbf57f1931",
+    "attempt": "20261120T064903Z-26fcf9de",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 10 && code < 13",
+          "verdict": "verified",
+          "domain": "code: int",
+          "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 30 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 0.025,
+            "properties": 1,
+            "unwind": 30,
+            "maxArrayLength": 12,
+            "stage": null,
+            "deadlineSeconds": 30.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 30.0,
+                "seconds": 0.021,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.001,
+                  "symbolic": 0.006,
+                  "encoding": 0.012,
+                  "solving": 0.002,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 4028,
+                  "clauses": 1
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 29.975,
+                "seconds": 0.008,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.007,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 9,
+                  "clauses": 1
+                }
+              }
+            ],
+            "native": {
+              "paths": 5,
+              "merges": 0,
+              "solverCalls": 65,
+              "solvingSeconds": 0.001535973,
+              "gatesEvaluated": 216,
+              "evaluatingSeconds": 0.000150559,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "wordOperations": 147,
+              "finiteQueries": {
+                "diagrams": 65,
+                "bitwuzla": 0
+              },
+              "variables": 4028,
+              "clauses": 1,
+              "seconds": 0.021494232,
+              "loadingSeconds": 0.000587834,
+              "decodingSeconds": 0.001308501,
+              "encodingSeconds": 0.011881122,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 10 && code < 13",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 30,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found bits(code=12).",
+              "witness": "bits(code=12)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 30 times with unwinding assertions",
+    "problem": null,
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 10 && code < 13"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 10 && code < 13",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 30,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found bits(code=12).",
+        "witness": "bits(code=12)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "ee87f6d96467f391c58bee7eb6a24e3e45c175be60622b6b8ad3d6b3071692eb",
+        "bytes": 71808
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "434c96ca7732f052c9ea44f0f0749d4beee2a9772740167e000f571040f4c8a4",
+        "bytes": 288
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "c4a29a6b5b5700b6bef866b1e13889f7e9ba3ab2d15da7cdba31211e66ad01b2",
+        "bytes": 1967
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "90370b0eafb8af5f609a5fd1a0cff931c6352b424a8bd575e1b6c2d72fd908d4",
+        "bytes": 1691
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "ac85ab46063b9bf70f4af0fab1ded775026e771184a1993fae976f3673cfd3b9",
+        "bytes": 7179
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "108ebfbd4f7ffe953a4b01a1246dfa41e826d34b0f64d913b041c20dcc2eb1d8",
+        "bytes": 5902
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "7524f9eb9be6444c50be8f27cc720c25049a9b72d10b0664d0fe7fdb29c125bd",
+        "bytes": 64506
+      }
+    ]
+  }
+}
