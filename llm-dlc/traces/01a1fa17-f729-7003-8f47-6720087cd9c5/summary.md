@@ -60,6 +60,76 @@ Register the seven remaining Java subjects and retain original bytecode attempts
 
 Verification jobs: 20261120-192108-332-check-paper-startup-from-compiled-ja, 20261120-192109-332-exhaust-paper-startup-on-pinned-jvms, 20261120-192109-333-check-context-service-providers-from, 20261120-192109-333-exhaust-context-service-providers-on, 20261120-192109-334-check-zone-transitions-from-compiled, 20261120-192109-334-exhaust-zone-transitions-on-pinned-j, 20261120-192109-340-check-live-treelist-iterators-from-c, 20261120-192109-340-exhaust-live-treelist-iterators-on-p, 20261120-192109-341-check-streaming-utf-8-partitions-fro, 20261120-192109-341-exhaust-streaming-utf-8-partitions-o, 20261120-192109-343-check-real-synchronized-reservations, 20261120-192110-343-verify-the-real-synchronized-map-wra, 20261120-192110-344-check-shared-seat-identities-from-co, 20261120-192110-344-compare-exhaustive-and-identity-awar, 20261120-192110-345-measure-inline-and-composed-importer.
 
+### Rename the run-brief skill to multi-agent-brief
+
+change `zkzpxvssnuyr` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+Codex work turns given a brief to execute alone twice opened the run-brief skill as if it were the way to run any brief (VF-045). At the user's word the skill is renamed multi-agent-brief: its folder, its name, the Codex link at .agents/skills, and the live references (the llm-dlc README's 'A brief's run', the brief template, stream-conductor, brief_run.py, run-streams.sh, single-agent-run). Historical records (past briefs, the rehearsal, the README's session table, the old workspace name) keep the name they had. VF-045 notes the rename; its invocation flags stay open. Verified: agent_client.py instructions --client codex lists the skill with no problems, and test_costs.py run --changed passed 12 of 12.
+
+### Record verification results for 1 job(s)
+
+change `prtuuumklyvt` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-180249-build-both-importer-dependency-repairs-a: passed: 4 passed step(s) in 1m36s, peak 726.0 MiB (estimated 9m00s, 3.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `ouptxtykuzry` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261120-181157-exhaust-the-frozen-observations-for-comm: passed: 1 passed step(s) in 9.2s, peak 140.6 MiB (estimated 3m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261120-181203-exhaust-the-frozen-observations-for-comm: passed: 1 passed step(s) in 11.8s, peak 140.0 MiB (estimated 3m00s, 2.0 GiB); 9 output file(s) changed Applied 9 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+change `uqrtnxoxqyty` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+Outputs applied for 1 of the 3 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-181156-exhaust-the-frozen-observations-for-the: passed: 1 passed step(s) in 45.5s, peak 188.2 MiB (estimated 3m00s, 2.0 GiB); 17 output file(s) changed Applied 17 output(s). 20261120-181157-check-commons-io-prefix-and-eof-on-the-p: failed: 1 failed step(s) in 5.4s, peak 142.4 MiB (estimated 3m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-181203-check-commons-csv-pagination-on-the-pinn: failed: 1 failed step(s) in 6.4s, peak 147.8 MiB (estimated 3m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `wqpxklzzkrsk` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-181157-check-the-unchanged-importer-on-the-pinn: failed: 1 failed step(s) in 23.0s, peak 181.2 MiB (estimated 3m00s, 2.0 GiB); 240 output file(s) changed; signals: example:task-unexpected×16 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### A Codex worker adopts other sessions' logs inside its sandbox, and any agent may without asking
+
+change `wkykvlzzqvnn` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+### Merge the adopt-logs sandbox change into the line
+
+change `nxntuknxmuwy` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+Brings in wkykvlzz, committed by the user from the workspace adopt-logs-sandbox: sync.py lists the workspaces without a jj snapshot, the loops' Codex sandbox may write the trace tools' state folder (~/.local/state/llm-traces), and CLAUDE.md and the operating notes say any agent may run sync.py adopt-logs without asking (the user, 2026-11-20). A Codex worker in a side workspace can then adopt other sessions' logs inside its sandbox, where its automatic reviewer had refused the escalation. No conflicts; the generated trace files regenerated.
+
+### Propose a Codex session log's file name for the allow list
+
+change `yowlqvsrxtsw` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+The long-token rule flags rollout-&lt;timestamp>-&lt;thread id>, the name of a Codex session log under ~/.codex/sessions, which a session read while looking into the adopt-logs refusal. It holds a timestamp and a UUID, no credential; proposed for a person to approve.
+
+### Record verification results for 12 job(s)
+
+change `nyxsqssntmmx` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+Outputs applied for 8 of the 12 job(s); 4 kept under outputs/, not applied (the job didn't pass); 1 with outputs not applied because they changed since the job's commit. 20261120-183452-335-prove-guava-signed-means-over-both-e: failed: 1 failed step(s) in 12.4s, peak 277.6 MiB (estimated 4m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×1 20261120-183452-336-check-first-match-and-preservation-a: passed: 1 passed step(s) in 8.0s, peak 224.2 MiB (estimated 6m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). 20261120-183453-336-prove-first-match-for-any-allocated: passed: 1 passed step(s) in 2.0s, peak 124.4 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-183453-342-check-two-real-ticket-calls-on-one-c: failed: 1 failed step(s) in 7.0s, peak 141.3 MiB (estimated 4m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6 20261120-184226-337-check-both-range-fill-roots-at-bound: failed: 1 failed step(s) in 7.5s, peak 142.8 MiB (estimated 6m00s, 2.0 GiB); 56 output file(s) changed; signals: example:task-unexpected×4 20261120-184234-337-bound-64-check-both-range-fill-roots: failed: 1 failed step(s) in 12.8s, peak 139.3 MiB (estimated 6m00s, 2.0 GiB); 56 output file(s) changed; signals: example:task-unexpected×4 20261120-184234-337-certify-caller-any-length-on-the-sel: passed: 1 passed step(s) in 2.8s, peak 121.6 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-184234-337-certify-fill-any-length-on-the-selec: passed: 1 passed step(s) in 2.5s, peak 118.0 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-184235-310-test-native-counterexamples-on-unmod: passed: 1 passed step(s) in 6.4s, peak 200.6 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261120-184235-321-test-native-counterexamples-on-unmod: passed: 2 passed step(s) in 17.0s, peak 386.2 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-184235-327-test-native-counterexamples-on-unmod: passed: 2 passed step(s) in 11.9s, peak 253.1 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-184923-342-explore-compiled-ticket-monitors-wit: passed: 3 passed step(s) in 6.9s, peak 119.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 2 output(s). 1 output(s) not applied: changed since the job's commit. Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `uzvmzmpmymtq` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-183453-336-check-first-match-and-preservation-a: passed: 1 passed step(s) in 1m30s, peak 860.0 MiB (estimated 6m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `uzvzrvzzmsxs` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-185734-340-build-the-rejected-treelist-edit-acr: passed: 2 passed step(s) in 57.7s, peak 784.4 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Add the external-upgrade-evaluation brief
+
+change `kyuprxrtuoxk` · [log `e43a435bb2c6`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz)
+
+The user's brief for a later single-agent run, copied unchanged: evaluate the verifier on 24 external non-CVE Java/Maven dependency upgrades, check whether improvements transfer to eight unseen upgrades, and run an advisory pilot with three Java teams.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/e43a435bb2c61b1d73612c12be89342deca3e40b25b751f7912be12d9e0a8aad.jsonl.gz) has every step in between: reasoning, tool calls and their results.
