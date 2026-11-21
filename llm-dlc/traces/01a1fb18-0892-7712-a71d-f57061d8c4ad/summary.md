@@ -26,6 +26,14 @@ Across 14 examples, 70 of 99 frozen claim and subject pairs were established and
 
 All eight long-array and 16 Unicode-importer holdout obligations met expectation. Collected all 110 campaign jobs, including the failed monolithic searches. The public receipt reader now checks the compiled guard source, non-vacuity, retained assumptions and the original JVM witness program. Rechecked 436 recorded file hashes, reran the public holdout JVM controls and passed all 61 default test groups. The encoding time estimate test passed on its automatic retry.
 
+### Record the completed Java proof campaign and both holdouts
+
+change `nmttmskrvkxp` · [log `c479e1c61fee`](https://terminalvalue.net/raw-traces/01a1fb18-0892-7712-a71d-f57061d8c4ad/c479e1c61feeef02240dc9fa54cfeba430bc1f0de1c93a87aec536b5b06fd145.jsonl.gz)
+
+Across 14 examples, 70 of 99 frozen claim and subject pairs were established and 29 refuted. All 12 primary importer obligations and four controls have strict native decisions on unchanged client bytecode. Both Guava array widths have arbitrary-length certificates. Five previously conditional startup witnesses reproduce at original scope, and the compiled ticket and synchronized-map histories explain both split-lock failures.
+
+All eight long-array and 16 Unicode-importer holdout obligations met expectation. Collected all 110 campaign jobs, including the failed monolithic searches. The public receipt reader now checks the compiled guard source, non-vacuity, retained assumptions and the original JVM witness program. Rechecked 436 recorded file hashes, reran the public holdout JVM controls and passed all 61 default test groups. The encoding time estimate test passed on its automatic retry.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fb18-0892-7712-a71d-f57061d8c4ad/58f8a156efe5961ac4037f691d3d72ca852fe0009ff78e504f108e5f83b61e5f.jsonl.gz) has every step in between: reasoning, tool calls and their results.

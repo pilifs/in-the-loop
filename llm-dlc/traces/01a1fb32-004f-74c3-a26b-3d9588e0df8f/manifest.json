@@ -12,31 +12,32 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-20T23:02:00.548Z",
-  "ended": "2026-11-21T00:20:09.097Z",
-  "duration_seconds": 4689,
+  "ended": "2026-11-21T00:56:16.311Z",
+  "duration_seconds": 6856,
   "stats": {
     "turns": 0,
-    "api_calls": 299,
-    "tool_calls": 473,
+    "api_calls": 420,
+    "tool_calls": 665,
     "tool_errors": 7,
     "compactions": 0,
-    "peak_context_tokens": 257160,
+    "peak_context_tokens": 355617,
     "usage": {
-      "input_tokens": 257949,
-      "output_tokens": 188127,
-      "cache_read_input_tokens": 41994496,
+      "input_tokens": 365509,
+      "output_tokens": 272147,
+      "cache_read_input_tokens": 78512512,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "exec": 228,
-    "Bash": 189,
-    "send_message": 48,
-    "apply_patch": 7,
+    "exec": 322,
+    "Bash": 263,
+    "send_message": 69,
+    "apply_patch": 10,
     "list_agents": 1
   },
   "files_touched": [
     "lib/benchmark/external-upgrades/curation/README.md",
+    "lib/benchmark/external-upgrades/curation/export_pair.py",
     "lib/benchmark/external-upgrades/curation/registry_overlap.py",
     "lib/benchmark/external-upgrades/curation/screen.py",
     "lib/benchmark/external-upgrades/curation/seal_reference.py"
@@ -45,24 +46,24 @@
     {
       "index": 0,
       "started": "2026-11-20T23:02:00.548Z",
-      "ended": "2026-11-21T00:20:09.097Z",
+      "ended": "2026-11-21T00:56:16.311Z",
       "turns": 0,
-      "api_calls": 299,
+      "api_calls": 420,
       "usage": {
-        "input_tokens": 257949,
-        "output_tokens": 188127,
-        "cache_read_input_tokens": 41994496,
+        "input_tokens": 365509,
+        "output_tokens": 272147,
+        "cache_read_input_tokens": 78512512,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 257160
+      "peak_context_tokens": 355617
     }
   ],
   "log": {
-    "sha256": "5b3a82f6808acc916ce2699124d90bcf7e958276eb5f6d3392695f92f2905eef",
-    "bytes": 5172371,
-    "lines": 2140,
-    "gzip_bytes": 2368350,
-    "path": "llm-dlc/traces/01a1fb32-004f-74c3-a26b-3d9588e0df8f/logs/5b3a82f6808acc916ce2699124d90bcf7e958276eb5f6d3392695f92f2905eef.jsonl.gz"
+    "sha256": "f941fa1d020fd68d94cb60efbae17862e68ae9dc7ba197ae35df7c82919a30e2",
+    "bytes": 7328319,
+    "lines": 3031,
+    "gzip_bytes": 3372564,
+    "path": "llm-dlc/traces/01a1fb32-004f-74c3-a26b-3d9588e0df8f/logs/f941fa1d020fd68d94cb60efbae17862e68ae9dc7ba197ae35df7c82919a30e2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -121,6 +122,22 @@
       "summary": "Compare real upgrade baselines and retain historical CI evidence (verification pending)",
       "body": "Two BUMP image pairs give different maintainer decisions. FSCrawler's old ordinary DOCX produced extracted text and the upgrade yielded null. The AssertJ upgrade failed Maven Enforcer before tests; the old suite passed 355 tests. Check image digests, original POM-only diffs, archived CI, bytecode linkage and a networkless replay. Recover 529 original Maven JARs and 845 POMs for warm offline builds. The first FSCrawler repeat stopped at conflicting heap flags before launching Maven; remove the added heap maximum and preserve the original failure.\n\nThe V0 paired JBMC frontend refused distinct dependency closures for rxjava-jdbc and AWS. The actual evidence binds identical application targets, observers, classpaths, deadline and bounds to the native attempts. Add a standalone engine comparison using byte-identical harnesses on both sides. The unchanged JVM validated both input arms on both revisions before the standalone jobs were queued. Original-scope scoring now checks the ordered artifact digests against the signed roster. All four scorecard tests, cost-tier lint and the verification queue validator passed. The new trace allow-list proposal is for the published Jackson Databind version in the AWS POM, which the scanner classified as an IP address.\n\nVerification jobs: 20261121-001305-replay-fscrawler-ordinary-docx-across-th, 20261121-001750-348-run-standalone-jbmc-on-both-original and 20261121-001750-351-run-standalone-jbmc-on-both-original. The separate JBMC checks retain exception and unwinding evidence and cannot earn a blinded product decision.",
       "log_sha256": "5b3a82f6808acc916ce2699124d90bcf7e958276eb5f6d3392695f92f2905eef"
+    },
+    {
+      "change_id": "lvuxwvulmvtpvvuzrqqttkllzsvktllq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "f941fa1d020fd68d94cb60efbae17862e68ae9dc7ba197ae35df7c82919a30e2"
+    },
+    {
+      "change_id": "wurynlzvuwptxqrtqpoyrlmuyksvtmux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Collect the historical DOCX replay and matched standalone JBMC results",
+      "body": "The corrected FSCrawler container reproduced the original DOCX failure and preserving text companion. Standalone JBMC ran on the same original H2 and AWS artifacts as the native checks. H2 hit incomplete unwinding and its isolated caller property even passed on an input the JVM refutes. Both AWS processes exhausted their share of the 600-second engine deadline. Preserve the full per-side outputs and the limits on the comparison.\n\nThe runner collected all three jobs and both independently reconstructed FSCrawler payloads agree. The Cucumber PR record pins the actual merge and head. Both Joda pins passed the 18-input replay again. All Cucumber form, plan, router and cross-example checks passed, as did 36 of 36 changed-test groups.",
+      "log_sha256": "f941fa1d020fd68d94cb60efbae17862e68ae9dc7ba197ae35df7c82919a30e2"
     }
   ],
   "logs": {
@@ -164,6 +181,12 @@
       "bytes": 4636713,
       "lines": 1904,
       "gzip_bytes": 2109961,
+      "url": null
+    },
+    "f941fa1d020fd68d94cb60efbae17862e68ae9dc7ba197ae35df7c82919a30e2": {
+      "bytes": 7328319,
+      "lines": 3031,
+      "gzip_bytes": 3372564,
       "url": null
     }
   },

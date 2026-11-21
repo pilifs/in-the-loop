@@ -12,33 +12,34 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T00:19:10.460Z",
-  "duration_seconds": 96101,
+  "ended": "2026-11-21T00:55:14.149Z",
+  "duration_seconds": 98264,
   "stats": {
     "turns": 15,
-    "api_calls": 4060,
-    "tool_calls": 10579,
-    "tool_errors": 332,
-    "compactions": 13,
+    "api_calls": 4200,
+    "tool_calls": 10911,
+    "tool_errors": 336,
+    "compactions": 14,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 7161191,
-      "output_tokens": 2092547,
-      "cache_read_input_tokens": 1261708160,
+      "input_tokens": 7383727,
+      "output_tokens": 2171629,
+      "cache_read_input_tokens": 1312219648,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 6160,
-    "exec": 3835,
-    "apply_patch": 436,
+    "Bash": 6368,
+    "exec": 3921,
+    "apply_patch": 444,
+    "send_message": 65,
     "wait": 53,
-    "send_message": 43,
     "sleep": 43,
+    "followup_task": 6,
+    "send_message_to_user_async": 4,
     "spawn_agent": 4,
-    "followup_task": 2,
     "request_user_input_async": 2,
-    "send_message_to_user_async": 1
+    "list_agents": 1
   },
   "files_touched": [
     "examples/197-shared-int-array-poststates/README.md",
@@ -131,6 +132,10 @@
     "lib/benchmark/external-upgrades/README.md",
     "lib/benchmark/external-upgrades/baselines/jbmc_pair.py",
     "lib/benchmark/external-upgrades/baselines/jbmc_sides.py",
+    "lib/benchmark/external-upgrades/curation/allocate.py",
+    "lib/benchmark/external-upgrades/curation/test_allocate.py",
+    "lib/benchmark/external-upgrades/intake_probe.py",
+    "lib/benchmark/external-upgrades/open_packets.py",
     "lib/benchmark/external-upgrades/pin.py",
     "lib/benchmark/external-upgrades/pinned_task.py",
     "lib/benchmark/external-upgrades/protocol.md",
@@ -468,24 +473,38 @@
     {
       "index": 13,
       "started": "2026-11-20T22:47:51.080Z",
-      "ended": "2026-11-21T00:19:10.460Z",
+      "ended": "2026-11-21T00:47:03.277Z",
       "turns": 2,
-      "api_calls": 334,
+      "api_calls": 425,
       "usage": {
-        "input_tokens": 556937,
-        "output_tokens": 185717,
-        "cache_read_input_tokens": 95116288,
+        "input_tokens": 651752,
+        "output_tokens": 246798,
+        "cache_read_input_tokens": 141004288,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 461782
+      "peak_context_tokens": 550238
+    },
+    {
+      "index": 14,
+      "started": "2026-11-21T00:47:03.288Z",
+      "ended": "2026-11-21T00:55:14.149Z",
+      "turns": 0,
+      "api_calls": 49,
+      "usage": {
+        "input_tokens": 127721,
+        "output_tokens": 18001,
+        "cache_read_input_tokens": 4623488,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 137595
     }
   ],
   "log": {
-    "sha256": "46ff7954daceef8093d3fac80d38f2a46296eac53c770df74d8044b9ded4f63b",
-    "bytes": 94405818,
-    "lines": 32165,
-    "gzip_bytes": 36606717,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/46ff7954daceef8093d3fac80d38f2a46296eac53c770df74d8044b9ded4f63b.jsonl.gz"
+    "sha256": "8a8e8b7ea205e90d3322d845d2de9bbb6fb25a198fc7bdb9ef7859324730c630",
+    "bytes": 97859701,
+    "lines": 33313,
+    "gzip_bytes": 38132983,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/8a8e8b7ea205e90d3322d845d2de9bbb6fb25a198fc7bdb9ef7859324730c630.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1442,6 +1461,30 @@
       "log_sha256": "0a8716cc5eb027b534ab01aff512ee05a5c0066702a74d8d8caf6be44443fc25"
     },
     {
+      "change_id": "wuqzptzrvqvskpksyyqwykokwtnpmtrn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify UTF-8 split boundaries and isolate the byte-preview proof (verification pending)",
+      "body": "The selected JDK now supplies its exact surrogate arithmetic. Constant UTF-8 slices retain every scalar, replace each leading stray continuation and replace a final incomplete scalar once. The unchanged one-byte-at-a-time reader reproduced U+1F600 on the native checker; rebuilding strings per byte produced a JVM-replayed refutation. Explicitly freeze all eight cuts of that four-byte character and repeated EOF. Preserve the original 5,578-selector claim and add an independently checked native witness on it. Recover archived native results and preserve compilable wrapper bytes in the versioned receipt.\n\nThe last unknown importer row-count case came from a reintroduced BOM on old IO with repaired CSV. Its original selector 20 passed in 3.4 seconds. The new full and IO-only byte-preview comparison prepares the original class hashes and measures reuse against a clean native recomputation in each scenario. The fixed byte-only probe passed without CSV or Codec. All 26 changed test groups and the focused final decoder, archive and recipe tests passed; both example packets and the queue validate. The preceding complete default suite passed all 61 groups.\n\nVerification jobs: 20261120-215315-345-measure-full-and-io-only-native-byte, 20261120-215635-345-close-the-old-io-fixed-csv-row-count, 20261120-215815-341-bom-check-all-four-byte-character-pa, 20261120-215815-341-separate-check-all-four-byte-charact, 20261120-215815-341-stream-check-all-four-byte-character, 20261120-220310-341-refute-per-chunk-decoding-on-the-ful.",
+      "log_sha256": "c50e2b5d3dc7c1b47f1d3d44f5a36ccc72da26dd6a333238209edae2a60feed7"
+    },
+    {
+      "change_id": "zmzwrtosmpovxkvyqknpxvostsvqnoyp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify all twelve importer claims and transfer to two holdouts (verification pending)",
+      "body": "The 99 frozen claim/subject pairs yield 70 establishments and 29 refutations with no disagreement. The original importer now has five native establishments and seven JVM-replayed native refutations across the twelve primary claims and four established positive controls. All six isolated IO and eight CSV producer checks passed. The IO-only byte client reused its complete native proof after a CSV-only or unrelated change, agreeing with a separately measured clean recomputation. The campaign ledger retains the different JVM, ordinary native, native case-analysis and bounded scheduling scopes, including all 23 prior startup obligations.\n\nThe original public array rule initially refused Guava Longs.indexOf on its descriptor. It now interprets the actual lload/laload/lcmp bytecode, using 64-bit cells and signed 32-bit cursor arithmetic. A capped probe passed eleven obligations, including unequal long values with identical low 32 bits, and a reversed search refuted the original assertion on the JVM. The four-byte-field holdout keeps every PageImporter class and dependency hash and forces read boundaries inside U+1F600. Its 32-input JVM matrix matched all four expected configurations, its fixed native witness passed, and its transfer links four checked decoder producer receipts. Preserve original int-array and changed-range checks. All 43 changed test groups and both packet/replay validations passed.\n\nVerification jobs: 20261120-221141-346-bound-64-transfer-first-match-and-fr, 20261120-221141-346-bound-8-transfer-first-match-and-fra, 20261120-221142-336-retain-the-original-int-array-proofs, 20261120-221142-337-retain-the-original-int-array-proofs, 20261120-221142-346-certify-the-released-guava-long-trav, 20261120-221142-347-fix-fix-check-multibyte-csv-fields-w, 20261120-221142-347-fix-parent-check-multibyte-csv-field, 20261120-221142-347-independently-exhaust-the-four-unico, 20261120-221142-347-monolithic-strict-native-unicode-pag, 20261120-221142-347-parent-fix-check-multibyte-csv-field, 20261120-221142-347-parent-parent-check-multibyte-csv-fi, 20261120-221803-331-rerun-the-remaining-helper-check-at. The regression retry runs the one remaining tiling helper at the same 25-second budget.",
+      "log_sha256": "202d1130fc4f185eb8c3c8a53332e996b65f8264d99acb806f77b69a040bf70b"
+    },
+    {
+      "change_id": "nmttmskrvkxpvolployzxrmkonuyqrlk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the completed Java proof campaign and both holdouts",
+      "body": "Across 14 examples, 70 of 99 frozen claim and subject pairs were established and 29 refuted. All 12 primary importer obligations and four controls have strict native decisions on unchanged client bytecode. Both Guava array widths have arbitrary-length certificates. Five previously conditional startup witnesses reproduce at original scope, and the compiled ticket and synchronized-map histories explain both split-lock failures.\n\nAll eight long-array and 16 Unicode-importer holdout obligations met expectation. Collected all 110 campaign jobs, including the failed monolithic searches. The public receipt reader now checks the compiled guard source, non-vacuity, retained assumptions and the original JVM witness program. Rechecked 436 recorded file hashes, reran the public holdout JVM controls and passed all 61 default test groups. The encoding time estimate test passed on its automatic retry.",
+      "log_sha256": "a25b02e9e72ab42c5ad05b2d558d2c94cac2098d33e3345da30f861a580c4efa"
+    },
+    {
       "change_id": "zkzpxvssnuyrnmrvytxumzoklnlqnqqy",
       "commit_id": null,
       "immutable": false,
@@ -1808,6 +1851,22 @@
       "summary": "Compare real upgrade baselines and retain historical CI evidence (verification pending)",
       "body": "Two BUMP image pairs give different maintainer decisions. FSCrawler's old ordinary DOCX produced extracted text and the upgrade yielded null. The AssertJ upgrade failed Maven Enforcer before tests; the old suite passed 355 tests. Check image digests, original POM-only diffs, archived CI, bytecode linkage and a networkless replay. Recover 529 original Maven JARs and 845 POMs for warm offline builds. The first FSCrawler repeat stopped at conflicting heap flags before launching Maven; remove the added heap maximum and preserve the original failure.\n\nThe V0 paired JBMC frontend refused distinct dependency closures for rxjava-jdbc and AWS. The actual evidence binds identical application targets, observers, classpaths, deadline and bounds to the native attempts. Add a standalone engine comparison using byte-identical harnesses on both sides. The unchanged JVM validated both input arms on both revisions before the standalone jobs were queued. Original-scope scoring now checks the ordered artifact digests against the signed roster. All four scorecard tests, cost-tier lint and the verification queue validator passed. The new trace allow-list proposal is for the published Jackson Databind version in the AWS POM, which the scanner classified as an IP address.\n\nVerification jobs: 20261121-001305-replay-fscrawler-ordinary-docx-across-th, 20261121-001750-348-run-standalone-jbmc-on-both-original and 20261121-001750-351-run-standalone-jbmc-on-both-original. The separate JBMC checks retain exception and unwinding evidence and cannot earn a blinded product decision.",
       "log_sha256": "46ff7954daceef8093d3fac80d38f2a46296eac53c770df74d8044b9ded4f63b"
+    },
+    {
+      "change_id": "lvuxwvulmvtpvvuzrqqttkllzsvktllq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "8a8e8b7ea205e90d3322d845d2de9bbb6fb25a198fc7bdb9ef7859324730c630"
+    },
+    {
+      "change_id": "wurynlzvuwptxqrtqpoyrlmuyksvtmux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Collect the historical DOCX replay and matched standalone JBMC results",
+      "body": "The corrected FSCrawler container reproduced the original DOCX failure and preserving text companion. Standalone JBMC ran on the same original H2 and AWS artifacts as the native checks. H2 hit incomplete unwinding and its isolated caller property even passed on an input the JVM refutes. Both AWS processes exhausted their share of the 600-second engine deadline. Preserve the full per-side outputs and the limits on the comparison.\n\nThe runner collected all three jobs and both independently reconstructed FSCrawler payloads agree. The Cucumber PR record pins the actual merge and head. Both Joda pins passed the 18-input replay again. All Cucumber form, plan, router and cross-example checks passed, as did 36 of 36 changed-test groups.",
+      "log_sha256": "8a8e8b7ea205e90d3322d845d2de9bbb6fb25a198fc7bdb9ef7859324730c630"
     }
   ],
   "logs": {
@@ -2152,6 +2211,12 @@
       "lines": 13007,
       "gzip_bytes": 15255799,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/8791c7a6952517c7f5676769f07ec531808f54607c75bbe2d1ce0798d33da505.jsonl.gz"
+    },
+    "8a8e8b7ea205e90d3322d845d2de9bbb6fb25a198fc7bdb9ef7859324730c630": {
+      "bytes": 97859701,
+      "lines": 33313,
+      "gzip_bytes": 38132983,
+      "url": null
     },
     "927794b4fa91437138477f95a1c560d19ea12808b50e8ef944977674903d5e65": {
       "bytes": 57569690,
