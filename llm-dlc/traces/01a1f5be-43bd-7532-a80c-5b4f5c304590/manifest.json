@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T23:29:51.326Z",
-  "duration_seconds": 179541,
+  "ended": "2026-11-21T23:35:26.029Z",
+  "duration_seconds": 179876,
   "stats": {
     "turns": 25,
-    "api_calls": 7450,
-    "tool_calls": 18644,
-    "tool_errors": 554,
+    "api_calls": 7472,
+    "tool_calls": 18698,
+    "tool_errors": 558,
     "compactions": 25,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 12930727,
-      "output_tokens": 3961716,
-      "cache_read_input_tokens": 2272401920,
+      "input_tokens": 12959881,
+      "output_tokens": 3975136,
+      "cache_read_input_tokens": 2276615680,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 10678,
-    "exec": 6908,
-    "apply_patch": 700,
+    "Bash": 10709,
+    "exec": 6929,
+    "apply_patch": 702,
     "send_message": 148,
     "wait": 83,
     "sleep": 82,
@@ -145,6 +145,7 @@
     "examples/tools/targets/workflow_refusal.py",
     "examples/tools/test_build.py",
     "lib/Cargo.toml",
+    "lib/benchmark/domain-foundations/startup.py",
     "lib/benchmark/external-upgrades/README.md",
     "lib/benchmark/external-upgrades/baselines/compcheck-aws.md",
     "lib/benchmark/external-upgrades/baselines/compcheck_aws.py",
@@ -708,24 +709,24 @@
     {
       "index": 25,
       "started": "2026-11-21T16:41:23.003Z",
-      "ended": "2026-11-21T23:29:51.326Z",
+      "ended": "2026-11-21T23:35:26.029Z",
       "turns": 2,
-      "api_calls": 46,
+      "api_calls": 68,
       "usage": {
-        "input_tokens": 217600,
-        "output_tokens": 30143,
-        "cache_read_input_tokens": 5760000,
+        "input_tokens": 246754,
+        "output_tokens": 43563,
+        "cache_read_input_tokens": 9973760,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 185374
+      "peak_context_tokens": 212979
     }
   ],
   "log": {
-    "sha256": "56f36a4a51869eaae6e73442e7a6558220edb54787cf045fd442c5a8917afa56",
-    "bytes": 171048511,
-    "lines": 58808,
-    "gzip_bytes": 68179248,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/56f36a4a51869eaae6e73442e7a6558220edb54787cf045fd442c5a8917afa56.jsonl.gz"
+    "sha256": "5295706a5915d99f963f96d32739d2f7c862d30c7bd70c0608826d413d211c81",
+    "bytes": 171540758,
+    "lines": 58967,
+    "gzip_bytes": 68351010,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/5295706a5915d99f963f96d32739d2f7c862d30c7bd70c0608826d413d211c81.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3266,20 +3267,28 @@
       "log_sha256": "299ccb5dc0ca588df276253368b29b2afcf9d1922d6670fd5bc94e7699006b7c"
     },
     {
-      "change_id": "vzmtlpvyzrtpqmkmkwqlzqukqwvltluw",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "56f36a4a51869eaae6e73442e7a6558220edb54787cf045fd442c5a8917afa56"
-    },
-    {
       "change_id": "mormrttqxpxovtpxvrkwspoqswtwtwmk",
       "commit_id": null,
       "immutable": false,
       "summary": "Pin the original Avro decimal upgrade (verification pending)",
       "body": "Register Avro #729 as a separate adoption cohort. Pin its first-parent pair, nested DecimalConversion class, original Maven build and landed JUnit method without widening the original campaign population. Checked both historical source and test blobs in the upstream Git repository, the original first-parent link, the six plus two frozen populations, four runner tests, and the job schema.\n\nJob 20261121-232627-build-avro-729-decimal-conversion-on-bot builds both original modules and runs the landed decimal test on each. Their verified artifact receipts will make the frozen public example executable.",
       "log_sha256": "56f36a4a51869eaae6e73442e7a6558220edb54787cf045fd442c5a8917afa56"
+    },
+    {
+      "change_id": "vrkopxnyvvukyyrztvxvmnwkprqpmoom",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "5295706a5915d99f963f96d32739d2f7c862d30c7bd70c0608826d413d211c81"
+    },
+    {
+      "change_id": "okprpnmlzynkmuxlurpyskkvmnmkqowm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Trace startup dependencies on original JVMs (verification pending)",
+      "body": "Pair each ordinary JVM call with a nontransforming JVMTI observer on the same checked Maven JARs. Record static and selected receiver reads and writes by method and bytecode offset, actual class status and unbound classes. Inspect class bytes offline to distinguish static declarations and candidate writers from the paths that actually ran. Include CPU, directory, resource, separator, changed-observer and throwing-initializer controls.\n\nOn Temurin 21.0.13 the Avro writer-schema observer returned BYTES and the identical object twice. The JavaParser separator observer returned LF, failed at initialization after the property was cleared, and failed again with an erroneous class. Instrumented and ordinary JVM outputs matched. The static scanner checked instruction offsets against the original classfile labels and lengths, including 180 Avro-path classes in the smoke test. Both jobs validated. Jobs 20261121-233322-trace-original-startup-and-field-depende and 20261121-233332-trace-javaparser-field-and-property-depe run the full profile matrix on both revisions.",
+      "log_sha256": "5295706a5915d99f963f96d32739d2f7c862d30c7bd70c0608826d413d211c81"
     }
   ],
   "logs": {
@@ -3612,6 +3621,12 @@
       "lines": 12776,
       "gzip_bytes": 15038998,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/526f2d0930321d156b4c1ffed3bcf9c6e0ed4197dfc4b063de4820f0e00e2b1d.jsonl.gz"
+    },
+    "5295706a5915d99f963f96d32739d2f7c862d30c7bd70c0608826d413d211c81": {
+      "bytes": 171540758,
+      "lines": 58967,
+      "gzip_bytes": 68351010,
+      "url": null
     },
     "56f36a4a51869eaae6e73442e7a6558220edb54787cf045fd442c5a8917afa56": {
       "bytes": 171048511,
