@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-21T14:43:28.167Z",
-  "ended": "2026-11-21T15:00:33.839Z",
-  "duration_seconds": 1026,
+  "ended": "2026-11-21T15:18:13.532Z",
+  "duration_seconds": 2085,
   "stats": {
-    "turns": 1,
-    "api_calls": 3,
+    "turns": 5,
+    "api_calls": 7,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 50620,
+    "peak_context_tokens": 84290,
     "usage": {
-      "input_tokens": 51004,
-      "output_tokens": 436,
-      "cache_read_input_tokens": 77952,
+      "input_tokens": 101443,
+      "output_tokens": 833,
+      "cache_read_input_tokens": 311552,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-21T14:43:28.167Z",
-      "ended": "2026-11-21T15:00:33.839Z",
-      "turns": 1,
-      "api_calls": 3,
+      "ended": "2026-11-21T15:18:13.532Z",
+      "turns": 5,
+      "api_calls": 7,
       "usage": {
-        "input_tokens": 51004,
-        "output_tokens": 436,
-        "cache_read_input_tokens": 77952,
+        "input_tokens": 101443,
+        "output_tokens": 833,
+        "cache_read_input_tokens": 311552,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 50620
+      "peak_context_tokens": 84290
     }
   ],
   "log": {
-    "sha256": "d21e04ca043dcbc45daa21b11d5f232e3e964dc1b09a2aa0060e4fdec772dcb2",
-    "bytes": 461140,
-    "lines": 44,
-    "gzip_bytes": 191115,
-    "path": "llm-dlc/traces/01a1fe8f-ef20-7173-90fb-4f5e2745ef13/logs/d21e04ca043dcbc45daa21b11d5f232e3e964dc1b09a2aa0060e4fdec772dcb2.jsonl.gz"
+    "sha256": "a1232b325b56a080bc7e1f6efed13f4eb16c6cd8f962febe92e0cc2bc8d53730",
+    "bytes": 790319,
+    "lines": 92,
+    "gzip_bytes": 277601,
+    "path": "llm-dlc/traces/01a1fe8f-ef20-7173-90fb-4f5e2745ef13/logs/a1232b325b56a080bc7e1f6efed13f4eb16c6cd8f962febe92e0cc2bc8d53730.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -62,9 +62,23 @@
       "summary": "Execute JDK map-backed sets and fresh concurrent key views (verification pending)",
       "body": "The verifier and interpreter execute Collections.newSetFromMap on the selected JDK. Its backing map controls mutation, validation and iteration. A freshly constructed exact ConcurrentHashMap runs the JDK count and key-view methods with its own fields and cached view identity. Explicitly modeled or uninitialized maps cannot borrow that representation.\n\nThe physical JVM, interpreter and strict checker passed the shared-map mutation, nonempty and null rejection, and concurrent view identity controls on Temurin 21.0.13 and 25.0.5. The changed selection passed all 58 Rust test binaries. The original bounded Avro factory progressed through its map-backed set to Hadoop Configuration.REGISTRY with the previous three-root startup digest. Job 20261121-145625-follow-the-original-avro-factory-through repeats the claim on the original 124-entry closure.",
       "log_sha256": "d21e04ca043dcbc45daa21b11d5f232e3e964dc1b09a2aa0060e4fdec772dcb2"
+    },
+    {
+      "change_id": "rnwoytzkzkwytqstmtqtmkzymrnmrnpl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify null-valued weak registries across JVM startup (verification pending)",
+      "body": "An opt-in joint snapshot retains the identity of exact WeakHashMaps whose current values are all null. Collection can remove keys while preserving that invariant. On qualified JDK images the checker can read or register a null value with a key that inherits Object.equals and hashCode. It still refuses membership, iteration, callbacks and a non-null write. Earlier startup digests remain reproducible. The campaign recount now discovers each recorded native stage.\n\nPhysical and native controls on Temurin 21 and 25 checked shared aliases, a nonempty registry, repeated registration, a deliberately false result and unsupported operations. All 46 changed test groups passed, the cost inventory lint passed and example 355 replayed both revisions on all 21 inputs. The original factory progressed through Configuration.REGISTRY to Credentials startup. Explicitly initializing Credentials as a fourth root reached Configuration.deprecationContext in the actual property lookup. Job 20261121-151148-verify-the-real-avro-factory-with-its-ob repeats both newly registered scopes.",
+      "log_sha256": "a1232b325b56a080bc7e1f6efed13f4eb16c6cd8f962febe92e0cc2bc8d53730"
     }
   ],
   "logs": {
+    "a1232b325b56a080bc7e1f6efed13f4eb16c6cd8f962febe92e0cc2bc8d53730": {
+      "bytes": 790319,
+      "lines": 92,
+      "gzip_bytes": 277601,
+      "url": null
+    },
     "d21e04ca043dcbc45daa21b11d5f232e3e964dc1b09a2aa0060e4fdec772dcb2": {
       "bytes": 461140,
       "lines": 44,

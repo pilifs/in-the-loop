@@ -151,6 +151,7 @@ def finite(folder, task, plan, stages):
 def startup_companions(folder, example, target, frozen_tasks):
     """Recount conditional tasks independently of the obligations registered at baseline."""
     results = {}
+    stages = [p.name.removesuffix("-native") for p in sorted((folder / "records").glob("*-native")) if p.is_dir()]
     for task in target["tasks"]:
         if task["id"] in frozen_tasks or task["kind"] == "replay":
             continue
@@ -160,7 +161,7 @@ def startup_companions(folder, example, target, frozen_tasks):
             continue
         attempts = []
         seen = set()
-        for stage in ("enum-snapshot", "traversal-boundaries", "observed-process", "joint-startup", "constructor-transport", "writable-startup", "buffer-wrap", "factory-startup", "workflow"):
+        for stage in [*stages, "workflow"]:
             result = native(folder, task, [stage], plan)
             if not result.get("receipt"):
                 continue
@@ -171,7 +172,7 @@ def startup_companions(folder, example, target, frozen_tasks):
         if attempts:
             results[task["id"]] = {"claimKey": plan.claim["key"], "guard": plan.claim["assume"], "expected": task["expected"],
                                    "observedInitializers": initializers, "observedRuntime": plan.claim.get("observedRuntime", {}),
-                                   "attempts": attempts}
+                                   "attempts": sorted(attempts, key=lambda a: Path(a["receipt"]).parent.name)}
     return results
 
 

@@ -8,6 +8,7 @@ use crate::observed::{Object, Observed, Slot};
 /// The classes of the `HashMap` model an observed map is made of, and the fields the model keeps it in.
 const MAP: &str = "java/util/HashMap";
 const NODE: &str = "java/util/HashMap$Node";
+pub(super) const WEAK_NULLS: &str = "<observed.WeakHashMap.nullValues>";
 
 impl Engine<'_> {
     /// Whether `class`'s initializer is one the check was given the observed state of.
@@ -161,6 +162,15 @@ impl Engine<'_> {
                 }
                 o
             }
+            Object::NullValuedWeakMap => {
+                if !self.cp.weak_map_null_operations() {
+                    return Err("an observed WeakHashMap on a JDK whose key callbacks have not been qualified".into());
+                }
+                let map = self.alloc(path, "java/util/WeakHashMap");
+                // A pair's cached-call key cannot identify the unobserved entries of two maps.
+                path.objects[map].fields.insert(WEAK_NULLS.into(), Val::Unobserved("the GC-sensitive keys of the observed WeakHashMap".into()));
+                map
+            }
             Object::EmptyConcurrentMap => {
                 let class = crate::models::CONCURRENT_MAP;
                 if !self.cp.checker_runs(class) || !self.cp.checker_runs(MAP) {
@@ -230,5 +240,34 @@ impl Engine<'_> {
         };
         made.insert(i, o);
         Ok(Val::R(Some(o)))
+    }
+}
+
+impl Engine<'_> {
+    /// The exact JDK map has only null values. Both absent and present keys therefore return
+    /// null, and writing null preserves the invariant through every alias. The collector may
+    /// remove any dead key. No size, membership, traversal or weak-key liveness is inferred.
+    pub(super) fn null_valued_weak_map_call(&mut self, path: &mut Path, map: usize, special: bool, member: &crate::classfile::MemberRef, args: &[Val]) -> Step {
+        match (special, member.name.as_str(), member.descriptor.as_str(), args) {
+            (false, "get", "(Ljava/lang/Object;)Ljava/lang/Object;", [key])
+            | (false, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", [key, Val::R(None)]) => {
+                if !self.cp.is_subtype("java/util/WeakHashMap", &member.owner) {
+                    return unsupported("an incompatible owner for an observed WeakHashMap operation");
+                }
+                match key {
+                    Val::R(None) => {}
+                    Val::R(Some(k)) if !path.objects[*k].unknown && !path.objects[*k].assumed && !path.objects[*k].given
+                        && [("hashCode", "()I"), ("equals", "(Ljava/lang/Object;)Z")].into_iter().all(|(n, d)|
+                            self.cp.find_method(&path.objects[*k].class, n, d).is_some_and(|(cf, _)| cf.name == "java/lang/Object")) => {}
+                    _ => return unsupported("an observed WeakHashMap key whose hashCode or equals may run application code"),
+                }
+                // Even get may expunge stale mappings from the queue.
+                self.keeps(path, Some(map), "updates a WeakHashMap that existed before the call")?;
+                self.push(path, Val::R(None));
+                self.advance(path);
+                Ok(None)
+            }
+            _ => unsupported(format!("WeakHashMap.{}{} is outside the observed null-value invariant", member.name, member.descriptor)),
+        }
     }
 }

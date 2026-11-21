@@ -55,6 +55,9 @@
 //!   can pass through an application constructor into a field until such an operation. This scope includes any
 //!   cross-class registration the JVM made. It assumes that unrecorded external state and aliases do not affect
 //!   the checked call. The ordinary first-use observation still compares each transitive class independently.
+//!   `weakMapValues: true` additionally captures exact WeakHashMaps whose entries all have null values.
+//!   Their identities are shared. Reading a value and writing null with an identity key preserve the invariant
+//!   on qualified JDK images. Key membership, size, iteration and user callbacks require further evidence.
 //! - The default locale: one whose language is Turkish, Azeri or Lithuanian is refused, since the check takes the
 //!   JVM's default to be none of them ([`crate::bmc::strings::LOCALE_ASSUMPTION`]); any other is stated. The default
 //!   time zone (which the JDK reads from `user.timezone` or the machine, as `ob.Zoned`'s `TimeZone.getDefault()`
@@ -126,6 +129,8 @@ pub enum Object {
     Map(Vec<(Slot, Slot)>),
     /// An exact ConcurrentHashMap observed empty. Its references share the same object number.
     EmptyConcurrentMap,
+    /// An exact WeakHashMap whose existing values are all null. The keys and size are unknown.
+    NullValuedWeakMap,
     /// Final application value, with every inherited instance field and its defining bytes.
     Value(Vec<ValueClass>),
     /// An array: its element type's descriptor and its cells.
@@ -183,6 +188,7 @@ pub struct On {
     pub fixed_processors: Option<i32>,
     pub empty_environment: bool,
     pub root_working_directory: bool,
+    pub weak_map_values: bool,
     /// Each system property the initialization read, in the order it first did, and the value it had.
     pub properties: Vec<(String, Option<String>)>,
     /// The first class of the class path that read the system properties as a whole, if one did.
@@ -214,6 +220,7 @@ pub struct Runtime {
     pub empty_environment: bool,
     pub preinitialize_together: bool,
     pub root_working_directory: bool,
+    pub weak_map_values: bool,
 }
 
 impl std::str::FromStr for Runtime {
@@ -222,6 +229,9 @@ impl std::str::FromStr for Runtime {
         let r: Self = serde_json::from_str(text).map_err(|e| format!("invalid observed runtime: {e}"))?;
         if r == Self::default() || r.processors.is_some_and(|n| n.get() < 1) {
             return Err("provide a positive processor count or enable a supported startup setting".into());
+        }
+        if r.weak_map_values && !r.preinitialize_together {
+            return Err("weakMapValues requires preinitializeTogether so all aliases share one captured heap".into());
         }
         Ok(r)
     }
@@ -235,6 +245,7 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
         None => "the check's class path".to_string(),
     };
     let bound = &observed.on;
+    let weak_maps = if bound.weak_map_values { ". Exact weak maps recorded with only null values retain that invariant while the collector may remove keys." } else { "" };
     let processors = bound.fixed_processors.map(|n| format!("; Runtime.availableProcessors() was pinned to {n} (-XX:ActiveProcessorCount={n}) throughout initialization")).unwrap_or_default();
     let environment = if bound.empty_environment { ", with an empty process environment throughout initialization" } else { "" };
     let cwd = if bound.root_working_directory { ", with the process working directory and JVM absolute-path base both at the Unix root /" } else { "" };
@@ -256,7 +267,7 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
     };
     let ownership = if observed.joint_fields.is_some() { "its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call" } else { "the objects it leaves are held by no other class" };
     format!(
-        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the selected roots on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{processors}{environment}{cwd}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and {ownership})",
+        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the selected roots on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{processors}{environment}{cwd}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and {ownership}){weak_maps}",
         class.replace('/', "."),
         bound.vendor,
         short(&bound.sha256),
@@ -275,6 +286,9 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
 }
 
 fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: Runtime) -> Result<Observations, Error> {
+    if runtime.weak_map_values && !runtime.preinitialize_together {
+        return Err(Error::new("--observed-runtime weakMapValues requires preinitializeTogether"));
+    }
     if runtime.processors.is_some_and(|n| n.get() < 1) { return Err(Error::new("--observed-runtime requires a positive processor count")); }
     let mut out = Observations::new();
     if classes.is_empty() {
@@ -309,6 +323,7 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         let line = jvm.run(&binary, Some(&log))?;
         let observed = parse(&binary, &line)?;
         if runtime.preinitialize_together != observed.joint_fields.is_some()
+            || runtime.weak_map_values != observed.on.weak_map_values
             || !observed.additional_roots.iter().map(|(name, _)| name.replace('/', ".")).eq(jvm.additional.iter().cloned())
             || runtime.root_working_directory && !observed.on.root_working_directory
             || runtime.empty_environment && !observed.on.empty_environment
@@ -380,7 +395,9 @@ impl Jvm {
         command.arg("-cp").arg(&self.class_path).arg(CLASS).arg(binary);
         if let Some(log) = log {
             command.arg(log);
-            if self.runtime.preinitialize_together { command.arg("together").args(&self.additional); }
+            if self.runtime.preinitialize_together {
+                command.arg(if self.runtime.weak_map_values { "together-weak-map-values" } else { "together" }).args(&self.additional);
+            }
         }
         let mut child = command
             .current_dir(if self.runtime.root_working_directory { Path::new("/") } else { &self.dir })
@@ -756,6 +773,9 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
             }
             Some("class") => Object::Class(o.get("name").and_then(|n| n.as_str()).ok_or_else(|| bad("a class"))?.to_string()),
             Some("concurrentMap") if o.get("entries").and_then(|v| v.as_array()).is_some_and(Vec::is_empty) => Object::EmptyConcurrentMap,
+            Some("weakMap") if o["allValuesNull"].as_bool() == Some(true)
+                && json["on"]["weakMapValues"].as_bool() == Some(true)
+                && json["on"]["preinitializeTogether"].as_bool() == Some(true) => Object::NullValuedWeakMap,
             Some("map") => {
                 let flat = slots(o.get("entries"))?;
                 if flat.len() % 2 != 0 {
@@ -832,6 +852,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         fixed_processors: fixed_processors(on)?,
         empty_environment: empty_environment(on)?,
         root_working_directory: root_directory(on)?,
+        weak_map_values: on.get("weakMapValues").map(|v| v.as_bool().ok_or_else(|| bad("weakMapValues"))).transpose()?.unwrap_or(false),
         properties: list("properties")?.iter().map(|p| Ok((text(p, "name")?, p.get("value").and_then(|v| v.as_str()).map(String::from)))).collect::<Result<_, Error>>()?,
         all_properties: match on.get("allProperties") {
             Some(serde_json::Value::Null) => None,
@@ -847,6 +868,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
     if let Some(n) = on.fixed_processors { state["fixedProcessors"] = n.into(); }
     if on.empty_environment { state["emptyEnvironment"] = true.into(); }
     if on.root_working_directory { state["rootWorkingDirectory"] = true.into(); }
+    if on.weak_map_values { state["weakMapValues"] = true.into(); }
     let state_sha256 = crate::digest::sha256_hex(state.to_string().as_bytes());
     let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), state_sha256, fields, objects, joint_fields, additional_roots, previous: None, on };
     let within = |s: &Slot| !matches!(s, Slot::Object(i) if *i >= observed.objects.len());

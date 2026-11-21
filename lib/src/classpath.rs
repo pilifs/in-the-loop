@@ -847,6 +847,22 @@ impl ClassPath {
             | "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
     }
 
+    /// In these JDKs WeakHashMap.get and put hash the supplied key, and compare with
+    /// suppliedKey.equals(storedKey). Queue draining, growth and reference processing
+    /// call no user code. The checker separately checks dispatch of both key methods.
+    pub(crate) fn weak_map_null_operations(&self) -> bool {
+        let Some(image) = self.jdk() else { return false };
+        let mut bytes = Vec::new();
+        for name in ["java/util/WeakHashMap", "java/util/WeakHashMap$Entry", "java/lang/ref/WeakReference",
+            "java/lang/ref/Reference", "java/lang/ref/ReferenceQueue", "java/lang/Object"] {
+            let Ok(Some(body)) = image.read_class(name) else { return false };
+            bytes.extend(body);
+        }
+        matches!(crate::digest::sha256_hex(&bytes).as_str(),
+            "e02eeefdfde93353bae13bfd1312d063c3248c1ff9af97772cdbe50b36c03bcd" // Temurin 21.0.13
+            | "f9bdfff0be7df1a7633155c47b51ff4e0c02b9288c6755529512c6b2ffbaff55") // Temurin 25.0.5
+    }
+
     /// Methods of an image-backed byte or char buffer with an ordinary Java heap array.
     /// Foreign segments and native memory operations keep their separate call boundaries.
     pub(crate) fn heap_buffer_method(&self, owner: &str, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {

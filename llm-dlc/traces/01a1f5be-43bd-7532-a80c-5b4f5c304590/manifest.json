@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T15:00:35.006Z",
-  "duration_seconds": 148985,
+  "ended": "2026-11-21T15:18:19.575Z",
+  "duration_seconds": 150050,
   "stats": {
     "turns": 23,
-    "api_calls": 7076,
-    "tool_calls": 17738,
-    "tool_errors": 536,
+    "api_calls": 7132,
+    "tool_calls": 17871,
+    "tool_errors": 539,
     "compactions": 23,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 11809255,
-      "output_tokens": 3742261,
-      "cache_read_input_tokens": 2134661376,
+      "input_tokens": 12145014,
+      "output_tokens": 3775002,
+      "cache_read_input_tokens": 2149616000,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 10175,
-    "exec": 6546,
-    "apply_patch": 667,
+    "Bash": 10246,
+    "exec": 6601,
+    "apply_patch": 674,
     "send_message": 148,
     "sleep": 82,
     "wait": 75,
@@ -675,24 +675,24 @@
     {
       "index": 23,
       "started": "2026-11-21T14:25:42.920Z",
-      "ended": "2026-11-21T15:00:35.006Z",
+      "ended": "2026-11-21T15:18:19.575Z",
       "turns": 2,
-      "api_calls": 62,
+      "api_calls": 118,
       "usage": {
-        "input_tokens": 235899,
-        "output_tokens": 50159,
-        "cache_read_input_tokens": 9670912,
+        "input_tokens": 571658,
+        "output_tokens": 82900,
+        "cache_read_input_tokens": 24625536,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 244697
+      "peak_context_tokens": 307817
     }
   ],
   "log": {
-    "sha256": "c3e3835dfbe60c51e4e173afe6615ac0c745b83e85037907f016dbe402c4854e",
-    "bytes": 162270441,
-    "lines": 55794,
-    "gzip_bytes": 64382253,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/c3e3835dfbe60c51e4e173afe6615ac0c745b83e85037907f016dbe402c4854e.jsonl.gz"
+    "sha256": "21018089ba52014bbc2d819c1675f899c2f7c3c118f209bf0f8988adc162f910",
+    "bytes": 163487838,
+    "lines": 56248,
+    "gzip_bytes": 64947644,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/21018089ba52014bbc2d819c1675f899c2f7c3c118f209bf0f8988adc162f910.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3191,6 +3191,14 @@
       "summary": "Execute JDK map-backed sets and fresh concurrent key views (verification pending)",
       "body": "The verifier and interpreter execute Collections.newSetFromMap on the selected JDK. Its backing map controls mutation, validation and iteration. A freshly constructed exact ConcurrentHashMap runs the JDK count and key-view methods with its own fields and cached view identity. Explicitly modeled or uninitialized maps cannot borrow that representation.\n\nThe physical JVM, interpreter and strict checker passed the shared-map mutation, nonempty and null rejection, and concurrent view identity controls on Temurin 21.0.13 and 25.0.5. The changed selection passed all 58 Rust test binaries. The original bounded Avro factory progressed through its map-backed set to Hadoop Configuration.REGISTRY with the previous three-root startup digest. Job 20261121-145625-follow-the-original-avro-factory-through repeats the claim on the original 124-entry closure.",
       "log_sha256": "c3e3835dfbe60c51e4e173afe6615ac0c745b83e85037907f016dbe402c4854e"
+    },
+    {
+      "change_id": "rnwoytzkzkwytqstmtqtmkzymrnmrnpl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify null-valued weak registries across JVM startup (verification pending)",
+      "body": "An opt-in joint snapshot retains the identity of exact WeakHashMaps whose current values are all null. Collection can remove keys while preserving that invariant. On qualified JDK images the checker can read or register a null value with a key that inherits Object.equals and hashCode. It still refuses membership, iteration, callbacks and a non-null write. Earlier startup digests remain reproducible. The campaign recount now discovers each recorded native stage.\n\nPhysical and native controls on Temurin 21 and 25 checked shared aliases, a nonempty registry, repeated registration, a deliberately false result and unsupported operations. All 46 changed test groups passed, the cost inventory lint passed and example 355 replayed both revisions on all 21 inputs. The original factory progressed through Configuration.REGISTRY to Credentials startup. Explicitly initializing Credentials as a fourth root reached Configuration.deprecationContext in the actual property lookup. Job 20261121-151148-verify-the-real-avro-factory-with-its-ob repeats both newly registered scopes.",
+      "log_sha256": "21018089ba52014bbc2d819c1675f899c2f7c3c118f209bf0f8988adc162f910"
     }
   ],
   "logs": {
@@ -3367,6 +3375,12 @@
       "lines": 28518,
       "gzip_bytes": 32598300,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/202d1130fc4f185eb8c3c8a53332e996b65f8264d99acb806f77b69a040bf70b.jsonl.gz"
+    },
+    "21018089ba52014bbc2d819c1675f899c2f7c3c118f209bf0f8988adc162f910": {
+      "bytes": 163487838,
+      "lines": 56248,
+      "gzip_bytes": 64947644,
+      "url": null
     },
     "267059c137305ad9f861ddf4c098a1913f1b5964d9d7f028e4752d61c9816701": {
       "bytes": 77995285,

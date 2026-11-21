@@ -303,7 +303,8 @@ public final class ObservedInitializer {
         String display = Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag();
         String zone = java.util.TimeZone.getDefault().getID();
         Path log = args.length > 1 ? Path.of(args[1]) : null;
-        boolean together = args.length >= 3 && args[2].equals("together");
+        boolean weakMapValues = args.length >= 3 && args[2].equals("together-weak-map-values");
+        boolean together = weakMapValues || args.length >= 3 && args[2].equals("together");
         boolean atRoot = unixRoot();
         boolean emptyEnvironment = emptyEnvironment();
         Properties original = System.getProperties();
@@ -351,6 +352,7 @@ public final class ObservedInitializer {
         }
         // The classes the initialization initialized: what the JVM logged after the mark, of the class path.
         Dump dump = new Dump(false);
+        dump.weakMapValues = weakMapValues;
         String fields = together ? null : dump.fieldsOf(c);
         if (!together) logged = Files.readAllBytes(log);
         String after = new String(logged, (int) Math.min(mark, logged.length), (int) Math.max(0, logged.length - mark), StandardCharsets.UTF_8);
@@ -423,6 +425,7 @@ public final class ObservedInitializer {
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
                 + text(display) + "},\"zone\":" + text(zone) + ",\"preinitializeTogether\":" + together
+                + ",\"weakMapValues\":" + weakMapValues
                 + ",\"additionalRoots\":[" + String.join(",", additionalRoots) + "],\"rootWorkingDirectory\":" + (atRoot && unixRoot())
                 + ",\"fixedProcessors\":" + fixedProcessors() + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment())
                 + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
@@ -524,6 +527,7 @@ public final class ObservedInitializer {
         private final List<String> objects = new ArrayList<>();
         private final java.util.Set<Class<?>> owners = new java.util.HashSet<>();
         private final boolean describe;
+        private boolean weakMapValues;
         private Class<?> owner;
 
         Dump(boolean describe) {
@@ -665,6 +669,10 @@ public final class ObservedInitializer {
             Class<?> type = v.getClass();
             boolean map = type == HashMap.class;
             boolean emptyConcurrentMap = type == java.util.concurrent.ConcurrentHashMap.class && ((Map<?, ?>) v).isEmpty();
+            // GC can remove mappings, which preserves the all-null value invariant. Keep the
+            // map's identity but neither its cardinality nor strong references to its keys.
+            boolean nullValues = weakMapValues && type == java.util.WeakHashMap.class
+                    && ((Map<?, ?>) v).values().stream().allMatch(java.util.Objects::isNull);
             if (map) {
                 for (Object key : ((Map<?, ?>) v).keySet()) {
                     if (key != null && !(key instanceof String)) {
@@ -686,7 +694,7 @@ public final class ObservedInitializer {
                 }
                 catch (Exception e) { return unheld("an unreadable value of " + nameOf(type), v); }
             }
-            if (!(v instanceof String) && !(v instanceof Class) && !map && !emptyConcurrentMap && !type.isArray()) {
+            if (!(v instanceof String) && !(v instanceof Class) && !map && !emptyConcurrentMap && !nullValues && !type.isArray()) {
                 return unheld("an object of " + nameOf(type), v);
             }
             // Numbered before what it holds is, so that an object that reaches itself ends.
@@ -709,6 +717,9 @@ public final class ObservedInitializer {
             }
             else if (emptyConcurrentMap) {
                 o.append("{\"k\":\"concurrentMap\",\"entries\":[]}");
+            }
+            else if (nullValues) {
+                o.append("{\"k\":\"weakMap\",\"allValuesNull\":true}");
             }
             else if (map) {
                 o.append("{\"k\":\"map\",\"entries\":[");

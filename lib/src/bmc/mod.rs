@@ -4859,6 +4859,9 @@ impl<'a> Engine<'a> {
     /// The key the instance field `owner.name:descriptor` has in object `o`: its name, unless a subclass along the
     /// object's class declares the name again ([`ClassPath::field_key`]), as the interpreter keys it.
     fn field_key(&mut self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<String, Stop> {
+        if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
+            return unsupported(format!("the observed WeakHashMap does not supply its internal field {name}"));
+        }
         if owner == throwables::THROWABLE && name == "suppressedExceptions" && descriptor == "Ljava/util/List;" {
             return Ok(throwables::SUPPRESSED.into());
         }
@@ -5256,6 +5259,9 @@ impl<'a> Engine<'a> {
             Ok(o) => o.expect("checked"),
             Err(step) => return step,
         };
+        if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
+            return self.null_valued_weak_map_call(path, o, special, member, &args);
+        }
         let special = special;
         // A virtual call on an object whose class the engine does not know: an override of that class may run.
         if !special && path.objects[o].assumed {
