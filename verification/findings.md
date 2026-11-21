@@ -18,6 +18,26 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-051: a second runner in the agent's workspace killed the watcher's runs of the same six jobs
+
+- **Status**: open.
+- **Raised**: 2026-11-21 by the watcher of the single-agent run `external-upgrade-evaluation`, from the six results
+  collected as `torsqylr` and the user's systemd journal.
+- **Found**: the run's agent submitted six Maven rebuild jobs at 06:28 UTC: `20261121-062836-…` to
+  `20261121-062849-…`. The watcher's runner in the default workspace started them. At 06:32:02 the agent ran
+  `python3 verification/pipeline.py run --memory 72G --cpus 26 --workers 13` from its own workspace,
+  `in-the-loop-foundation-domain-streams`, which has a separate `verification/.state` and lock. That runner started
+  the same job ids. The systemd scope names (`vjob-<id>-<hash>-1.scope`) are the same in both checkouts, so systemd
+  stopped the watcher's scopes at 06:32:14–15. All six results read `SIGTERM` after about 50 s, with empty logs and
+  `timedOut: false`. CLAUDE.md says the pipeline is run by the agent managing it, not by the agent that submits. The
+  agent had just read the run-verification skill, which is written for the managing agent.
+- **Needs**: `pipeline.py run` should refuse to start while another checkout's runner is at work, or take a lock
+  shared across checkouts (the machine's `~/.config/in-the-loop/` or the default workspace's `.state`). Scope names
+  could also carry the checkout. A brief or the operating notes may need to tell a run's agent plainly not to start a
+  runner. The six jobs also have to run again.
+- **Closes when**: a second `pipeline.py run` from another workspace is refused while one is at work, and the six jobs
+  have results that weren't cut off.
+
 ### VF-050: the external-upgrade-evaluation run swapped the model it was asked to use for Claude models, unasked
 
 - **Status**: open (the user, 2026-11-21: every role is to use the same Astra session, and the run is to drop its custody

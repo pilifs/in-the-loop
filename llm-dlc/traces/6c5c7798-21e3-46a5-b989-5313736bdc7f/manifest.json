@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-21T06:31:30.658Z",
-  "duration_seconds": 479044,
+  "ended": "2026-11-21T06:36:47.230Z",
+  "duration_seconds": 479361,
   "stats": {
-    "turns": 617,
-    "api_calls": 3038,
-    "tool_calls": 2626,
+    "turns": 618,
+    "api_calls": 3048,
+    "tool_calls": 2637,
     "tool_errors": 39,
     "compactions": 10,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 7302,
-      "output_tokens": 1445395,
-      "cache_read_input_tokens": 734862046,
-      "cache_creation_input_tokens": 3805547
+      "input_tokens": 7324,
+      "output_tokens": 1448777,
+      "cache_read_input_tokens": 738142007,
+      "cache_creation_input_tokens": 3815827
     }
   },
   "tools": {
-    "Bash": 2505,
+    "Bash": 2516,
     "Edit": 28,
     "SendMessage": 19,
     "ToolSearch": 17,
@@ -207,24 +207,24 @@
     {
       "index": 10,
       "started": "2026-11-20T21:07:50.949Z",
-      "ended": "2026-11-21T06:31:30.658Z",
-      "turns": 118,
-      "api_calls": 430,
+      "ended": "2026-11-21T06:36:47.230Z",
+      "turns": 119,
+      "api_calls": 440,
       "usage": {
-        "input_tokens": 1096,
-        "output_tokens": 109837,
-        "cache_read_input_tokens": 88241641,
-        "cache_creation_input_tokens": 290427
+        "input_tokens": 1118,
+        "output_tokens": 113219,
+        "cache_read_input_tokens": 91521602,
+        "cache_creation_input_tokens": 300707
       },
-      "peak_context_tokens": 323103
+      "peak_context_tokens": 333475
     }
   ],
   "log": {
-    "sha256": "e1cd2d8a376a4ed5cee9302acad72bf6175f83ec589587656c0dfd6ed3c31b6c",
-    "bytes": 50400567,
-    "lines": 24363,
-    "gzip_bytes": 8211118,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/e1cd2d8a376a4ed5cee9302acad72bf6175f83ec589587656c0dfd6ed3c31b6c.jsonl.gz"
+    "sha256": "7c60d22477546fe3986dc8e30ab1071580f0c740c809e0621cbc47d207694813",
+    "bytes": 50517375,
+    "lines": 24445,
+    "gzip_bytes": 8223907,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/7c60d22477546fe3986dc8e30ab1071580f0c740c809e0621cbc47d207694813.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -5707,6 +5707,14 @@
       "summary": "Record verification results for 6 job(s)",
       "body": "Outputs applied for 0 of the 6 job(s); 4 declared or produced none; 2 kept under outputs/, not applied (the job didn't pass). 20261121-062836-rebuild-original-java-upgrades-for-the-m: failed: 1 failed step(s) in 49.9s, peak 460.3 MiB (estimated 8m00s, 2.0 GiB); 5 output file(s) changed 20261121-062836-rebuild-original-java-upgrades-for-the-t: failed: 1 failed step(s) in 50.1s, peak 230.5 MiB (estimated 8m00s, 2.0 GiB); 5 output file(s) changed 20261121-062837-restore-complete-original-maven-modules: failed: 1 failed step(s) in 50.1s, peak 308.7 MiB (estimated 5m00s, 2.0 GiB) 20261121-062848-group-2-original-java-modules-for-caller: failed: 1 failed step(s) in 50.2s, peak 302.3 MiB (estimated 5m00s, 2.0 GiB) 20261121-062849-group-3-original-java-modules-for-caller: failed: 1 failed step(s) in 49.9s, peak 272.4 MiB (estimated 5m00s, 2.0 GiB) 20261121-062849-group-4-original-java-modules-for-caller: failed: 1 failed step(s) in 49.3s, peak 283.9 MiB (estimated 5m00s, 2.0 GiB) Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.",
       "log_sha256": "e1cd2d8a376a4ed5cee9302acad72bf6175f83ec589587656c0dfd6ed3c31b6c"
+    },
+    {
+      "change_id": "pvukkvwsxwzmuwmotzwxlpqpsnrupwmz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record that a runner in the agent's workspace killed the watcher's runs of six jobs (VF-051)",
+      "body": "The external-upgrade-evaluation agent ran pipeline.py run in its own workspace while the watcher's runner had its six new Maven jobs running. The two checkouts' runners share systemd scope names, so the second stopped the first's scopes and all six results read SIGTERM after 50 s. Nothing locks across checkouts. Documentation only.",
+      "log_sha256": "7c60d22477546fe3986dc8e30ab1071580f0c740c809e0621cbc47d207694813"
     }
   ],
   "logs": {
@@ -6741,6 +6749,12 @@
       "lines": 16855,
       "gzip_bytes": 6466234,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/7c198109efb86f5e179b9ee2a863473d1eb888e818f15283d544f973789e5b0b.jsonl.gz"
+    },
+    "7c60d22477546fe3986dc8e30ab1071580f0c740c809e0621cbc47d207694813": {
+      "bytes": 50517375,
+      "lines": 24445,
+      "gzip_bytes": 8223907,
+      "url": null
     },
     "7d50e475f7e837c36ebb2002d61581cee3dccd32821ede071f29704a26d1ddeb": {
       "bytes": 27309688,
