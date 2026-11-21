@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-104615-organic-java-changes-preserve-quote-fami",
+  "title": "Organic Java changes preserve quote-family proof and cache identity",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m06s, peak 2.5 GiB (estimated 5m00s, 3.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-104615-organic-java-changes-preserve-quote-fami.json",
+    "sha256": "fcd22a29754fd804008761621702f4d2da2f84593865e020fb0d15e74e1a119e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-104615-organic-java-changes-preserve-quote-fami",
+      "title": "Organic Java changes preserve quote-family proof and cache identity",
+      "description": "Run the targeted proof-tier J1 regression on the repaired String and classpath code. It verifies every quote-family variant, replays the refutations on a JVM, and checks cold and reused proof keys for unchanged and changed value-model inputs.",
+      "kind": "library",
+      "capabilities": [
+        "organic-java-pr",
+        "proof-reuse"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T10:46:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "cargo",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Run the integrated String and object value proof",
+          "run": "cargo test --manifest-path lib/Cargo.toml --profile test-fast --test application_core_joint j1_the_quote_family_composes_the_four_streams -- --ignored --exact",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
+  "startedAt": "2026-11-21T11:03:26+00:00",
+  "finishedAt": "2026-11-21T11:07:46+00:00",
+  "wallSeconds": 260.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1104093,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2733039616,
+    "wallSeconds": 246.5,
+    "cpuSeconds": 361.7,
+    "memoryOfEstimate": 0.85,
+    "durationOfEstimate": 0.82
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the integrated String and object value proof",
+      "run": "cargo test --manifest-path lib/Cargo.toml --profile test-fast --test application_core_joint j1_the_quote_family_composes_the_four_streams -- --ignored --exact",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 246.515,
+      "cpuSeconds": 361.733,
+      "cpuThrottledSeconds": 60.248,
+      "peakMemoryBytes": 2733039616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-integrated-string-and.log",
+        "lines": 66,
+        "bytes": 2300,
+        "sha256": "18e84b88bfe8f285fb74db2eec49ddc16401cb91c057a386877b4a0f74992540",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 65,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 119.19s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling num-integer v0.1.47",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling stacker v0.1.25",
+        "   Compiling cadical v0.1.16",
+        "   Compiling heck v0.5.0",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling serde v1.0.229",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling num-bigint v0.4.8",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling rustix v1.1.6",
+        "   Compiling itoa v1.0.18",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling num-rational v0.4.2",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-104615-organic-java-changes-preserve-quote-fami/lib)",
+        "    Finished `test-fast` profile [optimized + debuginfo] target(s) in 2m 07s",
+        "     Running tests/application_core_joint.rs (lib/target/test-fast/deps/application_core_joint-0ee5ea68c514d62b)",
+        "",
+        "running 1 test",
+        "test j1_the_quote_family_composes_the_four_streams has been running for over 60 seconds",
+        "test j1_the_quote_family_composes_the_four_streams ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 119.19s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-21T11:11:29+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

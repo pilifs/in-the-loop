@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-21 04:29 UTC (5272 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -3831,6 +3831,12 @@ Outputs applied for 1 of the 1 job(s). 20261121-095939-358-streams-native-checks
 change `ptttkwmwvkkt` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-101427-359-build-reserve-build-with-the-declare: failed: 1 failed step(s) in 19.8s, peak 344.2 MiB (estimated 5m00s, 3.0 GiB); 2 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `mywrnwslwplk` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-111009-359-replay-the-native-selector-witnesses: passed: 1 passed step(s) in 6.6s, peak 171.3 MiB (estimated 2m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
 ## Conversation
 
