@@ -12,37 +12,40 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T18:30:40.092Z",
-  "duration_seconds": 5598,
+  "ended": "2026-11-21T18:45:51.826Z",
+  "duration_seconds": 6509,
   "stats": {
     "turns": 5,
-    "api_calls": 187,
-    "tool_calls": 223,
-    "tool_errors": 7,
+    "api_calls": 230,
+    "tool_calls": 294,
+    "tool_errors": 9,
     "compactions": 1,
     "peak_context_tokens": 521446,
     "usage": {
-      "input_tokens": 374,
-      "output_tokens": 375800,
-      "cache_read_input_tokens": 56271952,
-      "cache_creation_input_tokens": 793526
+      "input_tokens": 460,
+      "output_tokens": 466309,
+      "cache_read_input_tokens": 71975664,
+      "cache_creation_input_tokens": 927004
     }
   },
   "tools": {
-    "Bash": 163,
+    "Bash": 205,
     "Read": 44,
-    "Write": 10,
-    "Edit": 6
+    "Edit": 32,
+    "Write": 13
   },
   "files_touched": [
     ".claude/settings.json",
+    "llm-dlc/loops/llm-dlc-process-plumbing-results.md",
     "llm-dlc/operating-notes.md",
     "llm-dlc/tools/artifacts.py",
     "llm-dlc/tools/checkpoint.py",
+    "llm-dlc/tools/delegation.py",
     "llm-dlc/tools/promote.py",
     "llm-dlc/tools/sync.py",
     "llm-dlc/tools/test_artifacts.py",
     "llm-dlc/tools/test_checkpoint.py",
+    "llm-dlc/tools/test_delegation.py",
     "llm-dlc/tools/test_promote.py",
     "llm-dlc/tools/vm_inventory.py",
     "verification/capture.py",
@@ -67,24 +70,24 @@
     {
       "index": 1,
       "started": "2026-11-21T18:06:07.166Z",
-      "ended": "2026-11-21T18:30:40.092Z",
+      "ended": "2026-11-21T18:45:51.826Z",
       "turns": 4,
-      "api_calls": 53,
+      "api_calls": 96,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 102505,
-        "cache_read_input_tokens": 11169521,
-        "cache_creation_input_tokens": 283697
+        "input_tokens": 192,
+        "output_tokens": 193014,
+        "cache_read_input_tokens": 26873233,
+        "cache_creation_input_tokens": 417175
       },
-      "peak_context_tokens": 295314
+      "peak_context_tokens": 428792
     }
   ],
   "log": {
-    "sha256": "f03571c4e241b27db07d75528271dc49ccc7d7e91450de122e29391b903769a5",
-    "bytes": 6319528,
-    "lines": 1717,
-    "gzip_bytes": 1168437,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/f03571c4e241b27db07d75528271dc49ccc7d7e91450de122e29391b903769a5.jsonl.gz"
+    "sha256": "b7b96e80f04d71245289ca1449aa420dae1bd4793e7f37f1a282f51bd80bdf37",
+    "bytes": 7482500,
+    "lines": 2140,
+    "gzip_bytes": 1316084,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/b7b96e80f04d71245289ca1449aa420dae1bd4793e7f37f1a282f51bd80bdf37.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -159,6 +162,14 @@
       "summary": "Checkpoint: a credential fixture the remote already holds is not refused again when its file is edited",
       "body": "The rehearsal of sync.py promote on this line's real history refused the checkpoint of the promote commit itself: that commit edits llm-dlc/tools/test_performance.py, a redaction test that has carried a made-up private key since before main's head, git names the edited file as a new blob, and the scan refused it. A blob's findings are now compared with those of the same file at the push's bases (the remote's develop and main): when every kind and value is already there, the edit exposes nothing new and the blob passes, counted as carried in the receipt; a value the base's copy does not hold is refused as before.\n\nAlso in promote.py: a trailer whose session's manifest is not in the frozen tree says what resolves it (the workspace that ran the session lands, and that commit is promoted), and the review view counts examples' replay records with the generated records rather than as source lines. Verified by test_checkpoint.py (13 tests, one new: the edit passes, a second token in the same file is refused and not printed) and test_promote.py.",
       "log_sha256": "f03571c4e241b27db07d75528271dc49ccc7d7e91450de122e29391b903769a5"
+    },
+    {
+      "change_id": "qktxmywwtmrtlkppxkzxuwpklrplwqnq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add delegated redaction decisions, switched off: a person can let one run's watcher decide routine findings",
+      "body": "llm-dlc/tools/delegation.py and the specification's new Delegated decisions paragraph under Redaction. Nothing changes until a person turns it on: the watcher asks with sync.py delegate request, the person grants that request from their own terminal, and sync.py delegate off ends it from any shell. The watcher is the client process (Claude Code's or Codex's) that asked, by pid, start time and boot: a command is the watcher's when the nearest client process above it is that one, so an environment variable or a file in the checkout confers nothing, a worker the watcher started is not the watcher, and a watcher that ended decides nothing more.\n\nWhile it is on the watcher has three commands of its own, spelled apart from the person's so that the project's permission rules for those stay as they are. delegate approve takes allow-list proposals by id with evidence the command checks itself (the value is in a file main publishes, in a committed fixture, is a digest of a committed file, a git object id or a log's name); a stated public origin is recorded as not checked and refused for a long-token; the kinds the redactor removes stay refused. delegate withhold keeps an unpublished log out of publication for good: sealed in the restricted archive, removed, marked withdrawn in its manifest. delegate mask adds a value to this machine's redactions, withholds the unpublished logs that hold it and escalates the published ones. review escalate (anyone) writes one masked record that check warns of until a person closes it. No command prints a value.\n\nEach decision is a line of a record outside every checkout, chained by hash, signed with a key the permission rules deny agents, and sealed into the restricted archive as it grows. check, land, checkpoint and promote count a decision when it is on main, recorded as a person's, or recorded by the watcher with exactly the bytes the file has, under the redaction policy in force, while the delegation is on. A decision now counts as published only on main: before, any immutable commit counted, and commits on develop have been immutable since the checkpoint command. Also here: promote abandons a record it committed and then found wanting, and does not count its own records among a promotion's evidence; the results page records the promotion rehearsal on the real history (25 commits promoted on a bare remote, the checkpoint fix and the three real missing receipts it found), where a commit's 28 s go, and the design of the trace changes that are next.\n\nVerified by test_delegation.py (9 tests: off by default; who the watcher is; an approval with checked evidence; the refusals; a forged entry, changed bytes, an added and an edited record line, a stale policy and delegation off all failing; withholding into restricted custody; masking with one escalation) and by test_costs.py run --changed (25 files passed).",
+      "log_sha256": "b7b96e80f04d71245289ca1449aa420dae1bd4793e7f37f1a282f51bd80bdf37"
     }
   ],
   "logs": {
@@ -202,6 +213,12 @@
       "bytes": 6157526,
       "lines": 1651,
       "gzip_bytes": 1146434,
+      "url": null
+    },
+    "b7b96e80f04d71245289ca1449aa420dae1bd4793e7f37f1a282f51bd80bdf37": {
+      "bytes": 7482500,
+      "lines": 2140,
+      "gzip_bytes": 1316084,
       "url": null
     },
     "f03571c4e241b27db07d75528271dc49ccc7d7e91450de122e29391b903769a5": {

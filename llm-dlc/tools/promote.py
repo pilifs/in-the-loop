@@ -187,7 +187,8 @@ def originals(s, commits: list[dict], rev: str, settle: bool = False) -> dict:
         return out
     try:
         wanted = set(jobs)
-        relevant = lambda r: r.get("job") in wanted or r.get("session") in sessions or (r.get("source") or {}).get("commit") in shas
+        relevant = lambda r: not str(r.get("kind")).startswith("promotion-") and (  # a promotion's own records are not its evidence
+            r.get("job") in wanted or r.get("session") in sessions or (r.get("source") or {}).get("commit") in shas)
         rows = [r for r in archive.rows() if relevant(r)]
         if settle and any(r["custody"]["state"] not in VERIFIED for r in rows):
             archive.retry_now()
@@ -525,6 +526,8 @@ def build(s, path: Path, state: dict) -> None:
     """The publication record of the frozen set, as a commit of its own on the frozen commit."""
     base, head, ident = state["base"], state["frozen"], state["id"]
     prepare(s, head)
+    if attempt := state.pop("attempt", None):  # a record an earlier try committed and then found wanting: made again
+        s.jj("abandon", attempt)
     commits = frozen(s, base, head)
     for line in s.adopt_logs():
         print(f"took {line}")
@@ -586,6 +589,8 @@ def build(s, path: Path, state: dict) -> None:
     if s.jj("commit", "-m", message).returncode:
         raise Blocked("jj commit failed in the candidate workspace")
     candidate = s.jj("log", "--no-graph", "-r", "@-", "-T", "commit_id").stdout.strip()
+    state["attempt"] = candidate
+    save(s, path, state)
     changed = git(s, "diff", "--name-only", "--no-renames", head, candidate).stdout.decode().splitlines()
     if strays := [p for p in changed if not is_record(p)]:
         raise Blocked(f"the publication record {candidate[:12]} changes files that are not generated records: {', '.join(strays[:5])}")
@@ -593,6 +598,7 @@ def build(s, path: Path, state: dict) -> None:
         raise Blocked("the trace check failed on the publication record")
     if problems := s.publication_gate(candidate):
         raise Blocked("the publication record is not what was checked:\n  " + "\n  ".join(problems[:20]))
+    state.pop("attempt")
     state.update({"candidate": candidate, "tree": tree_of(s, candidate), "commits": len(commits), "summary": rel,
                   "inventory": {"occurrence": occurrence, "sha256": summary["archive"]["sha256"]},
                   "evidence": summary["evidence"], "stage": "built"})

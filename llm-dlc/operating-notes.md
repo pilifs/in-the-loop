@@ -58,6 +58,11 @@ of `cargo test` because `costs.json` had changed filled a stream's memory and go
   command; its state is in `~/.local/state/llm-traces/promotions/`, and nothing there is edited by hand.
 - When `main` moved under a promotion (someone else promoted), merge `main` into the line by an ordinary merge,
   checkpoint the merge and promote that. Never force `main` or `develop`.
+- Redaction decisions are a person's unless `python3 llm-dlc/tools/sync.py delegate status` says a person
+  delegated them to a run's watcher. A watcher that wants that asks (`sync.py delegate request --run NAME`) and
+  tells the user the code; it never sets it up for itself, and a worker never decides. `sync.py delegate off`
+  ends it at once, from any shell, and is the thing to run when the trust boundary changes (another contributor on
+  the machine, a client whose rules cannot keep agents from the key in `~/.config/in-the-loop/`).
 - Originals are sealed by the tools that produce them (the runner, the collector, `sync.py commit` for
   transcripts) and uploaded in the background. `python3 llm-dlc/tools/artifacts.py status` says what is still on
   this machine only; `upload --drain` finishes what a dead uploader left. Before removing a run directory, a work

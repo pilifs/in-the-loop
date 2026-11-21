@@ -94,6 +94,17 @@ Commands:
   sync.py allow drop ID...      remove entries, proposed or approved
   sync.py allow vouch           say that the decisions `check` finds no record of were a person's;
                                 a person at a terminal only
+  sync.py delegate [status | request --run NAME | on CODE [--fresh] | off]
+                                a person lets one run's watcher take routine redaction decisions, and takes
+                                that back (delegation.py); off unless a person turned it on
+  sync.py delegate approve ID... --evidence KIND:DETAIL --reason TEXT
+                                the designated watcher approves proposals whose origin the command can check
+  sync.py delegate withhold SESSION SHA256 --reason TEXT   (a person: sync.py review withhold ...)
+                                keep a log that is not uploaded out of publication for good (private-only)
+  sync.py delegate mask ID... --reason TEXT                (a person: sync.py review mask ...)
+                                add a value to this machine's redactions; withhold the unpublished logs with it
+  sync.py review escalate ID... --reason TEXT [--contained TEXT]
+                                one masked record for a person to decide; `review close ID --reason TEXT` ends it
   sync.py decisions [--at REV]  the decisions in the allow list and the reviewed findings that no person is
                                 recorded as having taken, here or in a commit (status 1 when there is one)
   sync.py stamp [--full]        after a change to redaction_rules.py: rescan everything, then
@@ -2199,7 +2210,7 @@ HOOK_LOCK_WAIT = 15  # seconds hook-commit waits for another operation (its hook
 # only its Langfuse cursor, and hook-commit takes it itself, once it knows the call was a commit.
 LOCKING = {"check": "shared", "scan": "shared", "sync": "exclusive", "commit": "exclusive", "push": "exclusive",
            "upload": "exclusive", "unpublish": "exclusive", "stamp": "exclusive", "allow": "exclusive",
-           "review": "exclusive", "init": "exclusive", "regenerate": "exclusive", "adopt-logs": "exclusive"}
+           "review": "exclusive", "delegate": "exclusive", "init": "exclusive", "regenerate": "exclusive", "adopt-logs": "exclusive"}
 
 
 def _terminated(signum, frame) -> None:
@@ -2822,6 +2833,11 @@ def in_agent_session() -> bool:
 # that is neither in a commit already published nor in that record. An agent that patched the file is found at its
 # next commit; a person who did decide (on an earlier version of this tool, say) runs `sync.py allow vouch`.
 
+# Published, for a decision: in a commit a promotion put on `main`. A commit that is only on the remote's `develop`
+# got there by a checkpoint, which asks this very question first and confers no authority of its own.
+DECISIONS_PUBLISHED = "(immutable() ~ (::remote_bookmarks(exact:develop) ~ ::trunk()))"
+
+
 def _decided_path() -> Path:
     return STATE / "person-decisions.json"
 
@@ -2855,7 +2871,8 @@ def _decisions(name: str, doc: dict) -> dict[str, dict]:
 
 def unrecorded_decisions(rev: str | None = None) -> dict[str, dict[str, dict]]:
     """{file name: {id: entry}} of the decisions in the two files that are neither in a published commit (the file
-    as it is at the newest immutable ancestors of @) nor recorded here as a person's. The commits are asked only
+    as it is at the newest immutable ancestors of @, those only on `develop` apart), nor recorded here as a person's,
+    nor recorded as the designated watcher's while a person's delegation is on (delegation.py). The commits are asked only
     when the two files changed since they were last found in order. With REV, the files as they are in that
     commit, against its own published ancestors: what a line would bring in, asked before it is merged."""
     if not has_jj():
@@ -2874,10 +2891,13 @@ def unrecorded_decisions(rev: str | None = None) -> dict[str, dict[str, dict]]:
             current[path] = _decisions(path.name, json.loads(data)) if data else {}
         except ValueError:
             current[path] = {}  # allowlist_problems and reviewed_problems say what is wrong with the file
+    import delegation
+    state.update(delegation.fingerprint(sys.modules[__name__]))  # the watcher's record, and whether it counts
     doc = load_decided()
     if state.hexdigest() in doc.get("in order", []):
         return {}
-    bases = [c["commit_id"] for c in jj_commits(f"heads(immutable() & ::({rev or '@'}))")] if any(current.values()) else []
+    watcher = delegation.recorded(sys.modules[__name__])
+    bases = [c["commit_id"] for c in jj_commits(f"heads({DECISIONS_PUBLISHED} & ::({rev or '@'}))")] if any(current.values()) else []
     open_ = {}
     for path, decisions in current.items():
         published = []
@@ -2887,9 +2907,10 @@ def unrecorded_decisions(rev: str | None = None) -> dict[str, dict[str, dict]]:
                 published.append(_decisions(path.name, json.loads(r.stdout)) if r.returncode == 0 else {})
             except ValueError:
                 published.append({})
-        recorded = doc.get(path.name) or {}
+        recorded, delegated = doc.get(path.name) or {}, watcher.get(path.name) or {}
         missing = {fid: e for fid, e in decisions.items()
-                   if not any(known.get(fid) == e for known in published) and recorded.get(fid) != _decision_digest(e)}
+                   if not any(known.get(fid) == e for known in published)
+                   and _decision_digest(e) not in (recorded.get(fid), delegated.get(fid))}
         if missing:
             open_[path.name] = missing
     if not open_:
@@ -2912,13 +2933,14 @@ def cmd_decisions(args: list[str]) -> int:
 
 
 def decision_problems(rev: str | None = None) -> list[str]:
-    errors = []
+    import delegation
+    errors = delegation.problems(sys.modules[__name__])
     for name, missing in unrecorded_decisions(rev).items():
         how = "sync.py allow approve" if name == ALLOWLIST.name else "sync.py review accept"
         for fid, e in sorted(missing.items()):
             errors.append(f"{name}: {fid[:8]} ({e.get('kind')}) is a decision in the file that no person is recorded as having "
-                          f"taken here, and it is in no published commit: only `{how}`, run by a person at their terminal, "
-                          f"writes one. If a person did decide it, they run `python3 llm-dlc/tools/sync.py allow vouch`; "
+                          f"taken here, and it is in no published commit: only `{how}`, run by a person at their terminal "
+                          f"(or by the watcher a person delegated to, with the entry unchanged since), writes one. If a person did decide it, they run `python3 llm-dlc/tools/sync.py allow vouch`; "
                           f"otherwise take it out of the file and propose it (`sync.py allow propose`)")
     return errors
 
@@ -3169,10 +3191,14 @@ def cmd_review(args: list[str]) -> int:
         return 0
     if args[0] == "show" and len(args) == 2:
         return show_finding(args[1])
+    import delegation  # withhold, mask, escalate, close (delegation.py)
+    if (status := delegation.cmd_review(sys.modules[__name__], args)) is not None:
+        return status
     ids = args[1:args.index("--reason")] if "--reason" in args else []
     reason = " ".join(args[args.index("--reason") + 1:]).strip() if "--reason" in args else ""
     if args[0] != "accept" or not ids or not reason:
-        print("usage: sync.py review [accept ID... --reason TEXT]", file=sys.stderr)
+        print("usage: sync.py review [show ID | accept ID... --reason TEXT | withhold SESSION SHA256 --reason TEXT | "
+              "mask ID... --reason TEXT | escalate ID... --reason TEXT | close ESCALATION --reason TEXT]", file=sys.stderr)
         return 2
     if not person_at_terminal():
         print("refused: a person must accept findings, from their own terminal. Ask them to run this command.",
@@ -3321,8 +3347,8 @@ def cmd_allow(args: list[str]) -> int:
     no_commit = "--no-commit" in rest
     rest = [a for a in rest if a != "--no-commit"]
     if not person_at_terminal():
-        print("refused: a person must approve the allow list, from their own terminal. Ask them to run this command.",
-              file=sys.stderr)
+        print("refused: a person must approve the allow list, from their own terminal. Ask them to run this command "
+              "(where they delegated it, the run's watcher has `sync.py delegate approve`).", file=sys.stderr)
         return 1
     if cmd == "vouch":
         # A decision that is in a file with no record of who took it (see unrecorded_decisions): a person who did
@@ -3402,7 +3428,7 @@ def cmd_allow(args: list[str]) -> int:
     return commit_allowlist(chosen, who)
 
 
-def commit_allowlist(chosen: dict[str, dict], who: str) -> int:
+def commit_allowlist(chosen: dict[str, dict], who: str, how: str = "at their terminal with sync.py allow") -> int:
     """Commit a decision just recorded in the allow list, so that it never waits in @ for someone to
     commit it (push refuses uncommitted work). With nothing else changed in @, as `sync.py commit`
     commits, with trace lines and the check after it. With other work in @, the allow list alone,
@@ -3415,7 +3441,7 @@ def commit_allowlist(chosen: dict[str, dict], who: str) -> int:
     ids = [fid[:8] for fid in chosen]
     summary = f"Allow list: {who} approved {', '.join(ids[:8])}" + (f" and {len(ids) - 8} more" if len(ids) > 8 else "")
     shown = lines[:50] + ([f"... and {len(lines) - 50} more, each in {ALLOWLIST.name}"] if len(lines) > 50 else [])
-    body = (f"{who} approved {len(chosen)} value(s) at their terminal with sync.py allow; the command committed "
+    body = (f"{who} approved {len(chosen)} value(s) {how}; the command committed "
             "the decision itself.\n\n" + "\n".join(shown))
     others = [p for p in uncommitted_work() if p != path]
     if jj_commits("@")[0]["description"].strip():
@@ -4142,6 +4168,8 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
         warnings.append(f"Langfuse may be missing turns of {len(unsent)} session(s) whose end-of-turn hook has not "
                         f"finished a send ({since}); with Langfuse up, run: python3 llm-dlc/tools/sync.py langfuse "
                         + " ".join(sid for sid, _ in unsent))
+    import delegation
+    warnings += delegation.open_escalations(sys.modules[__name__])
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():
@@ -4294,6 +4322,9 @@ def run(cmd: str, args: list[str]) -> int:
         return cmd_review(args)
     elif cmd == "allow":
         return cmd_allow(args)
+    elif cmd == "delegate":
+        import delegation  # llm-dlc/tools/delegation.py
+        return delegation.cmd_delegate(sys.modules[__name__], args)
     elif cmd == "stamp":
         return cmd_stamp(args)
     elif cmd == "regenerate":
