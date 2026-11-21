@@ -18,6 +18,28 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-053: the DLC lets unpushed commits, bulky records and deferred reviews pile up across runs
+
+- **Status**: open.
+- **Raised**: 2026-11-21 by the user, while runs 5–7 (next-proof-campaign, external-upgrade-evaluation, organic-java-pr-campaign) waited to be pushed. The watcher pushed them at the user's word at about 14:50 UTC (`main` 4f87fd1f → cfe2dc91, `--skip-tests`), records included: the push first failed on three run-5 commits that had held a conflict in `lib/src/classpath.rs` since 18:58 on 2026-11-20, unnoticed until push time, which had to be rewritten out of the history. That is one more cost of a long unpushed stretch.
+- **Found**: three problems that build on each other.
+  1. **Unpushed commits.** By 13:30 UTC, 206 mutable commits had gone unpushed since `4f87fd1f`. Each `sync.py commit` re-stamps `LLM-Trace` trailers with one `jj describe` per commit, and each describe rewrites everything after it. Sessions that run for days have time windows that cover the whole stretch: two had trailers on all 206 commits and the Codex agent on 181. A one-job results commit took about 5½ minutes, mostly about 85 describes plus a redaction scan of every log not yet published. The cost grows with every commit until a push makes them immutable.
+  2. **Data checked in.** Run 7 wrote about 20k files under `examples/353-…` to `359-…/records/`, about 250 MB uncompressed (354: 89 MB, 359: 58 MB, 355: 56 MB, 358: 39 MB). Compressed for a push it is small: the whole pending push was 44 MB. The cost is the file count. One directory holds 2,865 entries, close to GitHub's recommended 3,000. Every jj snapshot, checkout and scan walks all of them. Most of it is one `native.json` and one `stderr` for each input case of native-selector runs (`cases/p0` onwards). Large JVM streams are already cut to a hash plus their first 512 KiB, but per-case records have no such rule. Neither the commit, the land nor `check` warns, so all of it would reach GitHub with the next push.
+  3. **Reviews left to the end.** What needs a person piles up until a push: about 405 publication warnings in the agent's `check`, allow-list proposals, the trace-exposure items run 6 flagged, and decisions not yet reviewed (fast-follow D005 and others). A push then waits on one long review, and the delay feeds problem 1.
+  4. **GitHub limits coming into view** (measured 2026-11-21 at the watcher's pause commit `42166180`):
+     - `llm-dlc/traces/01a1f5be-…/metrics.json`, the Codex session reused since run 3, grew from 3.8 MB to 9.3 MB over runs 5–7. It is rewritten on every commit. At that rate it reaches GitHub's 50 MB warning in about 10 days and its 100 MB hard limit, which blocks the push, in about 3–4 weeks.
+     - `verification/results/` and `verification/jobs/` have about 975 entries each and grow by about 230 a day. GitHub's web view lists at most 1,000 files in a directory, and GitHub recommends at most 3,000 entries, which these reach in about 9 days.
+     - Most of the 3.3 GB of uncompressed objects in the 232 unpushed commits are versions of trace files and `llm-dlc/index.json` regenerated on each commit. The upload deltas them away, but every local rewrite stores them again.
+- **Needs**: changes to the DLC (sync.py, single_run.py and the skills) so that none of the three can pile up silently. For example:
+  - stamp trailers only on commits made since the last sync, or batch the describes into a single rewrite;
+  - warn in `commit` and `check` once unpushed commits pass a threshold;
+  - set a size and file-count budget for an example's `records/`, enforced by `check` and at land. Keep summaries, receipts and counterexample replays; leave bulk per-case output in the job results, or keep a digest of it;
+  - surface publication warnings and pending decisions at each cycle's end (in the watcher's verdict or report), so they get reviewed as they arrive;
+  - add a push point between runs to the single-agent-run and multi-agent-brief procedures.
+  The user will work through this finding to make those changes. The records already committed, run 7's included, will be cut down afterwards in a single pass by the same rule, before the next run starts, so that no data is lost and every receipt, scorecard and index still agrees with what it points to. Nobody should trim them by hand before then.
+- **Tracked in**: this finding.
+- **Closes when**: a run's results commit takes seconds whatever the number of unpushed commits; `check` flags oversized records and a long unpushed stretch; the existing records are cut down by that rule in a single pass, with their receipts, scorecards and indexes still consistent; and the watcher reports pending reviews at each cycle's end.
+
 ### VF-052: 348's generated-keys receipt is unresolved yet marked as expected, which fails the default run
 
 - **Status**: open.
