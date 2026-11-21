@@ -1,0 +1,257 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-052300-transfer-applications-replay-original-qr",
+  "title": "Transfer applications replay original QR files, reflection adapters and FTP file types",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 2m33s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (Prepare original modules) was held back 6m13s by its 2-CPU quota in 2m21s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-052300-transfer-applications-replay-original-qr.json",
+    "sha256": "4d5551ca17d82a3fb28354352f534c4ea8794270e654f7557a9fb4d34de3995d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-052300-transfer-applications-replay-original-qr",
+      "title": "Transfer applications replay original QR files, reflection adapters and FTP file types",
+      "description": "Prepare full original Maven modules and use real application receivers and inputs. Read a QR file through ImageIO and decode it, generate a real constructor adapter, and classify an actual file, folder and missing path through the VFS client and a loopback Apache FTPServer. The server libraries are those declared by the original project tests. Both releases see identical fixtures.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "expected": "All three cases record their qualified observation or precise unresolved step, including original old expectation and actual method entry.",
+      "submitted": {
+        "at": "2026-11-21T05:23:00+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "100m"
+      },
+      "steps": [
+        {
+          "name": "Prepare original modules",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/transfer-modules/01 --case compsuite-i-37 --case reflector-35 --case commons-vfs-55c96cfd",
+          "cwd": "."
+        },
+        {
+          "name": "Run typed original callers",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-recovery/04 --case compsuite-i-37 --case reflector-35 --case commons-vfs-55c96cfd",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/transfer-modules/01",
+        "verification/external-upgrades/corpus-runs/finite-recovery/04"
+      ]
+    }
+  },
+  "sourceCommit": "4964365145d610ee68b5e1cd068e2b35c1affe87",
+  "startedAt": "2026-11-21T05:29:53+00:00",
+  "finishedAt": "2026-11-21T05:32:35+00:00",
+  "wallSeconds": 162.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3972301,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1246818304,
+    "wallSeconds": 153.7,
+    "cpuSeconds": 287.2,
+    "memoryOfEstimate": 0.58,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prepare original modules",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/transfer-modules/01 --case compsuite-i-37 --case reflector-35 --case commons-vfs-55c96cfd",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 141.504,
+      "cpuSeconds": 272.903,
+      "cpuThrottledSeconds": 373.799,
+      "peakMemoryBytes": 1246818304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prepare-original-modules.log",
+        "lines": 6,
+        "bytes": 218,
+        "sha256": "0f04f35dff08952717bf90e56f8aef741fe1c472adb6d05b2e4b1016d10d944b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-37 old artifacts ready",
+        "compsuite-i-37 new artifacts ready",
+        "reflector-35 old artifacts ready",
+        "reflector-35 new artifacts ready",
+        "commons-vfs-55c96cfd old artifacts ready",
+        "commons-vfs-55c96cfd new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Run typed original callers",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-recovery/04 --case compsuite-i-37 --case reflector-35 --case commons-vfs-55c96cfd",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 12.222,
+      "cpuSeconds": 14.334,
+      "cpuThrottledSeconds": 2.382,
+      "peakMemoryBytes": 130129920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-run-typed-original-callers.log",
+        "lines": 6,
+        "bytes": 868,
+        "sha256": "2b778a381159ad54e19693ebd67669fb42d14cd7e578dcc89b8eeefccb883e32",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved net.glxn.qrgen.javase.QRCode#file()Ljava/io/File;",
+        "compsuite-i-37 preserved",
+        "open old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvi",
+        "reflector-35 open",
+        "open old input 0: the original caller method was never entered. java.lang.NoClassDefFoundError: org/slf4j/LoggerFactory at org.apache.ftpserver.usermanager.impl.PropertiesUserManager.<init>(PropertiesUserManager.java:117) caused by java.lang.ClassNotFoundException: org.slf4j.LoggerFactory at java.ba",
+        "commons-vfs-55c96cfd open"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/transfer-modules/01/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 3841,
+      "sha256": "9ac743e4566b02ec922af48a93cf9340421807d79637d919241c1408be5efaa1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/transfer-modules/01/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 2480,
+      "sha256": "2f78f8689565f0cf23765b2d6bbaf28a44807dcdc391888c3d172a9b3ba203a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/transfer-modules/01/reflector-35.json",
+      "change": "added",
+      "bytes": 3568,
+      "sha256": "0af1f9aaa0fba570a3a5f746b5b6baf702b421c227467a23f5d5faf732b976e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-recovery/04/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 6920,
+      "sha256": "84f027eee77a0618d0bf985e99666e56684dfa5db1d3011d65019dec51f2c048",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-recovery/04/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 14882,
+      "sha256": "58f98fd5cf56abc768bd50b9f680b41f0a2c9a0d5873cea73714a214c44078f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-recovery/04/reflector-35.json",
+      "change": "added",
+      "bytes": 5701,
+      "sha256": "58c71b63fb18e72f282d0593cccebed110f38c0cf1030748eca8c5dc47a3a084",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T05:34:43+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/transfer-modules/01/commons-vfs-55c96cfd.json",
+      "verification/external-upgrades/corpus-runs/transfer-modules/01/compsuite-i-37.json",
+      "verification/external-upgrades/corpus-runs/transfer-modules/01/reflector-35.json",
+      "verification/external-upgrades/corpus-runs/finite-recovery/04/commons-vfs-55c96cfd.json",
+      "verification/external-upgrades/corpus-runs/finite-recovery/04/compsuite-i-37.json",
+      "verification/external-upgrades/corpus-runs/finite-recovery/04/reflector-35.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
