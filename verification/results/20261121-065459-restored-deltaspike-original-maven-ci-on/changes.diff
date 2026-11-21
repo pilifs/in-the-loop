@@ -1,0 +1,410 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-81/compsuite-i-81/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++                    
++                    
++                    
++                    
++                    
++                   
++                   
++                   
++                    
++[WARNING] The POM for org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 is missing, no dependency information available
++                    
++                   
++                   
++                   
++                    
++                   
++                    
++                   
++                   
++                    
++                   
++                    
++                    
++                   
++                   
++                    
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Togglz 2.6.0.Final:
++[INFO] 
++[INFO] Togglz ............................................. FAILURE [  3.122 s]
++[INFO] Togglz - Core Framework ............................ SKIPPED
++[INFO] Togglz - DeltaSpike integration .................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  4.466 s
++[INFO] Finished at: 2026-11-21T06:59:09Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: Could not find artifact org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 in isolated-central (http://127.0.0.1:36503/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-81/compsuite-i-81/new/summary.json
+@@ -0,0 +1,50 @@
++{
++  "revision": "f74b56a98f000d3ab3913e90f3f47b2746809356",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "8a1bfcaf39a9d06678e87d6557705e3faf8a679afc08b361f4093bca19cebe2e",
++      "mavenCommandLines": [
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true -DskipTests=true -B install\"",
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true test\""
++      ]
++    }
++  },
++  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
++  "module": "deltaspike",
++  "goals": [
++    "-pl",
++    "deltaspike",
++    "-am",
++    "verify"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repository.jboss.org/nexus/repository/public-jboss/"
++  ],
++  "resolver": {
++    "cachedRequests": 710,
++    "upstreamHttp404": 2
++  },
++  "exit": 1,
++  "seconds": 6.1,
++  "logSha256": "405a8ea0ca65b3060127717218b69217fbf7211b9f2e997b44cc3273570ac9c5",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: Could not find artifact org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 in isolated-central (http://127.0.0.1:36503/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
++  ],
++  "namedTest": "DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-81/compsuite-i-81/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++                    
++                    
++                    
++                    
++                    
++                   
++                   
++                   
++                    
++[WARNING] The POM for org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 is missing, no dependency information available
++                    
++                   
++                   
++                   
++                    
++                   
++                    
++                   
++                   
++                    
++                   
++                    
++                    
++                   
++                   
++                    
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Togglz 2.6.0.Final:
++[INFO] 
++[INFO] Togglz ............................................. FAILURE [  3.908 s]
++[INFO] Togglz - Core Framework ............................ SKIPPED
++[INFO] Togglz - DeltaSpike integration .................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  5.228 s
++[INFO] Finished at: 2026-11-21T06:59:03Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: Could not find artifact org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 in isolated-central (http://127.0.0.1:40669/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-81/compsuite-i-81/old/summary.json
+@@ -0,0 +1,50 @@
++{
++  "revision": "3418531ea79f1c858f008d5ec4fa83d0251601db",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "8a1bfcaf39a9d06678e87d6557705e3faf8a679afc08b361f4093bca19cebe2e",
++      "mavenCommandLines": [
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true -DskipTests=true -B install\"",
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true test\""
++      ]
++    }
++  },
++  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
++  "module": "deltaspike",
++  "goals": [
++    "-pl",
++    "deltaspike",
++    "-am",
++    "verify"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repository.jboss.org/nexus/repository/public-jboss/"
++  ],
++  "resolver": {
++    "cachedRequests": 710,
++    "upstreamHttp404": 2
++  },
++  "exit": 1,
++  "seconds": 6.88,
++  "logSha256": "3fb51a34908c5959c9edd7be1ff36f527e129802d73dc5573fc8a6c30d55c472",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: Could not find artifact org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 in isolated-central (http://127.0.0.1:40669/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
++  ],
++  "namedTest": "DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-focused-ci/compsuite-i-81/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++                    
++                    
++                    
++                    
++                    
++                   
++                   
++                   
++                    
++[WARNING] The POM for org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 is missing, no dependency information available
++                    
++                   
++                   
++                   
++                    
++                   
++                    
++                   
++                   
++                    
++                   
++                    
++                    
++                   
++                   
++                    
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Togglz 2.6.0.Final:
++[INFO] 
++[INFO] Togglz ............................................. FAILURE [  2.950 s]
++[INFO] Togglz - Core Framework ............................ SKIPPED
++[INFO] Togglz - DeltaSpike integration .................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  4.087 s
++[INFO] Finished at: 2026-11-21T06:59:28Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: Could not find artifact org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 in isolated-central (http://127.0.0.1:36481/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-focused-ci/compsuite-i-81/new/summary.json
+@@ -0,0 +1,53 @@
++{
++  "revision": "f74b56a98f000d3ab3913e90f3f47b2746809356",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "8a1bfcaf39a9d06678e87d6557705e3faf8a679afc08b361f4093bca19cebe2e",
++      "mavenCommandLines": [
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true -DskipTests=true -B install\"",
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true test\""
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "deltaspike",
++  "goals": [
++    "-pl",
++    "deltaspike",
++    "-am",
++    "-Dtest=DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repository.jboss.org/nexus/repository/public-jboss/"
++  ],
++  "resolver": {
++    "cachedRequests": 710,
++    "upstreamHttp404": 2
++  },
++  "exit": 1,
++  "seconds": 5.66,
++  "logSha256": "e322ac9c21251848ae4337207fb17fc03e0f407927bd5828a8c5ad015818e2e9",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: Could not find artifact org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 in isolated-central (http://127.0.0.1:36481/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
++  ],
++  "namedTest": "DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-focused-ci/compsuite-i-81/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++                    
++                    
++                    
++                    
++                    
++                   
++                   
++                   
++                    
++[WARNING] The POM for org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 is missing, no dependency information available
++                    
++                   
++                   
++                   
++                    
++                   
++                    
++                   
++                   
++                    
++                   
++                    
++                    
++                   
++                   
++                    
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Togglz 2.6.0.Final:
++[INFO] 
++[INFO] Togglz ............................................. FAILURE [  6.341 s]
++[INFO] Togglz - Core Framework ............................ SKIPPED
++[INFO] Togglz - DeltaSpike integration .................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  10.928 s
++[INFO] Finished at: 2026-11-21T06:59:22Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: Could not find artifact org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 in isolated-central (http://127.0.0.1:46289/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-focused-ci/compsuite-i-81/old/summary.json
+@@ -0,0 +1,53 @@
++{
++  "revision": "3418531ea79f1c858f008d5ec4fa83d0251601db",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "8a1bfcaf39a9d06678e87d6557705e3faf8a679afc08b361f4093bca19cebe2e",
++      "mavenCommandLines": [
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true -DskipTests=true -B install\"",
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true test\""
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "deltaspike",
++  "goals": [
++    "-pl",
++    "deltaspike",
++    "-am",
++    "-Dtest=DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repository.jboss.org/nexus/repository/public-jboss/"
++  ],
++  "resolver": {
++    "cachedRequests": 710,
++    "upstreamHttp404": 2
++  },
++  "exit": 1,
++  "seconds": 12.48,
++  "logSha256": "04425e62f826d4014b84784e14b7338409328b52b336800fff076ae41e6cd799",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: Could not find artifact org.apache.ant:com.springsource.org.apache.tools.ant:jar:1.7.0 in isolated-central (http://127.0.0.1:46289/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
++  ],
++  "namedTest": "DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}

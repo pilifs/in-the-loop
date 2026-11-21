@@ -1,0 +1,64 @@
+{
+  "revision": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e",
+  "historicalCiFiles": {
+    ".travis.yml": {
+      "sha256": "7b4742e5eaf7592536a443d850f6d3998ab83f1e85b40013bde36a04c5977e6c",
+      "mavenCommandLines": []
+    }
+  },
+  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
+  "module": "languagetool-core",
+  "goals": [
+    "-pl",
+    "languagetool-core",
+    "-am",
+    "verify"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client with a serial public Maven mirror",
+  "declaredReleaseRepositories": [
+    "https://repo1.maven.org/maven2/"
+  ],
+  "resolver": {
+    "cachedRequests": 1236
+  },
+  "exit": 1,
+  "seconds": 25.51,
+  "logSha256": "aa269cbd62d10bbb9a81f9d78e41875be3c7d6eb32d992d63cd200cc753fd12d",
+  "freshReports": {
+    "tests": 241,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 9,
+    "named": [
+      {
+        "class": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModelTest",
+        "method": "testLanguageModel",
+        "outcome": "error",
+        "type": "java.lang.NoClassDefFoundError",
+        "message": "org/apache/lucene/codecs/PointsFormat"
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModelTest",
+        "method": "testLanguageModel",
+        "outcome": "error",
+        "type": "java.lang.NoClassDefFoundError",
+        "message": "org/apache/lucene/codecs/PointsFormat"
+      }
+    ],
+    "reportCount": 76,
+    "reportsSha256": "92ef1cb772a0a5940e7ba2bc47f8c66b2b8799d4a5f09e87eb2e53d42475b766"
+  },
+  "diagnostic": [
+    "java.lang.NoClassDefFoundError: org/apache/lucene/codecs/PointsFormat",
+    "Caused by: java.lang.ClassNotFoundException: org.apache.lucene.codecs.PointsFormat",
+    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project languagetool-core: There are test failures.",
+    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+  ],
+  "namedTest": "LuceneSingleIndexLanguageModelTest#testLanguageModel",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}

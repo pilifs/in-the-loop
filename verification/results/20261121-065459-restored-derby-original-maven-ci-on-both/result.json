@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-065459-restored-derby-original-maven-ci-on-both",
+  "title": "Restored Derby original Maven CI on both releases",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 3m55s, peak 2.3 GiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed",
+  "attention": [
+    "step 2 (Recheck both complete original owning-module lifecycles) was held back 9m30s by its 2-CPU quota in 3m55s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-065459-restored-derby-original-maven-ci-on-both.json",
+    "sha256": "74fb890ce0e7184c43701330044fe275fc497cb6dc102bc5028f0e5b749b4367",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-065459-restored-derby-original-maven-ci-on-both",
+      "title": "Restored Derby original Maven CI on both releases",
+      "description": "Rerun original CI after recovering the historical JCenter predictor and SpringSource bundles. Keep actual test counts, named test outcomes and any earlier build failure visible. No green wrapper is accepted as evidence of test execution.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "original-client-ci"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T06:54:59+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m",
+        "memoryLimit": "6G",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "Verify the archived inputs",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/restore_archived.py --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"",
+          "cwd": "."
+        },
+        {
+          "name": "Recheck both complete original owning-module lifecycles",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --case compsuite-i-9 --seconds 600 --output verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9"
+      ]
+    }
+  },
+  "sourceCommit": "0a57f2dd97fc6cdd7511c46457ece1d4ca11de46",
+  "startedAt": "2026-11-21T06:58:46+00:00",
+  "finishedAt": "2026-11-21T07:02:52+00:00",
+  "wallSeconds": 246.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1020915,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2473668608,
+    "wallSeconds": 235.9,
+    "cpuSeconds": 375.0,
+    "memoryOfEstimate": 1.15,
+    "durationOfEstimate": 0.66
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Verify the archived inputs",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/restore_archived.py --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.071,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 14819328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-verify-the-archived-inputs.log",
+        "lines": 1,
+        "bytes": 44,
+        "sha256": "e2aeb03b2246f188cf9516580cdf64404b0ecd0dda5682ad5cf3bc9a4cb24752",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Verified 14 historical Maven release files."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Recheck both complete original owning-module lifecycles",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --case compsuite-i-9 --seconds 600 --output verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 235.736,
+      "cpuSeconds": 374.905,
+      "cpuThrottledSeconds": 570.844,
+      "peakMemoryBytes": 2473668608,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-recheck-both-complete-original.log",
+        "lines": 2,
+        "bytes": 96,
+        "sha256": "f685ae20d18fb052089cb6271cfff6f49af085bdb55f1c57ebdd7306109202f8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-9 old tests or lifecycle failed 465",
+        "compsuite-i-9 new tests or lifecycle failed 465"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/new/maven-tail.txt",
+      "change": "added",
+      "bytes": 2956,
+      "sha256": "d35e16edf4f3c18e80b87153bb365c14f6e09accacbdf298b25cbce2e84ba198",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/new/summary.json",
+      "change": "added",
+      "bytes": 2672,
+      "sha256": "bbcf8bb2aecf2aa27ea5759ec52ef13c216938bac5e0f4d0573d3b2ad3986f91",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/old/maven-tail.txt",
+      "change": "added",
+      "bytes": 2956,
+      "sha256": "30caaf42fd9bfd30ec0c81558b7ce9153d9e70110d40b466575915492cda3598",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/old/summary.json",
+      "change": "added",
+      "bytes": 2672,
+      "sha256": "880d6fe8f99021c1af146fc1740455abeadfcb7f57d58eee73f7a98199fc9f81",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T07:03:05+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/new/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/new/summary.json",
+      "verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/old/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/old/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

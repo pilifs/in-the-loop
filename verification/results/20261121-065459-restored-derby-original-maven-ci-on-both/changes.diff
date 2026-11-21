@@ -1,0 +1,216 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] Italian module for LanguageTool .................... SKIPPED
++[INFO] Breton module for LanguageTool ..................... SKIPPED
++[INFO] Dutch module for LanguageTool ...................... SKIPPED
++[INFO] Portuguese module for LanguageTool ................. SKIPPED
++[INFO] Russian module for LanguageTool .................... SKIPPED
++[INFO] Asturian module for LanguageTool ................... SKIPPED
++[INFO] Belarusian module for LanguageTool ................. SKIPPED
++[INFO] Chinese module for LanguageTool .................... SKIPPED
++[INFO] Danish module for LanguageTool ..................... SKIPPED
++[INFO] Esperanto module for LanguageTool .................. SKIPPED
++[INFO] Galician module for LanguageTool ................... SKIPPED
++[INFO] Greek module for LanguageTool ...................... SKIPPED
++[INFO] Japanese module for LanguageTool ................... SKIPPED
++[INFO] Khmer module for LanguageTool ...................... SKIPPED
++[INFO] Romanian module for LanguageTool ................... SKIPPED
++[INFO] Slovak module for LanguageTool ..................... SKIPPED
++[INFO] Slovenian module for LanguageTool .................. SKIPPED
++[INFO] Spanish module for LanguageTool .................... SKIPPED
++[INFO] Swedish module for LanguageTool .................... SKIPPED
++[INFO] Tamil module for LanguageTool ...................... SKIPPED
++[INFO] Tagalog module for LanguageTool .................... SKIPPED
++[INFO] Ukrainian module for LanguageTool .................. SKIPPED
++[INFO] Simple German module for LanguageTool .............. SKIPPED
++[INFO] All language modules for LanguageTool .............. SKIPPED
++[INFO] LanguageTool Wikipedia tools ....................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  01:46 min
++[INFO] Finished at: 2026-11-21T07:02:52Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project language-de: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/languagetool-language-modules/de/target/surefire-reports for the individual test results.
++[ERROR] Please refer to dump files (if any exist) [date]-jvmRun[N].dump, [date].dumpstream and [date]-jvmRun[N].dumpstream.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :language-de
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/new/summary.json
+@@ -0,0 +1,57 @@
++{
++  "revision": "a63476d024688e9f28f02bd3d2a7660f6a4d75e2",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "7b4742e5eaf7592536a443d850f6d3998ab83f1e85b40013bde36a04c5977e6c",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
++  "module": "languagetool-wikipedia",
++  "goals": [
++    "-pl",
++    "languagetool-wikipedia",
++    "-am",
++    "verify"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repo1.maven.org/maven2/"
++  ],
++  "resolver": {
++    "cachedRequests": 1370
++  },
++  "exit": 1,
++  "seconds": 110.21,
++  "logSha256": "c2571b1131dbdaea1b4c6d4d26f81f9e12112fa33d4f5908274ccbf368e1fce9",
++  "freshReports": {
++    "tests": 465,
++    "failures": 1,
++    "errors": 0,
++    "skipped": 23,
++    "named": [],
++    "firstFailures": [
++      {
++        "class": "org.languagetool.rules.de.GermanPatternRuleTest",
++        "method": "testRules",
++        "outcome": "failure",
++        "type": "java.lang.AssertionError",
++        "message": "German rule X_SOLL_XXXX[1]:\n\"Das Hotel soll 2013 er\u00f6ffnet werden.\"\nErrors expected: 1\nErrors found   : 0\nMessage: Evtl. ist diese Angabe veraltet und sollte aktualisiert werden.\nAnalyzed token readings: [/SENT_START*] Das[der/ART:DEF:AKK:SIN:NEU*,der/ART:DEF:NOM:SIN:NEU*,der/PRO:DEM:AKK:SIN:NEU*,der/PRO:DEM:NOM:SIN:NEU*,der/PRO:PER:AKK:SIN:NEU*,der/PRO:PER:NOM:SIN:NEU*,B-NP|NPS]  [ /null*] Hotel[Hotel/SUB:AKK:SIN:NEU,Hotel/SUB:NOM:SIN:NEU,I-NP|NPS]  [ /null*] soll[sollen/VER:MOD:1:SIN:PR\u00c4,sollen/VER:MOD:3:SIN:PR\u00c4,O]  [ /null*] 2013[2013/null,O]  [ /null*] er\u00f6ffnet[er\u00f6ffnet/PA2:PRD:GRU:VER,er\u00f6ffnen/VER:2:PLU:KJ1:SFT,er\u00f6ffnen/VER:2:PLU:PR\u00c4:SFT,er\u00f6ffnen/VER:3:SIN:PR\u00c4:SFT,er\u00f6ffnen/VER:IMP:PLU:SF"
++      }
++    ],
++    "reportCount": 180,
++    "reportsSha256": "4c533040bbe7aca761a520933f097ae2331b52e32ae901c22f5e7da544711052"
++  },
++  "diagnostic": [
++    "SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
++    "SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
++    "SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
++    "java.lang.AssertionError:",
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project language-de: There are test failures."
++  ],
++  "namedTest": "MatchDatabaseTest#test",
++  "namedTestExecuted": false,
++  "disposition": "tests or lifecycle failed"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] Italian module for LanguageTool .................... SKIPPED
++[INFO] Breton module for LanguageTool ..................... SKIPPED
++[INFO] Dutch module for LanguageTool ...................... SKIPPED
++[INFO] Portuguese module for LanguageTool ................. SKIPPED
++[INFO] Russian module for LanguageTool .................... SKIPPED
++[INFO] Asturian module for LanguageTool ................... SKIPPED
++[INFO] Belarusian module for LanguageTool ................. SKIPPED
++[INFO] Chinese module for LanguageTool .................... SKIPPED
++[INFO] Danish module for LanguageTool ..................... SKIPPED
++[INFO] Esperanto module for LanguageTool .................. SKIPPED
++[INFO] Galician module for LanguageTool ................... SKIPPED
++[INFO] Greek module for LanguageTool ...................... SKIPPED
++[INFO] Japanese module for LanguageTool ................... SKIPPED
++[INFO] Khmer module for LanguageTool ...................... SKIPPED
++[INFO] Romanian module for LanguageTool ................... SKIPPED
++[INFO] Slovak module for LanguageTool ..................... SKIPPED
++[INFO] Slovenian module for LanguageTool .................. SKIPPED
++[INFO] Spanish module for LanguageTool .................... SKIPPED
++[INFO] Swedish module for LanguageTool .................... SKIPPED
++[INFO] Tamil module for LanguageTool ...................... SKIPPED
++[INFO] Tagalog module for LanguageTool .................... SKIPPED
++[INFO] Ukrainian module for LanguageTool .................. SKIPPED
++[INFO] Simple German module for LanguageTool .............. SKIPPED
++[INFO] All language modules for LanguageTool .............. SKIPPED
++[INFO] LanguageTool Wikipedia tools ....................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  02:00 min
++[INFO] Finished at: 2026-11-21T07:01:01Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project language-de: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/languagetool-language-modules/de/target/surefire-reports for the individual test results.
++[ERROR] Please refer to dump files (if any exist) [date]-jvmRun[N].dump, [date].dumpstream and [date]-jvmRun[N].dumpstream.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :language-de
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-9/compsuite-i-9/old/summary.json
+@@ -0,0 +1,57 @@
++{
++  "revision": "fe77e85a2f7b472ba71564821e7545025eeda242",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "7b4742e5eaf7592536a443d850f6d3998ab83f1e85b40013bde36a04c5977e6c",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
++  "module": "languagetool-wikipedia",
++  "goals": [
++    "-pl",
++    "languagetool-wikipedia",
++    "-am",
++    "verify"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repo1.maven.org/maven2/"
++  ],
++  "resolver": {
++    "cachedRequests": 1370
++  },
++  "exit": 1,
++  "seconds": 124.92,
++  "logSha256": "ca1076f14bd4bd3e63edc5ca8e9df01490a786cc6d98e29cacb72e6504bd18cd",
++  "freshReports": {
++    "tests": 465,
++    "failures": 1,
++    "errors": 0,
++    "skipped": 23,
++    "named": [],
++    "firstFailures": [
++      {
++        "class": "org.languagetool.rules.de.GermanPatternRuleTest",
++        "method": "testRules",
++        "outcome": "failure",
++        "type": "java.lang.AssertionError",
++        "message": "German rule X_SOLL_XXXX[1]:\n\"Das Hotel soll 2013 er\u00f6ffnet werden.\"\nErrors expected: 1\nErrors found   : 0\nMessage: Evtl. ist diese Angabe veraltet und sollte aktualisiert werden.\nAnalyzed token readings: [/SENT_START*] Das[der/ART:DEF:AKK:SIN:NEU*,der/ART:DEF:NOM:SIN:NEU*,der/PRO:DEM:AKK:SIN:NEU*,der/PRO:DEM:NOM:SIN:NEU*,der/PRO:PER:AKK:SIN:NEU*,der/PRO:PER:NOM:SIN:NEU*,B-NP|NPS]  [ /null*] Hotel[Hotel/SUB:AKK:SIN:NEU,Hotel/SUB:NOM:SIN:NEU,I-NP|NPS]  [ /null*] soll[sollen/VER:MOD:1:SIN:PR\u00c4,sollen/VER:MOD:3:SIN:PR\u00c4,O]  [ /null*] 2013[2013/null,O]  [ /null*] er\u00f6ffnet[er\u00f6ffnet/PA2:PRD:GRU:VER,er\u00f6ffnen/VER:2:PLU:KJ1:SFT,er\u00f6ffnen/VER:2:PLU:PR\u00c4:SFT,er\u00f6ffnen/VER:3:SIN:PR\u00c4:SFT,er\u00f6ffnen/VER:IMP:PLU:SF"
++      }
++    ],
++    "reportCount": 180,
++    "reportsSha256": "54f816a5f81e937417b79176b8b6d7aa6016cd5642cadc28d33cf5193e924225"
++  },
++  "diagnostic": [
++    "SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
++    "SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
++    "SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
++    "java.lang.AssertionError:",
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project language-de: There are test failures."
++  ],
++  "namedTest": "MatchDatabaseTest#test",
++  "namedTestExecuted": false,
++  "disposition": "tests or lifecycle failed"
++}
