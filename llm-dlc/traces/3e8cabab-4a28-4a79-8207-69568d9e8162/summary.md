@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 15:15 UTC (5511 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -3029,6 +3029,12 @@ Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the j
 [`2c64d91e3037`](https://github.com/pilifs/in-the-loop/commit/2c64d91e30376ad2a9164c506858587f14306812) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-133632-measure-every-avro-factory-obligation-wi: failed: 1 failed step(s) in 1m13s, peak 488.3 MiB (estimated 4m00s, 3.0 GiB); 137 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
+
+### Add the LLM-DLC process plumbing brief
+
+change `tsovozrrxxtm` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The user's brief, copied unchanged from their analysis folder, for a single-agent run on Fable 5.2 at high effort to start after organic-java-pr-campaign ends: develop checkpoints and gated promotion to main, private custody of original outputs in R2, watcher-delegated redaction decisions, and less churn in traces and the verification layout. Documentation only.
 
 ## Conversation
 
