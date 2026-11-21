@@ -353,6 +353,9 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
               "prepareSeconds": round(prep_seconds, 4), "controlSeconds": round(controls_seconds, 4)}
     if desc.endswith(")Ljava/lang/String;"):
         result["returnEncoding"] = "ordered UTF-16 code units or null"
+    if kind == "java.lang.String":
+        alphabets, cardinality = string_alphabets(claim, names[plan.revisions[0]], case_limit)
+        result["inputDomain"] = {"type": kind, "unitsByPosition": alphabets, "candidateStrings": cardinality}
     if failed:
         value = [{"name": names[plan.revisions[0]], "type": kind,
                   "value": actual_input(kind, claim, names[plan.revisions[0]], failed[0], case_limit)}]
@@ -460,6 +463,8 @@ def validate_record(plan, record):
     recipe = recipes.translate(plan)
     if record["entry"] != recipe.entry or list(record["sides"]) != list(plan.revisions):
         raise ValueError("wrong checked entry or ordered revisions")
+    if recipe.entry.endswith(")Ljava/lang/String;") and record.get("returnEncoding") != "ordered UTF-16 code units or null":
+        raise ValueError("the finite string return lacks its UTF-16 encoding")
     outputs = []
     for side in record["sides"].values():
         if side["entry"]["entry"] != recipe.entry or not side["classpath"]:
@@ -467,6 +472,10 @@ def validate_record(plan, record):
         rows = side["rows"]
         name = side["parameter"]
         kind, (low, high), program = selector(recipe.entry, plan.claim, name, record.get("caseLimit", LIMIT))
+        if kind == "java.lang.String":
+            alphabets, count = string_alphabets(plan.claim, name, record.get("caseLimit", LIMIT))
+            if record.get("inputDomain") != {"type": kind, "unitsByPosition": alphabets, "candidateStrings": count}:
+                raise ValueError("the recorded string alphabet differs from the frozen source guard")
         if kind == "boolean" or high - low + 1 > 4096:
             width = 1 if kind == "boolean" else CHUNK
             expected_chunks = [[start, min(high, start + width - 1)] for start in range(low, high + 1, width)]

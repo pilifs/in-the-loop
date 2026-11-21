@@ -14,6 +14,33 @@ from targets import executions, interfaces, qualification, recipes, replay_candi
 
 
 class RecipesTest(unittest.TestCase):
+    def test_finite_string_domain_requires_a_bound_at_every_position_and_replays_exact_code_units(self):
+        from itertools import product
+        from targets import finite_check
+        plan = self.plan("349", "preservation")
+        entry = plan.target
+        alphabets, count = finite_check.string_alphabets(plan.claim, "input", 156)
+        self.assertEqual(count, 156)
+        actual = [finite_check.string_value(alphabets, i) for i in range(count)]
+        expected = {"".join(s) for n in range(4) for s in product('a,"\r\n', repeat=n)}
+        self.assertEqual(set(actual), expected)
+        kind, bounds, probe = finite_check.selector(entry, plan.claim, "input", 156)
+        self.assertEqual((kind, bounds), ("java.lang.String", (0, 155)))
+        self.assertIn("result.chars().toArray()", probe)
+        for guard in ("(s.length() < 1 || s.charAt(0) == 97) || true",
+                      "(s.length() < 1 || s.charAt(0) != 97)", "s.length() == 1"):
+            with self.assertRaises(ValueError):
+                finite_check.string_alphabets({"bounds":{"maxArrayLength":1}, "assume":guard}, "s", 4)
+        with self.assertRaises(ValueError):
+            finite_check.string_alphabets(plan.claim, "input", 155)
+        params = [{"type": "java.lang.String", "name": "input"}]
+        value = [{**params[0], "value": "\ud800\0"}]
+        self.assertIsNone(qualification.witness_problem(value, params, set(), [], 2))
+        self.assertIsNotNone(qualification.witness_problem(value, params, set(), [], 1))
+        self.assertIn("new char[]{55296,0}", replay_candidate.source(entry, plan.claim, value, ["input"]))
+        self.assertTrue(finite_check.valid_result([55296,0], "Ljava/lang/String;"))
+        self.assertFalse(finite_check.valid_result([65536], "Ljava/lang/String;"))
+
     def test_boolean_replay_checks_both_values_and_retains_ordered_array_results(self):
         from targets.finite_check import selector, valid_result
         entry = "fixture.Keys#read(Z)[I"
