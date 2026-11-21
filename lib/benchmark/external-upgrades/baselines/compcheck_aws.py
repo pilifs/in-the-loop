@@ -1,6 +1,7 @@
 """Run the published CompCheck CLI on one disclosed AWS production call site in two isolated treatments."""
 
 import argparse
+from contextlib import nullcontext
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -9,6 +10,7 @@ import re
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 import time
@@ -100,7 +102,52 @@ def prepare_client(args, source):
             "method": "Recompiled original DateUtils.java; published AWS core supplies sibling types. No test or call-context fixture supplied."}
 
 
-def one(args, root, maven, treatment):
+def warm_stock(args, root, maven, tool, scratch, socket_dir):
+    # The guest starts the same tool command. Its only network endpoint serves the shared Central mirror.
+    import public_ci
+    work = root / "work"
+    (work / "home").mkdir(parents=True)
+    (scratch / "jvm").mkdir()
+    class_dir = tool / "check/_downloads/aws-sdk-java/aws-java-sdk-core/target/classes"
+    context = tool / "check/context" / CID / "context.json"
+    if class_dir.exists() or context.exists():
+        raise ValueError("the warm stock run must start without compiled classes or a supplied context")
+    command = public_ci.namespace(tool, work, scratch, socket_dir, maven, args.jdk)
+    try:
+        return run([*command, "--stock-compcheck", CID], timeout=max(1, args.warm_deadline - time.monotonic()))
+    except subprocess.TimeoutExpired as exc:
+        output = (exc.stdout or b"").decode(errors="replace")
+        errors = (exc.stderr or b"").decode(errors="replace")
+        return subprocess.CompletedProcess(command, 124, output, errors)
+
+
+def warm_build_evidence(source, context, build_text):
+    classes = source / "aws-java-sdk-core/target/classes"
+    selected = classes / "com/amazonaws/util/DateUtils.class"
+    java = source / "aws-java-sdk-core/src/main/java/com/amazonaws/util/DateUtils.java"
+    original = subprocess.check_output(["git", "-C", source, "show", SUBJECT + ":aws-java-sdk-core/src/main/java/com/amazonaws/util/DateUtils.java"])
+    # Each context originates at the selected pinned production call and has its own line and caller.
+    matching = []
+    for records in context.values():
+        if isinstance(records, list):
+            for observed in records:
+                if (isinstance(observed, dict) and str(observed.get("startLine")) == "104"
+                        and "com.amazonaws.util.DateUtils" in str(observed.get("caller", ""))):
+                    matching.append({"line": 104, "caller": observed["caller"]})
+    return {
+        "inputCompiledClasses": 0, "inputCallContexts": 0, "classInjection": False,
+        "producedClassFiles": sum(1 for _ in classes.rglob("*.class")) if classes.exists() else 0,
+        "dateUtilsClassSha256": sha(selected) if selected.is_file() else None,
+        "recordedSourceSha256": hashlib.sha256(original).hexdigest(), "finalSourceSha256": sha(java),
+        "contextsAtSelectedSourceLine": matching,
+        "lastMavenBuildMarker": next((marker for marker in ("BUILD FAILURE", "BUILD SUCCESS") if marker in build_text), None),
+        "lastMavenCompilerLines": [line[:350] for line in build_text.splitlines() if "Compiling " in line and "source file" in line][:3],
+        "lastMavenErrors": [line.strip()[:500] for line in build_text.splitlines() if line.startswith("[ERROR]") and line.strip() != "[ERROR]"][:4],
+        "javaTmpdir": "/scratch/jvm",
+    }
+
+
+def one(args, root, maven, treatment, socket_dir=None):
     started, clock = stamp(), time.monotonic()
     root.mkdir()
     unpack = root / "checkout"
@@ -127,27 +174,30 @@ def one(args, root, maven, treatment):
     assisted = prepare_client(args, source) if args.prepared_client else None
     scratch, m2 = root / "tmp", root / "m2"
     scratch.mkdir()
-    m2.mkdir()
-    (m2 / "settings.xml").write_text("<settings><offline>true</offline></settings>\n")
-    for version, digest in JODA.items():
-        name = f"joda-time-{version}.jar"
-        jar = args.inputs / name
-        verify(jar, digest)
-        dest = m2 / "repository/joda-time/joda-time" / version / name
-        dest.parent.mkdir(parents=True)
-        shutil.copyfile(jar, dest)
-    private_home = str(Path.home())
-    command = ["bwrap", "--unshare-net", "--die-with-parent", "--ro-bind", "/usr", "/usr",
-               "--symlink", "usr/bin", "/bin", "--symlink", "usr/lib", "/lib", "--symlink", "usr/lib64", "/lib64",
-               "--ro-bind", "/etc", "/etc", "--proc", "/proc", "--dev", "/dev", "--bind", str(tool), "/case",
-               "--ro-bind", str(args.jdk), "/jdk", "--ro-bind", str(maven), "/maven",
-               "--bind", str(m2), private_home + "/.m2", "--bind", str(scratch), "/tmp",
-               "--chdir", "/case/compcheck", "--", "/usr/bin/python3", "main.py", "--check", "--id", CID]
-    env = {"PATH": "/jdk/bin:/maven/bin:/usr/bin:/bin", "JAVA_HOME": "/jdk", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
-           "TZ": "UTC", "TMPDIR": "/tmp", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null",
-           "PYTHONWARNINGS": "ignore::SyntaxWarning", "MAVEN_OPTS": "-Xmx768m"}
     at, start = stamp(), time.monotonic()
-    process = run(command, env=env, timeout=360)
+    if socket_dir is not None:
+        process = warm_stock(args, root, maven, tool, scratch, socket_dir)
+    else:
+        m2.mkdir()
+        (m2 / "settings.xml").write_text("<settings><offline>true</offline></settings>\n")
+        for version, digest in JODA.items():
+            name = f"joda-time-{version}.jar"
+            jar = args.inputs / name
+            verify(jar, digest)
+            dest = m2 / "repository/joda-time/joda-time" / version / name
+            dest.parent.mkdir(parents=True)
+            shutil.copyfile(jar, dest)
+        private_home = str(Path.home())
+        command = ["bwrap", "--unshare-net", "--die-with-parent", "--ro-bind", "/usr", "/usr",
+                   "--symlink", "usr/bin", "/bin", "--symlink", "usr/lib", "/lib", "--symlink", "usr/lib64", "/lib64",
+                   "--ro-bind", "/etc", "/etc", "--proc", "/proc", "--dev", "/dev", "--bind", str(tool), "/case",
+                   "--ro-bind", str(args.jdk), "/jdk", "--ro-bind", str(maven), "/maven",
+                   "--bind", str(m2), private_home + "/.m2", "--bind", str(scratch), "/tmp",
+                   "--chdir", "/case/compcheck", "--", "/usr/bin/python3", "main.py", "--check", "--id", CID]
+        env = {"PATH": "/jdk/bin:/maven/bin:/usr/bin:/bin", "JAVA_HOME": "/jdk", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
+               "TZ": "UTC", "TMPDIR": "/tmp", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null",
+               "PYTHONWARNINGS": "ignore::SyntaxWarning", "MAVEN_OPTS": "-Xmx768m"}
+        process = run(command, env=env, timeout=360)
     observed = process.stdout + process.stderr
     ctx = tool / "check/context" / CID / "context.json"
     matched = tool / "check/matching/relax_prim_poly-0.7.json"
@@ -156,10 +206,10 @@ def one(args, root, maven, treatment):
     # Only this named call site's stage markers and selected diagnostics leave the isolated tree.
     stages = [m for m in ("Extracting Call Site Context", "Call site found", "Call site not found",
                            "Processing CFG file", "API CALL SITE MATCH!", "API CALL SITE NOT MATCH",
-                           "Running incompatibility revealing", "Running test generation") if m in observed]
-    if not build.is_file():
+                           "Running incompatibility revealing", "Need make public", "Need reuse", "Running test generation") if m in observed]
+    if not build.is_file() and socket_dir is None:
         raise RuntimeError("the original CLI failed before its Maven invocation: " + observed[:240])
-    build_text = build.read_text(errors="replace")
+    build_text = build.read_text(errors="replace") if build.is_file() else ""
     retained = [line.strip()[:550] for line in build_text.splitlines() if (
         "Non-resolvable parent POM" in line or "Unresolveable build extension" in line
         or "Error resolving version for plugin" in line or "Cannot access central" in line
@@ -171,7 +221,7 @@ def one(args, root, maven, treatment):
               "toolStartedUtc": at, "toolSeconds": round(time.monotonic() - start, 3), "exit": process.returncode,
               "treatment": treatment, "knowledge": kb, "site": site, "clientTree": sha_source, "sourceLine": mapped,
               "argv": ["python3", "main.py", "--check", "--id", CID], "stages": stages,
-              "mavenBuildFailed": failed, "mavenDiagnostics": retained, "mavenLogSha256": sha(build),
+              "mavenBuildFailed": failed, "mavenDiagnostics": retained, "mavenLogSha256": sha(build) if build.is_file() else None,
               "staticContextGenerated": ctx.is_file(), "match": match, "generatedJUnitLogFiles": (
                   sum(p.is_file() for p in testlogs.rglob("*")) if testlogs.exists() else 0),
               "toolStdoutSha256": hashlib.sha256(process.stdout.encode()).hexdigest(),
@@ -194,6 +244,8 @@ def one(args, root, maven, treatment):
                 "failures": int(counts.group(2)) if counts else (0 if passed else None),
                 "runnerCouldNotFindClass": "Could not find or load main class" in text,
             }
+    if socket_dir is not None:
+        report["stockBuild"] = warm_build_evidence(source, json.loads(ctx.read_bytes()) if ctx.is_file() else {}, build_text)
     if assisted:
         report["caseSpecificPreparation"] = assisted
     return report
@@ -204,8 +256,16 @@ def main():
     parser.add_argument("--inputs", type=Path, help="directory containing the pinned tool and Maven archives, aws.git, and the two Joda JARs")
     parser.add_argument("--jdk", type=Path, default=Path.home() / ".sdkman/candidates/java/8.0.512.0+9-tem")
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--prepared-client", action="store_true", help="assisted experiment with recompiled original DateUtils.class and runtime/test dependencies")
+    routes = parser.add_mutually_exclusive_group()
+    routes.add_argument("--prepared-client", action="store_true", help="assisted experiment with recompiled original DateUtils.class and runtime/test dependencies")
+    routes.add_argument("--warm-stock", action="store_true", help="restore dependencies via the serial Central cache; stock CompCheck builds directly from the pinned clean source")
+    parser.add_argument("--repository", type=Path, default=Path.home()/".cache/in-the-loop/external-upgrades/maven/repository",
+                        help="shared read-through Central repository for --warm-stock")
     args = parser.parse_args()
+    if args.warm_stock:
+        args.warm_deadline = time.monotonic() + 7200
+    if args.warm_stock and args.output.exists():
+        parser.error("warm-stock output already exists; supply a new receipt path")
     if args.inputs is None:
         root = Path.home() / ".cache/in-the-loop/agent-tmp"
         candidates = [p / "compcheck-aws-inputs-v1" for p in root.iterdir() if (p / "compcheck-aws-inputs-v1").is_dir()]
@@ -228,12 +288,31 @@ def main():
                   "mavenVersion": "3.6.3", "searchBudgetSeconds": 60, "strategy": "relax_prim_poly", "threshold": 0.7,
                   "clientInputs": "Stock registry c15-2; cached upstream AWS Git source, original unmodified published analyzer and per-treatment cold Maven repository with both real Joda-Time JARs. Maven works offline. All user files except named run inputs are outside the sandbox.",
                   "route": "assisted original bytecode" if args.prepared_client else "stock cold build", "treatments": []}
-        for treatment in ("normal", "leave-issue-233-out"):
-            row = one(args, work / treatment, mvn, treatment)
-            result["treatments"].append(row)
-            args.output.write_text(json.dumps(result, indent=2) + "\n")
-            print(treatment, "CLI exit", row["exit"], "context", row["staticContextGenerated"],
-                  "match", row["match"], "test logs", row["generatedJUnitLogFiles"], flush=True)
+        server = nullcontext({})
+        socket_dir = None
+        if args.warm_stock:
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            import maven_mirror
+            socket_dir = work / "mirror"
+            socket_dir.mkdir()
+            limit = 2_900_000_000
+            server = maven_mirror.serve(args.repository, socket_dir, limit)
+            result.update(route="stock source build with shared Central dependency restore",
+                budget={"cpus": 4, "memoryGiB": 16, "wallSecondsForBothTreatments": 7200},
+                clientInputs="Stock c15-2 and the original AWS Git source. Every treatment starts with empty build products and an empty private Maven repository. The pair shares one serial read-through cache for Central files.",
+                resolver={"url": maven_mirror.CENTRAL, "pairByteLimit": limit, "serializedBy": "resolution.lock"},
+                mavenCoreSha256=sha(next((mvn / "lib").glob("maven-core-*.jar"))),
+                guestControllerSha256=sha(Path(__file__).with_name("public_ci.py")), mirrorSha256=sha(Path(maven_mirror.__file__)))
+        with server as counters:
+            for treatment in ("normal", "leave-issue-233-out"):
+                before = dict(counters)
+                row = one(args, work / treatment, mvn, treatment, socket_dir)
+                if args.warm_stock:
+                    row["resolver"] = {k: count - before.get(k, 0) for k, count in counters.items()}
+                result["treatments"].append(row)
+                args.output.write_text(json.dumps(result, indent=2) + "\n")
+                print(treatment, "CLI exit", row["exit"], "contexts", row.get("contextCount", 0),
+                      "match", row["match"], "test logs", row["generatedJUnitLogFiles"], flush=True)
 
 
 if __name__ == "__main__":

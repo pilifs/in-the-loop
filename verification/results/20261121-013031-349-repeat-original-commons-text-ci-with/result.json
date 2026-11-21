@@ -1,0 +1,203 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-013031-349-repeat-original-commons-text-ci-with",
+  "title": "349 repeat original Commons Text CI with normal local host resolution",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m00s, peak 13.7 GiB (estimated 3m00s, 14.0 GiB); 5 output file(s) changed",
+  "attention": [
+    "step 1 (Run the two original CI processes with ordinary loopback identity) was held back 1m32s by its 4-CPU quota in 2m00s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-013031-349-repeat-original-commons-text-ci-with.json",
+    "sha256": "f3649d18d85f9dcdb5f4993add3da6624a3df676355d17ae22012789ead90305",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-013031-349-repeat-original-commons-text-ci-with",
+      "title": "349 repeat original Commons Text CI with normal local host resolution",
+      "description": "Reproduce the same original Maven lifecycle and exact Git revision pair on JDK 21 in a networkless guest with localhost and its own hostname in /etc/hosts. The first full run reached 1305 tests on each side with 18 lookup errors. This isolates missing machine-local name service from tests requiring a real external site. Retain all suite counts and all 34 StringEscapeUtils outcomes.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "baseline:original-ci"
+      ],
+      "links": {
+        "examples": [
+          "349"
+        ]
+      },
+      "expected": "The same suite and named CSV coverage are measured on both real artifacts. Record any remaining external-service dependency explicitly.",
+      "submitted": {
+        "at": "2026-11-21T01:30:31+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "python3",
+        "git",
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "14G",
+        "duration": "3m",
+        "memoryLimit": "16G",
+        "timeout": "2h",
+        "notes": "The first full Linux run reached 1305 tests per side in 2m20s and peaked at 13.9 GiB. Preserve the matched 16 GiB hard limit and 4 CPUs; the shared Maven artifact cache is warm."
+      },
+      "steps": [
+        {
+          "name": "Run the two original CI processes with ordinary loopback identity",
+          "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 349 --out examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost"
+      ]
+    }
+  },
+  "sourceCommit": "7059b651e93fad9e1368400e714fd81ef9cff22d",
+  "startedAt": "2026-11-21T01:44:31+00:00",
+  "finishedAt": "2026-11-21T01:46:35+00:00",
+  "wallSeconds": 124.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1323496,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 17179869184,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 15032385536,
+    "durationSeconds": 180.0,
+    "notes": "The first full Linux run reached 1305 tests per side in 2m20s and peaked at 13.9 GiB. Preserve the matched 16 GiB hard limit and 4 CPUs; the shared Maven artifact cache is warm."
+  },
+  "usage": {
+    "peakMemoryBytes": 14703685632,
+    "wallSeconds": 120.3,
+    "cpuSeconds": 282.4,
+    "memoryOfEstimate": 0.98,
+    "durationOfEstimate": 0.67
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the two original CI processes with ordinary loopback identity",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 349 --out examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 120.279,
+      "cpuSeconds": 282.449,
+      "cpuThrottledSeconds": 92.057,
+      "peakMemoryBytes": 14703685632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-two-original-ci-proces.log",
+        "lines": 2,
+        "bytes": 232,
+        "sha256": "92eb94d41226545f8e864ec565ff5b7ee74c371f7e9c08f0a16e845dd19801f5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"side\": \"old\", \"exit\": 1, \"tests\": 1305, \"failures\": 0, \"errors\": 2, \"skipped\": 2, \"named\": 34, \"seconds\": 69.549}",
+        "{\"side\": \"new\", \"exit\": 1, \"tests\": 1305, \"failures\": 0, \"errors\": 2, \"skipped\": 2, \"named\": 34, \"seconds\": 50.152}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/new/TEST-org.apache.commons.text.StringEscapeUtilsTest.xml.gz",
+      "change": "added",
+      "bytes": 2113,
+      "sha256": "903e21f37f4337032b207ce0266afbbd45b9ddefe69b1b961f2fde7d8533b228",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/new/maven.log.gz",
+      "change": "added",
+      "bytes": 6038,
+      "sha256": "7ac6abe84ab0e3f7a9c2ac338efd5a10d1af1384e51293b2f6d33f34d8a9db9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/old/TEST-org.apache.commons.text.StringEscapeUtilsTest.xml.gz",
+      "change": "added",
+      "bytes": 2113,
+      "sha256": "77a43c42c261616f005f6c65deb8a195e55ca3e0be6df9c11b7bdeb2a8257c65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/old/maven.log.gz",
+      "change": "added",
+      "bytes": 6072,
+      "sha256": "ffca6b0664da2d95e47bb613e6cef848d07edc9b8df9a80a2424f51768a00c6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/result.json",
+      "change": "added",
+      "bytes": 41751,
+      "sha256": "bd7db83bdf982f32098e9941ed53758cafe885a4437066e6e131b82c074265a9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T01:46:43+00:00",
+    "applied": [
+      "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/new/TEST-org.apache.commons.text.StringEscapeUtilsTest.xml.gz",
+      "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/new/maven.log.gz",
+      "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/old/TEST-org.apache.commons.text.StringEscapeUtilsTest.xml.gz",
+      "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/old/maven.log.gz",
+      "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

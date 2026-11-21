@@ -29,4 +29,6 @@ To reconstruct the full effective POMs, put the three POMs under their Maven rep
     "$SOURCE/pom.xml" "$MODEL_REPO" "$OUTPUT_XML"
 ```
 
+Reproducing the original Linux JDK 21 CI workflow reached 1,305 tests on each revision. All 34 string-escape tests passed. Supplying ordinary loopback name resolution reduced the identical network-related errors on each side from 18 to two. Those two tests request public DNS or HTTPS for the Apache website. Both Maven exits were 1. [First complete suite run](records/full-linux-ci/result.json) · [Repeat with local hostname resolution](records/full-linux-ci-localhost/result.json)
+
 The campaign disclosed the client, entry, expected rule and mutant before this calibration. This result contributes zero cases to the 24 scored upgrades and eight transfer upgrades. [Independent adjudication](records/adjudication.json)
