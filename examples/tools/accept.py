@@ -69,6 +69,18 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+
+
+def _verification_layout():
+    """verification/layout.py: where a job and its result are kept, by id (flat, or under the day it was submitted)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+layout = _verification_layout()
 ANSWER = {"verified": "established", "violation": "refuted"}
 OK, FAIL, UNBOUND = "ok", "fail", "unbound"
 FROZEN = ("kind", "relation", "revision", "pair", "target", "claim", "expected", "engine", "gaps", "allowedChange", "bounds")
@@ -364,14 +376,15 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
     if "/" in job_id or job_id.startswith("."):
         said("job", FAIL, f"{job_id!r} is not a job's id")
         return done(**base, actual=None)
-    result = load(root / "verification/results" / job_id / "result.json")
+    kept = layout.find_result(root, job_id) or root / layout.result_rel(job_id)
+    result = load(kept / "result.json")
     if result is None:
         said("job", UNBOUND, f"no result of job {job_id} in this checkout (verification/results)")
         return done(**base, actual=None)
     if result.get("status") != "passed":
         said("job", FAIL, f"job {job_id} ended {result.get('status')}, not passed")
         return done(**base, actual=None)
-    job_file = root / "verification/jobs" / f"{job_id}.json"
+    job_file = layout.find_job(root, job_id) or root / layout.job_rel(job_id)
     job = load(job_file)
     if job is None:
         said("job", UNBOUND, f"job {job_id}'s file is not in this checkout (verification/jobs)")
@@ -648,7 +661,7 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
     if constructed:
         replayed = replayed_mutant(folder)
         log = step.get("log") or {}
-        log_file = root / "verification/results" / job_id / (log.get("path") or "")
+        log_file = (layout.find_result(root, job_id) or root / layout.result_rel(job_id)) / (log.get("path") or "")
         built = (evidence or {}).get("mutant", {}).get("sha256") if evidence else None
         if built is None and log.get("path") and file_sha256(log_file) == log.get("sha256"):
             lines = [m.group(1) for line in log_file.read_text(errors="replace").splitlines() if line.startswith("mutant:")

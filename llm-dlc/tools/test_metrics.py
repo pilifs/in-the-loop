@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tests for metrics.py, on made-up sessions. Run: python3 llm-dlc/tools/test_metrics.py"""
+import hashlib
 import json
 import unittest
 
@@ -175,6 +176,66 @@ class CacheEvents(unittest.TestCase):
         e = s["cache_events"][1]
         self.assertEqual(e["later_calls"], 2)
         self.assertAlmostEqual(e["reread_usd"], 2 * 30_000 / 1e6)
+
+
+class Bounded(unittest.TestCase):
+    """A session's file: the whole document without its row for each model call and tool call."""
+
+    def whole(self, day=0):
+        stamp = lambda minute, second=0: at(minute, second).replace("-01T", f"-{day + 1:02d}T")
+        return build([prompt(stamp(0), "go"),
+                      reply(stamp(0, 1), "a", usage(output=10), [tool("t1", command="jj log")], effort="high"),
+                      result(stamp(0, 31), "t1"),
+                      reply(stamp(0, 40), "b", usage(read=5000, output=20), [tool("t2", command="cargo test")], model="m-b"),
+                      result(stamp(2, 40), "t2", "Exit code 1", error=True),
+                      prompt(stamp(5), "more"), reply(stamp(5, 1), "c", usage(read=9000, output=5), model="m-new")])
+
+    def test_the_file_leaves_out_the_per_call_tables_and_names_their_text(self):
+        whole = self.whole()
+        file = metrics.bounded(whole)
+        self.assertEqual((whole["schema"], file["schema"]), (metrics.WHOLE_SCHEMA, metrics.SCHEMA))
+        self.assertEqual(set(whole) - set(file), {"calls", "tools"})
+        self.assertEqual(set(file) - set(whole), {"events", "by_day"})
+        text = metrics.events(whole)
+        self.assertEqual(file["events"], {"schema": metrics.EVENTS_SCHEMA, "calls": 3, "tools": 2, "bytes": len(text.encode()),
+                                          "sha256": hashlib.sha256(text.encode()).hexdigest()})
+        self.assertEqual((json.loads(text)["calls"], json.loads(text)["tools"]), (whole["calls"], whole["tools"]))
+        for table in ("totals", "time", "by_model", "by_tool", "windows", "commits", "cache_events"):
+            self.assertEqual(file[table], whole[table], table)
+        self.assertIs(metrics.bounded(file), file)                       # already one: left as it is
+        read_back = json.loads(metrics.dumps(whole))                     # a file written before 2026-11-21, read from disk
+        self.assertEqual(metrics.dumps(metrics.bounded(read_back)), metrics.dumps(file))
+        self.assertLess(len(metrics.dumps(file)), len(metrics.dumps(whole)))
+
+    def test_what_the_readers_took_from_the_rows_is_in_the_file(self):
+        whole = self.whole()
+        file = metrics.bounded(whole)
+        usage_keys = list(metrics.tally([]))
+        self.assertEqual(metrics.tally(file["by_day"]), {k: whole["totals"][k] for k in usage_keys})
+        self.assertEqual([d["date"] for d in file["by_day"]], [whole["calls"][0]["start"][:10]])
+        first, second = file["prompts"]
+        self.assertEqual({k: v for k, v in first.items() if k in whole["prompts"][0]}, whole["prompts"][0])
+        self.assertEqual(first["peak_context_tokens"], max(c["context_tokens"] for c in whole["calls"][:2]))
+        self.assertEqual(first["efforts"], ["high", "low"])
+        self.assertEqual([(r["model"], r["api_calls"]) for r in first["by_model"]], [("m-a", 1), ("m-b", 1)])
+        self.assertEqual(sum(r["usd"] for r in first["by_model"]), first["usd"])
+        self.assertEqual(second["by_model"], [{"model": "m-new", "api_calls": 1, "usd": 0.0}])  # no price: counted, at nothing
+
+    def test_the_files_over_all_sessions_are_the_same_from_the_file_as_from_the_whole_document(self):
+        one, two = self.whole(), self.whole(day=1)
+        pairs = lambda docs: [({"session_id": f"s{i}"}, doc) for i, doc in enumerate(docs)]
+        from_whole = metrics.rollup(pairs([one, two]), PRICING)
+        from_files = metrics.rollup(pairs([metrics.bounded(one), metrics.bounded(two)]), PRICING)
+        self.assertEqual(metrics.dumps(from_files), metrics.dumps(from_whole))
+        self.assertEqual(from_files["schema"], metrics.ROLLUP_SCHEMA)
+        self.assertEqual([d["api_calls"] for d in from_files["by_day"]], [3, 3])
+        self.assertEqual(from_files["totals"]["api_calls"], 6)
+        self.assertEqual((from_files["totals"]["tool_errors"], from_files["totals"]["unpriced_calls"]), (2, 2))
+        bash = next(r for r in from_files["by_tool"] if r["name"] == "Bash")
+        self.assertEqual((bash["calls"], bash["errors"], bash["total_ms"], bash["max_ms"]), (4, 2, 2 * 150_000, 120_000))
+        self.assertNotIn("median_ms", bash)                              # not to be had from two sessions' medians
+        self.assertEqual(metrics.bounded(one)["by_tool"][0]["median_ms"], metrics.median([30_000, 120_000]))  # a session's file has its own
+        self.assertEqual([r["model"] for r in from_files["by_model"]][-1], "m-new")
 
 
 class Output(unittest.TestCase):

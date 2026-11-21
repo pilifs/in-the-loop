@@ -1,16 +1,18 @@
 """Check a finite int selector by exhaustive native execution of its constant call sites."""
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import subprocess
 import struct
+import sys
 import tempfile
 import time
 
-from targets import executions, finite_check, interfaces, qualification, recipes
+from targets import case_pack, executions, finite_check, interfaces, qualification, recipes
 from targets import replay_candidate, route, runtime, runtime_jar, sidecar, workflow, workflow_ingest
 
 PACKAGE = "verificationselectors"
@@ -446,11 +448,11 @@ def validate_result(folder, plan, path):
     ):
         raise ValueError("inconsistent admitted cases")
     for r in checked:
-        raw = workflow.inside(out, r["raw"])
-        if runtime.sha256(raw) != r["rawSha256"]:
+        raw = case_pack.read(out, r["raw"])  # the file, or its member of the pack its cases are kept in
+        if hashlib.sha256(raw).hexdigest() != r["rawSha256"]:
             raise ValueError("different raw checker output")
         if r["status"] != "open":
-            (answer,) = read(raw)
+            (answer,) = json.loads(raw.decode())
             name = PACKAGE + ".Calls#" + case_name(r["selector"]) + "()"
             if (
                 r["target"] != name
@@ -590,6 +592,11 @@ def main(argv):
                     )
                     and passed
                 )
+            try:  # the run's per-case output, one file a folder from here on: the validator reads it there
+                case_pack.pack(out)
+            except (OSError, ValueError, SystemExit) as exc:
+                print(f"the per-case output was left loose ({exc}): python3 examples/tools/targets/case_pack.py "
+                      f"pack {a.example} before a commit", file=sys.stderr)
             return 0 if passed else 1
     except (OSError, ValueError, KeyError, subprocess.SubprocessError, RuntimeError) as exc:
         parser.exit(1, f"native selector checks unresolved: {exc}\n")

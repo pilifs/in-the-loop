@@ -27,7 +27,23 @@ import time
 from pathlib import Path
 
 RESULTS = "verification/results"
-MARKER = ".captured"  # in a run directory: the attempt that wrote it was sealed, with the occurrences it names
+MARKER = ".captured"
+_layout = None
+
+
+def logical(root, job_id):
+    """A job's result folder as a repository path, in the layout its job has (layout.py): what a restore of its
+    originals is laid out as, so that the readers of a checkout find them where they would find the result."""
+    global _layout
+    try:
+        if _layout is None:
+            spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parent / "layout.py")
+            _layout = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(_layout)
+        return _layout.new_result(Path(root), job_id).relative_to(root).as_posix()
+    except Exception:
+        return f"{RESULTS}/{job_id}"
+  # in a run directory: the attempt that wrote it was sealed, with the occurrences it names
 _lock = threading.Lock()
 _module = None
 
@@ -101,25 +117,25 @@ def _parts(arch, job, attempt, source, run_dir, work, result, root, status, why=
     meta = dict(job=job_id, attempt=attempt, run=(job.get("submitted") or {}).get("session"),
                 source={"commit": source} if source else None)
     notes = {"why": why} if why else {}
-    logical = f"{RESULTS}/{job_id}"
+    base = logical(root, job_id)
     made = {}
     steps = [s["log"]["path"].split("/", 1)[1] for s in (result or {}).get("steps", []) if s.get("log")]
     if (run_dir / "logs").is_dir() or steps:
-        made["logs"] = arch.capture(run_dir / "logs", "job-logs", f"{logical}/logs", expected=steps, status=status,
+        made["logs"] = arch.capture(run_dir / "logs", "job-logs", f"{base}/logs", expected=steps, status=status,
                                     notes=notes, **meta)
     outputs = (result or {}).get("outputs") or []
     # A declared output the work directory does not hold never materialized; one it holds unchanged is in the commit.
     never = [spec for spec in job.get("outputs") or [] if work is not None and not (Path(work) / spec).exists()]
     if (run_dir / "outputs").is_dir() or outputs or never:
-        made["outputs"] = arch.capture(run_dir / "outputs", "job-outputs", f"{logical}/outputs", status=status,
+        made["outputs"] = arch.capture(run_dir / "outputs", "job-outputs", f"{base}/outputs", status=status,
                                        expected=[o["path"] for o in outputs if o["change"] != "deleted"] + never,
                                        deleted=[o["path"] for o in outputs if o["change"] == "deleted"], notes=notes, **meta)
     if (run_dir / "changes.diff").exists():
-        made["diff"] = arch.capture(run_dir / "changes.diff", "job-diff", f"{logical}/changes.diff", status=status,
+        made["diff"] = arch.capture(run_dir / "changes.diff", "job-diff", f"{base}/changes.diff", status=status,
                                     notes=notes, **meta)
     if work is not None and Path(work).is_dir() and (result or {}).get("status") != "passed" and source:
         made["workdir"] = arch.capture(
-            work, "job-workdir", f"{logical}/workdir", status=status, sparse=True, exclude=beyond_commit(root, work, source),
+            work, "job-workdir", f"{base}/workdir", status=status, sparse=True, exclude=beyond_commit(root, work, source),
             notes={**notes, "rule": "files identical to the source commit are left out, and folders that hold none "
                                     "of the rest: the commit and these members give the work directory back"}, **meta)
     return {k: v["id"] for k, v in made.items() if v}
@@ -174,7 +190,7 @@ def sealed_result(root, state, job, attempt, source, path):
     try:
         arch = arts.Archive()
         try:
-            record = arch.capture(path, "job-result", f"{RESULTS}/{job['id']}/result.json", job=job["id"], attempt=attempt,
+            record = arch.capture(path, "job-result", f"{logical(root, job['id'])}/result.json", job=job["id"], attempt=attempt,
                                   run=(job.get("submitted") or {}).get("session"), source={"commit": source} if source else None,
                                   notes={"stage": "as the runner wrote it"})
         finally:
@@ -198,9 +214,9 @@ def before_collect(root, state, job_id, src, dest, result):
                 arch.db.execute("SELECT MAX(attempt) FROM attempts WHERE job=?", (job_id,)).fetchone()[0]
             meta = dict(job=job_id, attempt=attempt, source={"commit": result.get("sourceCommit")})
             if Path(dest).exists():
-                arch.capture(dest, "job-result", f"{RESULTS}/{job_id}", notes={"stage": "a collected result that a later collect replaced"}, **meta)
+                arch.capture(dest, "job-result", logical(root, job_id), notes={"stage": "a collected result that a later collect replaced"}, **meta)
             if not result.get("originals"):  # staged by a runner that sealed nothing: seal what is here
-                arch.capture(src, "job-result", f"{RESULTS}/{job_id}", status="partial", **meta, notes={
+                arch.capture(src, "job-result", logical(root, job_id), status="partial", **meta, notes={
                     "stage": "staged by a runner without capture: logs longer than its limit are head and tail here"})
                 run_dir = Path(state) / "runs" / job_id
                 if run_dir.is_dir() and _marker(run_dir) is None:
@@ -223,7 +239,7 @@ def after_collect(root, state, job_id, dest, result):
         arch = arts.Archive()
         try:
             collected = result.get("collected") or {}
-            record = arch.capture(Path(dest) / "result.json", "job-result", f"{RESULTS}/{job_id}/result.json", job=job_id,
+            record = arch.capture(Path(dest) / "result.json", "job-result", f"{logical(root, job_id)}/result.json", job=job_id,
                                   attempt=(result.get("originals") or {}).get("attempt"),
                                   source={"commit": result.get("sourceCommit")}, conflicts=collected.get("conflicts") or [],
                                   notes={"stage": "as collected", "applied": len(collected.get("applied") or []),

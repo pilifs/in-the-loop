@@ -167,6 +167,23 @@ class Checkpoint(Sandbox):
         self.assertIn("nothing left this machine", err)
 
     @cost("tool")
+    def test_a_fixture_the_remote_already_holds_is_not_exposed_again_by_an_edit_and_a_new_value_is(self):
+        self.commit("A redaction test with a made-up token", {"lib/test_fixture.py": f"TOKEN = '{TOKEN}'\n"})
+        self.jj("bookmark", "set", "main", "-r", "@-")
+        self.jj("git", "push", "--bookmark", "main", "--remote", "origin")  # as main came to hold such tests
+        self.bootstrapped()
+        head = self.commit("Edit the test elsewhere", {"lib/test_fixture.py": f"TOKEN = '{TOKEN}'\n\ndef test():\n    pass\n"})
+        status, out, err = self.run_checkpoint("--rev", "@-")
+        self.assertEqual((status, self.remote_ref()), (0, head), out + err)
+        self.assertEqual(json.loads(checkpoint.receipt_path(sync, head).read_text())["scan"]["carried"], 1)
+        other = "gh" + "p_" + "Qw7" * 12
+        self.commit("Add a second token", {"lib/test_fixture.py": f"TOKEN = '{TOKEN}'\nOTHER = '{other}'\n"})
+        status, out, _ = self.run_checkpoint("--rev", "@-")
+        self.assertEqual((status, self.remote_ref()), (1, head))
+        self.assertIn("lib/test_fixture.py: holds github-token ×2", out)
+        self.assertNotIn(other, out)
+
+    @cost("tool")
     def test_an_unsafe_message_a_raw_payload_an_oversized_blob_and_a_bad_name_are_refused(self):
         develop = self.bootstrapped()
         self.commit(f"Use {TOKEN} in the deploy step", {"lib/b.txt": "two\n"})
@@ -184,6 +201,41 @@ class Checkpoint(Sandbox):
         self.assertIn("lib/big.bin: is 5,000 bytes, over the 4,096", out)
         self.assertIn("lib/trailing. : has a component ending in a space or a dot", out)
         self.assertEqual(self.remote_ref(), develop)
+
+    @cost("tool")
+    def test_a_credential_inside_a_compressed_file_is_refused_as_one_in_a_text_file_is(self):
+        import gzip
+        import io
+        import tarfile
+        develop = self.bootstrapped()
+
+        def pack(files):  # as examples/tools/targets/case_pack.py writes a folder of per-case records
+            buffer = io.BytesIO()
+            with gzip.GzipFile(fileobj=buffer, mode="wb", mtime=0) as zipped, tarfile.open(fileobj=zipped, mode="w") as tar:
+                for name, data in files.items():
+                    info = tarfile.TarInfo(name)
+                    info.size = len(data)
+                    tar.addfile(info, io.BytesIO(data))
+            return buffer.getvalue()
+        clean = pack({f"p{i}/native.json": b'[{"made-up": true}]\n' for i in range(40)})
+        head = self.commit("Records, packed", {"examples/901-made-up/records/calls/abc/cases.tar.gz": clean})
+        self.assertEqual((self.run_checkpoint("--rev", "@-")[0], self.remote_ref()), (0, head))
+        leaking = pack({"p0/native.json": b"[]\n", "p1/stderr": f"export GH_TOKEN={TOKEN}\n".encode() + b"padding\n" * 4000})
+        self.assertNotIn(TOKEN.encode(), leaking)  # the compressed bytes do not show it
+        self.commit("More records", {"examples/901-made-up/records/calls/def/cases.tar.gz": leaking,
+                                     "examples/901-made-up/records/calls/def/after.gz": gzip.compress(b"nothing\n") + TOKEN.encode()})
+        status, out, err = self.run_checkpoint("--rev", "@-")
+        self.assertEqual((status, self.remote_ref()), (1, head))
+        self.assertIn("examples/901-made-up/records/calls/def/cases.tar.gz: holds github-token ×1", out)
+        self.assertIn("examples/901-made-up/records/calls/def/after.gz: holds github-token ×1", out)  # after the stream's end
+        self.assertNotIn(TOKEN, out + err)
+        self.jj("abandon", "@-")
+        self.commit("A file that opens to more than is read", {"lib/large.gz": gzip.compress(b"0" * 100_000)})
+        with mock.patch.object(checkpoint, "OPENED_MAX", 50_000):
+            status, out, _ = self.run_checkpoint("--rev", "@-")
+        self.assertEqual((status, self.remote_ref()), (1, head))
+        self.assertIn("lib/large.gz: holds compressed-beyond-scan ×1", out)
+        self.assertNotEqual(develop, head)
 
     @cost("tool")
     def test_what_the_redactor_would_change_is_refused_in_a_trace_file_and_not_in_code(self):

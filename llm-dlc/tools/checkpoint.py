@@ -15,7 +15,9 @@ What it does, in order:
      this machine's own secrets or account identifiers, in any blob or message; anything the redactor would still
      change in a file the trace tools publish; a redaction decision no person or delegated watcher is recorded as
      having taken. A blob's verdict is kept by its git id and the policy, so the work grows with the new bytes
-     (git names each new blob once, by the first path it has: content already on the remote is not new);
+     (git names each new blob once, by the first path it has: content already on the remote is not new). A value
+     the same file already holds on the remote is not new either: an edit to a test that carries a made-up
+     credential does not expose it a second time;
   4. pushes exactly `SHA:refs/heads/develop` to `origin`, and if the answer is lost reads the remote before saying
      anything;
   5. writes a receipt outside the tree: the commits, the scan, and which evidence is public, which is pending
@@ -33,13 +35,23 @@ import re
 import subprocess
 import sys
 import time
+import zlib
 from datetime import datetime, timezone
 from pathlib import Path
 
-POLICY = 1           # bump when a rule below changes what is refused: every kept verdict is then worked out again
+POLICY = 3           # bump when a rule below changes what is refused: every kept verdict is then worked out again
 REMOTE, DEVELOP, MAIN = "origin", "develop", "main"
 MAX_BLOB = 16 << 20  # a larger blob is refused: GitHub warns at 50 MiB and refuses at 100, and none here is meant to be near
 RECEIPT_SCHEMA = "itl-checkpoint/v1"
+# Publication summaries (llm-dlc/artifacts/) are written for the public: each gets the redactor's whole rule set, as
+# a trace file does, and a size limit, so that an unbounded inventory cannot come back into git by this door.
+SUMMARIES = "llm-dlc/artifacts/"
+SUMMARY_MAX, CATALOG_MAX = 64 << 10, 256 << 10
+# A gzip blob is read as what it opens to: a pack of per-case records (examples/tools/targets/case_pack.py) publishes
+# every byte inside it, and the rules see none of them in the compressed form. One that opens to more than this is
+# refused, since nothing read it.
+OPENED_MAX = 256 << 20
+UNREAD = "compressed-beyond-scan"
 # Paths that hold raw payloads or private records and are never committed on purpose: each is gitignored, so one
 # among the outgoing objects was forced in or came from a broken ignore file.
 RAW_PATHS = [(re.compile(p), why) for p, why in (
@@ -163,14 +175,63 @@ class Verdicts:
             s.atomic_write(self.path, json.dumps({"fingerprint": self.fingerprint, "blobs": self.entries}, separators=(",", ":")), private=True)
 
 
+def opened(data: bytes) -> bytes | None:
+    """The bytes to scan for a blob: itself, or for a gzip blob what it opens to (every member, and whatever follows
+    the last). None when that is more than OPENED_MAX. A blob that only begins like gzip is scanned as it is, after
+    whatever of it did open."""
+    if data[:2] != b"\x1f\x8b":
+        return data
+    parts, rest, room = [], data, OPENED_MAX
+    try:
+        while rest[:2] == b"\x1f\x8b":
+            stream = zlib.decompressobj(16 + zlib.MAX_WBITS)
+            part = stream.decompress(rest, room + 1)
+            room -= len(part)
+            if room < 0 or stream.unconsumed_tail:
+                return None
+            parts.append(part)
+            if not stream.eof:
+                return b"\n".join(parts)  # cut short: what there is of it
+            rest = stream.unused_data
+    except zlib.error:
+        return b"\n".join([*parts, data])
+    return b"\n".join([*parts, rest])
+
+
 def content_kinds(s, redact, data: bytes, strict: bool) -> dict[str, int]:
     """The kinds the content is refused for, with how often each occurs."""
+    data = opened(data)
+    if data is None:
+        return {UNREAD: 1}
     try:
         text = data.decode()
     except UnicodeDecodeError:
         text = data.decode(errors="replace")
     hits = redact.leak_hits(text)
     return {kind: sum(found.values()) for kind, found in sorted(hits.items()) if not strict or kind in STRICT_KINDS}
+
+
+def findings(s, redact, data: bytes, strict: bool) -> set[tuple[str, str]]:
+    """The (kind, value) pairs the content is refused for. Values stay in this process."""
+    data = opened(data)
+    if data is None:
+        return {(UNREAD, hashlib.sha256(b"").hexdigest())}
+    hits = redact.leak_hits(data.decode(errors="replace"))
+    return {(kind, value) for kind, found in hits.items() if not strict or kind in STRICT_KINDS for value in found}
+
+
+def carried(s, redact, oid: str, path: str, bases: list[str], strict: bool) -> bool:
+    """Whether everything a blob is refused for is already in the same file at a base (the remote's `develop` or
+    `main`): an edit elsewhere in a file that holds a made-up credential, as the redaction tests do, re-issues the
+    file whole and exposes nothing that was not public before. A value the base's copy does not hold is new."""
+    new = findings(s, redact, git(s, "cat-file", "blob", oid).stdout, strict)
+    known: set[tuple[str, str]] = set()
+    for base in bases:
+        if base:
+            r = git(s, "cat-file", "blob", f"{base}:{path}")
+            if r.returncode == 0:
+                known |= findings(s, redact, r.stdout, strict)
+    return bool(new) and new <= known
 
 
 def outgoing(s, target: str, bases: list[str]) -> tuple[list[str], list[tuple[str, int, str]]]:
@@ -196,19 +257,21 @@ def scan(s, redact, commits: list[str], blobs: list[tuple[str, int, str]], targe
     problems: list[str] = []
     verdicts = Verdicts(s, redact)
     stats = {"commits": len(commits), "blobs": len(blobs), "bytes": sum(b[1] for b in blobs), "scanned_blobs": 0,
-             "scanned_bytes": 0, "kept_verdicts": 0}
-    todo = []
+             "scanned_bytes": 0, "kept_verdicts": 0, "carried": 0}
+    todo, flagged = [], []
     for oid, size, path in blobs:
         for problem in path_problems(path):
             problems.append(f"{path}: {problem}")
         if size > MAX_BLOB:
             problems.append(f"{path}: is {size:,} bytes, over the {MAX_BLOB:,} a blob may be (blob {oid[:12]})")
             continue
-        key = f"{oid}:{'trace' if s.trace_owned(path) else 'strict'}"
+        if path.startswith(SUMMARIES) and size > (CATALOG_MAX if path.rsplit("/", 1)[-1].startswith("catalog-") else SUMMARY_MAX):
+            problems.append(f"{path}: is {size:,} bytes, over what a publication summary may be: its detail belongs in the private archive")
+        key = f"{oid}:{'trace' if s.trace_owned(path) or path.startswith(SUMMARIES) else 'strict'}"
         if key in verdicts.entries:
             stats["kept_verdicts"] += 1
             if verdicts.entries[key]:
-                problems.append(f"{path}: holds {_kinds(verdicts.entries[key])} (blob {oid[:12]})")
+                flagged.append((oid, path, key))
         else:
             todo.append((oid, size, path, key))
     if todo:
@@ -231,9 +294,14 @@ def scan(s, redact, commits: list[str], blobs: list[tuple[str, int, str]], targe
                 stats["scanned_blobs"] += 1
                 stats["scanned_bytes"] += size
                 if found:
-                    problems.append(f"{path}: holds {_kinds(found)} (blob {oid[:12]})")
+                    flagged.append((oid, path, key))
             proc.wait()
         verdicts.save(s)
+    for oid, path, key in flagged:
+        if carried(s, redact, oid, path, bases, strict=not key.endswith(":trace")):
+            stats["carried"] += 1
+        else:
+            problems.append(f"{path}: holds {_kinds(verdicts.entries[key])} (blob {oid[:12]})")
     if commits:
         log = git(s, "log", "--no-walk=unsorted", "--format=%H%x00%B%x00%x01", *commits[:5000])
         for entry in log.stdout.decode(errors="replace").split("\x01"):

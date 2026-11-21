@@ -16,7 +16,8 @@ sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
 from cost_tier import cost  # noqa: E402
 
 SCRIPT = Path(__file__).resolve().with_name("prune_workspaces.py")
-ENV = {**os.environ, "JJ_USER": "Test", "JJ_EMAIL": "test@example.invalid", "JJ_CONFIG": "/dev/null"}
+# The machine's own private archive is no part of these tests: off, except in the one test that gives it a home.
+ENV = {**os.environ, "JJ_USER": "Test", "JJ_EMAIL": "test@example.invalid", "JJ_CONFIG": "/dev/null", "ITL_ORIGINALS_OFF": "1"}
 spec = importlib.util.spec_from_file_location("prune_workspaces", SCRIPT)
 prune_workspaces = importlib.util.module_from_spec(spec)
 sys.modules["prune_workspaces"] = prune_workspaces  # its dataclasses look their module up there
@@ -116,6 +117,41 @@ class PruneTest(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertEqual((archive / "side" / ".env").read_text(), "TOKEN=made-up-value\n")
         self.assertFalse(self.ws.exists())
+
+    @cost("tool")
+    def test_a_file_the_private_archive_holds_verified_in_the_store_is_recoverable_and_a_pending_one_is_not(self):
+        sys.path.insert(0, str(SCRIPT.parent))
+        import artifacts
+        base = Path(self.tmp.name)
+        env = {"ITL_ORIGINALS_HOME": str(base / "originals"), "ITL_ORIGINALS_CACHE": str(base / "cache"), "ITL_ORIGINALS_OFF": "",
+               "ITL_ORIGINALS_STORE": f"dir:{base / 'store'}", "ITL_ORIGINALS_RESERVE": "0", "ITL_ORIGINALS_UPLOAD": "manual"}
+        work = self.ws / "records" / "run-1"   # gitignored, and nowhere else: a run's output left in its workspace
+        work.mkdir(parents=True)
+        (work / "prove.log").write_text("a made-up log\n" * 100)
+        (work / "result.json").write_text('{"made-up": true}\n')
+        with mock.patch.dict(os.environ, env), mock.patch.dict(ENV, env):
+            archive = artifacts.Archive()
+            self.addCleanup(archive.close)
+            archive.capture(work, "job-run", "records/run-1", job="made-up")
+            code, out = self.prune("side")
+            self.assertEqual(code, 1, out)       # sealed on this machine only: its disk is still the last copy
+            self.assertIn("2 file(s) recoverable from nowhere", out)
+            archive.upload()
+            (work / "later.txt").write_text("written after the capture\n")
+            code, out = self.prune("side")
+            self.assertEqual(code, 1, out)
+            self.assertIn("1 file(s) recoverable from nowhere", out)
+            self.assertIn("records/run-1/later.txt", out)
+            self.assertNotIn("prove.log", out)
+            (work / "later.txt").unlink()
+            (work / "result.json").write_text('{"made-up": false}\n')   # the same length, other bytes
+            self.assertIn("records/run-1/result.json", self.prune("side")[1])
+            (work / "result.json").write_text('{"made-up": true}\n')
+            code, out = self.prune("side")
+            self.assertEqual(code, 0, out)
+            self.assertIn("2 of them are kept by the private archive alone, verified in the store", out)
+        code, out = self.prune("side")           # and with no archive to ask, they block as before
+        self.assertEqual(code, 1, out)
 
     @cost("tool")
     def test_a_gitignored_file_copied_into_the_default_workspace_is_clear(self):

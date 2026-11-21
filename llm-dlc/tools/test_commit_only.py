@@ -76,6 +76,37 @@ class CommitOnly(unittest.TestCase):
         self.assertNotIn("wip", self.jj("log", "--no-graph", "-r", "all()", "-T", 'description ++ "\\n"'))
 
     @cost("tool")
+    def test_thousands_of_other_files_are_set_aside_by_one_short_command(self):
+        for i in range(600):  # as an example's records are, added by one session while another commits its own
+            self.write(f"examples/901-made-up/records/calls/abc/cases/p{i}/native.json", "[]\n")
+        self.write('lib/odd "name" here.txt', "theirs too\n")
+        self.write("verification/findings.md", "VF-1\n")
+        calls, real = [], sync.jj
+        with mock.patch.object(sync, "jj", lambda *args: calls.append(args) or real(*args)):
+            theirs = self.commit(["verification"], "Record a finding")
+        self.assertEqual(len(theirs), 601)
+        split = next(args for args in calls if args[0] == "split")
+        self.assertLess(sum(len(a) for a in split), 200)  # it names what stays; the paths that go are not on the line
+        self.assertEqual(self.jj("diff", "-r", "@-", "--name-only").split(), ["verification/findings.md"])
+        self.assertEqual(len(self.jj("diff", "-r", "@", "--name-only").splitlines()), 601)
+        self.assertEqual(sync.listed(theirs, most=2).split(" and ")[1], "599 more")
+        self.assertEqual(sync.listed(["a", "b"]), "a b")
+
+    @cost("tool")
+    def test_a_pile_of_commits_on_neither_develop_nor_main_is_warned_of_and_a_few_are_not(self):
+        self.assertEqual(sync.unpublished_commits(), [])  # one commit, far from many
+        for i in range(3):
+            self.write("lib/a.txt", f"{i}\n")
+            self.jj("commit", "-m", f"change {i}")
+        with mock.patch.object(sync, "UNPUBLISHED_MANY", 4):
+            (warning,) = sync.unpublished_commits()
+            self.assertIn("4 commits of this line are on neither develop nor main", warning)
+            self.assertIn("sync.py checkpoint --rev REV", warning)
+            self.jj("bookmark", "create", "main", "-r", "@--")  # what is on main is published, and no longer counts
+            self.jj("config", "set", "--repo", 'revset-aliases."trunk()"', "main")
+            self.assertEqual(sync.unpublished_commits(), [])
+
+    @cost("tool")
     def test_with_nothing_else_changed_nothing_is_set_aside(self):
         self.write("verification/findings.md", "VF-1\n")
         self.assertEqual(self.commit(["verification"], "Record a finding"), [])

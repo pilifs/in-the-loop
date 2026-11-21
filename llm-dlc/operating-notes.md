@@ -50,6 +50,19 @@ of `cargo test` because `costs.json` had changed filled a stream's memory and go
 - Once a commit is on `develop` it is immutable for jj (the repository's `immutable_heads()` names
   `develop@origin`): `sync.py commit` no longer stamps it, and `jj describe` on it is refused. Don't work round
   that with `--ignore-immutable`: others have fetched the commit.
+- `sync.py promote --rev REV` builds in the jj workspace `promote` (the folder `REPO-promote`), which is for
+  promotions only: don't work there, and don't remove it (it is moved, not remade, at each promotion; its first
+  checkout takes a minute, and a default run there builds `lib/target` anew). To have the gate reuse a run
+  instead of running one, run the default run on the commit to be promoted, with nothing uncommitted, before
+  asking: a pass of that tree covers the record on top of it. A promotion that stopped is continued by the same
+  command; its state is in `~/.local/state/llm-traces/promotions/`, and nothing there is edited by hand.
+- When `main` moved under a promotion (someone else promoted), merge `main` into the line by an ordinary merge,
+  checkpoint the merge and promote that. Never force `main` or `develop`.
+- Redaction decisions are a person's unless `python3 llm-dlc/tools/sync.py delegate status` says a person
+  delegated them to a run's watcher. A watcher that wants that asks (`sync.py delegate request --run NAME`) and
+  tells the user the code; it never sets it up for itself, and a worker never decides. `sync.py delegate off`
+  ends it at once, from any shell, and is the thing to run when the trust boundary changes (another contributor on
+  the machine, a client whose rules cannot keep agents from the key in `~/.config/in-the-loop/`).
 - Originals are sealed by the tools that produce them (the runner, the collector, `sync.py commit` for
   transcripts) and uploaded in the background. `python3 llm-dlc/tools/artifacts.py status` says what is still on
   this machine only; `upload --drain` finishes what a dead uploader left. Before removing a run directory, a work
@@ -194,7 +207,13 @@ verdict against the CLI of the same build.
 - Every `sync.py commit` rewrites four generated files (`llm-dlc/index.json`, `llm-dlc/traces/README.md`,
   `llm-dlc/traces/metrics.json`, the session table in `llm-dlc/README.md`), so two lines that both committed
   conflict in all four. After the merge run `python3 llm-dlc/tools/sync.py regenerate`, which rewrites them from
-  the session files and lists any other conflict; resolve only what it lists, never the four by hand.
+  the session files and lists any other conflict; resolve only what it lists, never the four by hand. (Since
+  2026-11-21 a commit writes its session's manifest alone and these files are rendered at a promotion, so two
+  lines conflict in them only when one of them rendered: by `sync.py sync`, a push, or tools from before.)
+- A session's own `metrics.json` or `summary.md` left conflicted by a merge is settled the same way, by rendering:
+  `python3 llm-dlc/tools/sync.py sync SESSION`, never by hand. The files are functions of the session's log and
+  manifest. It is to be expected once, when a line whose tools still write the per-call tables into
+  `metrics.json` meets one whose tools do not (2026-11-21).
 - `check` reads only the commits of `::@`, so a "session … has no manifest" error is not to be expected from
   another workspace's commits.
 - One case is known: a stream that merged another stream's commit into its line stamps that commit with its own
@@ -211,6 +230,18 @@ verdict against the CLI of the same build.
 
 **Why:** the four conflicts silenced every integration check after the streams' first commits in four runs, and
 in one that hid a real bug until the merge.
+
+## A test of the trace tools writes nowhere in the checkout
+
+A test that calls `sync.cmd_sync`, `cmd_push` or `cmd_regenerate` either points `sync.TRACES` (and what is
+derived from it) at a folder of its own, or stands in for every step that writes under `llm-dlc/traces/`.
+After running such tests, `jj st` should list nothing under `llm-dlc/traces/` that you did not mean; if it
+does, `jj restore --from @- llm-dlc/traces` puts the files back, and the test is what to fix.
+
+**Why:** `test_performance`'s `Sync` test stood in for some of a sync's steps and let the others run on the
+real tree. It went unseen while every commit kept the generated files current. Once rendering was deferred it
+rewrote the checkout's stale summaries on each run, and on 2026-11-21 a new rendering step rewrote all 207
+session files there in one test run (seen in `jj st` before the commit, and put back).
 
 ## Shell commands that set off the commit hook
 
@@ -233,6 +264,12 @@ repository: probe from a scratch folder.
 - A plain `pipeline.py run` collects nothing until every job of its batch has ended, so one long job delays the
   results of the short ones queued with it.
 - `default_tests.py queue` queues a run at `@-`: commit the work first, then queue, then commit the job.
+- A job declares every tool its steps call (`--requires jvmcontract`, `java`, `javac`, ...), and its pass must
+  depend on something only a real run produces: a new record, a count, a named line of output. Without the
+  requirement a step that calls the checker ends at once with "no built native checker"; a step written to accept
+  an exit of 1 (which a run with refuted claims also ends with) then passes on nothing. Job
+  `20261121-194629-345-native-selectors-again-the-run-packs` passed that way in 1.2 s (2026-11-21); a result that is
+  much faster than its estimate is read before it is believed.
 
 **Why:** a started job burns machine time and leaves a stray result that another agent has to triage.
 

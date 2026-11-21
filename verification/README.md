@@ -38,6 +38,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | [`pipeline.py`](pipeline.py) | every command: `submit`, `status`, `run`, `prioritize`, `collect`, `report`, `resubmit`, `validate`; [`test_pipeline.py`](test_pipeline.py) tests it | |
 | [`/run-verification`](../.claude/skills/run-verification/SKILL.md) | the procedure of the agent that manages the pipeline, as a skill; [`llm-dlc/tools/verification-loop.sh`](../llm-dlc/tools/verification-loop.sh) runs it unattended | |
 | [`capture.py`](capture.py) | hands each run's originals to the private archive before they are cut or removed (see [Originals](#originals-the-whole-logs-and-outputs)); [`test_capture.py`](test_capture.py) tests it | |
+| [`layout.py`](layout.py) | where a job and its result are kept, by id: flat, or under the day the job was submitted (see [Two layouts](#two-layouts-flat-and-by-day)); every reader goes through it; [`test_layout.py`](test_layout.py) tests it | |
 | [`schema/job.schema.json`](schema/job.schema.json) | the job format | |
 | [`schema/result.schema.json`](schema/result.schema.json) | the result format | |
 | `jobs/ID.json` | one job, committed with the change it verifies | the submitting agent, with `submit` |
@@ -45,7 +46,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | `results/ID/logs/` | each step's console output, whole if under 2 MB, else its head and tail | `collect` |
 | `results/ID/changes.diff` | the job's outputs against its commit; over 1 MiB, the most a commit takes, it is kept gzipped as `changes.diff.gz`, or as `changes.stat`, the files it changes, when that is still over (`collected.changesDiff` says which) | `collect` |
 | `results/ID/outputs/` | outputs that were not applied: the job did not pass, or the file changed since | `collect` |
-| `results/index.json` | one line per result, newest first | `collect` |
+| `results/index.json` | one line per result kept flat, newest first, and under `shards` the days that have an index of their own (`results/YYYY/MM/DD/index.json`, the same lines for that day's results) | `collect` |
 | [`findings.md`](findings.md) | what the runs found that needs a person, and the decisions taken, open first, each with what closes it | the managing agent, by hand |
 | `priorities.json` | the queue's priorities by job id, each with its reason, over the jobs' own | `prioritize`, committed |
 | [`pipeline.toml`](pipeline.toml) | the runner's defaults; `~/.config/in-the-loop/pipeline.local.toml` overrides them for the machine, and `pipeline.local.toml` (not committed) for one checkout | |
@@ -57,6 +58,39 @@ committed yet is not run: the runner reads jobs from the latest commit (jj's `@-
 also reads them from `@-` in every other jj workspace of the repository, so a job committed on a branch that another
 workspace works on (a stream of a feature loop run in parallel) runs at its own commit without being merged first. Its
 result is collected here, in the runner's workspace, and reaches that branch when the branches are merged.
+
+### Two layouts: flat, and by day
+
+Every job so far is kept flat, `jobs/ID.json` and `results/ID/`: about a thousand entries in each folder by
+2026-11-21, a few hundred more a day, against the 3,000 a forge recommends as a folder's width. A job can instead be
+kept under the UTC day it was submitted, which its id begins with: `jobs/YYYY/MM/DD/ID.json` and
+`results/YYYY/MM/DD/ID/`, with one overflow folder, `undated/`, for an id that begins with no date.
+
+- **Nothing moves.** A job is written once. The runner tests the commit that last touched a job's file when the job
+  names no revision, so moving a pending job would change the code it tests; and the flat paths are linked from
+  commits, findings and notes. A result goes beside its job: flat for a flat job, in the shard for a sharded one.
+- **Readers take both**, through [`layout.py`](layout.py) and nothing else: `pipeline.py` (the queue, `status`,
+  `collect`, `commit-paths`, `report`, `resubmit`, `prioritize`, `validate`, results recorded on other heads), the
+  loops' statistics in `sync.py`, the test cost inventory, the conductor and the brief's watcher, example acceptance
+  and claim history, the capture of originals, and a promotion's inventory. `results/index.json` lists the results kept flat and names, under `shards`, each day
+  that has results; a day's own `index.json` lists those, so the first file stops growing once new jobs go by day
+  and is then the complete index of everything collected before the switch. Every line gives its result's path
+  under `results/`.
+- **A receipt is held to a size.** `result.json` lists every output file with its digest, and the readers that
+  verify kept outputs against it need every row, so the list is not cut. Six results of November 2026 listed 3,000
+  to 5,900 files each (1.5 to 2.9 MB a receipt), from jobs that wrote two files a case; such a producer packs its
+  cases now ([`examples/approaches.md`](../examples/approaches.md)). `sync.py check` warns about a result submitted
+  since 2026-11-22 whose `result.json` is over 256 KiB (`layout.heavy_receipts`), naming the job. The complete
+  inventory of what a job wrote is in the private archive whatever the receipt holds
+  (`python3 llm-dlc/tools/artifacts.py list --job ID`).
+- **One id, two records.** Identical copies resolve to the flat one, always. Copies that differ are a problem
+  `pipeline.py validate` names, and readers still get the flat one.
+- **Where new jobs go** is `WRITE` in `layout.py`: `"flat"` today. Switching it to `"shards"` is one line, for the
+  user to decide once a real batch has been promoted with the readers above (the brief's order: readers first, then
+  writers); `VERIFY_LAYOUT=shards` does it for one command. A sharded job's `$schema` and its result's are written
+  relative to their own depth.
+- **Not through the resolver:** the scripts under `lib/benchmark/external-upgrades/` name particular results of
+  November 2026 by their flat paths, which stay where they are.
 
 ## For agents making changes: submitting a job
 

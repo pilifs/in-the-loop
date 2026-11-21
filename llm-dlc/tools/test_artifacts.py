@@ -232,6 +232,35 @@ class Transcripts(Case):
             ("session-transcript", "restricted", "s1", "claude/-made-up-project/s1/subagents/agent-a.jsonl", 0),
             ("session-transcript", "restricted", "s1", "claude/-made-up-project/s1.jsonl", 12)])
 
+    def test_a_workspaces_run_records_are_sealed_file_by_file_as_they_grow_and_a_tests_folder_is_not(self):
+        import sync
+        folder = self.dir / "made-up-workspace/llm-dlc/loop-summaries"
+        (folder / "single-made-up").mkdir(parents=True)
+        (folder / "2026-01-01-000000-made-up.md").write_text("cycle 1\n")
+        (folder / "single-made-up/events.jsonl").write_text('{"n": 1}\n')
+        with mock.patch.dict(os.environ, {"ITL_ORIGINALS_UPLOAD": "manual"}):
+            with mock.patch.object(sync, "LOOP_SUMMARIES", folder):       # as a test of sync points it: not this checkout's
+                self.assertEqual(sync.seal_run_records(), 0)
+            self.assertEqual(self.archive.rows(), [])
+            self.assertEqual(sync.seal_run_records(folder), 2)
+            with mock.patch.object(artifacts.Archive, "capture_stream", side_effect=AssertionError("opened an unchanged file")):
+                self.assertEqual(sync.seal_run_records(folder), 0)        # same sizes and times: no file is read
+            with open(folder / "single-made-up/events.jsonl", "a") as f:
+                f.write('{"n": 2}\n')
+            (folder / "2026-01-01-000000-made-up.md").write_text("cycle 1, rewritten\n")
+            self.assertEqual(sync.seal_run_records(folder), 2)
+        rows = [(r["kind"], r["access"], r["logical"], r["stream"]["key"], r["stream"]["generation"], r["stream"]["offset"])
+                for r in self.archive.rows()]
+        md, events = "2026-01-01-000000-made-up.md", "single-made-up/events.jsonl"
+        self.assertEqual(rows, [
+            ("run-record", "restricted", f"llm-dlc/loop-summaries/{md}", f"run-records/made-up-workspace/{md}", 1, 0),
+            ("run-record", "restricted", f"llm-dlc/loop-summaries/{events}", f"run-records/made-up-workspace/{events}", 1, 0),
+            ("run-record", "restricted", f"llm-dlc/loop-summaries/{md}", f"run-records/made-up-workspace/{md}", 2, 0),       # rewritten: whole again
+            ("run-record", "restricted", f"llm-dlc/loop-summaries/{events}", f"run-records/made-up-workspace/{events}", 1, 9)])  # appended: the gain
+        with mock.patch.object(artifacts, "home", side_effect=RuntimeError("made up")), mock.patch.object(sync, "log") as said:
+            self.assertEqual(sync.seal_run_records(folder), 0)            # and it never fails a sync
+        self.assertIn("made up", said.call_args[0][0])
+
     def test_sealing_never_fails_a_sync(self):
         import sync
         with mock.patch.object(artifacts, "transcript_key", side_effect=RuntimeError("made up")), mock.patch.object(sync, "log") as said:
@@ -530,6 +559,22 @@ class Reads(Case):
         self.assertEqual([r[0] for r in logged], ["made-up purpose: count the lines"])
         with self.assertRaises(Unavailable):
             artifacts.analyze(record["id"], "  ", self.archive)
+        # On a machine that never held it (an empty journal and spool), the same facts come from the store alone,
+        # and the read is logged there too; nothing of it is left in a cache.
+        elsewhere = artifacts.Archive(self.dir / "another-machine")
+        self.addCleanup(elsewhere.close)
+        remote = artifacts.analyze(record["id"], "made-up purpose: from the store", elsewhere)
+        self.assertEqual((remote["read_from"], facts["read_from"]), ("the store", "this machine"))
+        same = ("id", "kind", "access", "bytes", "members", "inventory_sha256", "raw_sha256", "files", "largest_file_bytes", "suffixes")
+        self.assertEqual({k: remote[k] for k in same}, {k: facts[k] for k in same})
+        self.assertEqual(remote["state"], "remote_verified")
+        self.assertNotIn("private", json.dumps(remote))
+        self.assertNotIn("made-up-name", json.dumps(remote))
+        self.assertEqual(elsewhere.db.execute("SELECT detail FROM events WHERE event='private analysis'").fetchone()[0],
+                         "made-up purpose: from the store")
+        self.assertEqual([p for p in (self.dir / "another-machine").rglob("*") if p.is_file() and b"private text" in p.read_bytes()], [])
+        with self.assertRaisesRegex(Unavailable, "neither in this machine's journal nor verified in the store"):
+            artifacts.analyze("20261121T000000Z-0000000000000000", "made-up purpose", elsewhere)
 
     def test_with_the_store_unreachable_a_list_still_shows_what_this_machine_knows(self):
         record = self.archive.capture(self.tree(), "job-logs", "j/logs", job="j", attempt=1)

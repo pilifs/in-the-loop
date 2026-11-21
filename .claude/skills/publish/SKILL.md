@@ -8,6 +8,11 @@ Promote this repo's line to `main`. The user asked for it by running this skill,
 for this run only. (A checkpoint to `develop`, `sync.py checkpoint --rev REV`, is a different job: it publishes
 code for planning, with no test run and no log upload, and needs no skill.)
 
+When the line is already on `develop` and other sessions are at work, promote without touching this working
+copy instead of steps 1 and 2: `python3 llm-dlc/tools/sync.py promote --rev REV --dry-run` prints the review
+view (read it, and relay what it says would block), then the same without `--dry-run` promotes. It reports as
+step 3 says.
+
 1. Run `jj status`. If `@` has unfinished work, stop and say what is unfinished.
    Otherwise, if it has finished work, commit it:
    `python3 llm-dlc/tools/sync.py commit -m "Summary" -m "What changed, why, and how it was verified."`

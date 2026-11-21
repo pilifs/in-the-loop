@@ -129,7 +129,7 @@ class RecipesTest(unittest.TestCase):
 
     def test_native_selector_receipt_binds_the_guard_replay_and_assumptions(self):
         from copy import deepcopy
-        from targets import native_selectors
+        from targets import case_pack, native_selectors
         plan = self.plan("345", "page-parent-fix")
         folder = Path(plan.folder)
         receipt = folder / "records/native-selectors/parent-fix/20261120T213550Z-d07309cd"
@@ -138,11 +138,13 @@ class RecipesTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as scratch:
             target = Path(scratch)
             result = target / task_dir / "result.json"
-            for name in (original["admissionClass"], original["callsClass"], original["checked"][0]["raw"],
-                         task_dir / "Admission.java"):
+            for name in (original["admissionClass"], original["callsClass"], task_dir / "Admission.java"):
                 dest = target / name
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 dest.write_bytes(native_selectors.archived_bytes(receipt, name).read_bytes())
+            dest = target / original["checked"][0]["raw"]  # one case's record, wherever the example keeps its cases
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(case_pack.read(receipt, original["checked"][0]["raw"]))
             result.write_text(json.dumps(original))
             self.assertEqual(native_selectors.validate_result(folder, plan, result)["status"], "refuted")
             candidate = deepcopy(original)

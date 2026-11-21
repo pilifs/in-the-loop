@@ -1,0 +1,205 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "itl-publication-summary/v1",
+ "title": "A reviewed publication summary: what git says of evidence kept in the private archive",
+ "description": "One small file per summary under llm-dlc/artifacts/YYYY/MM/DD/. It describes evidence and how to verify it; a checker's verdict still comes from its own validator. Unbounded rows, paths, tool text and case lists stay in digest-addressed objects of the private archive, which `archive` names. At most 64 KiB (256 KiB for a catalog page, catalog-*.json): sync.py checkpoint refuses a larger one. Never a credential, a signed or expiring URL, a literal finding or a sensitive file name.",
+ "type": "object",
+ "required": [
+  "schema",
+  "kind",
+  "id",
+  "source",
+  "evidence",
+  "archive",
+  "disposition",
+  "policy"
+ ],
+ "properties": {
+  "schema": {
+   "const": "itl-publication-summary/v1"
+  },
+  "kind": {
+   "type": "string",
+   "description": "promotion, job, selector-set, trace-segment, or any other name: an unknown kind carries the common fields alone"
+  },
+  "id": {
+   "type": "string",
+   "description": "the promotion's id, or the occurrence id of what is summarized"
+  },
+  "source": {
+   "type": "object",
+   "description": "safe source references: commits, trees, change ids, a job id, counts"
+  },
+  "evidence": {
+   "type": "object",
+   "required": [
+    "availability"
+   ],
+   "properties": {
+    "availability": {
+     "enum": [
+      "verified",
+      "pending",
+      "restricted",
+      "missing"
+     ]
+    }
+   }
+  },
+  "archive": {
+   "type": "object",
+   "description": "where the full evidence is: an occurrence id and the SHA-256 and length of its original bytes; never a URL that expires",
+   "properties": {
+    "occurrence": {
+     "type": "string"
+    },
+    "sha256": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{64}$"
+    },
+    "bytes": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "read": {
+     "type": "string"
+    }
+   }
+  },
+  "disposition": {
+   "enum": [
+    "published",
+    "withheld",
+    "private-only"
+   ]
+  },
+  "policy": {
+   "type": "object",
+   "description": "the versions of the rules the summary was made under"
+  },
+  "payload": {
+   "type": "object",
+   "description": "the kind's own bounded fields"
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "promotion"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "source": {
+      "required": [
+       "base",
+       "frozen",
+       "frozen_tree",
+       "commits"
+      ]
+     },
+     "evidence": {
+      "required": [
+       "trace_logs",
+       "originals"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "job"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "payload"
+    ],
+    "properties": {
+     "payload": {
+      "required": [
+       "status",
+       "exit",
+       "declared",
+       "applied",
+       "conflicted",
+       "wall_seconds",
+       "peak_memory_bytes"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "selector-set"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "payload"
+    ],
+    "properties": {
+     "payload": {
+      "required": [
+       "admitted",
+       "checked",
+       "route",
+       "disposition"
+      ],
+      "properties": {
+       "first_blocker": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "description": "only if it may be published"
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "trace-segment"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "payload"
+    ],
+    "properties": {
+     "payload": {
+      "required": [
+       "session",
+       "boundary",
+       "events",
+       "tokens",
+       "redacted_sha256"
+      ],
+      "properties": {
+       "url": {
+        "type": "string",
+        "description": "the public URL, only once the CDN's copy is verified"
+       }
+      }
+     }
+    }
+   }
+  }
+ ]
+}

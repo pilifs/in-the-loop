@@ -304,7 +304,7 @@ class Decisions(unittest.TestCase):
         self.assertEqual(len(sync.decision_problems()), 1)
         self.published["allowlist.json"] = {"schema": sync.ALLOWLIST_SCHEMA, "entries": {self.fid: entry}}
         self.assertEqual(sync.decision_problems(), [])
-        self.assertIn("heads(immutable() & ::(@))", self.asked)
+        self.assertIn(f"heads({sync.DECISIONS_PUBLISHED} & ::(@))", self.asked)
         self.asked.clear()
         self.assertEqual(sync.decision_problems(), [])  # found in order once: not asked again
         self.assertEqual(self.asked, [])
@@ -335,7 +335,7 @@ class Decisions(unittest.TestCase):
         with mock.patch("sys.stdout", out):
             self.assertEqual(sync.cmd_decisions(["--at", "stream@-"]), 1)
         self.assertIn(f"allowlist.json: {self.fid[:8]} (public-ip)", out.getvalue())
-        self.assertIn("heads(immutable() & ::(stream@-))", self.asked)
+        self.assertIn(f"heads({sync.DECISIONS_PUBLISHED} & ::(stream@-))", self.asked)
         self.published["allowlist.json"] = doc  # published on the line's own ancestors: nothing to ask about
         self.assertEqual(sync.cmd_decisions(["--at", "stream@-"]), 0)
         self.published.clear()

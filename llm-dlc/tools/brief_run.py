@@ -130,6 +130,18 @@ import streams_status
 import watch
 
 REPO = Path(__file__).resolve().parents[2]
+
+
+def _verification_layout():
+    """verification/layout.py: where a job and its result are kept, by id (flat, or under the day it was submitted)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+layout = _verification_layout()
 INTERVAL = 1800
 FOUNDATION = {"model": "claude-fable-5-2", "effort": "high"}
 # The user's words for the foundation stage (2026-11-17), after a sentence that names the brief.
@@ -1385,7 +1397,7 @@ def collect(run: Run) -> dict | None:
     results, attention = [], []
     for job in ids:
         try:
-            result = json.loads((root / "verification" / "results" / job / "result.json").read_text())
+            result = json.loads(((layout.find_result(root, job) or root / layout.result_rel(job)) / "result.json").read_text())
         except (OSError, ValueError):
             result = {}
         row = {"id": job, "status": result.get("status", "?"), "summary": result.get("summary")}

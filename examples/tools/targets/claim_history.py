@@ -14,11 +14,11 @@ def job_history(root, folder, number):
     """Associate plain task steps with their actual job results. An unrecognized step decides nothing."""
     tasks = defaultdict(list)
     others = []
-    for path in sorted((root / "verification/jobs").glob("*.json")):
+    for path in accept.layout.jobs(root).values():
         job = read_json(path) or {}
         if number not in (job.get("links") or {}).get("examples", []):
             continue
-        result_path = root / "verification/results" / path.stem / "result.json"
+        result_path = (accept.layout.find_result(root, path.stem) or root / accept.layout.result_rel(path.stem)) / "result.json"
         result = read_json(result_path) or {}
         job_ref = {"job": path.stem, "jobFile": str(path.relative_to(root)), "budget": job.get("resources"),
                    "jobResult": str(result_path.relative_to(root)) if result else None,
@@ -58,8 +58,11 @@ def evidence_folders(root, folder):
     """A failed or mixed job can retain its receipts in its outputs instead of applying them to the example."""
     yield folder, None
     relative = folder.relative_to(root).as_posix()
-    for archive in sorted((root / "verification/results").glob(f"*/outputs/{relative}")):
-        result = read_json(archive.parents[2] / "result.json") or {}
+    for kept in accept.layout.results(root).values():
+        archive = kept / "outputs" / relative
+        if not archive.exists():
+            continue
+        result = read_json(kept / "result.json") or {}
         manifest = {o["path"]: o.get("sha256") for o in result.get("outputs", [])}
         yield archive, manifest
 

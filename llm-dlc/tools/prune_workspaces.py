@@ -29,7 +29,10 @@ says why.
    - a file in the default workspace has its exact content, at any path: a run record copied
      in, an identical .env, a job's work directory; or
    - it lies in a directory that is both gitignored there and one of the build outputs
-     named in REGENERABLE (target/, build/, __pycache__/, ...), which a build makes again.
+     named in REGENERABLE (target/, build/, __pycache__/, ...), which a build makes again; or
+   - the private archive holds its exact bytes in an occurrence it has verified in the store
+     (artifacts.py: a job's work directory, a run's records, a transcript sealed before this),
+     so it can be restored on any machine. A capture still waiting to be uploaded does not count.
 
    The check reads file contents, not jj's view of them, so edits jj never snapshotted (a
    stale or forgotten workspace's) count like any other. Gitignored files are never in
@@ -102,6 +105,7 @@ class Workspace:
     problems: list[str] = field(default_factory=list)
     lost: list[tuple[str, int, bool]] = field(default_factory=list)  # (relative path, size, gitignored)
     files: int = 0
+    archived: int = 0  # files whose only other copy is the private archive's, verified in the store
     regenerated: int = 0  # bytes in build outputs, not checked file by file
     sessions: Path | None = None
 
@@ -120,6 +124,7 @@ class Repo:
         self._reachable: set[str] | None = None
         self._default_by_size: dict[int, list[Path]] | None = None
         self._default_hashed: dict[Path, str] = {}
+        self._archived: dict[int, set[str]] | None = None
 
     def reachable(self) -> set[str]:
         """Every object id reachable from INTO, blobs included."""
@@ -127,6 +132,31 @@ class Repo:
             out = run(["git", "--git-dir", str(self.git_dir), "rev-list", "--objects", *self.intos])
             self._reachable = {line.split(b" ", 1)[0].decode() for line in out.splitlines() if line}
         return self._reachable
+
+    def archive_has(self, path: Path, size: int) -> bool:
+        """Whether the private archive holds this file's exact bytes in an occurrence verified in the store. The
+        archive is read once, and a file is hashed only when one of its length is there."""
+        if self._archived is None:
+            self._archived = {}
+            try:
+                import artifacts
+                if not artifacts.off():
+                    archive = artifacts.Archive()
+                    try:
+                        for digest, length in archive.verified_files():
+                            self._archived.setdefault(length, set()).add(digest)
+                    finally:
+                        archive.close()
+            except Exception as e:  # no archive here, or one that cannot be read: nothing is taken as held
+                print(f"note: the private archive was not consulted ({type(e).__name__})", file=sys.stderr)
+        held = self._archived.get(size)
+        if not held or path.is_symlink():
+            return False
+        h = hashlib.sha256()
+        with path.open("rb") as f:
+            for chunk in iter(lambda: f.read(1 << 20), b""):
+                h.update(chunk)
+        return h.hexdigest() in held
 
     def default_has(self, blob: str, size: int) -> bool:
         """Whether some file of the default workspace has this content. Files are hashed only
@@ -312,6 +342,9 @@ def check(repo: Repo, ws: Workspace, archive: Path | None) -> None:
             size = len(os.fsencode(os.readlink(p))) if stat.S_ISLNK(st.st_mode) else st.st_size
             if repo.default_has(blob, size):
                 continue
+            if repo.archive_has(p, size):
+                ws.archived += 1
+                continue
             pending.append((rel, p, blob, size))
 
     flags = ignored(repo, ws.path, [rel for rel, *_ in pending])
@@ -352,7 +385,10 @@ def person_at_terminal() -> bool:
 def report(ws: Workspace) -> None:
     kind = "listed" if ws.listed else "forgotten"
     print(f"\n{ws.name} ({kind}, {ws.path}): {'BLOCKED' if ws.problems else 'safe to delete'}")
-    print(f"  {ws.files} file(s) checked, each in history or the default workspace" if not ws.lost else f"  {ws.files} file(s) checked")
+    print(f"  {ws.files} file(s) checked, each in history or the default workspace" if not ws.lost and not ws.archived
+          else f"  {ws.files} file(s) checked")
+    if ws.archived:
+        print(f"  {ws.archived} of them are kept by the private archive alone, verified in the store (artifacts.py list, fetch)")
     if ws.regenerated:
         print(f"  {human(ws.regenerated)} of gitignored build output not checked (regenerable)")
     for p in ws.problems:

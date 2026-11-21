@@ -26,6 +26,18 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def _verification_layout():
+    """verification/layout.py: where a job and its result are kept, by id (flat, or under the day it was submitted)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+layout = _verification_layout()
 LIB = ROOT / "lib"
 TOOLS = ROOT / "llm-dlc" / "tools"
 
@@ -685,7 +697,7 @@ def session_evidence(root: Path = ROOT, fetch: bool = False, exclude=()) -> tupl
 def job_evidence(root: Path = ROOT) -> list[dict]:
     """Cargo sections from every past job's step logs, each with its source `job:ID`."""
     out = []
-    for result in sorted((root / "verification" / "results").glob("*/result.json")):
+    for result in (folder / "result.json" for folder in layout.results(root).values()):
         r = json.loads(result.read_text())
         for step in r.get("steps") or []:
             log = (step.get("log") or {}).get("path")

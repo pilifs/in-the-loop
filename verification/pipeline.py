@@ -72,6 +72,11 @@ def originals():
 HERE = "verification"
 JOBS = f"{HERE}/jobs"
 RESULTS = f"{HERE}/results"
+# Where a job and its result are, by id: flat as every job until now, or under the day it was submitted
+# (layout.py). Every path of a job or a result below comes from there.
+_layout = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parent / "layout.py")
+layout = importlib.util.module_from_spec(_layout)
+_layout.loader.exec_module(layout)
 PRIORITIES = f"{HERE}/priorities.json"
 SCHEMAS = ROOT / HERE / "schema"
 JOB_SCHEMA = "verification-job/v1"
@@ -201,6 +206,12 @@ def run_quiet(cmd, **kw):
     return subprocess.run(cmd, text=True, capture_output=True, **kw)
 
 
+def schema_ref(path, name):
+    """What a job or a result at `path` gives as its "$schema": the schema file, relative to the file's own folder,
+    which is three levels deeper in a day's shard than in the flat layout."""
+    return os.path.relpath(ROOT / HERE / "schema" / name, Path(path).parent)
+
+
 def write_json(path, document):
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
@@ -327,9 +338,7 @@ def recorded_on_heads():
     for head in (proc.stdout.split() if proc.returncode == 0 else []):
         if head not in _RECORDED:
             listed = git("ls-tree", "-r", "--name-only", head, "--", f"{RESULTS}/", check=False)
-            _RECORDED[head] = ({Path(line).parent.name for line in listed.stdout.splitlines()
-                                if Path(line).name == "result.json" and Path(line).parent.parent.as_posix() == RESULTS}
-                               if listed.returncode == 0 else set())
+            _RECORDED[head] = layout.recorded(listed.stdout.splitlines()) if listed.returncode == 0 else set()
         for job_id in _RECORDED[head]:
             found.setdefault(job_id, head)
     return found
@@ -373,7 +382,7 @@ def committed_jobs(rev, needs_source=None):
     takes a git process for each job, so `needs_source(job id)` may say which jobs it is wanted for (a job that
     has run needs none); the others come with None."""
     listing = git("ls-tree", "-r", "--name-only", rev, "--", JOBS + "/").stdout.split()
-    paths = sorted(p for p in listing if p.endswith(".json"))
+    paths = sorted(p for p in listing if layout.job_id_of(p))
     blobs = show_many(rev, paths)
     jobs = []
     jj_workspace = (ROOT / ".jj").exists()
@@ -884,9 +893,7 @@ class Runner:
         # A job the runner was stopped in the middle of counts as not run, and runs again.
         done = {p.name for p in (self.state / "results").iterdir() if (p / "result.json").exists()
                 and json.loads((p / "result.json").read_text()).get("status") != "cancelled"}
-        tree = ROOT / RESULTS
-        if tree.exists():
-            done |= {p.name for p in tree.iterdir() if (p / "result.json").exists()}
+        done |= set(layout.results(ROOT))
         # A result committed on a head this working copy isn't on: done all the same, and said once, since it is
         # missing here until that commit is merged.
         for job_id, head in sorted(recorded_on_heads().items()):
@@ -1503,7 +1510,7 @@ def cmd_status(args):
     claims = {p.name: json.loads(p.read_text() or "{}") for p in (state / "claims").iterdir()} if (state / "claims").exists() else {}
     finished = sorted(p.name for p in (state / "results").iterdir() if (p / "result.json").exists()
                       and json.loads((p / "result.json").read_text()).get("status") != "cancelled") if (state / "results").exists() else []
-    collected = sorted(p.name for p in (ROOT / RESULTS).iterdir() if (p / "result.json").exists()) if (ROOT / RESULTS).exists() else []
+    collected = sorted(layout.results(ROOT))
     elsewhere = {i: head for i, head in recorded_on_heads().items() if i not in collected and i not in finished}
     rows = {"pending": [], "running": [], "finished, not collected": [], "recorded on another head": [], "collected": []}
     seen = set()
@@ -1518,7 +1525,7 @@ def cmd_status(args):
             rows["recorded on another head"].append(f"{line}  (in commit {elsewhere[job_id][:12]}, which this working copy "
                                                     f"is not on: merge it; the job is not run again)")
         elif job_id in collected:
-            res = json.loads((ROOT / RESULTS / job_id / "result.json").read_text())
+            res = json.loads((layout.find_result(ROOT, job_id) / "result.json").read_text())
             rows["collected"].append(f"{line}  [{res['status']}]")
         elif job_id in finished:
             res = json.loads((state / "results" / job_id / "result.json").read_text())
@@ -1535,7 +1542,7 @@ def cmd_status(args):
     for job_id in finished:
         if job_id not in seen:
             rows["finished, not collected"].append(f"{job_id}  (job file no longer in {rev[:12]})")
-    uncommitted = sorted(p.stem for p in (ROOT / JOBS).glob("*.json")) if (ROOT / JOBS).exists() else []
+    uncommitted = sorted(layout.jobs(ROOT))
     not_committed = [j for j in uncommitted if j not in seen]
     if args.json:
         print(json.dumps({**rows, "not committed": not_committed}, indent=2))
@@ -1564,8 +1571,7 @@ def cmd_prioritize(args):
         for job_id, entry in sorted(jobs.items(), key=lambda kv: (-kv[1]["priority"], kv[0])):
             print(f"{entry['priority']:>4}  {job_id}  {entry.get('reason', '')}")
         return 0
-    known = ({j.get("id") for j, _, _ in committed_jobs(default_rev(), lambda _: False)} |
-             {p.stem for p in (ROOT / JOBS).glob("*.json")})
+    known = {j.get("id") for j, _, _ in committed_jobs(default_rev(), lambda _: False)} | set(layout.jobs(ROOT))
     unknown = [i for i in args.ids if i not in known]
     if unknown and not args.clear:
         sys.exit(f"no such job: {', '.join(unknown)}")
@@ -1595,7 +1601,8 @@ def cmd_commit_paths(args):
     paths = list(COLLECTORS_OWN)
     proc = run_quiet(["jj", "diff", "--name-only", RESULTS], cwd=ROOT) if (ROOT / ".jj").exists() and shutil.which("jj") \
         else run_quiet(["git", "status", "--porcelain", "--untracked-files=all", RESULTS], cwd=ROOT)
-    changed = {Path(line.split()[-1]).parent for line in proc.stdout.splitlines() if line.strip().endswith("/result.json")}
+    changed = {Path(line.split()[-1]).parent for line in proc.stdout.splitlines()
+               if (layout.result_id_of(line.split()[-1]) or ("", ""))[1] == "result.json"}
     for folder in sorted(changed):
         try:
             applied = (json.loads((ROOT / folder / "result.json").read_text()).get("collected") or {}).get("applied") or []
@@ -1622,7 +1629,7 @@ def cmd_collect(args):
     for job_id in ids:
         src = state / job_id
         result = json.loads((src / "result.json").read_text())
-        dest = ROOT / RESULTS / job_id
+        dest = layout.new_result(ROOT, job_id)  # beside its job: flat for a flat job, in the day's shard for a sharded one
         capture = originals()
         sealed = capture.before_collect(ROOT, config["runner"]["state_dir"], job_id, src, dest, result) if capture else True
         if dest.exists():
@@ -1663,6 +1670,8 @@ def cmd_collect(args):
         if conflicts:
             result["attention"].append(f"{len(conflicts)} output(s) changed in the working copy since the job's commit and were "
                                        f"not applied (kept under outputs/): rerun the job on the newer commit")
+        if "$schema" in result:
+            result["$schema"] = schema_ref(dest / "result.json", "result.schema.json")
         write_json(dest / "result.json", result)
         if capture:
             capture.after_collect(ROOT, config["runner"]["state_dir"], job_id, dest, result)
@@ -1707,12 +1716,13 @@ def collect_totals(tally, jobs):
 
 
 def write_index():
+    """One line a result, newest first: results/index.json for the results kept flat, and an index.json in each
+    day's folder for the ones kept there, which the first names under "shards". So the complete index stops growing
+    when new results go by day, and a day's index is rewritten only on that day's collects."""
     tree = ROOT / RESULTS
-    entries = []
-    for p in sorted(tree.iterdir()) if tree.exists() else []:
+    entries, days = [], {}
+    for p in layout.results(ROOT).values():
         f = p / "result.json"
-        if not f.exists():
-            continue
         r = json.loads(f.read_text())
         spec = r["job"]["spec"]
         entries.append({"id": r["id"], "title": r.get("title"), "status": r["status"], "summary": r["summary"],
@@ -1720,27 +1730,38 @@ def write_index():
                         "links": spec.get("links", {}), "sourceCommit": r["sourceCommit"], "finishedAt": r["finishedAt"],
                         "wallSeconds": (r.get("usage") or {}).get("wallSeconds"),
                         "peakMemoryBytes": (r.get("usage") or {}).get("peakMemoryBytes"),
-                        "estimate": r.get("estimate"), "host": r["runner"]["host"], "result": f"{p.name}/result.json"})
-    entries.sort(key=lambda e: e["finishedAt"] or "", reverse=True)
+                        "estimate": r.get("estimate"), "host": r["runner"]["host"],
+                        "result": f"{p.relative_to(tree).as_posix()}/result.json"})
+        if p.parent != tree:
+            days.setdefault(p.parent, []).append(entries.pop())
+    newest = lambda rows: sorted(rows, key=lambda e: e["finishedAt"] or "", reverse=True)
     if entries or tree.exists():
-        write_json(tree / "index.json", {"schema": "verification-results-index/v1", "results": entries})
+        shards = {"shards": sorted(d.relative_to(tree).as_posix() for d in days)} if days else {}
+        write_json(tree / "index.json", {"schema": "verification-results-index/v1", **shards, "results": newest(entries)})
+    for folder, rows in days.items():
+        write_json(folder / "index.json", {"schema": "verification-results-index/v1", "shard": folder.relative_to(tree).as_posix(),
+                                           "results": newest(rows)})
+
+
+def result_rel(job_id):
+    """A result's folder as a repository path, wherever it is kept; the flat path for one that is not here."""
+    found = layout.find_result(ROOT, job_id)
+    return found.relative_to(ROOT).as_posix() if found else layout.result_rel(job_id)
 
 
 def load_results(args):
-    tree = ROOT / RESULTS
     results = []
-    for p in sorted(tree.iterdir()) if tree.exists() else []:
-        if (p / "result.json").exists():
-            r = json.loads((p / "result.json").read_text())
-            if args.ids and r["id"] not in args.ids:
-                continue
-            if args.status and r["status"] not in args.status:
-                continue
-            if args.since and (r["finishedAt"] or "") < args.since:
-                continue
-            if args.capability and not set(args.capability) & set(r["job"]["spec"].get("capabilities", [])):
-                continue
-            results.append(r)
+    for p in layout.results(ROOT).values():
+        r = json.loads((p / "result.json").read_text())
+        if args.ids and r["id"] not in args.ids:
+            continue
+        if args.status and r["status"] not in args.status:
+            continue
+        if args.since and (r["finishedAt"] or "") < args.since:
+            continue
+        if args.capability and not set(args.capability) & set(r["job"]["spec"].get("capabilities", [])):
+            continue
+        results.append(r)
     results.sort(key=lambda r: (STATUS_ORDER.index(r["status"]) if r["status"] in STATUS_ORDER else 0, r["finishedAt"] or ""))
     return results
 
@@ -1791,9 +1812,9 @@ def cmd_report(args):
             "steps": [{"name": s["name"], "status": s["status"], "exitCode": s.get("exitCode"),
                        "wallSeconds": s.get("wallSeconds"), "peakMemoryBytes": s.get("peakMemoryBytes"),
                        "signalCounts": s.get("signalCounts"), "tail": (s.get("tail") or [])[-args.tail:],
-                       "log": f"{RESULTS}/{r['id']}/{s['log']['path']}" if s.get("log") else None} for s in r["steps"]],
+                       "log": f"{result_rel(r['id'])}/{s['log']['path']}" if s.get("log") else None} for s in r["steps"]],
             "outputs": r["outputs"], "collected": r.get("collected"),
-            "result": f"{RESULTS}/{r['id']}/result.json"} for r in results],
+            "result": f"{result_rel(r['id'])}/result.json"} for r in results],
             "calibration": calibration(results), "calibrationByHost": calibration_by_host(results)}, indent=2, ensure_ascii=False))
         return 0
     counts = {}
@@ -1815,9 +1836,9 @@ def cmd_report(args):
                 print(f"- expected: {spec['expected']}")
             for s in r["steps"]:
                 if s["status"] not in ("passed", "skipped"):
-                    print(f"- step {s['index']} `{s['name']}` {s['status']}; last lines of `{RESULTS}/{r['id']}/{s['log']['path']}`:")
+                    print(f"- step {s['index']} `{s['name']}` {s['status']}; last lines of `{result_rel(r['id'])}/{s['log']['path']}`:")
                     print("\n```\n" + "\n".join((s.get("tail") or [])[-args.tail:]) + "\n```")
-            print(f"- result: `{RESULTS}/{r['id']}/result.json`\n")
+            print(f"- result: `{result_rel(r['id'])}/result.json`\n")
     if clean:
         print("\n## Passed\n")
         for r in clean:
@@ -2001,7 +2022,8 @@ def cmd_submit(args):
     problems = validate(job, "job.schema.json")
     if problems:
         sys.exit("not a valid job:\n  " + "\n  ".join(problems))
-    path = ROOT / JOBS / f"{job['id']}.json"
+    path = layout.new_job(ROOT, job["id"])
+    job["$schema"] = schema_ref(path, "job.schema.json")
     if path.exists() and not args.force:
         sys.exit(f"{path.relative_to(ROOT)} exists")
     if args.dry_run:
@@ -2024,9 +2046,9 @@ def cmd_submit(args):
 
 
 def cmd_resubmit(args):
-    old_path = ROOT / JOBS / f"{args.id}.json"
-    if not old_path.exists():
-        sys.exit(f"{old_path.relative_to(ROOT)} not found")
+    old_path = layout.find_job(ROOT, args.id)
+    if old_path is None:
+        sys.exit(f"{layout.job_rel(args.id)} not found (nor in its day's shard)")
     job = json.loads(old_path.read_text())
     at = now()
     job["id"] = new_id(job["title"], at)
@@ -2044,7 +2066,9 @@ def cmd_resubmit(args):
     problems = validate(job, "job.schema.json")
     if problems:
         sys.exit("not a valid job:\n  " + "\n  ".join(problems))
-    path = ROOT / JOBS / f"{job['id']}.json"
+    path = layout.new_job(ROOT, job["id"])
+    if "$schema" in job:
+        job["$schema"] = schema_ref(path, "job.schema.json")
     write_json(path, job)
     print(f"wrote {path.relative_to(ROOT)}, superseding {args.id}. Commit it to queue it.")
     return 0
@@ -2052,7 +2076,10 @@ def cmd_resubmit(args):
 
 def cmd_validate(args):
     bad = 0
-    for path in sorted((ROOT / JOBS).glob("*.json")) if (ROOT / JOBS).exists() else []:
+    for problem in layout.conflicts(ROOT):  # one id recorded twice, differently
+        print(problem)
+        bad += 1
+    for path in layout.jobs(ROOT).values():
         job = json.loads(path.read_text())
         problems = validate(job, "job.schema.json")
         if job.get("id") != path.stem:
@@ -2060,7 +2087,7 @@ def cmd_validate(args):
         for p in problems:
             print(f"{path.relative_to(ROOT)}: {p}")
         bad += bool(problems)
-    for path in sorted((ROOT / RESULTS).glob("*/result.json")) if (ROOT / RESULTS).exists() else []:
+    for path in (folder / "result.json" for folder in layout.results(ROOT).values()):
         problems = validate(json.loads(path.read_text()), "result.schema.json")
         for p in problems:
             print(f"{path.relative_to(ROOT)}: {p}")

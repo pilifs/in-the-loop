@@ -7,7 +7,8 @@ Layout (llm-dlc/specification.md has the full spec, llm-dlc/README.md the proced
   llm-dlc/traces/README.md                           checked in: every session added up (llm-dlc/traces-readme-template.md)
   llm-dlc/traces/<session-id>/manifest.json          checked in: stats, log pointer, commits
   llm-dlc/traces/<session-id>/summary.md             checked in: readable summary (llm-dlc/summary-template.md)
-  llm-dlc/traces/<session-id>/metrics.json           checked in: per-call tables for charts (metrics.py)
+  llm-dlc/traces/<session-id>/metrics.json           checked in: tables for charts (metrics.py); the row for each
+                                                     model and tool call is built on demand (sync.py events)
   llm-dlc/traces/<session-id>/runs/<record>.md       checked in: a feature-loop.sh run of the session, redacted
   llm-dlc/traces/metrics.json                        checked in: those tables added up over all sessions
   llm-dlc/traces/loops.json, loops.md                checked in: the loops added up by category, loop, run, cycle
@@ -23,14 +24,19 @@ Identifiers:
   log       sha256 of the *uncompressed* redacted JSONL; a snapshot file never changes
   commit    each change made in a session carries the trailer
               LLM-Trace: <session-id> sha256:<log-sha256>
-            next to links to the session summary and the log
+            and the manifest lists those changes (jj change id, git SHA once immutable). Commits made before
+            2026-11-21 also carry two links above it, which every reader still takes:
               LLM-Trace-Summary: <repo URL>/blob/main/llm-dlc/traces/<session-id>/summary.md
               LLM-Trace-Log: https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
-            and the manifest lists those changes (jj change id, git SHA once immutable)
 
 Commands:
   sync.py hook                  Claude Code Stop/SessionEnd hook: Langfuse only, leaves the repo alone
   sync.py hook-commit           Claude Code PostToolUse hook: traces a plain `jj commit` or `git commit`
+  sync.py trace [REV]           what a commit's LLM-Trace lines resolve to now: the session, its summary, and its
+                                log, public, withdrawn or pending and where it waits
+  sync.py events SESSION [--to FILE]
+                                the row for each model call and tool call of a session, which its metrics.json
+                                names by digest and does not hold: built again from the log, and compared
   sync.py sync [--all | ID...] [--full]
                                 snapshot sessions of this repo from ~/.claude/projects: those named, or
                                 else those whose transcript, commits, note or files changed since they
@@ -61,6 +67,13 @@ Commands:
                                 log and waits for nothing; it refuses if what the push would expose holds a
                                 conflict, a raw payload, a credential or an undecided redaction decision
                                 (checkpoint.py). --bootstrap creates `develop` where origin's `main` is
+  sync.py promote --rev REV [--dry-run]
+                                move origin's `main` forward to a commit of `develop`: the commits between
+                                them are frozen, their logs uploaded and their originals accounted for in a
+                                candidate workspace of its own, the record is a commit on top, the default
+                                run must cover that tree, and `main` moves only if it is still where the
+                                promotion found it (promote.py). --dry-run prints the review view and what
+                                would block; --skip-tests REASON is the user's alone
   sync.py check [--remote] [--full]
                                 verify hashes, trailers and redaction (--remote: re-download uploads);
                                 a log already scanned under these rules is not scanned again, --full
@@ -87,6 +100,17 @@ Commands:
   sync.py allow drop ID...      remove entries, proposed or approved
   sync.py allow vouch           say that the decisions `check` finds no record of were a person's;
                                 a person at a terminal only
+  sync.py delegate [status | request --run NAME | on CODE [--fresh] | off]
+                                a person lets one run's watcher take routine redaction decisions, and takes
+                                that back (delegation.py); off unless a person turned it on
+  sync.py delegate approve ID... --evidence KIND:DETAIL --reason TEXT
+                                the designated watcher approves proposals whose origin the command can check
+  sync.py delegate withhold SESSION SHA256 --reason TEXT   (a person: sync.py review withhold ...)
+                                keep a log that is not uploaded out of publication for good (private-only)
+  sync.py delegate mask ID... --reason TEXT                (a person: sync.py review mask ...)
+                                add a value to this machine's redactions; withhold the unpublished logs with it
+  sync.py review escalate ID... --reason TEXT [--contained TEXT]
+                                one masked record for a person to decide; `review close ID --reason TEXT` ends it
   sync.py decisions [--at REV]  the decisions in the allow list and the reviewed findings that no person is
                                 recorded as having taken, here or in a commit (status 1 when there is one)
   sync.py stamp [--full]        after a change to redaction_rules.py: rescan everything, then
@@ -800,6 +824,9 @@ def sync_session(transcript: Path, redact: Redactor, status: str,
         "logs": old.get("logs") or {sha: {"url": url} for sha, url in old.get("uploads", {}).items()},
         "redaction_policy": REDACTION_POLICY,
         "generator": "llm-dlc/tools/sync.py",
+        # The workspace the session ran in, as its log names it: a summary rendered elsewhere (a promotion's
+        # candidate) shortens the paths of edited files by it, as the workspace's own sync does.
+        "workspace": redact.string(str(REPO)),
     }
     save_manifest(sid, m)
     return sid, m, entries, subagent_entries
@@ -855,15 +882,60 @@ def _is_session_trailer(line: str, sid: str) -> bool:
 
 
 def set_trailer(desc: str, sid: str, sha: str) -> str:
-    """Replace this session's trailers (any old sha, or none) with ones for the given log:
-    links to the summary and the log, then the LLM-Trace identifier."""
+    """Replace this session's trailers (any old sha, or none) with the identifier of the given log:
+    `LLM-Trace: SESSION sha256:LOG`, and nothing else. The identifier is true from the moment the commit is made
+    and stays so: `sync.py trace REV` says what it resolves to now (the session's summary, the log's URL once a
+    promotion published it, or where the log waits until then). Until 2026-11-21 two link lines stood above it,
+    `LLM-Trace-Summary` (a URL on `main`) and `LLM-Trace-Log` (the CDN's URL): both were promises about a
+    promotion that had not happened yet. Commits that carry them keep them, and every reader takes either form."""
     lines = [ln for ln in desc.rstrip("\n").split("\n") if not _is_session_trailer(ln, sid)]
     body = "\n".join(lines).rstrip("\n")
     # Join an existing trailer block (e.g. Co-Authored-By) rather than start a new paragraph.
     sep = "\n" if re.search(r"(^|\n)[A-Za-z][A-Za-z-]*: .+$", body) else ("\n\n" if body else "")
-    return (f"{body}{sep}{LINK_TRAILERS[0]}: {summary_url(sid)}\n"
-            f"{LINK_TRAILERS[1]}: {log_url(sid, sha)}\n"
-            f"{TRAILER}: {sid} sha256:{sha}\n")
+    return f"{body}{sep}{TRAILER}: {sid} sha256:{sha}\n"
+
+
+def cmd_trace(args: list[str]) -> int:
+    """`sync.py trace [REV]`: what the LLM-Trace lines of a commit (default @-) resolve to in this checkout now.
+    For each: the session and its summary, and the log: public at its URL, withdrawn and why, or pending, with
+    where it is stored meanwhile. Reads no working copy and contacts nothing."""
+    if len(args) > 1:
+        print("usage: sync.py trace [REV]", file=sys.stderr)
+        return 2
+    r = jj("--ignore-working-copy", "log", "--no-graph", "-r", args[0] if args else "@-", "-T", COMMIT_TEMPLATE)
+    if r.returncode:
+        print(f"cannot read that revision: {r.stderr.strip()[:200]}", file=sys.stderr)
+        return 1
+    roots = None
+    for row in r.stdout.splitlines():
+        change, commit, _, desc = row.split("\t", 3)
+        desc = json.loads(desc)
+        found = [(sid, sha) for sid, sha in TRAILER_RE.findall(desc)]
+        print(f"{change[:12]} {commit[:12]}  {commit_summary(desc) or '(no description)'}" + ("" if found else "\n  no LLM-Trace line"))
+        for sid, sha in found:
+            m = load_manifest(sid)
+            info = (m.get("logs") or {}).get(sha) if sha else None
+            print(f"  session {sid}" + (f"  {m.get('title') or ''}".rstrip() if m else "  (no manifest of it in this checkout: its workspace's line brings it)"))
+            if m:
+                print(f"    summary  {summary_path(sid).relative_to(REPO)}")
+            if not sha:
+                print("    log      not named (a trailer from before logs were named by their hash)")
+                continue
+            if info and info.get("withdrawn"):
+                state = f"withdrawn: {info['withdrawn']}"
+            elif info and info.get("url"):
+                state = f"public  {info['url']}"
+            elif log_path(sid, sha).exists():
+                state = "pending: stored in this workspace; a promotion uploads it"
+            else:
+                roots = workspace_roots() if roots is None else roots
+                rel = log_path(sid, sha).relative_to(REPO)
+                where = next((str(root) for root in roots if (root / rel).exists()), None)
+                state = (f"pending: stored in the workspace {where}; a promotion takes it from there" if where else
+                         "pending, and stored in no workspace of this machine" + ("" if info else "; the manifest here does not list it"))
+            print(f"    log      {sha[:12]}  {state}")
+            print(f"    originals  python3 llm-dlc/tools/artifacts.py list --session {sid}")
+    return 0
 
 
 def commit_summary(desc: str) -> str | None:
@@ -1206,10 +1278,18 @@ def metrics_path(sid: str) -> Path:
 def session_metrics(sid: str, m: dict, entries: list[dict], redact: Redactor,
                     subagents: list[tuple[str, list[dict]]] | None = None) -> str:
     """metrics.json of a session, from its redacted logs and manifest and from the price list.
-    `subagents`: (agent, entries) of the manifest's subagent logs, when the caller has them."""
+    `subagents`: (agent, entries) of the manifest's subagent logs, when the caller has them.
+    The file leaves out the row for each model call and tool call and names their text by its digest
+    (metrics.bounded); `sync.py events SESSION` builds that text again."""
+    return metrics.dumps(metrics.bounded(whole_metrics(sid, m, entries, redact, subagents)))
+
+
+def whole_metrics(sid: str, m: dict, entries: list[dict], redact: Redactor,
+                  subagents: list[tuple[str, list[dict]]] | None = None) -> dict:
+    """Everything metrics.py makes of a session's logs, the per-call tables included."""
     if subagents is None:
         subagents = [(s["agent"], log_entries(load_log(sid, s["log"]["sha256"]) or b"")) for s in m.get("subagents", [])]
-    return metrics.dumps(metrics.session(m, entries, subagents, json.loads(PRICING.read_text()), redact.string))
+    return metrics.session(m, entries, subagents, json.loads(PRICING.read_text()), redact.string)
 
 
 def metrics_files(manifests: dict[str, dict] | None = None) -> list[tuple[dict, dict]]:
@@ -1240,18 +1320,28 @@ def loops_page_path() -> Path:
     return TRACES / "loops.md"
 
 
+def verification_layout():
+    """verification/layout.py: a job and its result by id, flat or under the day it was submitted."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
+    layout = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(layout)
+    return layout
+
+
 def verification_jobs() -> list[dict]:
     """Each verification job (verification/jobs/ID.json) with what its result, if it has one, says
     it took (verification/results/ID/result.json), as loop_stats reads them. A file that is not
     JSON, or not a job, is left out: the pipeline's own `validate` is what reports it."""
-    out, root = [], REPO / "verification"
-    for path in sorted((root / "jobs").glob("*.json")):
+    layout = verification_layout()
+    out = []
+    for path in layout.jobs(REPO).values():
         try:
             job = json.loads(path.read_text())
             submitted, links = job.get("submitted") or {}, job.get("links") or {}
             row = {"id": job["id"], "at": submitted.get("at"), "session": submitted.get("session"),
                    "supersedes": job.get("supersedes"), "examples": links.get("examples") or []}
-            result = root / "results" / job["id"] / "result.json"
+            result = (layout.find_result(REPO, job["id"]) or REPO / layout.result_rel(job["id"])) / "result.json"
             if result.exists():
                 r = json.loads(result.read_text())
                 usage = r.get("usage") or {}
@@ -1290,7 +1380,7 @@ def loops_warnings() -> list[str]:
 
 
 def metrics_problems(sid: str, m: dict, data, redact: Redactor, checks: CheckCache | None = None,
-                     logs: list[str | None] | None = None) -> tuple[list[str], list[str]]:
+                     logs: list[str | None] | None = None, rendered: bool = True) -> tuple[list[str], list[str]]:
     """(errors, warnings) for a session's metrics.json. Without the log here, as in a fresh clone,
     the file can only be read. With it, the file must be what the log gives, and its token totals
     must equal the manifest's, which `summarize` counts separately. data may be a function giving
@@ -1303,8 +1393,13 @@ def metrics_problems(sid: str, m: dict, data, redact: Redactor, checks: CheckCac
     text = path.read_text()
     doc = json.loads(text)
     errors, warnings = [], []
-    if doc.get("schema") != metrics.SCHEMA:
+    if doc.get("schema") not in (metrics.SCHEMA, metrics.WHOLE_SCHEMA):  # the whole document until a rendering
         errors.append(f"{sid}: metrics.json has unknown schema {doc.get('schema')}")
+    elif rendered and doc.get("schema") != metrics.SCHEMA:
+        errors.append(f"{sid}: metrics.json still holds its per-call tables (run sync)")
+        data = None   # said once: it cannot be what a rendering gives
+    if not rendered:  # between two renderings the file describes an earlier log of the session (RENDERING)
+        data = None
     if data is not None:
         key = same = None
         if checks is not None and logs is not None:
@@ -1322,7 +1417,7 @@ def metrics_problems(sid: str, m: dict, data, redact: Redactor, checks: CheckCac
     usages = [m["stats"]["usage"]] + [s["stats"]["usage"] for s in m.get("subagents", [])]
     pairs = (("input_tokens", "input_tokens"), ("output_tokens", "output_tokens"),
              ("cache_read_tokens", "cache_read_input_tokens"), ("cache_write_tokens", "cache_creation_input_tokens"))
-    for ours, theirs in pairs:
+    for ours, theirs in pairs if rendered else ():
         if doc.get("totals", {}).get(ours) != sum(u[theirs] for u in usages):
             errors.append(f"{sid}: {ours} in metrics.json differs from the manifest")
     if unpriced := doc.get("totals", {}).get("unpriced_calls"):
@@ -1828,7 +1923,7 @@ class Uploader:
             return url
         path = log_path(sid, sha)
         with self.cpu:
-            stored = self.checks.snapshot(path)
+            stored = self.checks.snapshot(path, by_stat=False)  # by the bytes about to be sent, never by the file's stat
             if stored is None:
                 raise FileNotFoundError(f"log {sha[:12]} of {sid} is neither stored locally nor on the CDN")
             actual, size, data, gz = stored
@@ -2175,6 +2270,8 @@ def recover_step(step: dict) -> str:
     if kind == "away":
         return return_working_copy(step)
     if kind == "sync":
+        if not step.get("render", True):  # a commit's sync: it writes manifests alone, and each write is whole
+            return "a commit's sync stopped part way: sessions it did not reach are synced by the next commit, which sees they changed"
         write_index()
         return ("a sync stopped part way: rebuilt the global files; sessions it did not reach are synced "
                 "by the next commit, which sees they changed")
@@ -2190,9 +2287,9 @@ def recover_step(step: dict) -> str:
 HOOK_LOCK_WAIT = 15  # seconds hook-commit waits for another operation (its hook times out at 60)
 # How each command takes the repository lock; commands not listed take none: the Stop hook writes
 # only its Langfuse cursor, and hook-commit takes it itself, once it knows the call was a commit.
-LOCKING = {"check": "shared", "scan": "shared", "sync": "exclusive", "commit": "exclusive", "push": "exclusive",
+LOCKING = {"check": "shared", "scan": "shared", "sync": "exclusive", "render": "exclusive", "commit": "exclusive", "push": "exclusive",
            "upload": "exclusive", "unpublish": "exclusive", "stamp": "exclusive", "allow": "exclusive",
-           "review": "exclusive", "init": "exclusive", "regenerate": "exclusive", "adopt-logs": "exclusive"}
+           "review": "exclusive", "delegate": "exclusive", "init": "exclusive", "regenerate": "exclusive", "adopt-logs": "exclusive"}
 
 
 def _terminated(signum, frame) -> None:
@@ -2204,11 +2301,14 @@ def _terminated(signum, frame) -> None:
 # --------------------------------------------------------------------------- commands
 
 def process(transcript: Path, redact: Redactor, status: str, live: bool, current: bool,
-            publishing: bool = False, cache: LocalCache | None = None) -> dict:
+            publishing: bool = False, cache: LocalCache | None = None, render: bool = True) -> dict:
     """Bring a session's own tracked files up to date; the caller rebuilds the global ones once,
     with write_index. Langfuse is not contacted: the Stop hook sends turns. live: the last turn may be
     unfinished. current: the session is the one running now, so @ is its working copy.
-    publishing: @ is a trace record, which carries every session with log no commit points at yet."""
+    publishing: @ is a trace record, which carries every session with log no commit points at yet.
+    render: also rewrite the session's summary.md and metrics.json. An ordinary commit does not (see RENDERING):
+    it writes the manifest, which is what its trailer is checked against, and makes the other two only when the
+    session has none yet, so that the links to them resolve."""
     known = {c.get("log_sha256") for c in load_manifest(sid_of(transcript)).get("commits", [])}
     with perf.phase("snapshot"):
         sid, m, entries, subagents = sync_session(transcript, redact, status, cache)
@@ -2219,9 +2319,23 @@ def process(transcript: Path, redact: Redactor, status: str, live: bool, current
             link_commits(sid, m, current, publishing)
     finalize_logs(sid, m)
     with perf.phase("summary and metrics"):
-        render_summary(sid, m, entries, redact.string(str(REPO)))
-        write_if_changed(metrics_path(sid), session_metrics(sid, m, entries, redact, subagents))
+        if render or not summary_path(sid).exists():
+            render_summary(sid, m, entries, redact.string(str(REPO)))
+        if render or not metrics_path(sid).exists():
+            write_if_changed(metrics_path(sid), session_metrics(sid, m, entries, redact, subagents))
+        else:
+            perf.count("sessions left for the next rendering")
     return m
+
+
+# RENDERING. The files generated from the manifests and the logs are a session's summary.md and metrics.json and,
+# over all sessions, index.json, the table in llm-dlc/README.md, traces/README.md, traces/metrics.json and the loops'
+# two files. Until 2026-11-21 every commit rewrote them: twelve generated files a commit, megabytes of them for a
+# long session, and a conflict in the global ones at every merge of two lines. They are now rendered when they are
+# published or asked for: by `sync.py promote` in its candidate, by `sync.py push`, and on demand by `sync.py sync`
+# (also spelled `sync.py render`) and `sync.py regenerate`. An ordinary `sync.py commit` and the commit hook write the
+# session's manifest alone. `check` compares the generated files with their inputs only when asked (`--rendered`,
+# as a promotion and a push ask); it always scans them for what the redactor would change.
 
 
 def langfuse_config() -> tuple[str, str, str] | None:
@@ -2500,19 +2614,20 @@ def hook_commit(transcript: Path, at: dict, parent: dict) -> None:
     try:
         redact = Redactor()
         cache = transcript_cache(redact)
-        process(transcript, redact, "open", live=False, current=True, cache=cache)
+        process(transcript, redact, "open", live=False, current=True, cache=cache, render=False)
         cache.save()
-        write_index()
     finally:
         return_working_copy(step)
         done(key)
 
 
-def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None" = None) -> "Redactor":
+def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None" = None, render: bool = True) -> "Redactor":
     """Sync the sessions named, or else every session whose state (session_state) differs from the
     one recorded after it was last synced: one whose transcript grew, whose commits were described,
     rewritten or became immutable, whose note or generated files changed, or that went from open to
-    ended. --all and --full sync every session, and so does a publish."""
+    ended. --all and --full sync every session, and so does a publish. With `render` off, as a commit
+    calls it, only the manifests are written (see RENDERING); a session synced that way is rendered by
+    the next sync that renders, whether or not it changed since."""
     src, full = claude_project_dir(), full_audit(args)
     named = [a for a in args if a not in ("--full", "--all")]
     every = full or publishing or "--all" in args
@@ -2520,25 +2635,28 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
     redact = redact or Redactor()
     cache, states = transcript_cache(redact, full), sync_cache(redact, trusted=not every)
     me, index, unchanged, synced = running_session(), commit_index(), 0, []
-    with journaled("sync"):
+    with journaled("sync", render=render):
         publish_runs(redact)  # before the sessions: their summaries list the copies
         for p in paths:
             live = time.time() - p.stat().st_mtime < LIVE_SECONDS
             sid = sid_of(p)
             status, current = "open" if live else "ended", live or sid == me
-            if not named and not every and states.entries.get(sid) == session_state(p, status, current, index):
+            was = states.entries.get(sid) or {}
+            if not named and not every and (was.get("rendered", True) or not render) and \
+                    {k: v for k, v in was.items() if k != "rendered"} == session_state(p, status, current, index):
                 unchanged += 1
                 perf.count("sessions unchanged, not synced")
                 continue
             state = session_state(p, status, current, None)  # its sources, before they are read
             synced.append(p)
             with perf.phase("process"):
-                m = process(p, redact, status, live, current=current, publishing=publishing, cache=cache)
+                m = process(p, redact, status, live, current=current, publishing=publishing, cache=cache, render=render)
             index = commit_index()  # process may have described changes
             if publishing:  # its manifest records git SHAs that a sync outside a publish leaves out
                 states.entries.pop(sid, None)
             else:
-                states.entries[sid] = {**session_state(p, status, current, index), "sources": state["sources"]}
+                states.entries[sid] = {**session_state(p, status, current, index), "sources": state["sources"],
+                                       "rendered": render}
             s = m["stats"]
             print(f"{m['session_id']}  {s['turns']} turns  {s['tool_calls']} tools  log sha256:{m['log']['sha256'][:12]}… "
                   f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
@@ -2546,15 +2664,22 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
             print(f"{unchanged} sessions unchanged since their last sync (--all syncs them anyway)")
         with perf.phase("seal transcripts"):
             seal_transcripts(synced)
-        with perf.phase("metrics elsewhere"):
-            refresh_metrics({sid_of(p) for p in session_transcripts()}, redact, states)
+            seal_run_records()
+        if render:
+            with perf.phase("metrics elsewhere"):
+                here = {sid_of(p) for p in session_transcripts()}
+                refresh_metrics(here, redact, states)
+                bound_metrics()
+                render_elsewhere(here, redact, states)
         publish_runs(redact)  # again, for a session whose trace the loop above started
-        for sid in sorted({p.parent.parent.name for p in TRACES.glob("*/runs/*.md")}):
-            splice_runs(sid)  # a session rendered above already lists its runs; one traced elsewhere does not
+        if render:
+            for sid in sorted({p.parent.parent.name for p in TRACES.glob("*/runs/*.md")}):
+                splice_runs(sid)  # a session rendered above already lists its runs; one traced elsewhere does not
         cache.save()
         states.save()
-        with perf.phase("index"):
-            write_index()  # once, after every session: it reads all their manifests
+        if render:
+            with perf.phase("index"):
+                write_index()  # once, after every session: it reads all their manifests
     return redact
 
 
@@ -2584,6 +2709,56 @@ def seal_transcripts(transcripts: list[Path]) -> None:
         log(traceback.format_exc())
 
 
+OWN_LOOP_SUMMARIES = LOOP_SUMMARIES  # where this checkout's are, whatever a test points LOOP_SUMMARIES at
+
+
+def seal_run_records(folder: Path | None = None) -> int:
+    """Hand the loops' private run records of this workspace (llm-dlc/loop-summaries/: never committed, the redacted
+    copies under traces/ are what is published) to the private archive, in restricted custody. Each file is a stream
+    of its own: what it gained since it was last sealed, or the whole of it again when it was rewritten, so a cycle's
+    record leaves this machine with the commit that follows it and not at the next inventory. A file whose size and
+    time are those last sealed is not opened. Nothing here fails a sync: an error goes to the hook log. Returns how
+    many segments were sealed. Without `folder` it seals this checkout's own records and no others (a test's
+    folder is not this checkout's)."""
+    try:
+        import artifacts
+        if folder is None and LOOP_SUMMARIES != OWN_LOOP_SUMMARIES:
+            return 0
+        folder = LOOP_SUMMARIES if folder is None else Path(folder)
+        if artifacts.off() or not folder.is_dir():
+            return 0
+        memo_path = artifacts.home() / "run-records-sealed.json"
+        try:
+            memo = json.loads(memo_path.read_text())
+        except (OSError, ValueError):
+            memo = {}
+        workspace = folder.resolve().parents[1].name
+        todo = []
+        for path in sorted(p for p in folder.rglob("*") if p.is_file() and not p.is_symlink()):
+            rel, st = path.relative_to(folder).as_posix(), path.stat()
+            if memo.get(f"{workspace}/{rel}") != [st.st_size, st.st_mtime_ns]:
+                todo.append((rel, path, [st.st_size, st.st_mtime_ns]))
+        if not todo:
+            return 0
+        sealed, archive = 0, artifacts.Archive()
+        try:
+            for rel, path, mark in todo:
+                if archive.capture_stream(path, f"run-records/{workspace}/{rel}", "run-record", f"llm-dlc/loop-summaries/{rel}",
+                                          notes={"workspace": workspace, "stage": "sealed at a sync of the workspace"}):
+                    sealed += 1
+                memo[f"{workspace}/{rel}"] = mark
+        finally:
+            archive.close()
+            artifacts.write_durably(memo_path, json.dumps(memo, indent=1, sort_keys=True).encode())
+        perf.count("run record segments sealed", sealed)
+        if sealed:
+            artifacts.kick()
+        return sealed
+    except Exception:
+        log(traceback.format_exc())
+        return 0
+
+
 def refresh_metrics(here: set[str], redact: Redactor, states: LocalCache) -> int:
     """Rewrite metrics.json of each session whose transcript is not in this checkout's Claude
     project folder (`here`: the ids that are), from its stored logs and manifest, as `check`
@@ -2607,6 +2782,109 @@ def refresh_metrics(here: set[str], redact: Redactor, states: LocalCache) -> int
             changed += 1
             print(f"{sid}  metrics.json recomputed from its stored log (transcript in another workspace's folder)")
         states.entries[f"metrics:{sid}"] = logs
+    return changed
+
+
+def bound_metrics() -> int:
+    """Rewrite each metrics.json that still holds its per-call tables (every one written before 2026-11-21) as the
+    file without them. It needs no log: the file is metrics.bounded of what it held, which is what a rendering
+    from the same log gives. A session rendered just now is already so. Returns how many files changed."""
+    changed = 0
+    for sid in all_manifests():
+        path = metrics_path(sid)
+        if not path.exists():
+            continue
+        with path.open() as stream:
+            if metrics.WHOLE_SCHEMA not in stream.read(200):
+                continue
+        changed += write_if_changed(path, metrics.dumps(metrics.bounded(json.loads(path.read_text()))))
+    if changed:
+        print(f"{changed} session(s): metrics.json rewritten without its per-call tables (sync.py events SESSION builds them)")
+    return changed
+
+
+def cmd_events(args: list[str]) -> int:
+    """`sync.py events SESSION [--to FILE]`: the row for each model call and each tool call of a session, which its
+    metrics.json names by digest and does not hold. Built from the session's current log, its manifest and the
+    price list, as the file was: the log is read from this workspace, or from its public URL when it is not stored
+    here, and is checked against its name either way. Says whether the text is the one the file names (it is at the
+    revision that rendered the file; a later price list or metrics.py can give another). Changes nothing in the
+    checkout."""
+    to = None
+    if "--to" in args:
+        at = args.index("--to")
+        to, args = (args[at + 1] if at + 1 < len(args) else None), args[:at] + args[at + 2:]
+        if to is None:
+            args = []
+    if len(args) != 1:
+        print("usage: sync.py events SESSION [--to FILE]", file=sys.stderr)
+        return 2
+    sid = args[0]
+    m = load_manifest(sid)
+    if not m or not (m.get("log") or {}).get("sha256"):
+        print(f"no manifest with a log for session {sid} in this checkout", file=sys.stderr)
+        return 1
+
+    def log_of(sha: str) -> bytes | None:
+        if (data := load_log(sid, sha)) is None:
+            url = ((m.get("logs") or {}).get(sha) or {}).get("url")
+            if not url:
+                print(f"log {sha[:12]} is not stored in this workspace and has no public URL yet "
+                      f"(python3 llm-dlc/tools/sync.py adopt-logs takes it from the workspace that stores it)", file=sys.stderr)
+                return None
+            try:
+                data = fetch_log(url)
+            except (OSError, EOFError, gzip.BadGzipFile) as e:
+                print(f"log {sha[:12]} could not be read from {url}: {e}", file=sys.stderr)
+                return None
+        if hashlib.sha256(data).hexdigest() != sha:
+            print(f"log {sha[:12]} is not the content its name says", file=sys.stderr)
+            return None
+        return data
+
+    logs = [log_of(m["log"]["sha256"])] + [log_of(s["log"]["sha256"]) for s in m.get("subagents", [])]
+    if any(data is None for data in logs):
+        return 1
+    subagents = [(s["agent"], log_entries(data)) for s, data in zip(m.get("subagents", []), logs[1:])]
+    doc = whole_metrics(sid, m, log_entries(logs[0]), Redactor(), subagents)
+    text = metrics.events(doc)
+    digest = hashlib.sha256(text.encode()).hexdigest()
+    named = (json.loads(metrics_path(sid).read_text()).get("events") or {}) if metrics_path(sid).exists() else {}
+    print(f"{sid}: {len(doc['calls']):,} model calls, {len(doc['tools']):,} tool calls, {len(text.encode()):,} bytes, sha256:{digest}")
+    if not named:
+        print("  metrics.json here names no such text (it still holds the tables, or the session has no file yet)")
+    elif named.get("sha256") == digest:
+        print("  the text metrics.json names")
+    else:
+        print(f"  NOT the text metrics.json names (sha256:{named.get('sha256')}): the file was rendered from another log "
+              f"of the session, or under another price list or metrics.py; python3 llm-dlc/tools/sync.py sync {sid} renders it again")
+    if to:
+        Path(to).write_text(text)
+        print(f"  written to {to}")
+    return 0 if not named or named.get("sha256") == digest else 1
+
+
+def render_elsewhere(here: set[str], redact: Redactor, states: LocalCache) -> int:
+    """Rewrite summary.md of each session whose transcript is not in this checkout's project folder, from its stored
+    current log and its manifest: what its own workspace's sync would write, which that workspace's commits no longer
+    do (RENDERING). refresh_metrics has done its metrics.json. Only a session whose manifest records its workspace
+    is rendered, since the summary shortens paths by it: an older session's summary stays as its workspace left it.
+    Once for each manifest and log, by the entry "summary:SID" in the sync cache. Returns how many files changed."""
+    changed = 0
+    for sid, m in all_manifests().items():
+        if sid in here or m.get("schema") != SCHEMA or not m.get("workspace"):
+            continue
+        key = sha256(json.dumps([m, [s["log"]["sha256"] for s in m.get("subagents", [])]], sort_keys=True, ensure_ascii=False).encode())
+        if states.entries.get(f"summary:{sid}") == key and summary_path(sid).exists():
+            continue
+        if (data := load_log(sid, m["log"]["sha256"])) is None:
+            continue
+        before = summary_path(sid).read_bytes() if summary_path(sid).exists() else None
+        render_summary(sid, m, log_entries(data), m["workspace"])
+        if summary_path(sid).read_bytes() != before:
+            changed += 1
+            print(f"{sid}  summary.md rendered from its stored log (transcript in another workspace's folder)")
+        states.entries[f"summary:{sid}"] = key
     return changed
 
 
@@ -2815,6 +3093,11 @@ def in_agent_session() -> bool:
 # that is neither in a commit already published nor in that record. An agent that patched the file is found at its
 # next commit; a person who did decide (on an earlier version of this tool, say) runs `sync.py allow vouch`.
 
+# Published, for a decision: in a commit a promotion put on `main`. A commit that is only on the remote's `develop`
+# got there by a checkpoint, which asks this very question first and confers no authority of its own.
+DECISIONS_PUBLISHED = "(immutable() ~ (::remote_bookmarks(exact:develop) ~ ::trunk()))"
+
+
 def _decided_path() -> Path:
     return STATE / "person-decisions.json"
 
@@ -2848,7 +3131,8 @@ def _decisions(name: str, doc: dict) -> dict[str, dict]:
 
 def unrecorded_decisions(rev: str | None = None) -> dict[str, dict[str, dict]]:
     """{file name: {id: entry}} of the decisions in the two files that are neither in a published commit (the file
-    as it is at the newest immutable ancestors of @) nor recorded here as a person's. The commits are asked only
+    as it is at the newest immutable ancestors of @, those only on `develop` apart), nor recorded here as a person's,
+    nor recorded as the designated watcher's while a person's delegation is on (delegation.py). The commits are asked only
     when the two files changed since they were last found in order. With REV, the files as they are in that
     commit, against its own published ancestors: what a line would bring in, asked before it is merged."""
     if not has_jj():
@@ -2867,10 +3151,13 @@ def unrecorded_decisions(rev: str | None = None) -> dict[str, dict[str, dict]]:
             current[path] = _decisions(path.name, json.loads(data)) if data else {}
         except ValueError:
             current[path] = {}  # allowlist_problems and reviewed_problems say what is wrong with the file
+    import delegation
+    state.update(delegation.fingerprint(sys.modules[__name__]))  # the watcher's record, and whether it counts
     doc = load_decided()
     if state.hexdigest() in doc.get("in order", []):
         return {}
-    bases = [c["commit_id"] for c in jj_commits(f"heads(immutable() & ::({rev or '@'}))")] if any(current.values()) else []
+    watcher = delegation.recorded(sys.modules[__name__])
+    bases = [c["commit_id"] for c in jj_commits(f"heads({DECISIONS_PUBLISHED} & ::({rev or '@'}))")] if any(current.values()) else []
     open_ = {}
     for path, decisions in current.items():
         published = []
@@ -2880,9 +3167,10 @@ def unrecorded_decisions(rev: str | None = None) -> dict[str, dict[str, dict]]:
                 published.append(_decisions(path.name, json.loads(r.stdout)) if r.returncode == 0 else {})
             except ValueError:
                 published.append({})
-        recorded = doc.get(path.name) or {}
+        recorded, delegated = doc.get(path.name) or {}, watcher.get(path.name) or {}
         missing = {fid: e for fid, e in decisions.items()
-                   if not any(known.get(fid) == e for known in published) and recorded.get(fid) != _decision_digest(e)}
+                   if not any(known.get(fid) == e for known in published)
+                   and _decision_digest(e) not in (recorded.get(fid), delegated.get(fid))}
         if missing:
             open_[path.name] = missing
     if not open_:
@@ -2905,13 +3193,14 @@ def cmd_decisions(args: list[str]) -> int:
 
 
 def decision_problems(rev: str | None = None) -> list[str]:
-    errors = []
+    import delegation
+    errors = delegation.problems(sys.modules[__name__])
     for name, missing in unrecorded_decisions(rev).items():
         how = "sync.py allow approve" if name == ALLOWLIST.name else "sync.py review accept"
         for fid, e in sorted(missing.items()):
             errors.append(f"{name}: {fid[:8]} ({e.get('kind')}) is a decision in the file that no person is recorded as having "
-                          f"taken here, and it is in no published commit: only `{how}`, run by a person at their terminal, "
-                          f"writes one. If a person did decide it, they run `python3 llm-dlc/tools/sync.py allow vouch`; "
+                          f"taken here, and it is in no published commit: only `{how}`, run by a person at their terminal "
+                          f"(or by the watcher a person delegated to, with the entry unchanged since), writes one. If a person did decide it, they run `python3 llm-dlc/tools/sync.py allow vouch`; "
                           f"otherwise take it out of the file and propose it (`sync.py allow propose`)")
     return errors
 
@@ -3162,10 +3451,14 @@ def cmd_review(args: list[str]) -> int:
         return 0
     if args[0] == "show" and len(args) == 2:
         return show_finding(args[1])
+    import delegation  # withhold, mask, escalate, close (delegation.py)
+    if (status := delegation.cmd_review(sys.modules[__name__], args)) is not None:
+        return status
     ids = args[1:args.index("--reason")] if "--reason" in args else []
     reason = " ".join(args[args.index("--reason") + 1:]).strip() if "--reason" in args else ""
     if args[0] != "accept" or not ids or not reason:
-        print("usage: sync.py review [accept ID... --reason TEXT]", file=sys.stderr)
+        print("usage: sync.py review [show ID | accept ID... --reason TEXT | withhold SESSION SHA256 --reason TEXT | "
+              "mask ID... --reason TEXT | escalate ID... --reason TEXT | close ESCALATION --reason TEXT]", file=sys.stderr)
         return 2
     if not person_at_terminal():
         print("refused: a person must accept findings, from their own terminal. Ask them to run this command.",
@@ -3314,8 +3607,8 @@ def cmd_allow(args: list[str]) -> int:
     no_commit = "--no-commit" in rest
     rest = [a for a in rest if a != "--no-commit"]
     if not person_at_terminal():
-        print("refused: a person must approve the allow list, from their own terminal. Ask them to run this command.",
-              file=sys.stderr)
+        print("refused: a person must approve the allow list, from their own terminal. Ask them to run this command "
+              "(where they delegated it, the run's watcher has `sync.py delegate approve`).", file=sys.stderr)
         return 1
     if cmd == "vouch":
         # A decision that is in a file with no record of who took it (see unrecorded_decisions): a person who did
@@ -3395,7 +3688,7 @@ def cmd_allow(args: list[str]) -> int:
     return commit_allowlist(chosen, who)
 
 
-def commit_allowlist(chosen: dict[str, dict], who: str) -> int:
+def commit_allowlist(chosen: dict[str, dict], who: str, how: str = "at their terminal with sync.py allow") -> int:
     """Commit a decision just recorded in the allow list, so that it never waits in @ for someone to
     commit it (push refuses uncommitted work). With nothing else changed in @, as `sync.py commit`
     commits, with trace lines and the check after it. With other work in @, the allow list alone,
@@ -3408,7 +3701,7 @@ def commit_allowlist(chosen: dict[str, dict], who: str) -> int:
     ids = [fid[:8] for fid in chosen]
     summary = f"Allow list: {who} approved {', '.join(ids[:8])}" + (f" and {len(ids) - 8} more" if len(ids) > 8 else "")
     shown = lines[:50] + ([f"... and {len(lines) - 50} more, each in {ALLOWLIST.name}"] if len(lines) > 50 else [])
-    body = (f"{who} approved {len(chosen)} value(s) at their terminal with sync.py allow; the command committed "
+    body = (f"{who} approved {len(chosen)} value(s) {how}; the command committed "
             "the decision itself.\n\n" + "\n".join(shown))
     others = [p for p in uncommitted_work() if p != path]
     if jj_commits("@")[0]["description"].strip():
@@ -3478,14 +3771,24 @@ def set_aside(only: list[str]) -> tuple[str | None, list[str]]:
     share a working copy, as a loop and the result collector do), and goes into a change of its own below @, where
     the commit does not take it. Returns that change and the files; (None, []) when there are none. The files on
     disk don't change. What the trace tools write is never set aside: the commit regenerates it."""
-    mine = lambda p: any(p == o or p.startswith(o + "/") for o in only) or trace_owned(p)
-    theirs = [p for p in jj("diff", "--name-only").stdout.splitlines() if not mine(p)]
+    named = lambda p: any(p == o or p.startswith(o + "/") for o in only)
+    changed = jj("diff", "--name-only").stdout.splitlines()
+    theirs = [p for p in changed if not named(p) and not trace_owned(p)]
     if not theirs:
         return None, []
-    r = jj("split", "-r", "@", "-m", "wip: another session's files", "--", *theirs)
+    # Named by what stays, not by what goes: the files set aside may be thousands (an example's records, packed or
+    # deleted), and that many paths are more than one command line holds.
+    kept = [*only, *(p for p in changed if trace_owned(p) and not named(p))]
+    quoted = " | ".join('root:"' + p.replace("\\", "\\\\").replace('"', '\\"') + '"' for p in kept)
+    r = jj("split", "-r", "@", "-m", "wip: another session's files", "--", f"~({quoted})")
     if r.returncode:
         raise RuntimeError(f"could not set aside the files outside --only: {r.stderr.strip()}")
     return jj("log", "--no-graph", "-r", "@-", "-T", "change_id").stdout.strip(), theirs
+
+
+def listed(paths: list[str], most: int = 40) -> str:
+    """Paths for a line of output: all of a few, the first of many with the count of the rest."""
+    return " ".join(paths) if len(paths) <= most else f"{' '.join(paths[:most])} and {len(paths) - most:,} more"
 
 
 def put_back(other: str | None, committed: str) -> None:
@@ -3530,14 +3833,14 @@ def cmd_commit(args: list[str]) -> int:
         return 2
     other, theirs = set_aside(only) if only else (None, [])
     if theirs:
-        print(f"left uncommitted, as outside --only: {' '.join(theirs)}")
+        print(f"left uncommitted, as outside --only: {listed(theirs)}")
     # Describe first: the sync then stamps the trailer onto this message and writes a manifest
     # that lists @ under its real summary, before `jj new` freezes both into the commit.
     with journaled("describe", summary=message.split("\n", 1)[0]):
         if jj("describe", "-r", "@", "-m", message).returncode:
             print("jj describe failed", file=sys.stderr)
             return 1
-        redact = cmd_sync([])
+        redact = cmd_sync([], render=False)  # the manifest alone: the rest is rendered when it is published
         at = jj_commits("@")[0]
         if jj("new").returncode:
             print("jj new failed", file=sys.stderr)
@@ -3618,7 +3921,7 @@ def publish(args: list[str], step: str | None) -> int:
     uploads = lambda: {(sid, sha) for sid, m in all_manifests().items() for sha, i in m.get("logs", {}).items() if i.get("url")}
     uploaded = uploads()
     cmd_sync([], publishing=True)
-    if cmd_check() != 0:  # before the upload: a log with a leak must not reach the CDN
+    if cmd_check(["--rendered"]) != 0:  # before the upload: a log with a leak must not reach the CDN
         print("trace check failed; nothing uploaded", file=sys.stderr)
         return 1
     journal_update(step, stage="upload")
@@ -3639,7 +3942,7 @@ def publish(args: list[str], step: str | None) -> int:
         if flag in ("--bookmark", "-b") and jj("bookmark", "set", name, "-r", "@-").returncode:
             print(f"could not move bookmark {name} to @-", file=sys.stderr)
             return 1
-    if cmd_check() != 0:
+    if cmd_check(["--rendered"]) != 0:
         print("trace check failed; not pushing", file=sys.stderr)
         return 1
     # The check read the files on disk; what goes out is the revision the bookmarks point at.
@@ -3671,6 +3974,13 @@ def push_revisions(args: list[str]) -> str:
         elif a == "--all":
             picked.append("bookmarks()")
     return " | ".join(picked) if picked else "bookmarks() ~ ::remote_bookmarks()"
+
+
+# The commits whose logs an earlier push published: the ancestors of the remote's bookmarks, less those that are on
+# `develop` alone. A checkpoint publishes code and never a log (checkpoint.py), so a commit that is on the remote's
+# develop and not on its main still has to have its logs uploaded before main may hold it.
+ONLY_ON_DEVELOP = "(::remote_bookmarks(exact:develop) ~ ::trunk())"
+LOGS_PUBLISHED = f"(::remote_bookmarks() ~ {ONLY_ON_DEVELOP})"
 
 
 def git_blob_id(data: bytes, length: int) -> str:
@@ -3722,7 +4032,7 @@ def publication_gate(revset: str) -> list[str]:
             elif kind != "blob" or mode not in ("100644", "100755") or oid != git_blob_id(checked[path].read_bytes(), len(oid)):
                 errors.append(f"commit {commit[:12]}: {path} differs from the copy that was checked")
     if targets:
-        for c in jj_commits(f"::({revset}) ~ ::remote_bookmarks()"):
+        for c in jj_commits(f"::({revset}) ~ {LOGS_PUBLISHED}"):
             for sid, sha in TRAILER_RE.findall(c["description"]):
                 info = manifests.get(sid, {}).get("logs", {}).get(sha) if sha else None
                 if sha and not (info and (info.get("url") == log_url(sid, sha) or info.get("withdrawn"))):
@@ -3732,7 +4042,7 @@ def publication_gate(revset: str) -> list[str]:
 
 
 def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool,
-                   scans: ScanCache | None = None, checks: CheckCache | None = None) -> tuple[list, list, list, int]:
+                   scans: ScanCache | None = None, checks: CheckCache | None = None, rendered: bool = True) -> tuple[list, list, list, int]:
     """(errors, warnings, notes, logs left out as older than the stamp) for each session's logs,
     files and metrics. A log is scanned by `scans`, which holds only what its content gave before,
     and its .gz bytes, prefixes and metrics are looked up in `checks` by their content: without
@@ -3816,7 +4126,8 @@ def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool,
                                                  else "unverified" for s in m.get("subagents", [])]
         with perf.phase("metrics"):
             found_errors, found_warnings = metrics_problems(sid, m, content if present else None, redact, checks,
-                                                            inputs if current_gz is not None and "unverified" not in inputs else None)
+                                                            inputs if current_gz is not None and "unverified" not in inputs else None,
+                                                            rendered)
         errors += found_errors
         warnings += found_warnings
         # Logs are append-only: every log a commit points at should be a prefix of the current one.
@@ -3840,7 +4151,7 @@ def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool,
     return errors, warnings, notes, left_out
 
 
-def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
+def check_trailers(manifests: dict[str, dict], full: bool = False) -> tuple[list, list]:
     """(errors, notes) for every commit with a trace trailer in the history of @: its session and log
     are known, and the manifest committed with it names the same log. Commits only another workspace's
     line holds are left to that workspace's own check (each `commit` runs one), and to this one once
@@ -3856,19 +4167,44 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
     errors, notes = [], []
     if not has_jj():
         return errors, notes
-    traced = jj_commits(f'::@ & description(substring:"{TRAILER}:")')
     paths = lambda sid: (str(manifest_path(sid).relative_to(REPO)), *(f"{d}/{sid}/manifest.json" for d in LEGACY_TRACES))
+    # A commit that is immutable was read once and is not read again: what its trailers say and which log the manifest
+    # in its tree names never change (TrailerCursor). Only what `@` gained since, and the mutable commits, are asked.
+    cursor = TrailerCursor(trusted=not (full or full_audit([])))
+    below = " | ".join(cursor.heads)
+    if below:
+        moved = jj("log", "--no-graph", "-r", f"({below}) ~ (::@ & immutable())", "-T", 'commit_id ++ "\n"')
+        if moved.returncode or moved.stdout.strip():  # another line, or a commit that is no longer published: read it all again
+            cursor.reset()
+            below = ""
+    fresh = jj_commits(f'(::@ ~ ::({below})) & description(substring:"{TRAILER}:")' if below
+                       else f'::@ & description(substring:"{TRAILER}:")')
     with perf.phase("read trees"):
-        files = tree_files([(c["commit_id"], path) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
-                            if sha and (sid not in manifests or sha in manifests[sid].get("logs", {})) for path in paths(sid)])
+        files = tree_files([(c["commit_id"], path) for c in fresh for sid, sha in TRAILER_RE.findall(c["description"])
+                            if sha for path in paths(sid)])
+    traced = []
+    for c in fresh:
+        rows = []
+        for sid, sha in TRAILER_RE.findall(c["description"]):
+            found = next((f for path in paths(sid) if (f := files.get((c["commit_id"], path))) is not None), None) if sha else None
+            try:
+                in_tree = json.loads(found).get("log", {}).get("sha256") if found is not None else None
+            except ValueError:
+                in_tree = None
+            rows.append([sid, sha, found is not None, in_tree])
+        traced.append({"change_id": c["change_id"], "commit_id": c["commit_id"], "immutable": c["immutable"], "trailers": rows})
+    perf.count("traced commits read", len(traced))
+    perf.count("traced commits known from the cursor", len(cursor.commits))
+    known = [{"commit_id": commit, **record} for commit, record in cursor.commits.items()]
+    cursor.advance([c for c in traced if c["immutable"]])
+    traced += known
     # a session this tree has no manifest of, though the commit's own tree had one: a merge lost it, an error
-    lost = {(c["commit_id"], sid) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
-            if sha and sid not in manifests and any(files.get((c["commit_id"], path)) is not None for path in paths(sid))}
-    unlisted = {(sid, sha) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
+    lost = {(c["commit_id"], sid) for c in traced for sid, sha, had, _ in c["trailers"] if sha and sid not in manifests and had}
+    unlisted = {(sid, sha) for c in traced for sid, sha, _, _ in c["trailers"]
                 if sha and (sid not in manifests or sha not in manifests[sid].get("logs", {}))}
     elsewhere = listed_elsewhere(unlisted, paths) if unlisted else {}
     for c in traced:
-        for sid, sha in TRAILER_RE.findall(c["description"]):
+        for sid, sha, _, in_tree in c["trailers"]:
             where = f"change {c['change_id'][:12]}"
             if not sha:
                 notes.append(f"{where}: legacy trailer without sha256 for {sid}")
@@ -3881,14 +4217,52 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
                 errors.append(f"{where}: session {sid} has no manifest")
             elif sha not in manifests[sid].get("logs", {}):
                 errors.append(f"{where}: points at log {sha[:12]} that the manifest does not list")
-            else:
-                # The manifest committed in the same tree should name the same log.
-                found = next((f for path in paths(sid) if (f := files[c["commit_id"], path]) is not None), None)
-                tree_sha = json.loads(found).get("log", {}).get("sha256") if found is not None else None
-                if tree_sha != sha:
-                    notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
-                                 f"{(tree_sha or 'none')[:12]} (committed without trace-commit)")
+            elif in_tree != sha:  # the manifest committed in the same tree should name the same log
+                notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
+                             f"{(in_tree or 'none')[:12]} (committed without trace-commit)")
     return errors, notes
+
+
+class TrailerCursor:
+    """What check_trailers read of this checkout's immutable commits, so that it reads each once: for every traced
+    commit below `heads`, its change, and for each trailer the session, the log, whether the commit's own tree holds a
+    manifest of that session and which log that manifest names. None of that can change while the commit is
+    immutable, and a mutable commit is never recorded. The record is kept by the checkout's path and the tools'
+    digest; it is dropped, and everything read again, when one of its heads is no longer an immutable ancestor of
+    `@` (another line was checked out, history was rewritten, a remote bookmark went away), and it is not read at
+    all under --full or LLM_TRACES_FULL=1."""
+
+    def __init__(self, trusted: bool = True) -> None:
+        key = hashlib.sha256(f"{REPO.resolve()}\0{tools_digest()}".encode()).hexdigest()[:16]
+        self.path = STATE / "trailer-cursors" / f"{key}.json"  # one file a checkout and tools version
+        try:
+            mine = json.loads(self.path.read_text()) if trusted else {}
+        except (OSError, ValueError):
+            mine = {}
+        mine = mine if isinstance(mine, dict) else {}
+        self.heads: list[str] = list(mine.get("heads") or [])
+        self.commits: dict[str, dict] = dict(mine.get("commits") or {})
+
+    def reset(self) -> None:
+        self.heads, self.commits = [], {}
+        perf.count("trailer cursor dropped")
+
+    def advance(self, read: list[dict]) -> None:
+        """Take in the immutable commits just read (newest first, as jj lists them) and the immutable heads of `@`."""
+        heads = jj("log", "--no-graph", "-r", "heads(immutable() & ::@)", "-T", 'commit_id ++ "\n"')
+        if heads.returncode:
+            return
+        new = {c["commit_id"]: {"change_id": c["change_id"], "trailers": c["trailers"]} for c in read}
+        if heads.stdout.split() == self.heads and not new:
+            return
+        self.heads, self.commits = heads.stdout.split(), new | self.commits
+        try:
+            atomic_write(self.path, json.dumps({"heads": self.heads, "commits": self.commits}, separators=(",", ":")), private=True)
+            kept = sorted(self.path.parent.glob("*.json"), key=lambda f: f.stat().st_mtime)[:-24]
+            for old in kept:  # an earlier tools version's, or a checkout that is gone
+                old.unlink(missing_ok=True)
+        except OSError:
+            pass  # a cache: the next check reads the commits again
 
 
 def listed_elsewhere(wanted: set[tuple[str, str]], paths) -> dict[tuple[str, str], str]:
@@ -4072,20 +4446,23 @@ def tree_files(wanted: list[tuple[str, str]]) -> dict[tuple[str, str], bytes | N
     return out
 
 
-def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str]:
-    """Errors in the files generated over all sessions, in the review lists, and in the decision records."""
+def check_global_files(manifests: dict[str, dict], redact: Redactor, rendered: bool = True) -> list[str]:
+    """Errors in the files generated over all sessions, in the review lists, and in the decision records. The
+    generated files are compared with what the manifests give only when `rendered`: between two renderings they
+    describe the sessions as they were at the last one (RENDERING)."""
     errors = []
-    if INDEX.exists() and {r["session_id"] for r in json.loads(INDEX.read_text())["sessions"]} != set(manifests):
-        errors.append("llm-dlc/index.json does not list exactly the sessions in llm-dlc/traces (run sync)")
-    if not TRACES_README.exists() or TRACES_README.read_text() != render_traces_readme(manifests):
-        errors.append("llm-dlc/traces/README.md does not match the manifests (run sync)")
-    found = metrics_files(manifests)
-    if not METRICS_ROLLUP.exists() or METRICS_ROLLUP.read_text() != render_rollup(found=found):
-        errors.append("llm-dlc/traces/metrics.json does not match the session metrics (run sync)")
-    for path, text in zip((loops_data_path(), loops_page_path()), render_loops(found=found)):
-        if not path.exists() or path.read_text() != text:
-            errors.append(f"{path.relative_to(REPO)} does not match the session metrics, the run records and "
-                          "the verification jobs (run sync)")
+    if rendered:
+        if INDEX.exists() and {r["session_id"] for r in json.loads(INDEX.read_text())["sessions"]} != set(manifests):
+            errors.append("llm-dlc/index.json does not list exactly the sessions in llm-dlc/traces (run sync)")
+        if not TRACES_README.exists() or TRACES_README.read_text() != render_traces_readme(manifests):
+            errors.append("llm-dlc/traces/README.md does not match the manifests (run sync)")
+        found = metrics_files(manifests)
+        if not METRICS_ROLLUP.exists() or METRICS_ROLLUP.read_text() != render_rollup(found=found):
+            errors.append("llm-dlc/traces/metrics.json does not match the session metrics (run sync)")
+        for path, text in zip((loops_data_path(), loops_page_path()), render_loops(found=found)):
+            if not path.exists() or path.read_text() != text:
+                errors.append(f"{path.relative_to(REPO)} does not match the session metrics, the run records and "
+                              "the verification jobs (run sync)")
     for listed in (REVIEWED, ALLOWLIST, *sorted(DECISIONS.glob("*.jsonl"))):
         if listed.exists() and (leaks := redact.leaks(listed.read_text())):
             errors.append(f"unredacted {leaks} in {listed.relative_to(REPO)}")
@@ -4093,12 +4470,43 @@ def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str
     return errors
 
 
+UNPUBLISHED_MANY = 100
+
+
+def unpublished_commits() -> list[str]:
+    """A warning once the commits of this line that are on neither `develop` nor `main` pass UNPUBLISHED_MANY. A pile
+    of them is what made each commit slow and a push a day's work (VF-053: 206 by 2026-11-21); a checkpoint publishes
+    the code in seconds and asks for none of what a promotion does."""
+    with perf.phase("check: unpublished commits"):
+        r = jj("log", "--no-graph", "-r", "(::@ ~ ::(remote_bookmarks(exact:develop) | trunk())) ~ empty()", "-T", '"x"')
+    count = len(r.stdout.strip()) if r.returncode == 0 else 0
+    if count < UNPUBLISHED_MANY:
+        return []
+    return [f"{count} commits of this line are on neither develop nor main: a checkpoint publishes them without a test "
+            "run or an upload (python3 llm-dlc/tools/sync.py checkpoint --rev REV, the watcher's in a run)"]
+
+
+def records_budget() -> tuple[list[str], list[str]]:
+    """(errors, warnings) for the examples' records against their budget (examples/tools/targets/case_pack.py).
+    Per-case output left loose in thousands of files is an error, which one command settles; a record that is
+    simply large is for a person to judge. A checkout without the tool has nothing to say."""
+    tool = REPO / "examples/tools/targets/case_pack.py"
+    if not tool.is_file():
+        return [], []
+    import importlib.util
+    with perf.phase("check: records budget"):
+        spec = importlib.util.spec_from_file_location("case_pack", tool)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.over_budget(REPO / "examples")
+
+
 def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed: bool = True) -> int:
     """Everything published or about to be, checked. Logs already scanned with these rules and
     tools are not scanned again (ScanCache), and .gz bytes already verified are not decompressed
     again (CheckCache); --full does all of it again, trusting no earlier result. `commit` runs it
     with notes_listed off: the notes are only counted, since they need no action."""
-    remote, full = "--remote" in args, full_audit(args)
+    remote, full, rendered = "--remote" in args, full_audit(args), "--rendered" in args
     redact, errors, notes, warnings = redact or Redactor(), [], [], []
     scans, checks = ScanCache(redact, trusted=not full), CheckCache(redact, trusted=not full)
     errors += reviewed_problems()
@@ -4107,19 +4515,22 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
     warnings += found_warnings
     manifests = all_manifests()
     with perf.phase("sessions"):
-        found_errors, found_warnings, found_notes, left_out = check_sessions(manifests, redact, remote, scans, checks)
+        found_errors, found_warnings, found_notes, left_out = check_sessions(manifests, redact, remote, scans, checks, rendered)
     scans.save()
     checks.save()
     errors += found_errors
     warnings += found_warnings
     notes += found_notes
     with perf.phase("trailers"):
-        found_errors, found_notes = check_trailers(manifests)
+        found_errors, found_notes = check_trailers(manifests, full)
     errors += found_errors
     notes += found_notes
     with perf.phase("global files"):
-        errors += check_global_files(manifests, redact)
+        errors += check_global_files(manifests, redact, rendered)
         warnings += loops_warnings()
+        if not rendered:
+            notes.append("the summaries, the metrics, the index and the overview are rendered at a promotion or by "
+                         "`sync.py sync`, not at each commit: `check --rendered` compares them with the manifests and logs")
     with perf.phase("run records"):
         notes += run_notes(redact)
     if unsent := hook_unsent(older_than=HOOK_GRACE):
@@ -4128,6 +4539,13 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
         warnings.append(f"Langfuse may be missing turns of {len(unsent)} session(s) whose end-of-turn hook has not "
                         f"finished a send ({since}); with Langfuse up, run: python3 llm-dlc/tools/sync.py langfuse "
                         + " ".join(sid for sid, _ in unsent))
+    import delegation
+    warnings += delegation.open_escalations(sys.modules[__name__])
+    over, large = records_budget()
+    errors += over
+    warnings += large + unpublished_commits()
+    with perf.phase("check: result receipts"):  # a new result whose receipt lists thousands of files (verification/layout.py)
+        warnings += verification_layout().heavy_receipts(REPO) if (REPO / "verification").is_dir() else []
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():
@@ -4204,7 +4622,7 @@ def runtime_commit(args: list[str]) -> int:
         return 2
     other, theirs = set_aside(only) if only else (None, [])
     if theirs:
-        print(f"left uncommitted, as outside --only: {' '.join(theirs)}")
+        print(f"left uncommitted, as outside --only: {listed(theirs)}")
     if jj("describe", "-r", "@", "-m", set_runtime_trailer(message)).returncode:
         print("jj describe failed", file=sys.stderr)
         return 1
@@ -4253,7 +4671,7 @@ def run(cmd: str, args: list[str]) -> int:
         cmd_hook()
     elif cmd == "hook-commit":
         cmd_hook_commit()
-    elif cmd == "sync":
+    elif cmd in ("sync", "render"):  # `render` says what a sync by hand is for since commits stopped rendering
         cmd_sync(args)
     elif cmd == "commit":
         return cmd_commit(args)
@@ -4262,13 +4680,20 @@ def run(cmd: str, args: list[str]) -> int:
     elif cmd == "checkpoint":
         import checkpoint  # llm-dlc/tools/checkpoint.py; it is handed this module, which runs as __main__
         return checkpoint.cmd_checkpoint(sys.modules[__name__], args)
+    elif cmd == "promote":
+        import promote  # llm-dlc/tools/promote.py
+        return promote.cmd_promote(sys.modules[__name__], args)
+    elif cmd == "trace":
+        return cmd_trace(args)
+    elif cmd == "events":
+        return cmd_events(args)
     elif cmd == "upload":
         return cmd_upload()
     elif cmd == "unpublish":
         return cmd_unpublish(args)
     elif cmd == "check":
-        if set(args) - {"--remote", "--full"}:
-            print("usage: sync.py check [--remote] [--full]", file=sys.stderr)
+        if set(args) - {"--remote", "--full", "--rendered"}:
+            print("usage: sync.py check [--remote] [--full] [--rendered]", file=sys.stderr)
             return 2
         return cmd_check(args)
     elif cmd == "scan":
@@ -4277,6 +4702,9 @@ def run(cmd: str, args: list[str]) -> int:
         return cmd_review(args)
     elif cmd == "allow":
         return cmd_allow(args)
+    elif cmd == "delegate":
+        import delegation  # llm-dlc/tools/delegation.py
+        return delegation.cmd_delegate(sys.modules[__name__], args)
     elif cmd == "stamp":
         return cmd_stamp(args)
     elif cmd == "regenerate":

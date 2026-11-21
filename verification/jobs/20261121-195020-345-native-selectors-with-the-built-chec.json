@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-195020-345-native-selectors-with-the-built-chec",
+  "title": "345 native selectors with the built checker: the run packs its per-case output and the packed record validates",
+  "description": "The selector route of example 345 (four parent-fix tasks, every admitted selector checked natively on the real classpath, as job 20261120-213848-345-parent-fix-exhaust-native-selector-b ran it), on a commit where a run replaces each cases/ folder of its record with cases.tar.gz at its end and the validator reads a case from the folder or from the pack (examples/tools/targets/case_pack.py, VF-053). It replaces job 20261121-194629-345-native-selectors-again-the-run-packs, whose pass shows nothing: that job did not require jvmcontract, its run ended at once with 'no built native checker', and its checks accepted that. Here the first step fails unless the run ended 0 or 1 (1 is what the earlier real run ended with, some of the four claims being refuted) and left a new record with the page task's result in it. The second fails if any folder named cases is left under the example's selector records or the records are over the budget sync.py check holds them to. The third reads the example's claim history, which validates every retained record through the packs, and fails if it does not cite the new record or reports a case as missing, altered or unreadable.",
+  "kind": "example",
+  "capabilities": [
+    "native:finite-partition",
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "345"
+    ],
+    "paths": [
+      "examples/tools/targets/case_pack.py",
+      "examples/tools/targets/native_selectors.py"
+    ]
+  },
+  "expected": "All three steps pass, the first after about three minutes of native checking: a new record is written with its per-case output packed, no loose per-case folder is left, and the claim history cites the new record with no missing or altered case.",
+  "submitted": {
+    "at": "2026-11-21T19:50:20+00:00",
+    "session": "b9b56f5e-fc0e-48ca-a64e-7a46495d814f"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "10m",
+    "memoryLimit": "4G",
+    "timeout": "30m",
+    "notes": "The same run took 2m53s and 139 MiB as job 20261120-213848-345-parent-fix-exhaust-native-selector-b, plus the checker's build when no build of this lib/ tree is cached; the two checks after it take seconds."
+  },
+  "steps": [
+    {
+      "name": "Prove original properties by complete native case analysis",
+      "run": "python3 examples/tools/build.py 345 --native-selectors bytes-parent-fix,count-parent-fix,page-parent-fix,positive-parent-fix --checker-seconds 90 --first 6; code=$?; new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); echo \"selector run exited $code; newest record $new\"; test $code -le 1 && test \"$new\" != 20261120T220835Z-adb5055d && test -f examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/$new/tasks/page-parent-fix/result.json",
+      "cwd": "."
+    },
+    {
+      "name": "No per-case folder is left loose, and the records are within their budget",
+      "run": "new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); python3 examples/tools/targets/case_pack.py budget 345 && python3 examples/tools/targets/case_pack.py verify 345 && test -z \"$(find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix -type d -name cases)\" && test -n \"$(find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/$new -name cases.tar.gz)\" && find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/$new -name cases.tar.gz",
+      "cwd": "."
+    },
+    {
+      "name": "The claim history validates the packed record of this run",
+      "run": "new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); test \"$new\" != 20261120T220835Z-adb5055d && python3 examples/tools/targets/workflow_handoff.py handoff 345 | NEW=$new python3 -c \"import os, sys; t = sys.stdin.read(); bad = [w for w in ('does not exist', 'different raw checker output', 'cannot be read') if w in t]; print(len(t), 'bytes of claim history; cites', os.environ['NEW'], os.environ['NEW'] in t, '; failure phrases', bad); sys.exit(0 if t and not bad and os.environ['NEW'] in t else 1)\"",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix"
+  ]
+}

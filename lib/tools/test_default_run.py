@@ -54,6 +54,21 @@ class Records(unittest.TestCase):
             self.assertTrue(dr.covers("t1", "t2", self.root))
             self.assertFalse(dr.covers("t1", "t3", self.root))
 
+    def test_the_generated_table_of_the_dlc_readme_is_untested_and_the_rest_of_the_file_is_not(self):
+        page = lambda table, tail="Written by people.": f"# Changes\n\n{dr.TABLE_BEGIN}\n{table}\n{dr.TABLE_END}\n\n{tail}\n"
+        files = {"t1": page("| one session |"), "t2": page("| one session |\n| another |"), "t3": page("| one session |", "Edited."),
+                 "t4": page("| x |").replace(dr.TABLE_END, ""), "t5": page("| x |") + dr.TABLE_BEGIN}
+        self.assertEqual(dr.outside_table(files["t1"]), dr.outside_table(files["t2"]))
+        self.assertIsNone(dr.outside_table(files["t4"]))
+        self.assertIsNone(dr.outside_table(files["t5"]))
+        shown = lambda cmd, **kw: subprocess.CompletedProcess(cmd, 0 if cmd[2].split(":")[0] in files else 128, files.get(cmd[2].split(":")[0], ""), "")
+        with mock.patch.object(dr, "_out", return_value="llm-dlc/README.md\nllm-dlc/artifacts/2026/11/21/promotion-x.json"), \
+                mock.patch.object(dr.subprocess, "run", side_effect=shown):
+            self.assertTrue(dr.covers("t1", "t2", self.root))    # the table alone
+            self.assertFalse(dr.covers("t1", "t3", self.root))   # the page's own text
+            self.assertFalse(dr.covers("t1", "t4", self.root))   # a mark is gone: compared whole
+            self.assertFalse(dr.covers("t1", "t9", self.root))   # no such file on one side
+
     def test_last_takes_the_newest_record_that_covers(self):
         dr.record("old", "c0", "passed", self.root, self.path)
         dr.record("other", "c1", "passed", self.root, self.path)

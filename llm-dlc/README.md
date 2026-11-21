@@ -37,7 +37,8 @@ llm-dlc/
   traces/<session-id>/
     summary.md                      what was asked, what was done, what was committed (generated)
     manifest.json                   detailed metadata: stats, models, tokens, commits, logs (generated)
-    metrics.json                    every prompt, model call and tool call as tables, with costs and causes (generated)
+    metrics.json                    every prompt, commit and context window as tables, with costs and causes (generated);
+                                    the rows for single model and tool calls: python3 llm-dlc/tools/sync.py events SESSION
     runs/<record>.md                each feature-loop.sh run the session worked in: its record, redacted (generated)
     logs/<sha256>.jsonl.gz          redacted transcript snapshots (gitignored, published on the CDN)
   tools/sync.py                     the hook and commands that capture, redact, publish and check traces;
@@ -142,15 +143,22 @@ llm-dlc/infra/langfuse/up.sh              # optional: Langfuse on http://localho
 
 ## How a commit points at its session
 
-Each commit message ends with three lines that point at all of this:
+Each commit message ends with a line that points at all of this:
+
+```
+LLM-Trace: <session-id> sha256:<sha256>
+```
+
+`python3 llm-dlc/tools/sync.py trace REV` says what it resolves to now: the session and its summary, and the log, which is public at `https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz` once a promotion has uploaded it and pending until then. Commits made before 2026-11-21 also carry two links above that line, to the summary on `main` and to the log's URL:
 
 ```
 LLM-Trace-Summary: https://github.com/<owner>/<repo>/blob/main/llm-dlc/traces/<session-id>/summary.md
 LLM-Trace-Log: https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
-LLM-Trace: <session-id> sha256:<sha256>
 ```
 
-The first two are links for readers. The last is the identifier: the SHA-256 of the uncompressed log at the moment of the commit, so the log can be verified.
+A commit writes its session's manifest and nothing else that is generated: the summaries, the metrics, the index and the overview are rendered at a promotion, so on `develop` they describe the sessions as of the last one ([`specification.md`](specification.md#workflow), *Rendering*).
+
+The `LLM-Trace` line is the identifier: the SHA-256 of the uncompressed log at the moment of the commit, so the log can be verified.
 [`specification.md`](specification.md) has the full specification: identifiers, invariants, storage and redaction.
 
 ## Procedure for agents
@@ -184,7 +192,14 @@ python3 llm-dlc/tools/sync.py checkpoint --rev @-             # one committed re
 ```
 A checkpoint is a planning snapshot of the code for someone on another machine. It pushes a revision that is already committed, as it is: it reads no working copy (another session's uncommitted files stay where they are, and stay local), runs no test, renders and uploads nothing, and waits for no job. Before anything leaves the machine it reads every git object and message the push would expose and refuses a conflict, a raw payload, a credential or an undecided redaction decision; [`specification.md`](specification.md#checkpoints) has the list. Its receipt says which trace logs are public and which pending. The watcher of a run makes checkpoints under standing authority: at a finished slice, when a stream or the run lands, at a pause, or when asked for a snapshot. A loop's own agent doesn't. `sync.py checkpoint --bootstrap` created `develop` where `main` was.
 
-**Push to `main` only when the user asks.** That is a promotion: it publishes the logs, and a person should read them first; see *Redaction* in [`specification.md`](specification.md#redaction).
+**Move `main` only when the user asks.** That is a promotion: it publishes the logs, and a person should read them first; see *Redaction* in [`specification.md`](specification.md#redaction).
+```bash
+python3 llm-dlc/tools/sync.py promote --rev REV --dry-run   # the review view: source changes, test receipt, decisions, evidence; nothing changes
+python3 llm-dlc/tools/sync.py promote --rev REV             # a commit of develop becomes main, with its logs uploaded and its evidence accounted for
+```
+`promote` takes a commit that is already on `develop` and works in a candidate workspace of its own, so it runs from any workspace, whatever is uncommitted there, while `develop` goes on. The commits between `main` and `REV` are frozen; their logs are uploaded; their originals must be verified in the private archive or be recorded gaps; the record is one commit on top (the URLs, the index, and a small summary under `llm-dlc/artifacts/`); a passed default run must cover that tree, and is run in the candidate when none does; and `main` moves only if it is still where the promotion found it. A promotion that stops (a failing test, a log nobody stores, a store that does not answer) leaves `main` where it was, says why, and continues from there when the same command is run again. [`specification.md`](specification.md#promotions) has the contract.
+
+The older entry point does the same for a workspace with nothing uncommitted, without a candidate:
 ```bash
 python3 llm-dlc/tools/sync.py scan                   # preview: what was redacted, what a person should look at
 python3 llm-dlc/tools/sync.py push --bookmark main   # record outstanding traces, check, upload, check, verify the revision, push
@@ -575,7 +590,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 <!-- index:begin (generated by llm-dlc/tools/sync.py) -->
 | Started | Session | Prompts | Commits | Status |
 |---|---|---|---|---|
-| 2026-11-21 16:57 UTC | [b9b56f5e-fc0e-48ca-a64e-7a46495d814f](traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 1 | 7 | open |
+| 2026-11-21 16:57 UTC | [b9b56f5e-fc0e-48ca-a64e-7a46495d814f](traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 10 | 21 | open |
 | 2026-11-21 14:43 UTC | [01a1fe8f-ef20-7173-90fb-4f5e2745ef13](traces/01a1fe8f-ef20-7173-90fb-4f5e2745ef13/summary.md) | 13 | 5 | open |
 | 2026-11-21 14:25 UTC | [01a1fe7f-af92-7ac2-8c0e-9086c066840b](traces/01a1fe7f-af92-7ac2-8c0e-9086c066840b/summary.md) | 0 | 0 | ended |
 | 2026-11-21 14:24 UTC | [01a1fe7e-bafb-7370-afae-905f50dfe335](traces/01a1fe7e-bafb-7370-afae-905f50dfe335/summary.md) | 0 | 0 | ended |

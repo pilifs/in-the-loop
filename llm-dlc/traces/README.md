@@ -12,15 +12,15 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 |---|---|
 | Sessions | 178, plus 29 empty |
 | Period | 2026-10-24 14:07 UTC to 2026-11-21 20:26 UTC |
-| Prompts | 4,671 |
-| Model calls | 46,667 |
-| Tool calls | 58,021 (1,256 failed) |
-| Compactions | 550 |
+| Prompts | 4,680 |
+| Model calls | 47,141 |
+| Tool calls | 58,561 (1,264 failed) |
+| Compactions | 553 |
 | Subagents | 22 |
-| Tokens written | 39,955,923 |
-| Tokens read | 9,093,657,201 (98.4% from cache) |
-| Commits with a trace | 1,547 |
-| Log snapshots | 2,124 (10730.7 MB gzipped, 2,076 uploaded) |
+| Tokens written | 40,504,792 |
+| Tokens read | 9,224,884,648 (98.4% from cache) |
+| Commits with a trace | 1,561 |
+| Log snapshots | 2,138 (10755.4 MB gzipped, 2,076 uploaded) |
 
 ## Sessions
 
@@ -205,7 +205,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-21 11:30 UTC | [01a1fddf-742a-73d1-b3b4-0521cf9483e6](01a1fddf-742a-73d1-b3b4-0521cf9483e6/summary.md) | ended | 1 h 5 min | `codex-auto-review` | 15 | 22 | 0 | 0 | 0 | 166,457 | 4 |
 | 2026-11-21 12:43 UTC | [01a1fe21-e306-7652-88cf-564d0978419e](01a1fe21-e306-7652-88cf-564d0978419e/summary.md) | ended | 1 h 30 min | `codex-auto-review` | 18 | 28 | 0 | 0 | 0 | 189,841 | 5 |
 | 2026-11-21 14:43 UTC | [01a1fe8f-ef20-7173-90fb-4f5e2745ef13](01a1fe8f-ef20-7173-90fb-4f5e2745ef13/summary.md) | open | 1 h 46 min | `codex-auto-review` | 13 | 21 | 0 | 0 | 0 | 202,538 | 5 |
-| 2026-11-21 16:57 UTC | [b9b56f5e-fc0e-48ca-a64e-7a46495d814f](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | open | 1 h 5 min | `claude-fable-5-2` | 1 | 132 | 148 | 5 | 0 | 516,107 | 7 |
+| 2026-11-21 16:57 UTC | [b9b56f5e-fc0e-48ca-a64e-7a46495d814f](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | open | 3 h 25 min | `claude-fable-5-2` | 10 | 606 | 688 | 13 | 3 | 566,444 | 21 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md), [`01a1f62e`](01a1f62e-f24f-7342-99e8-22a7a7fc5f13/summary.md), [`01a1f66a`](01a1f66a-0b6c-7510-a56c-c6baf75e9623/summary.md), [`01a1f6a8`](01a1f6a8-4655-7232-a3fc-00d65712c59d/summary.md), [`01a1f6a9`](01a1f6a9-c683-75d3-b798-35527ad2b8bf/summary.md), [`01a1f746`](01a1f746-d708-7b30-a967-6cea2026945f/summary.md), [`01a1f78b`](01a1f78b-c6a9-7be1-956d-9da9b51640a5/summary.md), [`01a1f7d7`](01a1f7d7-6eb1-7742-b379-36bfc2906bec/summary.md), [`01a1f830`](01a1f830-d4fd-7131-b180-8a5b611363f6/summary.md), [`01a1f8a1`](01a1f8a1-1bc5-75d2-8d27-ee1be35dfcd9/summary.md), [`01a1f8a2`](01a1f8a2-8992-7030-a6ae-946623bc63f9/summary.md), [`01a1fb23`](01a1fb23-fa6b-7441-ba2b-d4e2ea4dcde6/summary.md), [`01a1fb25`](01a1fb25-0c27-7140-91b3-df7c9c4b3ef0/summary.md), [`01a1fb30`](01a1fb30-73ce-7ac0-98ae-14a53e020270/summary.md), [`01a1fb31`](01a1fb31-b3eb-7231-b464-c3233fd02921/summary.md), [`01a1fb31`](01a1fb31-d64c-78a3-8007-dfadb7fff401/summary.md), [`01a1fb32`](01a1fb32-004f-74c3-a26b-3d9588e0df8f/summary.md), [`01a1fb71`](01a1fb71-6111-7651-9080-802ed92f6e9d/summary.md), [`01a1fb32`](01a1fb32-005f-7a33-acd6-73253b1ba3c3/summary.md), [`01a1fbe2`](01a1fbe2-d1f8-79c0-be8c-cd06311ac522/summary.md), [`01a1fbeb`](01a1fbeb-2e66-75e2-b4a6-31fdb21225b6/summary.md), [`01a1fcc4`](01a1fcc4-0efc-7bb3-9ab6-f4eadea9b952/summary.md), [`01a1fd0a`](01a1fd0a-a952-7b91-a479-372ec1f5a747/summary.md), [`01a1fd3f`](01a1fd3f-9cb4-7b13-b449-3e318ed71076/summary.md), [`01a1fd40`](01a1fd40-a4b6-7312-ab11-bd4799bfcbec/summary.md), [`01a1fdde`](01a1fdde-5a09-7992-9175-a0ed560793ee/summary.md), [`01a1fe20`](01a1fe20-c5a1-7e60-920f-9f9b82cb1a1b/summary.md), [`01a1fe7e`](01a1fe7e-bafb-7370-afae-905f50dfe335/summary.md), [`01a1fe7f`](01a1fe7f-af92-7ac2-8c0e-9086c066840b/summary.md).
 
@@ -392,18 +392,18 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`01a1fddf`](01a1fddf-742a-73d1-b3b4-0521cf9483e6/summary.md) | 1,999 | 292,967 | 0 | 1,954,560 | 87.0% | 1,124 |
 | [`01a1fe21`](01a1fe21-e306-7652-88cf-564d0978419e/summary.md) | 2,577 | 337,965 | 0 | 3,057,152 | 90.0% | 1,317 |
 | [`01a1fe8f`](01a1fe8f-ef20-7173-90fb-4f5e2745ef13/summary.md) | 2,045 | 281,560 | 0 | 2,208,768 | 88.7% | 1,218 |
-| [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 271,437 | 264 | 504,490 | 44,065,358 | 98.9% | 164 |
+| [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 820,306 | 1,212 | 1,699,720 | 174,096,627 | 99.0% | 214 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 45,563 | 78.5% | 144 |
-| `exec` | 7,230 | 12.5% | 3 |
-| `Read` | 1,475 | 2.5% | 62 |
-| `Edit` | 1,185 | 2.0% | 60 |
+| `Bash` | 46,033 | 78.6% | 144 |
+| `exec` | 7,230 | 12.3% | 3 |
+| `Read` | 1,502 | 2.6% | 62 |
+| `Edit` | 1,218 | 2.1% | 60 |
 | `apply_patch` | 769 | 1.3% | 2 |
-| `Write` | 753 | 1.3% | 59 |
+| `Write` | 763 | 1.3% | 59 |
 | `ToolSearch` | 222 | 0.4% | 47 |
 | `Monitor` | 148 | 0.3% | 52 |
 | `send_message` | 148 | 0.3% | 1 |
@@ -1982,6 +1982,20 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1545 | change `qywlynvk` | Record the watcher's continue after cycle 2 of dlc-process-plumbing | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/6dec65dd22e7bea573b929bbcf2a46ae0abccb4f40fbe8f882fa205ca39d8a8e.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/8a1563afec72a860a57812b749bf1695d6c88ddcdc5bb6b8a84e58ba245a3f49.jsonl.gz)) |
 | 1546 | change `kwquwwmk` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/c1fc9b12a3e0b0e4296f414f31be77c8f5c82b94d5f09c1627c6a11db62b63c0.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/8a1563afec72a860a57812b749bf1695d6c88ddcdc5bb6b8a84e58ba245a3f49.jsonl.gz)) |
 | 1547 | change `kkmzowqm` | Record the watcher's stop after cycle 3 of dlc-process-plumbing | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d65e276b15d357a53b718b9c93189eb8b2d87874c2e7aeb30d6bd948c4073c0a.jsonl.gz)) |
+| 1548 | change `xuumpxym` | Add sync.py promote: a frozen part of develop becomes main, with its logs, originals and test receipt accounted for | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/b41a9df5f7f6ea692511239f0c0ec3e28488e9db1db909a06a0d4d06fe0fe00a.jsonl.gz)) |
+| 1549 | change `pztonlvu` | Checkpoint: a credential fixture the remote already holds is not refused again when its file is edited | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/f03571c4e241b27db07d75528271dc49ccc7d7e91450de122e29391b903769a5.jsonl.gz)) |
+| 1550 | change `qktxmyww` | Add delegated redaction decisions, switched off: a person can let one run's watcher decide routine findings | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/b7b96e80f04d71245289ca1449aa420dae1bd4793e7f37f1a282f51bd80bdf37.jsonl.gz)) |
+| 1551 | change `qvkkkpkz` | Render the generated trace files at promotion, not at every commit; make the check after a commit four times faster | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/6539b8c25da5cf36832489d005548735fe9fa8f7c385e8a9a85d02a0d4a55f4a.jsonl.gz)) |
+| 1552 | change `pptpprnz` | Find a verification job and its result by id, kept flat or under its day: every reader goes through verification/layout.py | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/69b6ba95aa44476e56e308e8a9b34089ae617c36b7ece2735132a0b32cd53ab6.jsonl.gz)) |
+| 1553 | change `tkvzqtpy` | Keep an example's per-case records as one pack a folder, read in place; hold the records to a budget in check | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/0e6af0cdfd7d56bb0a208b1f98c893bdb955a8081ac5927902743f9f964a196f.jsonl.gz)) |
+| 1554 | change `oxyxvysk` | Record the run report; a promotion stopped by a fault of the tools says so; Codex may not switch delegation on | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09.jsonl.gz)) |
+| 1555 | change `nntstxwy` | Queue the selector route of example 345 on the commit that packs a run's per-case output (verification pending) | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/fa971ac374ec4365dfa8aa85f91525e955913451546686939599322c49f985a3.jsonl.gz)) |
+| 1556 | change `quxwpwrr` | Keep the verification results index by day for results kept by day | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/cab8a8886cd012ad5489f2968644439f6875768132845bb2599fa7d2cab1a48d.jsonl.gz)) |
+| 1557 | change `vlmlnqvu` | Queue example 345's selector route again, requiring the built checker (verification pending) | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/dfb2ee0284896d923cf8aa009b8df678ed243669d8b0bfd92d962aeb087caa5e.jsonl.gz)) |
+| 1558 | change `srxyqurw` | Tell every agent two rules of this cycle: per-case records are committed packed, and a job's pass must rest on a real run | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/61eb9ee5c1c26d6c2a7786e6a4eb9485ce5be6b0913a24f4288eafefb08312e6.jsonl.gz)) |
+| 1559 | change `mnlrpyxm` | Results page: name the line's head by where to find it, and what the next cycle reads first | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/958b67a3a6b42dab4b9eb85108737447c7e354a1a55020fc0f880a9d91698bb4.jsonl.gz)) |
+| 1560 | change `lvsronts` | Keep a session's per-call rows out of its metrics file; warn on a result's oversized receipt; seal what was set aside from the runner | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/60554910c0e372249140b751c49cfede1aa78b8385e886a44fe4046d89d53648.jsonl.gz)) |
+| 1561 | change `rtlrlwsn` | Seal a workspace's private run records at each sync; record cycle 3 and its rehearsal | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/b74a672329cc25b47b77241d616134dd87c5a6bbf56030381145f18f55664d1b.jsonl.gz)) |
 
 ## Logs
 
@@ -2166,7 +2180,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`01a1fddf`](01a1fddf-742a-73d1-b3b4-0521cf9483e6/summary.md) | 5 | 5 | 1.7 MB | [`77c53ff75e3e`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/77c53ff75e3e8081a5f3b841f339517a18e78d4bb6a1fba0bfb3c484dfac0a1a.jsonl.gz) |
 | [`01a1fe21`](01a1fe21-e306-7652-88cf-564d0978419e/summary.md) | 6 | 5 | 2.0 MB | `1e47b737ab66`, not uploaded |
 | [`01a1fe8f`](01a1fe8f-ef20-7173-90fb-4f5e2745ef13/summary.md) | 5 | 0 | 1.8 MB | `83e171ad48ac`, not uploaded |
-| [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 7 | 0 | 4.2 MB | `8d08815dc7d6`, not uploaded |
+| [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 21 | 0 | 29.0 MB | `b74a672329cc`, not uploaded |
 
 ## Session notes
 

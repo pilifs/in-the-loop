@@ -168,6 +168,71 @@ class CaptureTest(unittest.TestCase):
         self.assertEqual(capture.begin(self.repo.dir, state, job, None, run_dir, state / "work" / job["id"]), 3)
         self.assertEqual(len(self.archive().rows(job=job["id"])), 1)
 
+    def killed_at(self, point):
+        """The repository's capture.py for one command: the real one, and a kill of the collecting process itself at
+        `point`, with no handler run: "copy", when the result's folder in the tree is wiped and not yet written, or
+        "sealed", when the collected result is written and sealed and the staged one is still there."""
+        real = (HERE / "capture.py").read_text()
+        (self.repo.dir / "verification/capture.py").write_text(real + f'''
+
+_before, _after, _point = before_collect, after_collect, {point!r}
+
+
+def before_collect(*args, **kwargs):
+    said = _before(*args, **kwargs)
+    if _point == "copy":
+        import shutil, signal
+        shutil.copytree = lambda *a, **k: os.kill(os.getpid(), signal.SIGKILL)
+    return said
+
+
+def after_collect(*args, **kwargs):
+    said = _after(*args, **kwargs)
+    if _point == "sealed":
+        import signal
+        os.kill(os.getpid(), signal.SIGKILL)
+    return said
+''')
+
+    def test_a_collect_killed_half_way_is_finished_by_the_next_one_and_nothing_unsealed_is_lost(self):
+        (self.repo.dir / "o.txt").write_text("before\n")
+        job_id = self.repo.submit("Killed", "--output", "o.txt", "--run", "echo after > o.txt")
+        self.repo.commit("job")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        staged, kept = self.repo.dir / "verification/.state/results" / job_id, self.repo.dir / "verification/results" / job_id
+        earlier = b'{"earlier": "collect"}\n'
+        kept.mkdir(parents=True)
+        (kept / "result.json").write_bytes(earlier)
+        self.killed_at("copy")
+        self.assertEqual(self.repo.pipeline("collect", check=False).returncode, -9)
+        self.assertTrue((staged / "result.json").exists())           # the staged result is all there
+        self.assertFalse((kept / "result.json").exists())            # and the tree's copy is wiped: the earlier one is gone from disk
+        self.assertEqual((self.repo.dir / "o.txt").read_text(), "before\n")
+        replaced = [x for x in self.archive().rows(job=job_id) if x["notes"].get("stage") == "a collected result that a later collect replaced"]
+        self.assertEqual(self.restored(replaced[0]["id"], "replaced"), {"result.json": earlier})  # sealed before it was wiped
+        self.killed_at("sealed")
+        self.assertEqual(self.repo.pipeline("collect", check=False).returncode, -9)
+        self.assertEqual(self.repo.result(job_id)["collected"]["applied"], ["o.txt"])
+        self.assertTrue((staged / "result.json").exists())           # written and sealed, the staged one not yet released
+        shutil.copy(HERE / "capture.py", self.repo.dir / "verification/capture.py")
+        self.assertIn(job_id, self.repo.pipeline("collect").stdout)   # the next collect finds it and finishes
+        final = self.repo.result(job_id)
+        self.assertEqual((final["status"], final["collected"]["applied"], (self.repo.dir / "o.txt").read_text()), ("passed", ["o.txt"], "after\n"))
+        self.assertFalse(staged.exists())
+        self.assertIn("nothing to collect", self.repo.pipeline("collect").stdout)
+        archive = self.archive()
+        rows = [x for x in archive.rows(job=job_id) if x["kind"] == "job-result"]
+        self.assertTrue(all(x["status"] in ("complete", "partial") for x in rows))
+        collected = [x for x in rows if x["notes"].get("stage") == "as collected"]
+        self.assertEqual(json.loads(self.restored(collected[-1]["id"], "final")), final)   # what the tree holds is what the store holds
+        # One record for each thing a collect did, none of them a false success: the earlier result it wiped, the
+        # folder the kill left empty (replaced by the second collect), the result written twice with the same bytes.
+        stages = [(x["notes"].get("stage"), x["status"], (x.get("inventory") or {}).get("members")) for x in rows]
+        replaced = "a collected result that a later collect replaced"
+        self.assertEqual(sorted(s for s in stages if s[0] != "as the runner wrote it"),
+                         [(replaced, "complete", 0), (replaced, "complete", 1), (replaced, "complete", 4),
+                          ("as collected", "complete", 1), ("as collected", "complete", 1)])
+
     def test_no_archive_tool_no_capture(self):
         os.environ.pop("ITL_ARTIFACTS")
         self.assertIsNone(capture.tool(self.repo.dir))
