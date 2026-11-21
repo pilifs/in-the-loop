@@ -1,0 +1,1012 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-102304-356-final-native-checks-on-the-original",
+  "title": "356 final native checks on the original gson public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 11.6s, peak 159.8 MiB (estimated 5m00s, 3.0 GiB); 106 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-102304-356-final-native-checks-on-the-original.json",
+    "sha256": "ad3b79029c2e1c6f4bfb5a57e288c564c9a25559a53a5a94ca2cd89dca91debf",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-102304-356-final-native-checks-on-the-original",
+      "title": "356 final native checks on the original gson public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/google/gson#3034 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:native"
+      ],
+      "links": {
+        "examples": [
+          "356"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T10:23:04+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 356 --route native --stage final --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/356-gson-overflowing-number/records/final-native"
+      ]
+    }
+  },
+  "sourceCommit": "88866c1dafc86d76b2c905878108da7b0d94ac95",
+  "startedAt": "2026-11-21T10:43:40+00:00",
+  "finishedAt": "2026-11-21T10:46:46+00:00",
+  "wallSeconds": 186.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 757440,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 167542784,
+    "wallSeconds": 11.6,
+    "cpuSeconds": 17.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 356 --route native --stage final --seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 11.63,
+      "cpuSeconds": 16.975,
+      "cpuThrottledSeconds": 0.693,
+      "peakMemoryBytes": 167542784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 552,
+        "sha256": "20ff914eb633ce07bc1a0004648839df88ee84098f388299b99ca308957d8a5a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"356\", \"route\": \"native\", \"stage\": \"final\", \"workflowExit\": 0, \"seconds\": 11.42, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"token-parent\", \"token-fix\", \"lexeme-parent\", \"lexeme-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"88866c1dafc86d76b2c905878108da7b0d94ac95\", \"checke"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f092c2c4366d881be6c713008ada735d483e1ceb47a6140529c4dd9ea787419e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/plan.json",
+      "change": "added",
+      "bytes": 7301,
+      "sha256": "d8ca15f3d5103401dede4b8cc231717ce7c4253388e941479ae4895cdec39285",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/controls.json",
+      "change": "added",
+      "bytes": 7757,
+      "sha256": "da803e9cfbc47084417bd2ab25582249062e1bc78ef28eb41a1bf6230cdd22f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/execution.json",
+      "change": "added",
+      "bytes": 23656,
+      "sha256": "b3e5a90d0b7d49372f6435e0655a163863083b77eeabb8cca23433080617298f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "2a81c412c4248a53cf66abd6c8953fc4932b33117717eb0ff625a437c07539b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "da79e44fe3891f579eb52bee355f507f569a38b20385e25d17a7bf0599f5f465",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/verifier.json",
+      "change": "added",
+      "bytes": 15750,
+      "sha256": "8ad7305d2f35acbaa39884f7c7e5ee38cf0f1da1886a7aa808067e94f4c1dc41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5266,
+      "sha256": "667cf32d08117a5f9ec51606430186c4b68e5bf3bac62ff504a6f39125dfd5b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/result.json",
+      "change": "added",
+      "bytes": 16903,
+      "sha256": "a8879a56886fcdb8fb63300a0d608be81fb36ab5a506d6ba4fbc63e7ad364050",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/executions/20261121T104645Z-8fc810fb/attempt.json",
+      "change": "added",
+      "bytes": 13020,
+      "sha256": "6a2b49e92313993cae535bfabd227ae5857ba3cffce9bda7bd3411bc14130b74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/executions/20261121T104645Z-8fc810fb/checker.json",
+      "change": "added",
+      "bytes": 6726,
+      "sha256": "5f7b376129d8ee27cb82e38748e567c7b8ab66787ac8fb885d83aee60f6d6a3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-fix/executions/20261121T104645Z-8fc810fb/correspondence.json",
+      "change": "added",
+      "bytes": 1392,
+      "sha256": "7f2971ee08f3447d3f54ed1c3f2cf008b8af15e0cc46d7e685a70ff16149931a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "caa789c3fca8da85fb98f40d391e19c2c08a5d7e0b2971f18e7d37909beddc6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/plan.json",
+      "change": "added",
+      "bytes": 7210,
+      "sha256": "994900571a7eb11f5236af1fb1c4fd7bf54262ab2868d9b53333fc3312629e2d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/controls.json",
+      "change": "added",
+      "bytes": 8054,
+      "sha256": "5c2a4c650c1802cd924247f8cbef72f9e79043b2ee56e625c5b82401c2f4f6ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/execution.json",
+      "change": "added",
+      "bytes": 23994,
+      "sha256": "dafd2b06b3c2cc431ff6bde6572227c9be3885829ca29f89b68d343523d58c18",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "271ebf3b0d1c18d45f2a75b413a1a537393753d5fb7592b635f9d173e0a3f7fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "da79e44fe3891f579eb52bee355f507f569a38b20385e25d17a7bf0599f5f465",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/verifier.json",
+      "change": "added",
+      "bytes": 15809,
+      "sha256": "129e396a2035f4eb0aa29ec614694f3a53c16f9ea42040ad1017831dc9d0c379",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5263,
+      "sha256": "ae71f41980d5485a4827b3132363342a2f87c488197a933636aedf4afd62bb1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/result.json",
+      "change": "added",
+      "bytes": 16959,
+      "sha256": "bbc772eee9fdd2151aa7b51b02de99e85fe6cb3bc26552a467cfecbb6c065a83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/executions/20261121T104645Z-47963239/attempt.json",
+      "change": "added",
+      "bytes": 13086,
+      "sha256": "7af5bc10fb11c12ea2e0a6d81c9a6a6e6e1fdd4e8f91ce08cdf8a14634b0dd6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/executions/20261121T104645Z-47963239/checker.json",
+      "change": "added",
+      "bytes": 6734,
+      "sha256": "8059537356566ada7c702b42fdd08a0aacb6006fa356562b19fcc8f651aa1785",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/controls-parent/executions/20261121T104645Z-47963239/correspondence.json",
+      "change": "added",
+      "bytes": 1395,
+      "sha256": "a72b99e3f0c0b3e44d2d928e132a03c8823bc22019247458da00007ececcdde4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cb4a3f2b0a27d7e49e4914e8cbd973314686e29f12619040fc57e03e94463a47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/plan.json",
+      "change": "added",
+      "bytes": 7373,
+      "sha256": "7c6fe304baffcc0969e1e91f5d3f894e64c2796a0ae37ef742d25a37f2e53e12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/controls.json",
+      "change": "added",
+      "bytes": 7753,
+      "sha256": "b6fae42cbff83313d7635d956b3adc839ce7de4de76d27dbfd040ef0ca3cd7eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/execution.json",
+      "change": "added",
+      "bytes": 23712,
+      "sha256": "0eca66df33d96879f1129c5a86a72474d5027d352b6cd5aa2b75098c31a52c7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "370c67aa5262cba928474eea3913661e29257e8b134803a90f54cf7cedac7b07",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "c1b81a3efc196fe8d48c75b9358d40f3956788d0feb7a5278e1047df14d37bd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/verifier.json",
+      "change": "added",
+      "bytes": 15802,
+      "sha256": "5d846daed2111dd028158c298e5b5829593b3aee8dddda3c8c6c3a76fa3b27d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5257,
+      "sha256": "0e1b35be3e651f573295a3622e1e806ba6d5d4bd459e8b48cdc452865d2a8194",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/result.json",
+      "change": "added",
+      "bytes": 16924,
+      "sha256": "4338e7913cc37a77ca4c72976b3de70d3418859e3a1592dfb2a1d442cae79101",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/executions/20261121T104643Z-3edd374d/attempt.json",
+      "change": "added",
+      "bytes": 13083,
+      "sha256": "5c9d8c9ab63013052fb624f4834341b08b41266090250822a2ff95a7873baf07",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/executions/20261121T104643Z-3edd374d/checker.json",
+      "change": "added",
+      "bytes": 6716,
+      "sha256": "391b484eb8ec29f47a699ebf4bca755e571ac00ba7e152aae4b801276811979a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/executions/20261121T104643Z-3edd374d/correspondence.json",
+      "change": "added",
+      "bytes": 1415,
+      "sha256": "5fc60ad7bdda78eb37ed5a00a356ef9891fafe50be871c1faf87b605421a7a11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7f86f4e70cb15a4d7c5715e48fa4557603e803befed75eafca4ddb2bdae39cb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/plan.json",
+      "change": "added",
+      "bytes": 7278,
+      "sha256": "0163f69aea1147c7b80c18c54efa569627ce3d379041e56d09164fd533162869",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/controls.json",
+      "change": "added",
+      "bytes": 8050,
+      "sha256": "ccb49c4fbfe11c956fa6d74154e62336c10d87b989f07df916427841ae128fcf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/execution.json",
+      "change": "added",
+      "bytes": 27402,
+      "sha256": "ff9d21a3bfe53846367100b51831e740fef759470721eeeea40a52f8e45798ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "5d5a989fa19336ded47ff6769bc453acbed510070ec2d82e0efea82e81624ed1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 581,
+      "sha256": "84469705dff32624cfeb386fac3df1cfc078c2ebaaeed4a6d2ad029f1ed37073",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/verifier.json",
+      "change": "added",
+      "bytes": 16666,
+      "sha256": "19f81ca0174331d7e92062ac535fc38cc1e482d9136c56e5f8707ffeeb3b9a48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5975,
+      "sha256": "4dc1ccd1903da49d28f3d1cf19761c2cc9a19f73b78aa1e1fc39072da709940f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/result.json",
+      "change": "added",
+      "bytes": 18262,
+      "sha256": "64ade5ca0b34015c9fc606238bd925ce70c68e3d13747a8d0bffac156eedf4e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/executions/20261121T104639Z-a2074131/attempt.json",
+      "change": "added",
+      "bytes": 13268,
+      "sha256": "ecdfaf88cd9aa7baf64dd339dd98305fa456ff9f512e8f063dd99270711b3a1f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/executions/20261121T104639Z-a2074131/checker.json",
+      "change": "added",
+      "bytes": 7487,
+      "sha256": "9f002d0687b1c70838f6bd6008f640a953b532f843f2c4b44bf8c50a29553650",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/executions/20261121T104639Z-a2074131/correspondence.json",
+      "change": "added",
+      "bytes": 1418,
+      "sha256": "7a734dfb4fe98daa99bfc3b1d3eee7101ba3bcbd0cba01c2e0fdc82c64851a9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/executions/20261121T104639Z-a2074131/replay.json",
+      "change": "added",
+      "bytes": 2027,
+      "sha256": "9f9c000bfe15390e59cdae1f5a77499e2519b0701d7b466fa46b422f9f876452",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "81db93a59ebb901c0bbcd06b174299e3047e3ed42975033b76d40ed36457ee04",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/plan.json",
+      "change": "added",
+      "bytes": 8029,
+      "sha256": "ecc55e10b0c94e127a31261b09e0a553159e7073d2f2672f55dab4c0ac830764",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/controls.json",
+      "change": "added",
+      "bytes": 15728,
+      "sha256": "62e894b219d761143b677f6dc9cd3266230f8675b7a33e95f7be739825ca9342",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/execution.json",
+      "change": "added",
+      "bytes": 16379,
+      "sha256": "262c9ae6843123035ed13916159c0ff4c9b8bd70864ddc70db3913e449a74d46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/streams.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "380b2a12ac03474b811b5e184cb5583cd4a5d10ed209251edf5862dcc6313a32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/summary.txt",
+      "change": "added",
+      "bytes": 614,
+      "sha256": "d2d7a978afdd0e7bc94688797fbd5e8f1f9760dd0102018ac10c5cab001b77ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/result.json",
+      "change": "added",
+      "bytes": 11322,
+      "sha256": "f10004ce602532d72290feb3f56b68508676bf3bc8784255680c85c97fcafe3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/replay/executions/20261121T104634Z-d7014338/attempt.json",
+      "change": "added",
+      "bytes": 6547,
+      "sha256": "82056268103183566a3966359effdf69343ee14651c0b0aa3e41f6dd4d019501",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/run.json",
+      "change": "added",
+      "bytes": 618,
+      "sha256": "0356ee3d477347a4df197a4737d94a11baae7b791a47a2568cf20cf75363ae14",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c4f86766395be2699b8120fb163ad4ce22c0c665be616c2c32f2c695f3c707a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/plan.json",
+      "change": "added",
+      "bytes": 7322,
+      "sha256": "eb5ec07b281e556b3c3ad212ae791a34ccb3e95c2e8fa29740903cbd64fd86d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/controls.json",
+      "change": "added",
+      "bytes": 7747,
+      "sha256": "01fc9c05b2500e5f63dba83a9ed048c3878461e4a73963612f1afcb7564044f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/execution.json",
+      "change": "added",
+      "bytes": 22968,
+      "sha256": "04b09cd8f6458b8cd0dde13369757c6d0bfd5e3d5ecba36a0b3f40521d2ab734",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "8a8fbbae882c515214585f41444e76b85bb9e3b71d05f32ee096b81e3272c420",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 286,
+      "sha256": "cc598f9219d880bb087499c2d9737693af0a2044382928aa6d8adc8fbd1e02fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/verifier.json",
+      "change": "added",
+      "bytes": 15080,
+      "sha256": "bee52fd1c868ddb9da1a863f44ef25bd956ef7f117bd47332dda5201ed7e9a6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5256,
+      "sha256": "5c1caea568226fb8b64c6a873c4bbfe851875ef12ed3c1186f40b28c100f5c0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/result.json",
+      "change": "added",
+      "bytes": 16896,
+      "sha256": "0f02d4ab48daad4f2051d6145be6702963a3f53b9f98571d9e72b72166130442",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/executions/20261121T104639Z-4a5eb259/attempt.json",
+      "change": "added",
+      "bytes": 12397,
+      "sha256": "9ea7a2a41f5d7c20877d52d778e61a1b52d139d50533a3f887718af9d779fb29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/executions/20261121T104639Z-4a5eb259/checker.json",
+      "change": "added",
+      "bytes": 6714,
+      "sha256": "f5bd82c4291f13254eac80ac1c27c698b7fdfb1d1711bace95169260d3381b3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-fix/executions/20261121T104639Z-4a5eb259/correspondence.json",
+      "change": "added",
+      "bytes": 1404,
+      "sha256": "e3598f379ba467e3cc94d827dd109d4131e1ef52a7a6e412050fe0594e73ea01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "67014dc89431240034d828828446c3b6e612efa6029cf01879b33c35d224a056",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/plan.json",
+      "change": "added",
+      "bytes": 7227,
+      "sha256": "9b59954480e929f3ffe6a595cc57022a4d1591d91d9ef0f0a989a1cfd703105d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/controls.json",
+      "change": "added",
+      "bytes": 8041,
+      "sha256": "9163af11f4a1e31057cbb06e7ed5501c24031a812f9b72a6f24ddbdd7256e8ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/execution.json",
+      "change": "added",
+      "bytes": 26643,
+      "sha256": "7fe5865548514768f41538b8c8f5380cbeb70c008afe960d9a38c05c5b0d93f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "6d0a8330e76a6c6389aa1980660b36312cd652044d45d659a3d2098433fdd585",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "75b6f45606cc3193ed417afd2871b1cdd51ebd3c9d0c6552cbab72d4e65de456",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/verifier.json",
+      "change": "added",
+      "bytes": 15932,
+      "sha256": "108572d488120ad1e6ec066aa01140ece652afe5716c70e5a38ddc12f7bac2bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5962,
+      "sha256": "bd1d2b42f5f70b5b7eef1dd0576d61ce17d1d11b7e05a57e967b1021fa58e075",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/result.json",
+      "change": "added",
+      "bytes": 18224,
+      "sha256": "70c026d45115d9b0f5732195d4611e43a2f4cef1a0118e1d3fcaa024339a6c53",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/executions/20261121T104638Z-74701e23/attempt.json",
+      "change": "added",
+      "bytes": 12584,
+      "sha256": "2e65641655f3da9634e044b233465a6c4eeab941cda472f40def6e05a51f2bdd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/executions/20261121T104638Z-74701e23/checker.json",
+      "change": "added",
+      "bytes": 7473,
+      "sha256": "10061d292e66d65b5fe1b90815c75b765c52d77fb1efa58ece4c6b9ab7cd0b12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/executions/20261121T104638Z-74701e23/correspondence.json",
+      "change": "added",
+      "bytes": 1407,
+      "sha256": "5065deaf72f5ee51f1eef20cae8842432054c9fe28acf2774bcc81ae0553a7c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/token-parent/executions/20261121T104638Z-74701e23/replay.json",
+      "change": "added",
+      "bytes": 2024,
+      "sha256": "ce649674c522dc0bbcc8d3b88e5b17f91e30ae4e7711b0231eea0be21642a93c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/final-native/workflow.log",
+      "change": "added",
+      "bytes": 1532,
+      "sha256": "359fd1cb3c4e3b95e33b6d1aaa68068cc5df4aaa7041d1acd9184b67ed0a59b8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:46:54+00:00",
+    "applied": [
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/completion.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/plan.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/controls.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/execution.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/streams.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/20261121T104645Z-8fc810fb/result.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/executions/20261121T104645Z-8fc810fb/attempt.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/executions/20261121T104645Z-8fc810fb/checker.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-fix/executions/20261121T104645Z-8fc810fb/correspondence.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/completion.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/plan.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/controls.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/execution.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/streams.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/20261121T104645Z-47963239/result.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/executions/20261121T104645Z-47963239/attempt.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/executions/20261121T104645Z-47963239/checker.json",
+      "examples/356-gson-overflowing-number/records/final-native/controls-parent/executions/20261121T104645Z-47963239/correspondence.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/completion.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/plan.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/controls.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/execution.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/streams.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/20261121T104643Z-3edd374d/result.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/executions/20261121T104643Z-3edd374d/attempt.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/executions/20261121T104643Z-3edd374d/checker.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-fix/executions/20261121T104643Z-3edd374d/correspondence.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/completion.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/plan.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/controls.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/execution.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/streams.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/20261121T104639Z-a2074131/result.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/executions/20261121T104639Z-a2074131/attempt.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/executions/20261121T104639Z-a2074131/checker.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/executions/20261121T104639Z-a2074131/correspondence.json",
+      "examples/356-gson-overflowing-number/records/final-native/lexeme-parent/executions/20261121T104639Z-a2074131/replay.json",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/completion.json",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/plan.json",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/controls.json",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/execution.json",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/streams.json",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/records/summary.txt",
+      "examples/356-gson-overflowing-number/records/final-native/replay/20261121T104634Z-d7014338/result.json",
+      "examples/356-gson-overflowing-number/records/final-native/replay/executions/20261121T104634Z-d7014338/attempt.json",
+      "examples/356-gson-overflowing-number/records/final-native/run.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/completion.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/plan.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/controls.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/execution.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/streams.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/20261121T104639Z-4a5eb259/result.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/executions/20261121T104639Z-4a5eb259/attempt.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/executions/20261121T104639Z-4a5eb259/checker.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-fix/executions/20261121T104639Z-4a5eb259/correspondence.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/completion.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/plan.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/controls.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/execution.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/streams.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/20261121T104638Z-74701e23/result.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/executions/20261121T104638Z-74701e23/attempt.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/executions/20261121T104638Z-74701e23/checker.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/executions/20261121T104638Z-74701e23/correspondence.json",
+      "examples/356-gson-overflowing-number/records/final-native/token-parent/executions/20261121T104638Z-74701e23/replay.json",
+      "examples/356-gson-overflowing-number/records/final-native/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2d182dd1f729468156da6c7fb83da09a8c0e8d6f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

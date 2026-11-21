@@ -1,0 +1,648 @@
+{
+  "task": "live-parent",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+      "prove",
+      "organic.SumView#live(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar",
+      "--classpath",
+      "prepare/parent/lib/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "--classpath",
+      "prepare/parent/lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+      "--classpath",
+      "prepare/parent/lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+      "--classpath",
+      "prepare/parent/lib/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar",
+      "--assume",
+      "code >= 0 && code < 1",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "48",
+      "--max-array-length",
+      "64",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.051,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "15e32d8b0bb81586c2a4cd37b1aa8eb8b2382d8ed4ee938af3981f00ebf9bc9f",
+      "commit": "88866c1dafc86d76b2c905878108da7b0d94ac95",
+      "libTree": "2d182dd1f729468156da6c7fb83da09a8c0e8d6f",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 64
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "An existing view and a fresh entry iterator see a backing mutation from six to seven. The selector identifies the input and direct public observation in controls/table.json.",
+        "method": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+        "revisions": {
+          "parent": {
+            "commit": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+            "loadedFrom": "built/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+            "classSha256": "a404f0170144858d2796a5134071598f35aa5fb1d4e8054d7ae21da5d26b6075",
+            "origin": "built by maven from https://github.com/google/guava at 117b5277123e3a2cb1cad35ec8e47c852a3a8858: guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+            "parameters": {
+              "names": [
+                "multiset1",
+                "multiset2"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "organic.SumView#live(I)I",
+          "mapping": "An existing view and a fresh entry iterator see a backing mutation from six to seven. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 49
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "881c9d3acc2e8134c3ebe7a2a7c8896272c3a3ac1b138e3ead49bf8ce86ac3ee",
+            "role": "adapter"
+          },
+          {
+            "path": "built/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+            "sha256": "90ca918ca4eeea6f9b7d43e9eb560a6b4190a44d64866550078cb021645791c5",
+            "role": "original"
+          },
+          {
+            "path": "lib/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar",
+            "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+            "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+            "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+            "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar",
+            "sha256": "84d3a150518485f8140ea99b8a985656749629f6433c92b80c75b36aba3b099b",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "organic.SumView#live(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "organic.SumView#live(I)I",
+          "classSha256": "15e787e810cd6b755e14a476c3713603cd73a480d14137dfef36450850d8ddfb",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+          "subjectClassSha256": "a404f0170144858d2796a5134071598f35aa5fb1d4e8054d7ae21da5d26b6075"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+        "checkedEntry": "organic.SumView#live(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 1"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "48"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "64"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "organic.SumView#live(I)I",
+          "mapping": "An existing view and a fresh entry iterator see a backing mutation from six to seven. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 49
+        }
+      },
+      "commits": {
+        "parent": "117b5277123e3a2cb1cad35ec8e47c852a3a8858"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "6656",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx4300m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+            "gaps",
+            "--target",
+            "organic.SumView#live(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/built/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/parent/lib/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar",
+            "--classpath",
+            "prepare/parent/lib/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+            "--classpath",
+            "prepare/parent/lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+            "--classpath",
+            "prepare/parent/lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+            "--classpath",
+            "prepare/parent/lib/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.066,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+              "sites": [
+                "com.google.common.collect.Multisets$3.elementIterator:580"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.logging.Logger.log(Ljava/util/logging/Level;Ljava/lang/String;Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.logging.Logger.log(java.util.logging.Level, java.lang.String, java.lang.Throwable)",
+              "sites": [
+                "com.google.common.base.Strings.lenientToString:315"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Object.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Object.toString()",
+              "sites": [
+                "com.google.common.base.Strings.lenientToString:308"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(java.lang.CharSequence, int, int)",
+              "sites": [
+                "com.google.common.base.Strings.lenientFormat:282",
+                "com.google.common.base.Strings.lenientFormat:286"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Iterator.next()",
+              "sites": [
+                "com.google.common.collect.AbstractMapBasedMultiset$1.next:102",
+                "com.google.common.collect.AbstractMapBasedMultiset$2.next:130",
+                "com.google.common.collect.Multisets.equalsImpl:890",
+                "com.google.common.collect.Multisets$3$1.computeNext:591",
+                "com.google.common.collect.Multisets$3$1.computeNext:597",
+                "com.google.common.collect.Sets$1.size:849",
+                "com.google.common.collect.Sets$1$1.computeNext:871",
+                "com.google.common.collect.Sets$1$1.computeNext:874",
+                "com.google.common.collect.Sets$SetView.equals:769",
+                "com.google.common.collect.Sets$SetView.equals:788",
+                "organic.SumView.live:76",
+                "organic.SumView.live:78"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.entrySet()Ljava/util/Set;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.entrySet()",
+              "sites": [
+                "com.google.common.collect.AbstractMapBasedMultiset.elementIterator:90",
+                "com.google.common.collect.AbstractMapBasedMultiset.entryIterator:119"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map$Entry.getKey()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map$Entry.getKey()",
+              "sites": [
+                "com.google.common.collect.AbstractMapBasedMultiset$1.next:104",
+                "com.google.common.collect.AbstractMapBasedMultiset$2$1.getElement:136"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map$Entry.getValue()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map$Entry.getValue()",
+              "sites": [
+                "com.google.common.collect.AbstractMapBasedMultiset$2$1.getCount:141"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Set.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Set.iterator()",
+              "sites": [
+                "com.google.common.collect.AbstractMapBasedMultiset.elementIterator:90",
+                "com.google.common.collect.AbstractMapBasedMultiset.entryIterator:119",
+                "com.google.common.collect.Multisets.equalsImpl:890",
+                "com.google.common.collect.Multisets$3.entryIterator:585",
+                "com.google.common.collect.Multisets$3.entryIterator:586",
+                "com.google.common.collect.Sets$1.size:849",
+                "com.google.common.collect.Sets$1$1.<init>:865",
+                "com.google.common.collect.Sets$1$1.<init>:866",
+                "com.google.common.collect.Sets$SetView.equals:788",
+                "organic.SumView.live:76",
+                "organic.SumView.live:78"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Set.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Set.toString()",
+              "sites": [
+                "com.google.common.collect.AbstractMultiset.toString:230"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.equals(java.lang.Object)",
+              "sites": [
+                "java.util.HashMap.find:80",
+                "java.util.Objects.equals:64"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.hashCode()",
+              "sites": [
+                "com.google.common.collect.Multisets$AbstractEntry.hashCode:856",
+                "java.util.HashMap.find:77",
+                "java.util.HashMap.put:65"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Iterator.hasNext()",
+              "sites": [
+                "com.google.common.collect.AbstractMapBasedMultiset$1.hasNext:96",
+                "com.google.common.collect.AbstractMapBasedMultiset$2.hasNext:125",
+                "com.google.common.collect.Multisets.equalsImpl:890",
+                "com.google.common.collect.Multisets$3$1.computeNext:590",
+                "com.google.common.collect.Multisets$3$1.computeNext:596",
+                "com.google.common.collect.Sets$1.size:849",
+                "com.google.common.collect.Sets$1$1.computeNext:870",
+                "com.google.common.collect.Sets$1$1.computeNext:873",
+                "com.google.common.collect.Sets$SetView.equals:769",
+                "com.google.common.collect.Sets$SetView.equals:788"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.contains(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.contains(java.lang.Object)",
+              "sites": [
+                "com.google.common.collect.Sets$1.contains:896",
+                "com.google.common.collect.Sets$1.size:850",
+                "com.google.common.collect.Sets$1$1.computeNext:875",
+                "com.google.common.collect.Sets$SetView.equals:771"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.hashCode()",
+              "sites": [
+                "com.google.common.collect.AbstractMultiset.hashCode:219"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.size()",
+              "sites": [
+                "com.google.common.collect.Multisets.equalsImpl:887",
+                "com.google.common.collect.Multisets$ElementSet.size:1020",
+                "com.google.common.collect.Multisets$ViewMultiset.distinctElements:1194",
+                "com.google.common.collect.Sets$1.size:848",
+                "com.google.common.collect.Sets$SetView.maxSize:826",
+                "com.google.common.collect.Sets$SetView.minSize:810"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Integer.toHexString(I)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Integer.toHexString(int)",
+              "sites": [
+                "com.google.common.base.Strings.lenientToString:312"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Integer.toString(I)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Integer.toString(int)",
+              "sites": [
+                "com.google.common.collect.Count.toString:68"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.valueOf(java.lang.Object)",
+              "sites": [
+                "com.google.common.base.Platform.stringValueOf:88",
+                "com.google.common.base.Strings.lenientFormat:267",
+                "com.google.common.collect.Multisets$AbstractEntry.toString:867"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.System.identityHashCode(Ljava/lang/Object;)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.System.identityHashCode(java.lang.Object)",
+              "sites": [
+                "com.google.common.base.Strings.lenientToString:312"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0474,
+        "peakRssBytes": 85024768,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "organic.SumView#live(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 1",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 48 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ organic.SumView#live(int) satisfies `result == 1` on every input where code >= 0 && code < 1 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 48 times with unwinding assertions)\n  not vacuous: live(code=0) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.01547967,
+          "properties": 1,
+          "unwind": 48,
+          "max_array_length": 64,
+          "stage": null,
+          "native": {
+            "paths": 3,
+            "merges": 0,
+            "solver_calls": 2,
+            "solving_seconds": 4.821e-05,
+            "gates_evaluated": 93,
+            "evaluating_seconds": 4.529e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 125,
+            "clauses": 308,
+            "seconds": 0.011338312,
+            "loading_seconds": 0.00270848,
+            "decoding_seconds": 0.000556076,
+            "encoding_seconds": 0.000300017,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.011,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.003,
+                "lowering": 0.001,
+                "symbolic": 0.008,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 125,
+                "clauses": 308
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.984,
+              "seconds": 0.007,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 190,
+                "clauses": 533
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.042,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.018,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.023
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 1",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 48,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found live(code=0).",
+            "witness": "live(code=0)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261121-102303-353-final-native-checks-on-the-original/.build-py/examples-gw6___v1/targets/353/live-parent/20261121T104645Z-90deff6f",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261121-102303-353-final-native-checks-on-the-original/.build-py/examples-gw6___v1/targets/353/live-parent/20261121T104645Z-90deff6f"
+  }
+}
