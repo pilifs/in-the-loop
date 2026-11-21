@@ -4,7 +4,9 @@ description: Commit finished work and publish it with its session traces, leavin
 disable-model-invocation: true
 ---
 
-Publish this repo. The user asked for it by running this skill, so pushing is authorized for this run only.
+Promote this repo's line to `main`. The user asked for it by running this skill, so pushing `main` is authorized
+for this run only. (A checkpoint to `develop`, `sync.py checkpoint --rev REV`, is a different job: it publishes
+code for planning, with no test run and no log upload, and needs no skill.)
 
 1. Run `jj status`. If `@` has unfinished work, stop and say what is unfinished.
    Otherwise, if it has finished work, commit it:

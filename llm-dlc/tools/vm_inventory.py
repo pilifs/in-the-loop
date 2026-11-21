@@ -40,6 +40,7 @@ STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
 ARCHIVED = Path.home() / ".cache/in-the-loop/workspace-archive"  # run records of workspaces that were removed
 # The examples whose records the runs of 2026-11-19 to 21 wrote (runs 5 to 7, VF-053): sealed before any trim.
 RECORD_RUNS = range(340, 360)
+SEALED_MARK = ".captured"  # verification/capture.py's mark in a run directory: its attempt was sealed
 
 
 def run(*argv: str, cwd: Path | None = None) -> str:
@@ -90,6 +91,8 @@ def fingerprint(path: Path) -> str:
     for base, dirs, names in os.walk(path):
         dirs.sort()
         for name in sorted(names):
+            if name == SEALED_MARK and base == str(path):
+                continue  # the runner's mark that the folder was sealed says nothing of its content
             st = os.lstat(os.path.join(base, name))
             h.update(f"{os.path.relpath(os.path.join(base, name), path)}\0{st.st_size}\0{st.st_mtime_ns}\n".encode())
     return h.hexdigest()
@@ -309,9 +312,11 @@ class Protector:
                     except (OSError, ValueError):
                         pass
                 self.tree("runs", f"runs:{root.name}:{run_dir.name}", run_dir, "job-run", f"verification/results/{run_dir.name}",
-                          job=run_dir.name, source={"commit": source} if source else None,
+                          job=run_dir.name, source={"commit": source} if source else None, exclude=lambda rel, is_dir: rel == SEALED_MARK,
                           notes={"stage": "sealed at the VM inventory: the run directory as the runner left it, before capture "
                                           "was wired into the runner; the attempt's number is not known", "workspace": root.name})
+                if not self.dry:  # so the runner, when it runs the job again, does not take it for an attempt nobody sealed
+                    (run_dir / SEALED_MARK).write_text(json.dumps({"at": "inventory"}))
 
     def workdirs(self) -> None:
         """Kept work directories, as what each holds beyond its job's commit."""

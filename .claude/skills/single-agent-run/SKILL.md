@@ -32,7 +32,12 @@ Everything you run is `python3 llm-dlc/tools/single_run.py`, whose own first lin
   message reads, **end it**: answer `stop`, say why, and the user decides what comes next. Ending the loop is
   almost always better than a run that goes on under a message that no longer fits.
 - **Never write into the agent's session**, and leave the files of the folder it works in alone while it runs.
-- **Nothing is pushed** unless the user asks.
+- **`main` is not pushed** unless the user asks. Checkpoints to `develop` are yours to make, without asking
+  (`python3 llm-dlc/tools/sync.py checkpoint --rev REV`, from the default workspace): after a cycle whose commits
+  you have read and would let continue, when the run lands, and when the user asks for a snapshot to plan from.
+  A checkpoint runs no test and waits for nothing. Read what it prints: a refusal names what must not leave the
+  machine, and is reported to the user, not worked round. It reads commits, never a working copy, so
+  `--rev WORKSPACE@-`, run from the default workspace, is safe while the agent is at work in its own.
 
 The request: $ARGUMENTS
 
@@ -177,14 +182,16 @@ When the run has ended:
   conflicts in real work is taken back and says where: resolve it as "Between two examples" in
   `llm-dlc/runtime.md` shows, or leave it and tell the user. A line that changes what only a person decides (an
   approval in the allow list or an accepted finding that no person is recorded as having taken) is not landed
-  at all: tell the user what `land` printed, and change neither file yourself. After a merge, run
-  `python3 lib/tools/default_run.py after-merge --final`: the default test run, in a memory cap of its own,
-  unless a passed run already covers the line as it stands; a failure is reported, not fixed by you. If the
-  user said to leave the workspace unmerged, leave it.
+  at all: tell the user what `land` printed, and change neither file yourself. After the land, checkpoint the
+  line (`python3 llm-dlc/tools/sync.py checkpoint --rev @-`) and report its receipt: the commit on `develop`,
+  and what evidence is still pending. The default test run is no longer owed at a land (since 2026-11-21): it
+  belongs to the promotion to `main`, which the user asks for and which runs it itself. If the user said to
+  leave the workspace unmerged, leave it.
 - Tell the user: whether the outcome was reached, by your reading of the last report and the commits, and what
   is left; each cycle in a line (what it did, your answer); the continue messages that were set and when; what
   the run cost and the jobs still out; the answers you gave that they have not reviewed
   (`python3 llm-dlc/tools/decisions.py list --group flagged,unreviewed`); where the loop's record and the
-  session are (`status` names both), that `start NAME` continues the run, and that nothing was pushed.
+  session are (`status` names both), that `start NAME` continues the run, which commit `develop` is at, what
+  `python3 llm-dlc/tools/artifacts.py status` says is still on this machine only, and that `main` was not pushed.
 
 The skill ends here. The session is theirs to continue.

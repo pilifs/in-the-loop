@@ -42,6 +42,11 @@ class Protect(unittest.TestCase):
             protector.archive.close()
             self.assertEqual(self.occurrences(), expected)
         self.assertEqual(protector.tally["runs unchanged"], 1)
+        (self.folder / vm_inventory.SEALED_MARK).write_text("{}")  # the mark itself is no change
+        protector = vm_inventory.Protector(dry=False)
+        protector.tree("runs", "runs:ws:made-up", self.folder, "job-run", "verification/results/made-up", job="made-up")
+        protector.archive.close()
+        self.assertEqual(self.occurrences(), 1)
         (self.folder / "logs/2-more.log").write_text("later\n")
         protector = vm_inventory.Protector(dry=False)
         protector.tree("runs", "runs:ws:made-up", self.folder, "job-run", "verification/results/made-up", job="made-up")

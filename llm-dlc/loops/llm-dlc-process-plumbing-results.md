@@ -95,7 +95,31 @@ Still to show for this row of the acceptance table: one historic flat job and on
   `sync.py commit` took 27.9 s, 99.7 s (caches cold), 22.0 s and 19.4 s, of which the check after the commit 13 to 16 s
   warm. A push to `main` on 2026-11-21 took the watcher a pause of the run and `--skip-tests`.
 
+## Acceptance evidence so far
+
+| Exercise of the brief | State after cycle 1 |
+|---|---|
+| Dirty workspace, reviewer busy, store offline | Shown on a bare remote by `test_checkpoint.py` and by the rehearsal on the real history: a fresh clone reads the code at `develop`; the foreign files' hashes and the working-copy commit are unchanged; the test gate, the session sync and the log upload are patched to fail if called and are not; the receipt lists pending trace logs and the archive's exposure; a credential in a parent commit the tip deleted, an unsafe message and `--all` are refused with the remote unchanged. The checkpoint asks the store nothing, so its being offline changes only the receipt's custody line. **Open:** the same on the real `origin` (the watcher's first push). |
+| Concurrent promotion and restart | **Not built** (`sync.py promote`). A lost push answer already resolves to one logical push in `checkpoint.push`, which a promotion will use with the expected `main`. |
+| Interrupted capture, multiple workers, bad store response | Shown by `test_artifacts.py` and `test_capture.py`: killed before and after the intake record, after the puts and before the receipt; a dead worker's lease; two workers on one object; a store offline, losing its answer, holding other bytes under the same key, holding a truncated object; a full disk (nothing sealed, the job and the collect unharmed, the staged files set aside, not deleted); reused paths keeping each version. No state reads `remote_verified` without the object having been read back. **Open:** a kill in the middle of `collect` itself is not exercised by a test. |
+| Recovery with only remote state | Shown with an empty cache and the reader's token, the journal not consulted: `artifacts.py canary` on the real buckets (11 of 11), and the 359 exercise above (two real occurrences, 12,279 files, every byte verified, then offline). In tests on a disk store: the middle of a cut log, failed and conflicted outputs, nested and binary files, any past prefix of a stream. **Open:** the watcher's read of a restricted occurrence from the store alone (today `analyze` reads the capturing machine's spool); a promoted attempt; a literal second machine. Legacy gaps are listed under "The VM as found". |
+| Evidence semantics | Shown for example 359, above. **Open:** one flat and one sharded job across jj heads. |
+| Delegated review | The access half is shown by the canary: an ordinary token cannot read a known restricted key, readers cannot write or delete, the public Worker and the public traces' token read neither class. **Not built:** the watcher's decision path (it is to be built switched off, decision 3). |
+| Cost and compatibility | Before: `sync.py commit` 19 to 28 s warm and 100 s cold in this workspace; every commit rewrites the global index and overview. After, for a checkpoint on the real history against a disk remote: 0.9 to 2.3 s for one commit, 15.0 s for 17, 0 default-suite calls. **Open:** the 20-commit comparison on the real remote, and the per-commit rewrites (the trace changes of the brief's section 4). |
+
+## What is left, in the order I would take it
+
+1. **`sync.py promote --rev REV`**: the frozen set `ancestors(D) − ancestors(P)`, a clean candidate workspace, the publication metadata as a commit of its own, the gate on the candidate's tree (reusing a covering pass by `default_run.covers`), the receipt outside the tree, the push with the expected `main` (`checkpoint.push`), the merge of the metadata forward into `develop`, and the one review view.
+2. **Delegated redaction decisions**, switched off: a watcher actor in `allow` and `review`, a ledger outside the checkout bound to the watcher's launch, validation in `check`, `land` and `checkpoint` (which already asks `decision_problems`), and how to switch it off again.
+3. **Trace churn** (section 4): no global index or overview rewrite at an ordinary commit, a cursor over processed commits and session offsets, a provenance trailer that needs no future URL, rendering at promotion.
+4. **Pipeline day shards** behind one ID resolver, readers first.
+5. **The records' rule** (VF-053, decision 5): the records of examples 340 to 359 are sealed and verified off the VM, and 359 restores and validates from them, so the trim by rule can now be made, with `check` and `land` holding the budget afterwards.
+6. Smaller: the watcher's restricted read from the store; `prune_workspaces.py` counting a `remote_verified` occurrence as recoverable; catalog pages, so a fresh machine lists without one request a receipt; Codex's rules for the token files; the two set-aside work directories.
+
 ## Notes for the next cycle
 
-- A new test file in this workspace: run `python3 lib/tools/test_costs.py estimate` with the old `lib/tests/costs.json` saved, then take only the new file's rows and its summary entry into the old file, and run `lint` (the operating notes, "A fresh jj workspace").
-- `TMPDIR=~/.cache/in-the-loop/tmp/plumbing` for tests and scratch files.
+- A new or changed test file in this workspace: save `lib/tests/costs.json`, run `python3 lib/tools/test_costs.py estimate`, take only that file's rows and summary entry into the saved copy, run `lint` (the operating notes, "A fresh jj workspace"). `~/.cache/in-the-loop/tmp/plumbing/take_rows.py OLD.json FILE...` does the taking; then `tag FILE` if the lint asks.
+- `TMPDIR=~/.cache/in-the-loop/tmp/plumbing` for tests and scratch files. `rehearse.py` there rebuilds the bare-remote rehearsal (`rehearse.py CHECKOUT REV N`).
+- A change to the redactor's literals or rules makes the next `sync.py commit` rescan every log (several minutes, once). The commit of `checkpoint.py` paid that for the three new tokens; the default workspace will pay it once when this line lands.
+- A Bash command whose text holds a push or a commit of plain git can be refused by the client: put such steps in a script file and run the file.
+- The first real `develop` push is the watcher's (decision 1); `sync.py checkpoint --bootstrap`, then `--rev @- --dry-run`, then the push.

@@ -12,29 +12,30 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T17:54:36.520Z",
-  "duration_seconds": 3434,
+  "ended": "2026-11-21T18:01:06.264Z",
+  "duration_seconds": 3824,
   "stats": {
     "turns": 1,
-    "api_calls": 119,
-    "tool_calls": 135,
+    "api_calls": 130,
+    "tool_calls": 146,
     "tool_errors": 5,
     "compactions": 0,
-    "peak_context_tokens": 478222,
+    "peak_context_tokens": 508642,
     "usage": {
-      "input_tokens": 238,
-      "output_tokens": 241260,
-      "cache_read_input_tokens": 37609112,
-      "cache_creation_input_tokens": 466605
+      "input_tokens": 260,
+      "output_tokens": 263271,
+      "cache_read_input_tokens": 43046682,
+      "cache_creation_input_tokens": 497025
     }
   },
   "tools": {
-    "Bash": 106,
+    "Bash": 116,
     "Read": 19,
     "Write": 7,
-    "Edit": 3
+    "Edit": 4
   },
   "files_touched": [
+    ".claude/settings.json",
     "llm-dlc/tools/artifacts.py",
     "llm-dlc/tools/checkpoint.py",
     "llm-dlc/tools/sync.py",
@@ -48,24 +49,24 @@
     {
       "index": 0,
       "started": "2026-11-21T16:57:22.471Z",
-      "ended": "2026-11-21T17:54:36.520Z",
+      "ended": "2026-11-21T18:01:06.264Z",
       "turns": 1,
-      "api_calls": 119,
+      "api_calls": 130,
       "usage": {
-        "input_tokens": 238,
-        "output_tokens": 241260,
-        "cache_read_input_tokens": 37609112,
-        "cache_creation_input_tokens": 466605
+        "input_tokens": 260,
+        "output_tokens": 263271,
+        "cache_read_input_tokens": 43046682,
+        "cache_creation_input_tokens": 497025
       },
-      "peak_context_tokens": 478222
+      "peak_context_tokens": 508642
     }
   ],
   "log": {
-    "sha256": "ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad",
-    "bytes": 3739945,
-    "lines": 1016,
-    "gzip_bytes": 659165,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad.jsonl.gz"
+    "sha256": "8ad3ffc6b7a6d8544165d5d98e9d2e9b60083b7d4e2fb845afe4eb8da80924a1",
+    "bytes": 3985069,
+    "lines": 1110,
+    "gzip_bytes": 689549,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/8ad3ffc6b7a6d8544165d5d98e9d2e9b60083b7d4e2fb845afe4eb8da80924a1.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -108,6 +109,14 @@
       "summary": "Seal source transcripts at each sync; reproduce example 359's native-selector route from hydrated evidence",
       "body": "sync.py now hands each synced session's source transcript, and its subagents', to the private archive as an append-only stream in restricted custody (seal_transcripts): what the file gained since it was last sealed, so a commit seals the turns that led to it and the upload starts then. Only a file in a client's own session store is sealed, and an error there goes to the hook log and fails no sync. artifacts.transcript_key names the streams, as vm_inventory.py protect did.\n\nThe archive's list was slow on first use, one request a receipt for 1,182 receipts: it now reads what it lacks on 16 threads, and on the capturing machine takes from the journal the receipts that machine wrote (1.5 s). Occurrence ids now carry the microsecond before their random bits, so they sort in the order they were made; a test had shown two made in one second in either order.\n\nThe brief's exercise on evidence semantics, run on the line's commit 7d865e55 with an empty cache and the reader's token: example 359's records (6,374 files, 97.5 MB) restored from the store into a plain export in 2.5 s, and the run directory of job 20261121-155348-repeat-organic-java-example-359-on-the-f (5,905 files, 64.6 MB) in 1.8 s, both identical to the checkout by diff -r; workflow_handoff.py handoff 359 --revision fix there reported contents-fix native selectors established, 2,865 admitted, 2,865 checked, no first blocker, and the same routes and coverage as in the checkout; with one native.json removed, then with one byte changed, that record became ineligible while the other record and the four finite-JVM routes stayed established. llm-dlc/loops/llm-dlc-process-plumbing-results.md records it, with the rehearsal of sync.py checkpoint on the real history against a bare remote on disk (0.9 to 2.3 s for one commit, 15.0 s for 17 commits and 5,877 new blobs, the working copy unread).\n\nVerified by two new tests in test_artifacts.py (a synced session sealed as streams with its subagent, a file outside a client's store left alone, a second sync sealing only what was gained; sealing never fails a sync), by test_artifacts.py, test_vm_inventory.py, test_checkpoint.py and test_capture.py run again after the last edits, and by the tests the change to sync.py selects (22 files).",
       "log_sha256": "ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad"
+    },
+    {
+      "change_id": "potlswkpqyuwvsqstwrvpxuoqlkxrrvl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Cut the entry points over to checkpoints: the default run belongs to a promotion, not to a landing",
+      "body": "The brief asks that the watcher stop pausing for the old checklist. CLAUDE.md, llm-dlc/README.md, the operating notes, the brief template and the /single-agent-run, /multi-agent-brief and /publish skills now say the same thing: a checkpoint (sync.py checkpoint --rev REV) puts a committed revision on origin's develop with no test run, no log upload and no wait, and is the watcher's to make without asking, at a finished slice, when a stream or a run lands, at a pause or when a snapshot is asked for; main moves by a promotion, at the user's word. Since 2026-11-21 the default test run is owed at a promotion to main and at a release only, each of which runs it itself when no passed run covers the commit. It is no longer owed when an example is done, when a stream or a run lands, or after a merge; an agent still runs it when it answers a development question, with default_run.py after-merge. The tests of what changed before each commit stay as they were.\n\nCLAUDE.md also says how to find and restore originals from the private archive and who reads which class, and the operating notes gain a section on checkpoints and the archive (never force, published commits are immutable, check custody before removing a run directory by hand, tests seal nothing). The Claude Code permissions deny reading the archive's token files or naming their path in a command; no allow rule was added for the checkpoint, which the watcher's session already runs as it runs the other watcher tools. Codex's rules cannot express a denied path and are unchanged.\n\nvm_inventory.py protect now leaves the runner's mark in each run directory it seals, so a rerun of the job does not take the directory for an attempt nobody sealed; it wrote the mark into the 910 directories sealed earlier without sealing anything again. llm-dlc/loops/llm-dlc-process-plumbing-results.md has the acceptance table as it stands after this cycle, what is left in order, and notes for the next cycle. Verified by the tests the documentation changes select (17 files, test_claude_setup.py and test_release.py among them) and test_vm_inventory.py.",
+      "log_sha256": "8ad3ffc6b7a6d8544165d5d98e9d2e9b60083b7d4e2fb845afe4eb8da80924a1"
     }
   ],
   "logs": {
@@ -133,6 +142,12 @@
       "bytes": 2519976,
       "lines": 520,
       "gzip_bytes": 522803,
+      "url": null
+    },
+    "8ad3ffc6b7a6d8544165d5d98e9d2e9b60083b7d4e2fb845afe4eb8da80924a1": {
+      "bytes": 3985069,
+      "lines": 1110,
+      "gzip_bytes": 689549,
       "url": null
     },
     "ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad": {

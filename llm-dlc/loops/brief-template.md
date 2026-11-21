@@ -19,8 +19,8 @@ Put these under the brief's `## How to work through it`, adjusted to its own wor
 - **Check each claim against the code first**, including the brief's own and its inputs'.
 - **Proofs, model checks and benchmark runs are queued, never run inline** (CLAUDE.md, Verification jobs and Tests).
   Compiling and the tests run inline: the tests of what changed while iterating and before each commit
-  (`python3 lib/tools/test_costs.py run --changed`), and the whole default run (`python3 lib/tools/test_costs.py
-  run`, the unit and tool tiers) when a piece of work is done and after a merge (see Tests below). The proof tier
+  (`python3 lib/tools/test_costs.py run --changed`). The whole default run (`python3 lib/tools/test_costs.py
+  run`, the unit and tool tiers) belongs to a promotion to `main`, not to a cycle (see Tests below). The proof tier
   runs as a job, for the tests whose inputs the change touched, with CLAUDE.md's one narrow inline exception. A new test is the
   cheapest that shows the behaviour, and a new proof-tier test has a tag, a reason and a proxy.
 - **Recorded results are evidence, not inputs to edit.** A new measurement is a new job.
@@ -63,10 +63,12 @@ Say in the brief which of the two modes it runs in:
 ### Tests
 
 Every loop works by CLAUDE.md's Tests section, inline: a cycle runs the tests of what it changed before its commit
-(`python3 lib/tools/test_costs.py run --changed`), and the whole default run (`python3 lib/tools/test_costs.py run`)
-once a piece of work is done and after a merge. A default run that fails is the first thing its owner takes up,
-before new work. Bookkeeping commits (Progress, a status line, a result recorded) run no tests. A push requires a
-passed default run covering its commit, and runs one itself when none is recorded (`lib/tools/default_run.py`).
+(`python3 lib/tools/test_costs.py run --changed`). The whole default run (`python3 lib/tools/test_costs.py run`)
+is owed at a promotion to `main` and at a release, which run it themselves when no passed run covers the commit
+(`lib/tools/default_run.py`); a loop runs it only when it answers a question the changed tests cannot. A default
+run that fails is the first thing its owner takes up, before new work. Bookkeeping commits (Progress, a status
+line, a result recorded) run no tests. The watcher checkpoints the line to `develop` as streams land
+(`sync.py checkpoint`), which runs no test.
 (From 2026-11-16 to 2026-11-17 a brief could say `- tests: queued` to queue its default runs as verification jobs;
 that setting is gone, and a brief that still says it runs as above.)
 
