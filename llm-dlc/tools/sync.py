@@ -4318,6 +4318,22 @@ def check_global_files(manifests: dict[str, dict], redact: Redactor, rendered: b
     return errors
 
 
+UNPUBLISHED_MANY = 100
+
+
+def unpublished_commits() -> list[str]:
+    """A warning once the commits of this line that are on neither `develop` nor `main` pass UNPUBLISHED_MANY. A pile
+    of them is what made each commit slow and a push a day's work (VF-053: 206 by 2026-11-21); a checkpoint publishes
+    the code in seconds and asks for none of what a promotion does."""
+    with perf.phase("check: unpublished commits"):
+        r = jj("log", "--no-graph", "-r", "(::@ ~ ::(remote_bookmarks(exact:develop) | trunk())) ~ empty()", "-T", '"x"')
+    count = len(r.stdout.strip()) if r.returncode == 0 else 0
+    if count < UNPUBLISHED_MANY:
+        return []
+    return [f"{count} commits of this line are on neither develop nor main: a checkpoint publishes them without a test "
+            "run or an upload (python3 llm-dlc/tools/sync.py checkpoint --rev REV, the watcher's in a run)"]
+
+
 def records_budget() -> tuple[list[str], list[str]]:
     """(errors, warnings) for the examples' records against their budget (examples/tools/targets/case_pack.py).
     Per-case output left loose in thousands of files is an error, which one command settles; a record that is
@@ -4375,7 +4391,7 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
     warnings += delegation.open_escalations(sys.modules[__name__])
     over, large = records_budget()
     errors += over
-    warnings += large
+    warnings += large + unpublished_commits()
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():

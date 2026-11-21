@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T19:26:39.560Z",
-  "duration_seconds": 8957,
+  "ended": "2026-11-21T19:38:49.779Z",
+  "duration_seconds": 9687,
   "stats": {
     "turns": 6,
-    "api_calls": 384,
-    "tool_calls": 454,
-    "tool_errors": 10,
+    "api_calls": 444,
+    "tool_calls": 516,
+    "tool_errors": 11,
     "compactions": 2,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 768,
-      "output_tokens": 618889,
-      "cache_read_input_tokens": 118083151,
-      "cache_creation_input_tokens": 1246419
+      "input_tokens": 888,
+      "output_tokens": 666018,
+      "cache_read_input_tokens": 132778346,
+      "cache_creation_input_tokens": 1343399
     }
   },
   "tools": {
-    "Bash": 361,
+    "Bash": 423,
     "Read": 44,
     "Edit": 32,
     "Write": 17
@@ -88,24 +88,24 @@
     {
       "index": 2,
       "started": "2026-11-21T19:12:09.670Z",
-      "ended": "2026-11-21T19:26:39.560Z",
+      "ended": "2026-11-21T19:38:49.779Z",
       "turns": 1,
-      "api_calls": 83,
+      "api_calls": 143,
       "usage": {
-        "input_tokens": 166,
-        "output_tokens": 66001,
-        "cache_read_input_tokens": 10754842,
-        "cache_creation_input_tokens": 181763
+        "input_tokens": 286,
+        "output_tokens": 113130,
+        "cache_read_input_tokens": 25450037,
+        "cache_creation_input_tokens": 278743
       },
-      "peak_context_tokens": 196668
+      "peak_context_tokens": 293648
     }
   ],
   "log": {
-    "sha256": "69b6ba95aa44476e56e308e8a9b34089ae617c36b7ece2735132a0b32cd53ab6",
-    "bytes": 10465026,
-    "lines": 3446,
-    "gzip_bytes": 1729003,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/69b6ba95aa44476e56e308e8a9b34089ae617c36b7ece2735132a0b32cd53ab6.jsonl.gz"
+    "sha256": "0e6af0cdfd7d56bb0a208b1f98c893bdb955a8081ac5927902743f9f964a196f",
+    "bytes": 11404820,
+    "lines": 3927,
+    "gzip_bytes": 1840518,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/0e6af0cdfd7d56bb0a208b1f98c893bdb955a8081ac5927902743f9f964a196f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -198,23 +198,29 @@
       "log_sha256": "6539b8c25da5cf36832489d005548735fe9fa8f7c385e8a9a85d02a0d4a55f4a"
     },
     {
-      "change_id": "spyszqqrynpruzvtsmytrznnruzvstoy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "69b6ba95aa44476e56e308e8a9b34089ae617c36b7ece2735132a0b32cd53ab6"
-    },
-    {
       "change_id": "pptpprnznwsqsqqlztpysqowytrnwuyz",
       "commit_id": null,
       "immutable": false,
       "summary": "Find a verification job and its result by id, kept flat or under its day: every reader goes through verification/layout.py",
       "body": "The brief's pipeline layout, readers first. verification/layout.py is the one place that knows where a job's specification and its result are: flat (verification/jobs/ID.json, verification/results/ID/), as all 986 are, or under the UTC day the id begins with (verification/jobs/YYYY/MM/DD/ID.json), with one overflow shard for an id without a date. A job is never moved, since the runner tests the commit that last touched its file; a result goes beside its job; identical duplicates resolve to the flat copy and differing ones are named by pipeline.py validate. Results recorded on other heads are recognised in both layouts from a listing of the commit's tree.\n\nReaders moved to it: pipeline.py (the queue, status, collect, commit-paths, report, resubmit, prioritize, validate, the results index, schema references at the new depth), sync.py's loop statistics, cost_inventory.py, conductor.py, brief_run.py, accept.py, claim_history.py, capture.py, vm_inventory.py and promote.py. New jobs still go flat (WRITE = \"flat\" in layout.py; VERIFY_LAYOUT=shards for one command): the brief migrates readers before writers, and two standing decisions of the user say to add no complexity to pipeline.py and to move no folders, so the switch is one line left for a person after a real promotion. The conductor loads the module only for the one question that needs it, so a copy of the loop's scripts in a checkout without it still answers the others.\n\nAlso fixed, found by this very commit: sync.py commit --only named every file it set aside on one jj command line, and 16,000 of them (an example's per-case records, being packed for the next commit) were more than a command line holds. It now names what stays, and prints the first 40 of a long list with the count of the rest.",
       "log_sha256": "69b6ba95aa44476e56e308e8a9b34089ae617c36b7ece2735132a0b32cd53ab6"
+    },
+    {
+      "change_id": "tkvzqtpykolqpxzzmlmsmkllmxqpplot",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Keep an example's per-case records as one pack a folder, read in place; hold the records to a budget in check",
+      "body": "The records' rule of VF-053 (the user's decision 5: seal the records, show 359 restores, then slim them by rule). A native-selector run writes two files for each admitted selector; over examples 340 to 359 that was 16,376 of the 22,103 files their records held, one folder with 2,865 entries. examples/tools/targets/case_pack.py keeps such a folder as cases.tar.gz beside where it was: the same bytes under the same names, written so that the same files give the same pack. The validator (native_selectors.validate_result) reads a case from the folder or from the pack and compares its digest either way, so a plain checkout checks every case as before and nothing has to be fetched from the private archive, which a public reader cannot read. A selector run packs its own output at its end.\n\nApplied in one pass to examples 341, 345, 347, 354 and 359: 16,376 files became 45 packs (37.0 MB to 0.9 MB), the twenty examples' records went from 22,103 files to 5,772, and no folder has more than 1,000 entries. Shown: each of the five handoffs (workflow_handoff.py handoff NNN, and --revision fix for 354 and 359) is byte for byte what it was; the five sealed originals restored from the store with artifacts.py fetch equal the packed records file for file (case_pack.py verify --against, 16,376 members); with one packed case of 359 removed, and then with one byte of it changed, its record became ineligible (does not exist; different raw checker output) while the other 39 established results stayed, and matched again with the pack put back; validate_example.py passes for the five. Not cut: the bytes of the large per-execution files (execution.json, 125 MB in 319 files), which are few and read whole; what to keep of them is a question about the evidence, for the user.\n\nThe budget: sync.py check reports more than 50 loose per-case files in one cases/ folder as an error that names the command, and more than 2,000 files under one example's records/ or 1,000 entries in one folder as a warning (none of either now; 50 ms). It also warns at 100 commits on neither develop nor main. The checkpoint's scan now reads a gzip blob as what it opens to, every member and whatever follows the last, and refuses one that opens to more than 256 MiB: without that, a credential inside a pack would have left unseen (POLICY 3, so each kept verdict is worked out once more).\n\nAlso in this commit, from the brief's acceptance table and VF-053: a test that kills the collector (SIGKILL) with a result's folder wiped and again with the result written, and collects again, with the earlier result sealed before the wipe; the watcher's private analysis reads an occurrence its machine never held from the store alone (shown on a disk store; on the real restricted bucket it is the watcher's to run); prune_workspaces.py counts a file as recoverable when the archive holds its exact bytes verified in the store, and its tests no longer read the machine's own archive; both run skills have the watcher say, with each verdict or merge, what waits on a person. VF-053 records what was done against each of its needs and stays open for the user.",
+      "log_sha256": "0e6af0cdfd7d56bb0a208b1f98c893bdb955a8081ac5927902743f9f964a196f"
     }
   ],
   "logs": {
+    "0e6af0cdfd7d56bb0a208b1f98c893bdb955a8081ac5927902743f9f964a196f": {
+      "bytes": 11404820,
+      "lines": 3927,
+      "gzip_bytes": 1840518,
+      "url": null
+    },
     "1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d": {
       "bytes": 2017364,
       "lines": 328,

@@ -93,6 +93,20 @@ class CommitOnly(unittest.TestCase):
         self.assertEqual(sync.listed(["a", "b"]), "a b")
 
     @cost("tool")
+    def test_a_pile_of_commits_on_neither_develop_nor_main_is_warned_of_and_a_few_are_not(self):
+        self.assertEqual(sync.unpublished_commits(), [])  # one commit, far from many
+        for i in range(3):
+            self.write("lib/a.txt", f"{i}\n")
+            self.jj("commit", "-m", f"change {i}")
+        with mock.patch.object(sync, "UNPUBLISHED_MANY", 4):
+            (warning,) = sync.unpublished_commits()
+            self.assertIn("4 commits of this line are on neither develop nor main", warning)
+            self.assertIn("sync.py checkpoint --rev REV", warning)
+            self.jj("bookmark", "create", "main", "-r", "@--")  # what is on main is published, and no longer counts
+            self.jj("config", "set", "--repo", 'revset-aliases."trunk()"', "main")
+            self.assertEqual(sync.unpublished_commits(), [])
+
+    @cost("tool")
     def test_with_nothing_else_changed_nothing_is_set_aside(self):
         self.write("verification/findings.md", "VF-1\n")
         self.assertEqual(self.commit(["verification"], "Record a finding"), [])

@@ -530,6 +530,22 @@ class Reads(Case):
         self.assertEqual([r[0] for r in logged], ["made-up purpose: count the lines"])
         with self.assertRaises(Unavailable):
             artifacts.analyze(record["id"], "  ", self.archive)
+        # On a machine that never held it (an empty journal and spool), the same facts come from the store alone,
+        # and the read is logged there too; nothing of it is left in a cache.
+        elsewhere = artifacts.Archive(self.dir / "another-machine")
+        self.addCleanup(elsewhere.close)
+        remote = artifacts.analyze(record["id"], "made-up purpose: from the store", elsewhere)
+        self.assertEqual((remote["read_from"], facts["read_from"]), ("the store", "this machine"))
+        same = ("id", "kind", "access", "bytes", "members", "inventory_sha256", "raw_sha256", "files", "largest_file_bytes", "suffixes")
+        self.assertEqual({k: remote[k] for k in same}, {k: facts[k] for k in same})
+        self.assertEqual(remote["state"], "remote_verified")
+        self.assertNotIn("private", json.dumps(remote))
+        self.assertNotIn("made-up-name", json.dumps(remote))
+        self.assertEqual(elsewhere.db.execute("SELECT detail FROM events WHERE event='private analysis'").fetchone()[0],
+                         "made-up purpose: from the store")
+        self.assertEqual([p for p in (self.dir / "another-machine").rglob("*") if p.is_file() and b"private text" in p.read_bytes()], [])
+        with self.assertRaisesRegex(Unavailable, "neither in this machine's journal nor verified in the store"):
+            artifacts.analyze("20261121T000000Z-0000000000000000", "made-up purpose", elsewhere)
 
     def test_with_the_store_unreachable_a_list_still_shows_what_this_machine_knows(self):
         record = self.archive.capture(self.tree(), "job-logs", "j/logs", job="j", attempt=1)

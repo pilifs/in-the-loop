@@ -1164,6 +1164,23 @@ class Archive:
         row = self.db.execute("SELECT state FROM occurrences WHERE id=?", (occurrence,)).fetchone()
         return bool(row) and row["state"] == "remote_verified"
 
+    def verified_files(self) -> set[tuple[str, int]]:
+        """(SHA-256, length) of every file that an occurrence verified in the store holds: what stays recoverable
+        from the archive whatever happens to this machine. From the journal and the sealed inventories in the spool;
+        an occurrence whose inventory is not here contributes nothing."""
+        found: set[tuple[str, int]] = set()
+        for row in self.db.execute("SELECT access, manifest, record FROM occurrences WHERE state='remote_verified'").fetchall():
+            raw = json.loads(row["record"]).get("raw") or {}
+            if raw.get("sha256") and raw.get("bytes") is not None:
+                found.add((raw["sha256"], raw["bytes"]))
+            if row["manifest"]:
+                try:
+                    members = json.loads(gzip.decompress(self.object_path(row["access"], row["manifest"], "gzip").read_bytes()))["members"]
+                except (OSError, EOFError, ValueError, zlib.error):
+                    continue
+                found.update((m["sha256"], m["bytes"]) for m in members if m.get("type") == "file" and m.get("sha256"))
+        return found
+
     def rows(self, **where) -> list[dict]:
         clauses, values = [], []
         for column, value in where.items():
@@ -1487,29 +1504,63 @@ def kick() -> bool:
 
 def analyze(occurrence: str, purpose: str, archive: Archive) -> dict:
     """Safe derived facts about an occurrence in restricted custody, for the watcher's private analysis: lengths,
-    counts and digests, read from the journal and the sealed inventory on this machine. No member's bytes and no
-    member's name are returned. The id and the purpose are logged before anything is read."""
+    counts and digests. Read from the journal and the sealed inventory on this machine when they are here, and
+    otherwise from the store, with the restricted class's own reader: the verified receipt and the inventory it
+    names, held in memory and kept nowhere. No member's bytes and no member's name are returned. The id and the
+    purpose are logged before anything is read."""
     if not purpose.strip():
         raise Unavailable("a private analysis states its purpose")
     with archive.transaction():
         archive.event(occurrence, "private analysis", purpose.strip()[:500])
     row = archive.db.execute("SELECT * FROM occurrences WHERE id=?", (occurrence,)).fetchone()
-    if row is None:
-        raise Unavailable(f"{occurrence} is not in this machine's journal")
-    record = json.loads(row["record"])
-    facts = {"id": occurrence, "kind": row["kind"], "access": row["access"], "state": row["state"], "status": row["status"],
-             "bytes": row["raw_bytes"], "members": row["members"], "inventory_sha256": row["manifest"],
-             "raw_sha256": (record.get("raw") or {}).get("sha256"), "stream": record.get("stream")}
-    if row["manifest"]:
-        path = archive.object_path(row["access"], row["manifest"], "gzip")
-        if path.exists():
+    members = None
+    if row is not None:
+        record = json.loads(row["record"])
+        facts = {"id": occurrence, "kind": row["kind"], "access": row["access"], "state": row["state"], "status": row["status"],
+                 "bytes": row["raw_bytes"], "members": row["members"], "inventory_sha256": row["manifest"],
+                 "raw_sha256": (record.get("raw") or {}).get("sha256"), "stream": record.get("stream"), "read_from": "this machine"}
+        path = archive.object_path(row["access"], row["manifest"], "gzip") if row["manifest"] else None
+        if path is not None and path.exists():
             members = json.loads(gzip.decompress(path.read_bytes()))["members"]
-            files = [m for m in members if m["type"] == "file"]
-            facts["files"] = len(files)
-            facts["largest_file_bytes"] = max((m["bytes"] for m in files), default=0)
-            facts["suffixes"] = dict(sorted(((s, sum(1 for m in files if PurePosixPath(m["path"]).suffix == s))
-                                             for s in {PurePosixPath(m["path"]).suffix for m in files}), key=lambda kv: -kv[1])[:12])
+    else:
+        facts, members = _analyze_remote(occurrence)
+    if members is not None:
+        files = [m for m in members if m["type"] == "file"]
+        facts["files"] = len(files)
+        facts["largest_file_bytes"] = max((m["bytes"] for m in files), default=0)
+        facts["suffixes"] = dict(sorted(((s, sum(1 for m in files if PurePosixPath(m["path"]).suffix == s))
+                                         for s in {PurePosixPath(m["path"]).suffix for m in files}), key=lambda kv: -kv[1])[:12])
     return facts
+
+
+def _analyze_remote(occurrence: str) -> tuple[dict, list | None]:
+    """An occurrence this machine's journal does not hold, from the store alone: (facts, members). Its class is told
+    from where its verified receipt is, the restricted bucket first."""
+    key = f"occurrences/{id_date(occurrence)}/{occurrence}.json"
+    for access in ("restricted", "ordinary"):
+        store = store_for(access)
+        data = read_all(store, key)
+        if data is None:
+            continue
+        doc = json.loads(data)
+        if doc.get("id") != occurrence or doc.get("access") != access:
+            raise Unavailable(f"the receipt of {occurrence} in the {access} archive is not that occurrence's")
+        inventory = doc.get("inventory") or {}
+        facts = {"id": occurrence, "kind": doc.get("kind"), "access": access, "state": (doc.get("custody") or {}).get("state"),
+                 "status": doc.get("status"), "bytes": (doc.get("raw") or {}).get("bytes"), "members": inventory.get("members"),
+                 "inventory_sha256": inventory.get("sha256"), "raw_sha256": (doc.get("raw") or {}).get("sha256"),
+                 "stream": doc.get("stream"), "read_from": "the store"}
+        if not inventory.get("sha256"):
+            return facts, None
+        packed = read_all(store, object_key(inventory["sha256"], "gzip"))
+        try:
+            plain = gzip.decompress(packed) if packed is not None else None
+        except (OSError, EOFError, zlib.error):
+            plain = b""
+        if plain is None or hashlib.sha256(plain).hexdigest() != inventory["sha256"]:
+            raise Unavailable(f"the inventory of {occurrence} is {'missing from' if plain is None else 'damaged in'} the store")
+        return facts, json.loads(plain)["members"]
+    raise Unavailable(f"{occurrence} is neither in this machine's journal nor verified in the store")
 
 
 def canary() -> list[tuple[str, bool, str]]:

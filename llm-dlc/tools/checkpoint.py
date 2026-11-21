@@ -35,10 +35,11 @@ import re
 import subprocess
 import sys
 import time
+import zlib
 from datetime import datetime, timezone
 from pathlib import Path
 
-POLICY = 2           # bump when a rule below changes what is refused: every kept verdict is then worked out again
+POLICY = 3           # bump when a rule below changes what is refused: every kept verdict is then worked out again
 REMOTE, DEVELOP, MAIN = "origin", "develop", "main"
 MAX_BLOB = 16 << 20  # a larger blob is refused: GitHub warns at 50 MiB and refuses at 100, and none here is meant to be near
 RECEIPT_SCHEMA = "itl-checkpoint/v1"
@@ -46,6 +47,11 @@ RECEIPT_SCHEMA = "itl-checkpoint/v1"
 # a trace file does, and a size limit, so that an unbounded inventory cannot come back into git by this door.
 SUMMARIES = "llm-dlc/artifacts/"
 SUMMARY_MAX, CATALOG_MAX = 64 << 10, 256 << 10
+# A gzip blob is read as what it opens to: a pack of per-case records (examples/tools/targets/case_pack.py) publishes
+# every byte inside it, and the rules see none of them in the compressed form. One that opens to more than this is
+# refused, since nothing read it.
+OPENED_MAX = 256 << 20
+UNREAD = "compressed-beyond-scan"
 # Paths that hold raw payloads or private records and are never committed on purpose: each is gitignored, so one
 # among the outgoing objects was forced in or came from a broken ignore file.
 RAW_PATHS = [(re.compile(p), why) for p, why in (
@@ -169,8 +175,34 @@ class Verdicts:
             s.atomic_write(self.path, json.dumps({"fingerprint": self.fingerprint, "blobs": self.entries}, separators=(",", ":")), private=True)
 
 
+def opened(data: bytes) -> bytes | None:
+    """The bytes to scan for a blob: itself, or for a gzip blob what it opens to (every member, and whatever follows
+    the last). None when that is more than OPENED_MAX. A blob that only begins like gzip is scanned as it is, after
+    whatever of it did open."""
+    if data[:2] != b"\x1f\x8b":
+        return data
+    parts, rest, room = [], data, OPENED_MAX
+    try:
+        while rest[:2] == b"\x1f\x8b":
+            stream = zlib.decompressobj(16 + zlib.MAX_WBITS)
+            part = stream.decompress(rest, room + 1)
+            room -= len(part)
+            if room < 0 or stream.unconsumed_tail:
+                return None
+            parts.append(part)
+            if not stream.eof:
+                return b"\n".join(parts)  # cut short: what there is of it
+            rest = stream.unused_data
+    except zlib.error:
+        return b"\n".join([*parts, data])
+    return b"\n".join([*parts, rest])
+
+
 def content_kinds(s, redact, data: bytes, strict: bool) -> dict[str, int]:
     """The kinds the content is refused for, with how often each occurs."""
+    data = opened(data)
+    if data is None:
+        return {UNREAD: 1}
     try:
         text = data.decode()
     except UnicodeDecodeError:
@@ -181,6 +213,9 @@ def content_kinds(s, redact, data: bytes, strict: bool) -> dict[str, int]:
 
 def findings(s, redact, data: bytes, strict: bool) -> set[tuple[str, str]]:
     """The (kind, value) pairs the content is refused for. Values stay in this process."""
+    data = opened(data)
+    if data is None:
+        return {(UNREAD, hashlib.sha256(b"").hexdigest())}
     hits = redact.leak_hits(data.decode(errors="replace"))
     return {(kind, value) for kind, found in hits.items() if not strict or kind in STRICT_KINDS for value in found}
 

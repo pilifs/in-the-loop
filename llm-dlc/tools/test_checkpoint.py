@@ -203,6 +203,41 @@ class Checkpoint(Sandbox):
         self.assertEqual(self.remote_ref(), develop)
 
     @cost("tool")
+    def test_a_credential_inside_a_compressed_file_is_refused_as_one_in_a_text_file_is(self):
+        import gzip
+        import io
+        import tarfile
+        develop = self.bootstrapped()
+
+        def pack(files):  # as examples/tools/targets/case_pack.py writes a folder of per-case records
+            buffer = io.BytesIO()
+            with gzip.GzipFile(fileobj=buffer, mode="wb", mtime=0) as zipped, tarfile.open(fileobj=zipped, mode="w") as tar:
+                for name, data in files.items():
+                    info = tarfile.TarInfo(name)
+                    info.size = len(data)
+                    tar.addfile(info, io.BytesIO(data))
+            return buffer.getvalue()
+        clean = pack({f"p{i}/native.json": b'[{"made-up": true}]\n' for i in range(40)})
+        head = self.commit("Records, packed", {"examples/901-made-up/records/calls/abc/cases.tar.gz": clean})
+        self.assertEqual((self.run_checkpoint("--rev", "@-")[0], self.remote_ref()), (0, head))
+        leaking = pack({"p0/native.json": b"[]\n", "p1/stderr": f"export GH_TOKEN={TOKEN}\n".encode() + b"padding\n" * 4000})
+        self.assertNotIn(TOKEN.encode(), leaking)  # the compressed bytes do not show it
+        self.commit("More records", {"examples/901-made-up/records/calls/def/cases.tar.gz": leaking,
+                                     "examples/901-made-up/records/calls/def/after.gz": gzip.compress(b"nothing\n") + TOKEN.encode()})
+        status, out, err = self.run_checkpoint("--rev", "@-")
+        self.assertEqual((status, self.remote_ref()), (1, head))
+        self.assertIn("examples/901-made-up/records/calls/def/cases.tar.gz: holds github-token ×1", out)
+        self.assertIn("examples/901-made-up/records/calls/def/after.gz: holds github-token ×1", out)  # after the stream's end
+        self.assertNotIn(TOKEN, out + err)
+        self.jj("abandon", "@-")
+        self.commit("A file that opens to more than is read", {"lib/large.gz": gzip.compress(b"0" * 100_000)})
+        with mock.patch.object(checkpoint, "OPENED_MAX", 50_000):
+            status, out, _ = self.run_checkpoint("--rev", "@-")
+        self.assertEqual((status, self.remote_ref()), (1, head))
+        self.assertIn("lib/large.gz: holds compressed-beyond-scan ×1", out)
+        self.assertNotEqual(develop, head)
+
+    @cost("tool")
     def test_what_the_redactor_would_change_is_refused_in_a_trace_file_and_not_in_code(self):
         self.bootstrapped()
         context = "DB_PASS" + "WORD=" + "hunter2hunter2"   # the redactor's env-secret: KEY=value, shaped by its context

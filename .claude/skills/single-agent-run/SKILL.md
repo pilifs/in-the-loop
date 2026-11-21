@@ -132,6 +132,10 @@ again, until it returns `ended`.
     the time left allows (with `--unattended`: `stop`, with what they need to decide as the reason).
   - With no answer in time, a cycle that committed is followed by another and one that did not ends the run;
     three cycles in a row without an answer end it too.
+  - With each verdict, say what now waits on a person, so that it is reviewed as it arrives and not all at once
+    before a promotion (VF-053): the count and ids of open findings and allow-list proposals
+    (`python3 llm-dlc/tools/sync.py review`), any open escalation, and the decisions of this run you flagged.
+    One line when there is nothing new since the last cycle.
 - **A `question` of type `compaction`**: the agent's session compacted itself with no commit since the cycle
   began. `continue` while the work is moving (read the transcript the event names, and the working copy's diff),
   `stop` when it is stuck.
