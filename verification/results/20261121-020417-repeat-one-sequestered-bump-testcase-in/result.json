@@ -1,0 +1,169 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-020417-repeat-one-sequestered-bump-testcase-in",
+  "title": "Repeat one sequestered BUMP testcase in four clean historical builds",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m32s, peak 1.2 GiB (estimated 4m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Run four offline repetitions and publish opaque coverage) was held back 6m05s by its 2-CPU quota in 1m32s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-020417-repeat-one-sequestered-bump-testcase-in.json",
+    "sha256": "18808edd8012fd135f44262340fb70beb67e8db65a0d26733bc65225b6482d37",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-020417-repeat-one-sequestered-bump-testcase-in",
+      "title": "Repeat one sequestered BUMP testcase in four clean historical builds",
+      "description": "The curator prepared a digest-bound original comparison. Run four independent offline Maven builds in networkless user namespaces using their original images and JARs. The generic runner checks for stale testcase reports and retains Maven logs, XML and runtime details privately. The public output contains only aggregate coverage and opaque input, program and receipt digests, preserving the blinded selection.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "baseline:original-ci"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/curation/queued_bump.py"
+        ]
+      },
+      "expected": "Four fresh, exact, unskipped testcase records constitute a completed reference reproduction attempt. No eligibility, signed reference or cohort membership follows from its exit code.",
+      "submitted": {
+        "at": "2026-11-21T02:04:17+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "bwrap",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "15m",
+        "notes": "The independent curator estimated four minutes, two CPUs and a four GiB hard limit for four original named Maven trials. Source, dependencies and runtime are local."
+      },
+      "steps": [
+        {
+          "name": "Run four offline repetitions and publish opaque coverage",
+          "run": "python3 -I lib/benchmark/external-upgrades/curation/queued_bump.py --session 0cea9d0e-0fe8-427e-8e71-96614b084e11 --packet e129ea4f5fcfcdbcdb7e87d2 --input-sha256 bac60aa83ef6774a94046a801d8559ebde5c5478657ea526d5b89574f9fea0e8 --output lib/benchmark/external-upgrades/curation/replays/e129ea4f5fcfcdbcdb7e87d2.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/external-upgrades/curation/replays/e129ea4f5fcfcdbcdb7e87d2.json"
+      ]
+    }
+  },
+  "sourceCommit": "a75b672e03a02605cecf36b7c7b68eb148acd162",
+  "startedAt": "2026-11-21T02:10:52+00:00",
+  "finishedAt": "2026-11-21T02:12:28+00:00",
+  "wallSeconds": 96.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1697979,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": "The independent curator estimated four minutes, two CPUs and a four GiB hard limit for four original named Maven trials. Source, dependencies and runtime are local."
+  },
+  "usage": {
+    "peakMemoryBytes": 1308409856,
+    "wallSeconds": 92.2,
+    "cpuSeconds": 142.7,
+    "memoryOfEstimate": 0.41,
+    "durationOfEstimate": 0.38
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run four offline repetitions and publish opaque coverage",
+      "run": "python3 -I lib/benchmark/external-upgrades/curation/queued_bump.py --session 0cea9d0e-0fe8-427e-8e71-96614b084e11 --packet e129ea4f5fcfcdbcdb7e87d2 --input-sha256 bac60aa83ef6774a94046a801d8559ebde5c5478657ea526d5b89574f9fea0e8 --output lib/benchmark/external-upgrades/curation/replays/e129ea4f5fcfcdbcdb7e87d2.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 92.228,
+      "cpuSeconds": 142.67,
+      "cpuThrottledSeconds": 365.834,
+      "peakMemoryBytes": 1308409856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-four-offline-repetitions-a.log",
+        "lines": 1,
+        "bytes": 75,
+        "sha256": "5bb65fef305935ad04e63a6e85b9f7127f4621836e170e06d3ee1433e63d8e16",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"completed\": 4, \"fresh_exact_named_testcases\": 4, \"input_verified\": true}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/external-upgrades/curation/replays/e129ea4f5fcfcdbcdb7e87d2.json",
+      "change": "added",
+      "bytes": 413,
+      "sha256": "e4a66dc7a8a636e36a06b46441663519f17d898efa182e087a5ce39c3c267970",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T02:12:32+00:00",
+    "applied": [
+      "lib/benchmark/external-upgrades/curation/replays/e129ea4f5fcfcdbcdb7e87d2.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
