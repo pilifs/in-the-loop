@@ -1,0 +1,163 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-050027-compsuite-i-29-run-compcheck-on-its-orig",
+  "title": "compsuite-i-29 run CompCheck on its original published call sites",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24.4s, peak 1.0 GiB (estimated 6m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Run stock and applicable sensitivity treatments) was held back 1m01s by its 2-CPU quota in 24.4s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-050027-compsuite-i-29-run-compcheck-on-its-orig.json",
+    "sha256": "2a014823931fd62b5e4889a303817c33ad7c48985d3be6b529996ee583b2623d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-050027-compsuite-i-29-run-compcheck-on-its-orig",
+      "title": "compsuite-i-29 run CompCheck on its original published call sites",
+      "description": "Run stock CompCheck on the exact original client commit and registered API locations in an isolated original checkout. Record contexts, matches and generated test evidence separately. Remove knowledge of this same incident when present, retaining other clients.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "compcheck"
+      ],
+      "links": {},
+      "expected": "Each registered site produces a measured outcome. A static match gets no credit for a test that did not run.",
+      "submitted": {
+        "at": "2026-11-21T05:00:27+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m",
+        "memoryLimit": "5G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run stock and applicable sensitivity treatments",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/compcheck_corpus.py --case compsuite-i-29 --archive \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/compcheck-aws-inputs-v1/compcheck.tar.gz\" --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/compcheck-runs/compsuite-i-29",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/compcheck-runs/compsuite-i-29"
+      ]
+    }
+  },
+  "sourceCommit": "3d14ab86a7b18d40322ebeb50ac7220e01f7bd88",
+  "startedAt": "2026-11-21T05:20:57+00:00",
+  "finishedAt": "2026-11-21T05:21:30+00:00",
+  "wallSeconds": 33.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3911391,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 5368709120,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1102032896,
+    "wallSeconds": 24.4,
+    "cpuSeconds": 41.9,
+    "memoryOfEstimate": 0.51,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run stock and applicable sensitivity treatments",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/compcheck_corpus.py --case compsuite-i-29 --archive \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/compcheck-aws-inputs-v1/compcheck.tar.gz\" --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/compcheck-runs/compsuite-i-29",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 24.446,
+      "cpuSeconds": 41.903,
+      "cpuThrottledSeconds": 61.186,
+      "peakMemoryBytes": 1102032896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-stock-and-applicable-sensi.log",
+        "lines": 1,
+        "bytes": 33,
+        "sha256": "1940a408e4ec3c0651f41532a5820e37d847a30d9bcad73ec010fe3f80fe1bf7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "c3-1 stock full knowledge 0 True"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/compcheck-runs/compsuite-i-29/treatments.json",
+      "change": "added",
+      "bytes": 1005,
+      "sha256": "a109878914a9f29cb53cb19a95218bb96f7b10868d00b56c5cc085f2c105cc2e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T05:21:40+00:00",
+    "applied": [
+      "verification/external-upgrades/compcheck-runs/compsuite-i-29/treatments.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
