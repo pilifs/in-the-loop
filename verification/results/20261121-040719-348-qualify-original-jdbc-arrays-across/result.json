@@ -1,0 +1,172 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-040719-348-qualify-original-jdbc-arrays-across",
+  "title": "348 qualify original JDBC arrays across the unconditional preservation region",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.2s, peak 206.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-040719-348-qualify-original-jdbc-arrays-across.json",
+    "sha256": "e4c14194269383329109b34311650efaf33721354963a41db6440a22ea2f1cae",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-040719-348-qualify-original-jdbc-arrays-across",
+      "title": "348 qualify original JDBC arrays across the unconditional preservation region",
+      "description": "Run the unchanged generated-keys claim after recognizing the standard false allowed-change predicate as unconditional preservation. Both real JDBC inputs run in separate fresh JVMs at both pins. The isolated bounded diagnostic reproduced [2] versus [1,2] for the combined insert and agreement for the separate inserts.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "348"
+        ]
+      },
+      "expected": "Two admitted booleans, one differing ordered return, both revision-bound fresh witness observations and the original correspondence controls.",
+      "submitted": {
+        "at": "2026-11-21T04:07:19+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check the original submitted claim",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 348 --finite-domain --tasks generated-keys",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "b02558ed5d919d5b878931b8b61acdaf9dc4ff3a",
+  "startedAt": "2026-11-21T04:13:33+00:00",
+  "finishedAt": "2026-11-21T04:13:45+00:00",
+  "wallSeconds": 12.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2943658,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 216182784,
+    "wallSeconds": 7.2,
+    "cpuSeconds": 12.6,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original submitted claim",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 348 --finite-domain --tasks generated-keys",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 7.216,
+      "cpuSeconds": 12.61,
+      "cpuThrottledSeconds": 1.021,
+      "peakMemoryBytes": 216182784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-submitted-c.log",
+        "lines": 1,
+        "bytes": 39,
+        "sha256": "2d4ae1bb134e7904b33aaa3c4aa2ad73cb93b68a86f8289060880ad1bde898ba",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "348 generated-keys refuted 2 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs/20261121T041338Z-1d03f437/batch.json",
+      "change": "added",
+      "bytes": 1150,
+      "sha256": "0d0b1642083a0a4e0d1c57c272e5036ec8432023de2d3f4bfbc9fdecd2163bc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs/20261121T041338Z-1d03f437/generated-keys.json",
+      "change": "added",
+      "bytes": 18855,
+      "sha256": "81bf6afa63d2c5b1aee1a743d37ecdef3a39f7fcfe0aa7098b0cdaa0a5fe969b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:14:13+00:00",
+    "applied": [
+      "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs/20261121T041338Z-1d03f437/batch.json",
+      "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs/20261121T041338Z-1d03f437/generated-keys.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

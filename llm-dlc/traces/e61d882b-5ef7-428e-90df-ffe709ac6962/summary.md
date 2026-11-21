@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-21 03:35 UTC (5217 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -3493,6 +3493,12 @@ The user's brief for the next single-agent run: prove six real Java library fixe
 change `kqxstwytnvvk` · [log `fb1e77e9d63b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-033202-replay-both-commons-text-csv-tasks-after: failed: 1 failed step(s) in 6.6s, peak 156.7 MiB (estimated 2m00s, 2.0 GiB); 24 output file(s) changed; signals: example:task-unexpected×2 Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zpvyzowssmnu` · [log `fb1e77e9d63b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-040719-348-qualify-original-jdbc-arrays-across: passed: 1 passed step(s) in 7.2s, peak 206.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ## Conversation
 
