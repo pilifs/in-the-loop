@@ -38,7 +38,11 @@ def main():
                     ref = "refs/tags/" + case["dependency"].replace(":", "--") + "-" + case["versions"][side]
                     local = ref
                 else:
-                    ref, local = sha, "refs/corpus/" + sha
+                    # Local Maven/CI clones copy branches and tags, including from a shallow
+                    # source cache. A private ref alone leaves them with an unreachable commit.
+                    ref, local = sha, "refs/heads/corpus/" + sha
+                    if subprocess.run([*git, "cat-file", "-e", sha + "^{commit}"], capture_output=True).returncode == 0:
+                        subprocess.run([*git, "update-ref", local, sha], check=True)
                 required[local] = sha
                 obj = subprocess.run([*git, "rev-parse", "--verify", local + "^{commit}"], capture_output=True, text=True)
                 if obj.returncode or obj.stdout.strip() != sha:

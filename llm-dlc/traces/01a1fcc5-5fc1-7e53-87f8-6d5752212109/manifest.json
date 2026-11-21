@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-21T06:22:35.977Z",
-  "ended": "2026-11-21T06:44:06.300Z",
-  "duration_seconds": 1290,
+  "ended": "2026-11-21T06:56:47.169Z",
+  "duration_seconds": 2051,
   "stats": {
-    "turns": 3,
-    "api_calls": 5,
+    "turns": 4,
+    "api_calls": 7,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 65962,
+    "peak_context_tokens": 88795,
     "usage": {
-      "input_tokens": 66552,
-      "output_tokens": 665,
-      "cache_read_input_tokens": 153728,
+      "input_tokens": 89697,
+      "output_tokens": 844,
+      "cache_read_input_tokens": 296320,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-21T06:22:35.977Z",
-      "ended": "2026-11-21T06:44:06.300Z",
-      "turns": 3,
-      "api_calls": 5,
+      "ended": "2026-11-21T06:56:47.169Z",
+      "turns": 4,
+      "api_calls": 7,
       "usage": {
-        "input_tokens": 66552,
-        "output_tokens": 665,
-        "cache_read_input_tokens": 153728,
+        "input_tokens": 89697,
+        "output_tokens": 844,
+        "cache_read_input_tokens": 296320,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 65962
+      "peak_context_tokens": 88795
     }
   ],
   "log": {
-    "sha256": "36d64df0a8f450da63a789f6bd4bce6e7e1af8740af633e3692ea953e9d8e839",
-    "bytes": 575345,
-    "lines": 68,
-    "gzip_bytes": 201621,
-    "path": "llm-dlc/traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/logs/36d64df0a8f450da63a789f6bd4bce6e7e1af8740af633e3692ea953e9d8e839.jsonl.gz"
+    "sha256": "1aa3232cda187e6e4b120b20c0d971832a4e90444da93291cb5ff4708ca5c9b5",
+    "bytes": 745677,
+    "lines": 91,
+    "gzip_bytes": 243661,
+    "path": "llm-dlc/traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/logs/1aa3232cda187e6e4b120b20c0d971832a4e90444da93291cb5ff4708ca5c9b5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -78,9 +78,31 @@
       "summary": "Trace failures before the selected Java caller (verification pending)",
       "body": "Complete the debugger and observation changes begun in the input-preparation commit. A fresh diagnostic JVM matches the escaping exception object on the observer thread to its live throw event and records exact methods, bytecode positions and loaded JAR hashes. Both versions and all admitted inputs are retained when construction fails before the selected method. The primary claim remains open. The regression erases the application's Java stack, then replaces a caught exception with another of the same class. Only the genuine earlier failure qualifies. All 26 affected test groups passed and the job schemas validated.\n\nRepeat the 27 original caller scenarios in 20261121-064106-replay-group-01-with-exact-jvm-early-fai through 20261121-064107-replay-group-06-with-exact-jvm-early-fai. Repeat the previously unavailable upstream LanguageTool builds and tests in 20261121-064107-restore-languagetool-lucene-original-bui and 20261121-064107-restore-languagetool-derby-original-buil with the restored JCenter dependency. The two native jobs already covered all 32 cases.",
       "log_sha256": "36d64df0a8f450da63a789f6bd4bce6e7e1af8740af633e3692ea953e9d8e839"
+    },
+    {
+      "change_id": "nqxwrloywmuzwnqxvzzpmknzrotkmlwm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "1aa3232cda187e6e4b120b20c0d971832a4e90444da93291cb5ff4708ca5c9b5"
+    },
+    {
+      "change_id": "qmpvuwxuurmunvvpkrkrvrvklmomlunq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Recover declared upgrade environments and rethrows (verification pending)",
+      "body": "Java finally and resource cleanup can rethrow the same exception after its original stack has unwound. The debugger retains the last attributed throw on the same observer thread plus its subsequent propagation, and distinguishes it from a newly allocated exception. The original-classpath workflow now records and enforces Maven runtime, host-provided and test scopes. It imports fourteen digest-pinned historical release files atomically. Verified Git commits survive shallow local clones. LanguageTool now has observations of its genuine n-gram index and Derby test database. The first build retry recovered both developer tests: each passed before the upgrade and failed afterward. Derby is explicitly test-only on both original POMs.\n\nAll 28 affected groups passed, including 58 Rust test binaries. Four live JVM controls and five Maven and original-CI controls passed separately. Checked the archived cache, all 32 local Git pairs offline, javac against the original LanguageTool module, the tier inventory and the job schemas. Jobs 20261121-065458-current-upgrade-group-01-native-and-fini through 20261121-065459-current-upgrade-group-07-native-and-fini repeat all 32 pairs on the repaired build. Jobs 20261121-065459-restored-lucene-original-maven-ci-on-bot, 20261121-065459-restored-derby-original-maven-ci-on-both and 20261121-065459-restored-deltaspike-original-maven-ci-on rerun original CI.",
+      "log_sha256": "1aa3232cda187e6e4b120b20c0d971832a4e90444da93291cb5ff4708ca5c9b5"
     }
   ],
   "logs": {
+    "1aa3232cda187e6e4b120b20c0d971832a4e90444da93291cb5ff4708ca5c9b5": {
+      "bytes": 745677,
+      "lines": 91,
+      "gzip_bytes": 243661,
+      "url": null
+    },
     "2efa3dc1e992ecf19465891304045029a5011b9b46146dadfdb1fa4a0086bcae": {
       "bytes": 406344,
       "lines": 45,

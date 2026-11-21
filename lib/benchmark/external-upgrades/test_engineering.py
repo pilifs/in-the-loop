@@ -1,4 +1,6 @@
 """Regression checks for the original Maven operand and historical testcase evidence."""
+import hashlib
+import io
 import sys
 import tempfile
 import unittest
@@ -11,10 +13,44 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "baselines"))
 import engineering
 from corpus_ci import fresh_reports
+from complete_client import declared_scope
 from maven_mirror import artifact_path, declared_releases, open_release
+from restore_archived import restore
 
 
 class OriginalInputs(unittest.TestCase):
+    def test_pinned_archive_is_checked_before_installation_and_on_reuse(self):
+        name = "group/tool/1/tool-1.jar"
+        archive = "https://example.invalid/"
+        expected = {"bytes": 3, "sha256": hashlib.sha256(b"jar").hexdigest()}
+        with tempfile.TemporaryDirectory() as temp, patch("restore_archived.urlopen") as fetch:
+            repo = Path(temp).resolve() / "repository"
+            def response(raw):
+                stream = io.BytesIO(raw)
+                stream.geturl = lambda: archive + name
+                return stream
+            fetch.side_effect = [response(b"bad"), response(b"jar")]
+            with self.assertRaisesRegex(ValueError, "archived bytes differ"):
+                restore(repo, archive, name, expected)
+            self.assertFalse((repo/name).exists())
+            restore(repo, archive, name, expected)
+            restore(repo, archive, name, expected)
+            self.assertEqual(fetch.call_count, 2)
+            self.assertEqual((repo/(name + ".sha1")).read_text().strip(), hashlib.sha1(b"jar").hexdigest())
+            (repo/name).write_bytes(b"bad")
+            with self.assertRaisesRegex(ValueError, "existing cached bytes differ"):
+                restore(repo, archive, name, expected)
+
+    def test_environment_scope_comes_from_the_direct_module_declaration(self):
+        with tempfile.TemporaryDirectory() as temp:
+            pom = Path(temp) / "pom.xml"
+            dependency = "<dependency><groupId>g</groupId><artifactId>a</artifactId><scope>{}</scope></dependency>"
+            managed = "<dependencyManagement><dependencies>" + dependency.format("test") + "</dependencies></dependencyManagement>"
+            for direct in ("", "provided", "test"):
+                deps = "<dependencies>" + (dependency.format(direct) if direct else "") + "</dependencies>"
+                pom.write_text('<project xmlns="http://maven.apache.org/POM/4.0.0">' + managed + deps + "</project>")
+                self.assertEqual(declared_scope(pom, "g:a"), direct or None)
+
     def test_relocated_operand_follows_the_published_pom_to_the_runtime_jar(self):
         case = {"dependency": "old.group:client", "versions": {"new": "1"}}
         with tempfile.TemporaryDirectory() as temp:

@@ -88,6 +88,9 @@ def snapshot(args, revision, *, historical=False):
         inputs = ("corpus.json", "scenarios", "engineering.py", "check_scenarios.py", "corpus_sources.py",
                   "baselines/complete_client.py", "baselines/corpus_ci.py", "baselines/maven_mirror.py")
         prefix = "lib/benchmark/external-upgrades/"
+        archive_inputs = ("baselines/restore_archived.py", "baselines/archived-releases.json")
+        if output("git", "ls-tree", "--name-only", revision, "--", prefix + archive_inputs[0]):
+            inputs += archive_inputs
         lock["engineeringInputs"] = {path: output("git", "rev-parse", f"{revision}:{prefix}{path}")
                                      for path in inputs}
     return lock

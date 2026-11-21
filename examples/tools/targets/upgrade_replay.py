@@ -49,9 +49,13 @@ def check_input(path, entry, dependency):
     data = runtime_jar.read_class(files[0], runtime_jar.internal(owner))
     if not data or (method, descriptor) not in runtime_jar.methods(data):
         raise ValueError("the selected method and descriptor must belong to the original client JAR")
-    return files, files[hashes.index(dependency)], {"commit": doc["commit"], "sourceSha256": doc["sourceSha256"],
+    binding = {"commit": doc["commit"], "sourceSha256": doc["sourceSha256"],
             "callerClassSha256": hashlib.sha256(data).hexdigest(), "classpath": hashes, "dependency": dependency,
             "preparation": doc.get("scope"), "compiledClasses": doc.get("compiledClasses"), "resources": doc.get("resources")}
+    for key in ("operandScope", "declaredDependencyScope", "modulePomSha256"):
+        if key in doc:
+            binding[key] = doc[key]
+    return files, files[hashes.index(dependency)], binding
 
 
 def class_origins(text):
@@ -96,10 +100,16 @@ def early_failure(debugger_marks, loaded, files, artifact_hashes, dependency, re
     stacks = [s.removeprefix("UPGRADE-THROW-STACK ") for s in debugger_marks if s.startswith("UPGRADE-THROW-STACK ")]
     if len(stacks) != 1:
         return evidence
+    events = []
     for line in base64.b64decode(stacks[0], validate=True).decode("utf-8").splitlines():
+        if line == "truncated":
+            return evidence
+        if line == "event":
+            events.append({"frames": [], "observerCodeIndex": None})
+            continue
         fields = line.split("\t")
         if fields[0] == "observer":
-            evidence["observerCodeIndex"] = int(fields[1])
+            events[-1]["observerCodeIndex"] = int(fields[1])
             continue
         entry, code_index, source_line = fields
         origins = loaded.get(entry.partition("#")[0], set())
@@ -109,9 +119,17 @@ def early_failure(debugger_marks, loaded, files, artifact_hashes, dependency, re
         if jar not in files:
             continue
         index = files.index(jar)
-        evidence["frames"].append({"entry": entry, "codeIndex": int(code_index), "sourceLine": int(source_line),
-                                   "artifact": "client" if index == 0 else "upgrade" if jar == dependency else "classpath",
-                                   "classpathIndex": index, "jarSha256": artifact_hashes[index]})
+        events[-1]["frames"].append({"entry": entry, "codeIndex": int(code_index), "sourceLine": int(source_line),
+                                     "artifact": "client" if index == 0 else "upgrade" if jar == dependency else "classpath",
+                                     "classpathIndex": index, "jarSha256": artifact_hashes[index]})
+    if events:
+        # Keep the last attributed throw and show any subsequent propagation of the
+        # identical object after those frames unwound. A replacement gets its own stack.
+        attributed = [i for i, event in enumerate(events)
+                      if any(f["artifact"] in ("client", "upgrade") for f in event["frames"])]
+        selected = attributed[-1] if attributed else len(events) - 1
+        evidence.update(events[selected])
+        evidence["subsequentRethrows"] = events[selected + 1:]
     return evidence
 
 
@@ -170,12 +188,20 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             raise ValueError("every input needs an independently specified return or exception")
     caller = spec["entry"]
     prepared = {side: check_input(path, caller, digest) for side,path,digest in zip(("old","new"),(before,after),dependencies)}
+    operand_scope = spec.get("operandScope", "runtime")
+    if operand_scope not in ("runtime", "provided", "test"):
+        raise ValueError("unknown dependency environment in the caller scope")
+    for side, (_, _, binding) in prepared.items():
+        if binding.get("operandScope", "runtime") != operand_scope or (operand_scope != "runtime" and
+                (binding.get("declaredDependencyScope") != operand_scope or
+                 not re.fullmatch("[0-9a-f]{64}", binding.get("modulePomSha256") or ""))):
+            raise ValueError(f"{side} preparation does not establish the declared {operand_scope} dependency environment")
     if prepared["old"][2]["sourceSha256"] != prepared["new"][2]["sourceSha256"]:
         raise ValueError("the selected caller source differs between dependency revisions")
     if dependencies[0] == dependencies[1]:
         raise ValueError("the dependency digests identify the same bytes")
     report = {} if progress is None else progress
-    report.update({"entry":caller,"observer":spec["observer"],"domainBasis":spec["basis"],"cases":domain,
+    report.update({"entry":caller,"observer":spec["observer"],"domainBasis":spec["basis"],"cases":domain,"operandScope":operand_scope,
               "probeSha256":sha(probe),"launcherSha256":sha(LAUNCHER),"tracerSha256":sha(TRACER),"jdk":runtime_jdk.identity(jdk)["release"],
               "sides":{s:v[2] for s,v in prepared.items()},"status":"open"})
     if "originalCallerSource" in spec:

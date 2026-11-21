@@ -10,10 +10,18 @@ import sys
 import tempfile
 import time
 import zipfile
+import xml.etree.ElementTree as ET
 
 from corpus_ci import maven_mirror, namespace
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from engineering import HERE, classpath_rows, resolved_operand, digest, failure, read, source_side
+
+
+def declared_scope(pom, coordinate):
+    group, artifact = coordinate.split(":")
+    rows = [entry for entry in ET.parse(pom).findall("{*}dependencies/{*}dependency")
+            if entry.findtext("{*}groupId") == group and entry.findtext("{*}artifactId") == artifact]
+    return (rows[0].findtext("{*}scope") or "compile") if len(rows) == 1 else None
 
 
 def jar_directory(directory, target):
@@ -57,10 +65,17 @@ def side(case, rev, repo, args, socketdir):
         subprocess.run(["git","-c","core.hooksPath=/dev/null","clone","-q","--no-hardlinks","--no-checkout",str(repo),str(project)],check=True,env=env)
         subprocess.run(["git","-C",str(project),"-c","core.hooksPath=/dev/null","checkout","-q","--detach",commit],check=True,env=env)
         module=Path(case["modulePom"]).parent
+        pom = project / case["modulePom"]
+        scope = declared_scope(pom, case["dependency"])
+        original.update(declaredDependencyScope=scope, modulePomSha256=digest(pom), operandScope=args.operand_scope)
+        if args.operand_scope != "runtime" and scope != args.operand_scope:
+            raise ValueError("the original module does not declare this operand with the requested scope")
         reactor=["-pl",module.as_posix(),"-am"] if module!=Path(".") else []
         older=case["origin"].startswith("CompSuite") or case["id"] in ("ea-async-27","whatjdk-12","incremental-analysis-28","reflector-35")
         jdk=args.jdk8 if older else args.jdk21;maven=args.maven8 if older else args.maven
-        argv=[*reactor,"-Dmaven.test.skip=true","-DincludeScope=runtime","-Dmdep.outputFile=target/upgrade-runtime.cp",
+        primary_scope = "test" if args.operand_scope == "test" else "runtime"
+        skip_tests = "-DskipTests" if args.operand_scope == "test" else "-Dmaven.test.skip=true"
+        argv=[*reactor,skip_tests,"-DincludeScope="+primary_scope,"-Dmdep.outputFile=target/upgrade-runtime.cp",
               args.phase,"org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"]
         original.update(subjectJdk=jdk.name,jdkReleaseSha256=digest(jdk/"release"),goals=argv)
         log=area/"package.log"
@@ -68,8 +83,16 @@ def side(case, rev, repo, args, socketdir):
         original["declaredReleaseRepositories"] = releases
         with maven_mirror.serve(args.maven_cache, socketdir, 6*1024**3, releases), log.open("wb") as stream:
             try:
-                status=subprocess.run([*namespace(project,work,scratch,socketdir,maven,jdk),*argv],stdout=stream,
+                invocation = namespace(project,work,scratch,socketdir,maven,jdk)
+                status=subprocess.run([*invocation,*argv],stdout=stream,
                                       stderr=subprocess.STDOUT,timeout=args.seconds).returncode
+                if status == 0 and args.operand_scope == "provided":
+                    host_args = ["-DincludeScope=provided" if a == "-DincludeScope=runtime" else
+                                 "-Dmdep.outputFile=target/upgrade-provided.cp" if a.startswith("-Dmdep.outputFile=")
+                                 else a for a in argv]
+                    original["providedGoals"] = host_args
+                    status=subprocess.run([*invocation, *host_args],stdout=stream,stderr=subprocess.STDOUT,
+                                          timeout=max(1, args.seconds-(time.monotonic()-started))).returncode
             except subprocess.TimeoutExpired:status=124
         classes=project/module/"target/classes";cpfile=project/module/"target/upgrade-runtime.cp"
         owner=case["entry"].split("#")[0].replace(".","/")+".class"
@@ -79,7 +102,13 @@ def side(case, rev, repo, args, socketdir):
                     "logTail":tail[-10:],"logSha256":digest(log),"seconds":round(time.monotonic()-started,2)}
         jar=area/"client.jar";jar_directory(classes,jar)
         inputs=[copy_asset(jar,store)]
-        for guest_path in cpfile.read_text().strip().split(":"):
+        guest_paths = cpfile.read_text().strip().split(":")
+        if args.operand_scope == "provided":
+            guest_paths.extend((project/module/"target/upgrade-provided.cp").read_text().strip().split(":"))
+            original["scope"] = "original production module and runtime with the declared container-provided artifacts"
+        elif args.operand_scope == "test":
+            original["scope"] = "original production module on its declared Maven test classpath"
+        for guest_path in dict.fromkeys(guest_paths):
             if not guest_path:continue
             if guest_path.startswith("/work/repository/"):
                 rel=guest_path.removeprefix("/work/repository/")
@@ -97,7 +126,7 @@ def side(case, rev, repo, args, socketdir):
         anchor, relocations = resolved_operand(args.maven_cache, case, rev)
         if relocations: original["dependencyRelocations"] = relocations
         if not anchor.is_file() or digest(anchor) not in {digest(f) for f in inputs[1:]}:
-            return {**original,"stage":"original Maven runtime operand unavailable","exit":status}
+            return {**original,"stage":"original Maven "+args.operand_scope+" operand unavailable","exit":status}
         prepared={**original,"stage":"artifacts ready","classpath":classpath_rows(inputs),"compiledClasses":len(list(classes.rglob("*.class"))),
                   "resources":sum(f.is_file() and f.suffix!=".class" for f in classes.rglob("*")),"seconds":round(time.monotonic()-started,2)}
         tmp=root/"prepared.tmp"
@@ -116,6 +145,8 @@ def main():
     ap.add_argument("--seconds",type=int,default=420)
     ap.add_argument("--phase", choices=("package", "compile"), default="package",
                     help="compile retains original classes and processed resources when packaging tooling is unavailable")
+    ap.add_argument("--operand-scope", choices=("runtime", "provided", "test"), default="runtime",
+                    help="provided adds the original module's declared host classpath; test selects its test environment")
     args=ap.parse_args()
     cases={c["id"]:c for c in read(HERE/"corpus.json")["cases"]};repos=read(args.repositories)
     args.output.mkdir(parents=True,exist_ok=True)

@@ -97,7 +97,9 @@ class UpgradeReviewTest(unittest.TestCase):
                     if (input[0].equals("replace")) {
                         try { app.Real.prepare(); }
                         catch (IllegalStateException original) { throw new IllegalStateException("observer"); }
-                    } else { app.Real.prepare(); }
+                    } else {
+                        try { app.Real.prepare(); } finally { System.nanoTime(); }
+                    }
                     return Integer.toString(app.Real.call());
                 }
             }""")
@@ -113,9 +115,15 @@ class UpgradeReviewTest(unittest.TestCase):
             self.assertTrue(primary["repeatableBeforeEntry"])
             self.assertEqual([(f["entry"], f["artifact"]) for f in primary["beforeEntry"][0]["frames"]],
                              [("dep.Number#prepare()V", "upgrade"), ("app.Real#prepare()V", "client")])
+            self.assertEqual(primary["beforeEntry"][0]["subsequentRethrows"][-1]["frames"], [])
             self.assertEqual(replaced["beforeEntry"][0]["frames"], [])
             self.assertEqual([c["status"] for c in result["beforeEntryComparison"]],
                              ["reproduced earlier failure", "unqualified"])
+            scope = json.loads(spec.read_text())
+            scope["operandScope"] = "provided"
+            spec.write_text(json.dumps(scope))
+            with self.assertRaisesRegex(ValueError, "declared provided dependency environment"):
+                upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
 
     def test_only_instructions_from_the_selected_overload_supply_call_evidence(self):
         text = """public class app.Client {

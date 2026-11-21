@@ -150,9 +150,18 @@ public final class UpgradeTrace {
                         String id = raised.thread().uniqueID() + "/" + raised.exception().uniqueID();
                         List<String> stack = throwingStack(raised, observer);
                         if (stack != null) {
-                            thrown.remove(id);
+                            // try-with-resources and finally can rethrow the very same object
+                            // from the caller after the library's frame has been unwound.
+                            List<String> eventsForObject = thrown.remove(id);
+                            if (eventsForObject == null) eventsForObject = new ArrayList<>();
                             if (thrown.size() == 64) thrown.remove(thrown.keySet().iterator().next());
-                            thrown.put(id, stack);
+                            if (eventsForObject.size() < 512) {
+                                eventsForObject.add("event");
+                                eventsForObject.addAll(stack);
+                            } else if (!eventsForObject.get(eventsForObject.size() - 1).equals("truncated")) {
+                                eventsForObject.add("truncated");
+                            }
+                            thrown.put(id, eventsForObject);
                         }
                     } else if (event instanceof BreakpointEvent) {
                         BreakpointEvent point = (BreakpointEvent) event;

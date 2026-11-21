@@ -9,7 +9,7 @@ import time
 import hashlib
 import sys
 
-from engineering import HERE, ROOT, resolved_operand, digest, read, git
+from engineering import HERE, ROOT, resolved_operand, digest, read, git, preparation_root
 
 
 def main():
@@ -34,14 +34,18 @@ def main():
         out = args.output / (key + ".json")
         if out.exists():
             raise ValueError(f"existing result for {key}")
+        if not (directory / "scope.json").is_file():
+            out.write_text(json.dumps({"status": "open", "entry": original["entry"], "revisions": original["revisions"],
+                "reason": "No finite caller observation is registered for this scope.",
+                "elapsedSeconds": round(time.monotonic() - started, 3)}, indent=2) + "\n")
+            print(key, "open", flush=True)
+            continue
         jdk = ("8.0.512.0+9-tem" if original["origin"].startswith("CompSuite") or key == "ea-async-27"
                else "21.0.13.0+9-tem")
         cmd = [sys.executable, str(ROOT / "examples/tools/build.py"), "--review-upgrade",
                "--spec", str(directory / "scope.json"), "--probe", str(directory / "UpgradeProbe.java"),
                "--jdk", str(Path.home() / ".sdkman/candidates/java" / jdk), "--output", str(out)]
-        prep = next((path for path in args.complete
-                     if all((path / key / side / "prepared.json").is_file() for side in ("old", "new"))),
-                    args.preparations)
+        prep = preparation_root(args.preparations, args.complete, key)
         try:
             for side in ("old", "new"):
                 manifest = prep/key/side/"prepared.json"

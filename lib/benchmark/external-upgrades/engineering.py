@@ -123,6 +123,11 @@ def classpath_rows(files):
     return [{"file": str(f.resolve()), "sha256": digest(f)} for f in files]
 
 
+def preparation_root(default, complete, case_id):
+    return next((root for root in complete
+                 if all((root/case_id/side/"prepared.json").is_file() for side in ("old", "new"))), default)
+
+
 def prepare_side(case, side, repo, args, jdk, out):
     commit = source_side(case, side, repo)
     record = {"commit": commit, "sourceSha256": case["sourceSha256"], "subjectJdk": jdk.name}
@@ -132,6 +137,9 @@ def prepare_side(case, side, repo, args, jdk, out):
         if (saved.get("commit") != commit or saved.get("sourceSha256") != case["sourceSha256"] or
                 any(digest(r["file"]) != r["sha256"] for r in saved["classpath"])):
             raise ValueError("the reusable original preparation changed")
+        operand, _ = resolved_operand(args.maven_cache, case, side)
+        if digest(operand) not in [row["sha256"] for row in saved["classpath"][1:]]:
+            raise ValueError("the prepared classpath lacks the registered dependency")
         return saved
     out.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=args.work, prefix="compile-") as temporary:
@@ -311,6 +319,8 @@ def main():
     ap.add_argument("--build", choices=("V0", "current"), action="append", required=True)
     ap.add_argument("--repositories", required=True, type=Path, help="JSON mapping case IDs to original local Git repositories")
     ap.add_argument("--work", type=Path, required=True, help="reusable input preparations, outside the checkout")
+    ap.add_argument("--complete", type=Path, action="append", default=[],
+                    help="prefer this original Maven module when both revisions are prepared")
     ap.add_argument("--maven-cache", type=Path, required=True)
     ap.add_argument("--maven", type=Path, default=Path(shutil.which("mvn") or "mvn"))
     ap.add_argument("--maven8", type=Path)
@@ -345,10 +355,11 @@ def main():
         with (cachedir/"prepare.lock").open("a") as lock:
             fcntl.flock(lock,fcntl.LOCK_EX)
             inputs={}
+            source = preparation_root(a.work, a.complete, case["id"])
             for side in ("old","new"):
                 try:
                     jdk=a.historical_jdk if case["origin"].startswith("CompSuite") else a.verifier_jdk
-                    prepared=prepare_side(case,side,Path(repos[case["id"]]),a,jdk,cachedir/side)
+                    prepared=prepare_side(case,side,Path(repos[case["id"]]),a,jdk,source/case["id"]/side)
                 except (OSError,ValueError,subprocess.SubprocessError,tarfile.TarError,KeyError) as exc:
                     prepared={"stage":"source preparation","diagnostic": [str(exc)]}
                 inputs[side]=prepared
