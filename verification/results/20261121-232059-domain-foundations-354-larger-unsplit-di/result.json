@@ -1,0 +1,307 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-232059-domain-foundations-354-larger-unsplit-di",
+  "title": "Domain foundations 354 larger unsplit diagnostic",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m02s, peak 1.1 GiB (estimated 5m00s, 3.0 GiB); 17 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-232059-domain-foundations-354-larger-unsplit-di.json",
+    "sha256": "7f2dd6dbe50560da3fb169fe950801a823b05494c76aab4866dceb1739e2f83c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-232059-domain-foundations-354-larger-unsplit-di",
+      "title": "Domain foundations 354 larger unsplit diagnostic",
+      "description": "Measure one unsplit strict native query with 180 seconds on the same guard, JDK, default solver and bounds. The exact per-input proof already covers the full domain. This measures performance only.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "354"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:20:59+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d",
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check foundation-180s",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 354 --route native --stage foundation-180s --tasks truncate-fix --seconds 180",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native"
+      ]
+    }
+  },
+  "sourceCommit": "3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d",
+  "startedAt": "2026-11-21T23:24:54+00:00",
+  "finishedAt": "2026-11-21T23:30:37+00:00",
+  "wallSeconds": 343.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2195921,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1188909056,
+    "wallSeconds": 122.8,
+    "cpuSeconds": 125.0,
+    "memoryOfEstimate": 0.37,
+    "durationOfEstimate": 0.41
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check foundation-180s",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 354 --route native --stage foundation-180s --tasks truncate-fix --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 122.796,
+      "cpuSeconds": 124.986,
+      "cpuThrottledSeconds": 0.181,
+      "peakMemoryBytes": 1188909056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-foundation-180s.log",
+        "lines": 1,
+        "bytes": 476,
+        "sha256": "f10d78eeaebd51191f2d89fa1d89bf0f2a85b1e52e314169afd18786ab3666d3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"354\", \"route\": \"native\", \"stage\": \"foundation-180s\", \"workflowExit\": 0, \"seconds\": 122.553, \"checkerSeconds\": 180, \"tasks\": [\"truncate-fix\"], \"verifierCommit\": \"3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d\", \"checkerSha256\": \"5a8efb0dd81cbfbf886e4ee644af5d15d8495369e3227aa41e579f884d201246\""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/run.json",
+      "change": "added",
+      "bytes": 518,
+      "sha256": "cb47367bc21ca814dada6d37802b197ef5214ada173dff08d8d50dc9756457f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "382ae2616b884b1382ccac4b7db4d852572e86d2ba869a2088f3c7604cc6e002",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/plan.json",
+      "change": "added",
+      "bytes": 7419,
+      "sha256": "a4f52b19efd4ef11bf72f1e3c115c01646341e6820b10c2db416a23ad4671df4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 320734,
+      "sha256": "67f4a4950a0e2fca9e62bd6c1276689c9c3a3221b2727bb750a6b050d6380225",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "9baee8a9c73ac8e03ea2099bd4ae13c1dba70018720c1d6f2fbf35ebf29fa686",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/execution.json",
+      "change": "added",
+      "bytes": 1010643,
+      "sha256": "df4f2a6f598d6ef6af0915afff20c943d3796b0f643e5a9259ae21c6b799468e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "ae507609b7a896900a80b16a1a226a852d26e9ff6b98055b27616389773f2554",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 296,
+      "sha256": "aaa270474e4673efa424b2a56f17c22314842a0603a11705bbaddd0a151b887e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/verifier.json",
+      "change": "added",
+      "bytes": 16281,
+      "sha256": "6521bbcd9f21e97f723ceac61f4d54f2e5dd6f93a0440c8589fc11750ba2d68f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5319,
+      "sha256": "c22002d87e2d40f6471d2345b105880c0016aed7cb29e489d2cb6556c86f5d25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/result.json",
+      "change": "added",
+      "bytes": 18458,
+      "sha256": "c072fb3dc5286ae03ea03f7c35a0371a620383109e02a3ffb7ac0428b34ca6fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/executions/20261121T232835Z-137e81f9/attempt.json",
+      "change": "added",
+      "bytes": 14910,
+      "sha256": "61caaab7efad08237b83b096b032ba7cd7b29c6067a6d86cece7abec71f9e847",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/executions/20261121T232835Z-137e81f9/checker.json",
+      "change": "added",
+      "bytes": 7155,
+      "sha256": "cb814b32b6285e299e4b4667863d6004c08cbb52c53a7b8ab606b2218657040d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/executions/20261121T232835Z-137e81f9/correspondence.json",
+      "change": "added",
+      "bytes": 1330,
+      "sha256": "02578c8ce43ae5e972c5df64518455f3b3ce16fc145c7448b98c8de0b1e2ea15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/workflow.log",
+      "change": "added",
+      "bytes": 232,
+      "sha256": "b09d2fd42dddd4ccfa09eb3b710fb7ced7159a8987ebfeccfe587651bcc2e385",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T23:33:18+00:00",
+    "applied": [
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/run.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/control-fix-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/control-fix-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/20261121T232835Z-137e81f9/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/executions/20261121T232835Z-137e81f9/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/executions/20261121T232835Z-137e81f9/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/truncate-fix/executions/20261121T232835Z-137e81f9/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "426f4c91db2e578a5a5744892da13f5391cb9b51",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/426f4c91db2e578a5a5744892da13f5391cb9b51/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T233037Z-5317756cb1f0371e",
+      "outputs": "20261121T233037Z-57467678db795a37",
+      "diff": "20261121T233037Z-597508eaab37ce47"
+    }
+  }
+}
