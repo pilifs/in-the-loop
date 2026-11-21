@@ -49,6 +49,32 @@ class Measure(unittest.TestCase):
         self.assertEqual(r["served"], "helper proved in the run")
         self.assertEqual(r["helpers"][1], {"callee": "A.g", "shared": False, "why": "its two versions differ, at g(1)", "seconds": 0.1})
 
+    def test_typed_decisions_are_read_as_data_and_give_what_the_notes_gave(self):
+        # The same two runs as the two tests above, with the decisions as the outcome's `helpers` (lib/src/proof_wire.rs)
+        # and notes whose wording says nothing a pattern knows.
+        def decision(cls, method, action, seconds, **more):
+            return {"callee": {"class": cls, "method": method, "descriptor": "(I)J"}, "action": action, "seconds": seconds, **more}
+        typed = [decision("shop.Split", "share", "shared", 0.2, key=HELPER, source="proved-now"),
+                 decision("shop.Split", "rate", "shared", 0.05, key=HELPER, source="cache")]
+        output = f"note: reworded\nnote: the proof cache has no result for this claim ({KEY}); proving\n" + TIMED + f"✓ verified\nnote: stored in the proof cache as claim {KEY}\n"
+        r = economics.measure({**outcome(output=output), "helpers": typed}, output, 2.0)
+        self.assertEqual((r["served"], r["helperSeconds"], r["other"]), ("helper evidence found", 0.25, 1.127))
+        self.assertEqual(r["helpers"], [{"callee": "Split.share", "shared": True, "found": False, "key": HELPER, "seconds": 0.2},
+                                        {"callee": "Split.rate", "shared": True, "found": True, "key": HELPER, "seconds": 0.05}])
+        kept = [decision("a.A", "g", "stays-as-written", 0.1, reason={"code": "not-applicable", "text": "its two versions differ, at g(1)"})]
+        r = economics.measure({**outcome(output=TIMED), "helpers": kept}, TIMED, 1.0)
+        self.assertEqual((r["served"], r["helpers"]), ("proved", [{"callee": "A.g", "shared": False, "why": "its two versions differ, at g(1)", "seconds": 0.1}]))
+        # A summary applied and a body kept are listed with their action, and neither counts as a helper proved equal.
+        summary = [decision("a.A", "fee", "summary-applied", 0.3, key=HELPER, source="cache", summary={"reads": ["this.x"], "facts": []}),
+                   decision("a.A", "floor", "keeps-body", 0.1, reason={"code": "no-summary", "text": "its two versions differ"})]
+        r = economics.measure({**outcome(output=TIMED), "helpers": summary}, TIMED, 1.0)
+        self.assertEqual((r["served"], [h.get("action") for h in r["helpers"]], [h["shared"] for h in r["helpers"]]),
+                         ("proved", ["summary-applied", "keeps-body"], [False, False]))
+        self.assertEqual([economics.helper_words(h) for h in r["helpers"]], ["by its summary, found", "keeps its body"])
+        # An exact hit carries the stored run's decisions: they are that run's, and are not counted in this one.
+        hit = {**outcome(output=TIMED, search=None, reuse={"kind": "exact", "key": KEY, "from": "x"}), "helpers": typed}
+        self.assertEqual(economics.measure(hit, TIMED, 0.4)["helpers"], [])
+
     def test_an_exact_hit_s_helper_notes_are_the_stored_run_s_and_are_not_counted(self):
         output = (f"note: A.f, changed: its two versions have the same outcome, result or exception, on every input, proved now and stored in the proof cache (claim {HELPER}); one function in both versions\n"
                   f"note: reused from the proof cache: an exact hit of claim {KEY}, the result of x; nothing was proved again\n" + TIMED)

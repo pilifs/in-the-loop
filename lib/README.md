@@ -38,6 +38,8 @@ lib/
   tests/               integration tests over Java fixtures compiled at test time (fixtures/), the conformance corpus,
                        and costs.json, every test's cost tier (#tests)
   tools/               the test runner by cost tier and its lint: test_costs.py, cost_tier.py
+  python/              what Python consumers share of the library's contracts: jvmcontract_io.py, the reader of
+                       proof output (#proof-output)
   benchmark/           the corpus both engines are measured on, and its results (benchmark/README.md)
   solvers/             the comparison of solvers for the own checker (solvers/README.md)
 ```
@@ -45,6 +47,28 @@ lib/
 The examples that exercise each contract kind are found by approach in the
 [examples router](../examples/README.md#find-an-example). How the verifier is run on a user's change is in
 [`llm-dlc/runtime.md`](../llm-dlc/runtime.md).
+
+### Who owns which decision
+
+Reusable code is placed by the decision it owns, not by its language: a proof technique several examples use can
+live here in Python. Each row names the one place that decides, and a test that fails when a second place starts
+deciding differently. Update the row when a responsibility moves.
+
+| Decision | Owner | A working control |
+|---|---|---|
+| Proof serialization: what `prove --json` and `equivalence --json` print, the wire version, the process exit | [`src/proof_wire.rs`](src/proof_wire.rs) writes it and [`python/jvmcontract_io.py`](python/jvmcontract_io.py) reads it ([Proof output](#proof-output)) | [`test_proof_output.py`](../examples/tools/targets/test_proof_output.py): one archived row and three changed copies through every reader |
+| Class selection: which bytes stand for a class name on a class path and a JDK | [`src/classpath.rs`](src/classpath.rs) for the checker; [`runtime_jar.py`](../examples/tools/targets/runtime_jar.py) and the launch guard in [`runtime.py`](../examples/tools/targets/runtime.py) for a preparation | [`observed_countermodels.rs`](tests/observed_countermodels.rs), the multi-release refusals; [`test_runtime.py`](../examples/tools/targets/test_runtime.py) |
+| Semantic proof methods: how a claim becomes obligations a solver answers | the checker's engines under [`src/bmc/`](src/bmc/mod.rs) and [`src/equivalence.rs`](src/equivalence.rs); array induction in [`array_induction.py`](../examples/tools/targets/array_induction.py) | [`test_recipes.py`](../examples/tools/targets/test_recipes.py) |
+| Receipt qualification: whether what a run reported answers the frozen claim | [`qualification.py`](../examples/tools/targets/qualification.py), with the consumer's own checks ([`native_selectors.py`](../examples/tools/targets/native_selectors.py)'s `disposition`, [`accept.py`](../examples/tools/accept.py)) | [`test_qualification.py`](../examples/tools/targets/test_qualification.py) |
+| Benchmark scoring: what a valid engine answer is worth against the expected one | [`benchmark/run.py`](benchmark/run.py)'s `classify` | [`benchmark/test_run.py`](benchmark/test_run.py) |
+
+A research experiment needs none of this to start: the smallest script where the work is easiest is a valid result.
+The commitment begins when another component reads that work as evidence for a claim. Then its reader must be able
+to say what ran, on which bytes, at what scope, and why the result qualifies, and two readers that disagree on such a
+fact are fixed at the boundary they share, with the smallest counterexample that would have caught them. Five
+identifiers answer five different questions and are never equated because several are digests: the source claim key
+(which claim), the prepared binding (which bytes), the execution or attempt id (which run), the proof-cache key
+(which proof may be reused) and the archived evidence reference (where the original output is kept).
 
 ## Install
 
@@ -336,6 +360,38 @@ JML's generalized quantifiers fold a value over the range instead: `(\sum int i;
 **An effect contract at a call** (`--lemmas FILE`, a declaration with `writes:` among the lemmas). The write set stands in for the method's calls: the contract is proved first, at its own `arrays:` bound, with its frame, and also as reading nothing that was there before the call (no field of the receiver or an object argument, which the proof took from their constructors and a caller may have set since; no static field that is not final; no array; no default locale) and comparing no such object by identity, so what it writes is a function of its arguments alone. In the check, a call by anything but the harness and the claim, on a receiver of exactly the contract's class (a subclass's object may run a hook the proof's never had) and on arguments within its bounds (a String not null and no longer than the bound, an object not null), runs a stub of the claim's class instead: a field the assertion gives a parameter (a top-level `this.f == p`, of the field's type, a String compared with a String parameter by identity) takes it, any other written field of a primitive type any value, and nothing else changes; elsewhere the method runs as written. Each write the stub makes meets the gate the method's own `putfield` would, so inside a proof by induction (`--decreases`) or under a write set (`--writes`) a contracted call that writes what was there before the call is refused as it is when the method runs as written ([`tests/fixtures/stub-countermodels`](tests/fixtures/stub-countermodels/README.md)). A written reference field the assertion gives no parameter is refused (the stub can make no object), as are an `assume:`, a `throws:`, an array parameter and a result that is no integral or boolean value. The statement lists the contract, and a run it stood in for names it among what the run rests on. `claims.Frames` holds the application side: a rename through the honest setter keeps an admin an admin under the new name, proved with the contract; the adversarial setter's contract is refuted, so the check that would rest on it is refused, and without it a rename to `admin:` refutes "a rename makes no account an admin". One countermodel per side condition, each granting admin on a JVM and each a false proof with its rule switched off: a name longer than the contract's bound, a field of the receiver a caller set (`setRole`), a static switch, the identity of a literal, and a subclass's hook called by the inherited setter. Not yet: a stated read set (a method that reads its receiver's fields is refused), the postcondition beyond those parameter equalities, allocations that escape, and a contract at a reflective call (`Method.invoke`, the binder's).
 
 The five properties of the [Quorum](../examples/apps/quorum/README.md) module (quorum intersection, backoff bounds and monotonicity, the hybrid logical clock's monotonicity and symmetry, last-writer-wins antisymmetry) are proved in about four seconds in all, and the seven of [Crosscut](../examples/apps/crosscut/README.md) (a Kafka partitioner and batch commit, a retry policy, a JWT validator's skew, a token bucket's refill, a cache's expiry) in about forty, and the sixteen of [Mica](../examples/apps/mica/README.md) (`idiv` and `irem` at `Integer.MIN_VALUE / -1` and their `ArithmeticException` on zero, the exception table's `ClassFormatError` on a malformed entry, modified UTF-8's zero-free bytes and the encoder that writes them and leaves the rest of the buffer alone, a `lookupswitch` bisection within the sizes a `Code` attribute allows and its full correctness on every sorted table, the sort of a `lookupswitch`'s pairs as a permutation, the exception table's handler lookup, a power-of-two table size, the stack map frame offsets with their `+ 1`, the length of a `Code` attribute, constant pool numbering around a `long`, and `max_stack` as the largest prefix sum) in about a minute and a half, most of it the three sums and the sort. A property-based test states the same theorem and samples it; here the solver covers the domain, which is how [example 015](../examples/015-rounded-half-is-not-a-majority/README.md) catches `(n + 1) / 2` at `n = 2`, [example 016](../examples/016-backoff-cleanup-overflows-into-a-negative-delay/README.md) catches an overflow forty attempts in, [example 023](../examples/023-abs-partitioner-sends-one-key-to-a-negative-partition/README.md) catches `Math.abs(Integer.MIN_VALUE)`, and [example 034](../examples/034-idiv-overflow-check-throws-where-the-jvm-returns-min-value/README.md) catches an `idiv` that throws on the one input the specification says must not, and [example 054](../examples/054-exception-table-check-that-rejects-a-range-ending-at-code-length/README.md) catches a class file check that rejects a handler covering the last instruction, on the exceptional path a throws clause brings under the proof, and [example 055](../examples/055-encoder-that-zero-terminates-into-the-callers-buffer/README.md) catches an encoder that writes one byte past what it returns, against a frame condition in `\old`.
+
+## Proof output
+
+What `prove --json` and `equivalence --json` print, and what the process exit says beside it, is a contract with one
+writer and one reader. [`src/proof_wire.rs`](src/proof_wire.rs) owns the Rust side, and the command line is one
+caller of it. [`python/jvmcontract_io.py`](python/jvmcontract_io.py) owns the Python side, and every Python consumer
+reads through it: the example tools ([`checker_output.py`](../examples/tools/checker_output.py), ordinary receipt
+ingestion), the native-selector check, live and archived, the benchmark and the solver comparison.
+
+- `prove --json` prints an array with one object for each property, in the order declared. `equivalence --json`
+  prints one object. Each object is the outcome with `wire_version` beside its fields, 1 today; output from before
+  the field has none and counts as version 0. A reader refuses a version it does not know, whatever the rest says.
+- The process exits with 0 when every outcome is verified and with 1 when any is a violation or unverifiable: the
+  maximum over a run's rows, so a refuted property among verified ones exits with 1 and each row keeps its own
+  result. Exit 2 is the tool's failure, with no outcome.
+- A regression check under `--cache` says what it did with each changed helper as data, in the outcome's `helpers`:
+  the callee (class, method, descriptor), the `action` (`shared`, proved equal on every input and one function at
+  every call; `summary-applied`, a summary applied at each call, conditional when it has facts; `stays-as-written`;
+  `keeps-body`), the claim `key` of the proof it rests on and whether that was found in the cache, and a `reason`
+  code where the helper keeps its code. The notes in `output` are rendered from these, so no reader parses them.
+
+The reader keeps three questions apart, each a function of its own:
+
+1. **Can these bytes be decoded?** `decode(stdout, command)`: the ordered rows, or why there are none (`not-json`,
+   `not-outcome`, `unsupported-version`).
+2. **Did the process end as the command ends?** `completion(command, decoded, exit, ...)`: `completed`, or
+   `timed-out`, `killed`, `tool-error`, `unsupported-version`, `invalid-output` (a row count other than the one
+   asked for, a verdict that is none of the three, a decision field of another JSON type) or `contradictory-exit`.
+3. **Does this evidence qualify for this claim?** The consumer's own, with its independent checks: the benchmark
+   scores a valid refutation as the right answer at exit 1, where a proof campaign needs its witness replayed on a
+   JVM. What the reader offers for it is typed access (`facts`, `boolean`, `at`): a field that is missing or of
+   another type is unknown, and unknown satisfies no claim. The string `"false"` is not a boolean.
 
 ## How a boundary contract is checked
 

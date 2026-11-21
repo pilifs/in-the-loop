@@ -684,6 +684,9 @@ class PipelineTest(unittest.TestCase):
         tools.mkdir(parents=True, exist_ok=True)
         for module in ("build.py", "checker_output.py", "result_format.py"):  # build.py and the modules it imports
             shutil.copy(HERE.parent / "examples/tools" / module, tools / module)
+        reader = self.repo.dir / "lib/python/jvmcontract_io.py"  # the proof output reader checker_output.py reads through
+        reader.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(HERE.parent / "lib/python/jvmcontract_io.py", reader)
         if not (tools / "targets").exists():
             shutil.copytree(HERE.parent / "examples/tools/targets", tools / "targets",
                             ignore=shutil.ignore_patterns("__pycache__", "test_*.py"))

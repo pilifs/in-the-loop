@@ -453,6 +453,13 @@ fn a_changed_callers_proof_reuses_the_helpers_summary_at_each_call() {
     assert_eq!(carried(&used[0].1), summary, "the claim carries the whole summary, its reads included");
     assert!(total.output.contains("Tariff.fee, changed, is applied by its summary at each call in both versions") && total.output.contains("found in the proof cache"), "{}", total.output);
     assert!(total.proof.as_deref().unwrap_or("").contains("Tariff.fee changed, applied by its summary at each call"), "{:?}", total.proof);
+    // The same as data (the proof output contract): a summary applied is its own action, never a helper proved equal.
+    use jvmcontract::proof_wire::{HelperAction, ProofSource};
+    let [decision] = total.helpers.as_slice() else { panic!("one helper was asked about: {:?}", total.helpers) };
+    assert_eq!((decision.action, decision.key.as_deref(), decision.source), (HelperAction::SummaryApplied, Some(summary.proof.as_str()), Some(ProofSource::Cache)));
+    assert_eq!(decision.summary.as_ref().map(|s| (s.reads.clone(), s.facts.clone())), Some((summary.reads.clone(), summary.facts.clone())));
+    assert_eq!((decision.callee.method.as_str(), decision.callee.descriptor.as_str()), ("fee", "(I)J"));
+    assert!(total.output.contains(&decision.note()), "{}\n{}", decision.note(), total.output);
     assert_eq!(entries(&cache), 2, "the caller's claim is new, and the helper's proof is the one stored");
     // Each call in both versions goes to its version's adapter, which reads the fee from the receiver it is given.
     let substituted = total.work.join("substituted-classes");
@@ -507,6 +514,10 @@ fn a_caller_of_a_helper_reading_an_extra_field_keeps_its_body_and_is_refuted() {
     assert!(total.output.contains("Tariff.fee, changed, keeps its body in both versions") && total.output.contains("its two versions differ"), "{}", total.output);
     assert!(summaries_used(&total).is_empty());
     assert!(reproduced(&total), "{}", total.output);
+    let [decision] = total.helpers.as_slice() else { panic!("one helper was asked about: {:?}", total.helpers) };
+    assert_eq!((decision.action, decision.key.as_deref()), (jvmcontract::proof_wire::HelperAction::KeepsBody, None));
+    assert_eq!(decision.reason.as_ref().map(|r| r.code), Some(jvmcontract::proof_wire::ReasonCode::NoSummary));
+    assert!(total.output.contains(&decision.note()), "{}", total.output);
 }
 
 const CLAMPED_BEFORE: &str = "package p;

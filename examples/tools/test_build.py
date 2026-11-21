@@ -2351,7 +2351,7 @@ class ProofCacheTest(unittest.TestCase):
         ex["approach"].update({"engine": "native", **({"cache": True} if cache else {})})
         return ex
 
-    def proved(self, output, verdict="verified", ex=None):
+    def proved(self, output, verdict="verified", ex=None, **fields):
         root = Path(tempfile.mkdtemp(prefix="build-test-"))
         self.addCleanup(shutil.rmtree, root)
         stale = root / "examples/apps/crosscut" / build.PROOF_CACHE_DIR / "claims/aa/stale.json"
@@ -2364,7 +2364,7 @@ class ProofCacheTest(unittest.TestCase):
                 reports = root / "examples/apps/crosscut/build/reports"
                 reports.mkdir(parents=True, exist_ok=True)
                 (reports / "equivalence.sarif").write_text(json.dumps({"version": "2.1.0", "runs": []}))
-            return proc(0 if verdict == "verified" else 1, equivalence_json(root, verdict, output=output))
+            return proc(0 if verdict == "verified" else 1, equivalence_json(root, verdict, output=output, **fields))
         with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
                 mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
                 mock.patch.object(build.subprocess, "run", side_effect=fake):
@@ -2417,6 +2417,67 @@ class ProofCacheTest(unittest.TestCase):
         lines = build.findings_equivalence(self.cached(), {**result, "domain": "x: int"})
         self.assertIn("which did not hold: its two versions differ, at lastAfter(arg0=0, arg1=1, arg2=0, arg3=2, arg4=0). It stays as written", lines[-1])
         self.assertTrue(lines[0].startswith("The two versions disagree."), lines[0])
+
+    # The same decisions as the tool says them as data since the proof output contract (lib/src/proof_wire.rs).
+    CALLEE = {"class": "ratelimit.TokenBucket", "method": "lastAfter", "descriptor": "(JJJJJ)J"}
+    TYPED_SHARED = {"callee": CALLEE, "action": "shared", "key": KEY, "source": "proved-now", "seconds": 0.412}
+    TYPED_SUMMARY = {"callee": {**CALLEE, "method": "fee"}, "action": "summary-applied", "key": KEY, "source": "cache",
+                     "summary": {"reads": ["this.feeCents", "arg0"], "facts": ["this.feeCents >= 0"]}, "seconds": 0.2}
+    TYPED_BODY = {"callee": {**CALLEE, "method": "floor"}, "action": "keeps-body", "seconds": 0.1,
+                  "reason": {"code": "no-summary", "text": "its two versions differ"}}
+
+    def test_a_typed_decision_gives_the_record_the_note_gave_and_says_more(self):
+        result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n", helpers=[self.TYPED_SHARED])
+        legacy, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n")
+        (typed,), (noted,) = result["helpers"], legacy["helpers"]
+        self.assertEqual({k: typed[k] for k in noted}, noted, "callee, shared and the account, as read from the note")
+        self.assertEqual({k: typed[k] for k in typed if k not in noted},
+                         {"action": "shared", "class": "ratelimit.TokenBucket", "descriptor": "(JJJJJ)J", "key": self.KEY, "source": "proved-now"})
+        self.assertEqual(build.helper_lines(result), build.helper_lines(legacy))
+        self.assertEqual(build.shared_helpers(result), ["TokenBucket.lastAfter"])
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(result["helpers"], {**schema["properties"]["helpers"], "$defs": schema["$defs"]})
+
+    def test_the_wording_of_a_note_decides_nothing_once_the_decision_is_data(self):
+        decisions = [self.TYPED_SHARED, self.TYPED_SUMMARY, self.TYPED_BODY]
+        said, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n", helpers=decisions)
+        # Every note reworded, the summary's and the kept body's among them, and each reason's own words too.
+        reworded = [{**d, **({"reason": {**d["reason"], "text": "les deux versions diffèrent"}} if d.get("reason") else {})} for d in decisions]
+        other, _ = self.proved("remarque : TokenBucket.lastAfter a changé, et reste une seule fonction\n✓ a.B#m behaves as before on every input\n",
+                               helpers=reworded)
+        structured = lambda result: [{k: v for k, v in h.items() if k != "note"} for h in result["helpers"]]
+        self.assertEqual(structured(other), structured(said))
+        self.assertEqual(structured(said), [
+            {"callee": "TokenBucket.lastAfter", "shared": True, "action": "shared", "class": "ratelimit.TokenBucket", "descriptor": "(JJJJJ)J",
+             "key": self.KEY, "source": "proved-now"},
+            {"callee": "TokenBucket.fee", "shared": False, "action": "summary-applied", "class": "ratelimit.TokenBucket", "descriptor": "(JJJJJ)J",
+             "key": self.KEY, "source": "cache", "summary": {"reads": ["this.feeCents", "arg0"], "facts": ["this.feeCents >= 0"]}},
+            {"callee": "TokenBucket.floor", "shared": False, "action": "keeps-body", "class": "ratelimit.TokenBucket", "descriptor": "(JJJJJ)J",
+             "reason": "no-summary"}])
+        self.assertEqual(build.shared_helpers(other), build.shared_helpers(said))
+        self.assertEqual(build.shared_helpers(said), ["TokenBucket.lastAfter"], "a summary applied at calls is not a helper proved equal")
+        # The notes alone, read as before the field, knew neither the summary nor the kept body.
+        notes = ("note: TokenBucket.fee, changed, is applied by its summary at each call in both versions: its two versions, lifted\n"
+                 "note: TokenBucket.floor, changed, keeps its body in both versions: its two versions differ\n")
+        self.assertEqual(build.helpers_record(notes), [])
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(said["helpers"], {**schema["properties"]["helpers"], "$defs": schema["$defs"]})
+
+    def test_the_page_says_a_summary_and_a_kept_body_for_what_they_are(self):
+        result, _ = self.proved("✓ a.B#m behaves as before on every input\n", helpers=[self.TYPED_SUMMARY, self.TYPED_BODY])
+        lines = build.helper_lines(result)
+        self.assertIn("`TokenBucket.fee` changed, and has a summary, proved first: its two versions, lifted over the fields it reads "
+                      "(this.feeCents, arg0), have the same outcome on every value of them and of its arguments where this.feeCents >= 0, "
+                      f"found in the proof cache (claim {self.KEY}). The caller's proof applies it at each call in both versions", lines[-2])
+        self.assertIn("a call where its facts don't hold keeps the helper's body", lines[-2])
+        self.assertIn("`TokenBucket.floor` changed, and was offered for a summary, which it does not have: its two versions differ. "
+                      "It keeps its body in both versions", lines[-1])
+
+    def test_a_decision_the_reader_cannot_read_stops_the_run_rather_than_being_guessed(self):
+        with self.assertRaises(ValueError):
+            self.proved("✓ a.B#m behaves as before on every input\n", helpers=[{**self.TYPED_SHARED, "action": "inlined"}])
 
     def test_an_example_without_the_cache_records_nothing_of_helpers(self):
         result, _ = self.proved(self.SHARED + "✓ a.B#m behaves as before on every input\n", ex=self.cached(cache=False))

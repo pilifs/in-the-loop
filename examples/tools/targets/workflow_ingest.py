@@ -513,6 +513,21 @@ def replay_outcome(plan, target, bound, records, oracle):
     return fields, entries, "\n".join(lines + [label]) + "\n"
 
 
+def unreadable_reason(plan, v, outcomes):
+    """Why the shared reader gives no outcome for a verifier record, for the execution's reason: a decision field of
+    another type in the rows the record holds, or what decoding its kept standard output says (a wire version the
+    reader does not know, say). None when nothing says."""
+    import checker_output as wire
+    if outcomes:
+        wrong = sorted({name for o in outcomes if isinstance(o, dict) for name in wire.wire.mistyped(o)})
+        return f"{', '.join(wrong)} of another type than the proof output contract's" if wrong else None
+    stream = Path(v.directory) / v.stdout if v.directory and v.stdout else None
+    if stream is None or not stream.is_file() or stream.stat().st_size > STREAM_CAP:
+        return None
+    decoded = wire.wire.decode(stream.read_text(errors="replace"), "prove" if plan.kind == "prove" else "equivalence")
+    return None if decoded.ok else decoded.reason
+
+
 def verifier_outcome(plan, bound, records):
     """The flat fields of a proof attempt, from its one verifier record (the module's docstring)."""
     import checker_output as wire
@@ -524,7 +539,9 @@ def verifier_outcome(plan, bound, records):
     outcomes = list(v.observations) if v.observations is not None else None
     if plan.kind != "prove" and outcomes is not None:
         outcomes = outcomes if len(outcomes) == 1 else None
-    readable = outcomes is not None and outcomes and all(wire.is_outcome(o) for o in outcomes)
+    # Decoding and the envelope are the shared reader's (lib/python/jvmcontract_io.py, through checker_output); a
+    # decision field of another JSON type than the contract's ("false" for a boolean) makes a row unreadable.
+    readable = outcomes is not None and outcomes and all(wire.is_outcome(o) and not wire.wire.mistyped(o) for o in outcomes)
     output = "".join(o["output"] for o in outcomes) if readable else ""
     fields = {"counterexamples": [], "proof": None, "problem": None, "domain": None, "replay": None,
               "properties": None, "property": None}
@@ -539,8 +556,9 @@ def verifier_outcome(plan, bound, records):
         # An exit code jvmcontract uses for a verdict (0 or 1) completes only with a readable outcome.
         execution = wire.execution_status(v.exitCode, "--json outcome" if readable else "")
         if execution["status"] == "invalid-output":
+            why = unreadable_reason(plan, v, outcomes)
             execution["reason"] = (f"the verifier exited with code {v.exitCode}, and its --json outcome is missing or "
-                                   "unreadable: no verdict, a violation least of all")
+                                   f"unreadable{f' ({why})' if why else ''}: no verdict, a violation least of all")
     verdict = None
     if execution["status"] == "completed":
         if plan.kind == "prove":
@@ -665,7 +683,7 @@ def property_replay(props):
     replays = [r.get("replay") for r in props if r["verdict"] == "violation"]
     if not replays or not all(replays) or len({r["by"] for r in replays}) != 1:
         return None
-    return {"by": replays[0]["by"], "reproduced": all(r["reproduced"] for r in replays)}
+    return {"by": replays[0]["by"], "reproduced": all(r["reproduced"] is True for r in replays)}
 
 
 def name_revisions(plan, counterexamples):

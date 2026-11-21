@@ -55,6 +55,7 @@ use crate::classpath::ClassPath;
 use crate::digest::sha256_hex;
 use crate::equivalence::{Counterexample, Options, Outcome, Replay};
 use crate::harness::{self, BeforeMethod, Layout};
+use crate::proof_wire::{AppliedSummary, HelperAction, HelperCallee, HelperDecision, HelperReason, ProofSource, ReasonCode};
 use crate::jbmc::Argument;
 use crate::sarif::{self, Finding};
 use crate::spec::cache::{self, ClaimKey, ResultRecord, Reuse};
@@ -166,6 +167,10 @@ pub struct Stored {
     pub vacuous: Option<String>,
     #[serde(default)]
     pub shared: Vec<String>,
+    /// The decisions about the changed helpers of the run that was stored ([`HelperDecision`]); none in a record
+    /// from before the field.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub helpers: Vec<HelperDecision>,
     pub statement: Statement,
     /// The statement's gap mode, by name: its type doesn't deserialize.
     #[serde(default)]
@@ -550,6 +555,7 @@ impl<'a> Regression<'a> {
             output,
             work: self.shown.work.to_path_buf(),
             shared: stored.shared,
+            helpers: stored.helpers,
             previous: self.shown.previous.map(str::to_string),
             relation: o.results_agree_when.clone(),
             vacuous: stored.vacuous,
@@ -620,6 +626,7 @@ impl Entry {
             proof: outcome.proof.clone(),
             vacuous: outcome.vacuous.clone(),
             shared: outcome.shared.clone(),
+            helpers: outcome.helpers.clone(),
             gap_mode: statement.gap_mode.map(|g| g.name().to_string()),
             statement,
             findings: outcome.findings.iter().map(|f| StoredFinding { rule_id: f.rule_id.clone(), message: f.message.clone() }).collect(),
@@ -675,14 +682,16 @@ pub struct Helpers<'a> {
     budget: Duration,
     spent: Duration,
     assumptions: Vec<Assumption>,
-    /// The note per helper asked about, for the caller's output.
+    /// The note per helper asked about, for the caller's output: each decision's own ([`HelperDecision::note`]).
     pub notes: String,
+    /// What was decided about each helper asked about, in order, as data: the outcome's `helpers`.
+    pub decisions: Vec<HelperDecision>,
 }
 
 impl<'a> Helpers<'a> {
     /// The helpers of the check `options` describes, worked on under `work`.
     pub fn new(options: &'a Options, work: &Path) -> Helpers<'a> {
-        Helpers { options, work: work.join("helpers"), budget: Duration::from_secs(options.timeout_seconds) / HELPER_SHARE, spent: Duration::ZERO, assumptions: Vec::new(), notes: String::new() }
+        Helpers { options, work: work.join("helpers"), budget: Duration::from_secs(options.timeout_seconds) / HELPER_SHARE, spent: Duration::ZERO, assumptions: Vec::new(), notes: String::new(), decisions: Vec::new() }
     }
 
     /// Whether this check proves its changed helpers: it is cacheable (`--cache`, `--engine native`), and shares
@@ -694,6 +703,12 @@ impl<'a> Helpers<'a> {
     /// The caller's time left once its helpers are proved: `total` less what they took.
     pub fn remaining(&self, total: Duration) -> Duration {
         total.saturating_sub(self.spent)
+    }
+
+    /// Records a decision: the outcome carries it as data, and its note is rendered from it.
+    fn decide(&mut self, decision: HelperDecision) {
+        self.notes.push_str(&decision.note());
+        self.decisions.push(decision);
     }
 
     /// The assumptions the caller's claim gains: one per helper proved, of kind `callee`, basis `proved`, with the
@@ -718,19 +733,17 @@ impl<'a> Helpers<'a> {
         }
         let target = crate::shared::target_of(callee);
         let name = format!("{}.{}", callee.owner.rsplit('/').next().unwrap_or(&callee.owner), callee.name);
-        let mut note = |why: String| {
-            let _ = writeln!(self.notes, "note: {name}, changed, stays as written in both versions: {why}");
-        };
+        let kept = |code: ReasonCode, text: String, seconds: Option<f64>| HelperDecision { callee: wire_callee(callee), action: HelperAction::StaysAsWritten, key: None, source: None, summary: None, reason: Some(HelperReason { code, text }), seconds };
         let caller = self.options.target.clone();
         let names_callee = |t: &String| crate::verifier::parse_target(t).is_some_and(|(c, m)| c == callee.owner && m == callee.name);
         let cycle = names_callee(&caller) || PROVING.with(|p| p.borrow().iter().any(names_callee));
         if cycle {
-            note("its proof would rest on the proof it is used in".into());
+            self.decide(kept(ReasonCode::Cycle, "its proof would rest on the proof it is used in".into(), None));
             return None;
         }
         let left = self.budget.saturating_sub(self.spent);
         if left < Duration::from_secs(1) {
-            note("no time is left for its proof".into());
+            self.decide(kept(ReasonCode::NoTime, "no time is left for its proof".into(), None));
             return None;
         }
         let mut helper = self.options.clone();
@@ -753,40 +766,34 @@ impl<'a> Helpers<'a> {
         PROVING.with(|p| p.borrow_mut().pop());
         self.spent += started.elapsed();
         // What its check took, apart from the caller's own: an exact hit of its claim, or a proof made now.
-        let _ = writeln!(self.notes, "note: {name}'s own check took {:.3} s", started.elapsed().as_secs_f64());
-        let mut note = |why: String| {
-            let _ = writeln!(self.notes, "note: {name}, changed, stays as written in both versions: {why}");
-        };
+        let seconds = Some(started.elapsed().as_secs_f64());
         let outcome = match outcome {
             Ok(o) => o,
             Err(e) => {
-                note(format!("its check failed: {e}"));
+                self.decide(kept(ReasonCode::CheckFailed, format!("its check failed: {e}"), seconds));
                 return None;
             }
         };
         let key = KEYS.with(|k| k.borrow().iter().rev().find(|(t, _)| *t == target).map(|(_, key)| key.clone()));
         if let Err(why) = applicable(&outcome) {
-            note(why);
+            self.decide(kept(ReasonCode::NotApplicable, why, seconds));
             return None;
         }
         let Some(key) = key else {
-            note("its claim has no key".into());
+            self.decide(kept(ReasonCode::NotStored, "its claim has no key".into(), seconds));
             return None;
         };
         let dir = self.options.cache.as_ref().expect("active");
         let record = match cache::lookup(dir, &key) {
             Ok(Some(r)) if r.outcome.verdict == crate::spec::Verdict::Verified => r,
             _ => {
-                note(format!("its proof is not in the proof cache (claim {})", key.0));
+                self.decide(kept(ReasonCode::NotStored, format!("its proof is not in the proof cache (claim {})", key.0), seconds));
                 return None;
             }
         };
-        let how = match &outcome.reuse {
-            Some(Reuse::Exact { .. }) => "found in the proof cache",
-            _ => "proved now and stored in the proof cache",
-        };
+        let source = ProofSource::of(matches!(&outcome.reuse, Some(Reuse::Exact { .. })));
         let params = crate::classfile::MethodDescriptor::parse(&callee.descriptor).map(|d| d.params.iter().map(Type::java_name).collect::<Vec<_>>().join(", ")).unwrap_or_default();
-        let _ = writeln!(self.notes, "note: {name}, changed: its two versions have the same outcome, result or exception, on every input, {how} (claim {}); one function in both versions", key.0);
+        self.decide(HelperDecision { callee: wire_callee(callee), action: HelperAction::Shared, key: Some(key.0.clone()), source: Some(source), summary: None, reason: None, seconds });
         self.assumptions.push(Assumption {
             kind: AssumptionKind::Callee,
             text: format!(
@@ -816,19 +823,16 @@ impl Helpers<'_> {
     /// (its `reads`), and not only the key.
     fn summarize(&mut self, callee: &MemberRef) -> Option<crate::shared::Proved> {
         let name = format!("{}.{}", callee.owner.rsplit('/').next().unwrap_or(&callee.owner), callee.name);
-        let notes = &mut self.notes;
-        let mut note = |why: &str| {
-            let _ = writeln!(notes, "note: {name}, changed, keeps its body in both versions: {why}");
-        };
+        let kept = |code: ReasonCode, text: String, seconds: Option<f64>| HelperDecision { callee: wire_callee(callee), action: HelperAction::KeepsBody, key: None, source: None, summary: None, reason: Some(HelperReason { code, text }), seconds };
         let caller = self.options.target.clone();
         let names_callee = |t: &String| crate::verifier::parse_target(t).is_some_and(|(c, m)| c == callee.owner && m == callee.name);
         if names_callee(&caller) || PROVING.with(|p| p.borrow().iter().any(names_callee)) {
-            note("its summary would rest on the proof it is used in");
+            self.decide(kept(ReasonCode::Cycle, "its summary would rest on the proof it is used in".into(), None));
             return None;
         }
         let left = self.budget.saturating_sub(self.spent);
         if left < Duration::from_secs(1) {
-            note("no time is left for its summary's proof");
+            self.decide(kept(ReasonCode::NoTime, "no time is left for its summary's proof".into(), None));
             return None;
         }
         let mut options = self.options.clone();
@@ -836,23 +840,24 @@ impl Helpers<'_> {
         let started = Instant::now();
         let applied = crate::reuse::application(&options, callee, &self.work.join(format!("{}.{}", callee.owner.replace('/', "."), callee.name)));
         self.spent += started.elapsed();
-        let _ = writeln!(self.notes, "note: {name}'s summary took {:.3} s", started.elapsed().as_secs_f64());
+        let seconds = Some(started.elapsed().as_secs_f64());
         let a = match applied {
             Ok(a) => a,
             Err(u) => {
-                let _ = writeln!(self.notes, "note: {name}, changed, keeps its body in both versions: {}", u.what);
+                self.decide(kept(ReasonCode::NoSummary, u.what, seconds));
                 return None;
             }
         };
-        let how = if a.found { "found in the proof cache" } else { "proved now and stored in the proof cache" };
         let key = a.summary.proof.clone();
-        let _ = writeln!(
-            self.notes,
-            "note: {name}, changed, is applied by its summary at each call in both versions: its two versions, lifted over the fields it reads ({}), have the same outcome on every value of them and of its arguments{}, {how} (claim {key}); each call reads them from its actual receiver{}",
-            a.summary.reads.join(", "),
-            if a.summary.facts.is_empty() { String::new() } else { format!(" where {}", a.summary.facts.join(" and ")) },
-            if a.summary.facts.is_empty() { "" } else { ", and a call where they don't hold keeps the helper's body" }
-        );
+        self.decide(HelperDecision {
+            callee: wire_callee(callee),
+            action: HelperAction::SummaryApplied,
+            key: Some(key.clone()),
+            source: Some(ProofSource::of(a.found)),
+            summary: Some(AppliedSummary { reads: a.summary.reads.clone(), facts: a.summary.facts.clone() }),
+            reason: None,
+            seconds,
+        });
         let json = serde_json::to_string(&a.summary).expect("a summary serializes");
         self.assumptions.push(Assumption {
             kind: AssumptionKind::Summary,
@@ -862,6 +867,11 @@ impl Helpers<'_> {
         });
         Some(crate::shared::Proved { key, from: a.from })
     }
+}
+
+/// `callee` as a decision names it.
+fn wire_callee(callee: &MemberRef) -> HelperCallee {
+    HelperCallee { class: callee.owner.replace('/', "."), method: callee.name.clone(), descriptor: callee.descriptor.clone() }
 }
 
 /// R2: the regression proof of a read-only helper lifted over its footprint ([`crate::reuse::footprint::lift`]): the

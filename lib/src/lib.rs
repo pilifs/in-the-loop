@@ -69,6 +69,8 @@ pub mod jvm_witness;
 pub mod models;
 pub mod phases;
 pub mod proof_cache;
+/// The proof output contract: versioned `--json` outcomes and their process exit.
+pub mod proof_wire;
 pub mod pairing;
 pub mod property;
 pub mod purity;

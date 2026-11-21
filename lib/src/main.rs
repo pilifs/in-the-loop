@@ -880,18 +880,6 @@ struct ProveArgs {
     details: bool,
 }
 
-/// The proof wire format is independent of the CLI's human-readable output.
-#[derive(serde::Serialize)]
-struct WireOutcome<'a, T> {
-    wire_version: u8,
-    #[serde(flatten)]
-    outcome: &'a T,
-}
-
-fn wire_outcome<T>(outcome: &T) -> WireOutcome<'_, T> {
-    WireOutcome { wire_version: 1, outcome }
-}
-
 fn main() -> ExitCode {
     match run(Cli::parse()) {
         Ok(code) => ExitCode::from(code as u8),
@@ -991,14 +979,14 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.cache = args.cache;
             let outcome = equivalence::run(&options)?;
             if args.json {
-                println!("{}", serde_json::to_string_pretty(&wire_outcome(&outcome)).expect("serializable"));
+                println!("{}", jvmcontract::proof_wire::equivalence_json(&outcome));
             } else {
                 print!("{}", outcome.output);
                 if args.details {
                     print!("{}", jvmcontract::details::render(outcome.stated.as_ref(), outcome.search.as_ref()));
                 }
             }
-            Ok(outcome.verdict.exit_code())
+            Ok(jvmcontract::proof_wire::exit_code([outcome.verdict]))
         }
         Command::Prove(args) => {
             let declarations = match (&args.properties, &args.target) {
@@ -1015,7 +1003,6 @@ fn run(cli: Cli) -> Result<i32, Error> {
             };
             let mut outcomes = Vec::new();
             let mut findings = Vec::new();
-            let mut exit = 0;
             for (i, declaration) in declarations.iter().enumerate() {
                 let mut options = property::Options::new(&args.classes.classes, &declaration.target);
                 options.classpath = args.classes.classpath_entries();
@@ -1056,7 +1043,6 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.requested_models = args.model.clone();
                 options.stand_ins = args.stand_in.clone();
                 let outcome = property::run(&options)?;
-                exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {
                     print!("{}", outcome.output);
                     if args.details {
@@ -1072,9 +1058,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 }
             }
             if args.json {
-                println!("{}", serde_json::to_string_pretty(&outcomes.iter().map(wire_outcome).collect::<Vec<_>>()).expect("serializable"));
+                println!("{}", jvmcontract::proof_wire::prove_json(&outcomes));
             }
-            Ok(exit)
+            Ok(jvmcontract::proof_wire::exit_code(outcomes.iter().map(|o| o.verdict)))
         }
         Command::Capabilities { paths, each, json, module } => {
             if each {

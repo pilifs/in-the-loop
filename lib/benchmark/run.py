@@ -155,6 +155,8 @@ def command(case, engine, mode, classes, work, options, staging=None):
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from process_usage import wait as wait_measured
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "python"))
+import jvmcontract_io as wire  # the proof output contract's reader (lib/src/proof_wire.rs)
 
 
 def measure(cmd, limit):
@@ -178,24 +180,64 @@ def measure(cmd, limit):
         }
 
 
+def command_of(case):
+    """The command a case runs, whose output the reader decodes: a property proof prints a list, a regression
+    proof one object."""
+    return "prove" if case.get("kind") == "property" else "equivalence"
+
+
 def outcome_of(case, raw):
-    """The tool's JSON for the case: a property proof prints a list of one."""
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError:
-        return None
-    if isinstance(data, list):
-        data = data[0] if data else None
-    return data
+    """The tool's one outcome for the case, or None when the shared reader (lib/python/jvmcontract_io.py) does not
+    decode exactly one: output that is not JSON, not the command's shape, of a wire version the reader does not
+    know, or a list of more or fewer rows than the one property a case states. `classify` says which."""
+    decoded = wire.decode(raw, command_of(case))
+    return decoded.outcomes[0] if decoded.ok and len(decoded.outcomes) == 1 else None
+
+
+def unreadable(case, data, measured):
+    """Why a run earns no score whatever it printed, as (reason, problem), or None when its outcome can be scored:
+    the shared reader's two questions, asked before the benchmark's own. A run killed at its limit, a wire version
+    the reader does not know, more or fewer rows than the case's one property, a decision field of the wrong JSON
+    type, an exit that carries no verdict (2 is the tool's failure) and an exit that contradicts the verdict printed
+    are each no answer: a payload that looks decisive beside one of them is not credited."""
+    if measured["killed"]:
+        return "out of time", None
+    if data is None:
+        decoded = wire.decode(measured.get("stdout") or "", command_of(case))
+        if decoded.status == wire.UNSUPPORTED_VERSION:
+            return "unsupported wire version", decoded.reason
+        if decoded.ok:
+            return "not one outcome", f"the run printed {len(decoded.outcomes)} outcomes for one property"
+        return "no output", None
+    if not wire.supported_version(data):
+        return "unsupported wire version", f"unsupported checker wire version {data.get('wire_version')!r}"
+    wrong = wire.mistyped(data)
+    if wrong:
+        return "malformed outcome", f"{', '.join(wrong)} of another type than the proof output contract's"
+    problem = wire.exit_problem([data.get("verdict")], measured["exit"])
+    if problem and problem[0] == "tool-error":
+        return "tool failure", problem[1]
+    if problem and problem[0] == "contradictory-exit":
+        return "contradictory exit", problem[1]
+    return None
 
 
 def classify(case, data, measured):
-    """What a run's verdict is worth against the case's expected answer."""
+    """What a run's verdict is worth against the case's expected answer. Scoring is the benchmark's own question:
+    a refutation of a case expected to be refuted is `correct` at exit 1, which is how the tool ends one."""
     search = (data or {}).get("search") or {}
     gaps = search.get("gaps") or []
     assumed = [g["id"] for g in gaps if g.get("treatment") == "assumed"]
     contracts = [g["id"] for g in gaps if g.get("treatment") == "contract"]
     verdict = (data or {}).get("verdict", "none")
+    refused = unreadable(case, data, measured)
+    if refused:
+        # What was printed stays for diagnosis; it is no verdict of this record.
+        record = {"verdict": "none", "assumed": assumed, "contracts": contracts, "class": "unsupported", "reason": refused[0],
+                  "problem": (refused[1] or (data or {}).get("problem") or measured["stderr"][-300:]).strip()}
+        if data is not None:
+            record["printed"] = {"verdict": verdict, "wireVersion": data.get("wire_version", 0)}
+        return record
     record = {"verdict": verdict, "assumed": assumed, "contracts": contracts}
     if verdict not in ("verified", "violation"):
         record["class"] = "unsupported"

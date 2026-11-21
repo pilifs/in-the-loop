@@ -12,10 +12,19 @@ import sys
 import tempfile
 import time
 
+import checker_output
 from targets import case_pack, executions, finite_check, interfaces, qualification, recipes
 from targets import replay_candidate, route, runtime, runtime_jar, sidecar, workflow, workflow_ingest
 
 PACKAGE = "verificationselectors"
+
+
+def rule_files():
+    """{repository path: sha256} of the files a row's status is decided by: this module's `disposition` and the
+    proof output reader it reads the row through."""
+    root = Path(__file__).resolve().parents[3]
+    files = (Path(__file__).resolve(), Path(checker_output.wire.__file__).resolve())
+    return {f.relative_to(root).as_posix(): runtime.sha256(f) for f in files}
 
 
 def read(path):
@@ -188,11 +197,15 @@ def native_case(exe, jdk, cp, compiled, value, bounds, seconds, work, dest):
     if status != "exited":
         row["firstBlocker"] = status
         return row
-    try:
-        (answer,) = read(dest / "native.json")
-    except (ValueError, TypeError):
-        row["firstBlocker"] = "checker returned incomplete JSON"
+    # Whether the bytes decode and the process ended as `prove` ends are the shared reader's two questions
+    # (lib/python/jvmcontract_io.py); whether the one row answers this selector's claim is `disposition`'s.
+    decoded, ended = checker_output.wire.read((dest / "native.json").read_text(errors="replace"), "prove", rc, rows=1)
+    if not ended.ok:
+        row["firstBlocker"] = ("checker returned incomplete JSON" if ended.status == "invalid-output" and not decoded.ok
+                               else ended.reason)
         return row
+    (answer,) = decoded.outcomes
+    row["wireVersion"] = decoded.versions[0]
     row["status"], reason = disposition(answer, method, bounds, rc)
     row["assumptions"] = (answer.get("stated") or {}).get("assumptions", [])
     if reason:
@@ -200,42 +213,51 @@ def native_case(exe, jdk, cp, compiled, value, bounds, seconds, work, dest):
     return row
 
 
+def _is(value, expected):
+    """Equal and of the same JSON type: in Python True == 1, and a statement is not compared that loosely."""
+    return type(value) is type(expected) and value == expected
+
+
 def disposition(answer, method, bounds, rc):
-    stated = answer.get("stated") or {}
-    search = answer.get("search") or {}
+    """(status, first blocker) of one decoded row for one selector's claim: `established`, `refuted`,
+    `needs-jvm-replay` or `open`. Every field a status rests on is read as the type the contract gives it
+    (jvmcontract_io.facts): a missing or mistyped one is unknown, and unknown establishes nothing."""
+    wire = checker_output.wire
+    if not wire.supported_version(answer):
+        return "open", f"unsupported checker wire version {answer.get('wire_version')!r}"
+    facts = wire.facts(answer)
     if (
-        answer.get("target") != method
+        not _is(answer.get("target"), method)
         or answer.get("assume") is not None
-        or answer.get("assert") != "result == 1"
-        or stated.get("gap_mode") != "strict"
-        or (stated.get("checker") or {}).get("engine") != "native"
-        or (stated.get("bounds") or {}).get("unwind") != bounds["unwind"]
-        or (stated.get("domain") or {}).get("parameters") != []
-        or (stated.get("observations") or {}).get("exceptions") != "none may be thrown"
-        or search.get("properties") != 1
-        or search.get("max_array_length") != bounds["maxArrayLength"]
+        or not _is(answer.get("assert"), "result == 1")
+        or not _is(wire.at(answer, "stated", "gap_mode"), "strict")
+        or not _is(wire.at(answer, "stated", "checker", "engine"), "native")
+        or not _is(wire.at(answer, "stated", "bounds", "unwind"), bounds["unwind"])
+        or not _is(wire.at(answer, "stated", "domain", "parameters"), [])
+        or not _is(wire.at(answer, "stated", "observations", "exceptions"), "none may be thrown")
+        or not _is(wire.at(answer, "search", "properties"), 1)
+        or not _is(wire.at(answer, "search", "max_array_length"), bounds["maxArrayLength"])
     ):
         return "open", "the native checker returned a different statement"
     if (
-        answer["verdict"] == "verified"
-        and stated["bounds"].get("complete")
-        and (stated.get("vacuity") or {}).get("status") == "non-vacuous"
-        and answer.get("proof")
+        facts["verdict"] == "verified"
+        and facts["complete"] is True
+        and facts["vacuity"] == "non-vacuous"
+        and facts["proof"]
         and rc == 0
     ):
         return "established", None
     elif (
-        answer["verdict"] == "violation"
+        facts["verdict"] == "violation"
         and rc == 1
         and answer.get("counterexample")
-        and (answer.get("replay") or {}).get("reproduced") is True
+        and facts["reproduced"] is True
     ):
-        witness = answer["replay"].get("by")
-        if witness == "jvm":
+        if facts["replayedBy"] == "jvm":
             return "refuted", None
-        if witness == "interpreter":
+        if facts["replayedBy"] == "interpreter":
             return "needs-jvm-replay", None
-    return "open", answer.get("problem") or answer.get("output") or answer["verdict"]
+    return "open", wire.text(answer.get("problem")) or wire.text(answer.get("output")) or str(answer.get("verdict"))
 
 
 def check(plan, prepared, shared, work, out, exe, seconds, first, max_cases, task_start):
@@ -341,6 +363,9 @@ def check(plan, prepared, shared, work, out, exe, seconds, first, max_cases, tas
         "classpath": cp_info,
         "correspondence": correspondence,
         "ruleSha256": runtime.sha256(Path(__file__)),
+        # The rule now reads a row through the shared reader, so a new record names both files it was decided by;
+        # `ruleSha256` keeps its meaning, this file's digest, for records from before.
+        "ruleFiles": rule_files(),
         "admissionClass": str(gate.relative_to(out)),
         "admissionSha256": runtime.sha256(gate),
         "callsClass": str(file.relative_to(out)),
@@ -452,7 +477,10 @@ def validate_result(folder, plan, path):
         if hashlib.sha256(raw).hexdigest() != r["rawSha256"]:
             raise ValueError("different raw checker output")
         if r["status"] != "open":
-            (answer,) = json.loads(raw.decode())
+            decoded = checker_output.wire.decode(raw.decode(errors="replace"), "prove")
+            if not decoded.ok or len(decoded.outcomes) != 1:
+                raise ValueError(decoded.reason or "the retained checker record is not one outcome")
+            (answer,) = decoded.outcomes
             name = PACKAGE + ".Calls#" + case_name(r["selector"]) + "()"
             if (
                 r["target"] != name
