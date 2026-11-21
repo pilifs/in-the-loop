@@ -3,13 +3,15 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from urllib.error import HTTPError
+from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "baselines"))
 import engineering
 from corpus_ci import fresh_reports
-from maven_mirror import artifact_path
+from maven_mirror import artifact_path, declared_releases, open_release
 
 
 class OriginalInputs(unittest.TestCase):
@@ -46,6 +48,30 @@ class OriginalInputs(unittest.TestCase):
         self.assertIsNotNone(artifact_path("/org/codehaus/mojo/signature/java16/1.1/java16-1.1.signature.sha1"))
         diagnostic = "[ERROR] Non-resolvable parent POM for app:1 -> [Help 1]"
         self.assertEqual(engineering.failure("[INFO] Scanning for projects...\n" + diagnostic), [diagnostic])
+
+    def test_declared_release_repository_follows_a_missing_artifact(self):
+        endpoint = "https://repository.jboss.org/nexus/repository/public-jboss/"
+        original = "https://repository.jboss.org/nexus/content/groups/public-jboss/"
+        name = Path("org/example/artifact/1/artifact-1.pom")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "pom.xml").write_text(
+                f'<project xmlns="http://maven.apache.org/POM/4.0.0"><repositories>'
+                f'<repository><url>{original}</url></repository></repositories></project>')
+            self.assertEqual(declared_releases(root, ["pom.xml"]), [endpoint])
+            self.assertEqual(declared_releases(root, []), [])
+        with patch("maven_mirror.urlopen") as fetch:
+            response = unittest.mock.Mock()
+            response.geturl.return_value = endpoint + name.as_posix()
+            fetch.side_effect = [HTTPError("central", 404, "absent", {}, None), response]
+            self.assertIs(open_release(name, [endpoint]), response)
+            self.assertEqual(fetch.call_count, 2)
+            fetch.reset_mock()
+            fetch.side_effect = HTTPError("central", 403, "denied", {}, None)
+            with self.assertRaises(HTTPError) as failure:
+                open_release(name, [endpoint])
+            failure.exception.close()
+            self.assertEqual(fetch.call_count, 1)
 
 
 if __name__ == "__main__":

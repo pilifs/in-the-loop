@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 import tempfile
+import time
 import hashlib
 import sys
 
@@ -17,14 +18,19 @@ def main():
     ap.add_argument("--preparations", required=True, type=Path)
     ap.add_argument("--maven-cache", required=True, type=Path)
     ap.add_argument("--repositories", type=Path, help="original Git repositories for source-derived fixtures")
-    ap.add_argument("--complete", type=Path, help="prefer complete original Maven module inputs when available for both sides")
+    ap.add_argument("--complete", type=Path, action="append", default=[],
+                    help="prefer these full Maven modules when both sides are available, in option order")
+    ap.add_argument("--variant", choices=("operational",), help="run a declared additional observation for the original case")
     ap.add_argument("--output", required=True, type=Path)
     args = ap.parse_args()
     cases = {c["id"]: c for c in read(HERE / "corpus.json")["cases"]}
     args.output.mkdir(parents=True, exist_ok=True)
     for key in args.case:
+        started = time.monotonic()
         original = cases[key]
         directory = HERE / "scenarios" / key
+        if args.variant:
+            directory = directory / args.variant
         out = args.output / (key + ".json")
         if out.exists():
             raise ValueError(f"existing result for {key}")
@@ -33,9 +39,9 @@ def main():
         cmd = [sys.executable, str(ROOT / "examples/tools/build.py"), "--review-upgrade",
                "--spec", str(directory / "scope.json"), "--probe", str(directory / "UpgradeProbe.java"),
                "--jdk", str(Path.home() / ".sdkman/candidates/java" / jdk), "--output", str(out)]
-        prep = args.preparations
-        if args.complete and all((args.complete/key/side/"prepared.json").is_file() for side in ("old","new")):
-            prep = args.complete
+        prep = next((path for path in args.complete
+                     if all((path / key / side / "prepared.json").is_file() for side in ("old", "new"))),
+                    args.preparations)
         try:
             for side in ("old", "new"):
                 manifest = prep/key/side/"prepared.json"
@@ -52,6 +58,13 @@ def main():
                         "--" + side + "-dependency", digest(resolved_operand(args.maven_cache, original, side)[0])]
             with tempfile.TemporaryDirectory(prefix="upstream-fixtures-") as temp:
                 scope = read(directory / "scope.json")
+                if args.variant:
+                    source = scope["originalCallerSource"]
+                    repositories = read(args.repositories or args.preparations.parent / "repos.json")
+                    for revision in original["revisions"].values():
+                        data = git(repositories[key], "show", revision + ":" + source["path"])
+                        if hashlib.sha256(data).hexdigest() != source["sha256"]:
+                            raise ValueError("the additional caller's source differs from the registered original")
                 companions = scope.get("runtimeCompanions", [])
                 if companions:
                     for side, flag in (("old","--before"), ("new","--after")):
@@ -84,7 +97,8 @@ def main():
             if proc.returncode and not out.is_file():
                 raise ValueError(f"workflow exited {proc.returncode} before writing a case report")
         except (ValueError, OSError, subprocess.SubprocessError) as exc:
-            out.write_text(json.dumps({"status": "open", "reason": str(exc)}, indent=2) + "\n")
+            out.write_text(json.dumps({"status": "open", "reason": str(exc),
+                                       "elapsedSeconds": round(time.monotonic() - started, 3)}, indent=2) + "\n")
         print(key, read(out)["status"], flush=True)
 
 

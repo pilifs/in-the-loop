@@ -1,0 +1,37 @@
+{
+  "probeClass": "retrofit2.converter.wire.UpgradeProbe",
+  "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
+  "observer": "Serialize a real Phone through the other half of the registered request/response test and read the outbound protobuf bytes.",
+  "basis": "The original schema uses tag one as a length-delimited string. The expected wire records encode the ASCII phone strings independently.",
+  "fixtures": [
+    {
+      "kind": "java",
+      "file": "Phone.java",
+      "source": "retrofit-converters/wire/src/test/java/retrofit2/converter/wire/Phone.java",
+      "sha256": "1666f5317a58c0507f121d65da1469efe33df538157ed79fe3da9aaba5dd416e",
+      "class": "retrofit2.converter.wire.Phone"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        "(519) 867-5309"
+      ],
+      "expected": {
+        "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
+      }
+    },
+    {
+      "args": [
+        "123"
+      ],
+      "expected": {
+        "return": "CgMxMjM="
+      }
+    }
+  ],
+  "originalCallerSource": {
+    "path": "retrofit-converters/wire/src/main/java/retrofit2/converter/wire/WireRequestBodyConverter.java",
+    "sha256": "8965334b9699a2db35718b3300949a9654399ac544705d7eec78f1c5969d33dd"
+  }
+}

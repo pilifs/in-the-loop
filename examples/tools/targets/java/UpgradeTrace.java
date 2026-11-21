@@ -1,6 +1,7 @@
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.Method;
 import com.sun.jdi.ReferenceType;
+import com.sun.jdi.StackFrame;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.connect.Connector;
@@ -37,10 +38,20 @@ public final class UpgradeTrace {
         for (Method method : type.methodsByName(name, descriptor)) {
             if (!method.declaringType().equals(type) || method.isAbstract() || method.isNative()) continue;
             BreakpointRequest point = vm.eventRequestManager().createBreakpointRequest(method.location());
-            point.addCountFilter(1);
             point.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
             point.enable();
         }
+    }
+
+    private static boolean calledFromObserver(BreakpointEvent hit, String observer, String via) throws Exception {
+        boolean sawVia = via.isEmpty();
+        for (StackFrame frame : hit.thread().frames()) {
+            Method method = frame.location().method();
+            String name = method.declaringType().name() + "#" + method.name() + method.signature();
+            if (name.equals(via)) sawVia = true;
+            if (name.equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) return sawVia;
+        }
+        return false;
     }
 
     public static void main(String[] args) throws Exception {
@@ -53,9 +64,10 @@ public final class UpgradeTrace {
         Map<String, Connector.Argument> launch = connector.defaultArguments();
         launch.get("home").setValue(args[1]);
         launch.get("options").setValue("-Xmx384m -Duser.timezone=UTC -Duser.language=en -Duser.country=US "
-                + quote("-Djava.io.tmpdir=" + args[2]) + " -verbose:class -cp " + quote(args[3]));
+                + quote("-Djava.io.tmpdir=" + args[2]) + " " + quote("-Duser.home=" + args[2])
+                + " -verbose:class -cp " + quote(args[3]));
         StringBuilder main = new StringBuilder("UpgradeObservation");
-        for (String argument : Arrays.copyOfRange(args, 4, args.length)) main.append(' ').append(quote(argument));
+        for (String argument : Arrays.copyOfRange(args, 5, args.length)) main.append(' ').append(quote(argument));
         launch.get("main").setValue(main.toString());
         launch.get("suspend").setValue("true");
         VirtualMachine vm = connector.launch(launch);
@@ -75,7 +87,11 @@ public final class UpgradeTrace {
                     if (event instanceof ClassPrepareEvent) {
                         install(vm, ((ClassPrepareEvent) event).referenceType(), method, descriptor);
                     } else if (event instanceof BreakpointEvent) {
-                        hit = true;
+                        BreakpointEvent point = (BreakpointEvent) event;
+                        if (calledFromObserver(point, args[5], args[4])) {
+                            hit = true;
+                            point.request().disable();
+                        }
                     } else if (event instanceof VMDisconnectEvent) {
                         finished = true;
                     }

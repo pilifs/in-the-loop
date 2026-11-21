@@ -109,9 +109,11 @@ def run_side(case, side, repo, args, out):
             goals = [*reactor, "verify"]
         record.update(module=module.as_posix(),goals=goals,jdkReleaseSha256=digest(jdk/"release"),
                       mavenHome=maven.name,network="isolated client and serialized Maven Central mirror")
+        releases = maven_mirror.declared_releases(project, case.get("repositoryPoms", []))
+        record.update(declaredReleaseRepositories=releases, network="isolated client with a serial public Maven mirror")
         out.mkdir(parents=True)
         log=work/"maven.log"
-        with maven_mirror.serve(args.maven_cache,sockets,6*1024**3) as counters, log.open("wb") as stream:
+        with maven_mirror.serve(args.maven_cache,sockets,6*1024**3,releases) as counters, log.open("wb") as stream:
             command=namespace(project,work,scratch,sockets,maven,jdk)
             try:
                 status=subprocess.run([*command,*goals],stdout=stream,stderr=subprocess.STDOUT,timeout=args.seconds).returncode

@@ -48,7 +48,8 @@ def check_input(path, entry, dependency):
     if not data or (method, descriptor) not in runtime_jar.methods(data):
         raise ValueError("the selected method and descriptor must belong to the original client JAR")
     return files, files[hashes.index(dependency)], {"commit": doc["commit"], "sourceSha256": doc["sourceSha256"],
-            "callerClassSha256": hashlib.sha256(data).hexdigest(), "classpath": hashes, "dependency": dependency}
+            "callerClassSha256": hashlib.sha256(data).hexdigest(), "classpath": hashes, "dependency": dependency,
+            "preparation": doc.get("scope"), "compiledClasses": doc.get("compiledClasses"), "resources": doc.get("resources")}
 
 
 def parse_output(text, caller, original, dependency):
@@ -96,6 +97,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
     report.update({"entry":caller,"observer":spec["observer"],"domainBasis":spec["basis"],"cases":domain,
               "probeSha256":sha(probe),"launcherSha256":sha(LAUNCHER),"tracerSha256":sha(TRACER),"jdk":runtime_jdk.identity(jdk)["release"],
               "sides":{s:v[2] for s,v in prepared.items()},"status":"open"})
+    if "originalCallerSource" in spec:
+        report["originalCallerSource"] = spec["originalCallerSource"]
     owner, method, descriptor = runtime_jar.parse_target(caller)
     start=time.monotonic()
     with tempfile.TemporaryDirectory(prefix="upgrade-case-") as t:
@@ -107,6 +110,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         supplied = []
         fixture_classes = set()
         resources = []
+        services = []
         for item in spec.get("fixtures", []):
             if fixtures is None:
                 raise ValueError("the original caller fixture directory is missing")
@@ -117,10 +121,19 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             if item["kind"] == "java" and re.fullmatch(r"[\w$]+(?:\.[\w$]+)*", item["class"]):
                 supplied.append(file)
                 fixture_classes.add(item["class"].replace(".", "/"))
+            elif item["kind"] == "service" and re.fullmatch(r"META-INF/services/(?:[A-Za-z_$][\w$]*\.)*[A-Za-z_$][\w$]*", item["file"]):
+                services.append((file, output / item["file"]))
             elif item["kind"] == "resource":
                 resources.append((file, Path(item["file"])))
             else:
                 raise ValueError("unsupported caller fixture kind")
+        for source, dest in services:
+            providers = [line.split("#")[0].strip() for line in source.read_text().splitlines()]
+            named_providers = {name.replace(".", "/") for name in providers if name}
+            if not named_providers or not named_providers.issubset(fixture_classes):
+                raise ValueError("the service descriptor must name the supplied original Java providers")
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(source.read_bytes())
         report["originalFixtures"] = spec.get("fixtures", [])
         report["runtimeCompanions"] = spec.get("runtimeCompanions", [])
         for side, (_, _, bound) in prepared.items():
@@ -143,14 +156,15 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         compiled=sorted(output.rglob("*.class"))
         if any(helper_class(f) not in ("UpgradeObservation", "UpgradeTrace") and helper_class(f).split("$")[0] not in {main.replace(".","/"), *fixture_classes} for f in compiled):
             raise ValueError("the observer compiler produced an unrelated class")
-        refs=set().union(*(runtime_jar.references(f.read_bytes()) for f in compiled if helper_class(f) not in ("UpgradeObservation", "UpgradeTrace")))
-        if (runtime_jar.internal(owner),method,descriptor) not in refs:
-            raise ValueError("the compiled observer has no invocation reference to the declared original method")
+        via = spec.get("invocationVia", "")
+        direct = via or caller
+        declared_owner, declared_method, declared_descriptor = runtime_jar.parse_target(direct)
+        operand = (runtime_jar.internal(declared_owner), declared_method, declared_descriptor)
         methods = upgrade_claims.listing(jdk, [output], main.replace(".", "/"), max(0.01, timeout-(time.monotonic()-start)))
-        operand = (runtime_jar.internal(owner), method, descriptor)
         if operand not in methods.get(("observe", "([Ljava/lang/String;)Ljava/lang/String;"), []):
-            raise ValueError("observe() must itself invoke the declared original method and descriptor")
-        report["originalInvocation"] = owner + "#" + method + descriptor
+            raise ValueError("observe() must directly invoke the declared method or its specified synchronous caller")
+        report["originalInvocation"] = caller
+        report["invocationVia"] = via or None
         report["probeClasses"]={helper_class(f):sha(f) for f in compiled}
         for side,(files,dependency,side_record) in prepared.items():
             if any(runtime_jar.read_class(jar,name) is not None for jar in files for name in report["probeClasses"]):
@@ -172,7 +186,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         destination.parent.mkdir(parents=True, exist_ok=True)
                         destination.write_bytes(original.read_bytes())
                     cmd=[str(jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+str(run_dir), "-cp",
-                         cp([output,*tools]), "UpgradeTrace", caller, str(jdk), str(run_dir), cp([output,*files]), main,*enc]
+                         cp([output,*tools]), "UpgradeTrace", caller, str(jdk), str(run_dir), cp([output,*files]), via,main,*enc]
                     with subprocess.Popen(cmd, cwd=run_dir, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                           start_new_session=True) as child:
                         try:
@@ -221,6 +235,7 @@ def main(argv=None):
     ap.add_argument("--fixtures", type=Path)
     a=ap.parse_args(argv)
     result = {}
+    started = time.monotonic()
     try:
         result=evaluate(a.spec,a.before,a.after,a.probe,a.jdk,(a.old_dependency,a.new_dependency),a.seconds,
                         fixtures=a.fixtures, progress=result)
@@ -229,6 +244,8 @@ def main(argv=None):
         reason = str(e) + (". " + detail if detail and detail not in str(e) else "")
         result.update(status="open",reason=reason,entry=json.loads(a.spec.read_text()).get("entry"),
                       specSha256=sha(a.spec),probeSha256=sha(a.probe))
+    result["elapsedSeconds"] = round(time.monotonic() - started, 3)
+    result["specSha256"] = sha(a.spec)
     a.output.parent.mkdir(parents=True,exist_ok=True)
     with a.output.open("x") as stream:
         json.dump(result, stream, indent=2)

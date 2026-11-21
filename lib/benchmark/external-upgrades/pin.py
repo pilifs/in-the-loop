@@ -64,7 +64,7 @@ def snapshot(args, revision, *, historical=False):
         binaries[so] = bitwuzla / so
     if any(value is None for value in binaries.values()):
         raise ValueError("jbmc and z3 are required on PATH")
-    return {
+    lock = {
         "schema": "external-upgrade-product/v1", "revision": revision, "gitObjects": objects,
         "sourceManifestSha256": hashlib.sha256(source_manifest(revision)).hexdigest(),
         "sha256": {name: digest(path) for name, path in binaries.items()},
@@ -84,6 +84,13 @@ def snapshot(args, revision, *, historical=False):
                      "python3 examples/tools/targets/workflow_handoff.py handoff NNN --markdown",
                      "python3 verification/pipeline.py report --format json"],
     }
+    if revision != HISTORICAL_V0:
+        inputs = ("corpus.json", "scenarios", "engineering.py", "check_scenarios.py", "corpus_sources.py",
+                  "baselines/complete_client.py", "baselines/corpus_ci.py", "baselines/maven_mirror.py")
+        prefix = "lib/benchmark/external-upgrades/"
+        lock["engineeringInputs"] = {path: output("git", "rev-parse", f"{revision}:{prefix}{path}")
+                                     for path in inputs}
+    return lock
 
 
 def main():

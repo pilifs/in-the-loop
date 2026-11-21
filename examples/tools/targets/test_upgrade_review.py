@@ -12,8 +12,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from targets import runtime_jdk, upgrade_claims, upgrade_replay
 sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
 from cost_tier import cost
-sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
-from cost_tier import cost  # noqa: E402
 
 
 class UpgradeReviewTest(unittest.TestCase):
@@ -26,7 +24,7 @@ class UpgradeReviewTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             client_source = root / "Real.java"
-            client_source.write_text("package app; public class Real { public static int call() { return dep.Number.value(); } }")
+            client_source.write_text("package app; public class Real { public static int call() { return dep.Number.value(); } public static int wrapper() { return call(); } }")
             prepared, dependencies = [], []
             for side, number in (("old", "7"), ("new", "8")):
                 classes = root / side
@@ -53,6 +51,21 @@ class UpgradeReviewTest(unittest.TestCase):
             spec = root / "scope.json"
             spec.write_text(json.dumps({"entry": "app.Real#call()I", "observer": "returned text", "basis": "control",
                                        "probeClass": "UpgradeProbe", "cases": [{"args": ["skip"], "expected": {"return": "app.Real"}}]}))
+            with self.assertRaisesRegex(ValueError, "original caller method was never entered"):
+                upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
+
+            # The genuine wrapper reaches call() on the same stack. An earlier independent
+            # call cannot qualify a wrapper that was only referenced in a dormant branch.
+            scope = json.loads(spec.read_text())
+            scope["invocationVia"] = "app.Real#wrapper()I"
+            scope["cases"] = [{"args": ["run"], "expected": {"return": "7"}}]
+            spec.write_text(json.dumps(scope))
+            probe.write_text("public class UpgradeProbe { public static String observe(String[] x) { "
+                             "return Integer.toString(app.Real.wrapper()); } }")
+            result = upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
+            self.assertEqual((result["status"], result["differences"]), ("changed", [0]))
+            probe.write_text("public class UpgradeProbe { public static String observe(String[] x) { "
+                             "return Integer.toString(x.length == 1 ? app.Real.call() : app.Real.wrapper()); } }")
             with self.assertRaisesRegex(ValueError, "original caller method was never entered"):
                 upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
 

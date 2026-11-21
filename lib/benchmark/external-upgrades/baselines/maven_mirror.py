@@ -15,9 +15,48 @@ import tempfile
 from threading import Thread
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
+from xml.etree import ElementTree
 
 
 CENTRAL = "https://repo.maven.apache.org/maven2/"
+
+
+# These release repositories are used by the original clients in this comparison.
+# Map legacy URLs to the current HTTPS endpoints for the same public repository.
+PUBLIC_RELEASES = {
+    "https://repository.jboss.org/nexus/content/groups/public-jboss": "https://repository.jboss.org/nexus/repository/public-jboss/",
+    "https://repository.jboss.org/nexus/content/groups/public": "https://repository.jboss.org/nexus/repository/public/",
+    "https://jcenter.bintray.com": "https://repo1.maven.org/maven2/",
+}
+
+
+def declared_releases(project, pom_paths):
+    releases = []
+    for name in pom_paths:
+        file = (project / name).resolve()
+        if not file.is_relative_to(project.resolve()):
+            raise ValueError("repository POM is outside the original checkout")
+        document = ElementTree.parse(file)
+        for entry in document.findall(".//{*}repositories/{*}repository/{*}url"):
+            endpoint = PUBLIC_RELEASES.get((entry.text or "").strip().rstrip("/"))
+            if endpoint and endpoint not in releases:
+                releases.append(endpoint)
+    return releases
+
+
+def open_release(name, releases):
+    for base in (CENTRAL, *releases):
+        try:
+            response = urlopen(base + name.as_posix(), timeout=45)
+        except HTTPError as error:
+            if error.code != 404 or base == (releases[-1] if releases else CENTRAL):
+                raise
+            error.close()
+            continue
+        if response.geturl() != base + name.as_posix():
+            response.close()
+            raise ValueError("unexpected remote release location")
+        return response
 
 
 def artifact_path(request):
@@ -66,9 +105,8 @@ class Repository(QuietHandler):
                         self.send_error(404)
                         return
                     local.parent.mkdir(parents=True, exist_ok=True)
-                    with urlopen(CENTRAL + name.as_posix(), timeout=45) as upstream:
-                        if not upstream.geturl().startswith(CENTRAL):
-                            raise ValueError("unexpected remote repository")
+                    with open_release(name, server.releases) as upstream:
+                        server.counts["from " + upstream.geturl().removesuffix(name.as_posix())] += 1
                         with tempfile.NamedTemporaryFile(dir=local.parent) as pending:
                             while chunk := upstream.read(256 * 1024):
                                 server.counts["downloadedBytes"] += len(chunk)
@@ -88,6 +126,7 @@ class Repository(QuietHandler):
             server.counts[f"upstreamHttp{exc.code}"] += 1
             if exc.code == 404:
                 server.missing.add(name)
+            exc.close()
             self.send_error(exc.code)
         except (BrokenPipeError, ConnectionResetError):
             pass
@@ -97,13 +136,14 @@ class Repository(QuietHandler):
 
 
 @contextmanager
-def serve(repository, socket_directory, byte_limit):
+def serve(repository, socket_directory, byte_limit, releases=()):
     repository = repository.resolve(strict=True)
     # Unix socket names have a small length limit. The directory FD names the same socket inside the guest mount.
     fd = os.open(socket_directory, os.O_RDONLY | os.O_DIRECTORY)
     try:
         with UnixStreamServer(f"/proc/self/fd/{fd}/central.sock", Repository) as server:
             server.repository = repository
+            server.releases = tuple(releases)
             server.lock_file = repository.parent / "resolution.lock"
             server.byte_limit = byte_limit
             server.counts = Counter()

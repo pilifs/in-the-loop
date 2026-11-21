@@ -28,6 +28,10 @@ python3 lib/benchmark/external-upgrades/check_scenarios.py --case compsuite-i-38
   --output "$TMPDIR/reflectasm-results"
 ```
 
+For clients that need generated classes or resources, run `baselines/complete_client.py` with the case, repositories, Maven cache, output and an external preparation directory. Pass that directory to `check_scenarios.py --complete`. This preserves the original module and its ordered runtime classpath. The Apollo preparation retains its real Git tags and the Togglz preparation reads the public release repository declared in its original POM.
+
+A reviewed scope can identify a synchronous framework callback with `invocationVia`. The observer must call that method directly. The fresh JVM must stop inside the exact original callback with both the specified caller and the observer on its stack. The Nacos and Togglz scopes use this route. Retrofit and the spreadsheet client also have `--variant operational` observations for request serialization and workbook opening.
+
 ## Reproduce an open calibration
 
 Examples 348 and 349 include a source-build reproduction in their own folders. For 350, 351 or 352, obtain the two commits and the JARs in that example's `materials.json`. Give the script the local Git repository, directory of named JARs, recorded subject JDK and an empty output location. It checks every JAR digest, the parent relationship, the POM-only tracked diff, loaded class origins and the original caller's observations. For the two named JUnit 4 tests it requires the specified class and method to appear exactly once in fresh Surefire XML.

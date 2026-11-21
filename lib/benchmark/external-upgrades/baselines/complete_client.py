@@ -64,7 +64,9 @@ def side(case, rev, repo, args, socketdir):
               "package","org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"]
         original.update(subjectJdk=jdk.name,jdkReleaseSha256=digest(jdk/"release"),goals=argv)
         log=area/"package.log"
-        with log.open("wb") as stream:
+        releases = maven_mirror.declared_releases(project, case.get("repositoryPoms", []))
+        original["declaredReleaseRepositories"] = releases
+        with maven_mirror.serve(args.maven_cache, socketdir, 6*1024**3, releases), log.open("wb") as stream:
             try:
                 status=subprocess.run([*namespace(project,work,scratch,socketdir,maven,jdk),*argv],stdout=stream,
                                       stderr=subprocess.STDOUT,timeout=args.seconds).returncode
@@ -115,7 +117,7 @@ def main():
     args=ap.parse_args()
     cases={c["id"]:c for c in read(HERE/"corpus.json")["cases"]};repos=read(args.repositories)
     args.output.mkdir(parents=True,exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="complete-maven-mirror-") as temp, maven_mirror.serve(args.maven_cache,Path(temp),6*1024**3):
+    with tempfile.TemporaryDirectory(prefix="complete-maven-mirror-") as temp:
         for cid in args.case:
             case=cases[cid];out=args.output/(cid+".json")
             if out.exists():raise ValueError("refusing to replace module evidence")

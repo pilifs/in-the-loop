@@ -1,0 +1,28 @@
+{
+  "probeClass": "UpgradeProbe",
+  "entry": "com.monitorjbl.xlsx.StreamingReader$Builder#open(Ljava/io/InputStream;)Lorg/apache/poi/ss/usermodel/Workbook;",
+  "observer": "Open the actual original spreadsheet with StreamingReader and read its worksheet count.",
+  "basis": "The upstream spreadsheet and named test specify one worksheet. Workbook opening is a prerequisite to reading any cell style.",
+  "fixtures": [
+    {
+      "kind": "resource",
+      "file": "large.xlsx",
+      "source": "src/test/resources/large.xlsx",
+      "sha256": "1688458848b942e9c8ee73210829972b7e62b23464669638bb42f56822e54243"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        "large.xlsx"
+      ],
+      "expected": {
+        "return": "1"
+      }
+    }
+  ],
+  "originalCallerSource": {
+    "path": "src/main/java/com/monitorjbl/xlsx/StreamingReader.java",
+    "sha256": "ae301c669bfaf15c2da0d550de09f75dfcc20da0e82424a03cf8b77c171e7a42"
+  }
+}
