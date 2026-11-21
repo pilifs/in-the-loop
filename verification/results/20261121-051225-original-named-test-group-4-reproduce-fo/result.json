@@ -1,0 +1,353 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-051225-original-named-test-group-4-reproduce-fo",
+  "title": "Original named test group 4 reproduce four upstream upgrade expectations",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m32s, peak 802.4 MiB (estimated 12m00s, 2.0 GiB); 24 output file(s) changed",
+  "attention": [
+    "step 1 (Run original named test on both revisions) was held back 2m59s by its 2-CPU quota in 1m32s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-051225-original-named-test-group-4-reproduce-fo.json",
+    "sha256": "8924b65ffddde98a3c05e929fdc30d5c1e9843535117f29c11b7638d246ce7f8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-051225-original-named-test-group-4-reproduce-fo",
+      "title": "Original named test group 4 reproduce four upstream upgrade expectations",
+      "description": "Run each actual registered developer test on fresh old and new source trees. Include reactor prerequisites, accept Maven Central Animal Sniffer signature artifacts, retain XML and the final Maven diagnostic, and separately identify zero named tests. This complements the complete Maven lifecycle runs. Cases: compsuite-i-36, compsuite-i-103, compsuite-i-37, compsuite-i-80.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation"
+      ],
+      "links": {},
+      "expected": "Each original expectation has a concrete reproducer result or a specific unverified operation. A passing wrapper with no named test remains unavailable.",
+      "submitted": {
+        "at": "2026-11-21T05:12:25+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "100m"
+      },
+      "steps": [
+        {
+          "name": "Run original named test on both revisions",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --focused --output verification/external-upgrades/corpus-runs/focused-ci/04 --case compsuite-i-36 --case compsuite-i-103 --case compsuite-i-37 --case compsuite-i-80",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/focused-ci/04"
+      ]
+    }
+  },
+  "sourceCommit": "3d14ab86a7b18d40322ebeb50ac7220e01f7bd88",
+  "startedAt": "2026-11-21T05:20:57+00:00",
+  "finishedAt": "2026-11-21T05:22:38+00:00",
+  "wallSeconds": 101.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3911391,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 841359360,
+    "wallSeconds": 92.0,
+    "cpuSeconds": 132.5,
+    "memoryOfEstimate": 0.39,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run original named test on both revisions",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --focused --output verification/external-upgrades/corpus-runs/focused-ci/04 --case compsuite-i-36 --case compsuite-i-103 --case compsuite-i-37 --case compsuite-i-80",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 92.01,
+      "cpuSeconds": 132.497,
+      "cpuThrottledSeconds": 179.445,
+      "peakMemoryBytes": 841359360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-original-named-test-on-bot.log",
+        "lines": 8,
+        "bytes": 283,
+        "sha256": "9981e74786b4f1059c7d4230943ab9397ca52927b31d8bb695d22d4e4c9e5edb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-36 old passed 1",
+        "compsuite-i-36 new tests or lifecycle failed 1",
+        "compsuite-i-103 old passed 1",
+        "compsuite-i-103 new tests or lifecycle failed 1",
+        "compsuite-i-37 old passed 1",
+        "compsuite-i-37 new passed 1",
+        "compsuite-i-80 old passed 1",
+        "compsuite-i-80 new tests or lifecycle failed 1"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/maven-tail.txt",
+      "change": "added",
+      "bytes": 2553,
+      "sha256": "57d5d0bfee055fb7953e42bd008ab269895e66e9dacb28fb9d30efeaa412f6a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/summary.json",
+      "change": "added",
+      "bytes": 2391,
+      "sha256": "3da52bf3f7138d31ba778fc6b06758c584ddaad5ef39bdfa68e31c15a2c814d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/testcases/3b2804ab057d.xml.gz",
+      "change": "added",
+      "bytes": 2636,
+      "sha256": "18e560b31abb20a07ad40efbbdb6e6a48c596df61803f7392e74d0414fb480a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/maven-tail.txt",
+      "change": "added",
+      "bytes": 5129,
+      "sha256": "11fbbe57daa0ce0e19ea3b5bf13520158602eff239cd90b41323049703a9442b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/summary.json",
+      "change": "added",
+      "bytes": 1514,
+      "sha256": "d59e9b11155349ec1fb1033cd30b4548035f201aa0d55585babb16730039e4a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/testcases/3b2804ab057d.xml.gz",
+      "change": "added",
+      "bytes": 1411,
+      "sha256": "09b085ca1ece1cc70e5fb2f0c079a0a93c9971a5a3f070ff692d1113491d28c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/maven-tail.txt",
+      "change": "added",
+      "bytes": 2616,
+      "sha256": "db6ab4569e4a34823d98e3062e8bc916cc66f7336344bdde748b8a686ba4c676",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/summary.json",
+      "change": "added",
+      "bytes": 2372,
+      "sha256": "6bdfba8069f688d6b8b95b87ba5581ed934a50b28bcb4e926a1c9fdfa50ac169",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/testcases/32a57423836e.xml.gz",
+      "change": "added",
+      "bytes": 2028,
+      "sha256": "eadc04b54b04609bc67c7b934c143910e5f0d5a6670d9edb226aaaf8b0678554",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/maven-tail.txt",
+      "change": "added",
+      "bytes": 1525,
+      "sha256": "16ecc1f5f30bd529f0a4a07d16e65b684ce48d23f1cae33a60d91b01b857aa20",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/summary.json",
+      "change": "added",
+      "bytes": 1554,
+      "sha256": "c17f7e3a2bd8ce95ab4f0a6f0ad5678274a733fe9cff329ecbc757a04b73f2b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/testcases/32a57423836e.xml.gz",
+      "change": "added",
+      "bytes": 1386,
+      "sha256": "e8e9290a47c96774a9b301fbd3c59802f818595fa93c4b9b3d53911d07e7a58a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/maven-tail.txt",
+      "change": "added",
+      "bytes": 2152,
+      "sha256": "1712432d779197e87a021ff79ca813c348958f3736bdd3cfded9071af4db599d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/summary.json",
+      "change": "added",
+      "bytes": 1435,
+      "sha256": "1f17b4577162d49d24e9ea839e014a4e32d1e2d8cf2afd6423a78b08549c8b95",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/testcases/20d0b16c59d4.xml.gz",
+      "change": "added",
+      "bytes": 1393,
+      "sha256": "b00aa4d254c6680cb135a1c6c7cc61d4d2384da4b63ea4f204f69d9bbf142dcb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/maven-tail.txt",
+      "change": "added",
+      "bytes": 2152,
+      "sha256": "130a72f30bc4277b756e5d575a4f15443d99782d9a9c235216dad23bd5c4bd39",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/summary.json",
+      "change": "added",
+      "bytes": 1435,
+      "sha256": "60438f7d6ca6dd4af79ae3755e2813d94df06b8ea9089ba1811825677ae8431a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/testcases/20d0b16c59d4.xml.gz",
+      "change": "added",
+      "bytes": 1394,
+      "sha256": "c0e860e4d2ae883e30da3a02959b0734533adba2c41bc1be8ab84af251e04b19",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/maven-tail.txt",
+      "change": "added",
+      "bytes": 2859,
+      "sha256": "f4ca7064a28495c16fe3475e9a8e41ce2f28b1127db2fa0308c3af6fffbc22b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/summary.json",
+      "change": "added",
+      "bytes": 2163,
+      "sha256": "684201607af2561c359565daa4cc88f17427b1a41f7dadd2fa50c7265ca762ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/testcases/fa79beaac13e.xml.gz",
+      "change": "added",
+      "bytes": 2247,
+      "sha256": "4946de6db104073957b88eaa7cc4773f2953fcb80677bd7d51a1e1d53ea3e099",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/maven-tail.txt",
+      "change": "added",
+      "bytes": 1330,
+      "sha256": "dde4769ba2186e045d71a463ba13b24d680b43cc1c2aff9e88bea147b0f8b41a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/summary.json",
+      "change": "added",
+      "bytes": 1386,
+      "sha256": "1357e5c7d8900d78b4104e3b15d7f56602840017fa092bdd2f687f2822ac5412",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/testcases/fa79beaac13e.xml.gz",
+      "change": "added",
+      "bytes": 1381,
+      "sha256": "e3203a53a9a7152d1754e1347229b22ea94ce41534d80fd59b9f74290e2bf99c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T05:25:19+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/summary.json",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/testcases/3b2804ab057d.xml.gz",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/summary.json",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/testcases/3b2804ab057d.xml.gz",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/summary.json",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/testcases/32a57423836e.xml.gz",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/summary.json",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/testcases/32a57423836e.xml.gz",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/summary.json",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/testcases/20d0b16c59d4.xml.gz",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/summary.json",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/testcases/20d0b16c59d4.xml.gz",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/summary.json",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/testcases/fa79beaac13e.xml.gz",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/maven-tail.txt",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/summary.json",
+      "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/testcases/fa79beaac13e.xml.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

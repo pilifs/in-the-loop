@@ -1,0 +1,835 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-4/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.476 sec <<< FAILURE! - in com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest
++testGetFactoryFromRegistry(com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest)  Time elapsed: 0.409 sec  <<< ERROR!
++java.lang.ExceptionInInitializerError
++	at com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest.setUp(DefaultConfigFactoryManagerTest.java:24)
++Caused by: com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Guice Injector!
++	at com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest.setUp(DefaultConfigFactoryManagerTest.java:24)
++Caused by: java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
++	at com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest.setUp(DefaultConfigFactoryManagerTest.java:24)
++
++
++Results :
++
++Tests in error: 
++  DefaultConfigFactoryManagerTest.setUp:24 ExceptionInInitializer
++
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Apollo 1.4.0:
++[INFO] 
++[INFO] Apollo ............................................. SUCCESS [  1.283 s]
++[INFO] Apollo Core ........................................ SUCCESS [  4.862 s]
++[INFO] Apollo Client ...................................... FAILURE [  5.666 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  13.016 s
++[INFO] Finished at: 2026-11-21T05:22:24Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.19.1:test (default-test) on project apollo-client: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/apollo-client/target/surefire-reports for the individual test results.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :apollo-client
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-4/new/summary.json
+@@ -0,0 +1,67 @@
++{
++  "revision": "b494d596132961f8f6dc7f229a1d0e4919da151b",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "4db9f6f0c2ab47c0196581e3f0cdf073fab0bd6e700b2de8a83b5b8d52b5217a",
++      "mavenCommandLines": [
++        "- mvn clean test jacoco:report coveralls:report"
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "apollo-client",
++  "goals": [
++    "-pl",
++    "apollo-client",
++    "-am",
++    "-Dtest=DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 1132
++  },
++  "exit": 1,
++  "seconds": 14.61,
++  "logSha256": "99a9abcd34f085177d15f2d70d0be2a1ead47af9a6032d6b2d4c65ba325c7e2b",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 1,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest",
++        "method": "testGetFactoryFromRegistry",
++        "outcome": "error",
++        "type": "java.lang.ExceptionInInitializerError",
++        "message": ""
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest",
++        "method": "testGetFactoryFromRegistry",
++        "outcome": "error",
++        "type": "java.lang.ExceptionInInitializerError",
++        "message": ""
++      }
++    ],
++    "reportCount": 1,
++    "reportsSha256": "a95b6112947d0d0e3b4b30ebe2ba874ab2ac7f55709999e152d4dae8bb514935"
++  },
++  "diagnostic": [
++    "java.lang.ExceptionInInitializerError",
++    "Caused by: com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Guice Injector!",
++    "Caused by: java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V",
++    "Tests in error:",
++    "DefaultConfigFactoryManagerTest.setUp:24 ExceptionInInitializer"
++  ],
++  "namedTest": "DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-4/new/testcases/2fceb64ece36.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-4/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:148)
++	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:117)
++	at org.apache.maven.lifecycle.internal.builder.multithreaded.MultiThreadedBuilder$1.call(MultiThreadedBuilder.java:190)
++	at org.apache.maven.lifecycle.internal.builder.multithreaded.MultiThreadedBuilder$1.call(MultiThreadedBuilder.java:186)
++	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
++	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
++	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
++	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
++	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
++	at java.lang.Thread.run(Thread.java:750)
++Caused by: org.eclipse.jgit.errors.RevWalkException: Walk failure.
++	at org.eclipse.jgit.revwalk.RevWalk.iterator(RevWalk.java:1325)
++	at pl.project13.jgit.JGitCommon.findCommitsUntilSomeTag(JGitCommon.java:274)
++	... 21 more
++Caused by: org.eclipse.jgit.errors.MissingObjectException: Missing commit 537c82b11ea9022b1f094e667a4d66eb63d20976
++	at org.eclipse.jgit.internal.storage.file.WindowCursor.open(WindowCursor.java:147)
++	at org.eclipse.jgit.revwalk.RevWalk.getCachedBytes(RevWalk.java:903)
++	at org.eclipse.jgit.revwalk.RevCommit.parseHeaders(RevCommit.java:150)
++	at org.eclipse.jgit.revwalk.PendingGenerator.next(PendingGenerator.java:147)
++	at org.eclipse.jgit.revwalk.StartGenerator.next(StartGenerator.java:184)
++	at org.eclipse.jgit.revwalk.RevWalk.next(RevWalk.java:435)
++	at org.eclipse.jgit.revwalk.RevWalk.iterator(RevWalk.java:1323)
++	... 22 more
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Apollo 1.4.0:
++[INFO] 
++[INFO] Apollo ............................................. SUCCESS [  1.204 s]
++[INFO] Apollo Core ........................................ FAILURE [  1.102 s]
++[INFO] Apollo Client ...................................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  3.578 s
++[INFO] Finished at: 2026-11-21T05:22:09Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal pl.project13.maven:git-commit-id-plugin:2.2.0:revision (default) on project apollo-core: Could not complete Mojo execution...: Unable to find commits until some tag: Walk failure. Missing commit 537c82b11ea9022b1f094e667a4d66eb63d20976 -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :apollo-core
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-4/old/summary.json
+@@ -0,0 +1,51 @@
++{
++  "revision": "6b0a06a4682e8171cc17f5f61ccc8d87f6871b6d",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "4db9f6f0c2ab47c0196581e3f0cdf073fab0bd6e700b2de8a83b5b8d52b5217a",
++      "mavenCommandLines": [
++        "- mvn clean test jacoco:report coveralls:report"
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "apollo-client",
++  "goals": [
++    "-pl",
++    "apollo-client",
++    "-am",
++    "-Dtest=DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 576
++  },
++  "exit": 1,
++  "seconds": 5.0,
++  "logSha256": "ed67d1067d0c43cb5f82753498ebb4b220bc841ae0727187cf828f862fdec65a",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "java.lang.RuntimeException: Unable to find commits until some tag",
++    "Caused by: org.eclipse.jgit.errors.RevWalkException: Walk failure.",
++    "Caused by: org.eclipse.jgit.errors.MissingObjectException: Missing commit 537c82b11ea9022b1f094e667a4d66eb63d20976",
++    "[ERROR] Failed to execute goal pl.project13.maven:git-commit-id-plugin:2.2.0:revision (default) on project apollo-core: Could not complete Mojo execution...: Unable to find commits until some tag: Walk failure. Missing commit 537c82b11ea9022b1f094e667a4d66eb63d20976 -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException"
++  ],
++  "namedTest": "DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-62/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:124)
++	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
++	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
++	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
++	at java.lang.reflect.Method.invoke(Method.java:498)
++	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray2(ReflectionUtils.java:208)
++	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:159)
++	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:87)
++	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:153)
++	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:95)
++
++
++Results :
++
++Tests in error: 
++   » IllegalState Failed to load ApplicationContext
++
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for fluent-validator-parent 1.0.6-SNAPSHOT:
++[INFO] 
++[INFO] fluent-validator-parent ............................ SUCCESS [  1.862 s]
++[INFO] fluent-validator ................................... SUCCESS [  3.662 s]
++[INFO] fluent-validator-jsr303 ............................ SUCCESS [  0.484 s]
++[INFO] fluent-validator-spring ............................ FAILURE [  5.163 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  11.294 s
++[INFO] Finished at: 2026-11-21T05:22:50Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.14.1:test (default-test) on project fluent-validator-spring: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/fluent-validator-spring/target/surefire-reports for the individual test results.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :fluent-validator-spring
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-62/new/summary.json
+@@ -0,0 +1,65 @@
++{
++  "revision": "a7daf452b1db8a548d67b64d030d7d04f862b016",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "680f607b1a4b9e5d088185827cdc7be420b145a6d232e89c7a4a1c0573b0cf7b",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "fluent-validator-spring",
++  "goals": [
++    "-pl",
++    "fluent-validator-spring",
++    "-am",
++    "-Dtest=FluentValidateInterceptorTest#testAddCarsExcludeGroupsIgnore",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 924
++  },
++  "exit": 1,
++  "seconds": 12.79,
++  "logSha256": "cb07348c4a191304ed53a30cf67ea4ae5a0ccc2fab511ca7830c4e3ce2697c52",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 1,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptorTest",
++        "method": "testAddCarsExcludeGroupsIgnore",
++        "outcome": "error",
++        "type": "java.lang.IllegalStateException",
++        "message": "Failed to load ApplicationContext"
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptorTest",
++        "method": "testAddCarsExcludeGroupsIgnore",
++        "outcome": "error",
++        "type": "java.lang.IllegalStateException",
++        "message": "Failed to load ApplicationContext"
++      }
++    ],
++    "reportCount": 1,
++    "reportsSha256": "efe0b3feaada5d0bb3053604c3aa2f12bd7577088e5718da41f20a68a9853b49"
++  },
++  "diagnostic": [
++    "[INFO]\t2026-11-21 05:22:47,550\t[main]\tcontext.support.DefaultTestContextBootstrapper\t(AbstractTestContextBootstrapper.java:204)\t-Could not instantiate TestExecutionListener [org.springframework.test.context.web.ServletTestExecutionListener]. Specify custom listener classes or make the default listener classes (and their required dependencies) available. Offending class: [javax/servlet/ServletContext]",
++    "[WARN]\t2026-11-21 05:22:49,988\t[main]\tcontext.support.GenericApplicationContext\t(AbstractApplicationContext.java:487)\t-Exception encountered during context initialization - cancelling refresh attempt",
++    "org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'carServiceImpl' defined in file [/project/fluent-validator-spring/target/test-classes/com/baidu/unbiz/fluentvalidator/service/impl/CarServiceImpl.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'fluentValidateInterceptor' defined in URL [file:/project/fluent-validator-spring/target/test-classes/applicationContext.xml]: Invocation of init method failed; nested exception is java.lang.NoClassDefFoundError: javax/el/ELManager",
++    "Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'fluentValidateInterceptor' defined in URL [file:/project/fluent-validator-spring/target/test-classes/applicationContext.xml]: Invocation of init method failed; nested exception is java.lang.NoClassDefFoundError: javax/el/ELManager",
++    "Caused by: java.lang.NoClassDefFoundError: javax/el/ELManager"
++  ],
++  "namedTest": "FluentValidateInterceptorTest#testAddCarsExcludeGroupsIgnore",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-62/new/testcases/0e9c159b9073.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-62/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO]	2026-11-21 05:22:36,942	[main]	fluentvalidator.support.MessageSupport	(MessageSupport.java:79)	-MessageSupport has been initialized properly
++[INFO]	2026-11-21 05:22:37,078	[main]	export.annotation.AnnotationMBeanExporter	(MBeanExporter.java:431)	-Registering beans for JMX exposure on startup
++[DEBUG]	2026-11-21 05:22:37,098	[main]	fluentvalidator.interceptor.FluentValidateInterceptor	(FluentValidateInterceptor.java:150)	-Find @FluentValid annotation on index[0] parameter and ready to validate for method public java.util.List com.baidu.unbiz.fluentvalidator.service.impl.CarServiceImpl.addCarsWithExcludeGroups(java.util.List)
++[DEBUG]	2026-11-21 05:22:37,102	[main]	unbiz.fluentvalidator.FluentValidator	(FluentValidator.java:436)	-Total 3 of Car@HibernateSupportedValidator will be performed
++[INFO]	2026-11-21 05:22:37,106	[main]	unbiz.fluentvalidator.AnnotationValidatorCache	(AnnotationValidatorCache.java:142)	-Cached validator CarManufacturerValidator
++[INFO]	2026-11-21 05:22:37,106	[main]	unbiz.fluentvalidator.AnnotationValidatorCache	(AnnotationValidatorCache.java:142)	-Cached validator CarLicensePlateValidator
++[WARN]	2026-11-21 05:22:37,106	[main]	registry.impl.SpringApplicationContextRegistry	(SpringApplicationContextRegistry.java:44)	-Not found from Spring IoC container for CarSeatCountValidator, and try to init by calling newInstance.
++[INFO]	2026-11-21 05:22:37,107	[main]	unbiz.fluentvalidator.AnnotationValidatorCache	(AnnotationValidatorCache.java:142)	-Cached validator CarSeatCountValidator
++[DEBUG]	2026-11-21 05:22:37,107	[main]	unbiz.fluentvalidator.AnnotationValidatorCache	(AnnotationValidatorCache.java:87)	-Annotation-based validation added for Car, and to-do validators are [AnnotationValidator{field=private java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.manufacturer, method=public java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.getManufacturer(), groups=[], isCascade=false, validators=[CarManufacturerValidator]}, AnnotationValidator{field=private java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.licensePlate, method=public java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.getLicensePlate(), groups=[interface com.baidu.unbiz.fluentvalidator.groups.Add], isCascade=false, validators=[CarLicensePlateValidator]}, AnnotationValidator{field=private int com.baidu.unbiz.fluentvalidator.dto.Car.seatCount, method=public int com.baidu.unbiz.fluentvalidator.dto.Car.getSeatCount(), groups=[], isCascade=false, validators=[CarSeatCountValidator]}]
++[DEBUG]	2026-11-21 05:22:37,108	[main]	unbiz.fluentvalidator.FluentValidator	(FluentValidator.java:305)	-Current groups: [interface com.baidu.unbiz.fluentvalidator.groups.Add] will be ignored because you specify AnnotationValidator{field=private java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.licensePlate, method=public java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.getLicensePlate(), groups=[interface com.baidu.unbiz.fluentvalidator.groups.Add], isCascade=false, validators=[CarLicensePlateValidator]}
++[DEBUG]	2026-11-21 05:22:37,109	[main]	unbiz.fluentvalidator.FluentValidator	(FluentValidator.java:305)	-Current groups: [interface com.baidu.unbiz.fluentvalidator.groups.Add] will be ignored because you specify AnnotationValidator{field=private java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.licensePlate, method=public java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.getLicensePlate(), groups=[interface com.baidu.unbiz.fluentvalidator.groups.Add], isCascade=false, validators=[CarLicensePlateValidator]}
++[DEBUG]	2026-11-21 05:22:37,109	[main]	unbiz.fluentvalidator.FluentValidator	(FluentValidator.java:305)	-Current groups: [interface com.baidu.unbiz.fluentvalidator.groups.Add] will be ignored because you specify AnnotationValidator{field=private java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.licensePlate, method=public java.lang.String com.baidu.unbiz.fluentvalidator.dto.Car.getLicensePlate(), groups=[interface com.baidu.unbiz.fluentvalidator.groups.Add], isCascade=false, validators=[CarLicensePlateValidator]}
++[DEBUG]	2026-11-21 05:22:37,109	[main]	unbiz.fluentvalidator.FluentValidator	(FluentValidator.java:265)	-Total 3 of [Car#manufacturer@CarManufacturerValidator, Car#seatCount@CarSeatCountValidator] will be performed
++[DEBUG]	2026-11-21 05:22:37,140	[main]	unbiz.fluentvalidator.FluentValidator	(FluentValidator.java:481)	-Start to validate through [Total 3 of Car@HibernateSupportedValidator]->[[Car#manufacturer@CarManufacturerValidator, Car#seatCount@CarSeatCountValidator]]->[[Car#manufacturer@CarManufacturerValidator, Car#seatCount@CarSeatCountValidator]]->[[Car#manufacturer@CarManufacturerValidator, Car#seatCount@CarSeatCountValidator]]->NULL
++[INFO]	2026-11-21 05:22:37,199	[main]	rpc.impl.ManufacturerServiceImpl	(ManufacturerServiceImpl.java:20)	-Get all manufacturers
++[INFO]	2026-11-21 05:22:37,200	[main]	rpc.impl.ManufacturerServiceImpl	(ManufacturerServiceImpl.java:20)	-Get all manufacturers
++[INFO]	2026-11-21 05:22:37,202	[main]	rpc.impl.ManufacturerServiceImpl	(ManufacturerServiceImpl.java:20)	-Get all manufacturers
++Everything works fine!
++[DEBUG]	2026-11-21 05:22:37,204	[main]	unbiz.fluentvalidator.FluentValidator	(FluentValidator.java:523)	-End to validate through[Total 3 of Car@HibernateSupportedValidator]->[[Car#manufacturer@CarManufacturerValidator, Car#seatCount@CarSeatCountValidator]]->[[Car#manufacturer@CarManufacturerValidator, Car#seatCount@CarSeatCountValidator]]->[[Car#manufacturer@CarManufacturerValidator, Car#seatCount@CarSeatCountValidator]]->NULL costing 63ms with isSuccess=true
++[DEBUG]	2026-11-21 05:22:37,206	[main]	fluentvalidator.interceptor.FluentValidateInterceptor	(FluentValidateInterceptor.java:202)	-Result{isSuccess=true, errors=null, timeElapsedInMillis=63}
++here we enter aspectJ interceptor
++[[Car{licensePlate='BEIJING', manufacturer='BMW', seatCount=5}, Car{licensePlate='NYCuuu', manufacturer='Benz', seatCount=2}, Car{licensePlate='LA1234', manufacturer='Chevrolet', seatCount=7}]]
++List com.baidu.unbiz.fluentvalidator.service.impl.CarServiceImpl.addCarsWithExcludeGroups(List)
++Come on! [Car{licensePlate='BEIJING', manufacturer='BMW', seatCount=5}, Car{licensePlate='NYCuuu', manufacturer='Benz', seatCount=2}, Car{licensePlate='LA1234', manufacturer='Chevrolet', seatCount=7}]
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.273 sec
++[INFO]	2026-11-21 05:22:37,223	[Thread-2]	context.support.GenericApplicationContext	(AbstractApplicationContext.java:862)	-Closing org.springframework.context.support.GenericApplicationContext@4ec4f3a0: startup date [Sat Nov 21 05:22:35 UTC 2026]; root of context hierarchy
++[INFO]	2026-11-21 05:22:37,240	[Thread-2]	export.annotation.AnnotationMBeanExporter	(MBeanExporter.java:449)	-Unregistering JMX-exposed beans on shutdown
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for fluent-validator-parent 1.0.6-SNAPSHOT:
++[INFO] 
++[INFO] fluent-validator-parent ............................ SUCCESS [  2.109 s]
++[INFO] fluent-validator ................................... SUCCESS [  3.397 s]
++[INFO] fluent-validator-jsr303 ............................ SUCCESS [  0.495 s]
++[INFO] fluent-validator-spring ............................ SUCCESS [  5.341 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  11.450 s
++[INFO] Finished at: 2026-11-21T05:22:37Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-62/old/summary.json
+@@ -0,0 +1,48 @@
++{
++  "revision": "28119f2ae62ff9101e874a70a87baa639ecc681b",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "680f607b1a4b9e5d088185827cdc7be420b145a6d232e89c7a4a1c0573b0cf7b",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "fluent-validator-spring",
++  "goals": [
++    "-pl",
++    "fluent-validator-spring",
++    "-am",
++    "-Dtest=FluentValidateInterceptorTest#testAddCarsExcludeGroupsIgnore",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 916
++  },
++  "exit": 0,
++  "seconds": 12.97,
++  "logSha256": "4ef947f11313c4ba262ad5ac28bcc0752ce377cfecf8ec25eb82732e3cf14c7f",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptorTest",
++        "method": "testAddCarsExcludeGroupsIgnore",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "e846af5be9ebaac534804a2ed0cda394e61aae5ce74c0ee4662d15f602c1ef1f"
++  },
++  "namedTest": "FluentValidateInterceptorTest#testAddCarsExcludeGroupsIgnore",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-62/old/testcases/0e9c159b9073.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-85/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1243)
++	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:60)
++	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:343)
++	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:319)
++	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1637)
++	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1574)
++	... 46 more
++Caused by: org.hibernate.NotYetImplementedFor6Exception: org.hibernate.persister.entity.AbstractEntityPersister
++	at org.hibernate.persister.entity.AbstractEntityPersister.generateVersionMapping(AbstractEntityPersister.java:5947)
++	at org.hibernate.persister.entity.AbstractEntityPersister.lambda$prepareMappingModel$3(AbstractEntityPersister.java:5714)
++	at org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess.processSubPart(MappingModelCreationProcess.java:96)
++	at org.hibernate.persister.entity.AbstractEntityPersister.prepareMappingModel(AbstractEntityPersister.java:5712)
++	at org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess.execute(MappingModelCreationProcess.java:66)
++	at org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess.process(MappingModelCreationProcess.java:31)
++	at org.hibernate.metamodel.model.domain.internal.MappingMetamodelImpl.finishInitialization(MappingMetamodelImpl.java:208)
++	at org.hibernate.metamodel.internal.RuntimeMetamodelsImpl.finishInitialization(RuntimeMetamodelsImpl.java:47)
++	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:304)
++	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:453)
++	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1240)
++	... 51 more
++
++
++Results :
++
++Tests in error: 
++  canNotPurchaseIfOfferChanged(pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest): Failed to load ApplicationContext
++
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  9.245 s
++[INFO] Finished at: 2026-11-21T05:21:25Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project ddd-sample-2: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/target/surefire-reports for the individual test results.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-85/new/summary.json
+@@ -0,0 +1,57 @@
++{
++  "revision": "f500f1ea3c84932963cdf847fea48a98f2f492d0",
++  "historicalCiFiles": {},
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": ".",
++  "goals": [
++    "-Dtest=OrderingTest#canNotPurchaseIfOfferChanged",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 638
++  },
++  "exit": 1,
++  "seconds": 10.44,
++  "logSha256": "4315c4b2e102f56efba575ab608309a2b441ff0101a6cab0088b986e4dacab9c",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 1,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
++        "method": "canNotPurchaseIfOfferChanged",
++        "outcome": "error",
++        "type": "java.lang.IllegalStateException",
++        "message": "Failed to load ApplicationContext"
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
++        "method": "canNotPurchaseIfOfferChanged",
++        "outcome": "error",
++        "type": "java.lang.IllegalStateException",
++        "message": "Failed to load ApplicationContext"
++      }
++    ],
++    "reportCount": 1,
++    "reportsSha256": "234ae56da0fd5c8cec872784e47b2ded6a4c15c4034e3dcbf7e077bf1b079575"
++  },
++  "diagnostic": [
++    "[2026-11-21 05:21:25,882] WARN  1275[main] - org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:546) - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [configurationContext.xml]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory",
++    "[2026-11-21 05:21:25,884]ERROR  1277[main] - org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:231) - Caught exception while allowing TestExecutionListener [org.springframework.test.context.support.DependencyInjectionTestExecutionListener@6cd64ee8] to prepare test instance [pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest@620c8641]",
++    "java.lang.IllegalStateException: Failed to load ApplicationContext",
++    "Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [configurationContext.xml]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory",
++    "Caused by: javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory"
++  ],
++  "namedTest": "OrderingTest#canNotPurchaseIfOfferChanged",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-85/new/testcases/16946fe36992.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-85/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++Hibernate: select reservatio0_.aggregateId as aggregat1_9_0_, reservatio0_.aggregateStatus as aggregat2_9_0_, reservatio0_.version as version3_9_0_, reservatio0_.clientId as clientId4_9_0_, reservatio0_.name as name5_9_0_, reservatio0_.createDate as createDa6_9_0_, reservatio0_.status as status7_9_0_ from Reservation reservatio0_ where reservatio0_.aggregateId=?
++Hibernate: select items0_.reservation as reservat4_9_2_, items0_.entityId as entityId1_10_2_, items0_.entityId as entityId1_10_1_, items0_.product_aggregateId as product3_10_1_, items0_.quantity as quantity2_10_1_, product1_.aggregateId as aggregat1_6_0_, product1_.aggregateStatus as aggregat2_6_0_, product1_.version as version3_6_0_, product1_.name as name4_6_0_, product1_.currencyCode as currency5_6_0_, product1_.denomination as denomina6_6_0_, product1_.productType as productT7_6_0_ from ReservationItem items0_ left outer join Product product1_ on items0_.product_aggregateId=product1_.aggregateId where items0_.reservation=?
++Hibernate: select product0_.aggregateId as aggregat1_6_0_, product0_.aggregateStatus as aggregat2_6_0_, product0_.version as version3_6_0_, product0_.name as name4_6_0_, product0_.currencyCode as currency5_6_0_, product0_.denomination as denomina6_6_0_, product0_.productType as productT7_6_0_ from Product product0_ where product0_.aggregateId=?
++Hibernate: insert into ReservationItem (entityId, product_aggregateId, quantity) values (default, ?, ?)
++[2026-11-21 05:21:15,072] WARN  1474[main] - org.hibernate.engine.jdbc.internal.JdbcCoordinatorImpl.release(JdbcCoordinatorImpl.java:423) - HHH000386: ResultSet had no statement associated with it, but was not yet registered
++Hibernate: update Reservation set aggregateStatus=?, version=?, clientId=?, name=?, createDate=?, status=? where aggregateId=? and version=?
++Hibernate: update ReservationItem set reservation=? where entityId=?
++Hibernate: select version from Reservation where aggregateId =?
++Hibernate: select version from Product where aggregateId =?
++Hibernate: update Reservation set version=? where aggregateId=? and version=?
++[2026-11-21 05:21:15,077]DEBUG  1479[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect.beginTransaction(HibernateExtendedJpaDialect.java:63) - Transaction started
++[2026-11-21 05:21:15,077]DEBUG  1479[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:68) - The connection instance is org.hsqldb.jdbc.JDBCConnection@49dbaaf3
++[2026-11-21 05:21:15,078]DEBUG  1480[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:69) - The isolation level of the connection is 2 and the isolation level set on the transaction is -1
++Hibernate: select reservatio0_.aggregateId as aggregat1_9_0_, reservatio0_.aggregateStatus as aggregat2_9_0_, reservatio0_.version as version3_9_0_, reservatio0_.clientId as clientId4_9_0_, reservatio0_.name as name5_9_0_, reservatio0_.createDate as createDa6_9_0_, reservatio0_.status as status7_9_0_ from Reservation reservatio0_ where reservatio0_.aggregateId=?
++Hibernate: select items0_.reservation as reservat4_9_2_, items0_.entityId as entityId1_10_2_, items0_.entityId as entityId1_10_1_, items0_.product_aggregateId as product3_10_1_, items0_.quantity as quantity2_10_1_, product1_.aggregateId as aggregat1_6_0_, product1_.aggregateStatus as aggregat2_6_0_, product1_.version as version3_6_0_, product1_.name as name4_6_0_, product1_.currencyCode as currency5_6_0_, product1_.denomination as denomina6_6_0_, product1_.productType as productT7_6_0_ from ReservationItem items0_ left outer join Product product1_ on items0_.product_aggregateId=product1_.aggregateId where items0_.reservation=?
++Hibernate: select client0_.aggregateId as aggregat1_0_0_, client0_.aggregateStatus as aggregat2_0_0_, client0_.version as version3_0_0_, client0_.name as name4_0_0_ from Client client0_ where client0_.aggregateId=?
++Hibernate: select version from Reservation where aggregateId =?
++Hibernate: select version from Client where aggregateId =?
++[2026-11-21 05:21:15,087]DEBUG  1489[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect.beginTransaction(HibernateExtendedJpaDialect.java:63) - Transaction started
++[2026-11-21 05:21:15,088]DEBUG  1490[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:68) - The connection instance is org.hsqldb.jdbc.JDBCConnection@24fabd0f
++[2026-11-21 05:21:15,088]DEBUG  1490[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:69) - The isolation level of the connection is 2 and the isolation level set on the transaction is -1
++Hibernate: select reservatio0_.aggregateId as aggregat1_9_0_, reservatio0_.aggregateStatus as aggregat2_9_0_, reservatio0_.version as version3_9_0_, reservatio0_.clientId as clientId4_9_0_, reservatio0_.name as name5_9_0_, reservatio0_.createDate as createDa6_9_0_, reservatio0_.status as status7_9_0_ from Reservation reservatio0_ where reservatio0_.aggregateId=?
++Hibernate: select items0_.reservation as reservat4_9_2_, items0_.entityId as entityId1_10_2_, items0_.entityId as entityId1_10_1_, items0_.product_aggregateId as product3_10_1_, items0_.quantity as quantity2_10_1_, product1_.aggregateId as aggregat1_6_0_, product1_.aggregateStatus as aggregat2_6_0_, product1_.version as version3_6_0_, product1_.name as name4_6_0_, product1_.currencyCode as currency5_6_0_, product1_.denomination as denomina6_6_0_, product1_.productType as productT7_6_0_ from ReservationItem items0_ left outer join Product product1_ on items0_.product_aggregateId=product1_.aggregateId where items0_.reservation=?
++Hibernate: update ReservationItem set product_aggregateId=?, quantity=? where entityId=?
++Hibernate: select version from Reservation where aggregateId =?
++Hibernate: select version from Product where aggregateId =?
++Hibernate: update Reservation set version=? where aggregateId=? and version=?
++[2026-11-21 05:21:15,094]DEBUG  1496[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect.beginTransaction(HibernateExtendedJpaDialect.java:63) - Transaction started
++[2026-11-21 05:21:15,094]DEBUG  1496[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:68) - The connection instance is org.hsqldb.jdbc.JDBCConnection@71870da7
++[2026-11-21 05:21:15,094]DEBUG  1496[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:69) - The isolation level of the connection is 2 and the isolation level set on the transaction is 8
++Hibernate: select reservatio0_.aggregateId as aggregat1_9_0_, reservatio0_.aggregateStatus as aggregat2_9_0_, reservatio0_.version as version3_9_0_, reservatio0_.clientId as clientId4_9_0_, reservatio0_.name as name5_9_0_, reservatio0_.createDate as createDa6_9_0_, reservatio0_.status as status7_9_0_ from Reservation reservatio0_ where reservatio0_.aggregateId=?
++Hibernate: select items0_.reservation as reservat4_9_2_, items0_.entityId as entityId1_10_2_, items0_.entityId as entityId1_10_1_, items0_.product_aggregateId as product3_10_1_, items0_.quantity as quantity2_10_1_, product1_.aggregateId as aggregat1_6_0_, product1_.aggregateStatus as aggregat2_6_0_, product1_.version as version3_6_0_, product1_.name as name4_6_0_, product1_.currencyCode as currency5_6_0_, product1_.denomination as denomina6_6_0_, product1_.productType as productT7_6_0_ from ReservationItem items0_ left outer join Product product1_ on items0_.product_aggregateId=product1_.aggregateId where items0_.reservation=?
++Hibernate: select client0_.aggregateId as aggregat1_0_0_, client0_.aggregateStatus as aggregat2_0_0_, client0_.version as version3_0_0_, client0_.name as name4_0_0_ from Client client0_ where client0_.aggregateId=?
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.305 sec
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  7.891 s
++[INFO] Finished at: 2026-11-21T05:21:15Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-85/old/summary.json
+@@ -0,0 +1,40 @@
++{
++  "revision": "a1a0cf597e430cf58afe627cd5a724fa33665d2e",
++  "historicalCiFiles": {},
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": ".",
++  "goals": [
++    "-Dtest=OrderingTest#canNotPurchaseIfOfferChanged",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 508
++  },
++  "exit": 0,
++  "seconds": 9.35,
++  "logSha256": "a6e491416c19719928f7e6efb9f95cae1d4e1690ddaacc704b19722131d54c7b",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
++        "method": "canNotPurchaseIfOfferChanged",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "df4e33ff5e10c75d637868cb5b98ea2e759c07b5e56a14901f4e562c7157a328"
++  },
++  "namedTest": "OrderingTest#canNotPurchaseIfOfferChanged",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-85/old/testcases/16946fe36992.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-9/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] French module for LanguageTool ..................... SKIPPED
++[INFO] German module for LanguageTool ..................... SKIPPED
++[INFO] Polish module for LanguageTool ..................... SKIPPED
++[INFO] Catalan module for LanguageTool .................... SKIPPED
++[INFO] Italian module for LanguageTool .................... SKIPPED
++[INFO] Breton module for LanguageTool ..................... SKIPPED
++[INFO] Dutch module for LanguageTool ...................... SKIPPED
++[INFO] Portuguese module for LanguageTool ................. SKIPPED
++[INFO] Russian module for LanguageTool .................... SKIPPED
++[INFO] Asturian module for LanguageTool ................... SKIPPED
++[INFO] Belarusian module for LanguageTool ................. SKIPPED
++[INFO] Chinese module for LanguageTool .................... SKIPPED
++[INFO] Danish module for LanguageTool ..................... SKIPPED
++[INFO] Esperanto module for LanguageTool .................. SKIPPED
++[INFO] Galician module for LanguageTool ................... SKIPPED
++[INFO] Greek module for LanguageTool ...................... SKIPPED
++[INFO] Japanese module for LanguageTool ................... SKIPPED
++[INFO] Khmer module for LanguageTool ...................... SKIPPED
++[INFO] Romanian module for LanguageTool ................... SKIPPED
++[INFO] Slovak module for LanguageTool ..................... SKIPPED
++[INFO] Slovenian module for LanguageTool .................. SKIPPED
++[INFO] Spanish module for LanguageTool .................... SKIPPED
++[INFO] Swedish module for LanguageTool .................... SKIPPED
++[INFO] Tamil module for LanguageTool ...................... SKIPPED
++[INFO] Tagalog module for LanguageTool .................... SKIPPED
++[INFO] Ukrainian module for LanguageTool .................. SKIPPED
++[INFO] Simple German module for LanguageTool .............. SKIPPED
++[INFO] All language modules for LanguageTool .............. SKIPPED
++[INFO] LanguageTool Wikipedia tools ....................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  6.026 s
++[INFO] Finished at: 2026-11-21T05:22:04Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal on project languagetool-core: Could not resolve dependencies for project org.languagetool:languagetool-core:jar:4.6: Could not find artifact biz.k11i:xgboost-predictor:jar:0.3.0 in isolated-central (http://127.0.0.1:35257/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :languagetool-core
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-9/new/summary.json
+@@ -0,0 +1,47 @@
++{
++  "revision": "a63476d024688e9f28f02bd3d2a7660f6a4d75e2",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "7b4742e5eaf7592536a443d850f6d3998ab83f1e85b40013bde36a04c5977e6c",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "languagetool-wikipedia",
++  "goals": [
++    "-pl",
++    "languagetool-wikipedia",
++    "-am",
++    "-Dtest=MatchDatabaseTest#test",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 590,
++    "upstreamHttp404": 2
++  },
++  "exit": 1,
++  "seconds": 9.83,
++  "logSha256": "befc5413cf6ba3416aeb6494e1ca6856bcb2cbb5b3a0ebe13319afd6c283645a",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal on project languagetool-core: Could not resolve dependencies for project org.languagetool:languagetool-core:jar:4.6: Could not find artifact biz.k11i:xgboost-predictor:jar:0.3.0 in isolated-central (http://127.0.0.1:35257/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
++  ],
++  "namedTest": "MatchDatabaseTest#test",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-9/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] French module for LanguageTool ..................... SKIPPED
++[INFO] German module for LanguageTool ..................... SKIPPED
++[INFO] Polish module for LanguageTool ..................... SKIPPED
++[INFO] Catalan module for LanguageTool .................... SKIPPED
++[INFO] Italian module for LanguageTool .................... SKIPPED
++[INFO] Breton module for LanguageTool ..................... SKIPPED
++[INFO] Dutch module for LanguageTool ...................... SKIPPED
++[INFO] Portuguese module for LanguageTool ................. SKIPPED
++[INFO] Russian module for LanguageTool .................... SKIPPED
++[INFO] Asturian module for LanguageTool ................... SKIPPED
++[INFO] Belarusian module for LanguageTool ................. SKIPPED
++[INFO] Chinese module for LanguageTool .................... SKIPPED
++[INFO] Danish module for LanguageTool ..................... SKIPPED
++[INFO] Esperanto module for LanguageTool .................. SKIPPED
++[INFO] Galician module for LanguageTool ................... SKIPPED
++[INFO] Greek module for LanguageTool ...................... SKIPPED
++[INFO] Japanese module for LanguageTool ................... SKIPPED
++[INFO] Khmer module for LanguageTool ...................... SKIPPED
++[INFO] Romanian module for LanguageTool ................... SKIPPED
++[INFO] Slovak module for LanguageTool ..................... SKIPPED
++[INFO] Slovenian module for LanguageTool .................. SKIPPED
++[INFO] Spanish module for LanguageTool .................... SKIPPED
++[INFO] Swedish module for LanguageTool .................... SKIPPED
++[INFO] Tamil module for LanguageTool ...................... SKIPPED
++[INFO] Tagalog module for LanguageTool .................... SKIPPED
++[INFO] Ukrainian module for LanguageTool .................. SKIPPED
++[INFO] Simple German module for LanguageTool .............. SKIPPED
++[INFO] All language modules for LanguageTool .............. SKIPPED
++[INFO] LanguageTool Wikipedia tools ....................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  25.156 s
++[INFO] Finished at: 2026-11-21T05:21:54Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal on project languagetool-core: Could not resolve dependencies for project org.languagetool:languagetool-core:jar:4.6: Could not find artifact biz.k11i:xgboost-predictor:jar:0.3.0 in isolated-central (http://127.0.0.1:41735/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :languagetool-core
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-9/old/summary.json
+@@ -0,0 +1,47 @@
++{
++  "revision": "fe77e85a2f7b472ba71564821e7545025eeda242",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "7b4742e5eaf7592536a443d850f6d3998ab83f1e85b40013bde36a04c5977e6c",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "languagetool-wikipedia",
++  "goals": [
++    "-pl",
++    "languagetool-wikipedia",
++    "-am",
++    "-Dtest=MatchDatabaseTest#test",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 590,
++    "upstreamHttp404": 2
++  },
++  "exit": 1,
++  "seconds": 28.82,
++  "logSha256": "46732a479e853bba86439608b577ce31a76a093651b3d7ca88f9f1326ec19c5c",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal on project languagetool-core: Could not resolve dependencies for project org.languagetool:languagetool-core:jar:4.6: Could not find artifact biz.k11i:xgboost-predictor:jar:0.3.0 in isolated-central (http://127.0.0.1:41735/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
++  ],
++  "namedTest": "MatchDatabaseTest#test",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}

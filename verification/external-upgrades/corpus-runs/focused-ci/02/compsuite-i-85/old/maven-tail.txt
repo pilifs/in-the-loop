@@ -1,0 +1,45 @@
+Hibernate: select reservatio0_.aggregateId as aggregat1_9_0_, reservatio0_.aggregateStatus as aggregat2_9_0_, reservatio0_.version as version3_9_0_, reservatio0_.clientId as clientId4_9_0_, reservatio0_.name as name5_9_0_, reservatio0_.createDate as createDa6_9_0_, reservatio0_.status as status7_9_0_ from Reservation reservatio0_ where reservatio0_.aggregateId=?
+Hibernate: select items0_.reservation as reservat4_9_2_, items0_.entityId as entityId1_10_2_, items0_.entityId as entityId1_10_1_, items0_.product_aggregateId as product3_10_1_, items0_.quantity as quantity2_10_1_, product1_.aggregateId as aggregat1_6_0_, product1_.aggregateStatus as aggregat2_6_0_, product1_.version as version3_6_0_, product1_.name as name4_6_0_, product1_.currencyCode as currency5_6_0_, product1_.denomination as denomina6_6_0_, product1_.productType as productT7_6_0_ from ReservationItem items0_ left outer join Product product1_ on items0_.product_aggregateId=product1_.aggregateId where items0_.reservation=?
+Hibernate: select product0_.aggregateId as aggregat1_6_0_, product0_.aggregateStatus as aggregat2_6_0_, product0_.version as version3_6_0_, product0_.name as name4_6_0_, product0_.currencyCode as currency5_6_0_, product0_.denomination as denomina6_6_0_, product0_.productType as productT7_6_0_ from Product product0_ where product0_.aggregateId=?
+Hibernate: insert into ReservationItem (entityId, product_aggregateId, quantity) values (default, ?, ?)
+[2026-11-21 05:21:15,072] WARN  1474[main] - org.hibernate.engine.jdbc.internal.JdbcCoordinatorImpl.release(JdbcCoordinatorImpl.java:423) - HHH000386: ResultSet had no statement associated with it, but was not yet registered
+Hibernate: update Reservation set aggregateStatus=?, version=?, clientId=?, name=?, createDate=?, status=? where aggregateId=? and version=?
+Hibernate: update ReservationItem set reservation=? where entityId=?
+Hibernate: select version from Reservation where aggregateId =?
+Hibernate: select version from Product where aggregateId =?
+Hibernate: update Reservation set version=? where aggregateId=? and version=?
+[2026-11-21 05:21:15,077]DEBUG  1479[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect.beginTransaction(HibernateExtendedJpaDialect.java:63) - Transaction started
+[2026-11-21 05:21:15,077]DEBUG  1479[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:68) - The connection instance is org.hsqldb.jdbc.JDBCConnection@49dbaaf3
+[2026-11-21 05:21:15,078]DEBUG  1480[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:69) - The isolation level of the connection is 2 and the isolation level set on the transaction is -1
+Hibernate: select reservatio0_.aggregateId as aggregat1_9_0_, reservatio0_.aggregateStatus as aggregat2_9_0_, reservatio0_.version as version3_9_0_, reservatio0_.clientId as clientId4_9_0_, reservatio0_.name as name5_9_0_, reservatio0_.createDate as createDa6_9_0_, reservatio0_.status as status7_9_0_ from Reservation reservatio0_ where reservatio0_.aggregateId=?
+Hibernate: select items0_.reservation as reservat4_9_2_, items0_.entityId as entityId1_10_2_, items0_.entityId as entityId1_10_1_, items0_.product_aggregateId as product3_10_1_, items0_.quantity as quantity2_10_1_, product1_.aggregateId as aggregat1_6_0_, product1_.aggregateStatus as aggregat2_6_0_, product1_.version as version3_6_0_, product1_.name as name4_6_0_, product1_.currencyCode as currency5_6_0_, product1_.denomination as denomina6_6_0_, product1_.productType as productT7_6_0_ from ReservationItem items0_ left outer join Product product1_ on items0_.product_aggregateId=product1_.aggregateId where items0_.reservation=?
+Hibernate: select client0_.aggregateId as aggregat1_0_0_, client0_.aggregateStatus as aggregat2_0_0_, client0_.version as version3_0_0_, client0_.name as name4_0_0_ from Client client0_ where client0_.aggregateId=?
+Hibernate: select version from Reservation where aggregateId =?
+Hibernate: select version from Client where aggregateId =?
+[2026-11-21 05:21:15,087]DEBUG  1489[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect.beginTransaction(HibernateExtendedJpaDialect.java:63) - Transaction started
+[2026-11-21 05:21:15,088]DEBUG  1490[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:68) - The connection instance is org.hsqldb.jdbc.JDBCConnection@24fabd0f
+[2026-11-21 05:21:15,088]DEBUG  1490[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:69) - The isolation level of the connection is 2 and the isolation level set on the transaction is -1
+Hibernate: select reservatio0_.aggregateId as aggregat1_9_0_, reservatio0_.aggregateStatus as aggregat2_9_0_, reservatio0_.version as version3_9_0_, reservatio0_.clientId as clientId4_9_0_, reservatio0_.name as name5_9_0_, reservatio0_.createDate as createDa6_9_0_, reservatio0_.status as status7_9_0_ from Reservation reservatio0_ where reservatio0_.aggregateId=?
+Hibernate: select items0_.reservation as reservat4_9_2_, items0_.entityId as entityId1_10_2_, items0_.entityId as entityId1_10_1_, items0_.product_aggregateId as product3_10_1_, items0_.quantity as quantity2_10_1_, product1_.aggregateId as aggregat1_6_0_, product1_.aggregateStatus as aggregat2_6_0_, product1_.version as version3_6_0_, product1_.name as name4_6_0_, product1_.currencyCode as currency5_6_0_, product1_.denomination as denomina6_6_0_, product1_.productType as productT7_6_0_ from ReservationItem items0_ left outer join Product product1_ on items0_.product_aggregateId=product1_.aggregateId where items0_.reservation=?
+Hibernate: update ReservationItem set product_aggregateId=?, quantity=? where entityId=?
+Hibernate: select version from Reservation where aggregateId =?
+Hibernate: select version from Product where aggregateId =?
+Hibernate: update Reservation set version=? where aggregateId=? and version=?
+[2026-11-21 05:21:15,094]DEBUG  1496[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect.beginTransaction(HibernateExtendedJpaDialect.java:63) - Transaction started
+[2026-11-21 05:21:15,094]DEBUG  1496[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:68) - The connection instance is org.hsqldb.jdbc.JDBCConnection@71870da7
+[2026-11-21 05:21:15,094]DEBUG  1496[main] - pl.com.bottega.testutils.HibernateExtendedJpaDialect$1.execute(HibernateExtendedJpaDialect.java:69) - The isolation level of the connection is 2 and the isolation level set on the transaction is 8
+Hibernate: select reservatio0_.aggregateId as aggregat1_9_0_, reservatio0_.aggregateStatus as aggregat2_9_0_, reservatio0_.version as version3_9_0_, reservatio0_.clientId as clientId4_9_0_, reservatio0_.name as name5_9_0_, reservatio0_.createDate as createDa6_9_0_, reservatio0_.status as status7_9_0_ from Reservation reservatio0_ where reservatio0_.aggregateId=?
+Hibernate: select items0_.reservation as reservat4_9_2_, items0_.entityId as entityId1_10_2_, items0_.entityId as entityId1_10_1_, items0_.product_aggregateId as product3_10_1_, items0_.quantity as quantity2_10_1_, product1_.aggregateId as aggregat1_6_0_, product1_.aggregateStatus as aggregat2_6_0_, product1_.version as version3_6_0_, product1_.name as name4_6_0_, product1_.currencyCode as currency5_6_0_, product1_.denomination as denomina6_6_0_, product1_.productType as productT7_6_0_ from ReservationItem items0_ left outer join Product product1_ on items0_.product_aggregateId=product1_.aggregateId where items0_.reservation=?
+Hibernate: select client0_.aggregateId as aggregat1_0_0_, client0_.aggregateStatus as aggregat2_0_0_, client0_.version as version3_0_0_, client0_.name as name4_0_0_ from Client client0_ where client0_.aggregateId=?
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.305 sec
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.891 s
+[INFO] Finished at: 2026-11-21T05:21:15Z
+[INFO] ------------------------------------------------------------------------

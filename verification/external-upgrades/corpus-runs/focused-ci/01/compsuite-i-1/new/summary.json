@@ -1,0 +1,69 @@
+{
+  "revision": "577716be23b960fe24b31b1edcdf6b01e88a692e",
+  "historicalCiFiles": {
+    ".travis.yml": {
+      "sha256": "1e8905df3c51388c5dc6c4640ce86ebecde7dfd37c484f635283ef481d2a2565",
+      "mavenCommandLines": [
+        "install: mvn install javadoc:jar source:jar -DskipTests=true -B -V",
+        "script: mvn test -B"
+      ]
+    }
+  },
+  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
+  "module": "retrofit-converters/wire",
+  "goals": [
+    "-pl",
+    "retrofit-converters/wire",
+    "-am",
+    "-Dtest=WireConverterFactoryTest#serializeAndDeserialize",
+    "-DfailIfNoTests=false",
+    "-Dsurefire.failIfNoSpecifiedTests=false",
+    "test"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client and serialized Maven Central mirror",
+  "resolver": {
+    "cachedRequests": 1406,
+    "downloadedBytes": 80,
+    "downloadedFiles": 2
+  },
+  "exit": 1,
+  "seconds": 24.08,
+  "logSha256": "b79c36393b00fe3dd57d7398b63ff80e63d14803f1f8d993f7c2a17456e516c9",
+  "freshReports": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0,
+    "named": [
+      {
+        "class": "retrofit2.converter.wire.WireConverterFactoryTest",
+        "method": "serializeAndDeserialize",
+        "outcome": "error",
+        "type": "java.lang.NoSuchMethodError",
+        "message": "okio.Utf8.size$default(Ljava/lang/String;IIILjava/lang/Object;)J"
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "retrofit2.converter.wire.WireConverterFactoryTest",
+        "method": "serializeAndDeserialize",
+        "outcome": "error",
+        "type": "java.lang.NoSuchMethodError",
+        "message": "okio.Utf8.size$default(Ljava/lang/String;IIILjava/lang/Object;)J"
+      }
+    ],
+    "reportCount": 1,
+    "reportsSha256": "940498ed6986c101cd8d6a1799d628b58b4da90a10b1e967dcebba240ae09ce6"
+  },
+  "diagnostic": [
+    "java.lang.NoSuchMethodError: okio.Utf8.size$default(Ljava/lang/String;IIILjava/lang/Object;)J",
+    "Tests in error:",
+    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project converter-wire: There are test failures.",
+    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+  ],
+  "namedTest": "WireConverterFactoryTest#serializeAndDeserialize",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}

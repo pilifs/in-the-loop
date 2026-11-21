@@ -1,0 +1,65 @@
+{
+  "revision": "a7daf452b1db8a548d67b64d030d7d04f862b016",
+  "historicalCiFiles": {
+    ".travis.yml": {
+      "sha256": "680f607b1a4b9e5d088185827cdc7be420b145a6d232e89c7a4a1c0573b0cf7b",
+      "mavenCommandLines": []
+    }
+  },
+  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
+  "module": "fluent-validator-spring",
+  "goals": [
+    "-pl",
+    "fluent-validator-spring",
+    "-am",
+    "-Dtest=FluentValidateInterceptorTest#testAddCarsExcludeGroupsIgnore",
+    "-DfailIfNoTests=false",
+    "-Dsurefire.failIfNoSpecifiedTests=false",
+    "test"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client and serialized Maven Central mirror",
+  "resolver": {
+    "cachedRequests": 924
+  },
+  "exit": 1,
+  "seconds": 12.79,
+  "logSha256": "cb07348c4a191304ed53a30cf67ea4ae5a0ccc2fab511ca7830c4e3ce2697c52",
+  "freshReports": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0,
+    "named": [
+      {
+        "class": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptorTest",
+        "method": "testAddCarsExcludeGroupsIgnore",
+        "outcome": "error",
+        "type": "java.lang.IllegalStateException",
+        "message": "Failed to load ApplicationContext"
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptorTest",
+        "method": "testAddCarsExcludeGroupsIgnore",
+        "outcome": "error",
+        "type": "java.lang.IllegalStateException",
+        "message": "Failed to load ApplicationContext"
+      }
+    ],
+    "reportCount": 1,
+    "reportsSha256": "efe0b3feaada5d0bb3053604c3aa2f12bd7577088e5718da41f20a68a9853b49"
+  },
+  "diagnostic": [
+    "[INFO]\t2026-11-21 05:22:47,550\t[main]\tcontext.support.DefaultTestContextBootstrapper\t(AbstractTestContextBootstrapper.java:204)\t-Could not instantiate TestExecutionListener [org.springframework.test.context.web.ServletTestExecutionListener]. Specify custom listener classes or make the default listener classes (and their required dependencies) available. Offending class: [javax/servlet/ServletContext]",
+    "[WARN]\t2026-11-21 05:22:49,988\t[main]\tcontext.support.GenericApplicationContext\t(AbstractApplicationContext.java:487)\t-Exception encountered during context initialization - cancelling refresh attempt",
+    "org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'carServiceImpl' defined in file [/project/fluent-validator-spring/target/test-classes/com/baidu/unbiz/fluentvalidator/service/impl/CarServiceImpl.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'fluentValidateInterceptor' defined in URL [file:/project/fluent-validator-spring/target/test-classes/applicationContext.xml]: Invocation of init method failed; nested exception is java.lang.NoClassDefFoundError: javax/el/ELManager",
+    "Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'fluentValidateInterceptor' defined in URL [file:/project/fluent-validator-spring/target/test-classes/applicationContext.xml]: Invocation of init method failed; nested exception is java.lang.NoClassDefFoundError: javax/el/ELManager",
+    "Caused by: java.lang.NoClassDefFoundError: javax/el/ELManager"
+  ],
+  "namedTest": "FluentValidateInterceptorTest#testAddCarsExcludeGroupsIgnore",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}
