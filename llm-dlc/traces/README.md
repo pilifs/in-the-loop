@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 178, plus 29 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-21 20:04 UTC |
-| Prompts | 4,667 |
-| Model calls | 46,659 |
-| Tool calls | 58,012 (1,256 failed) |
-| Compactions | 549 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-21 20:26 UTC |
+| Prompts | 4,671 |
+| Model calls | 46,667 |
+| Tool calls | 58,021 (1,256 failed) |
+| Compactions | 550 |
 | Subagents | 22 |
-| Tokens written | 39,953,200 |
-| Tokens read | 9,091,079,749 (98.4% from cache) |
-| Commits with a trace | 1,546 |
-| Log snapshots | 2,123 (10721.3 MB gzipped, 2,076 uploaded) |
+| Tokens written | 39,955,923 |
+| Tokens read | 9,093,657,201 (98.4% from cache) |
+| Commits with a trace | 1,547 |
+| Log snapshots | 2,124 (10730.7 MB gzipped, 2,076 uploaded) |
 
 ## Sessions
 
@@ -139,7 +139,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | ended | 3 h 33 min | `claude-opus-5-5` | 61 | 471 | 470 | 9 | 10 | 190,640 | 21 |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | ended | 1 h 21 min | `claude-fable-5-2` | 11 | 116 | 117 | 2 | 0 | 415,695 | 12 |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | ended | 1 d 8 h | `claude-fable-5-2` | 41 | 1,941 | 1,999 | 18 | 14 | 566,568 | 89 |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | open | 6 d 2 h | `claude-opus-5-5` | 746 | 3,577 | 3,097 | 45 | 11 | 579,938 | 844 |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | open | 6 d 2 h | `claude-opus-5-5` | 749 | 3,585 | 3,106 | 45 | 11 | 579,938 | 845 |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | ended | 1 h 25 min | `claude-sonnet-5-5` | 1 | 36 | 36 | 2 | 0 | 70,286 | 6 |
 | 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | ended | 3 d 19 h | `claude-fable-5-2` | 60 | 1,502 | 1,610 | 50 | 12 | 466,857 | 403 |
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | ended | 1 h 35 min | `claude-sonnet-5-5` | 3 | 29 | 27 | 2 | 0 | 66,255 | 3 |
@@ -162,7 +162,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:13 UTC | [Window 11 verification loop](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | ended | 10 h 16 min | `claude-opus-5-5` | 11 | 87 | 83 | 1 | 0 | 194,540 | 14 |
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 40,446 | 2 |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
-| 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | ended | 4 d 6 h | `claude-opus-5-5` | 127 | 865 | 826 | 17 | 5 | 565,519 | 669 |
+| 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | ended | 4 d 7 h | `claude-opus-5-5` | 128 | 865 | 826 | 17 | 6 | 565,519 | 672 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 84 | 681 | 678 | 13 | 15 | 186,120 | 22 |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 13 h 7 min | `claude-opus-5-5` | 163 | 1,513 | 1,531 | 31 | 28 | 294,636 | 144 |
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 11 h 14 min | `claude-opus-5-5` | 151 | 1,400 | 1,362 | 14 | 23 | 273,336 | 28 |
@@ -326,7 +326,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 411,604 | 958 | 1,358,682 | 49,825,605 | 97.3% | 124 |
 | [`0c1ceb11`](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 171,649 | 242 | 384,249 | 33,894,142 | 98.9% | 200 |
 | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 2,378,425 | 3,882 | 5,726,751 | 507,097,667 | 98.9% | 216 |
-| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 1,642,387 | 8,630 | 4,339,334 | 937,016,513 | 99.5% | 573 |
+| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 1,645,110 | 8,652 | 4,345,754 | 939,587,523 | 99.5% | 574 |
 | [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 8,843 | 72 | 58,914 | 1,664,716 | 96.6% | 195 |
 | [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 2,066,207 | 3,084 | 5,195,749 | 414,366,826 | 98.8% | 203 |
 | [`5399f71b`](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 7,824 | 60 | 54,883 | 1,238,636 | 95.8% | 165 |
@@ -398,7 +398,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 45,554 | 78.5% | 144 |
+| `Bash` | 45,563 | 78.5% | 144 |
 | `exec` | 7,230 | 12.5% | 3 |
 | `Read` | 1,475 | 2.5% | 62 |
 | `Edit` | 1,185 | 2.0% | 60 |
@@ -1978,9 +1978,10 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1541 | [`9f3b19ad`](https://github.com/pilifs/in-the-loop/commit/9f3b19ad62a9978a9ff13fb8c46092e1c3be16cf) | Merge dlc-process-plumbing so far into the line, for its first develop checkpoint | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/665006576f5dacec5bdb0963549c00bb75645b45696c1e1b099ddd9e83d20fbe.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/87a113a72ce079ca144e4b2ae2d0e0e12846aee2c61211035da79dc302d0f3d8.jsonl.gz)) |
 | 1542 | change `mzvlutwk` | Add the domain foundations strategy brief | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/89a44e65d3ed4f75e11b5521bb02ab8411da5608e17fbb62c85ff22d4b6934b3.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2ca989ac0352eff5ea82b70f5c75664ab0a16c5c3e95f44553ce08aae66d32ff.jsonl.gz)) |
 | 1543 | change `kmtwlolr` | Say where the domain foundations brief's ZIP is, and that the repository holds the same files | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/fb203f13cfbe76e55deda6d4babeea13f0e176da34c3a94df35be03d13481811.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2ca989ac0352eff5ea82b70f5c75664ab0a16c5c3e95f44553ce08aae66d32ff.jsonl.gz)) |
-| 1544 | change `zklzqkym` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e41c070d17599e8dd2e1523113cc03b09aba467e45a925e056ea23912b2e7a13.jsonl.gz)) |
-| 1545 | change `qywlynvk` | Record the watcher's continue after cycle 2 of dlc-process-plumbing | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/6dec65dd22e7bea573b929bbcf2a46ae0abccb4f40fbe8f882fa205ca39d8a8e.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)) |
-| 1546 | change `kwquwwmk` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/c1fc9b12a3e0b0e4296f414f31be77c8f5c82b94d5f09c1627c6a11db62b63c0.jsonl.gz)) |
+| 1544 | change `zklzqkym` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e41c070d17599e8dd2e1523113cc03b09aba467e45a925e056ea23912b2e7a13.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/8a1563afec72a860a57812b749bf1695d6c88ddcdc5bb6b8a84e58ba245a3f49.jsonl.gz)) |
+| 1545 | change `qywlynvk` | Record the watcher's continue after cycle 2 of dlc-process-plumbing | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/6dec65dd22e7bea573b929bbcf2a46ae0abccb4f40fbe8f882fa205ca39d8a8e.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/8a1563afec72a860a57812b749bf1695d6c88ddcdc5bb6b8a84e58ba245a3f49.jsonl.gz)) |
+| 1546 | change `kwquwwmk` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/c1fc9b12a3e0b0e4296f414f31be77c8f5c82b94d5f09c1627c6a11db62b63c0.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/8a1563afec72a860a57812b749bf1695d6c88ddcdc5bb6b8a84e58ba245a3f49.jsonl.gz)) |
+| 1547 | change `kkmzowqm` | Record the watcher's stop after cycle 3 of dlc-process-plumbing | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d65e276b15d357a53b718b9c93189eb8b2d87874c2e7aeb30d6bd948c4073c0a.jsonl.gz)) |
 
 ## Logs
 
@@ -2099,7 +2100,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 19 | 19 | 30.8 MB | [`899d4403f2b2`](https://terminalvalue.net/raw-traces/72d38e75-aae0-402e-9b8a-881beec53824/899d4403f2b2a0909e5a6b90d70b75b6fdd06876f953c84931aeba6ed741b941.jsonl.gz) |
 | [`0c1ceb11`](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 6 | 6 | 2.5 MB | [`c1c42ffaf7db`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/c1c42ffaf7db4e4760ae1c502150d8043c016b95e69700ecace0c390f02645af.jsonl.gz) |
 | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 37 | 37 | 175.9 MB | [`4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz) |
-| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 405 | 386 | 2466.6 MB | `c1fc9b12a3e0`, not uploaded |
+| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 406 | 386 | 2475.9 MB | `d65e276b15d3`, not uploaded |
 | [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 4 | 4 | 0.4 MB | [`1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz) |
 | [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 58 | 58 | 206.3 MB | [`6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz) |
 | [`5399f71b`](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 3 | 0.3 MB | [`fdebcf4957a5`](https://terminalvalue.net/raw-traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/fdebcf4957a593489f34ce5d5d240d8c0bc494c33a6c1c3efda1eb0013f0e7ad.jsonl.gz) |
@@ -2122,7 +2123,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`b74acbd8`](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 7 | 7 | 1.9 MB | [`728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz) |
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 2 | 2 | 0.2 MB | [`d5b3ff93d2f4`](https://terminalvalue.net/raw-traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/d5b3ff93d2f464f79d4c2c3b63c435663917ad81d37a274a6519c9da315b7f3d.jsonl.gz) |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
-| [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 83 | 73 | 142.1 MB | `940fea76762f`, not uploaded |
+| [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 83 | 73 | 142.1 MB | `8a1563afec72`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 20 | 20 | 36.3 MB | [`b38cb00ee8e3`](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/b38cb00ee8e399df658a029f6c5f27883260d8a5bdaeb066de451cd7b1f2e2ba.jsonl.gz) |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 31 | 31 | 119.0 MB | [`48d54253e884`](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/48d54253e8843aecedd54821ca07cb9abf899068117a636ea6bbe0bb7d6b2391.jsonl.gz) |
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 27 | 27 | 82.8 MB | [`2a57c9145b73`](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/2a57c9145b731f5630b7d63c9e4dd9e494aa5d928201a4ec0c936f217b394fc0.jsonl.gz) |
