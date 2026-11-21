@@ -2994,6 +2994,12 @@ change `rnwzmzsoswrn` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 6 of the 6 job(s). 20261121-074403-v3-prep-group-01-original-java-upgrade-c: passed: 5 passed step(s) in 5m16s, peak 1.4 GiB (estimated 12m00s, 2.0 GiB); 15 output file(s) changed Applied 15 output(s). 20261121-074403-v3-prep-group-02-original-java-upgrade-c: passed: 4 passed step(s) in 5m48s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 17 output file(s) changed Applied 17 output(s). 20261121-074403-v3-prep-group-03-original-java-upgrade-c: passed: 4 passed step(s) in 3m02s, peak 759.8 MiB (estimated 12m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). 20261121-074403-v3-prep-group-04-original-java-upgrade-c: passed: 4 passed step(s) in 3m18s, peak 709.0 MiB (estimated 12m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). 20261121-074404-v3-prep-group-05-original-java-upgrade-c: passed: 4 passed step(s) in 4m28s, peak 1.1 GiB (estimated 12m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). 20261121-074404-v3-prep-group-07-original-java-upgrade-c: passed: 3 passed step(s) in 3m12s, peak 2.7 GiB (estimated 12m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
+### Record verification results for 2 job(s)
+
+change `otszsynmlyuk` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-075424-v3-dispatch-group-06-original-java-upgra: passed: 2 passed step(s) in 25.5s, peak 132.6 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-075424-v3-dispatch-group-07-original-java-upgra: passed: 2 passed step(s) in 16.7s, peak 644.2 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz) has every step in between: reasoning, tool calls and their results.
