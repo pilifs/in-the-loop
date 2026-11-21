@@ -1,0 +1,174 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-035106-348-exhaust-both-jdbc-insert-shapes-on-t",
+  "title": "348 exhaust both JDBC insert shapes on the original Rx and H2 classpaths",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.8s, peak 117.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (Qualify both real JDBC call shapes) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-035106-348-exhaust-both-jdbc-insert-shapes-on-t.json",
+    "sha256": "560cc4df03ee058beddae9328b19e1f5aec34936a22aa7849f61566ac5249ef9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-035106-348-exhaust-both-jdbc-insert-shapes-on-t",
+      "title": "348 exhaust both JDBC insert shapes on the original Rx and H2 classpaths",
+      "description": "Evaluate the exact public boolean-to-int-array adapter for both a combined insert and two separate inserts, using a fresh JVM per selector and version. Retain ordered integer arrays, the independent direct subscriber and database-row controls, and a fresh-JVM replay of the differing input.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "348"
+        ]
+      },
+      "expected": "The paired claim is refuted by the combined insert. The separate-insert companion agrees and the fresh witness returns the original arrays from both actual H2 releases.",
+      "submitted": {
+        "at": "2026-11-21T03:51:06+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Qualify both real JDBC call shapes",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 348 --finite-domain --tasks generated-keys",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "972ce9eaae978bec2cdbf19eda27fc43ba0b4d3f",
+  "startedAt": "2026-11-21T04:04:02+00:00",
+  "finishedAt": "2026-11-21T04:04:07+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2890915,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 123625472,
+    "wallSeconds": 0.8,
+    "cpuSeconds": 1.1,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualify both real JDBC call shapes",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 348 --finite-domain --tasks generated-keys",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 0.803,
+      "cpuSeconds": 1.134,
+      "cpuThrottledSeconds": 0.055,
+      "peakMemoryBytes": 123625472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-both-real-jdbc-call-sh.log",
+        "lines": 1,
+        "bytes": 111,
+        "sha256": "bb5277fcb6e8b46871e17728c7113326df1a4efd1d6326d1203661ffa6a8c18d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "348 generated-keys open 0 admitted a supported static entry with return and exception observations is required"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs/20261121T040406Z-db59fc91/batch.json",
+      "change": "added",
+      "bytes": 1147,
+      "sha256": "128f64591b5f59d5fd08a9cae918e66530e713257e5aef10ef944b12de047ee8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs/20261121T040406Z-db59fc91/generated-keys.json",
+      "change": "added",
+      "bytes": 511,
+      "sha256": "ddc1eadeaf2f3dca3fea3d2a8be6c06f64a7afa6dc5b615b2ec7b7583d17f7c0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:04:11+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs/20261121T040406Z-db59fc91/batch.json",
+      "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs/20261121T040406Z-db59fc91/generated-keys.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff"
+}
