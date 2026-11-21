@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-232627-build-avro-729-decimal-conversion-on-bot",
+  "title": "Build Avro 729 decimal conversion on both original revisions",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m14s, peak 1.9 GiB (estimated 6m00s, 3.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (Build both original revisions and run the landed test) was held back 13m32s by its 2-CPU quota in 4m14s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-232627-build-avro-729-decimal-conversion-on-bot.json",
+    "sha256": "f23e5872d4acb7000b1b0d02c01f971e59464179d3080577824cac8045f92430",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-232627-build-avro-729-decimal-conversion-on-bot",
+      "title": "Build Avro 729 decimal conversion on both original revisions",
+      "description": "Compile the unmodified historical Avro core module with its own Maven recipe. Bind the selected DecimalConversion class and ordered runtime JARs. Run the landed TestGenericLogicalTypes.testDecimalToFromBytes on the parent and the fix, requiring a named parent failure and a fixed pass.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "original-upstream-test"
+      ],
+      "links": {
+        "examples": [
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:26:27+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "maven"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "6m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Build both original revisions and run the landed test",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/upstream.py 361 --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/361-avro-decimal-buffer-cursor/records/build-historical",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/361-avro-decimal-buffer-cursor/records/build-historical"
+      ]
+    }
+  },
+  "sourceCommit": "db1f838dc72264b7f4e27a9bb37a31ab3b98be67",
+  "startedAt": "2026-11-21T23:30:10+00:00",
+  "finishedAt": "2026-11-21T23:34:34+00:00",
+  "wallSeconds": 264.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2195921,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2017918976,
+    "wallSeconds": 254.2,
+    "cpuSeconds": 357.0,
+    "memoryOfEstimate": 0.63,
+    "durationOfEstimate": 0.71
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build both original revisions and run the landed test",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/upstream.py 361 --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/361-avro-decimal-buffer-cursor/records/build-historical",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 254.177,
+      "cpuSeconds": 356.981,
+      "cpuThrottledSeconds": 812.034,
+      "peakMemoryBytes": 2017918976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-both-original-revisions.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "951305219c5497847d04d5d3e3060e0aaed150f3a57e76e2617e3b262f5234d3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "361 parent qualified",
+        "361 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/build-historical/build-fix.json",
+      "change": "added",
+      "bytes": 10652,
+      "sha256": "9cefb3c81c5a7a869a15579a16af485e3b02adb616450847fcffc628e0a93128",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/build-historical/build-parent.json",
+      "change": "added",
+      "bytes": 10540,
+      "sha256": "4af73543c38ee91923db1298bd2dc9dadccd7741c8a4ab895b5b361afb8b6cf5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/build-historical/fix-TEST-org.apache.avro.generic.TestGenericLogicalTypes.xml.gz",
+      "change": "added",
+      "bytes": 1790,
+      "sha256": "ad71f05ccfc0848b16f39836ee3faebb90e9e8f94907c69ce658877b617f93a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/build-historical/fix-upstream.json",
+      "change": "added",
+      "bytes": 9905,
+      "sha256": "7300662c0c7ca3859c46ad80b3631387b63c45b4b0917fc55f32ad372f01e2e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/build-historical/parent-TEST-org.apache.avro.generic.TestGenericLogicalTypes.xml.gz",
+      "change": "added",
+      "bytes": 2476,
+      "sha256": "e2d2efb67fb4d23f464f6e8a632494bf88d382bc4770209cd99b91868f6ab715",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/build-historical/parent-upstream.json",
+      "change": "added",
+      "bytes": 11422,
+      "sha256": "02e9d862ad3d53bad998497a646fd64d462fee78a6faaa7b3018735efedddc8b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T23:34:58+00:00",
+    "applied": [
+      "examples/361-avro-decimal-buffer-cursor/records/build-historical/build-fix.json",
+      "examples/361-avro-decimal-buffer-cursor/records/build-historical/build-parent.json",
+      "examples/361-avro-decimal-buffer-cursor/records/build-historical/fix-TEST-org.apache.avro.generic.TestGenericLogicalTypes.xml.gz",
+      "examples/361-avro-decimal-buffer-cursor/records/build-historical/fix-upstream.json",
+      "examples/361-avro-decimal-buffer-cursor/records/build-historical/parent-TEST-org.apache.avro.generic.TestGenericLogicalTypes.xml.gz",
+      "examples/361-avro-decimal-buffer-cursor/records/build-historical/parent-upstream.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T233434Z-0172575df87371e6",
+      "outputs": "20261121T233434Z-038071dabeef9275",
+      "diff": "20261121T233434Z-05759039c5535383"
+    }
+  }
+}
