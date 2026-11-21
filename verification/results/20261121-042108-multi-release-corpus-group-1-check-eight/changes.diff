@@ -1,0 +1,891 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/multi-release/01/current/compsuite-i-1.json
+@@ -0,0 +1,109 @@
++{
++  "id": "compsuite-i-1",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert",
++  "observer": "Deserialize a serialized phone response and read the phone number.",
++  "revisions": {
++    "old": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++    "new": "577716be23b960fe24b31b1edcdf6b01e88a692e"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "defa0be736c2d26867746ccfff3614564061d859e03c088e6a35b9bda15964ec",
++  "sides": {
++    "old": {
++      "commit": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
++      ],
++      "orderedSha256": [
++        "079fc0eeac81d826f9bb68ee98219c0743f40415e78ce7f6c221135eb42635c3",
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa"
++      ],
++      "callerClassSha256": "8a4010b976f74535ba8b1afaa9315536c21cfe2b5df97e2f01742c5d7aacff93",
++      "descriptors": [
++        "(Ljava/lang/Object;)Ljava/lang/Object;",
++        "(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;"
++      ]
++    },
++    "new": {
++      "commit": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
++      ],
++      "orderedSha256": [
++        "079fc0eeac81d826f9bb68ee98219c0743f40415e78ce7f6c221135eb42635c3",
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c"
++      ],
++      "callerClassSha256": "8a4010b976f74535ba8b1afaa9315536c21cfe2b5df97e2f01742c5d7aacff93",
++      "descriptors": [
++        "(Ljava/lang/Object;)Ljava/lang/Object;",
++        "(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.034,
++    "outputSha256": "06de5a828b12917199e50a0d9a5db3d0a7a3acd8b9ff5419d3c7b9701de141e1",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "retrofit2.converter.wire.WireResponseBodyConverter#convert",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "retrofit2.converter.wire.WireResponseBodyConverter#convert cannot be verified: convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++          "uri": null,
++          "line": 34
++        }
++      ],
++      "output": "\u2717 retrofit2.converter.wire.WireResponseBodyConverter#convert cannot be verified: convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++      "work": "$WORK/checker-yf2huc0h"
++    }
++  },
++  "firstBlocker": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++  "elapsedSeconds": 0.071,
++  "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/multi-release/01/current/compsuite-i-10.json
+@@ -0,0 +1,42 @@
++{
++  "id": "compsuite-i-10",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#getCount",
++  "observer": "Look up a unigram and an adjacent token pair in the original language index.",
++  "revisions": {
++    "old": "fe77e85a2f7b472ba71564821e7545025eeda242",
++    "new": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "defa0be736c2d26867746ccfff3614564061d859e03c088e6a35b9bda15964ec",
++  "sides": {
++    "old": {
++      "commit": "fe77e85a2f7b472ba71564821e7545025eeda242",
++      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "no diagnostic was emitted"
++      ]
++    },
++    "new": {
++      "commit": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e",
++      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "no diagnostic was emitted"
++      ]
++    }
++  },
++  "firstBlocker": "original Maven classpath",
++  "elapsedSeconds": 16.603,
++  "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/multi-release/01/current/compsuite-i-38.json
+@@ -0,0 +1,77 @@
++{
++  "id": "compsuite-i-38",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.esotericsoftware.reflectasm.MethodAccess#get",
++  "observer": "Construct an interface method accessor and invoke replace on a populated concurrent map.",
++  "revisions": {
++    "old": "7cab65bb46ccd17b07ad05dd6b83d92a695477fc",
++    "new": "5c636af1a65b92fa570582628a27aa1e7d29f24b"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "defa0be736c2d26867746ccfff3614564061d859e03c088e6a35b9bda15964ec",
++  "sides": {
++    "old": {
++      "commit": "7cab65bb46ccd17b07ad05dd6b83d92a695477fc",
++      "stage": "artifacts ready",
++      "subjectJdk": "Temurin 8",
++      "scope": "complete original production module and ordered runtime graph",
++      "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80",
++      "orderedSha256": [
++        "a7476f32e41def3b390ac14c59ad6c799dde874555c15d891667527bbd06e5d7",
++        "d2da399a9967c69f0a21739256fa79d284222c223082cacadc17372244764b54"
++      ],
++      "callerClassSha256": "0c119cffb1287f9fe7f6793a241cafd2e15dea30b18e5c9fd2927179b4dce246",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;"
++      ]
++    },
++    "new": {
++      "commit": "5c636af1a65b92fa570582628a27aa1e7d29f24b",
++      "stage": "artifacts ready",
++      "subjectJdk": "Temurin 8",
++      "scope": "complete original production module and ordered runtime graph",
++      "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80",
++      "orderedSha256": [
++        "a7476f32e41def3b390ac14c59ad6c799dde874555c15d891667527bbd06e5d7",
++        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672"
++      ],
++      "callerClassSha256": "0c119cffb1287f9fe7f6793a241cafd2e15dea30b18e5c9fd2927179b4dce246",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.006,
++    "outputSha256": "45378edde5b039e7edef6284cf867323e2ab9463354825162069196a5b38bf9f",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.esotericsoftware.reflectasm.MethodAccess#get",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.esotericsoftware.reflectasm.MethodAccess#get cannot be verified: parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 84
++        }
++      ],
++      "output": "\u2717 com.esotericsoftware.reflectasm.MethodAccess#get cannot be verified: parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-0snqd_67"
++    }
++  },
++  "firstBlocker": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 0.069,
++  "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/multi-release/01/current/compsuite-i-70.json
+@@ -0,0 +1,143 @@
++{
++  "id": "compsuite-i-70",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++  "observer": "Read the style of an unformatted cell from the original spreadsheet.",
++  "revisions": {
++    "old": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++    "new": "eed036e11b5aecaeb5889fae26505e9409bdc438"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "defa0be736c2d26867746ccfff3614564061d859e03c088e6a35b9bda15964ec",
++  "sides": {
++    "old": {
++      "commit": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++      "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 5,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "584159c02c776a8c8e35801c7fe3cbf0276c5b12a2feed770c12174ed8418cfb",
++        "5f2df1e467825e4cac5996d44890c4201c000b43c0b23cffc0782d28a0beb9b0",
++        "ff71bd27b36816889324de58ecf642532e5c9934c1dca2cfea0cbb2f393ec2cb",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "orderedSha256": [
++        "27ec1a7fbb8a5f2611a25088f1f74b41a3a06ae1cdd074283dae93795f9bb3fc",
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "584159c02c776a8c8e35801c7fe3cbf0276c5b12a2feed770c12174ed8418cfb",
++        "5f2df1e467825e4cac5996d44890c4201c000b43c0b23cffc0782d28a0beb9b0",
++        "ff71bd27b36816889324de58ecf642532e5c9934c1dca2cfea0cbb2f393ec2cb",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "callerClassSha256": "6def3252bd8e4129ee94541e8318e61f0b9b51710045164bc5e51fe667d68c9b",
++      "descriptors": [
++        "()Lorg/apache/poi/ss/usermodel/CellStyle;"
++      ]
++    },
++    "new": {
++      "commit": "eed036e11b5aecaeb5889fae26505e9409bdc438",
++      "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 5,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "3c8fc87be30f4992ca9e2d5743515e781ebf97696d270bbec0f51ee6f8543e9c",
++        "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++        "38bb45c99e6153260c19b97b99b6a7370a067de63344de6d1ea11922acaed86b",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "orderedSha256": [
++        "27ec1a7fbb8a5f2611a25088f1f74b41a3a06ae1cdd074283dae93795f9bb3fc",
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "3c8fc87be30f4992ca9e2d5743515e781ebf97696d270bbec0f51ee6f8543e9c",
++        "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++        "38bb45c99e6153260c19b97b99b6a7370a067de63344de6d1ea11922acaed86b",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "callerClassSha256": "6def3252bd8e4129ee94541e8318e61f0b9b51710045164bc5e51fe667d68c9b",
++      "descriptors": [
++        "()Lorg/apache/poi/ss/usermodel/CellStyle;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.5,
++    "outputSha256": "c528249732c93ffd7c7840a26b3a630577e1490721443a046e620d0696feb56f",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 266
++        }
++      ],
++      "output": "\u2717 com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-47h95nuz"
++    }
++  },
++  "firstBlocker": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++  "elapsedSeconds": 0.632,
++  "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/multi-release/01/current/compsuite-i-85.json
+@@ -0,0 +1,109 @@
++{
++  "id": "compsuite-i-85",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "pl.com.bottega.ecommerce.sales.application.impl.OrderingServiceImpl#confirm",
++  "observer": "Confirm a previously calculated offer after changing the order quantity.",
++  "revisions": {
++    "old": "a1a0cf597e430cf58afe627cd5a724fa33665d2e",
++    "new": "f500f1ea3c84932963cdf847fea48a98f2f492d0"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "defa0be736c2d26867746ccfff3614564061d859e03c088e6a35b9bda15964ec",
++  "sides": {
++    "old": {
++      "commit": "a1a0cf597e430cf58afe627cd5a724fa33665d2e",
++      "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 71,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "dbfabfcf63611a43b3eef40d9a58e973df35bc0eedb95acef358c267bed30506",
++        "dea2fe7895033bdbbe2c1688ad08a0588d9d9b0f17d53349081cc20dda31353e",
++        "5674d2dd1641e6068207effa45b8a633129695c1ab5773bc6b1a2ad3cb31fcd1",
++        "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
++        "ac2126dfbcd8d398e4b64cd0fdca21d2d64ff46e59326004de2d636b37036c35",
++        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++        "bacfb6460317d421aa2906d9e63c293b69dc1a5dac480d0f6416df50796a4bb3",
++        "eeec97d5987dc8d525285fab888bab4c68a2ef1412335f73aba2b804f88a6cb5",
++        "cea2405cf0f5427e226cd4957973e8b3d83091dea2f6383a7168192c790ecd06",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370",
++        "5f7c2d94073be6e8cf196d95b934b54384debe48026ab1c354668eba6cf8eb87",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f",
++        "8e4e3d5ef7d44274ca19c5b9ea0a00e7796aa06153337164a8d81effb3d4affa",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "d746d344f43af77c79cefb40f8c787d472cb58326eb21ba649dd3ee6c8089bef",
++        "1a5d8da8f2d31f069fd8cbd8b9abdc888b17f31c25ca42af10eb43bbb1a626ba",
++        "7f9e44b6bd0dc899c69b0d81c903fee8771ee60152ac3ce003f5909b03b9eb26",
++        "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044",
++        "f374dfb5a6f3985cd95e7d7c4a3b32d380e4f26f62fec4f6fc8021104d0c2431",
++        "1ba81c1000b878f8592b41907aa7c0c07ab6e62c0217e75f0003b0b682f6bb8f",
++        "b47ce0110d82853a2b94a56196c461148e7400d4caf38d73654a3d56d7384199",
++        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
++        "feb4b5b2e79a63b72ec47a693b1cf35cf1cea1f60a2bb2615bf21f74c7a60bb0",
++        "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
++        "8ba2177cfebc7c51a2c31427f572f7f8fefd13701a89661175ce376c1e478a5f",
++        "7b52f4d3ad41b7ed71f5b6b11833113b7e08326c8ef70d2dedf0b430c7ba5341"
++      ],
++      "orderedSha256": [
++        "26cc85965de9f734f9b1368947ea255b6eee73e37201ca1278330f84e45309e3",
++        "dbfabfcf63611a43b3eef40d9a58e973df35bc0eedb95acef358c267bed30506",
++        "dea2fe7895033bdbbe2c1688ad08a0588d9d9b0f17d53349081cc20dda31353e",
++        "5674d2dd1641e6068207effa45b8a633129695c1ab5773bc6b1a2ad3cb31fcd1",
++        "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
++        "ac2126dfbcd8d398e4b64cd0fdca21d2d64ff46e59326004de2d636b37036c35",
++        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++        "bacfb6460317d421aa2906d9e63c293b69dc1a5dac480d0f6416df50796a4bb3",
++        "eeec97d5987dc8d525285fab888bab4c68a2ef1412335f73aba2b804f88a6cb5",
++        "cea2405cf0f5427e226cd4957973e8b3d83091dea2f6383a7168192c790ecd06",
++        "2db20262b9cdd89907513575d0d6cb6fcb10fe9e9f484731e2f1a19c05c58e85",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370",
++        "5f7c2d94073be6e8cf196d95b934b54384debe48026ab1c354668eba6cf8eb87",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f",
++        "8e4e3d5ef7d44274ca19c5b9ea0a00e7796aa06153337164a8d81effb3d4affa",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "d746d344f43af77c79cefb40f8c787d472cb58326eb21ba649dd3ee6c8089bef",
++        "1a5d8da8f2d31f069fd8cbd8b9abdc888b17f31c25ca42af10eb43bbb1a626ba",
++        "7f9e44b6bd0dc899c69b0d81c903fee8771ee60152ac3ce003f5909b03b9eb26",
++        "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044",
++        "f374dfb5a6f3985cd95e7d7c4a3b32d380e4f26f62fec4f6fc8021104d0c2431",
++        "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
++        "1ba81c1000b878f8592b41907aa7c0c07ab6e62c0217e75f0003b0b682f6bb8f",
++        "b47ce0110d82853a2b94a56196c461148e7400d4caf38d73654a3d56d7384199",
++        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
++        "feb4b5b2e79a63b72ec47a693b1cf35cf1cea1f60a2bb2615bf21f74c7a60bb0",
++        "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
++        "8ba2177cfebc7c51a2c31427f572f7f8fefd13701a89661175ce376c1e478a5f",
++        "7b52f4d3ad41b7ed71f5b6b11833113b7e08326c8ef70d2dedf0b430c7ba5341"
++      ],
++      "callerClassSha256": "9b3b51551f2d3164ded80683d16664cef647ab1bbd46653b7e9c92c47eed8e6a",
++      "descriptors": [
++        "(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V"
++      ]
++    },
++    "new": {
++      "commit": "f500f1ea3c84932963cdf847fea48a98f2f492d0",
++      "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original classpath",
++      "diagnostic": [
++        "The selected module did not resolve the changed coordinate on its runtime classpath."
++      ]
++    }
++  },
++  "firstBlocker": "original classpath",
++  "elapsedSeconds": 4.108,
++  "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/multi-release/01/current/ea-async-27.json
+@@ -0,0 +1,89 @@
++{
++  "id": "ea-async-27",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.ea.async.instrumentation.Transformer#transform",
++  "observer": "Transform an async method holding an uninitialized value across await and read completion and result.",
++  "revisions": {
++    "old": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
++    "new": "a99e044708fac3654f621649d89bf1820bcd44a0"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "defa0be736c2d26867746ccfff3614564061d859e03c088e6a35b9bda15964ec",
++  "sides": {
++    "old": {
++      "commit": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
++      "stage": "artifacts ready",
++      "subjectJdk": "Temurin 8",
++      "scope": "complete original production module and ordered runtime graph",
++      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++      "orderedSha256": [
++        "17c1ab860d0477b4ea3d208d19bc3d6cfad8d2174a4b95c17ed4c7f736e69948",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
++        "f2820ea6ef069b83f37d805f5cec58b2872a25650f5f95b4f3cc572156323df0",
++        "62b2c0d818fde5c52cf6404aa10836dbb170a2c3fa8466e656f0f991732fa01f",
++        "02317d9ed739dab470a96f44de712fde51a811362ca26852b34324388e61257c",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
++      "descriptors": [
++        "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
++        "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
++      ]
++    },
++    "new": {
++      "commit": "a99e044708fac3654f621649d89bf1820bcd44a0",
++      "stage": "artifacts ready",
++      "subjectJdk": "Temurin 8",
++      "scope": "complete original production module and ordered runtime graph",
++      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++      "orderedSha256": [
++        "17c1ab860d0477b4ea3d208d19bc3d6cfad8d2174a4b95c17ed4c7f736e69948",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
++        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
++        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
++      "descriptors": [
++        "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
++        "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.016,
++    "outputSha256": "cac21beb18d2d4ec229938dd220e01effe280911b5c5a24a4d8d69eb1dadc9a7",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.ea.async.instrumentation.Transformer#transform",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "expected one method named transform, found 2: transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]), transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader); name one as transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.ea.async.instrumentation.Transformer#transform cannot be verified: expected one method named transform, found 2: transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]), transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader); name one as transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++          "uri": null,
++          "line": 1
++        }
++      ],
++      "output": "\u2717 com.ea.async.instrumentation.Transformer#transform cannot be verified: expected one method named transform, found 2: transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]), transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader); name one as transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])\n",
++      "work": "$WORK/checker-ygqphyq0"
++    }
++  },
++  "firstBlocker": "expected one method named transform, found 2: transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]), transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader); name one as transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++  "elapsedSeconds": 0.054,
++  "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/multi-release/01/current/incremental-analysis-28.json
+@@ -0,0 +1,201 @@
++{
++  "id": "incremental-analysis-28",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search",
++  "observer": "Inspect the original class selection and the referenced class names in a small build.",
++  "revisions": {
++    "old": "f4633c66214da5bca3761136e88c71ec3b1eead0",
++    "new": "4e33671a32cbad26d39404389165d07c35770070"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "defa0be736c2d26867746ccfff3614564061d859e03c088e6a35b9bda15964ec",
++  "sides": {
++    "old": {
++      "commit": "f4633c66214da5bca3761136e88c71ec3b1eead0",
++      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
++        "5ae4f6a5f844d34db58ada075bdb31b58de138e54288a0b9e6a3996329993cb6",
++        "635c839cad0212b7e9a27dea5823928b5b7010e5ca2d17985fb688d84d48fdb3",
++        "a94ad5b4d2bbbd20b6f38165751bddceb227420eb92c36160116fb5eaa157b9e",
++        "0e8aff5fe29b7b7c8e643d75eafc98cd754a3ceb5d215908cd69dd366b0286dd",
++        "229b10c12289bc0e28e3b9b64de3a61a6b736eb8afa145fdf4c33ff008736cb5",
++        "75e3810c681735e7a088294668f893667d193c87905e5bc976e03ccd939602c6",
++        "47ebf67979b231bf215ed967a63b2a142c8a2c1c7b219c0206559985e802b836",
++        "7ad0a3b98a9c284d6abc5beaf53f25ba4c4eb2b46b2402698a58774017c00dc0",
++        "0ab4654db5d86c019107dccad0d9c6c7fa8b3a9847e0a1f0b21b8384e43d9941",
++        "2cafa2629da49edd54eb4df6d15f628c2d80eec293f37cd561f1fe78e7bcff9d",
++        "9a84f5863407acf2bf9cf280cd02f5a518952a386de61df3b8c5db8cfdec725d",
++        "3f74c7c7b9c924769cf3c5b4d52d21aa63e9a2ccbf16f5d26c30ebb31b99699d",
++        "9e9a57439a98034732e94d841bb7065b56e3a065654361ca9cc07135e9fbe17c",
++        "807e9bc9e28d57ec0cb6daf04c317b3e13de5899c0282ee0f76c009198739350",
++        "1f10b2204cc77c919301f20ff90461c3df1b6e6cb148be1c2d22107f4851d423",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "11eec6fcc7a47c50c8d7fb7ac69920c33c70cb8df6b7a0d8eb751c813fb1928a",
++        "2254aa20804aaa804085830ae0b6e9105989c97849d2037e892872d13247c30a",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "aba7980581027ad5fc74a27ee4d64aad74932fdb32694967242d03fc50290d1f",
++        "8f3a655545fc5b4cbf12b5eb8a154fccb0c1144423a1450511f44005a3d574a2",
++        "b2931d41740490a8d931cbe0cfe9ac20deb66cca606e679f52522f7f534c9fd7",
++        "4df7a6a7be64b35bbccf60b5c115697f9ea3421d22674ae67135dde375fcca1f",
++        "3b0559bb8432f28937efe6ca193ef54a8506d0075d73fd7406b9b116c6a11063",
++        "5a15fdba22669e0fdd06e10dcce6320879e1f7398fbc910cd0677b50672a78c4",
++        "5fedab561b430bfaef520f06d269e21e999e564fb893465aa2d7d21ed06527ab",
++        "9e2434820dd2ba44ad70a66e5b2a9993a2a8b047ceabc3e850e4858cbf3f91c3"
++      ],
++      "orderedSha256": [
++        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
++        "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
++      ],
++      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
++      "descriptors": [
++        "(Ljava/nio/file/Path;Ljava/util/Set;)Ljava/util/stream/Stream;",
++        "(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;"
++      ]
++    },
++    "new": {
++      "commit": "4e33671a32cbad26d39404389165d07c35770070",
++      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
++        "5ae4f6a5f844d34db58ada075bdb31b58de138e54288a0b9e6a3996329993cb6",
++        "635c839cad0212b7e9a27dea5823928b5b7010e5ca2d17985fb688d84d48fdb3",
++        "a94ad5b4d2bbbd20b6f38165751bddceb227420eb92c36160116fb5eaa157b9e",
++        "0e8aff5fe29b7b7c8e643d75eafc98cd754a3ceb5d215908cd69dd366b0286dd",
++        "229b10c12289bc0e28e3b9b64de3a61a6b736eb8afa145fdf4c33ff008736cb5",
++        "75e3810c681735e7a088294668f893667d193c87905e5bc976e03ccd939602c6",
++        "47ebf67979b231bf215ed967a63b2a142c8a2c1c7b219c0206559985e802b836",
++        "7ad0a3b98a9c284d6abc5beaf53f25ba4c4eb2b46b2402698a58774017c00dc0",
++        "0ab4654db5d86c019107dccad0d9c6c7fa8b3a9847e0a1f0b21b8384e43d9941",
++        "2cafa2629da49edd54eb4df6d15f628c2d80eec293f37cd561f1fe78e7bcff9d",
++        "9a84f5863407acf2bf9cf280cd02f5a518952a386de61df3b8c5db8cfdec725d",
++        "3f74c7c7b9c924769cf3c5b4d52d21aa63e9a2ccbf16f5d26c30ebb31b99699d",
++        "9e9a57439a98034732e94d841bb7065b56e3a065654361ca9cc07135e9fbe17c",
++        "807e9bc9e28d57ec0cb6daf04c317b3e13de5899c0282ee0f76c009198739350",
++        "1f10b2204cc77c919301f20ff90461c3df1b6e6cb148be1c2d22107f4851d423",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "11eec6fcc7a47c50c8d7fb7ac69920c33c70cb8df6b7a0d8eb751c813fb1928a",
++        "2254aa20804aaa804085830ae0b6e9105989c97849d2037e892872d13247c30a",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "aba7980581027ad5fc74a27ee4d64aad74932fdb32694967242d03fc50290d1f",
++        "8f3a655545fc5b4cbf12b5eb8a154fccb0c1144423a1450511f44005a3d574a2",
++        "b2931d41740490a8d931cbe0cfe9ac20deb66cca606e679f52522f7f534c9fd7",
++        "4df7a6a7be64b35bbccf60b5c115697f9ea3421d22674ae67135dde375fcca1f",
++        "3b0559bb8432f28937efe6ca193ef54a8506d0075d73fd7406b9b116c6a11063",
++        "5a15fdba22669e0fdd06e10dcce6320879e1f7398fbc910cd0677b50672a78c4",
++        "5fedab561b430bfaef520f06d269e21e999e564fb893465aa2d7d21ed06527ab",
++        "9e2434820dd2ba44ad70a66e5b2a9993a2a8b047ceabc3e850e4858cbf3f91c3"
++      ],
++      "orderedSha256": [
++        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
++        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
++      ],
++      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
++      "descriptors": [
++        "(Ljava/nio/file/Path;Ljava/util/Set;)Ljava/util/stream/Stream;",
++        "(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.038,
++    "outputSha256": "1c12bbe8b7bec4b6f9a6d5416fefffd4fd06690d0eac5edf25fe2000071481bb",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "expected one method named search, found 2: search(java.util.stream.Stream), search(java.nio.file.Path, java.util.Set); name one as search(java.util.stream.Stream)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search cannot be verified: expected one method named search, found 2: search(java.util.stream.Stream), search(java.nio.file.Path, java.util.Set); name one as search(java.util.stream.Stream)",
++          "uri": null,
++          "line": 1
++        }
++      ],
++      "output": "\u2717 com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search cannot be verified: expected one method named search, found 2: search(java.util.stream.Stream), search(java.nio.file.Path, java.util.Set); name one as search(java.util.stream.Stream)\n",
++      "work": "$WORK/checker-m3kgpbod"
++    }
++  },
++  "firstBlocker": "expected one method named search, found 2: search(java.util.stream.Stream), search(java.nio.file.Path, java.util.Set); name one as search(java.util.stream.Stream)",
++  "elapsedSeconds": 0.075,
++  "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/multi-release/01/current/whatjdk-12.json
+@@ -0,0 +1,97 @@
++{
++  "id": "whatjdk-12",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.iodesystems.whatjdk.ClassEntryExtractor#next",
++  "observer": "Read an ordinary Java class and observe its class entry and referenced types.",
++  "revisions": {
++    "old": "206adaf9371d37dd308122f5f17e0f7cdaf3568c",
++    "new": "e5574c3c06f9db307b96baa5937f9c19039df605"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "defa0be736c2d26867746ccfff3614564061d859e03c088e6a35b9bda15964ec",
++  "sides": {
++    "old": {
++      "commit": "206adaf9371d37dd308122f5f17e0f7cdaf3568c",
++      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8"
++      ],
++      "orderedSha256": [
++        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8"
++      ],
++      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
++      "descriptors": [
++        "()Lcom/iodesystems/whatjdk/ClassEntry;",
++        "()Ljava/lang/Object;"
++      ]
++    },
++    "new": {
++      "commit": "e5574c3c06f9db307b96baa5937f9c19039df605",
++      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085"
++      ],
++      "orderedSha256": [
++        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085"
++      ],
++      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
++      "descriptors": [
++        "()Lcom/iodesystems/whatjdk/ClassEntry;",
++        "()Ljava/lang/Object;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.009,
++    "outputSha256": "9de1ba3a8b61fd1f954fc5f6a64be185973f4f9c55a97d64aa0aab87ca17509d",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.iodesystems.whatjdk.ClassEntryExtractor#next",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.iodesystems.whatjdk.ClassEntryExtractor#next cannot be verified: next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet",
++          "uri": null,
++          "line": 37
++        }
++      ],
++      "output": "\u2717 com.iodesystems.whatjdk.ClassEntryExtractor#next cannot be verified: next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet\n",
++      "work": "$WORK/checker-0jrmf2yo"
++    }
++  },
++  "firstBlocker": "next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet",
++  "elapsedSeconds": 0.039,
++  "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4"
++}

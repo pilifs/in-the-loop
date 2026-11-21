@@ -1,0 +1,347 @@
+{
+  "plan": {
+    "example": "352",
+    "task": "format",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "net.masterthought.cucumber.json.Result#getFormattedDuration()Ljava/lang/String;",
+    "revisions": [
+      "old",
+      "new"
+    ],
+    "claim": {
+      "task": "format",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "net.masterthought.cucumber.json.Result#getFormattedDuration()Ljava/lang/String;",
+      "file": "claims/format.json",
+      "sha256": "082e8e79b2669f68053073cbfd9e66ffdd9f7d19b27bb398a6fa89a374906b1a",
+      "property": "format",
+      "claimKind": "preservation",
+      "statement": "Both sides of the upgrade return exactly the same duration string for 18 report values deserialized from JSON, in UTC and English.",
+      "assume": "code >= 0 && code < 18",
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": "false",
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "caller-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "ec949ed6837ae3a5e0cf9376f7d38abcceaeebd49688fcfc726e4290390f458b"
+        },
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/calibration/CaseDriver.java",
+          "sha256": "e48002ef29c055a5224f19943c0dfd9f08b84c8f744dd80765c423066f9aad0c"
+        }
+      ],
+      "adapter": {
+        "entry": "calibration.Projection#format(I)Ljava/lang/String;",
+        "mapping": "Each selector picks one of three seconds, three millisecond values and two remainders; Jackson builds the real Result and the actual Joda formatter supplies the returned text.",
+        "correspondence": "caller-oracle",
+        "cases": 18
+      },
+      "key": "84de348848248c23"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "old",
+        "route": "published-artifact",
+        "repository": "https://github.com/damianszczepanik/cucumber-reporting",
+        "commit": "9e98993fbccbdd19a6be628fd9dcc4d8e2a4ff79",
+        "published": [
+          {
+            "coordinates": "net.masterthought:cucumber-reporting:5.7.8",
+            "url": "https://repo.maven.apache.org/maven2/net/masterthought/cucumber-reporting/5.7.8/cucumber-reporting-5.7.8.jar",
+            "sha256": "3fdfb7afd3baa1853ddfcc8ca07cb6aafaa9f1257a17d91f0149ee6e2b032a2d"
+          },
+          {
+            "coordinates": "joda-time:joda-time:2.12.5",
+            "url": "https://repo.maven.apache.org/maven2/joda-time/joda-time/2.12.5/joda-time-2.12.5.jar",
+            "sha256": "10628411ecb40c4634196c544f34681abdeef826f377096357433d1f9a135bc6"
+          },
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.14.0",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar",
+            "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.16.0/jackson-databind-2.16.0.jar",
+            "sha256": "8aaf1753823be70b798290e5826ab5bfe015d35b3a36a5d3c2ec9f57d4b0138b"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-core:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.16.0/jackson-core-2.16.0.jar",
+            "sha256": "66e2cde4cc7e565d5fce2a2998b64e991777bf9fad4d220735c525fd8d01c31a"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.16.0/jackson-annotations-2.16.0.jar",
+            "sha256": "c4b90ea0c0074da17efdc3aa23973525f25d6f34725692169748f529547334a6"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "new",
+        "route": "published-artifact",
+        "repository": "https://github.com/damianszczepanik/cucumber-reporting",
+        "commit": "29697966eacf46448a806ea03c6dd2d10e2665ec",
+        "parent": "9e98993fbccbdd19a6be628fd9dcc4d8e2a4ff79",
+        "published": [
+          {
+            "coordinates": "net.masterthought:cucumber-reporting:5.7.8",
+            "url": "https://repo.maven.apache.org/maven2/net/masterthought/cucumber-reporting/5.7.8/cucumber-reporting-5.7.8.jar",
+            "sha256": "3fdfb7afd3baa1853ddfcc8ca07cb6aafaa9f1257a17d91f0149ee6e2b032a2d"
+          },
+          {
+            "coordinates": "joda-time:joda-time:2.12.6",
+            "url": "https://repo.maven.apache.org/maven2/joda-time/joda-time/2.12.6/joda-time-2.12.6.jar",
+            "sha256": "f095506881f99d70cfddefd535c8ca0261b44f2ab53530d3adc89a92db9022f9"
+          },
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.14.0",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar",
+            "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.16.0/jackson-databind-2.16.0.jar",
+            "sha256": "8aaf1753823be70b798290e5826ab5bfe015d35b3a36a5d3c2ec9f57d4b0138b"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-core:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.16.0/jackson-core-2.16.0.jar",
+            "sha256": "66e2cde4cc7e565d5fce2a2998b64e991777bf9fad4d220735c525fd8d01c31a"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.16.0/jackson-annotations-2.16.0.jar",
+            "sha256": "c4b90ea0c0074da17efdc3aa23973525f25d6f34725692169748f529547334a6"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/format"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-042108-352-check-the-actual-duration-caller-thr/examples/352-cucumber-duration",
+    "network": true
+  },
+  "inputs": {
+    "example": "352",
+    "task": "format",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "net.masterthought.cucumber.json.Result#getFormattedDuration()Ljava/lang/String;",
+    "revisions": [
+      "old",
+      "new"
+    ],
+    "claim": {
+      "task": "format",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "net.masterthought.cucumber.json.Result#getFormattedDuration()Ljava/lang/String;",
+      "file": "claims/format.json",
+      "sha256": "082e8e79b2669f68053073cbfd9e66ffdd9f7d19b27bb398a6fa89a374906b1a",
+      "property": "format",
+      "claimKind": "preservation",
+      "statement": "Both sides of the upgrade return exactly the same duration string for 18 report values deserialized from JSON, in UTC and English.",
+      "assume": "code >= 0 && code < 18",
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": "false",
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 32,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "caller-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "ec949ed6837ae3a5e0cf9376f7d38abcceaeebd49688fcfc726e4290390f458b"
+        },
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/calibration/CaseDriver.java",
+          "sha256": "e48002ef29c055a5224f19943c0dfd9f08b84c8f744dd80765c423066f9aad0c"
+        }
+      ],
+      "adapter": {
+        "entry": "calibration.Projection#format(I)Ljava/lang/String;",
+        "mapping": "Each selector picks one of three seconds, three millisecond values and two remainders; Jackson builds the real Result and the actual Joda formatter supplies the returned text.",
+        "correspondence": "caller-oracle",
+        "cases": 18
+      },
+      "key": "84de348848248c23"
+    },
+    "artifacts": [
+      {
+        "revision": "old",
+        "route": "published-artifact",
+        "repository": "https://github.com/damianszczepanik/cucumber-reporting",
+        "commit": "9e98993fbccbdd19a6be628fd9dcc4d8e2a4ff79",
+        "published": [
+          {
+            "coordinates": "net.masterthought:cucumber-reporting:5.7.8",
+            "url": "https://repo.maven.apache.org/maven2/net/masterthought/cucumber-reporting/5.7.8/cucumber-reporting-5.7.8.jar",
+            "sha256": "3fdfb7afd3baa1853ddfcc8ca07cb6aafaa9f1257a17d91f0149ee6e2b032a2d"
+          },
+          {
+            "coordinates": "joda-time:joda-time:2.12.5",
+            "url": "https://repo.maven.apache.org/maven2/joda-time/joda-time/2.12.5/joda-time-2.12.5.jar",
+            "sha256": "10628411ecb40c4634196c544f34681abdeef826f377096357433d1f9a135bc6"
+          },
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.14.0",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar",
+            "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.16.0/jackson-databind-2.16.0.jar",
+            "sha256": "8aaf1753823be70b798290e5826ab5bfe015d35b3a36a5d3c2ec9f57d4b0138b"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-core:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.16.0/jackson-core-2.16.0.jar",
+            "sha256": "66e2cde4cc7e565d5fce2a2998b64e991777bf9fad4d220735c525fd8d01c31a"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.16.0/jackson-annotations-2.16.0.jar",
+            "sha256": "c4b90ea0c0074da17efdc3aa23973525f25d6f34725692169748f529547334a6"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "new",
+        "route": "published-artifact",
+        "repository": "https://github.com/damianszczepanik/cucumber-reporting",
+        "commit": "29697966eacf46448a806ea03c6dd2d10e2665ec",
+        "parent": "9e98993fbccbdd19a6be628fd9dcc4d8e2a4ff79",
+        "published": [
+          {
+            "coordinates": "net.masterthought:cucumber-reporting:5.7.8",
+            "url": "https://repo.maven.apache.org/maven2/net/masterthought/cucumber-reporting/5.7.8/cucumber-reporting-5.7.8.jar",
+            "sha256": "3fdfb7afd3baa1853ddfcc8ca07cb6aafaa9f1257a17d91f0149ee6e2b032a2d"
+          },
+          {
+            "coordinates": "joda-time:joda-time:2.12.6",
+            "url": "https://repo.maven.apache.org/maven2/joda-time/joda-time/2.12.6/joda-time-2.12.6.jar",
+            "sha256": "f095506881f99d70cfddefd535c8ca0261b44f2ab53530d3adc89a92db9022f9"
+          },
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.14.0",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar",
+            "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.16.0/jackson-databind-2.16.0.jar",
+            "sha256": "8aaf1753823be70b798290e5826ab5bfe015d35b3a36a5d3c2ec9f57d4b0138b"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-core:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.16.0/jackson-core-2.16.0.jar",
+            "sha256": "66e2cde4cc7e565d5fce2a2998b64e991777bf9fad4d220735c525fd8d01c31a"
+          },
+          {
+            "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.16.0",
+            "url": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.16.0/jackson-annotations-2.16.0.jar",
+            "sha256": "c4b90ea0c0074da17efdc3aa23973525f25d6f34725692169748f529547334a6"
+          }
+        ],
+        "adapters": [
+          "adapter/calibration/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/calibration/Projection.java",
+        "sha256": "ce817644f557a963d3299447ce4b0b3e060a73931ffb851b050a90f8357cf900"
+      }
+    ]
+  },
+  "key": "f71017472e1c4e79b46d5f83ac12ac6e96a9d512eec72e1fd5f23cc022cf4f56"
+}

@@ -3524,6 +3524,12 @@ change `vovwwylnknrz` · [log `ff4c580f8499`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 2 of the 2 job(s). 20261121-042109-multi-release-corpus-group-3-check-eight: passed: 1 passed step(s) in 8.4s, peak 146.7 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-042109-multi-release-corpus-group-4-check-eight: passed: 1 passed step(s) in 16.2s, peak 218.3 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
+### Record verification results for 3 job(s)
+
+change `wzvvmponwlxr` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-042108-352-check-the-actual-duration-caller-thr: failed: 1 failed step(s) in 45.5s, peak 131.7 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261121-042108-multi-release-corpus-group-1-check-eight: passed: 1 passed step(s) in 21.8s, peak 555.9 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-042108-multi-release-corpus-group-2-check-eight: passed: 1 passed step(s) in 28.7s, peak 533.5 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz) has every step in between: reasoning, tool calls and their results.
