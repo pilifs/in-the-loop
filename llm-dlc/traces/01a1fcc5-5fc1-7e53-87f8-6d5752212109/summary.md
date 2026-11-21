@@ -18,56 +18,6 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-### Rebuild original upgrade inputs for replay (verification pending)
-
-change `uurxkzmtkznn` · [log `c2e804e20dd0`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/c2e804e20dd06bbb4a5c0b3e6a8926064eebd303f12a4ec01e15b1c2962d65b5.jsonl.gz)
-
-Restore the pinned histories of all 32 engineering cases and repeat the native baseline on both sets. Four groups rebuild authentic Maven modules, generated classes and resources for the paid-down framework setup failures. The two native jobs are 20261121-062836-rebuild-original-java-upgrades-for-the-m and 20261121-062836-rebuild-original-java-upgrades-for-the-t. The module jobs are 20261121-062837-restore-complete-original-maven-modules, 20261121-062848-group-2-original-java-modules-for-caller, 20261121-062849-group-3-original-java-modules-for-caller and 20261121-062849-group-4-original-java-modules-for-caller. The original Git source resolver verified every revision and pipeline validation found no problems.
-
-### Record native upgrade runs and retry modules (verification pending)
-
-change `ytkkkwytwnvy` · [log `2efa3dc1e992`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/2efa3dc1e992ecf19465891304045029a5011b9b46146dadfdb1fa4a0086bcae.jsonl.gz)
-
-All 32 original native attempts completed on this line. Four independent module builds ended on SIGTERM before recording client evidence when a second checkout-local runner claimed the same jobs. The default checkout will alone run the replacements 20261121-063426-module-recovery-1-original-maven-classpa through 20261121-063426-module-recovery-4-original-maven-classpa. The failed starts retain their actual disposition.
-
-### Trace failures before the selected Java caller (verification pending)
-
-change `xvsqopmxsnpu` · [log `36d64df0a8f4`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/36d64df0a8f450da63a789f6bd4bce6e7e1af8740af633e3692ea953e9d8e839.jsonl.gz)
-
-Complete the debugger and observation changes begun in the input-preparation commit. A fresh diagnostic JVM matches the escaping exception object on the observer thread to its live throw event and records exact methods, bytecode positions and loaded JAR hashes. Both versions and all admitted inputs are retained when construction fails before the selected method. The primary claim remains open. The regression erases the application's Java stack, then replaces a caught exception with another of the same class. Only the genuine earlier failure qualifies. All 26 affected test groups passed and the job schemas validated.
-
-Repeat the 27 original caller scenarios in 20261121-064106-replay-group-01-with-exact-jvm-early-fai through 20261121-064107-replay-group-06-with-exact-jvm-early-fai. Repeat the previously unavailable upstream LanguageTool builds and tests in 20261121-064107-restore-languagetool-lucene-original-bui and 20261121-064107-restore-languagetool-derby-original-buil with the restored JCenter dependency. The two native jobs already covered all 32 cases.
-
-### Recover declared upgrade environments and rethrows (verification pending)
-
-change `qmpvuwxuurmu` · [log `1aa3232cda18`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/1aa3232cda187e6e4b120b20c0d971832a4e90444da93291cb5ff4708ca5c9b5.jsonl.gz)
-
-Java finally and resource cleanup can rethrow the same exception after its original stack has unwound. The debugger retains the last attributed throw on the same observer thread plus its subsequent propagation, and distinguishes it from a newly allocated exception. The original-classpath workflow now records and enforces Maven runtime, host-provided and test scopes. It imports fourteen digest-pinned historical release files atomically. Verified Git commits survive shallow local clones. LanguageTool now has observations of its genuine n-gram index and Derby test database. The first build retry recovered both developer tests: each passed before the upgrade and failed afterward. Derby is explicitly test-only on both original POMs.
-
-All 28 affected groups passed, including 58 Rust test binaries. Four live JVM controls and five Maven and original-CI controls passed separately. Checked the archived cache, all 32 local Git pairs offline, javac against the original LanguageTool module, the tier inventory and the job schemas. Jobs 20261121-065458-current-upgrade-group-01-native-and-fini through 20261121-065459-current-upgrade-group-07-native-and-fini repeat all 32 pairs on the repaired build. Jobs 20261121-065459-restored-lucene-original-maven-ci-on-bot, 20261121-065459-restored-derby-original-maven-ci-on-both and 20261121-065459-restored-deltaspike-original-maven-ci-on rerun original CI.
-
-### Record original startup failures and restored LanguageTool tests
-
-change `oqxkwqszqnlv` · [log `b21ec4fb566c`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/b21ec4fb566cc48fe203fdd76d01ecb577785ac3e0e72ff4de3c7c416930ec54.jsonl.gz)
-
-Import 22 completed jobs from the single host runner after validating each committed job specification, result and applied output SHA-256. The original Lucene test now passes on the old artifact and fails with a missing PointsFormat after the upgrade. The original Derby testcase passes before and cannot obtain a JDBC connection after. Its classpath is test-only. The application replays trace the original POI failure through resource cleanup and recover Apollo's nested Guava linkage error. Nacos's missing ErrorCoded and Bundlor's additional Ant dependency identify the next repeat. Receipts include every intermediate open and missing build.
-
-### Explain missing Java classes on both releases (verification pending)
-
-change `mslmysrlywzu` · [log `d26bec34cd70`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/d26bec34cd70459f9e3ec43259bbb2ead8f3d42e51a74892ec2cb07087aef643.jsonl.gz)
-
-When a caller repeatedly stops with a missing type, attempt that exact lookup without initializing it in two additional original JVMs. Bind the runtime provider, effective multi-release entries and genuine class-file references or member declarations to both sets of bytes. This distinguishes an old type that was actually loaded and removed from a new reference lacking a provider on either classpath. Text literals do not qualify, and neither conclusion closes the downstream caller question. A live removal control, a literal-only negative control, 28 affected test groups and schema validation passed. The original Lucene 70 codec declares pointsFormat() with the missing return type.
-
-The remaining Ant 1.7.0 bundle required by Togglz now has verified archive hashes and OSGi metadata. Jobs 20261121-070716-final-v2-group-01-original-caller-and-mi through 20261121-070717-final-v2-group-07-original-caller-and-mi repeat native and finite checks for all 32 original upgrades. Job 20261121-070717-final-togglz-original-ci-and-named-featu repeats its full original CI and the registered theory.
-
-### Report pinned V2 results for all 32 original Java upgrades
-
-change `mqymnlvpnmnu` · [log `ea141229c5b6`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/ea141229c5b6e16335479af30ba6eea5688364c4f38ee0d4f1226dc8baa4e4c8.jsonl.gz)
-
-V2 replays a third relevant main historical change. Togglz obeyed both flag booleans with its original provided DeltaSpike 1.7.2 API and threw on both with 1.9.2. Both original CI runs saw 180 testcases and the named theory passed before and failed after. The 12 routine decisions and five transfer decisions repeated. All 32 pairs have their original inputs, including one host-provided and one test-only environment. The pilot remains at zero of 15 because three historical decisions fall short of eight.
-
-The two missing-class diagnoses distinguish removal of Spring ErrorCoded from the Lucene codec's newly required PointsFormat return type on a classpath lacking it both times. Exact repeated original JVM inputs, JAR hashes, debugger evidence and independent fresh class lookups support the scoped findings. Seven native and finite groups and the final original CI job passed. Verified 12 tool and JDK digests, 467 product files, ten workload inputs, all applied result hashes, all 32 caller bindings, both repeats, the machine scorecard, 32 regenerated reports and all local links. Both affected test groups passed, including 58 Rust binaries.
-
 ### Record verification results for 6 job(s)
 
 change `torsqylrpknz` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
@@ -127,6 +77,56 @@ Outputs applied for 1 of the 1 job(s). 20261121-070717-final-v2-group-06-origina
 change `mlowsnvomywl` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
 
 Outputs applied for 7 of the 7 job(s). 20261121-070716-final-v2-group-01-original-caller-and-mi: passed: 4 passed step(s) in 1m12s, peak 800.6 MiB (estimated 6m00s, 2.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261121-070716-final-v2-group-02-original-caller-and-mi: passed: 2 passed step(s) in 58.1s, peak 311.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-03-original-caller-and-mi: passed: 2 passed step(s) in 1m03s, peak 132.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-04-original-caller-and-mi: passed: 2 passed step(s) in 1m10s, peak 196.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-togglz-original-ci-and-named-featu: passed: 3 passed step(s) in 1m12s, peak 1.7 GiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-05-original-caller-and-mi: passed: 2 passed step(s) in 57.7s, peak 137.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-07-original-caller-and-mi: passed: 4 passed step(s) in 1m45s, peak 2.5 GiB (estimated 6m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Rebuild original upgrade inputs for replay (verification pending)
+
+change `uurxkzmtkznn` · [log `c2e804e20dd0`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/c2e804e20dd06bbb4a5c0b3e6a8926064eebd303f12a4ec01e15b1c2962d65b5.jsonl.gz)
+
+Restore the pinned histories of all 32 engineering cases and repeat the native baseline on both sets. Four groups rebuild authentic Maven modules, generated classes and resources for the paid-down framework setup failures. The two native jobs are 20261121-062836-rebuild-original-java-upgrades-for-the-m and 20261121-062836-rebuild-original-java-upgrades-for-the-t. The module jobs are 20261121-062837-restore-complete-original-maven-modules, 20261121-062848-group-2-original-java-modules-for-caller, 20261121-062849-group-3-original-java-modules-for-caller and 20261121-062849-group-4-original-java-modules-for-caller. The original Git source resolver verified every revision and pipeline validation found no problems.
+
+### Record native upgrade runs and retry modules (verification pending)
+
+change `ytkkkwytwnvy` · [log `2efa3dc1e992`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/2efa3dc1e992ecf19465891304045029a5011b9b46146dadfdb1fa4a0086bcae.jsonl.gz)
+
+All 32 original native attempts completed on this line. Four independent module builds ended on SIGTERM before recording client evidence when a second checkout-local runner claimed the same jobs. The default checkout will alone run the replacements 20261121-063426-module-recovery-1-original-maven-classpa through 20261121-063426-module-recovery-4-original-maven-classpa. The failed starts retain their actual disposition.
+
+### Trace failures before the selected Java caller (verification pending)
+
+change `xvsqopmxsnpu` · [log `36d64df0a8f4`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/36d64df0a8f450da63a789f6bd4bce6e7e1af8740af633e3692ea953e9d8e839.jsonl.gz)
+
+Complete the debugger and observation changes begun in the input-preparation commit. A fresh diagnostic JVM matches the escaping exception object on the observer thread to its live throw event and records exact methods, bytecode positions and loaded JAR hashes. Both versions and all admitted inputs are retained when construction fails before the selected method. The primary claim remains open. The regression erases the application's Java stack, then replaces a caught exception with another of the same class. Only the genuine earlier failure qualifies. All 26 affected test groups passed and the job schemas validated.
+
+Repeat the 27 original caller scenarios in 20261121-064106-replay-group-01-with-exact-jvm-early-fai through 20261121-064107-replay-group-06-with-exact-jvm-early-fai. Repeat the previously unavailable upstream LanguageTool builds and tests in 20261121-064107-restore-languagetool-lucene-original-bui and 20261121-064107-restore-languagetool-derby-original-buil with the restored JCenter dependency. The two native jobs already covered all 32 cases.
+
+### Recover declared upgrade environments and rethrows (verification pending)
+
+change `qmpvuwxuurmu` · [log `1aa3232cda18`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/1aa3232cda187e6e4b120b20c0d971832a4e90444da93291cb5ff4708ca5c9b5.jsonl.gz)
+
+Java finally and resource cleanup can rethrow the same exception after its original stack has unwound. The debugger retains the last attributed throw on the same observer thread plus its subsequent propagation, and distinguishes it from a newly allocated exception. The original-classpath workflow now records and enforces Maven runtime, host-provided and test scopes. It imports fourteen digest-pinned historical release files atomically. Verified Git commits survive shallow local clones. LanguageTool now has observations of its genuine n-gram index and Derby test database. The first build retry recovered both developer tests: each passed before the upgrade and failed afterward. Derby is explicitly test-only on both original POMs.
+
+All 28 affected groups passed, including 58 Rust test binaries. Four live JVM controls and five Maven and original-CI controls passed separately. Checked the archived cache, all 32 local Git pairs offline, javac against the original LanguageTool module, the tier inventory and the job schemas. Jobs 20261121-065458-current-upgrade-group-01-native-and-fini through 20261121-065459-current-upgrade-group-07-native-and-fini repeat all 32 pairs on the repaired build. Jobs 20261121-065459-restored-lucene-original-maven-ci-on-bot, 20261121-065459-restored-derby-original-maven-ci-on-both and 20261121-065459-restored-deltaspike-original-maven-ci-on rerun original CI.
+
+### Record original startup failures and restored LanguageTool tests
+
+change `oqxkwqszqnlv` · [log `b21ec4fb566c`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/b21ec4fb566cc48fe203fdd76d01ecb577785ac3e0e72ff4de3c7c416930ec54.jsonl.gz)
+
+Import 22 completed jobs from the single host runner after validating each committed job specification, result and applied output SHA-256. The original Lucene test now passes on the old artifact and fails with a missing PointsFormat after the upgrade. The original Derby testcase passes before and cannot obtain a JDBC connection after. Its classpath is test-only. The application replays trace the original POI failure through resource cleanup and recover Apollo's nested Guava linkage error. Nacos's missing ErrorCoded and Bundlor's additional Ant dependency identify the next repeat. Receipts include every intermediate open and missing build.
+
+### Explain missing Java classes on both releases (verification pending)
+
+change `mslmysrlywzu` · [log `d26bec34cd70`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/d26bec34cd70459f9e3ec43259bbb2ead8f3d42e51a74892ec2cb07087aef643.jsonl.gz)
+
+When a caller repeatedly stops with a missing type, attempt that exact lookup without initializing it in two additional original JVMs. Bind the runtime provider, effective multi-release entries and genuine class-file references or member declarations to both sets of bytes. This distinguishes an old type that was actually loaded and removed from a new reference lacking a provider on either classpath. Text literals do not qualify, and neither conclusion closes the downstream caller question. A live removal control, a literal-only negative control, 28 affected test groups and schema validation passed. The original Lucene 70 codec declares pointsFormat() with the missing return type.
+
+The remaining Ant 1.7.0 bundle required by Togglz now has verified archive hashes and OSGi metadata. Jobs 20261121-070716-final-v2-group-01-original-caller-and-mi through 20261121-070717-final-v2-group-07-original-caller-and-mi repeat native and finite checks for all 32 original upgrades. Job 20261121-070717-final-togglz-original-ci-and-named-featu repeats its full original CI and the registered theory.
+
+### Report pinned V2 results for all 32 original Java upgrades
+
+change `mqymnlvpnmnu` · [log `ea141229c5b6`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/ea141229c5b6e16335479af30ba6eea5688364c4f38ee0d4f1226dc8baa4e4c8.jsonl.gz)
+
+V2 replays a third relevant main historical change. Togglz obeyed both flag booleans with its original provided DeltaSpike 1.7.2 API and threw on both with 1.9.2. Both original CI runs saw 180 testcases and the named theory passed before and failed after. The 12 routine decisions and five transfer decisions repeated. All 32 pairs have their original inputs, including one host-provided and one test-only environment. The pilot remains at zero of 15 because three historical decisions fall short of eight.
+
+The two missing-class diagnoses distinguish removal of Spring ErrorCoded from the Lucene codec's newly required PointsFormat return type on a classpath lacking it both times. Exact repeated original JVM inputs, JAR hashes, debugger evidence and independent fresh class lookups support the scoped findings. Seven native and finite groups and the final original CI job passed. Verified 12 tool and JDK digests, 467 product files, ten workload inputs, all applied result hashes, all 32 caller bindings, both repeats, the machine scorecard, 32 regenerated reports and all local links. Both affected test groups passed, including 58 Rust binaries.
 
 ## Conversation
 

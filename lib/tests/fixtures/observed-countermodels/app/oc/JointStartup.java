@@ -16,6 +16,27 @@ public class JointStartup {
         }
     }
 
+    static class Reader {
+        static final int beforeEntry = Store.count;
+    }
+
+    public static int recorded() { return Reader.beforeEntry; }
+
+    static class Directory {
+        static final String file = new java.io.File("entry").getAbsoluteFile().getPath();
+    }
+
+    static class Canonical {
+        static String file;
+        static {
+            try { file = new java.io.File("entry").getCanonicalPath(); }
+            catch (java.io.IOException e) { throw new ExceptionInInitializerError(e); }
+        }
+    }
+
+    public static boolean atRoot() { return Directory.file.equals("/entry"); }
+    public static boolean canonical() { return Canonical.file.equals("/entry"); }
+
     public static boolean shared() {
         int[] owned = Root.bytes;
         Store.bytes[0]++;

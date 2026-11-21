@@ -89,6 +89,8 @@ def source(entry, claim, inputs, names, *, argument_expression=None, helper=""):
         statements.append(f'if (Runtime.getRuntime().availableProcessors() != {count}) throw new IllegalStateException("processor count");')
     if settings.get("emptyEnvironment"):
         statements.append('if (!System.getenv().isEmpty()) throw new IllegalStateException("process environment");')
+    if settings.get("rootWorkingDirectory"):
+        statements.append('if (!"/".equals(System.getProperty("user.dir")) || !"/".equals(new java.io.File("").getAbsolutePath())) throw new IllegalStateException("working directory");')
     if settings.get("preinitializeTogether"):
         for name in sorted(claim["observedInitializers"]):
             if not re.fullmatch(r"[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*", name):
@@ -191,9 +193,10 @@ def check(plan, prepared, inputs, work, entry=None):
                 cp.sort(key=lambda a: a.path != holder)
             settings = claim.get("observedRuntime", {})
             flags = [f"-XX:ActiveProcessorCount={settings['processors']}"] if settings.get("processors") else []
-            command = [str(Path(jdk["home"]) / "bin/java"), *flags, "-cp", os.pathsep.join(str(where / a.path) for a in cp), str(path)]
+            command = [str(Path(jdk["home"]) / "bin/java"), *flags, "-cp", os.pathsep.join(str((where / a.path).absolute()) for a in cp), str(path.absolute())]
             env = {} if settings.get("emptyEnvironment") else runtime._verifier_env(jdk)
-            result = subprocess.run(command, capture_output=True, text=True, timeout=30, env=env)
+            result = subprocess.run(command, capture_output=True, text=True, timeout=30, env=env,
+                                    cwd="/" if settings.get("rootWorkingDirectory") else None)
             if result.returncode:
                 raise ValueError(f"JVM replay failed on {rev}: {result.stderr[-1000:]}")
             rows = result.stdout.splitlines()

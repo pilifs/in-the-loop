@@ -18,6 +18,72 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
+### Record verification results for 1 job(s)
+
+change `qulswuqnwtou` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-051151-caller-recovery-2-check-original-fixture: passed: 1 passed step(s) in 18.8s, peak 123.4 MiB (estimated 3m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 6 job(s)
+
+change `xkzpulxsnron` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 6 of the 6 job(s). 20261121-051151-caller-recovery-1-check-original-fixture: passed: 1 passed step(s) in 53.3s, peak 165.6 MiB (estimated 3m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-051151-complete-modules-1-materialize-original: passed: 2 passed step(s) in 1m40s, peak 959.5 MiB (estimated 12m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-051152-complete-modules-2-materialize-original: passed: 1 passed step(s) in 2m19s, peak 1.4 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-051152-complete-modules-3-materialize-original: passed: 1 passed step(s) in 1m29s, peak 1.0 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-051152-complete-modules-4-materialize-original: passed: 1 passed step(s) in 1m55s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-052300-transfer-applications-replay-original-qr: passed: 2 passed step(s) in 2m33s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `trnkpwqpmkzs` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-050135-350-exhaust-both-original-application-in: passed: 1 passed step(s) in 5.8s, peak 127.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-050135-351-exhaust-both-original-application-in: passed: 1 passed step(s) in 4.8s, peak 130.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `kunoxzvnosun` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-053029-352-compare-original-formatter-paths-pas: failed: 1 failed step(s) in 35.3s, peak 217.4 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+change `ummuvrmtmktr` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 3 of the 3 job(s). 20261121-054619-observe-spring-configuration-callbacks-a: passed: 1 passed step(s) in 16.8s, peak 144.2 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-054619-separate-outbound-wire-serialization-and: passed: 1 passed step(s) in 9.4s, peak 149.5 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-054619-togglz-original-deltaspike-callback-and: passed: 3 passed step(s) in 29.3s, peak 564.6 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `xrxszllqtwpw` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-054619-apollo-original-guice-services-and-tagge: passed: 3 passed step(s) in 51.9s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `vpsrlxylurkm` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-055303-compile-original-togglz-and-check-its-co: passed: 2 passed step(s) in 14.0s, peak 577.4 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `oltlmqzxzuuz` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-055302-rebuild-both-original-apollo-modules-in: passed: 2 passed step(s) in 36.5s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+change `lqtkmznupvso` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 3 of the 3 job(s). 20261121-055812-pinned-v1-finite-caller-group-1-replay-o: passed: 1 passed step(s) in 19.2s, peak 151.8 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-native-comparison-on-the-trans: passed: 1 passed step(s) in 14.2s, peak 177.5 MiB (estimated 6m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-055813-pinned-v1-finite-caller-group-6-replay-o: passed: 1 passed step(s) in 24.2s, peak 137.3 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 5 job(s)
+
+change `vwsmtyovzomu` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 5 of the 5 job(s). 20261121-055812-pinned-v1-finite-caller-group-2-replay-o: passed: 1 passed step(s) in 32.9s, peak 146.3 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-finite-caller-group-3-replay-o: passed: 1 passed step(s) in 58.7s, peak 131.3 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-finite-caller-group-4-replay-o: passed: 1 passed step(s) in 1m03s, peak 195.9 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-native-comparison-on-the-main: passed: 1 passed step(s) in 35.7s, peak 455.8 MiB (estimated 6m00s, 2.0 GiB); 24 output file(s) changed Applied 24 output(s). 20261121-055813-pinned-v1-finite-caller-group-5-replay-o: passed: 1 passed step(s) in 47.9s, peak 139.8 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `xlromxtxovkn` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-060355-pinned-v1-native-recovery-on-five-comple: passed: 2 passed step(s) in 1.6s, peak 119.4 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ### Replay original application fixtures and complete Maven modules (verification pending)
 
 change `wwpymuotyszx` · [log `f08d89934cdb`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/f08d89934cdb3f7ed610215cb1431ba36959979200e1ab9d14f43075e6bed20b.jsonl.gz)
@@ -93,72 +159,6 @@ Against V0 with no accepted decisions, V1 independently replays 2 of 12 register
 Separate original observations reproduce the Retrofit outbound serialization failure and spreadsheet workbook-opening failure while preserving the registered response/worksheet-style distinction. Both original artifacts became available for 29 of 32 pairs. The report names the first open step, historical CI and next review action for every case, including budget and measurement limits.
 
 The frozen native binary ran on all 32 pairs and on five additional complete-module inputs. Rechecked 27 reviewed caller scopes, all 64 original CI receipts, all 32 focused historical CI receipts, both supplemental original witnesses, the portable source manifest and all 12 tool/JDK digests. All nine final pipeline jobs, all 58 Rust test binaries, both report-related Python groups and all five disclosed example validators passed. Original receipts, prior open attempts and the failed native Cucumber proof are retained.
-
-### Record verification results for 1 job(s)
-
-change `qulswuqnwtou` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-051151-caller-recovery-2-check-original-fixture: passed: 1 passed step(s) in 18.8s, peak 123.4 MiB (estimated 3m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 6 job(s)
-
-change `xkzpulxsnron` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 6 of the 6 job(s). 20261121-051151-caller-recovery-1-check-original-fixture: passed: 1 passed step(s) in 53.3s, peak 165.6 MiB (estimated 3m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-051151-complete-modules-1-materialize-original: passed: 2 passed step(s) in 1m40s, peak 959.5 MiB (estimated 12m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-051152-complete-modules-2-materialize-original: passed: 1 passed step(s) in 2m19s, peak 1.4 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-051152-complete-modules-3-materialize-original: passed: 1 passed step(s) in 1m29s, peak 1.0 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-051152-complete-modules-4-materialize-original: passed: 1 passed step(s) in 1m55s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-052300-transfer-applications-replay-original-qr: passed: 2 passed step(s) in 2m33s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 2 job(s)
-
-change `trnkpwqpmkzs` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 2 of the 2 job(s). 20261121-050135-350-exhaust-both-original-application-in: passed: 1 passed step(s) in 5.8s, peak 127.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-050135-351-exhaust-both-original-application-in: passed: 1 passed step(s) in 4.8s, peak 130.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `kunoxzvnosun` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-053029-352-compare-original-formatter-paths-pas: failed: 1 failed step(s) in 35.3s, peak 217.4 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 3 job(s)
-
-change `ummuvrmtmktr` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 3 of the 3 job(s). 20261121-054619-observe-spring-configuration-callbacks-a: passed: 1 passed step(s) in 16.8s, peak 144.2 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-054619-separate-outbound-wire-serialization-and: passed: 1 passed step(s) in 9.4s, peak 149.5 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-054619-togglz-original-deltaspike-callback-and: passed: 3 passed step(s) in 29.3s, peak 564.6 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `xrxszllqtwpw` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-054619-apollo-original-guice-services-and-tagge: passed: 3 passed step(s) in 51.9s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `vpsrlxylurkm` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-055303-compile-original-togglz-and-check-its-co: passed: 2 passed step(s) in 14.0s, peak 577.4 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `oltlmqzxzuuz` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-055302-rebuild-both-original-apollo-modules-in: passed: 2 passed step(s) in 36.5s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 3 job(s)
-
-change `lqtkmznupvso` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 3 of the 3 job(s). 20261121-055812-pinned-v1-finite-caller-group-1-replay-o: passed: 1 passed step(s) in 19.2s, peak 151.8 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-native-comparison-on-the-trans: passed: 1 passed step(s) in 14.2s, peak 177.5 MiB (estimated 6m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-055813-pinned-v1-finite-caller-group-6-replay-o: passed: 1 passed step(s) in 24.2s, peak 137.3 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 5 job(s)
-
-change `vwsmtyovzomu` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 5 of the 5 job(s). 20261121-055812-pinned-v1-finite-caller-group-2-replay-o: passed: 1 passed step(s) in 32.9s, peak 146.3 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-finite-caller-group-3-replay-o: passed: 1 passed step(s) in 58.7s, peak 131.3 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-finite-caller-group-4-replay-o: passed: 1 passed step(s) in 1m03s, peak 195.9 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-native-comparison-on-the-main: passed: 1 passed step(s) in 35.7s, peak 455.8 MiB (estimated 6m00s, 2.0 GiB); 24 output file(s) changed Applied 24 output(s). 20261121-055813-pinned-v1-finite-caller-group-5-replay-o: passed: 1 passed step(s) in 47.9s, peak 139.8 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `xlromxtxovkn` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-060355-pinned-v1-native-recovery-on-five-comple: passed: 2 passed step(s) in 1.6s, peak 119.4 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ## Conversation
 

@@ -84,30 +84,6 @@ change `mxuwkwnryopt` · [log `1e195ed34407`](https://terminalvalue.net/raw-trac
 
 Discover concrete caller methods and exact overloads from original bytecode, then run a finite, source-reviewed observer on the original classpaths. The debugger sees a real entry into the declared method and descriptor for every input and repetition. JAR origins, exact UTF-16 results or escaping exceptions, independent expectations and stable repeated JVMs qualify each decision. The negative regression loads the client and references a call in an untaken branch, and correctly earns no result. A real ReflectASM probe reproduced the changed behavior with all eight original method-entry checks. Of 42 affected test groups, the history-span test failed while collection was active and passed when repeated; the updated three replay tests and tier lint pass. Jobs 20261121-042207-finite-caller-group-1-qualify-original-a, 20261121-042207-finite-caller-group-2-qualify-original-a, 20261121-042207-finite-caller-group-3-qualify-original-a, 20261121-042207-finite-caller-group-4-qualify-original-a, 20261121-043632-finite-caller-group-5-replay-original-ma, 20261121-043632-finite-caller-group-6-replay-original-ma, 20261121-043003-overload-recovery-group-1-compare-sixtee, 20261121-043003-overload-recovery-group-2-compare-sixtee cover 63 finite inputs across 16 upgrades and a full 32-case exact-overload rerun.
 
-### Run the original Maven lifecycle alongside the 32 upgrade reports (verification pending)
-
-change `xnqqzzvoxrnt` · [log `a03b01a3ad71`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/a03b01a3ad712e287babd0d7d77592cc6ecbac96086763eaac0b504a5292a0f0.jsonl.gz)
-
-Run Maven verify on the owning reactor module and prerequisites for 64 clean original revisions. Save historical workflow digests, actual test counts, matching developer assertions and separate build, timeout or zero-test outcomes. Source checkout and Maven run inside independent working areas, downloads share the serial repository and ephemeral build trees are removed. A fresh synthetic Surefire report verified parameterized test matching, skip and failure accounting. The selected default-tier run passed on retry. Jobs 20261121-044031-original-ci-group-1-run-unmodified-maven, 20261121-044031-original-ci-group-2-run-unmodified-maven, 20261121-044031-original-ci-group-3-run-unmodified-maven, 20261121-044031-original-ci-group-4-run-unmodified-maven, 20261121-044031-original-ci-group-5-run-unmodified-maven, 20261121-044031-original-ci-group-6-run-unmodified-maven.
-
-### Record the applied upgrade repairs and all 32 maintainer decisions
-
-change `nqkulvsxkzoz` · [log `87083561f23e`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/87083561f23ef0eed3a975f9957d584420272f36d1ea98db289621be37b7c8f9.jsonl.gz)
-
-The 16 scoped caller replays establish eight main-set finite preservations and replay the ReflectASM breakage, with three gains on the eight transfer upgrades. Validate actual method-entry hits, two fresh JVM results per input and side, original source and artifact bindings, old expectations, and the exact differing inputs before crediting a result. Record all open cases, all 32 native reruns after multi-release selection, all 32 exact-overload reruns, and the Cucumber checked-exception blocker. Added five-line reports for every original client and a reproducible scorecard.
-
-### Qualify finite UTF-16 string domains and original caller returns (verification pending)
-
-change `sslyzsppxvsn` · [log `cff0f071e654`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/cff0f071e654456c3f345d22522a35b670932c4529d283e48686deb3945159a5.jsonl.gz)
-
-Check one finite alphabet at every UTF-16 position against a mandatory conjunct of the original guard. Save the alphabets and total candidate cardinality, and distinguish null, empty strings and isolated UTF-16 surrogates on return and witness replay. The core decoding and enumeration changes landed in the preceding CI-baseline change while its scoped snapshot was being assembled. This change records the domain binding, regression controls and public jobs. A capped original Commons Text run established the unchanged claim over all 156 strings. All 25 affected Python groups passed. Jobs 20261121-044738-349-exhaust-actual-csv-fields-with-lossl, 20261121-044738-352-exhaust-actual-duration-strings-with qualify the originals for Commons Text and Cucumber Reporting.
-
-### Resolve original Maven relocations and compare the registered upstream tests (verification pending)
-
-change `orvrywvyynkl` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
-
-Bind a relocated Maven dependency to its actual runtime JAR through the published POM chain. The previously missing Hibernate entity-manager archive is present under org.hibernate.orm. Serve Animal Sniffer signature artifacts, retain the actionable Maven error and final diagnostic, and require actual named testcase XML. The official CompCheck call-site registry covers four of the 32 exact old client pins; run nine relevant published locations, retaining other-client knowledge in the sensitivity treatment. Unit controls verified relocation, cycles, signatures, named, skipped and failed testcases. All 27 affected Python groups passed, with the watcher test passing on retry. Jobs 20261121-050027-compsuite-i-38-run-compcheck-on-its-orig, 20261121-050027-compsuite-i-4-run-compcheck-on-its-origi, 20261121-050027-compsuite-i-29-run-compcheck-on-its-orig, 20261121-050027-compsuite-i-36-run-compcheck-on-its-orig, 20261121-051224-original-named-test-group-1-reproduce-fo, 20261121-051224-original-named-test-group-2-reproduce-fo, 20261121-051224-original-named-test-group-3-reproduce-fo, 20261121-051225-original-named-test-group-4-reproduce-fo.
-
 ### Record verification results for 1 job(s)
 
 change `kqxstwytnvvk` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
@@ -197,6 +173,30 @@ Outputs applied for 1 of the 1 job(s). 20261121-044031-original-ci-group-3-run-u
 change `stvvlzsutxwv` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-044031-original-ci-group-6-run-unmodified-maven: passed: 1 passed step(s) in 22m57s, peak 2.4 GiB (estimated 25m00s, 3.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Run the original Maven lifecycle alongside the 32 upgrade reports (verification pending)
+
+change `xnqqzzvoxrnt` · [log `a03b01a3ad71`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/a03b01a3ad712e287babd0d7d77592cc6ecbac96086763eaac0b504a5292a0f0.jsonl.gz)
+
+Run Maven verify on the owning reactor module and prerequisites for 64 clean original revisions. Save historical workflow digests, actual test counts, matching developer assertions and separate build, timeout or zero-test outcomes. Source checkout and Maven run inside independent working areas, downloads share the serial repository and ephemeral build trees are removed. A fresh synthetic Surefire report verified parameterized test matching, skip and failure accounting. The selected default-tier run passed on retry. Jobs 20261121-044031-original-ci-group-1-run-unmodified-maven, 20261121-044031-original-ci-group-2-run-unmodified-maven, 20261121-044031-original-ci-group-3-run-unmodified-maven, 20261121-044031-original-ci-group-4-run-unmodified-maven, 20261121-044031-original-ci-group-5-run-unmodified-maven, 20261121-044031-original-ci-group-6-run-unmodified-maven.
+
+### Record the applied upgrade repairs and all 32 maintainer decisions
+
+change `nqkulvsxkzoz` · [log `87083561f23e`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/87083561f23ef0eed3a975f9957d584420272f36d1ea98db289621be37b7c8f9.jsonl.gz)
+
+The 16 scoped caller replays establish eight main-set finite preservations and replay the ReflectASM breakage, with three gains on the eight transfer upgrades. Validate actual method-entry hits, two fresh JVM results per input and side, original source and artifact bindings, old expectations, and the exact differing inputs before crediting a result. Record all open cases, all 32 native reruns after multi-release selection, all 32 exact-overload reruns, and the Cucumber checked-exception blocker. Added five-line reports for every original client and a reproducible scorecard.
+
+### Qualify finite UTF-16 string domains and original caller returns (verification pending)
+
+change `sslyzsppxvsn` · [log `cff0f071e654`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/cff0f071e654456c3f345d22522a35b670932c4529d283e48686deb3945159a5.jsonl.gz)
+
+Check one finite alphabet at every UTF-16 position against a mandatory conjunct of the original guard. Save the alphabets and total candidate cardinality, and distinguish null, empty strings and isolated UTF-16 surrogates on return and witness replay. The core decoding and enumeration changes landed in the preceding CI-baseline change while its scoped snapshot was being assembled. This change records the domain binding, regression controls and public jobs. A capped original Commons Text run established the unchanged claim over all 156 strings. All 25 affected Python groups passed. Jobs 20261121-044738-349-exhaust-actual-csv-fields-with-lossl, 20261121-044738-352-exhaust-actual-duration-strings-with qualify the originals for Commons Text and Cucumber Reporting.
+
+### Resolve original Maven relocations and compare the registered upstream tests (verification pending)
+
+change `orvrywvyynkl` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Bind a relocated Maven dependency to its actual runtime JAR through the published POM chain. The previously missing Hibernate entity-manager archive is present under org.hibernate.orm. Serve Animal Sniffer signature artifacts, retain the actionable Maven error and final diagnostic, and require actual named testcase XML. The official CompCheck call-site registry covers four of the 32 exact old client pins; run nine relevant published locations, retaining other-client knowledge in the sensitivity treatment. Unit controls verified relocation, cycles, signatures, named, skipped and failed testcases. All 27 affected Python groups passed, with the watcher test passing on retry. Jobs 20261121-050027-compsuite-i-38-run-compcheck-on-its-orig, 20261121-050027-compsuite-i-4-run-compcheck-on-its-origi, 20261121-050027-compsuite-i-29-run-compcheck-on-its-orig, 20261121-050027-compsuite-i-36-run-compcheck-on-its-orig, 20261121-051224-original-named-test-group-1-reproduce-fo, 20261121-051224-original-named-test-group-2-reproduce-fo, 20261121-051224-original-named-test-group-3-reproduce-fo, 20261121-051225-original-named-test-group-4-reproduce-fo.
 
 ## Conversation
 

@@ -303,7 +303,8 @@ public final class ObservedInitializer {
         String display = Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag();
         String zone = java.util.TimeZone.getDefault().getID();
         Path log = args.length > 1 ? Path.of(args[1]) : null;
-        boolean together = args.length == 3 && args[2].equals("together");
+        boolean together = args.length >= 3 && args[2].equals("together");
+        boolean atRoot = unixRoot();
         boolean emptyEnvironment = emptyEnvironment();
         Properties original = System.getProperties();
         Recording recording = new Recording();
@@ -313,6 +314,9 @@ public final class ObservedInitializer {
         System.setProperties(recording);
         try {
             c = Class.forName(args[0], true, app);
+            if (together) {
+                for (int i = 3; i < args.length; i++) Class.forName(args[i], true, app);
+            }
         }
         catch (Throwable t) {
             System.setProperties(original);
@@ -342,7 +346,7 @@ public final class ObservedInitializer {
         // Alone, the class is what another initialization's is compared with: described in full.
         if (log == null) {
             System.out.println("@observed {\"jdk\":" + text(jdk) + ",\"fixedProcessors\":" + fixedProcessors()
-                    + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment()) + "," + new Dump(true).of(c) + "}");
+                    + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment()) + ",\"rootWorkingDirectory\":" + (atRoot && unixRoot()) + "," + new Dump(true).of(c) + "}");
             return;
         }
         // The classes the initialization initialized: what the JVM logged after the mark, of the class path.
@@ -384,6 +388,13 @@ public final class ObservedInitializer {
             dump.owners.addAll(members.values());
             fields = dump.fieldsOf(c);
         }
+        List<String> additionalRoots = new ArrayList<>();
+        for (int i = 3; together && i < args.length; i++) {
+            String internal = args[i].replace('.', '/');
+            if (!members.containsKey(internal))
+                throw new IllegalStateException("additional root missing from the application initialization log: " + internal);
+            additionalRoots.add(text(internal));
+        }
         StringBuilder initialized = new StringBuilder();
         for (var member : members.entrySet()) {
             String name = member.getKey();
@@ -412,6 +423,7 @@ public final class ObservedInitializer {
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
                 + text(display) + "},\"zone\":" + text(zone) + ",\"preinitializeTogether\":" + together
+                + ",\"additionalRoots\":[" + String.join(",", additionalRoots) + "],\"rootWorkingDirectory\":" + (atRoot && unixRoot())
                 + ",\"fixedProcessors\":" + fixedProcessors() + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment())
                 + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
                 + (recording.whole == null ? "null" : text(recording.whole)) + ",\"changed\":[" + changes + "],\"initialized\":[" + initialized + "]}}");
@@ -420,6 +432,12 @@ public final class ObservedInitializer {
     private static boolean emptyEnvironment() {
         try { return System.getenv().isEmpty(); }
         catch (SecurityException unavailable) { return false; }
+    }
+
+    private static boolean unixRoot() {
+        return java.io.File.separatorChar == '/' && "/".equals(System.getProperty("user.dir"))
+                && "/".equals(new java.io.File("").getAbsolutePath())
+                && "/".equals(java.nio.file.Path.of("").toAbsolutePath().toString());
     }
 
     /** A positive, read-only VM option pins this value throughout startup. Read it after capturing the subject. */

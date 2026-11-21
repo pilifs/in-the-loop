@@ -132,7 +132,7 @@ fn jointly_initialized_statics_share_one_heap_before_the_entry_runs() {
 }
 
 #[test]
-fn a_joint_snapshot_refuses_opaque_reads_and_overlapping_roots() {
+fn a_joint_snapshot_refuses_opaque_reads_and_preserves_explicit_root_order() {
     jvmcontract::tool_tier!();
     if classes().is_none() { return }
     let mut o = proving("oc.JointStartup#readsOpaque", "result", "joint-opaque");
@@ -141,10 +141,36 @@ fn a_joint_snapshot_refuses_opaque_reads_and_overlapping_roots() {
     let opaque = property::run(&o).unwrap();
     assert_eq!(opaque.verdict, Verdict::Unverifiable, "{}", opaque.output);
     assert!(opaque.output.contains("Store.opaque") && opaque.output.contains("StringBuilder"), "{}", opaque.output);
-    o.observed_initializers.push("oc.JointStartup$Store".into());
-    let overlap = property::run(&o).unwrap();
-    assert_eq!(overlap.verdict, Verdict::Unverifiable, "{}", overlap.output);
-    assert!(overlap.output.contains("snapshots overlap"), "{}", overlap.output);
+    let mut states = Vec::new();
+    for (roots, expected) in [(["Root", "Reader"], "result == 7"), (["Reader", "Root"], "result == 0")] {
+        let mut o = proving("oc.JointStartup#recorded", expected, roots[0]);
+        o.observed_initializers = roots.map(|n| format!("oc.JointStartup${n}")).to_vec();
+        o.observed_runtime.preinitialize_together = true;
+        let run = property::run(&o).unwrap();
+        assert_eq!(run.verdict, Verdict::Verified, "{}", run.output);
+        let statement = run.stated.unwrap();
+        let ids: Vec<_> = statement.assumptions.iter().filter_map(|a| a.id.as_deref()).filter(|id| id.starts_with("observed-initializer:")).collect();
+        assert_eq!(ids.len(), 2);
+        assert_eq!(ids[0].rsplit(':').next(), ids[1].rsplit(':').next());
+        states.push(ids[0].rsplit(':').next().unwrap().to_owned());
+    }
+    assert_ne!(states[0], states[1]);
+}
+
+#[test]
+fn a_root_directory_observation_binds_lexical_file_resolution() {
+    jvmcontract::tool_tier!();
+    if classes().is_none() { return }
+    let mut o = proving("oc.JointStartup#atRoot", "result", "root-cwd");
+    o.observed_initializers = vec!["oc.JointStartup$Directory".into()];
+    o.observed_runtime.root_working_directory = true;
+    let run = property::run(&o).unwrap();
+    assert_eq!(run.verdict, Verdict::Verified, "{}", run.output);
+    assert!(run.stated.unwrap().assumptions.iter().any(|a| a.text.contains("absolute-path base both at the Unix root")));
+    let mut c = proving("oc.JointStartup#canonical", "result", "root-canonical");
+    c.observed_initializers = vec!["oc.JointStartup$Canonical".into()];
+    c.observed_runtime.root_working_directory = true;
+    assert!(property::run(&c).unwrap_err().to_string().contains("getCanonicalPath"));
 }
 
 #[test]

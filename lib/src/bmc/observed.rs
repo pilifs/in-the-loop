@@ -65,6 +65,12 @@ impl Engine<'_> {
         let text = crate::observed::assumption(class, observed);
         self.assumption_ids.insert(text.clone(), format!("observed-initializer:{}:{}:{}", class.replace('/', "."), observed.on.sha256, observed.state_sha256));
         self.assumed.insert(text);
+        for (index, (name, digest)) in observed.additional_roots.iter().enumerate() {
+            let binary = name.replace('/', ".");
+            let text = format!("{binary} was startup root {} in the same JVM as {}, before the checked entry", index + 2, class.replace('/', "."));
+            self.assumption_ids.insert(text.clone(), format!("observed-initializer:{binary}:{digest}:{}", observed.state_sha256));
+            self.assumed.insert(text);
+        }
         Ok(())
     }
 

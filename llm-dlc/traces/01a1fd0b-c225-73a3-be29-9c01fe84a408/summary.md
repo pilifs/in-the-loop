@@ -18,46 +18,6 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-### Prepare original framework fixtures behind the Java runtime (verification pending)
-
-change `znyylzwoppxk` · [log `2356614cd834`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/2356614cd83457310b4dec2ac0ae52c22101338c13b4da97932a6869296f7fd8.jsonl.gz)
-
-Compile and retain the upstream Maven test classes, resources and additional companions needed to construct real Spring receivers. Preserve the complete production classpath first and check that the upgraded dependency is already on it independently of any tests. Record the fixture digest and require an explicit match between the observer scope and its prepared classpath. Keep discoverable package directories for component scans.
-
-All 28 changed test groups passed, including 58 Rust test binaries. The five original-input tests and verification job validation passed. Seven jobs rebuild and replay all 32 original pairs after the intake change at 20261121-074403-v3-prep-group-01-original-java-upgrade-c through 20261121-074404-v3-prep-group-07-original-java-upgrade-c.
-
-### Trace Java interface dispatch and exceptions through original framework calls (verification pending)
-
-change `kxnnqqkwxyxz` · [log `de7db575fc56`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/de7db575fc5609fd4ca3451e73c895708d9db94f9baa78176393c5a62e9f9633.jsonl.gz)
-
-At an original method breakpoint, match the observer’s real bytecode offset against its exact invoke instruction and record the runtime dispatch frame. This qualifies calls through Spring proxies. Match an escaping exception by JVM object identity and a throw that crosses the selected invocation, including when the application cleared its Java stack trace. Add original-scope order confirmation, car validation and servlet date-field observations. Each old framework exercised its real business operation and matched the developer expectation in the capped probes.
-
-All 28 affected test groups passed, including 58 Rust binaries. Six upgrade-review controls passed, including a real interface dispatch, a cleared genuine stack and a forged stack after a successful call. Cost and pipeline validation passed. The seven original-fixture intake batches repeated all 32 pairs. Jobs 20261121-075423-v3-dispatch-group-01-original-java-upgra through 20261121-075424-v3-dispatch-group-07-original-java-upgra repeat native and finite checks on the new product.
-
-### Resolve the member that failed in the original Java runtime (verification pending)
-
-change `uloqumqzozso` · [log `a58fcea45e10`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/a58fcea45e102774b8152ad9ce1cb8fe28732def2b903985e04fc256dc8a353d.jsonl.gz)
-
-Track the innermost exception object when a framework wraps a startup failure. Bind the actual throwing location, live method code and constant pool to its original JAR. Resolve the referenced member on each release with fresh JVM lookups, including a class used where bytecode requires an interface. Identify a root cause thrown from a newly introduced production dependency even when a framework wraps it outside the selected caller.
-
-All 27 affected test groups passed. A mixed-binary control required two independent JVM lookups and rejected a mismatched constant pool. The Citrus Java 8 probe bound getstatic at bytecode index 41 to the exact missing Spring field. The seven dispatch batches retained all 20 prior primary decisions, and 31 original old applications now reached their registered business method. Jobs 20261121-080528-v3-cause-group-01-original-java-upgrade through 20261121-080529-v3-cause-group-07-original-java-upgrade repeat all 32 pairs.
-
-### Diagnose JDBC driver selection on the original subject JDK (verification pending)
-
-change `mrxxqrpkrutr` · [log `1cb71db5cd9d`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/1cb71db5cd9d5a979b3f584ac321be8a91b21b60b380225b3ce2405efc0c6bcd.jsonl.gz)
-
-Expose a driver-selection check for a locked original classpath and invoke it automatically when the JDK throws a no-driver exception before the selected caller. Compare the selected old driver, service declaration, actual provider bytes and class-version error in fresh JVMs. Derby’s new provider requires classfile 53 on a JVM that accepts through 52. Both original H2 releases selected their pinned driver for the calibration URL and rejected the unmatched control. Root-cause attribution now requires the actual throwing instruction in the changed runtime JAR.
-
-All 30 affected test groups passed, including 58 Rust binaries. Eight focused workflow controls, the genuine JDBC probe, four H2 controls and schema and cost validation passed. Tracing every nested ClassNotFoundException timed out at 120 seconds for Fluent Validator in the intermediate pass. The passive class lookup restored the missing ELManager diagnosis on both original inputs in 14.47 seconds under the same deadline. Jobs 20261121-081221-v3-final-group-01-original-java-upgrade through 20261121-081222-v3-final-group-07-original-java-upgrade and 20261121-081222-v3-h2-original-jdbc-driver-selection-and verify the final product.
-
-### Report the pinned Java framework and JDBC results on all 32 upgrades
-
-change `qlnltrloqzvo` · [log `b313e625c313`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/b313e625c3134767d844c6410539e2a8d72339a7bdd47d7851e2a89ba58bc794.jsonl.gz)
-
-V3 at 83ae65d6afb1 repeated three of twelve registered historical changes, twelve of twelve scoped routine preservations and five of eight transfer decisions. All twenty V2 primary decisions held. All 32 cases now have reviewed original JVM observations. Thirty-one old applications matched the full requested domain. Seven main and one transfer upgrade have a separate verified explanation before the registered business result. Receiver construction stopped the first automatic native attempt on 23 pairs.
-
-Checked four complete native and finite corpus passes, all original source and output bindings, the final eight host receipts and both H2 URL controls. All 29 jobs passed. The intermediate Fluent Validator timeout recovered at the same 120-second limit. The final median was 10.626 seconds per finite pair, maximum 31.539. The toolchain pin verified 468 source files, 12 executable and JDK hashes and 11 workload inputs. An independent recount matched all 32 decisions, three corrupted receipts were rejected, the report regenerated exactly, all local links resolved, and the selected Rust run passed all 58 binaries.
-
 ### Propose two decision-id long-token findings for the allow list
 
 change `rlmknzomsxtr` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
@@ -111,6 +71,46 @@ Outputs applied for 3 of the 3 job(s). 20261121-081222-v3-final-group-06-origina
 change `zvwvxxmuvvpn` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 Outputs applied for 5 of the 5 job(s). 20261121-081221-v3-final-group-01-original-java-upgrade: passed: 2 passed step(s) in 34.3s, peak 156.9 MiB (estimated 4m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261121-081221-v3-final-group-02-original-java-upgrade: passed: 2 passed step(s) in 57.8s, peak 311.4 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-081221-v3-final-group-03-original-java-upgrade: passed: 2 passed step(s) in 1m20s, peak 212.9 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-081221-v3-final-group-04-original-java-upgrade: passed: 2 passed step(s) in 1m35s, peak 323.7 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-081222-v3-final-group-05-original-java-upgrade: passed: 2 passed step(s) in 1m28s, peak 270.7 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Prepare original framework fixtures behind the Java runtime (verification pending)
+
+change `znyylzwoppxk` · [log `2356614cd834`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/2356614cd83457310b4dec2ac0ae52c22101338c13b4da97932a6869296f7fd8.jsonl.gz)
+
+Compile and retain the upstream Maven test classes, resources and additional companions needed to construct real Spring receivers. Preserve the complete production classpath first and check that the upgraded dependency is already on it independently of any tests. Record the fixture digest and require an explicit match between the observer scope and its prepared classpath. Keep discoverable package directories for component scans.
+
+All 28 changed test groups passed, including 58 Rust test binaries. The five original-input tests and verification job validation passed. Seven jobs rebuild and replay all 32 original pairs after the intake change at 20261121-074403-v3-prep-group-01-original-java-upgrade-c through 20261121-074404-v3-prep-group-07-original-java-upgrade-c.
+
+### Trace Java interface dispatch and exceptions through original framework calls (verification pending)
+
+change `kxnnqqkwxyxz` · [log `de7db575fc56`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/de7db575fc5609fd4ca3451e73c895708d9db94f9baa78176393c5a62e9f9633.jsonl.gz)
+
+At an original method breakpoint, match the observer’s real bytecode offset against its exact invoke instruction and record the runtime dispatch frame. This qualifies calls through Spring proxies. Match an escaping exception by JVM object identity and a throw that crosses the selected invocation, including when the application cleared its Java stack trace. Add original-scope order confirmation, car validation and servlet date-field observations. Each old framework exercised its real business operation and matched the developer expectation in the capped probes.
+
+All 28 affected test groups passed, including 58 Rust binaries. Six upgrade-review controls passed, including a real interface dispatch, a cleared genuine stack and a forged stack after a successful call. Cost and pipeline validation passed. The seven original-fixture intake batches repeated all 32 pairs. Jobs 20261121-075423-v3-dispatch-group-01-original-java-upgra through 20261121-075424-v3-dispatch-group-07-original-java-upgra repeat native and finite checks on the new product.
+
+### Resolve the member that failed in the original Java runtime (verification pending)
+
+change `uloqumqzozso` · [log `a58fcea45e10`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/a58fcea45e102774b8152ad9ce1cb8fe28732def2b903985e04fc256dc8a353d.jsonl.gz)
+
+Track the innermost exception object when a framework wraps a startup failure. Bind the actual throwing location, live method code and constant pool to its original JAR. Resolve the referenced member on each release with fresh JVM lookups, including a class used where bytecode requires an interface. Identify a root cause thrown from a newly introduced production dependency even when a framework wraps it outside the selected caller.
+
+All 27 affected test groups passed. A mixed-binary control required two independent JVM lookups and rejected a mismatched constant pool. The Citrus Java 8 probe bound getstatic at bytecode index 41 to the exact missing Spring field. The seven dispatch batches retained all 20 prior primary decisions, and 31 original old applications now reached their registered business method. Jobs 20261121-080528-v3-cause-group-01-original-java-upgrade through 20261121-080529-v3-cause-group-07-original-java-upgrade repeat all 32 pairs.
+
+### Diagnose JDBC driver selection on the original subject JDK (verification pending)
+
+change `mrxxqrpkrutr` · [log `1cb71db5cd9d`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/1cb71db5cd9d5a979b3f584ac321be8a91b21b60b380225b3ce2405efc0c6bcd.jsonl.gz)
+
+Expose a driver-selection check for a locked original classpath and invoke it automatically when the JDK throws a no-driver exception before the selected caller. Compare the selected old driver, service declaration, actual provider bytes and class-version error in fresh JVMs. Derby’s new provider requires classfile 53 on a JVM that accepts through 52. Both original H2 releases selected their pinned driver for the calibration URL and rejected the unmatched control. Root-cause attribution now requires the actual throwing instruction in the changed runtime JAR.
+
+All 30 affected test groups passed, including 58 Rust binaries. Eight focused workflow controls, the genuine JDBC probe, four H2 controls and schema and cost validation passed. Tracing every nested ClassNotFoundException timed out at 120 seconds for Fluent Validator in the intermediate pass. The passive class lookup restored the missing ELManager diagnosis on both original inputs in 14.47 seconds under the same deadline. Jobs 20261121-081221-v3-final-group-01-original-java-upgrade through 20261121-081222-v3-final-group-07-original-java-upgrade and 20261121-081222-v3-h2-original-jdbc-driver-selection-and verify the final product.
+
+### Report the pinned Java framework and JDBC results on all 32 upgrades
+
+change `qlnltrloqzvo` · [log `b313e625c313`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/b313e625c3134767d844c6410539e2a8d72339a7bdd47d7851e2a89ba58bc794.jsonl.gz)
+
+V3 at 83ae65d6afb1 repeated three of twelve registered historical changes, twelve of twelve scoped routine preservations and five of eight transfer decisions. All twenty V2 primary decisions held. All 32 cases now have reviewed original JVM observations. Thirty-one old applications matched the full requested domain. Seven main and one transfer upgrade have a separate verified explanation before the registered business result. Receiver construction stopped the first automatic native attempt on 23 pairs.
+
+Checked four complete native and finite corpus passes, all original source and output bindings, the final eight host receipts and both H2 URL controls. All 29 jobs passed. The intermediate Fluent Validator timeout recovered at the same 120-second limit. The final median was 10.626 seconds per finite pair, maximum 31.539. The toolchain pin verified 468 source files, 12 executable and JDK hashes and 11 workload inputs. An independent recount matched all 32 decisions, three corrupted receipts were rejected, the report regenerated exactly, all local links resolved, and the selected Rust run passed all 58 binaries.
 
 ## Conversation
 

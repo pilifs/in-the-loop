@@ -49,7 +49,7 @@
 //!   refused, with why. A lambda's hidden class is named by what it was defined from (`R$$Lambda`), without the
 //!   address a JVM appends to its name, which differs from run to run (`claims.Hooked`, `lib/tests/claims.rs`).
 //! - With `--observed-runtime '{"preinitializeTogether":true}'`, startup precedes the checked entry. The named
-//!   root and its successfully initialized application classes are captured in one JVM with a shared object
+//!   roots are initialized in their specified order, and their transitive application classes share one object
 //!   table. The checker binds every class file, installs the fields and all represented aliases, and refuses
 //!   overlapping captures, absent application supertypes and operations that inspect opaque state. A reference
 //!   can pass through an application constructor into a field until such an operation. This scope includes any
@@ -70,6 +70,9 @@
 //! - `System.getenv` requires an empty process environment verified by the subject JVM. A caller can select
 //!   it with `--observed-runtime '{"emptyEnvironment":true}'`. The observer records only emptiness.
 //!   `ProcessBuilder.environment` and reads under an inherited nonempty environment remain unbound.
+//! - `rootWorkingDirectory: true` launches the observation at Unix / and checks its JVM and File bases before
+//!   and after startup. This binds lexical File.getAbsolutePath/getAbsoluteFile. Canonical paths and filesystem
+//!   provider calls still need their own evidence.
 //! - A read of `Runtime.availableProcessors()` requires a positive, immutable HotSpot
 //!   `-XX:ActiveProcessorCount=N` matching the observed JVM. This count enters the statement and state digest.
 //! - The JDK: its release must be the check's, and its vendor and home are stated.
@@ -148,6 +151,8 @@ pub struct Observed {
     pub objects: Vec<Object>,
     /// If requested, the other initialized application classes share the root's object table.
     pub(crate) joint_fields: Option<BTreeMap<String, BTreeMap<String, Slot>>>,
+    /// Additional explicitly requested roots in actual initialization order, with their class digests.
+    pub(crate) additional_roots: Vec<(String, String)>,
     /// For a class of the previous version of a pair ([`observe_previous`]): its own name, the one it was observed
     /// under on the previous version's class path. The check holds it under another.
     pub previous: Option<String>,
@@ -177,6 +182,7 @@ pub struct On {
     /// Runtime.availableProcessors() on a JVM whose read-only ActiveProcessorCount pins it.
     pub fixed_processors: Option<i32>,
     pub empty_environment: bool,
+    pub root_working_directory: bool,
     /// Each system property the initialization read, in the order it first did, and the value it had.
     pub properties: Vec<(String, Option<String>)>,
     /// The first class of the class path that read the system properties as a whole, if one did.
@@ -207,6 +213,7 @@ pub struct Runtime {
     pub processors: Option<std::num::NonZeroI32>,
     pub empty_environment: bool,
     pub preinitialize_together: bool,
+    pub root_working_directory: bool,
 }
 
 impl std::str::FromStr for Runtime {
@@ -214,7 +221,7 @@ impl std::str::FromStr for Runtime {
     fn from_str(text: &str) -> Result<Self, Self::Err> {
         let r: Self = serde_json::from_str(text).map_err(|e| format!("invalid observed runtime: {e}"))?;
         if r == Self::default() || r.processors.is_some_and(|n| n.get() < 1) {
-            return Err("provide a positive processors count, emptyEnvironment=true or preinitializeTogether=true".into());
+            return Err("provide a positive processor count or enable a supported startup setting".into());
         }
         Ok(r)
     }
@@ -230,6 +237,7 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
     let bound = &observed.on;
     let processors = bound.fixed_processors.map(|n| format!("; Runtime.availableProcessors() was pinned to {n} (-XX:ActiveProcessorCount={n}) throughout initialization")).unwrap_or_default();
     let environment = if bound.empty_environment { ", with an empty process environment throughout initialization" } else { "" };
+    let cwd = if bound.root_working_directory { ", with the process working directory and JVM absolute-path base both at the Unix root /" } else { "" };
     let short = |h: &str| h.chars().take(12).collect::<String>();
     let properties = if bound.properties.is_empty() {
         "it read no system property".to_string()
@@ -248,7 +256,7 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
     };
     let ownership = if observed.joint_fields.is_some() { "its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call" } else { "the objects it leaves are held by no other class" };
     format!(
-        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the class first thing on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{processors}{environment}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and {ownership})",
+        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the selected roots on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{processors}{environment}{cwd}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and {ownership})",
         class.replace('/', "."),
         bound.vendor,
         short(&bound.sha256),
@@ -291,15 +299,18 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     for entry in &entries[1..] {
         tool.add(entry)?;
     }
-    let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime };
+    let additional: Vec<String> = if runtime.preinitialize_together { classes.iter().skip(1).map(|c| c.replace('/', ".")).collect() } else { vec![] };
+    let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime, additional };
     let mut alone: BTreeMap<String, serde_json::Value> = BTreeMap::new();
-    for class in classes {
+    for class in classes.iter().take(if runtime.preinitialize_together { 1 } else { classes.len() }) {
         let internal = class.replace('.', "/");
         let binary = internal.replace('/', ".");
         let log = dir.join(format!("{binary}.init.log"));
         let line = jvm.run(&binary, Some(&log))?;
         let observed = parse(&binary, &line)?;
         if runtime.preinitialize_together != observed.joint_fields.is_some()
+            || !observed.additional_roots.iter().map(|(name, _)| name.replace('/', ".")).eq(jvm.additional.iter().cloned())
+            || runtime.root_working_directory && !observed.on.root_working_directory
             || runtime.empty_environment && !observed.on.empty_environment
             || runtime.processors.is_some_and(|n| observed.on.fixed_processors != Some(n.get())) {
             return Err(Error::new(format!("--observed-initializer {binary}: the observing JVM did not confirm its requested process settings")));
@@ -346,6 +357,7 @@ struct Jvm {
     class_path: std::ffi::OsString,
     dir: PathBuf,
     runtime: Runtime,
+    additional: Vec<String>,
 }
 
 impl Jvm {
@@ -368,10 +380,10 @@ impl Jvm {
         command.arg("-cp").arg(&self.class_path).arg(CLASS).arg(binary);
         if let Some(log) = log {
             command.arg(log);
-            if self.runtime.preinitialize_together { command.arg("together"); }
+            if self.runtime.preinitialize_together { command.arg("together").args(&self.additional); }
         }
         let mut child = command
-            .current_dir(&self.dir)
+            .current_dir(if self.runtime.root_working_directory { Path::new("/") } else { &self.dir })
             .stdout(std::fs::File::create(&stdout)?)
             .stderr(std::fs::File::create(&stderr)?)
             .spawn()
@@ -489,6 +501,8 @@ fn unbound_setting(tool: &crate::classpath::ClassPath, internal: &str, on: &On) 
             ("java/lang/invoke/MethodHandles$Lookup", name) if name.starts_with("find") || name.starts_with("unreflect") => "a dynamically looked-up member",
             ("java/lang/Runtime", "availableProcessors") if member.descriptor == "()I" && on.fixed_processors.is_some() => continue,
             ("java/lang/Runtime", "availableProcessors" | "maxMemory" | "totalMemory" | "freeMemory") => "the JVM resource configuration",
+            ("java/io/File", "getAbsolutePath") if member.descriptor == "()Ljava/lang/String;" && on.root_working_directory => continue,
+            ("java/io/File", "getAbsoluteFile") if member.descriptor == "()Ljava/io/File;" && on.root_working_directory => continue,
             ("java/io/File", "getAbsolutePath" | "getAbsoluteFile" | "getCanonicalPath" | "getCanonicalFile")
             | ("java/nio/file/Path", "toAbsolutePath" | "toRealPath") => "the JVM working directory",
             ("java/nio/charset/Charset", "defaultCharset") => "the default charset",
@@ -605,7 +619,8 @@ fn state(binary: &str, line: &str, on: &On) -> Result<serde_json::Value, Error> 
     if let Some(threw) = json.get("threw").and_then(|t| t.as_str()) {
         return Err(Error::new(format!("--observed-initializer {binary}: initialized alone on the JVM, the class threw {threw}")));
     }
-    if fixed_processors(&json)? != on.fixed_processors || empty_environment(&json)? != on.empty_environment {
+    if fixed_processors(&json)? != on.fixed_processors || empty_environment(&json)? != on.empty_environment
+        || root_directory(&json)? != on.root_working_directory {
         return Err(Error::new(format!("--observed-initializer {binary}: initialized alone under different process settings")));
     }
     Ok(serde_json::json!({ "fields": json.get("fields"), "objects": json.get("objects") }))
@@ -613,6 +628,11 @@ fn state(binary: &str, line: &str, on: &On) -> Result<serde_json::Value, Error> 
 
 fn empty_environment(settings: &serde_json::Value) -> Result<bool, Error> {
     settings.get("emptyEnvironment").map(|v| v.as_bool().ok_or_else(|| Error::new("--observed-initializer: invalid process environment observation")))
+        .unwrap_or(Ok(false))
+}
+
+fn root_directory(settings: &serde_json::Value) -> Result<bool, Error> {
+    settings.get("rootWorkingDirectory").map(|v| v.as_bool().ok_or_else(|| Error::new("--observed-initializer: invalid JVM working directory observation")))
         .unwrap_or(Ok(false))
 }
 
@@ -656,6 +676,10 @@ pub(crate) fn observe_previous_on(classes: &[String], previous: &crate::relocate
             return Err(Error::new(format!("--observed-initializer {binary}: the check holds no copy of the previous version's class")));
         }
         let held = format!("{}/{class}", previous.prefix);
+        for (name, _) in &mut observed.additional_roots {
+            let Found::Class(copy) = previous.find(name) else { return Err(Error::new(format!("no copy of previous initialized root {name}"))); };
+            *name = copy;
+        }
         if let Some(fields) = observed.joint_fields.take() {
             let mut relocated = BTreeMap::new();
             for (name, state) in fields {
@@ -784,6 +808,16 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         state["jointlyInitialized"] = on["initialized"].clone();
         Some(members)
     } else { None };
+    let mut additional_roots = vec![];
+    if let Some(roots) = on.get("additionalRoots") {
+        for value in roots.as_array().ok_or_else(|| bad("additional startup roots"))? {
+            let name = value.as_str().ok_or_else(|| bad("additional startup root name"))?;
+            let member = list("initialized")?.iter().find(|v| v["name"].as_str() == Some(name)).ok_or_else(|| bad("an unbound additional root"))?;
+            if joint_fields.is_none() || additional_roots.iter().any(|(n, _)| n == name) { return Err(bad("additional startup roots")); }
+            additional_roots.push((name.to_owned(), text(member, "sha256")?));
+        }
+        if !additional_roots.is_empty() { state["additionalRoots"] = roots.clone(); }
+    }
     let on = On {
         sha256: text(on, "sha256")?,
         from: on.get("from").and_then(|f| f.as_str()).map(String::from),
@@ -797,6 +831,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         utc_gregorian: on.get("utcGregorian").and_then(|v| v.as_bool()).unwrap_or(false),
         fixed_processors: fixed_processors(on)?,
         empty_environment: empty_environment(on)?,
+        root_working_directory: root_directory(on)?,
         properties: list("properties")?.iter().map(|p| Ok((text(p, "name")?, p.get("value").and_then(|v| v.as_str()).map(String::from)))).collect::<Result<_, Error>>()?,
         all_properties: match on.get("allProperties") {
             Some(serde_json::Value::Null) => None,
@@ -811,8 +846,9 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
     };
     if let Some(n) = on.fixed_processors { state["fixedProcessors"] = n.into(); }
     if on.empty_environment { state["emptyEnvironment"] = true.into(); }
+    if on.root_working_directory { state["rootWorkingDirectory"] = true.into(); }
     let state_sha256 = crate::digest::sha256_hex(state.to_string().as_bytes());
-    let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), state_sha256, fields, objects, joint_fields, previous: None, on };
+    let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), state_sha256, fields, objects, joint_fields, additional_roots, previous: None, on };
     let within = |s: &Slot| !matches!(s, Slot::Object(i) if *i >= observed.objects.len());
     let joint_slots = observed.joint_fields.iter().flat_map(|m| m.values()).flat_map(|fields| fields.values());
     let all = observed.fields.values().chain(joint_slots).chain(observed.objects.iter().flat_map(|o| match o {
