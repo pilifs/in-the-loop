@@ -1,0 +1,176 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "repository": "https://github.com/apache/commons-lang",
+    "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+    "class": "org.apache.commons.lang3.StringUtils",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    }
+  },
+  "artifacts": [
+    {
+      "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "sha256": "a72622f4c9439d585e2b73bc063fb0141bc404b2055a5fb944580779a5c5e62a",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/apache/commons-lang at 2c2ed9d80dac4b46e9426041c091ddcaadb4df2b: target/commons-lang3-3.21.0-SNAPSHOT.jar"
+    },
+    {
+      "path": "lib/net/bytebuddy/byte-buddy/1.17.5/byte-buddy-1.17.5.jar",
+      "sha256": "71568c9f8396677219f650268fbf6493ded484edcdbdf2dae6129ca5be81e8db",
+      "role": "dependency",
+      "coordinates": "net.bytebuddy:byte-buddy:1.17.5",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/objenesis/objenesis/3.4/objenesis-3.4.jar",
+      "sha256": "95488102feaf2e2858adf6b299353677dac6c15294006f8ed1c5556f8e3cd251",
+      "role": "dependency",
+      "coordinates": "org.objenesis:objenesis:3.4",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/mockito/mockito-inline/4.11.0/mockito-inline-4.11.0.jar",
+      "sha256": "ee52e1c299a632184fba274a9370993e09140429f5e516e6c5570fd6574b297f",
+      "role": "dependency",
+      "coordinates": "org.mockito:mockito-inline:4.11.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar",
+      "sha256": "4b909690cab288c761eb94c0bf0e814496cf3921d8affac84cd87774530351e5",
+      "role": "dependency",
+      "coordinates": "org.mockito:mockito-core:4.11.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar",
+      "sha256": "3a70240de7cdcde04e7c504c2327d7035b9c25ae0206881e3bf4e6798a273ed8",
+      "role": "dependency",
+      "coordinates": "net.bytebuddy:byte-buddy-agent:1.12.19",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+      "tree": "2a78658e6f1eda687dfe0f8ffd6d9facec0dc3bb",
+      "parents": [],
+      "fetchedFrom": "https://github.com/apache/commons-lang",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "target/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "target/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "a72622f4c9439d585e2b73bc063fb0141bc404b2055a5fb944580779a5c5e62a",
+          "auxiliary": false
+        }
+      ],
+      "selectedClass": "org/apache/commons/lang3/StringUtils.class",
+      "selectedClassSha256": "0c55f85f2cd2bbe3f2f925396104a9e970721a56c4a803dbb0393a67d2157525",
+      "sourceSha256": "a5fa3f53ac38895e2ff5e40ace7f602996ec17a20ddcc4c7bb5e05248cec3bb8"
+    },
+    "toolchain": {
+      "jdk": {
+        "feature": "21",
+        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        }
+      }
+    },
+    "steps": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 67.27,
+        "logSha256": "3a825e366a1f3d9f31e3612a6f6f46b05e7bb50a3a549d4e55382c2685d1c5cd",
+        "errors": [
+          "[ERROR] I/O error reading license TOC"
+        ],
+        "tail": [
+          "[INFO] Installing /project/target/commons-lang3-3.21.0-SNAPSHOT-bom.xml to /work/repository/org/apache/commons/commons-lang3/3.21.0-SNAPSHOT/commons-lang3-3.21.0-SNAPSHOT-cyclonedx.xml",
+          "[INFO] Installing /project/target/commons-lang3-3.21.0-SNAPSHOT-bom.json to /work/repository/org/apache/commons/commons-lang3/3.21.0-SNAPSHOT/commons-lang3-3.21.0-SNAPSHOT-cyclonedx.json",
+          "[INFO] Installing /project/target/site/org.apache.commons_commons-lang3-3.21.0-SNAPSHOT.spdx.json to /work/repository/org/apache/commons/commons-lang3/3.21.0-SNAPSHOT/commons-lang3-3.21.0-SNAPSHOT.spdx.json",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  01:05 min",
+          "[INFO] Finished at: 2026-11-21T09:13:26Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "pom.xml",
+          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+          "-DincludeScope=runtime",
+          "-Dmdep.outputFile=/project/target/organic-runtime.txt"
+        ],
+        "exit": 0,
+        "seconds": 4.35,
+        "logSha256": "0ba8af319cf36c0cdee7e076fd8391fbf37c9585695ffe36c132f3edc00973be",
+        "errors": [],
+        "tail": [
+          "[INFO] ",
+          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-lang3 ---",
+          "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  2.649 s",
+          "[INFO] Finished at: 2026-11-21T09:13:30Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ]
+  }
+}

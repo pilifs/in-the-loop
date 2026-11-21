@@ -1,0 +1,158 @@
+{
+  "revision": "ed2397502708ebaba53643e5c3d60e0974d7045f",
+  "side": "parent",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-pl",
+      "gson",
+      "-am",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 57.95,
+    "logSha256": "f596b00064e97acec6f441af0565b0f80ab287160e5279d8ece19167d20268d3",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] Gson Parent ........................................ SUCCESS [ 13.164 s]",
+      "[INFO] Gson ............................................... SUCCESS [ 37.078 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  56.269 s",
+      "[INFO] Finished at: 2026-11-21T09:13:16Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "gson/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/gson/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 4.52,
+    "logSha256": "b8ec93bcfd3dce16c4d0a2392c92eaf21a31a828464a4d83c03e85fe34831124",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ gson ---",
+      "[INFO] Wrote classpath file '/project/gson/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  2.902 s",
+      "[INFO] Finished at: 2026-11-21T09:13:21Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "gson/target/gson-2.14.1-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "gson/target/gson-2.14.1-SNAPSHOT.jar",
+        "sha256": "8878e0cef9943f813b0ae91bd74d226c5222a51fab7e9876c2e3b85b79fd655b",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "com/google/gson/stream/JsonReader.class",
+    "selectedClassSha256": "0c8301667976283989438a30b950db5eb03f7540aca439b7c71330ff3f041d2b",
+    "sourceSha256": "4fe70bd77c2e1a4d7b2ed898c1d01a9af6b8b12e54266084a404f14e5d3f8bff"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "gson",
+        "-am",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=JsonReaderTest#testNumberLongAccumulatorOverflowsToZero",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 28.6,
+      "logSha256": "7685ba2136b26511a8623e87e892ec00cb0da2102f339faa0a7f61bc1c3435a8",
+      "errors": [
+        "[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.053 s <<< FAILURE! -- in com.google.gson.stream.JsonReaderTest",
+        "[ERROR] com.google.gson.stream.JsonReaderTest.testNumberLongAccumulatorOverflowsToZero -- Time elapsed: 0.006 s <<< ERROR!",
+        "[ERROR] Errors: ",
+        "[ERROR]   JsonReaderTest.testNumberLongAccumulatorOverflowsToZero:833 \u00bb MalformedJson Use JsonReader.setStrictness(Strictness.LENIENT) to accept malformed JSON at line 1 column 1 path $",
+        "[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0",
+        "[ERROR] Gson ............................................... FAILURE [ 25.698 s]",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.5:test (default-test) on project gson: ",
+        "[ERROR] ",
+        "[ERROR] See /project/gson/target/surefire-reports for the individual test results.",
+        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]"
+      ],
+      "tail": [
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+        "[ERROR] ",
+        "[ERROR] After correcting the problems, you can resume the build with the command",
+        "[ERROR]   mvn <args> -rf :gson"
+      ]
+    },
+    "testSourceSha256": {
+      "gson/src/test/java/com/google/gson/stream/JsonReaderTest.java": "aa54bfd11faf679ebb4271ce19b2bc6330472f14c75bffee4731560dae62c19e"
+    },
+    "transplant": [
+      "gson/src/test/java/com/google/gson/stream/JsonReaderTest.java"
+    ],
+    "named": {
+      "JsonReaderTest#testNumberLongAccumulatorOverflowsToZero": [
+        {
+          "status": "error",
+          "class": "com.google.gson.stream.JsonReaderTest",
+          "method": "testNumberLongAccumulatorOverflowsToZero",
+          "xmlSha256": "57a77fb49b2a74e6df7e97f103e5e15bc2f05905f8b16edafd7c62e236167117"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "from https://repo.maven.apache.org/maven2/": 219,
+    "downloadedBytes": 28567943,
+    "downloadedFiles": 219,
+    "cachedRequests": 1625
+  }
+}

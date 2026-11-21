@@ -1,0 +1,145 @@
+{
+  "revision": "75d85a807d7b66da432a822de6fc75c48134decf",
+  "side": "fix",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 30.15,
+    "logSha256": "a0ba5079684b4129d5b591faaf24ebac06c4d06dd3f257046bfc945e3ca37c8d",
+    "errors": [
+      "[ERROR] I/O error reading license TOC"
+    ],
+    "tail": [
+      "[INFO] Installing /project/target/commons-lang3-3.21.0-SNAPSHOT-bom.xml to /work/repository/org/apache/commons/commons-lang3/3.21.0-SNAPSHOT/commons-lang3-3.21.0-SNAPSHOT-cyclonedx.xml",
+      "[INFO] Installing /project/target/commons-lang3-3.21.0-SNAPSHOT-bom.json to /work/repository/org/apache/commons/commons-lang3/3.21.0-SNAPSHOT/commons-lang3-3.21.0-SNAPSHOT-cyclonedx.json",
+      "[INFO] Installing /project/target/site/org.apache.commons_commons-lang3-3.21.0-SNAPSHOT.spdx.json to /work/repository/org/apache/commons/commons-lang3/3.21.0-SNAPSHOT/commons-lang3-3.21.0-SNAPSHOT.spdx.json",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  28.411 s",
+      "[INFO] Finished at: 2026-11-21T09:14:29Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 4.35,
+    "logSha256": "47c6bb81d4ecc4362aef2ad4f1ac0de75bbcff3031d40af036b93b65cb72ab4f",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-lang3 ---",
+      "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  2.775 s",
+      "[INFO] Finished at: 2026-11-21T09:14:34Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "target/commons-lang3-3.21.0-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "target/commons-lang3-3.21.0-SNAPSHOT.jar",
+        "sha256": "3795609690c5893b35c835d840e57d20b283b2ecdf7b35933f889f171ca097c1",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "org/apache/commons/lang3/StringUtils.class",
+    "selectedClassSha256": "811073485a444bb33a24ba11dc8e27bd63247c2dc71f4296450937d1932e957c",
+    "sourceSha256": "fb4ff79dc6092243dfe738691097f259bd5e8a1a6769f315283283c875a11c97"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=StringUtilsTest#testTruncate_StringIntInt_surrogatePair,StringUtilsAbbreviateTest#testAbbreviateSurrogatePair",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 27.1,
+      "logSha256": "25ae1f3fca9534850b1958ce85d75f42c77198a5bacffc19cc284890a6212bb5",
+      "errors": [],
+      "tail": [
+        "[INFO] ",
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] ",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  25.494 s",
+        "[INFO] Finished at: 2026-11-21T09:15:01Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    },
+    "testSourceSha256": {
+      "src/test/java/org/apache/commons/lang3/StringUtilsTest.java": "3defcb5d5b046dc324198cfd3ee3100b889fc2359404027790149a7605ccd114",
+      "src/test/java/org/apache/commons/lang3/StringUtilsAbbreviateTest.java": "57f46446806ffc9ffaf51c53ce9690e4ffb674472440131da929b4538e02e808"
+    },
+    "transplant": [],
+    "named": {
+      "StringUtilsTest#testTruncate_StringIntInt_surrogatePair": [
+        {
+          "status": "passed",
+          "class": "org.apache.commons.lang3.StringUtilsTest",
+          "method": "testTruncate_StringIntInt_surrogatePair",
+          "xmlSha256": "30958d216e9408439420ceaa738a836d3f7715607dd0e4670313dee62f2704fe"
+        }
+      ],
+      "StringUtilsAbbreviateTest#testAbbreviateSurrogatePair": [
+        {
+          "status": "passed",
+          "class": "org.apache.commons.lang3.StringUtilsAbbreviateTest",
+          "method": "testAbbreviateSurrogatePair",
+          "xmlSha256": "d6692dc9928e18d319ad3f5be346ad47c99aae492dcd2abc14caee4d6244c613"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 2760
+  }
+}

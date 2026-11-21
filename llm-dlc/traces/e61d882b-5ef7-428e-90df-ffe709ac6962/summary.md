@@ -3814,6 +3814,12 @@ change `usowqsqksolo` · [log `ff4c580f8499`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261121-090451-353-build-both-original-modules-and-exec: failed: 1 failed step(s) in 51.7s, peak 515.0 MiB (estimated 8m00s, 3.0 GiB); 2 output file(s) changed 20261121-090451-355-build-both-original-modules-and-exec: failed: 1 failed step(s) in 54.3s, peak 556.3 MiB (estimated 8m00s, 3.0 GiB); 2 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
+### Record verification results for 4 job(s)
+
+change `qltpkqnzxzyl` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 4 of the 4 job(s). 20261121-090451-354-build-both-original-modules-and-exec: passed: 1 passed step(s) in 2m42s, peak 1.7 GiB (estimated 8m00s, 3.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-090452-356-build-both-original-modules-and-exec: passed: 1 passed step(s) in 2m27s, peak 1.6 GiB (estimated 8m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-090452-357-build-both-original-modules-and-exec: passed: 1 passed step(s) in 2m31s, peak 1.6 GiB (estimated 8m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-090452-358-build-both-original-modules-and-exec: passed: 1 passed step(s) in 2m06s, peak 956.6 MiB (estimated 8m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz) has every step in between: reasoning, tool calls and their results.

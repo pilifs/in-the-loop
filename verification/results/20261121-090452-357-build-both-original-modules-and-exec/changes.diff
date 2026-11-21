@@ -1,0 +1,619 @@
+--- /dev/null
++++ b/examples/357-gson-repeated-bom/records/upstream/build-fix.json
+@@ -0,0 +1,155 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/google/gson",
++    "commit": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
++    "class": "com.google.gson.stream.JsonReader",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-pl",
++        "gson",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    },
++    "parent": "216c41b6e70dc04e6856418dd76bb00c854eb6b4"
++  },
++  "artifacts": [
++    {
++      "path": "built/gson-2.14.1-SNAPSHOT.jar",
++      "sha256": "99b53ca06707602a957850200a88504717a570b17270a93ac84f1e0bd7c05767",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/google/gson at 845664ba1c307e6c1910d07cfed2f622e0ad8df1: gson/target/gson-2.14.1-SNAPSHOT.jar"
++    },
++    {
++      "path": "lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
++      "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
++      "role": "dependency",
++      "coordinates": "com.google.errorprone:error_prone_annotations:2.50.0",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
++      "tree": "2e4eb85b5b5587d5d95ac1b3d830d5113a16fa14",
++      "parents": [
++        "216c41b6e70dc04e6856418dd76bb00c854eb6b4"
++      ],
++      "fetchedFrom": "https://github.com/google/gson",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "gson/target/gson-2.14.1-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "gson/target/gson-2.14.1-SNAPSHOT.jar",
++          "sha256": "99b53ca06707602a957850200a88504717a570b17270a93ac84f1e0bd7c05767",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "com/google/gson/stream/JsonReader.class",
++      "selectedClassSha256": "763474506dafc04ab0fdf3c745ea39017c58d015e3fb9366e0b413f25e41c785",
++      "sourceSha256": "327b49717142389329bc3786690f0fe1a1b6269e34999b888446d203f6526167"
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      }
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "-pl",
++          "gson",
++          "-am",
++          "-Dmaven.test.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 22.85,
++        "logSha256": "78516bbc7729a345ee7df5e95c48cdbeb09ed64cff1e435c7bd5029b9457bafa",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] Gson Parent ........................................ SUCCESS [  3.630 s]",
++          "[INFO] Gson ............................................... SUCCESS [ 15.461 s]",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  21.049 s",
++          "[INFO] Finished at: 2026-11-21T09:14:15Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "gson/pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/gson/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 4.99,
++        "logSha256": "7899af52fc6029751f1fbd3fedda807d30372dbd9de26149a96e37caa1c25f35",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ gson ---",
++          "[INFO] Wrote classpath file '/project/gson/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  3.200 s",
++          "[INFO] Finished at: 2026-11-21T09:14:20Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+--- /dev/null
++++ b/examples/357-gson-repeated-bom/records/upstream/build-parent.json
+@@ -0,0 +1,152 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/google/gson",
++    "commit": "216c41b6e70dc04e6856418dd76bb00c854eb6b4",
++    "class": "com.google.gson.stream.JsonReader",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-pl",
++        "gson",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    }
++  },
++  "artifacts": [
++    {
++      "path": "built/gson-2.14.1-SNAPSHOT.jar",
++      "sha256": "6dff7278b3b9777948151ea567614237c654aaa1db9c73cc761792c67682dbb5",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/google/gson at 216c41b6e70dc04e6856418dd76bb00c854eb6b4: gson/target/gson-2.14.1-SNAPSHOT.jar"
++    },
++    {
++      "path": "lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
++      "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
++      "role": "dependency",
++      "coordinates": "com.google.errorprone:error_prone_annotations:2.50.0",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "216c41b6e70dc04e6856418dd76bb00c854eb6b4",
++      "tree": "6362db116065f0efc05dbb78fa02c00daa1cf861",
++      "parents": [],
++      "fetchedFrom": "https://github.com/google/gson",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "gson/target/gson-2.14.1-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "gson/target/gson-2.14.1-SNAPSHOT.jar",
++          "sha256": "6dff7278b3b9777948151ea567614237c654aaa1db9c73cc761792c67682dbb5",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "com/google/gson/stream/JsonReader.class",
++      "selectedClassSha256": "6d6709eabd46ade454dc77f588421efa21aa4431c9058934c470aa15f3e3ab6b",
++      "sourceSha256": "46321d93477d0ca372aea8d8f62431ea44b7ca8947afea2f474bdebc2ff1e589"
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      }
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "-pl",
++          "gson",
++          "-am",
++          "-Dmaven.test.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 57.5,
++        "logSha256": "e9398e5a1ba58f884d5ac59663f6216f93d3ddc7953b52894c88f3884a5827a1",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] Gson Parent ........................................ SUCCESS [ 12.208 s]",
++          "[INFO] Gson ............................................... SUCCESS [ 37.639 s]",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  55.889 s",
++          "[INFO] Finished at: 2026-11-21T09:13:16Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "gson/pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/gson/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 4.7,
++        "logSha256": "ed171ead5e69d85270f6b34a5d900994423ae79067bf157bcdd55e82b32208f4",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ gson ---",
++          "[INFO] Wrote classpath file '/project/gson/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  3.084 s",
++          "[INFO] Finished at: 2026-11-21T09:13:21Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+Binary file examples/357-gson-repeated-bom/records/upstream/fix-TEST-com.google.gson.stream.JsonReaderTest.xml.gz changed
+--- /dev/null
++++ b/examples/357-gson-repeated-bom/records/upstream/fix-upstream.json
+@@ -0,0 +1,140 @@
++{
++  "revision": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
++  "side": "fix",
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "-pl",
++      "gson",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 22.85,
++    "logSha256": "78516bbc7729a345ee7df5e95c48cdbeb09ed64cff1e435c7bd5029b9457bafa",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] Gson Parent ........................................ SUCCESS [  3.630 s]",
++      "[INFO] Gson ............................................... SUCCESS [ 15.461 s]",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  21.049 s",
++      "[INFO] Finished at: 2026-11-21T09:14:15Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "gson/pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/gson/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 4.99,
++    "logSha256": "7899af52fc6029751f1fbd3fedda807d30372dbd9de26149a96e37caa1c25f35",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ gson ---",
++      "[INFO] Wrote classpath file '/project/gson/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  3.200 s",
++      "[INFO] Finished at: 2026-11-21T09:14:20Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "gson/target/gson-2.14.1-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "gson/target/gson-2.14.1-SNAPSHOT.jar",
++        "sha256": "99b53ca06707602a957850200a88504717a570b17270a93ac84f1e0bd7c05767",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "com/google/gson/stream/JsonReader.class",
++    "selectedClassSha256": "763474506dafc04ab0fdf3c745ea39017c58d015e3fb9366e0b413f25e41c785",
++    "sourceSha256": "327b49717142389329bc3786690f0fe1a1b6269e34999b888446d203f6526167"
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-pl",
++        "gson",
++        "-am",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=JsonReaderTest#testRepeatedBom",
++        "test"
++      ],
++      "exit": 0,
++      "seconds": 29.62,
++      "logSha256": "f2fac634ee1afb03c885c73835aac672462e4b04a7d42afc7fa2578743545922",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] Gson Parent ........................................ SUCCESS [  0.490 s]",
++        "[INFO] Gson ............................................... SUCCESS [ 26.629 s]",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  27.860 s",
++        "[INFO] Finished at: 2026-11-21T09:14:49Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ]
++    },
++    "testSourceSha256": {
++      "gson/src/test/java/com/google/gson/stream/JsonReaderTest.java": "6ff9c53471017f442478fc86c9761d48a27c01b727cc5224dea533acb3eded28"
++    },
++    "transplant": [],
++    "named": {
++      "JsonReaderTest#testRepeatedBom": [
++        {
++          "status": "passed",
++          "class": "com.google.gson.stream.JsonReaderTest",
++          "method": "testRepeatedBom",
++          "xmlSha256": "6c69206bb58802e1f34cd6ce2e38ab34e2a421a570866fb285405189d55f6940"
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "cachedRequests": 1836
++  }
++}
+Binary file examples/357-gson-repeated-bom/records/upstream/parent-TEST-com.google.gson.stream.JsonReaderTest.xml.gz changed
+--- /dev/null
++++ b/examples/357-gson-repeated-bom/records/upstream/parent-upstream.json
+@@ -0,0 +1,158 @@
++{
++  "revision": "216c41b6e70dc04e6856418dd76bb00c854eb6b4",
++  "side": "parent",
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "-pl",
++      "gson",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 57.5,
++    "logSha256": "e9398e5a1ba58f884d5ac59663f6216f93d3ddc7953b52894c88f3884a5827a1",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] Gson Parent ........................................ SUCCESS [ 12.208 s]",
++      "[INFO] Gson ............................................... SUCCESS [ 37.639 s]",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  55.889 s",
++      "[INFO] Finished at: 2026-11-21T09:13:16Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "gson/pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/gson/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 4.7,
++    "logSha256": "ed171ead5e69d85270f6b34a5d900994423ae79067bf157bcdd55e82b32208f4",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ gson ---",
++      "[INFO] Wrote classpath file '/project/gson/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  3.084 s",
++      "[INFO] Finished at: 2026-11-21T09:13:21Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "gson/target/gson-2.14.1-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "gson/target/gson-2.14.1-SNAPSHOT.jar",
++        "sha256": "6dff7278b3b9777948151ea567614237c654aaa1db9c73cc761792c67682dbb5",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "com/google/gson/stream/JsonReader.class",
++    "selectedClassSha256": "6d6709eabd46ade454dc77f588421efa21aa4431c9058934c470aa15f3e3ab6b",
++    "sourceSha256": "46321d93477d0ca372aea8d8f62431ea44b7ca8947afea2f474bdebc2ff1e589"
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-pl",
++        "gson",
++        "-am",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=JsonReaderTest#testRepeatedBom",
++        "test"
++      ],
++      "exit": 1,
++      "seconds": 30.85,
++      "logSha256": "b8cfb457c3515f523b1de5c0231bd530be0a09cae5cab7b8e4a16c965d6b7d13",
++      "errors": [
++        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.152 s <<< FAILURE! -- in com.google.gson.stream.JsonReaderTest",
++        "[ERROR] com.google.gson.stream.JsonReaderTest.testRepeatedBom -- Time elapsed: 0.062 s <<< FAILURE!",
++        "[ERROR] Failures: ",
++        "[ERROR]   JsonReaderTest.testRepeatedBom:1691 value of: nextString()",
++        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",
++        "[ERROR] Gson ............................................... FAILURE [ 27.873 s]",
++        "[ERROR] BUILD FAILURE",
++        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project gson: There are test failures.",
++        "[ERROR] ",
++        "[ERROR] See /project/gson/target/surefire-reports for the individual test results.",
++        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
++        "[ERROR] -> [Help 1]"
++      ],
++      "tail": [
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
++        "[ERROR] ",
++        "[ERROR] After correcting the problems, you can resume the build with the command",
++        "[ERROR]   mvn <args> -rf :gson"
++      ]
++    },
++    "testSourceSha256": {
++      "gson/src/test/java/com/google/gson/stream/JsonReaderTest.java": "6ff9c53471017f442478fc86c9761d48a27c01b727cc5224dea533acb3eded28"
++    },
++    "transplant": [
++      "gson/src/test/java/com/google/gson/stream/JsonReaderTest.java"
++    ],
++    "named": {
++      "JsonReaderTest#testRepeatedBom": [
++        {
++          "status": "failure",
++          "class": "com.google.gson.stream.JsonReaderTest",
++          "method": "testRepeatedBom",
++          "xmlSha256": "0ab96203434f0641d3fa3a37241504f43b141b78357abcf167feec2dff73cc75"
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "from https://repo.maven.apache.org/maven2/": 267,
++    "downloadedBytes": 36241934,
++    "downloadedFiles": 267,
++    "cachedRequests": 1569
++  }
++}

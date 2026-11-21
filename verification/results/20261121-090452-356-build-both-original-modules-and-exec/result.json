@@ -1,0 +1,209 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-090452-356-build-both-original-modules-and-exec",
+  "title": "356 build both original modules and execute the landed gson regression",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m27s, peak 1.6 GiB (estimated 8m00s, 3.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (Build and run both original revisions) was held back 5m06s by its 2-CPU quota in 2m27s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-090452-356-build-both-original-modules-and-exec.json",
+    "sha256": "6da480ecfeb83968e646f088899173993b4ecf79e37d3c06296e919ed6b48bc3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-090452-356-build-both-original-modules-and-exec",
+      "title": "356 build both original modules and execute the landed gson regression",
+      "description": "Build both pinned revisions of https://github.com/google/gson PR 3034 on JDK 21. Record the original production class, ordered runtime closure, and fresh named Surefire reports. Transplant only the landed test sources to the parent.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "original-upstream-test"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/organic-java/cases.json"
+        ]
+      },
+      "expected": "Original JARs captured on both revisions, the historical tests fail on the parent and pass on the fix.",
+      "submitted": {
+        "at": "2026-11-21T09:04:52+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "maven",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "8m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Build and run both original revisions",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 356 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output examples/356-gson-overflowing-number/records/upstream",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/356-gson-overflowing-number/records/upstream"
+      ]
+    }
+  },
+  "sourceCommit": "28141df762fedbcdbc8d369d662324ae46f56081",
+  "startedAt": "2026-11-21T09:12:11+00:00",
+  "finishedAt": "2026-11-21T09:14:46+00:00",
+  "wallSeconds": 155.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3339959,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1735782400,
+    "wallSeconds": 147.1,
+    "cpuSeconds": 217.9,
+    "memoryOfEstimate": 0.54,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build and run both original revisions",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 356 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output examples/356-gson-overflowing-number/records/upstream",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 147.123,
+      "cpuSeconds": 217.866,
+      "cpuThrottledSeconds": 306.874,
+      "peakMemoryBytes": 1735782400,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-and-run-both-original-re.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "a8fac2536d51771fd50f7a45ccca69744ed3f6e0cce3a052ad49c6af1f388318",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "356 parent qualified",
+        "356 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/356-gson-overflowing-number/records/upstream/build-fix.json",
+      "change": "added",
+      "bytes": 5500,
+      "sha256": "7a41138db9b86ad8cdf9b70cceae9f3f7e9a59a520abb6f4f58aecdf32fb1b3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/upstream/build-parent.json",
+      "change": "added",
+      "bytes": 5385,
+      "sha256": "5a200e54cc18d98362f4f53c84d5424e33ca1d2f75cbd778d75d6e1a6dfeccc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/upstream/fix-TEST-com.google.gson.stream.JsonReaderTest.xml.gz",
+      "change": "added",
+      "bytes": 1597,
+      "sha256": "ac2f889a7be027412ec3cd363e1ce8c5bac453db431ec7ba7fbf78eb2e787006",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/upstream/fix-upstream.json",
+      "change": "added",
+      "bytes": 4888,
+      "sha256": "a8996d224617ec917431750aba0559b990d1d9e2fc0934e3d87265ebccbfe9a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/upstream/parent-TEST-com.google.gson.stream.JsonReaderTest.xml.gz",
+      "change": "added",
+      "bytes": 2275,
+      "sha256": "302bf155050c840251072cb22fc130f8393662d88ee8d8014d090ae4807ed3e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/upstream/parent-upstream.json",
+      "change": "added",
+      "bytes": 6165,
+      "sha256": "331e2438feddb13a5f8473c95f194dd0dfc8553b0fdc1e8a49ff9ba070e7c373",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T09:17:22+00:00",
+    "applied": [
+      "examples/356-gson-overflowing-number/records/upstream/build-fix.json",
+      "examples/356-gson-overflowing-number/records/upstream/build-parent.json",
+      "examples/356-gson-overflowing-number/records/upstream/fix-TEST-com.google.gson.stream.JsonReaderTest.xml.gz",
+      "examples/356-gson-overflowing-number/records/upstream/fix-upstream.json",
+      "examples/356-gson-overflowing-number/records/upstream/parent-TEST-com.google.gson.stream.JsonReaderTest.xml.gz",
+      "examples/356-gson-overflowing-number/records/upstream/parent-upstream.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

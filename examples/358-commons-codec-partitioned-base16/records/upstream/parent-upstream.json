@@ -1,0 +1,152 @@
+{
+  "revision": "b22276db7282efa0794e2cca02a32006c0bca0dd",
+  "side": "parent",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 59.9,
+    "logSha256": "9343aed21191bf2fa5d81920d74fed94e848c2ff5a04fc54d20b2fbba104df3c",
+    "errors": [],
+    "tail": [
+      "[INFO] Installing /project/pom.xml to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT.pom",
+      "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-sources.jar",
+      "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-test-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-test-sources.jar",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  58.224 s",
+      "[INFO] Finished at: 2026-11-21T09:13:18Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 4.83,
+    "logSha256": "fddf9d764b4b635a178e7cb81d72bcf1a2283594b7a4532bf0fca2964c79aa61",
+    "errors": [],
+    "tail": [
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-codec ---",
+      "[INFO] No dependencies found.",
+      "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  3.197 s",
+      "[INFO] Finished at: 2026-11-21T09:13:23Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "target/commons-codec-1.16-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "target/commons-codec-1.16-SNAPSHOT.jar",
+        "sha256": "d7c85c44b0fe1606e37d16c5420853802b5afefe450cdb30c02f6a9c56a81f78",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "org/apache/commons/codec/binary/Base16.class",
+    "selectedClassSha256": "32f332a61114dc34d4a89fb1bb3115df01ea4248208ce02e0e5d7909a5c68f36",
+    "sourceSha256": "0e8525e2a53ffa0d347adab91a74234097869c96e3cceff3748501647338a41a"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=Base16Test#testOddEvenDecoding",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 19.18,
+      "logSha256": "0ff2757bb55d2a28ba33a63d72a1f3681b4ee1cbd1753c37f0b9bed119bc7d5b",
+      "errors": [
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.125 s <<< FAILURE! - in org.apache.commons.codec.binary.Base16Test",
+        "[ERROR] org.apache.commons.codec.binary.Base16Test.testOddEvenDecoding  Time elapsed: 0.102 s  <<< FAILURE!",
+        "[ERROR] Failures: ",
+        "[ERROR]   Base16Test.testOddEvenDecoding:599 expected: <ABCDE> but was: <ABCD>",
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M6:test (default-test) on project commons-codec: There are test failures.",
+        "[ERROR] ",
+        "[ERROR] Please refer to /project/target/surefire-reports for the individual test results.",
+        "[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] "
+      ],
+      "tail": [
+        "[ERROR] Please refer to /project/target/surefire-reports for the individual test results.",
+        "[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      ]
+    },
+    "testSourceSha256": {
+      "src/test/java/org/apache/commons/codec/binary/Base16Test.java": "878905642cff4816216c449cb67a1afb3d366430b5a2bff0b412f5248da15ab5"
+    },
+    "transplant": [
+      "src/test/java/org/apache/commons/codec/binary/Base16Test.java"
+    ],
+    "named": {
+      "Base16Test#testOddEvenDecoding": [
+        {
+          "status": "failure",
+          "class": "org.apache.commons.codec.binary.Base16Test",
+          "method": "testOddEvenDecoding",
+          "xmlSha256": "e1235a5a8e8968cfd644e43b02b1b7bff865ddf0d05a9eff5051ba425975c4a2"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "from https://repo.maven.apache.org/maven2/": 505,
+    "downloadedBytes": 21830676,
+    "downloadedFiles": 505,
+    "cachedRequests": 2259
+  }
+}
