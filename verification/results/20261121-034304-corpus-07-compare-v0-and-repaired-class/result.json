@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-034304-corpus-07-compare-v0-and-repaired-class",
+  "title": "Corpus 07 compare V0 and repaired class intake",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m19s, peak 278.3 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-034304-corpus-07-compare-v0-and-repaired-class.json",
+    "sha256": "3a4f1053b068a63b43a992dfe1be189b7d5b3f923a27a8be787b7ebd567aea7f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-034304-corpus-07-compare-v0-and-repaired-class",
+      "title": "Corpus 07 compare V0 and repaired class intake",
+      "description": "Compare the frozen and repaired readers and native checker on the same verified original sources, separate Maven compile/runtime graphs and Java toolchain. Preserve each first result, including dependency and native refusals. Upgrades in this job: cucumber-reporting-1220, cucumber-reporting-1198, commons-beanutils-440, commons-csv-8993be87.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "expected": "Each original upgrade yields a matched pair of first reports. Open findings are recorded on their actual observer and artifacts.",
+      "submitted": {
+        "at": "2026-11-21T03:43:04+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "2h"
+      },
+      "steps": [
+        {
+          "name": "Compare original upgrade pairs",
+          "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/07 --case cucumber-reporting-1220 --case cucumber-reporting-1198 --case commons-beanutils-440 --case commons-csv-8993be87",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/intake-1/07"
+      ]
+    }
+  },
+  "sourceCommit": "a123f954888fe1d408110749f034e44086f11647",
+  "startedAt": "2026-11-21T03:45:56+00:00",
+  "finishedAt": "2026-11-21T03:54:23+00:00",
+  "wallSeconds": 507.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2613287,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 291811328,
+    "wallSeconds": 319.2,
+    "cpuSeconds": 86.8,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.44
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare original upgrade pairs",
+      "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/07 --case cucumber-reporting-1220 --case cucumber-reporting-1198 --case commons-beanutils-440 --case commons-csv-8993be87",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 319.173,
+      "cpuSeconds": 86.783,
+      "cpuThrottledSeconds": 39.586,
+      "peakMemoryBytes": 291811328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-original-upgrade-pairs.log",
+        "lines": 8,
+        "bytes": 2174,
+        "sha256": "0dfe055f13ca8c9d6370187a411c829b9d7faae43a846b074e7148f01bf0f10c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cucumber-reporting-1220 V0 open native checker",
+        "cucumber-reporting-1220 current open native checker",
+        "cucumber-reporting-1198 V0 open parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constr",
+        "cucumber-reporting-1198 current open parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their c",
+        "commons-beanutils-440 V0 open parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are",
+        "commons-beanutils-440 current open parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans",
+        "commons-csv-8993be87 V0 open nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is",
+        "commons-csv-8993be87 current open nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of sever"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/07/V0/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 5360,
+      "sha256": "543bb34324d3806fcb3fe24f3e5f536d93de2b12336622b0d5353ef4efaa7121",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/07/V0/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 4800,
+      "sha256": "74ea17cebdbf5b41df80e97a8f066971777f6614a0cc09b9971692c7b6013295",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/07/V0/cucumber-reporting-1198.json",
+      "change": "added",
+      "bytes": 9503,
+      "sha256": "ade74fa2bbedd1e10d88916ccef8e4d1aebaec20da3981689c30b98e91f7c4ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/07/V0/cucumber-reporting-1220.json",
+      "change": "added",
+      "bytes": 7806,
+      "sha256": "d54bb77cf6f6d81d3b09ed8e9117c5ba507d2311dfd9bdefe3acc5c3e267f522",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/07/current/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 5364,
+      "sha256": "fc70a9c9c2fcee0e9b8860c7ea21ffd76f3aa59e7b91b20e5ae5ab3426b23269",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/07/current/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 4805,
+      "sha256": "a8379eb2a40b5e84407fbe23d2062fa558461234b8906287aaf156e21dda8e5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/07/current/cucumber-reporting-1198.json",
+      "change": "added",
+      "bytes": 9508,
+      "sha256": "ee112aba4c79b3ddfa52a1ed794097a59afb0fb055439a32bf6574c14cefbe3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/07/current/cucumber-reporting-1220.json",
+      "change": "added",
+      "bytes": 7810,
+      "sha256": "6b33040429e5b60350ae1cd224bfd496d36b3365d28403b40cc42850547b5ec6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T03:54:38+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/intake-1/07/V0/commons-beanutils-440.json",
+      "verification/external-upgrades/corpus-runs/intake-1/07/V0/commons-csv-8993be87.json",
+      "verification/external-upgrades/corpus-runs/intake-1/07/V0/cucumber-reporting-1198.json",
+      "verification/external-upgrades/corpus-runs/intake-1/07/V0/cucumber-reporting-1220.json",
+      "verification/external-upgrades/corpus-runs/intake-1/07/current/commons-beanutils-440.json",
+      "verification/external-upgrades/corpus-runs/intake-1/07/current/commons-csv-8993be87.json",
+      "verification/external-upgrades/corpus-runs/intake-1/07/current/cucumber-reporting-1198.json",
+      "verification/external-upgrades/corpus-runs/intake-1/07/current/cucumber-reporting-1220.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

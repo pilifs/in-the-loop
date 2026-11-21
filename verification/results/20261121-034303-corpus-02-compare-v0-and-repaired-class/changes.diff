@@ -1,0 +1,834 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/02/V0/compsuite-i-1.json
+@@ -0,0 +1,109 @@
++{
++  "id": "compsuite-i-1",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert",
++  "observer": "Deserialize a serialized phone response and read the phone number.",
++  "revisions": {
++    "old": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++    "new": "577716be23b960fe24b31b1edcdf6b01e88a692e"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
++      ],
++      "orderedSha256": [
++        "079fc0eeac81d826f9bb68ee98219c0743f40415e78ce7f6c221135eb42635c3",
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa"
++      ],
++      "callerClassSha256": "8a4010b976f74535ba8b1afaa9315536c21cfe2b5df97e2f01742c5d7aacff93",
++      "descriptors": [
++        "(Ljava/lang/Object;)Ljava/lang/Object;",
++        "(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;"
++      ]
++    },
++    "new": {
++      "commit": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
++      ],
++      "orderedSha256": [
++        "079fc0eeac81d826f9bb68ee98219c0743f40415e78ce7f6c221135eb42635c3",
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c"
++      ],
++      "callerClassSha256": "8a4010b976f74535ba8b1afaa9315536c21cfe2b5df97e2f01742c5d7aacff93",
++      "descriptors": [
++        "(Ljava/lang/Object;)Ljava/lang/Object;",
++        "(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.038,
++    "outputSha256": "71248dd8edef21c0e8faab36a6514d95f07e3d0ec1985d67a9c679a1bb55c61b",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "retrofit2.converter.wire.WireResponseBodyConverter#convert",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "retrofit2.converter.wire.WireResponseBodyConverter#convert cannot be verified: convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++          "uri": null,
++          "line": 34
++        }
++      ],
++      "output": "\u2717 retrofit2.converter.wire.WireResponseBodyConverter#convert cannot be verified: convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++      "work": "$WORK/checker-f_b0auad"
++    }
++  },
++  "firstBlocker": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++  "elapsedSeconds": 138.448,
++  "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/02/V0/compsuite-i-10.json
+@@ -0,0 +1,44 @@
++{
++  "id": "compsuite-i-10",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#getCount",
++  "observer": "Look up a unigram and an adjacent token pair in the original language index.",
++  "revisions": {
++    "old": "fe77e85a2f7b472ba71564821e7545025eeda242",
++    "new": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "fe77e85a2f7b472ba71564821e7545025eeda242",
++      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR]",
++        "[ERROR]"
++      ]
++    },
++    "new": {
++      "commit": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e",
++      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR]",
++        "[ERROR]"
++      ]
++    }
++  },
++  "firstBlocker": "original Maven classpath",
++  "elapsedSeconds": 54.844,
++  "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/02/V0/compsuite-i-70.json
+@@ -0,0 +1,143 @@
++{
++  "id": "compsuite-i-70",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++  "observer": "Read the style of an unformatted cell from the original spreadsheet.",
++  "revisions": {
++    "old": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++    "new": "eed036e11b5aecaeb5889fae26505e9409bdc438"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++      "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 5,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "584159c02c776a8c8e35801c7fe3cbf0276c5b12a2feed770c12174ed8418cfb",
++        "5f2df1e467825e4cac5996d44890c4201c000b43c0b23cffc0782d28a0beb9b0",
++        "ff71bd27b36816889324de58ecf642532e5c9934c1dca2cfea0cbb2f393ec2cb",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "orderedSha256": [
++        "27ec1a7fbb8a5f2611a25088f1f74b41a3a06ae1cdd074283dae93795f9bb3fc",
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "584159c02c776a8c8e35801c7fe3cbf0276c5b12a2feed770c12174ed8418cfb",
++        "5f2df1e467825e4cac5996d44890c4201c000b43c0b23cffc0782d28a0beb9b0",
++        "ff71bd27b36816889324de58ecf642532e5c9934c1dca2cfea0cbb2f393ec2cb",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "callerClassSha256": "6def3252bd8e4129ee94541e8318e61f0b9b51710045164bc5e51fe667d68c9b",
++      "descriptors": [
++        "()Lorg/apache/poi/ss/usermodel/CellStyle;"
++      ]
++    },
++    "new": {
++      "commit": "eed036e11b5aecaeb5889fae26505e9409bdc438",
++      "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 5,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "3c8fc87be30f4992ca9e2d5743515e781ebf97696d270bbec0f51ee6f8543e9c",
++        "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++        "38bb45c99e6153260c19b97b99b6a7370a067de63344de6d1ea11922acaed86b",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "orderedSha256": [
++        "27ec1a7fbb8a5f2611a25088f1f74b41a3a06ae1cdd074283dae93795f9bb3fc",
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "3c8fc87be30f4992ca9e2d5743515e781ebf97696d270bbec0f51ee6f8543e9c",
++        "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++        "38bb45c99e6153260c19b97b99b6a7370a067de63344de6d1ea11922acaed86b",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "callerClassSha256": "6def3252bd8e4129ee94541e8318e61f0b9b51710045164bc5e51fe667d68c9b",
++      "descriptors": [
++        "()Lorg/apache/poi/ss/usermodel/CellStyle;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.441,
++    "outputSha256": "0286acb869251d440b087ac835365935d63b704689fe78f8f6e343c8cd1c5042",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 266
++        }
++      ],
++      "output": "\u2717 com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-crh43gcq"
++    }
++  },
++  "firstBlocker": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++  "elapsedSeconds": 62.958,
++  "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/02/V0/compsuite-i-85.json
+@@ -0,0 +1,109 @@
++{
++  "id": "compsuite-i-85",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "pl.com.bottega.ecommerce.sales.application.impl.OrderingServiceImpl#confirm",
++  "observer": "Confirm a previously calculated offer after changing the order quantity.",
++  "revisions": {
++    "old": "a1a0cf597e430cf58afe627cd5a724fa33665d2e",
++    "new": "f500f1ea3c84932963cdf847fea48a98f2f492d0"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "a1a0cf597e430cf58afe627cd5a724fa33665d2e",
++      "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 71,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "dbfabfcf63611a43b3eef40d9a58e973df35bc0eedb95acef358c267bed30506",
++        "dea2fe7895033bdbbe2c1688ad08a0588d9d9b0f17d53349081cc20dda31353e",
++        "5674d2dd1641e6068207effa45b8a633129695c1ab5773bc6b1a2ad3cb31fcd1",
++        "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
++        "ac2126dfbcd8d398e4b64cd0fdca21d2d64ff46e59326004de2d636b37036c35",
++        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++        "bacfb6460317d421aa2906d9e63c293b69dc1a5dac480d0f6416df50796a4bb3",
++        "eeec97d5987dc8d525285fab888bab4c68a2ef1412335f73aba2b804f88a6cb5",
++        "cea2405cf0f5427e226cd4957973e8b3d83091dea2f6383a7168192c790ecd06",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370",
++        "5f7c2d94073be6e8cf196d95b934b54384debe48026ab1c354668eba6cf8eb87",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f",
++        "8e4e3d5ef7d44274ca19c5b9ea0a00e7796aa06153337164a8d81effb3d4affa",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "d746d344f43af77c79cefb40f8c787d472cb58326eb21ba649dd3ee6c8089bef",
++        "1a5d8da8f2d31f069fd8cbd8b9abdc888b17f31c25ca42af10eb43bbb1a626ba",
++        "7f9e44b6bd0dc899c69b0d81c903fee8771ee60152ac3ce003f5909b03b9eb26",
++        "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044",
++        "f374dfb5a6f3985cd95e7d7c4a3b32d380e4f26f62fec4f6fc8021104d0c2431",
++        "1ba81c1000b878f8592b41907aa7c0c07ab6e62c0217e75f0003b0b682f6bb8f",
++        "b47ce0110d82853a2b94a56196c461148e7400d4caf38d73654a3d56d7384199",
++        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
++        "feb4b5b2e79a63b72ec47a693b1cf35cf1cea1f60a2bb2615bf21f74c7a60bb0",
++        "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
++        "8ba2177cfebc7c51a2c31427f572f7f8fefd13701a89661175ce376c1e478a5f",
++        "7b52f4d3ad41b7ed71f5b6b11833113b7e08326c8ef70d2dedf0b430c7ba5341"
++      ],
++      "orderedSha256": [
++        "26cc85965de9f734f9b1368947ea255b6eee73e37201ca1278330f84e45309e3",
++        "dbfabfcf63611a43b3eef40d9a58e973df35bc0eedb95acef358c267bed30506",
++        "dea2fe7895033bdbbe2c1688ad08a0588d9d9b0f17d53349081cc20dda31353e",
++        "5674d2dd1641e6068207effa45b8a633129695c1ab5773bc6b1a2ad3cb31fcd1",
++        "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
++        "ac2126dfbcd8d398e4b64cd0fdca21d2d64ff46e59326004de2d636b37036c35",
++        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++        "bacfb6460317d421aa2906d9e63c293b69dc1a5dac480d0f6416df50796a4bb3",
++        "eeec97d5987dc8d525285fab888bab4c68a2ef1412335f73aba2b804f88a6cb5",
++        "cea2405cf0f5427e226cd4957973e8b3d83091dea2f6383a7168192c790ecd06",
++        "2db20262b9cdd89907513575d0d6cb6fcb10fe9e9f484731e2f1a19c05c58e85",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370",
++        "5f7c2d94073be6e8cf196d95b934b54384debe48026ab1c354668eba6cf8eb87",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f",
++        "8e4e3d5ef7d44274ca19c5b9ea0a00e7796aa06153337164a8d81effb3d4affa",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "d746d344f43af77c79cefb40f8c787d472cb58326eb21ba649dd3ee6c8089bef",
++        "1a5d8da8f2d31f069fd8cbd8b9abdc888b17f31c25ca42af10eb43bbb1a626ba",
++        "7f9e44b6bd0dc899c69b0d81c903fee8771ee60152ac3ce003f5909b03b9eb26",
++        "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044",
++        "f374dfb5a6f3985cd95e7d7c4a3b32d380e4f26f62fec4f6fc8021104d0c2431",
++        "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
++        "1ba81c1000b878f8592b41907aa7c0c07ab6e62c0217e75f0003b0b682f6bb8f",
++        "b47ce0110d82853a2b94a56196c461148e7400d4caf38d73654a3d56d7384199",
++        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
++        "feb4b5b2e79a63b72ec47a693b1cf35cf1cea1f60a2bb2615bf21f74c7a60bb0",
++        "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
++        "8ba2177cfebc7c51a2c31427f572f7f8fefd13701a89661175ce376c1e478a5f",
++        "7b52f4d3ad41b7ed71f5b6b11833113b7e08326c8ef70d2dedf0b430c7ba5341"
++      ],
++      "callerClassSha256": "9b3b51551f2d3164ded80683d16664cef647ab1bbd46653b7e9c92c47eed8e6a",
++      "descriptors": [
++        "(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V"
++      ]
++    },
++    "new": {
++      "commit": "f500f1ea3c84932963cdf847fea48a98f2f492d0",
++      "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original classpath",
++      "diagnostic": [
++        "The selected module did not resolve the changed coordinate on its runtime classpath."
++      ]
++    }
++  },
++  "firstBlocker": "original classpath",
++  "elapsedSeconds": 57.326,
++  "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/02/current/compsuite-i-1.json
+@@ -0,0 +1,109 @@
++{
++  "id": "compsuite-i-1",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert",
++  "observer": "Deserialize a serialized phone response and read the phone number.",
++  "revisions": {
++    "old": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++    "new": "577716be23b960fe24b31b1edcdf6b01e88a692e"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
++      ],
++      "orderedSha256": [
++        "079fc0eeac81d826f9bb68ee98219c0743f40415e78ce7f6c221135eb42635c3",
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa"
++      ],
++      "callerClassSha256": "8a4010b976f74535ba8b1afaa9315536c21cfe2b5df97e2f01742c5d7aacff93",
++      "descriptors": [
++        "(Ljava/lang/Object;)Ljava/lang/Object;",
++        "(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;"
++      ]
++    },
++    "new": {
++      "commit": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
++      ],
++      "orderedSha256": [
++        "079fc0eeac81d826f9bb68ee98219c0743f40415e78ce7f6c221135eb42635c3",
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c"
++      ],
++      "callerClassSha256": "8a4010b976f74535ba8b1afaa9315536c21cfe2b5df97e2f01742c5d7aacff93",
++      "descriptors": [
++        "(Ljava/lang/Object;)Ljava/lang/Object;",
++        "(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.028,
++    "outputSha256": "cedeeba5d4237c951ab117abc48e23c9a3d4927547936815e622041bed501c08",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "retrofit2.converter.wire.WireResponseBodyConverter#convert",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "retrofit2.converter.wire.WireResponseBodyConverter#convert cannot be verified: convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++          "uri": null,
++          "line": 34
++        }
++      ],
++      "output": "\u2717 retrofit2.converter.wire.WireResponseBodyConverter#convert cannot be verified: convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++      "work": "$WORK/checker-ybsb5wqc"
++    }
++  },
++  "firstBlocker": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++  "elapsedSeconds": 138.398,
++  "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/02/current/compsuite-i-10.json
+@@ -0,0 +1,44 @@
++{
++  "id": "compsuite-i-10",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#getCount",
++  "observer": "Look up a unigram and an adjacent token pair in the original language index.",
++  "revisions": {
++    "old": "fe77e85a2f7b472ba71564821e7545025eeda242",
++    "new": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "fe77e85a2f7b472ba71564821e7545025eeda242",
++      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR]",
++        "[ERROR]"
++      ]
++    },
++    "new": {
++      "commit": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e",
++      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR]",
++        "[ERROR]"
++      ]
++    }
++  },
++  "firstBlocker": "original Maven classpath",
++  "elapsedSeconds": 54.806,
++  "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/02/current/compsuite-i-70.json
+@@ -0,0 +1,143 @@
++{
++  "id": "compsuite-i-70",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++  "observer": "Read the style of an unformatted cell from the original spreadsheet.",
++  "revisions": {
++    "old": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++    "new": "eed036e11b5aecaeb5889fae26505e9409bdc438"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++      "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 5,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "584159c02c776a8c8e35801c7fe3cbf0276c5b12a2feed770c12174ed8418cfb",
++        "5f2df1e467825e4cac5996d44890c4201c000b43c0b23cffc0782d28a0beb9b0",
++        "ff71bd27b36816889324de58ecf642532e5c9934c1dca2cfea0cbb2f393ec2cb",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "orderedSha256": [
++        "27ec1a7fbb8a5f2611a25088f1f74b41a3a06ae1cdd074283dae93795f9bb3fc",
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "584159c02c776a8c8e35801c7fe3cbf0276c5b12a2feed770c12174ed8418cfb",
++        "5f2df1e467825e4cac5996d44890c4201c000b43c0b23cffc0782d28a0beb9b0",
++        "ff71bd27b36816889324de58ecf642532e5c9934c1dca2cfea0cbb2f393ec2cb",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "callerClassSha256": "6def3252bd8e4129ee94541e8318e61f0b9b51710045164bc5e51fe667d68c9b",
++      "descriptors": [
++        "()Lorg/apache/poi/ss/usermodel/CellStyle;"
++      ]
++    },
++    "new": {
++      "commit": "eed036e11b5aecaeb5889fae26505e9409bdc438",
++      "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 5,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "3c8fc87be30f4992ca9e2d5743515e781ebf97696d270bbec0f51ee6f8543e9c",
++        "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++        "38bb45c99e6153260c19b97b99b6a7370a067de63344de6d1ea11922acaed86b",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "orderedSha256": [
++        "27ec1a7fbb8a5f2611a25088f1f74b41a3a06ae1cdd074283dae93795f9bb3fc",
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "3c8fc87be30f4992ca9e2d5743515e781ebf97696d270bbec0f51ee6f8543e9c",
++        "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++        "38bb45c99e6153260c19b97b99b6a7370a067de63344de6d1ea11922acaed86b",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "callerClassSha256": "6def3252bd8e4129ee94541e8318e61f0b9b51710045164bc5e51fe667d68c9b",
++      "descriptors": [
++        "()Lorg/apache/poi/ss/usermodel/CellStyle;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.358,
++    "outputSha256": "349429229a20657a4e48071dcb2c17781af86fc172e419af4d4aecab34994014",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 266
++        }
++      ],
++      "output": "\u2717 com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-13tcb906"
++    }
++  },
++  "firstBlocker": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++  "elapsedSeconds": 62.833,
++  "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/02/current/compsuite-i-85.json
+@@ -0,0 +1,109 @@
++{
++  "id": "compsuite-i-85",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "pl.com.bottega.ecommerce.sales.application.impl.OrderingServiceImpl#confirm",
++  "observer": "Confirm a previously calculated offer after changing the order quantity.",
++  "revisions": {
++    "old": "a1a0cf597e430cf58afe627cd5a724fa33665d2e",
++    "new": "f500f1ea3c84932963cdf847fea48a98f2f492d0"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "a1a0cf597e430cf58afe627cd5a724fa33665d2e",
++      "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 71,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "dbfabfcf63611a43b3eef40d9a58e973df35bc0eedb95acef358c267bed30506",
++        "dea2fe7895033bdbbe2c1688ad08a0588d9d9b0f17d53349081cc20dda31353e",
++        "5674d2dd1641e6068207effa45b8a633129695c1ab5773bc6b1a2ad3cb31fcd1",
++        "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
++        "ac2126dfbcd8d398e4b64cd0fdca21d2d64ff46e59326004de2d636b37036c35",
++        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++        "bacfb6460317d421aa2906d9e63c293b69dc1a5dac480d0f6416df50796a4bb3",
++        "eeec97d5987dc8d525285fab888bab4c68a2ef1412335f73aba2b804f88a6cb5",
++        "cea2405cf0f5427e226cd4957973e8b3d83091dea2f6383a7168192c790ecd06",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370",
++        "5f7c2d94073be6e8cf196d95b934b54384debe48026ab1c354668eba6cf8eb87",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f",
++        "8e4e3d5ef7d44274ca19c5b9ea0a00e7796aa06153337164a8d81effb3d4affa",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "d746d344f43af77c79cefb40f8c787d472cb58326eb21ba649dd3ee6c8089bef",
++        "1a5d8da8f2d31f069fd8cbd8b9abdc888b17f31c25ca42af10eb43bbb1a626ba",
++        "7f9e44b6bd0dc899c69b0d81c903fee8771ee60152ac3ce003f5909b03b9eb26",
++        "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044",
++        "f374dfb5a6f3985cd95e7d7c4a3b32d380e4f26f62fec4f6fc8021104d0c2431",
++        "1ba81c1000b878f8592b41907aa7c0c07ab6e62c0217e75f0003b0b682f6bb8f",
++        "b47ce0110d82853a2b94a56196c461148e7400d4caf38d73654a3d56d7384199",
++        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
++        "feb4b5b2e79a63b72ec47a693b1cf35cf1cea1f60a2bb2615bf21f74c7a60bb0",
++        "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
++        "8ba2177cfebc7c51a2c31427f572f7f8fefd13701a89661175ce376c1e478a5f",
++        "7b52f4d3ad41b7ed71f5b6b11833113b7e08326c8ef70d2dedf0b430c7ba5341"
++      ],
++      "orderedSha256": [
++        "26cc85965de9f734f9b1368947ea255b6eee73e37201ca1278330f84e45309e3",
++        "dbfabfcf63611a43b3eef40d9a58e973df35bc0eedb95acef358c267bed30506",
++        "dea2fe7895033bdbbe2c1688ad08a0588d9d9b0f17d53349081cc20dda31353e",
++        "5674d2dd1641e6068207effa45b8a633129695c1ab5773bc6b1a2ad3cb31fcd1",
++        "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
++        "ac2126dfbcd8d398e4b64cd0fdca21d2d64ff46e59326004de2d636b37036c35",
++        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++        "bacfb6460317d421aa2906d9e63c293b69dc1a5dac480d0f6416df50796a4bb3",
++        "eeec97d5987dc8d525285fab888bab4c68a2ef1412335f73aba2b804f88a6cb5",
++        "cea2405cf0f5427e226cd4957973e8b3d83091dea2f6383a7168192c790ecd06",
++        "2db20262b9cdd89907513575d0d6cb6fcb10fe9e9f484731e2f1a19c05c58e85",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370",
++        "5f7c2d94073be6e8cf196d95b934b54384debe48026ab1c354668eba6cf8eb87",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f",
++        "8e4e3d5ef7d44274ca19c5b9ea0a00e7796aa06153337164a8d81effb3d4affa",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "d746d344f43af77c79cefb40f8c787d472cb58326eb21ba649dd3ee6c8089bef",
++        "1a5d8da8f2d31f069fd8cbd8b9abdc888b17f31c25ca42af10eb43bbb1a626ba",
++        "7f9e44b6bd0dc899c69b0d81c903fee8771ee60152ac3ce003f5909b03b9eb26",
++        "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044",
++        "f374dfb5a6f3985cd95e7d7c4a3b32d380e4f26f62fec4f6fc8021104d0c2431",
++        "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
++        "1ba81c1000b878f8592b41907aa7c0c07ab6e62c0217e75f0003b0b682f6bb8f",
++        "b47ce0110d82853a2b94a56196c461148e7400d4caf38d73654a3d56d7384199",
++        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
++        "feb4b5b2e79a63b72ec47a693b1cf35cf1cea1f60a2bb2615bf21f74c7a60bb0",
++        "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
++        "8ba2177cfebc7c51a2c31427f572f7f8fefd13701a89661175ce376c1e478a5f",
++        "7b52f4d3ad41b7ed71f5b6b11833113b7e08326c8ef70d2dedf0b430c7ba5341"
++      ],
++      "callerClassSha256": "9b3b51551f2d3164ded80683d16664cef647ab1bbd46653b7e9c92c47eed8e6a",
++      "descriptors": [
++        "(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V"
++      ]
++    },
++    "new": {
++      "commit": "f500f1ea3c84932963cdf847fea48a98f2f492d0",
++      "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original classpath",
++      "diagnostic": [
++        "The selected module did not resolve the changed coordinate on its runtime classpath."
++      ]
++    }
++  },
++  "firstBlocker": "original classpath",
++  "elapsedSeconds": 57.29,
++  "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd"
++}

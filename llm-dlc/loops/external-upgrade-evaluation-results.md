@@ -4,8 +4,8 @@ On the disclosed rxjava-jdbc change, existing CI already detected a different li
 
 | Evaluation | Population | Current result |
 |---|---:|---|
-| V0 retrospective | 12 changes and 12 scoped preservations | All 24 original source pairs and caller methods selected. First native and preparation results are being collected. |
-| V0 and V1 transfer | 8 engineering transfer upgrades | All eight original pairs selected, four in represented families and four in new ones. Paired results are being collected. |
+| V0 retrospective | 12 changes and 12 scoped preservations | 24/24 first reports. V0 found 0/12 relevant changes and established 0/12 routine claims. All 24 were open. |
+| V0 and V1 transfer | 8 engineering transfer upgrades | 8/8 paired after the UTF-8 repair. V0 and this repair answered 0/8. Four pairs use represented families and four use new ones. |
 | Prospective advisory pilot | First 5 eligible PRs from each of 3 consenting teams | 0 of 15 maintainer decisions collected. The retrospective gate has yet to be evaluated. |
 
 Since 03:05 UTC on 21 November, one gpt-6.2-astra session operates and reviews every case. The six Claude calibration reports and the earlier custody procedure are superseded. Public revision IDs and expected observations may be recorded directly. [Engineering protocol](../../lib/benchmark/external-upgrades/protocol.md#active-engineering-protocol-from-0305-utc-on-21-november)
@@ -13,6 +13,10 @@ Since 03:05 UTC on 21 November, one gpt-6.2-astra session operates and reviews e
 ## Engineering corpus
 
 The 32 identified pairs all change dependencies while keeping the selected caller's source byte-identical. The 16 CompSuite pairs carry upstream developers' test expectations. The routine group contains 13 identified merged PRs and three upstream commits. Three routine cases use ASM, three use Commons Lang, and two main cases come from LanguageTool. This engineering sample supports comparison on these specific upgrades. [Case list, Git revisions and caller observations](../../lib/benchmark/external-upgrades/corpus.json)
+
+The first native workflow pass left all 24 main decisions open on both V0 and the modified UTF-8 repair. Six stopped at an unconstructed instance receiver, five at an ambiguous overload, five during Maven resolution, four at multi-release JAR selection, three at unsupported parameter types and one because the selected runtime classpath did not contain the upgraded coordinate. Eighteen of the 24 reached the checker with prepared originals on both sides. The eight transfer stops comprise three unconstructed receivers, two unsupported parameters, one ambiguous overload, one original-source compile failure and one Maven resolution failure. No assurance was issued. [All 64 first reports and blocker counts](../../verification/external-upgrades/first-comparison.json)
+
+On the disclosed Commons Text calibration, the repaired class reader reached the original CSV method on both releases; a second fix identified the real JDK when the JVM printed a launcher-options banner. The normal replay qualified all 156 expected outputs on both sides. The mutation control caught 71 incorrect outputs. [Qualified original and mutation controls](../../verification/results/20261121-034615-349-qualify-fresh-csv-replays-with-confi/result.json)
 
 For ReflectASM, the same original client used ASM 5.1 to build a working interface accessor. Calling `replace` returned the previous value `"one"` and `size` returned 2. With ASM 7.2, accessor construction threw before the caller could invoke either method. A plain `Object` companion still worked. On EA Async #27, complete production builds against ASM 6.2 and 6.2.1 agreed on the result and completion state over the specified frame shapes and future states. These JVM reference results can be compared directly with what the verifier reports. [ReflectASM receipts](../../verification/external-upgrades/references/compsuite-i-38.json) · [EA Async receipts](../../verification/external-upgrades/references/ea-async-27.json)
 

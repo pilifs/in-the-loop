@@ -1,0 +1,810 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/08/V0/commons-fileupload-377.json
+@@ -0,0 +1,87 @@
++{
++  "id": "commons-fileupload-377",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData",
++  "observer": "Read a multipart body up to its boundary and observe the exact payload.",
++  "revisions": {
++    "old": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++    "new": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "orderedSha256": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "descriptors": [
++        "(Ljava/io/OutputStream;)J"
++      ]
++    },
++    "new": {
++      "commit": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "orderedSha256": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "descriptors": [
++        "(Ljava/io/OutputStream;)J"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.016,
++    "outputSha256": "2f29eb347c2493c0a62500eba9fb5af2ed7383044fa8ac3cfcec9ac9fcbc6393",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData cannot be verified: readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++          "uri": null,
++          "line": 796
++        }
++      ],
++      "output": "\u2717 org.apache.commons.fileupload2.core.MultipartInput#readBodyData cannot be verified: readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use\n",
++      "work": "$WORK/checker-vy_2_xdr"
++    }
++  },
++  "firstBlocker": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++  "elapsedSeconds": 64.785,
++  "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/08/V0/commons-validator-86e32931.json
+@@ -0,0 +1,117 @@
++{
++  "id": "commons-validator-86e32931",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString",
++  "observer": "Read a named property from a bean and observe the exact string or missing-value result.",
++  "revisions": {
++    "old": "a952e2fbe2b2226c72083f74cf66562a3118225f",
++    "new": "86e32931594e3437cd8614311f5da7bc0c62613c"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "a952e2fbe2b2226c72083f74cf66562a3118225f",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 4,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230"
++      ],
++      "orderedSha256": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    },
++    "new": {
++      "commit": "86e32931594e3437cd8614311f5da7bc0c62613c",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 4,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230"
++      ],
++      "orderedSha256": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.016,
++    "outputSha256": "ea8d42c393a57fd1bb7369415bf9009074419106ef8d465e06ce1fec8af334c1",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString cannot be verified: parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 116
++        }
++      ],
++      "output": "\u2717 org.apache.commons.validator.util.ValidatorUtils#getValueAsString cannot be verified: parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-4vx0pff3"
++    }
++  },
++  "firstBlocker": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 52.887,
++  "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/08/V0/commons-vfs-55c96cfd.json
+@@ -0,0 +1,139 @@
++{
++  "id": "commons-vfs-55c96cfd",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType",
++  "observer": "Classify the remote entry from its parsed FTP file type.",
++  "revisions": {
++    "old": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
++    "new": "55c96cfd2bdabe455058826ad86788f120b1425d"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 110,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "orderedSha256": [
++        "1b2e9c4eb2f437d32bf81aea814bbebcbb4b7f8621ec10eb9865bb67f060cb11",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "callerClassSha256": "c40103ecf7ddfeea2cbb3304822ed00d069d52c7763737a38a5f2b2c59f451c7",
++      "descriptors": [
++        "()Lorg/apache/commons/vfs2/FileType;"
++      ]
++    },
++    "new": {
++      "commit": "55c96cfd2bdabe455058826ad86788f120b1425d",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 110,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "orderedSha256": [
++        "1b2e9c4eb2f437d32bf81aea814bbebcbb4b7f8621ec10eb9865bb67f060cb11",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "callerClassSha256": "c40103ecf7ddfeea2cbb3304822ed00d069d52c7763737a38a5f2b2c59f451c7",
++      "descriptors": [
++        "()Lorg/apache/commons/vfs2/FileType;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.069,
++    "outputSha256": "ad86802bf8eb790ddcda624188858f473b0c13dfe0a47914e3eaea539147903c",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType cannot be verified: doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly",
++          "uri": null,
++          "line": 368
++        }
++      ],
++      "output": "\u2717 org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType cannot be verified: doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly\n",
++      "work": "$WORK/checker-bucj982p"
++    }
++  },
++  "firstBlocker": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly",
++  "elapsedSeconds": 57.402,
++  "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/08/V0/reflector-35.json
+@@ -0,0 +1,50 @@
++{
++  "id": "reflector-35",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator",
++  "observer": "Generate the original reflection adapter and inspect the resulting callable class.",
++  "revisions": {
++    "old": "a7421542ac2b34670c7c261539fc253d77526afc",
++    "new": "b8a65d35911580a469964aa722f4cd989c1a5382"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "a7421542ac2b34670c7c261539fc253d77526afc",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "original source compilation",
++      "exit": 1,
++      "diagnostic": [
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:25: error: constructor AsmClassGenerator in class AsmClassGenerator cannot be applied to given types;",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:32: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:34: error: cannot find symbol",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:35: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:36: error: incompatible types: String cannot be converted to val"
++      ]
++    },
++    "new": {
++      "commit": "b8a65d35911580a469964aa722f4cd989c1a5382",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "original source compilation",
++      "exit": 1,
++      "diagnostic": [
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:25: error: constructor AsmClassGenerator in class AsmClassGenerator cannot be applied to given types;",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:32: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:34: error: cannot find symbol",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:35: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:36: error: incompatible types: String cannot be converted to val"
++      ]
++    }
++  },
++  "firstBlocker": "original source compilation",
++  "elapsedSeconds": 128.272,
++  "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/08/current/commons-fileupload-377.json
+@@ -0,0 +1,87 @@
++{
++  "id": "commons-fileupload-377",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData",
++  "observer": "Read a multipart body up to its boundary and observe the exact payload.",
++  "revisions": {
++    "old": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++    "new": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "orderedSha256": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "descriptors": [
++        "(Ljava/io/OutputStream;)J"
++      ]
++    },
++    "new": {
++      "commit": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "orderedSha256": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "descriptors": [
++        "(Ljava/io/OutputStream;)J"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.013,
++    "outputSha256": "3f660275f3408204838a78b32a093767dd7dd61f591fa506823f884eef6fce0d",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData cannot be verified: readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++          "uri": null,
++          "line": 796
++        }
++      ],
++      "output": "\u2717 org.apache.commons.fileupload2.core.MultipartInput#readBodyData cannot be verified: readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use\n",
++      "work": "$WORK/checker-yoqhm23b"
++    }
++  },
++  "firstBlocker": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++  "elapsedSeconds": 64.746,
++  "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/08/current/commons-validator-86e32931.json
+@@ -0,0 +1,117 @@
++{
++  "id": "commons-validator-86e32931",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString",
++  "observer": "Read a named property from a bean and observe the exact string or missing-value result.",
++  "revisions": {
++    "old": "a952e2fbe2b2226c72083f74cf66562a3118225f",
++    "new": "86e32931594e3437cd8614311f5da7bc0c62613c"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "a952e2fbe2b2226c72083f74cf66562a3118225f",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 4,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230"
++      ],
++      "orderedSha256": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    },
++    "new": {
++      "commit": "86e32931594e3437cd8614311f5da7bc0c62613c",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 4,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230"
++      ],
++      "orderedSha256": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.013,
++    "outputSha256": "2c0e4b451cc666f34bd6204f44e55c27d3488820939712f9c5657ddd7f98d45d",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString cannot be verified: parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 116
++        }
++      ],
++      "output": "\u2717 org.apache.commons.validator.util.ValidatorUtils#getValueAsString cannot be verified: parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-351evh16"
++    }
++  },
++  "firstBlocker": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 52.845,
++  "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/08/current/commons-vfs-55c96cfd.json
+@@ -0,0 +1,139 @@
++{
++  "id": "commons-vfs-55c96cfd",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType",
++  "observer": "Classify the remote entry from its parsed FTP file type.",
++  "revisions": {
++    "old": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
++    "new": "55c96cfd2bdabe455058826ad86788f120b1425d"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 110,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "orderedSha256": [
++        "1b2e9c4eb2f437d32bf81aea814bbebcbb4b7f8621ec10eb9865bb67f060cb11",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "callerClassSha256": "c40103ecf7ddfeea2cbb3304822ed00d069d52c7763737a38a5f2b2c59f451c7",
++      "descriptors": [
++        "()Lorg/apache/commons/vfs2/FileType;"
++      ]
++    },
++    "new": {
++      "commit": "55c96cfd2bdabe455058826ad86788f120b1425d",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 110,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "orderedSha256": [
++        "1b2e9c4eb2f437d32bf81aea814bbebcbb4b7f8621ec10eb9865bb67f060cb11",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "callerClassSha256": "c40103ecf7ddfeea2cbb3304822ed00d069d52c7763737a38a5f2b2c59f451c7",
++      "descriptors": [
++        "()Lorg/apache/commons/vfs2/FileType;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.06,
++    "outputSha256": "4efe409d22c8848b8cb3c769cd8ac1083384d293fa2ba1495f2a78341bc67829",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType cannot be verified: doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly",
++          "uri": null,
++          "line": 368
++        }
++      ],
++      "output": "\u2717 org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType cannot be verified: doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly\n",
++      "work": "$WORK/checker-v_bfuzhi"
++    }
++  },
++  "firstBlocker": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly",
++  "elapsedSeconds": 57.354,
++  "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/08/current/reflector-35.json
+@@ -0,0 +1,50 @@
++{
++  "id": "reflector-35",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator",
++  "observer": "Generate the original reflection adapter and inspect the resulting callable class.",
++  "revisions": {
++    "old": "a7421542ac2b34670c7c261539fc253d77526afc",
++    "new": "b8a65d35911580a469964aa722f4cd989c1a5382"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "a7421542ac2b34670c7c261539fc253d77526afc",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "original source compilation",
++      "exit": 1,
++      "diagnostic": [
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:25: error: constructor AsmClassGenerator in class AsmClassGenerator cannot be applied to given types;",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:32: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:34: error: cannot find symbol",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:35: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-ngb3qit3/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:36: error: incompatible types: String cannot be converted to val"
++      ]
++    },
++    "new": {
++      "commit": "b8a65d35911580a469964aa722f4cd989c1a5382",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "original source compilation",
++      "exit": 1,
++      "diagnostic": [
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:25: error: constructor AsmClassGenerator in class AsmClassGenerator cannot be applied to given types;",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:32: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:34: error: cannot find symbol",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:35: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compile-msx_h3_l/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:36: error: incompatible types: String cannot be converted to val"
++      ]
++    }
++  },
++  "firstBlocker": "original source compilation",
++  "elapsedSeconds": 128.233,
++  "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0"
++}

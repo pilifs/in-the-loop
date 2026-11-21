@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T03:50:11.066Z",
-  "duration_seconds": 108761,
+  "ended": "2026-11-21T03:57:24.929Z",
+  "duration_seconds": 109195,
   "stats": {
     "turns": 15,
-    "api_calls": 4846,
-    "tool_calls": 12292,
+    "api_calls": 4873,
+    "tool_calls": 12357,
     "tool_errors": 375,
     "compactions": 15,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 8077718,
-      "output_tokens": 2502755,
-      "cache_read_input_tokens": 1524467584,
+      "input_tokens": 8113100,
+      "output_tokens": 2518347,
+      "cache_read_input_tokens": 1531618688,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 7114,
-    "exec": 4382,
-    "apply_patch": 496,
+    "Bash": 7150,
+    "exec": 4409,
+    "apply_patch": 498,
     "send_message": 148,
     "sleep": 55,
     "wait": 53,
@@ -120,6 +120,7 @@
     "examples/tools/targets/runtime.py",
     "examples/tools/targets/runtime_jar.py",
     "examples/tools/targets/runtime_jdk.py",
+    "examples/tools/targets/runtime_upstream.py",
     "examples/tools/targets/schedule_reduction.py",
     "examples/tools/targets/sidecar.py",
     "examples/tools/targets/synchronized_map.py",
@@ -518,24 +519,24 @@
     {
       "index": 15,
       "started": "2026-11-21T03:22:22.532Z",
-      "ended": "2026-11-21T03:50:11.066Z",
+      "ended": "2026-11-21T03:57:24.929Z",
       "turns": 0,
-      "api_calls": 108,
+      "api_calls": 135,
       "usage": {
-        "input_tokens": 244367,
-        "output_tokens": 64874,
-        "cache_read_input_tokens": 18295424,
+        "input_tokens": 279749,
+        "output_tokens": 80466,
+        "cache_read_input_tokens": 25446528,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 250411
+      "peak_context_tokens": 284123
     }
   ],
   "log": {
-    "sha256": "db5820c4cdc4dc3a8d6ab2ad21ffe32111ee91e4ed277c82fc13f038bc5873e5",
-    "bytes": 110255431,
-    "lines": 38344,
-    "gzip_bytes": 43581132,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/db5820c4cdc4dc3a8d6ab2ad21ffe32111ee91e4ed277c82fc13f038bc5873e5.jsonl.gz"
+    "sha256": "070361a72260ac6aac0c24a6dccf4b3a9837c410010b5978a3006d402f74f4ee",
+    "bytes": 110839828,
+    "lines": 38554,
+    "gzip_bytes": 43797051,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/070361a72260ac6aac0c24a6dccf4b3a9837c410010b5978a3006d402f74f4ee.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2012,20 +2013,28 @@
       "log_sha256": "6f64ea4eaba6fb99187459af573b21a35731a9eee497647379c69dd77bde63c5"
     },
     {
-      "change_id": "xtrpxqxplwuwqkylrxyrytzmuowsrxpz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "db5820c4cdc4dc3a8d6ab2ad21ffe32111ee91e4ed277c82fc13f038bc5873e5"
-    },
-    {
       "change_id": "wowvlvvkqszmvzylxvwxwrtmvvmzrkzw",
       "commit_id": null,
       "immutable": false,
       "summary": "Bind JVM replay receipts to the actual JDK version (verification pending)",
       "body": "Read the JDK's version line even when the launcher prints JVM options first. Pass the configured temporary directory to isolated controls. After the modified UTF-8 fix both original Commons Text runs produced 156 expected fields and the mutant disagreed on 71, but the launcher banner made those receipts ineligible. Captured the failed run and its unchanged raw observations. All 26 affected test groups passed. Job 20261121-034615-349-qualify-fresh-csv-replays-with-confi repeats both routes on JDK 21.",
       "log_sha256": "db5820c4cdc4dc3a8d6ab2ad21ffe32111ee91e4ed277c82fc13f038bc5873e5"
+    },
+    {
+      "change_id": "nwwonrzlplurytxrzqrtqsuplyqktqlx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "070361a72260ac6aac0c24a6dccf4b3a9837c410010b5978a3006d402f74f4ee"
+    },
+    {
+      "change_id": "kusmrlnqllpulupxptrpowtlkorzntyz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record all 32 V0 comparisons and qualify the original CSV control",
+      "body": "Eight queue jobs returned 64 original-pair reports. All 24 main and eight transfer cases stayed open on V0 and after the class-reader repair. Across the main set, six cases required an instance receiver, five required an exact overload, five stopped in Maven resolution, four at multi-release JARs, three at unsupported parameters and one at a missing runtime coordinate. Checked every V0/current pair, both strata and the independent transfer split. The qualified CSV job ran on the original client at both pins, with 156/156 expected outputs and 71 discrepancies on the mutant.",
+      "log_sha256": "070361a72260ac6aac0c24a6dccf4b3a9837c410010b5978a3006d402f74f4ee"
     }
   ],
   "logs": {
@@ -2052,6 +2061,12 @@
       "lines": 1767,
       "gzip_bytes": 2251251,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/06c62a8ed209911b20366c322c62d051683ce29e05fe2b31c839564585ef83d3.jsonl.gz"
+    },
+    "070361a72260ac6aac0c24a6dccf4b3a9837c410010b5978a3006d402f74f4ee": {
+      "bytes": 110839828,
+      "lines": 38554,
+      "gzip_bytes": 43797051,
+      "url": null
     },
     "07af14346a91a19ad4baaa64366ebade14dc980c888237d120c703e6959c5b16": {
       "bytes": 4921389,
