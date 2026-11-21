@@ -1,0 +1,163 @@
+{
+  "revision": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73",
+  "side": "parent",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "lang/java/pom.xml",
+      "-pl",
+      "mapred",
+      "-am",
+      "-DskipTests",
+      "-Dinvoker.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 96.67,
+    "logSha256": "3d5d053325943a7dcd9a7a69b2434809f7fedd62d130da87f01957e606b82ebb",
+    "errors": [],
+    "tail": [
+      "[INFO] Apache Avro IPC .................................... SUCCESS [ 16.911 s]",
+      "[INFO] Apache Avro IPC Jetty .............................. SUCCESS [  4.092 s]",
+      "[INFO] Apache Avro Mapred API ............................. SUCCESS [ 20.687 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  01:33 min",
+      "[INFO] Finished at: 2026-11-21T09:42:28Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "lang/java/mapred/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/lang/java/mapred/target/organic-runtime.txt"
+    ],
+    "exit": 1,
+    "seconds": 5.05,
+    "logSha256": "574f647f25a432221e09aef2d42a532b6c97ada3ab0df7960424a15f349f3f97",
+    "errors": [
+      "[ERROR] BUILD FAILURE",
+      "[ERROR] Failed to execute goal on project avro-mapred: Could not collect dependencies for project org.apache.avro:avro-mapred:bundle:1.13.0-SNAPSHOT",
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro-ipc:jar:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro:jar:tests:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro-ipc-jetty:jar:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro-ipc:jar:tests:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] -> [Help 1]",
+      "[ERROR] "
+    ],
+    "tail": [
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro-ipc:jar:tests:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] -> [Help 1]",
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
+    ]
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "lang/java/pom.xml",
+        "-pl",
+        "mapred",
+        "-am",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 21.34,
+      "logSha256": "e2a0bb9499a89423efbf1c74f0ebb43fd748ee46493c90acfb1fd9fb1d326989",
+      "errors": [
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.477 s <<< FAILURE! -- in org.apache.avro.hadoop.io.TestAvroDatumConverterFactory",
+        "[ERROR] org.apache.avro.hadoop.io.TestAvroDatumConverterFactory.convertBytesWritableRespectsLogicalLength -- Time elapsed: 0.463 s <<< FAILURE!",
+        "[ERROR] Failures: ",
+        "[ERROR]   TestAvroDatumConverterFactory.convertBytesWritableRespectsLogicalLength:101 expected: <3> but was: <5>",
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",
+        "[ERROR] Apache Avro Mapred API ............................. FAILURE [ 15.639 s]",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project avro-mapred: There are test failures.",
+        "[ERROR] ",
+        "[ERROR] See /project/lang/java/mapred/target/surefire-reports for the individual test results.",
+        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]"
+      ],
+      "tail": [
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+        "[ERROR] ",
+        "[ERROR] After correcting the problems, you can resume the build with the command",
+        "[ERROR]   mvn <args> -rf :avro-mapred"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testSourceSha256": {
+      "lang/java/mapred/src/test/java/org/apache/avro/hadoop/io/TestAvroDatumConverterFactory.java": "42314e365583fe4fe30c9f1d1ce6ff0017bada3b8a5add89d964320ea468b5bb"
+    },
+    "transplant": [
+      "lang/java/mapred/src/test/java/org/apache/avro/hadoop/io/TestAvroDatumConverterFactory.java"
+    ],
+    "named": {
+      "TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength": [
+        {
+          "status": "failure",
+          "class": "org.apache.avro.hadoop.io.TestAvroDatumConverterFactory",
+          "method": "convertBytesWritableRespectsLogicalLength",
+          "xmlSha256": "efde9ef90e6ee9e26332cce697bf5c90af5b16dc9caecb096015ba3a0f546395",
+          "failureType": "org.opentest4j.AssertionFailedError",
+          "message": "expected: <3> but was: <5>",
+          "atNamedTest": true
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 2781,
+    "from https://repo.maven.apache.org/maven2/": 19,
+    "downloadedBytes": 1875644,
+    "downloadedFiles": 19
+  }
+}

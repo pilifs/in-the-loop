@@ -1,0 +1,201 @@
+{
+  "revision": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+  "side": "parent",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-pl",
+      "guava",
+      "-am",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 34.75,
+    "logSha256": "585ea6b115c76e0288ebab7ee98c4558c0434f7851a4ffec165b872eb1560e42",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] Guava Maven Parent ................................. SUCCESS [  0.888 s]",
+      "[INFO] Guava: Google Core Libraries for Java .............. SUCCESS [ 28.670 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  33.096 s",
+      "[INFO] Finished at: 2026-11-21T09:41:27Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "guava/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/guava/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 5.34,
+    "logSha256": "0334f793415f1e63e0cff3f235cb7dfa3253ee5234ed9efd4635804c00a4d020",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ guava ---",
+      "[INFO] Wrote classpath file '/project/guava/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  3.780 s",
+      "[INFO] Finished at: 2026-11-21T09:41:32Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+        "sha256": "90ca918ca4eeea6f9b7d43e9eb560a6b4190a44d64866550078cb021645791c5",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "com/google/common/collect/Multisets.class",
+    "selectedClassSha256": "a404f0170144858d2796a5134071598f35aa5fb1d4e8054d7ae21da5d26b6075",
+    "sourceSha256": "7bc4ae3902f7ecb63729a6ed5120ccc0403927d5de366292cca829c6ab76875b"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "guava-tests/pom.xml",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=MultisetsTest#testSumCountOverflow,MultisetsTest#testSumEntryIteratorOverflow",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 39.25,
+      "logSha256": "5171fbee7e06925e5e90d6595a1231e0ff9cc72aff208b0af377668851dc7a14",
+      "errors": [
+        "[ERROR] Tests run: 2, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 0.116 s <<< FAILURE! -- in com.google.common.collect.MultisetsTest",
+        "[ERROR] com.google.common.collect.MultisetsTest.testSumEntryIteratorOverflow -- Time elapsed: 0.015 s <<< ERROR!",
+        "[ERROR] com.google.common.collect.MultisetsTest.testSumCountOverflow -- Time elapsed: 0.071 s <<< FAILURE!",
+        "[ERROR] Failures: ",
+        "[ERROR]   MultisetsTest.testSumCountOverflow:182 value of: count(...)",
+        "[ERROR] Errors: ",
+        "[ERROR]   MultisetsTest.testSumEntryIteratorOverflow:172 \u00bb IllegalArgument count cannot be negative but was: -2147483648",
+        "[ERROR] Tests run: 2, Failures: 1, Errors: 1, Skipped: 0",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project guava-tests: There are test failures.",
+        "[ERROR] ",
+        "[ERROR] See /project/guava-tests/target/surefire-reports for the individual test results."
+      ],
+      "tail": [
+        "[ERROR] See /project/guava-tests/target/surefire-reports for the individual test results.",
+        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      ]
+    },
+    "packagedTestSupport": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "guava-testlib/pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "exit": 0,
+      "seconds": 33.85,
+      "logSha256": "3b3165cd362f76a9e470d43e22dcdfb812025b1fdaccd99fce38dd54574843c3",
+      "errors": [],
+      "tail": [
+        "[INFO] Installing /project/guava-testlib/target/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT.jar to /work/repository/com/google/guava/guava-testlib/999.0.0-HEAD-jre-SNAPSHOT/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT.jar",
+        "[INFO] Installing /project/guava-testlib/target/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-sources.jar to /work/repository/com/google/guava/guava-testlib/999.0.0-HEAD-jre-SNAPSHOT/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-sources.jar",
+        "[INFO] Installing /project/guava-testlib/target/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-test-sources.jar to /work/repository/com/google/guava/guava-testlib/999.0.0-HEAD-jre-SNAPSHOT/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-test-sources.jar",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  32.385 s",
+        "[INFO] Finished at: 2026-11-21T09:42:06Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    },
+    "testSourceSha256": {
+      "guava-tests/test/com/google/common/collect/MultisetsTest.java": "7d5872a7f7f27ee360a916a14580c9daf4ad437d0e6afece43306745985c21cf"
+    },
+    "transplant": [
+      "guava-tests/test/com/google/common/collect/MultisetsTest.java"
+    ],
+    "named": {
+      "MultisetsTest#testSumCountOverflow": [
+        {
+          "status": "failure",
+          "class": "com.google.common.collect.MultisetsTest",
+          "method": "testSumCountOverflow",
+          "xmlSha256": "386834df43d0584fdf03313412a67021c34120718fe984d5edb8fdf302576e9e",
+          "failureType": "value of",
+          "message": "value of: count(...)\nexpected: 2147483647\nbut was : -2147483648",
+          "atNamedTest": true
+        }
+      ],
+      "MultisetsTest#testSumEntryIteratorOverflow": [
+        {
+          "status": "error",
+          "class": "com.google.common.collect.MultisetsTest",
+          "method": "testSumEntryIteratorOverflow",
+          "xmlSha256": "386834df43d0584fdf03313412a67021c34120718fe984d5edb8fdf302576e9e",
+          "failureType": "java.lang.IllegalArgumentException",
+          "message": "count cannot be negative but was: -2147483648",
+          "atNamedTest": true
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 1640,
+    "from https://repo.maven.apache.org/maven2/": 104,
+    "downloadedBytes": 5970980,
+    "downloadedFiles": 104
+  }
+}

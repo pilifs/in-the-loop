@@ -5272,8 +5272,14 @@ impl<'a> Engine<'a> {
                 self.advance(path);
                 return Ok(None);
             }
-            if special && member.owner == STRING && member.name == "<init>" && matches!(member.descriptor.as_str(), "([C)V" | "(Ljava/lang/String;)V") {
-                if let [Val::R(source)] = args.as_slice() { return self.initialize_string(path, o, *source, &member.descriptor); }
+            if special && member.owner == STRING && member.name == "<init>" {
+                match (member.descriptor.as_str(), args.as_slice()) {
+                    ("([CII)V", [Val::R(source), Val::I(offset), Val::I(count)]) =>
+                        return self.initialize_string_range(path, o, *source, offset, count),
+                    ("([C)V" | "(Ljava/lang/String;)V", [Val::R(source)]) =>
+                        return self.initialize_string(path, o, *source, &member.descriptor),
+                    _ => {}
+                }
             }
             if !special {
                 if let Some((cf, method)) = self.cp.image_default_method(&path.objects[o].class, &member.name, &member.descriptor) {

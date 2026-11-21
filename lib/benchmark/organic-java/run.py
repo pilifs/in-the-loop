@@ -7,6 +7,8 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tarfile
+import tempfile
 import time
 
 HERE = Path(__file__).resolve().parent
@@ -34,6 +36,36 @@ def baseline_inputs():
     return len(selected), h.hexdigest()
 
 
+def frozen_run(case, pin, route):
+    """Use the original Git tree when a later corpus preparation needs a fresh baseline."""
+    source = Path(os.environ.get("ORGANIC_SOURCE_REPOSITORY", ROOT))
+    original = ROOT / "examples" / case["folder"]
+    with tempfile.TemporaryDirectory(prefix="organic-baseline-tree-") as work:
+        frozen = Path(work)
+        paths = ["examples/tools", "examples/schema", "examples/tags.json", "lib/src", "lib/models",
+                 "lib/Cargo.toml", "lib/Cargo.lock", "lib/tools"]
+        with subprocess.Popen(["git", "-C", source, "archive", pin["revision"], *paths], stdout=subprocess.PIPE) as proc:
+            with tarfile.open(fileobj=proc.stdout, mode="r|") as archive:
+                archive.extractall(frozen, filter="data")
+            if proc.wait():
+                raise ValueError("unable to export the pinned baseline sources")
+        target = frozen / "examples" / case["folder"]
+        shutil.copytree(original, target, ignore=shutil.ignore_patterns("records", "receipts", "__pycache__"))
+        for name in read(original / "target.json")["preparation"].get("capturedBuilds", {}).values():
+            (target / name).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(original / name, target / name)
+        runner = frozen / "lib/benchmark/organic-java"
+        runner.mkdir(parents=True)
+        for name in ("cases.json", "baseline.json", "run.py"):
+            shutil.copyfile(HERE / name, runner / name)
+        env = dict(os.environ, ORGANIC_FROZEN_BASELINE="1")
+        proc = subprocess.run([sys.executable, runner / "run.py", *sys.argv[1:]], cwd=frozen, env=env)
+        receipt = Path("records") / ("baseline-" + route)
+        if (target / receipt).is_dir():
+            shutil.copytree(target / receipt, original / receipt)
+        return proc.returncode
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("example", choices=read(HERE / "cases.json")["cases"])
@@ -45,17 +77,19 @@ def main():
     case = read(HERE / "cases.json")["cases"][args.example]
     folder = ROOT / "examples" / case["folder"]
     archive = folder / "records" / (args.stage + "-" + args.route)
-    archive.mkdir(parents=True, exist_ok=False)
     env = dict(os.environ)
     pin = read(HERE / "baseline.json")
     if args.stage == "baseline":
         if baseline_inputs() != (pin["engineAndWorkflowFiles"], pin["engineAndWorkflowSha256"]):
-            parser.error("the actual selected engine and workflow sources differ from the common baseline")
+            if env.get("ORGANIC_FROZEN_BASELINE"):
+                parser.error("the exported Git sources differ from the frozen baseline fingerprint")
+            return frozen_run(case, pin, args.route)
         exe = Path(env.get("ORGANIC_BASELINE_BINARY", Path.home() / ".cache/in-the-loop/external-upgrades" /
                            pin["executableSha256"] / "jvmcontract"))
         if digest(exe) != pin["executableSha256"]:
             parser.error("the original native executable differs from the baseline")
         env.update(JVMCONTRACT=str(exe), JVMCONTRACT_LIB_TREE=pin["libTree"], VERIFY_SOURCE_COMMIT=pin["revision"])
+    archive.mkdir(parents=True, exist_ok=False)
     tasks = args.tasks or ",".join(t["id"] for t in read(folder / "target.json")["tasks"]
                                   if args.route == "native" or t["kind"] != "replay")
     argv = [sys.executable, "examples/tools/build.py", args.example]

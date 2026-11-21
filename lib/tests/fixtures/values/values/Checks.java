@@ -9,6 +9,47 @@ public final class Checks {
     private Checks() {
     }
 
+    public static void copiedRange(int unit, int offset, int count) {
+        char[] chars = {17, (char) unit, 29};
+        boolean valid = offset >= 0 && count >= 0 && (long) offset + count <= chars.length;
+        try {
+            String value = new String(chars, offset, count);
+            if (!valid || value.length() != count || value == "") throw new AssertionError();
+            chars[1] = 'x';
+            for (int i = 0; i < count; i++) {
+                char expected = offset + i == 1 ? (char) unit : (char) (offset + i == 0 ? 17 : 29);
+                if (value.charAt(i) != expected) throw new AssertionError();
+            }
+        } catch (StringIndexOutOfBoundsException e) {
+            if (valid) throw new AssertionError();
+        }
+    }
+
+    public static void nullSlice() {
+        try {
+            new String((char[]) null, -1, Integer.MAX_VALUE);
+            throw new AssertionError();
+        } catch (NullPointerException expected) {}
+    }
+
+    public static void codePointAtUnit(String s, int index) {
+        if (index < 0 || index >= s.length()) {
+            try { s.codePointAt(index); throw new AssertionError(); }
+            catch (StringIndexOutOfBoundsException expected) { return; }
+        }
+        int first = s.charAt(index);
+        int expected = first;
+        if (first >= 0xd800 && first <= 0xdbff && index + 1 < s.length()) {
+            int low = s.charAt(index + 1);
+            if (low >= 0xdc00 && low <= 0xdfff) expected = (first - 0xd800) * 1024 + low - 0xdc00 + 0x10000;
+        }
+        if (s.codePointAt(index) != expected) throw new AssertionError();
+    }
+
+    public static void firstUnitAlwaysAWholePoint(String s) {
+        if (!s.isEmpty() && s.codePointAt(0) != s.charAt(0)) throw new AssertionError();
+    }
+
     static boolean vipBefore(String code) {
         return code.startsWith("VIP");
     }

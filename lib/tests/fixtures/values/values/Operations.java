@@ -44,6 +44,17 @@ public final class Operations {
 
     // java.lang.String
 
+    static int copiedRange(int unit, int offset, int count) {
+        char[] chars = unit < 0 ? null : new char[]{17, (char) unit, 29};
+        String value = new String(chars, offset, count);
+        chars[1] = 'x';
+        return value.isEmpty() ? 0 : value.charAt(0);
+    }
+
+    static int codePointAtUnit(int n, int a, int b, int c, int index) {
+        return of(n, a, b, c).codePointAt(index);
+    }
+
     static int copiedUnits(int n, int unit, int offset) {
         String s = of(n, unit, 0, 0);
         char[] dst = offset < 0 ? null : new char[] {17, 23, 29};

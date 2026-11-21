@@ -1,0 +1,1491 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-093137-353-baseline-native-checks-on-the-origin",
+  "title": "353 baseline native checks on the original guava public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10.2s, peak 162.7 MiB (estimated 5m00s, 3.0 GiB); 166 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-093137-353-baseline-native-checks-on-the-origin.json",
+    "sha256": "fa808a679a2d2a19f437f0ac1a0a7b50a031c2503341fa682e0971f9293bff5a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-093137-353-baseline-native-checks-on-the-origin",
+      "title": "353 baseline native checks on the original guava public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/google/guava#8509 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:native"
+      ],
+      "links": {
+        "examples": [
+          "353"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T09:31:37+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 353 --route native --stage baseline --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/353-guava-saturated-sum/records/baseline-native"
+      ]
+    }
+  },
+  "sourceCommit": "c2e96866bc8837a711eef630520b368c32c823cb",
+  "startedAt": "2026-11-21T09:40:46+00:00",
+  "finishedAt": "2026-11-21T09:41:02+00:00",
+  "wallSeconds": 16.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3972090,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 170557440,
+    "wallSeconds": 10.2,
+    "cpuSeconds": 13.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 353 --route native --stage baseline --seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 10.22,
+      "cpuSeconds": 13.278,
+      "cpuThrottledSeconds": 0.746,
+      "peakMemoryBytes": 170557440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 609,
+        "sha256": "67dd6540576075eabff600001c23996e296a422cd203d3f4964cab50c7b46783",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"353\", \"route\": \"native\", \"stage\": \"baseline\", \"workflowExit\": 0, \"seconds\": 9.972, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"lookup-parent\", \"lookup-fix\", \"entries-parent\", \"entries-fix\", \"size-parent\", \"size-fix\", \"absent-parent\", \"absent-fix\", \"live-parent\", \"live-fix\"], \"verifierCom"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "619c6689db5def3b5f0288a74f722435d724c27178b92410da63ad5b85d5b1f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/plan.json",
+      "change": "added",
+      "bytes": 7447,
+      "sha256": "1c7fa03eebefdf4bfcc271ff46aa3a51960ede5f7f8e702cc16a53b8f7090442",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/controls.json",
+      "change": "added",
+      "bytes": 42022,
+      "sha256": "a3a7dd49de122730b97542ccd1be2d1cd0f468172ce82eb8c56b5c4924fe902e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/execution.json",
+      "change": "added",
+      "bytes": 69108,
+      "sha256": "34f5808dca7e703c646374d510f52c1aca5b9c9298711b9d3f454bd8fca548ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "ee4181d688b26c05f19be1f99b74a5e54144b57d8088cdb686464ce93e7510d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "2ce1166926ca7b4c1b8a90808e9a7f461cdb34f61379adde930d6234fe67a7f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/verifier.json",
+      "change": "added",
+      "bytes": 26503,
+      "sha256": "7465687a2cf0c1248d328da195999605cb7f271effd026e310ca67fd6651a2ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5252,
+      "sha256": "50da81d07f0a3c354bcec04663d54b90f2046cc8b3583265a52f019e983fa038",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/result.json",
+      "change": "added",
+      "bytes": 18544,
+      "sha256": "6302068bb65f4402e7d19825241df3b07f8202e529ab7e116e8e9bbb59d1ea8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/executions/20261121T094100Z-b9dfb9f5/attempt.json",
+      "change": "added",
+      "bytes": 25624,
+      "sha256": "49bbf23a2071358a03cae36ebf3d7afb98b8a5029f0117daaa306965aa19777d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/executions/20261121T094100Z-b9dfb9f5/checker.json",
+      "change": "added",
+      "bytes": 7202,
+      "sha256": "bafb7c9b4753f1587cb030d0be00550ae4f997d1200668fb1b0eb4cb06586b6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/executions/20261121T094100Z-b9dfb9f5/correspondence.json",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "8a8bd0b451a04f9402a846442a92ce7259c3336f30b8f5327ad73b781c6a7c7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "15f9b8c7683f4690358ed1ffb8aee4cb7e91aae363383647769f301d6bfd7eac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/plan.json",
+      "change": "added",
+      "bytes": 7356,
+      "sha256": "77ea45cb559034d87423b3e158721fdb13127c83d10c71eb7f243346f1070c59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/controls.json",
+      "change": "added",
+      "bytes": 40830,
+      "sha256": "ba65c51640244aade7db0eb3a9e4b9768b03633162324a356c4b44e6c851ed8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/execution.json",
+      "change": "added",
+      "bytes": 67990,
+      "sha256": "26b21e2e55f2e025359764d56e2e531d3c6b4aced0a30d7ecced37300d1666dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "ea33d4db4d336c5c629c71e038fe198bea6e2389997c16350df2f5cf27891e04",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "2ce1166926ca7b4c1b8a90808e9a7f461cdb34f61379adde930d6234fe67a7f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/verifier.json",
+      "change": "added",
+      "bytes": 26592,
+      "sha256": "9874ab36ebd11a3e370295cdefa095dbe513a1d11f45b1f19cdd513302d0bad5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5254,
+      "sha256": "f6a61911586e75054fd9256c3b499fb35b56b871920b24b336c168bb19f7ddab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/result.json",
+      "change": "added",
+      "bytes": 18629,
+      "sha256": "565ce84f97b5b60ffd7f03a52553903ba404c581d1a1c7044e5270d4253798dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/executions/20261121T094100Z-4cc9319b/attempt.json",
+      "change": "added",
+      "bytes": 25711,
+      "sha256": "73f54ba012506f0333189f378b8497649220c3b90e1f5afa1d2db863bc9bc764",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/executions/20261121T094100Z-4cc9319b/checker.json",
+      "change": "added",
+      "bytes": 7228,
+      "sha256": "457c2be95cf30473a9bf17951904f1daf23db28d5db1ce62b9ff461ad5bf66cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/executions/20261121T094100Z-4cc9319b/correspondence.json",
+      "change": "added",
+      "bytes": 1884,
+      "sha256": "6bcd574c947cb7a62a12502aac25cb2e15b0df909a974d0949b4a760c096338f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e2702101ef88b94e8be04cab3abe18b2aa4599c2c37794cf82086c36c985a276",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/plan.json",
+      "change": "added",
+      "bytes": 7642,
+      "sha256": "3acfeb99e7608b224f729e471bdd95ea22a3d158b17c623a6ef38e0a18bfa303",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/controls.json",
+      "change": "added",
+      "bytes": 42024,
+      "sha256": "4d9a081efe1636e9ebda5f3112d70c8a019ce2c72f019ae7308e545973692c61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/execution.json",
+      "change": "added",
+      "bytes": 69505,
+      "sha256": "777d89ff9d9d4fc87628fc4ea5297aac206adc710d5333a5b78d320f9ee45775",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "2613d00a4cfa8a703542d4fbdab70afed30697c907755d2ebc721c5c13bd1ecc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "204e2244828d94ac8e14159a165a59c73eddbe172145443249e4af47bbf9c6dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/verifier.json",
+      "change": "added",
+      "bytes": 26892,
+      "sha256": "a46b9f2f2a196e9b69e6b8e8376f00bc64fc730cb5b216bc642c0343332b49de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5259,
+      "sha256": "bb60c22d9e3c7924d3c047e826471b0cef60fe140d55d7b9e2ce0a95d2712c9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/result.json",
+      "change": "added",
+      "bytes": 18650,
+      "sha256": "1b83da52a26a108830200a0786689e18030e0cd0b17981d0214dff7c6f1d3ffe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/executions/20261121T094058Z-c210e3bd/attempt.json",
+      "change": "added",
+      "bytes": 25994,
+      "sha256": "cadbb3d62141b420b17c75fbfc309b4a02460530b38b1244c94575a3b1893560",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/executions/20261121T094058Z-c210e3bd/checker.json",
+      "change": "added",
+      "bytes": 7210,
+      "sha256": "b55d370106c087cc87a12f93e146773b6d2772edbf0a9a1ceefb846f03191d0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/executions/20261121T094058Z-c210e3bd/correspondence.json",
+      "change": "added",
+      "bytes": 1928,
+      "sha256": "364fd8e232d9c92dcbfe0f759d9ace60805d898c40b50556abd3afa6d5dc09a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "413eee78c1044ba9645fd5a94c737661fb3bc730bec3afe68e63d02c70bc8611",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/plan.json",
+      "change": "added",
+      "bytes": 7547,
+      "sha256": "0a722c736366d9b7df97e74094bd6e12562df86e52b6c4c1adeaf3ac791253d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/controls.json",
+      "change": "added",
+      "bytes": 40832,
+      "sha256": "b0bb31dcd3cac6eb3044b3b3e3865556c5bfd09abc8f92ab511bf6b071bb3d25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/execution.json",
+      "change": "added",
+      "bytes": 72072,
+      "sha256": "58bef4b74c4f332a0f07fa68b4254635435f76d7e934b332795ba600351674ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "815b9a352dbbc8895ff05cbd957fe780441e684bcb75c798d76215c176f55410",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 510,
+      "sha256": "5c179c6b268db56d67495fec677d375b99ddaa58ce947ccfe681c19059329ea2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/verifier.json",
+      "change": "added",
+      "bytes": 27438,
+      "sha256": "c7569e3a3bb92461bdbff17a1239877129d6895915a7dbf8ffd0b9723e2988f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5666,
+      "sha256": "7c0acbcfda92fb1ac3c1e53a9976ae0ddd38cd4d3de8cad4a05125d8e7b93fa2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/result.json",
+      "change": "added",
+      "bytes": 19444,
+      "sha256": "d432bf6aecd1ca57a7ca673216e6f8d326bc6e970862f2be00e8ece9cdefe8a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/executions/20261121T094057Z-a739ae12/attempt.json",
+      "change": "added",
+      "bytes": 26204,
+      "sha256": "4dd6d7244291801396ca12c3b7e11cb3c00edfb970f619c01d1376a20743ccd1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/executions/20261121T094057Z-a739ae12/checker.json",
+      "change": "added",
+      "bytes": 7667,
+      "sha256": "5c4cb2c50dd3efe3796427bf4e191c41cc3ac4acc0f41abc6dd633692413fd67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/executions/20261121T094057Z-a739ae12/correspondence.json",
+      "change": "added",
+      "bytes": 1931,
+      "sha256": "de9cfdd921fed88c04c62d2f50aaf59546b95cce32e3050334c5756ed7878009",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/executions/20261121T094057Z-a739ae12/replay.json",
+      "change": "added",
+      "bytes": 2572,
+      "sha256": "1526c7e5655a26b6c88c084fd9a6ed1c142fcbb8914a1713ac5bf493a4551240",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f5644a04397051d950f621c1b192e91bee897fe9f27801cce354cb95a73508b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/plan.json",
+      "change": "added",
+      "bytes": 7583,
+      "sha256": "f670d64408c5e6cf3419751dcf99e963034f1837cfe7768f4eca7f33f33850b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/controls.json",
+      "change": "added",
+      "bytes": 42018,
+      "sha256": "ddc7b384f1b6444f35a016db09e38cdf5b2c59d0c291d82cb81f14567909d8be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/execution.json",
+      "change": "added",
+      "bytes": 69361,
+      "sha256": "7461cdc8fc2af58d9b3cfc3920a17012db1c591e3624b24b8357272803f58805",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "2ff63a1f6b13bbd44a37c672e8a07d21a0382946b8c5d8421dbc43e6bccd0955",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 276,
+      "sha256": "ae6b6ceb946d028b367cf5968a5128a645bead1de0a638470a666a0e35048d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/verifier.json",
+      "change": "added",
+      "bytes": 26744,
+      "sha256": "a80e33f49511eb15c4c2af2536c01699abbcd34171cb3c8d204dae06991072f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5222,
+      "sha256": "39fa605cf995b4c6934fbb4148582d9761fe7c1a19801523f34c3da2df8301c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/result.json",
+      "change": "added",
+      "bytes": 18577,
+      "sha256": "5f6cb10f80519853ceccc5dc8580740f084e08c3f23a55a1fd17ca4f03a30280",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/executions/20261121T094101Z-a93c8ff8/attempt.json",
+      "change": "added",
+      "bytes": 25888,
+      "sha256": "9a789cffdcb526f8d27ce775d74af2dc3e2804c9ca63e1724ee19edf0c071e60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/executions/20261121T094101Z-a93c8ff8/checker.json",
+      "change": "added",
+      "bytes": 7170,
+      "sha256": "fc664a40019919cec69b8d1fa9f6bc3c23e90942023d6b4ec833c8475cd7d8ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-fix/executions/20261121T094101Z-a93c8ff8/correspondence.json",
+      "change": "added",
+      "bytes": 1919,
+      "sha256": "2ccbf3b7609027eda73534d4a26ea835152317a4034ce075b3b4a6555ecd716e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "92c80a2281acf48b50bad2fe3dec7b849b4d7ff560c2616e6bce9cd84e19601a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/plan.json",
+      "change": "added",
+      "bytes": 7492,
+      "sha256": "0eca09687d6e9206cf370d3378908eea940e34203bb76717845182551e75fbd7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/controls.json",
+      "change": "added",
+      "bytes": 40826,
+      "sha256": "4f5cb687267a93b5c7ad62ac4ca301e24dd37c2deec39a891978868dc5b4611c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/execution.json",
+      "change": "added",
+      "bytes": 68242,
+      "sha256": "24129927f79da138b1b319eae520b3f0de997df738dc88610eca1abf707fab5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "8591afd1baecb12251d59fa9d56c3e12d77e363e4423e679c9623a2d7cb1b414",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 276,
+      "sha256": "ae6b6ceb946d028b367cf5968a5128a645bead1de0a638470a666a0e35048d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/verifier.json",
+      "change": "added",
+      "bytes": 26832,
+      "sha256": "c425fa480307d615c45678e2e231de987cd318b11d9ff87f7018ff6e39e0a32e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5223,
+      "sha256": "30dee56387feba8a98c14297399d8db1d04917897c7b07802e1554b470ab85c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/result.json",
+      "change": "added",
+      "bytes": 18661,
+      "sha256": "f516e6ab459e09db9b7ac958e53a76305f2da3154adbf03702ea9342cc3b8c67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/executions/20261121T094101Z-37761ce6/attempt.json",
+      "change": "added",
+      "bytes": 25976,
+      "sha256": "40bd0e7805cb7ae439019c1a1c21b8d576a049e3d0a764f5f7cf35288f83ca4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/executions/20261121T094101Z-37761ce6/checker.json",
+      "change": "added",
+      "bytes": 7195,
+      "sha256": "443ec98b9e3e8f62ad652c4a4134401733fe726a7eddd87a24cf0a57b14c7490",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/live-parent/executions/20261121T094101Z-37761ce6/correspondence.json",
+      "change": "added",
+      "bytes": 1922,
+      "sha256": "1b1810d299436ed913867c99395ee4e23de7b2007b9b741575067ab278200293",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d4a61de68825c3d7a06d972f6565beda83f9c3514f11ebb2de3852115d797953",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/plan.json",
+      "change": "added",
+      "bytes": 7531,
+      "sha256": "3b3ed52d9716458f0a0044d3d5ee3a48b012223c7316f954ec1385e34949447c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/controls.json",
+      "change": "added",
+      "bytes": 42022,
+      "sha256": "47b75ab58dc7708d307a1e50cfa3d74449560141cf2056e6adf3618a37b693bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/execution.json",
+      "change": "added",
+      "bytes": 69173,
+      "sha256": "b68c1dcfb4433a5275fb13b2687dc1e9fcf95937d58f249cb47a89c3344f5298",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "ab5248c383b6dbf8b60cd0e536de174d2a55144e983363dff60c289b9575e442",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "2b5177611a244ccdba89a78ff4761884effc3c7d7ca65bf70193f85c66d98251",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/verifier.json",
+      "change": "added",
+      "bytes": 26568,
+      "sha256": "ea0ed49eedddbca6a78c1de994029d1259c3a2ea7699ec1b9938265e32f3dd11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5254,
+      "sha256": "709002c5a9238ab80b18fcb86faeeee5f5b62ce338d88f3fb0d27003ff8a77f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/result.json",
+      "change": "added",
+      "bytes": 18587,
+      "sha256": "135b309436a345875cfb4c8f4a59d374ae48876d3841774fde39de47303659bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/executions/20261121T094057Z-2addc3b2/attempt.json",
+      "change": "added",
+      "bytes": 25686,
+      "sha256": "743f39fe48e343d34e1d56c6873b5528a639c673fd9cc674d8ae56e64b0ccc59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/executions/20261121T094057Z-2addc3b2/checker.json",
+      "change": "added",
+      "bytes": 7204,
+      "sha256": "57cbdd8dbf07ca3d9936f319934b5956efdee44e0742a9f4d738d0033e5bb2c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/executions/20261121T094057Z-2addc3b2/correspondence.json",
+      "change": "added",
+      "bytes": 1902,
+      "sha256": "150ed72df270e5ba34383c34e7414f6c91486f9b00ff0955571266e1122996b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9d39cc8e9a5eb43cd911d4cb6cbb77d4d454e6127a2fc1ba2762476151c5161d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/plan.json",
+      "change": "added",
+      "bytes": 7436,
+      "sha256": "08433608606f58b8985644ff01809d64437fd570078ae610279f839c1aa210c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/controls.json",
+      "change": "added",
+      "bytes": 40830,
+      "sha256": "9803cbfc3a93ea4e9189fc21e305f31e0864abd4eddb336c535667266d85b373",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/execution.json",
+      "change": "added",
+      "bytes": 71734,
+      "sha256": "d40aefb3bfe7817266b76ca8ee77fcabfcfec12f84a158c9acf297246d7546ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "f9ac989b5ca8896a21fce7c993497173c38ba1785f8843d35b0d6bafba089710",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 508,
+      "sha256": "7fc0f92309111c4722ea514a4417f004eb62225eac0ae701b44df8b7d61f5ca6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/verifier.json",
+      "change": "added",
+      "bytes": 27111,
+      "sha256": "1bdbb04558ce5bc28ed3cc577d3dc665fb8bccb5e37f045464610c4ab1e487c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5658,
+      "sha256": "8fe18905136ff314a96d960b090bde003b873c0ffc21f4d6dda0cee1e3994e45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/result.json",
+      "change": "added",
+      "bytes": 19380,
+      "sha256": "9e11f100a31bd1bd4b02fab491b04f88da9c95db02a6b4c496d746a46c8205b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/executions/20261121T094056Z-3206db0c/attempt.json",
+      "change": "added",
+      "bytes": 25898,
+      "sha256": "f46fc9fe63d6c8f7d859426345c11ab9586a155a8e77c260edc2b2599d8c2a46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/executions/20261121T094056Z-3206db0c/checker.json",
+      "change": "added",
+      "bytes": 7658,
+      "sha256": "4b83a99973fd1b15c0efaaa29eaf6ce4b2849d0db7844a9f13f95aa1d5c68ce3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/executions/20261121T094056Z-3206db0c/correspondence.json",
+      "change": "added",
+      "bytes": 1905,
+      "sha256": "5f28173f129714ac18741ae7708bf84947b3e4d76c041476a58371b472c76eca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/executions/20261121T094056Z-3206db0c/replay.json",
+      "change": "added",
+      "bytes": 2569,
+      "sha256": "2a4ab9fe0e626d21ee76451e06242356929fb1ed0f30c9504443ef35ef44eaad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "55ed1ba8c65e291deb7828594e4172c371eefeceeb316b4e13e1d1721c7472ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/plan.json",
+      "change": "added",
+      "bytes": 8307,
+      "sha256": "3ab1066c1a048d72cb517a2d849fc9e28715674cef75c9758286f3c8265907f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/controls.json",
+      "change": "added",
+      "bytes": 82788,
+      "sha256": "e2e96db70d8cb8a78a5805d9e70a22ad483723157bdfd87a8ff25c5f0ce3b09c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/execution.json",
+      "change": "added",
+      "bytes": 84350,
+      "sha256": "482256faacf1c17731a0b3f7fb7caddac242e7c132e6ff2e552e4df55aca776b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/streams.json",
+      "change": "added",
+      "bytes": 1711,
+      "sha256": "ed171ac610d4fb7a93f352d6a3ba1137770361428dc1af184c98568dd379d2f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/summary.txt",
+      "change": "added",
+      "bytes": 923,
+      "sha256": "1723ae3fb0b21b89c05afce11643242a58159262ab3ef2a9ffcfb71e42c9365c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/result.json",
+      "change": "added",
+      "bytes": 15806,
+      "sha256": "7f04a388d4f01a0d321cc715b6f8f98942ec23012c2b42d3cece02ede203bc9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/replay/executions/20261121T094052Z-8047aa94/attempt.json",
+      "change": "added",
+      "bytes": 11051,
+      "sha256": "1bf18eb863ab38ba384725df826f7ee48c806ac2a91f05f04fb905a918d2126d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/run.json",
+      "change": "added",
+      "bytes": 691,
+      "sha256": "9926783b3bfb8dca41d55d8c1cef33b049306a2dbc71d2c40ad73127d9711ea6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3f4c547578d58a01a579274864e912e9c4f8defe071865de73179a75f8006de5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/plan.json",
+      "change": "added",
+      "bytes": 7461,
+      "sha256": "e510d74982db71c6972c4dd6e0dd6668523bcb5bde2acb34d821510a7f9c2db2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/controls.json",
+      "change": "added",
+      "bytes": 42018,
+      "sha256": "1ab965ce809e7b9286240941ec44163759ff0cf925dd1f5d0a42d34ca4aa1e22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/execution.json",
+      "change": "added",
+      "bytes": 69113,
+      "sha256": "5ada48c985d0da1f204dbb80172e753ecad2ac11a483744ec4c222e6002ca19f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "c6cd09240f7884c17613c7af779e5818922d17c9c5bad8524ab5ef03e74670fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 278,
+      "sha256": "b9010b5417feefa9c18f15ea0ef2b45bb572f6c75f1a34b657dce598e0269295",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/verifier.json",
+      "change": "added",
+      "bytes": 26504,
+      "sha256": "d1e2b68616368504ba67cca02274b31ea1a95a1a3a32c6e858d48406739fa7fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5246,
+      "sha256": "28c2e4b301efc4ecb9f228d2b8527986770b317d0d528cd5a72e9d9484ebe380",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/result.json",
+      "change": "added",
+      "bytes": 18541,
+      "sha256": "7dc2eb8ea1d0a8c16eea81c996a75f3ea639a8be4ed04eea0a8187a05d13e093",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/executions/20261121T094059Z-c817065b/attempt.json",
+      "change": "added",
+      "bytes": 25632,
+      "sha256": "69405dfac1de201bd67846f043cb60c2c8bb8dab696001810a36308bc65f8302",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/executions/20261121T094059Z-c817065b/checker.json",
+      "change": "added",
+      "bytes": 7194,
+      "sha256": "14b21e03da51c01b3412e18504e35a6eb7db2490fbf84c9d9021277cfb80014e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-fix/executions/20261121T094059Z-c817065b/correspondence.json",
+      "change": "added",
+      "bytes": 1888,
+      "sha256": "560ec8cfae8cf154d8241448b907ec5a87350a015b38ed19769eab26f290db11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e0b0591819df2ce9c10072c4fe5eee4f7763a4b9e35f5aeb5c24db583306d3bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/plan.json",
+      "change": "added",
+      "bytes": 7370,
+      "sha256": "a9416ed5744687ae1061ed0940934120f529f6f036a5b610d9f0cc43a343d45b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/controls.json",
+      "change": "added",
+      "bytes": 40826,
+      "sha256": "90f92bef595a6048f3fb47ac3896d3d15f1c70e70a58ad4a917d888aaf9d2984",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/execution.json",
+      "change": "added",
+      "bytes": 67989,
+      "sha256": "9574dda76f86e12363dfbf19ba86d7d13eafe9b597dcbaac4d53ae678fa79804",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "6851358c7aaa6ca6e98ffd1b8d2d112f8d74cb51634d6cc2613cbd5a9b7354ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 278,
+      "sha256": "b9010b5417feefa9c18f15ea0ef2b45bb572f6c75f1a34b657dce598e0269295",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/verifier.json",
+      "change": "added",
+      "bytes": 26587,
+      "sha256": "e786142d99276e06f76dfc5d62474227b76eed8d85a24faf6c7c75219263f6ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5242,
+      "sha256": "6aa256a9fec5920b2ff59975b8df82b7d67a89d7af2795784393d2cfb500a64a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/result.json",
+      "change": "added",
+      "bytes": 18621,
+      "sha256": "31ef0f2c9b615e8f277364dfc40cad546efd5f039de6ca1d207aa3f091efc169",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/executions/20261121T094059Z-52f7933a/attempt.json",
+      "change": "added",
+      "bytes": 25723,
+      "sha256": "4de8a6102acaeb72df57eed200fa857f19bc36826485687ef8495a4af397d371",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/executions/20261121T094059Z-52f7933a/checker.json",
+      "change": "added",
+      "bytes": 7214,
+      "sha256": "5d56072a31e1679030313ba484ac452a06ea1f8a87b887cdd39bc8ab057a6e20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/size-parent/executions/20261121T094059Z-52f7933a/correspondence.json",
+      "change": "added",
+      "bytes": 1891,
+      "sha256": "2403de463b3a6f24c4a3a187ad67a640f0d79b1b28d88bd9fd0516ae90cacf1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-native/workflow.log",
+      "change": "added",
+      "bytes": 2310,
+      "sha256": "0aebded566965668a16bcc27922dd478c4c803e47219a01d64a85f77da9ad440",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T09:41:27+00:00",
+    "applied": [
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/20261121T094100Z-b9dfb9f5/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/executions/20261121T094100Z-b9dfb9f5/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/executions/20261121T094100Z-b9dfb9f5/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-fix/executions/20261121T094100Z-b9dfb9f5/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/20261121T094100Z-4cc9319b/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/executions/20261121T094100Z-4cc9319b/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/executions/20261121T094100Z-4cc9319b/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/absent-parent/executions/20261121T094100Z-4cc9319b/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/20261121T094058Z-c210e3bd/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/executions/20261121T094058Z-c210e3bd/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/executions/20261121T094058Z-c210e3bd/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-fix/executions/20261121T094058Z-c210e3bd/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/20261121T094057Z-a739ae12/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/executions/20261121T094057Z-a739ae12/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/executions/20261121T094057Z-a739ae12/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/executions/20261121T094057Z-a739ae12/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/entries-parent/executions/20261121T094057Z-a739ae12/replay.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/20261121T094101Z-a93c8ff8/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/executions/20261121T094101Z-a93c8ff8/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/executions/20261121T094101Z-a93c8ff8/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-fix/executions/20261121T094101Z-a93c8ff8/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/20261121T094101Z-37761ce6/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/executions/20261121T094101Z-37761ce6/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/executions/20261121T094101Z-37761ce6/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/live-parent/executions/20261121T094101Z-37761ce6/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/20261121T094057Z-2addc3b2/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/executions/20261121T094057Z-2addc3b2/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/executions/20261121T094057Z-2addc3b2/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-fix/executions/20261121T094057Z-2addc3b2/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/20261121T094056Z-3206db0c/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/executions/20261121T094056Z-3206db0c/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/executions/20261121T094056Z-3206db0c/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/executions/20261121T094056Z-3206db0c/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/lookup-parent/executions/20261121T094056Z-3206db0c/replay.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/records/summary.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/20261121T094052Z-8047aa94/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/replay/executions/20261121T094052Z-8047aa94/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/run.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/20261121T094059Z-c817065b/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/executions/20261121T094059Z-c817065b/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/executions/20261121T094059Z-c817065b/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-fix/executions/20261121T094059Z-c817065b/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/completion.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/plan.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/controls.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/execution.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/streams.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/20261121T094059Z-52f7933a/result.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/executions/20261121T094059Z-52f7933a/attempt.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/executions/20261121T094059Z-52f7933a/checker.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/size-parent/executions/20261121T094059Z-52f7933a/correspondence.json",
+      "examples/353-guava-saturated-sum/records/baseline-native/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2527327,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "changesDiff": "changes.diff.gz"
+}

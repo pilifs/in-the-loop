@@ -45,13 +45,13 @@ def module_args(case, module):
 def build_args(case):
     # The Avro reactor publishes test JARs for its dependents. Package them while leaving the
     # separate invoker cross-JDK compatibility suite to upstream CI.
-    flags = ["-DskipTests", "-Dinvoker.skip=true"] if case["module"] == "mapred" else ["-Dmaven.test.skip=true"]
+    flags = ["-DskipTests", "-Dinvoker.skip=true"] if case.get("providedHost") else ["-Dmaven.test.skip=true"]
     return [*OPTIONS, *module_args(case, case["module"]), *flags, "install"]
 
 
 def toolchains(command, case, work, jdk26):
     """Expose the project's requested compilers and test JVMs inside the isolated Maven build."""
-    if case["module"] not in ("guava", "mapred"):
+    if case["module"] != "guava" and not case.get("providedHost"):
         return command, {}
     homes = {v: runtime_jdk.home(v) for v in ("11", "17", "21")}
     if case["module"] == "guava":
@@ -62,7 +62,7 @@ def toolchains(command, case, work, jdk26):
         if digest(homes["26"] / "lib/modules") != pin["moduleImageSha256"]:
             raise ValueError("Guava compiler differs from the pinned Temurin 26 module image")
     mounts, identities = [], {}
-    if case["module"] == "mapred":
+    if case.get("providedHost"):
         # Hadoop's original Job.getInstance uses UnixLoginModule during its JUnit setup.
         # Supply the isolated build's actual UID in its own passwd database.
         uid, gid = os.geteuid(), os.getegid()
@@ -138,9 +138,10 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk, compil
     listing = (module / "target/organic-runtime.txt").read_text().strip()
     entries = listing.split(":") if listing else []
     provided = module / "target/organic-compile.txt"
-    if case["module"] == "mapred":
+    if case.get("providedHost"):
         declared = ET.parse(module / "pom.xml").findall(".//{*}dependencies/{*}dependency")
-        if not any(d.findtext("{*}artifactId") == "hadoop-client" and d.findtext("{*}scope") == "provided" for d in declared):
+        if not any((d.findtext("{*}groupId") + ":" + d.findtext("{*}artifactId")) == case["providedHost"]
+                   and d.findtext("{*}scope") == "provided" for d in declared):
             raise ValueError("the original Avro module did not declare its Hadoop host")
         for item in provided.read_text().strip().split(":"):
             if item and item not in entries:
@@ -170,7 +171,7 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk, compil
     record = {"schema": "upstream-jar-build/v1", "recipe": recipe, "artifacts": records,
               "build": {"checkout": checkout, "outputs": outputs, "toolchain": {"jdk": runtime_jdk.identity(jdk), "declaredCompilers": compilers},
                         "steps": [build, cp]}}
-    if case["module"] == "mapred":
+    if case.get("providedHost"):
         record["build"]["outputs"]["hostClasspath"] = "Maven runtime, followed by the original module's compile-only entries including its provided Hadoop client"
     upstream_artifact.products(record, {"repository": case["repository"], "commit": revision,
                                        "parent": recipe.get("parent"), **recipe["build"]})
@@ -198,7 +199,7 @@ def tests(case, side, project, command, scratch, out):
         support = maven(command, [*OPTIONS, "-f", "guava-testlib/pom.xml", "-Dmaven.test.skip=true", "install"],
                         scratch, "install-original-testlib")
         selection = ["-f", "guava-tests/pom.xml"]
-    args = [*OPTIONS, *selection, "-Dsurefire.failIfNoSpecifiedTests=false", "-Dtest=" + ",".join(case["tests"]), "test"]
+    args = [*OPTIONS, *selection, "-Dmaven.build.cache.enabled=false", "-Dsurefire.failIfNoSpecifiedTests=false", "-Dtest=" + ",".join(case["tests"]), "test"]
     run = maven(command, args, scratch, "upstream-tests")
     found = {name: [] for name in case["tests"]}
     for xml in project.glob("**/target/surefire-reports/TEST-*.xml"):
@@ -246,7 +247,7 @@ def run_side(case, side, args):
                                      DEPENDENCIES, "-DincludeScope=runtime", "-Dmdep.outputFile=" +
                                      str(Path("/project") / module.relative_to(project) / "target/organic-runtime.txt")],
                            base, "classpath")
-                if cp["exit"] == 0 and case["module"] == "mapred":
+                if cp["exit"] == 0 and case.get("providedHost"):
                     host = maven(command, [*OPTIONS, "-f", str((module / "pom.xml").relative_to(project)),
                                  DEPENDENCIES, "-DincludeScope=compile", "-Dmdep.outputFile=" +
                                  str(Path("/project") / module.relative_to(project) / "target/organic-compile.txt")],

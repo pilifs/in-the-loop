@@ -1,0 +1,365 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-092910-355-build-avro-mapred-build-with-the-dec",
+  "title": "355 build-avro-mapred build with the declared Maven JDKs and original named tests",
+  "status": "failed",
+  "summary": "failed: 4 failed step(s) in 3m47s, peak 2.1 GiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "declared output examples/355-avro-writable-buffer-limit/records/baseline-finite was not produced",
+    "declared output examples/355-avro-writable-buffer-limit/records/baseline-native was not produced",
+    "step 1 (Build and test both pinned revisions) exited 1, expected 0",
+    "step 1 (Build and test both pinned revisions) was held back 13m29s by its 2-CPU quota in 3m47s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Bind the two actual original classpaths) exited 1, expected 0",
+    "step 3 (Run the common finite baseline) exited 1, expected 0",
+    "step 4 (Run the common native baseline) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-092910-355-build-avro-mapred-build-with-the-dec.json",
+    "sha256": "fdaafd4ff53b37aba1530ed779eafd10f327ff115242cf6a5b43603ede40d0af",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-092910-355-build-avro-mapred-build-with-the-dec",
+      "title": "355 build-avro-mapred build with the declared Maven JDKs and original named tests",
+      "description": "Provide the actual compilers selected by the original Maven POM while verifying the application under JDK 21. Retain both fresh named test reports, the compiled class and ordered dependencies including the declared Hadoop host where applicable. Package Avro reactor test JARs for its sibling modules and skip the separate cross-JDK invoker suites during artifact installation. After preparing both original artifacts, run the unmodified pinned verifier and finite checks from the two-sided public task plan. The isolated guest has a synthetic passwd entry for its build UID so Hadoop's original JUnit setup can obtain its Unix login.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "expected": "Original modules built and assertions fail on the parent and pass on the fix.",
+      "submitted": {
+        "at": "2026-11-21T09:29:10+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "maven"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Build and test both pinned revisions",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred",
+          "cwd": "."
+        },
+        {
+          "name": "Bind the two actual original classpaths",
+          "run": "python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred",
+          "cwd": "."
+        },
+        {
+          "name": "Run the common finite baseline",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred && python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route finite --seconds 180",
+          "cwd": "."
+        },
+        {
+          "name": "Run the common native baseline",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred && python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route native --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/355-avro-writable-buffer-limit/records/build-avro-mapred",
+        "examples/355-avro-writable-buffer-limit/records/baseline-finite",
+        "examples/355-avro-writable-buffer-limit/records/baseline-native"
+      ],
+      "stopOnFailure": false
+    }
+  },
+  "sourceCommit": "c2e96866bc8837a711eef630520b368c32c823cb",
+  "startedAt": "2026-11-21T09:40:46+00:00",
+  "finishedAt": "2026-11-21T09:44:39+00:00",
+  "wallSeconds": 233.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3972090,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2280034304,
+    "wallSeconds": 227.7,
+    "cpuSeconds": 443.5,
+    "memoryOfEstimate": 0.71,
+    "durationOfEstimate": 0.76
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build and test both pinned revisions",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 227.113,
+      "cpuSeconds": 443.295,
+      "cpuThrottledSeconds": 809.401,
+      "peakMemoryBytes": 2280034304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-and-test-both-pinned-rev.log",
+        "lines": 2,
+        "bytes": 29,
+        "sha256": "e284a622989491bdddab11f15494eeb7ba77cff3a5aad8045f5aba3b744c17ef",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "355 parent open",
+        "355 fix open"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Bind the two actual original classpaths",
+      "run": "python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.081,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16527360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-bind-the-two-actual-original-c.log",
+        "lines": 17,
+        "bytes": 1481,
+        "sha256": "64fa8503213960441db2c5f09bd913ff84e3443c80acb9c2e6a02f746d450fa5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/lib/benchmark/organic-java/upstream.py\", line 319, in <module>",
+        "    sys.exit(main())",
+        "             ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/lib/benchmark/organic-java/upstream.py\", line 302, in main",
+        "    bind(CASES[args.example], args.output)",
+        "    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/lib/benchmark/organic-java/upstream.py\", line 280, in bind",
+        "    record = json.loads(path.read_text())",
+        "                        ~~~~~~~~~~~~~~^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 788, in read_text",
+        "    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:",
+        "         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 772, in open",
+        "    return io.open(self, mode, buffering, encoding, errors, newline)",
+        "           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/examples/355-avro-writable-buffer-limit/records/build-avro-mapred/build-parent.json'"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Run the common finite baseline",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred && python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route finite --seconds 180",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.077,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 17002496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-run-the-common-finite-baseline.log",
+        "lines": 17,
+        "bytes": 1481,
+        "sha256": "64fa8503213960441db2c5f09bd913ff84e3443c80acb9c2e6a02f746d450fa5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/lib/benchmark/organic-java/upstream.py\", line 319, in <module>",
+        "    sys.exit(main())",
+        "             ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/lib/benchmark/organic-java/upstream.py\", line 302, in main",
+        "    bind(CASES[args.example], args.output)",
+        "    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/lib/benchmark/organic-java/upstream.py\", line 280, in bind",
+        "    record = json.loads(path.read_text())",
+        "                        ~~~~~~~~~~~~~~^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 788, in read_text",
+        "    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:",
+        "         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 772, in open",
+        "    return io.open(self, mode, buffering, encoding, errors, newline)",
+        "           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/examples/355-avro-writable-buffer-limit/records/build-avro-mapred/build-parent.json'"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Run the common native baseline",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred && python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route native --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.067,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16994304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-run-the-common-native-baseline.log",
+        "lines": 17,
+        "bytes": 1481,
+        "sha256": "64fa8503213960441db2c5f09bd913ff84e3443c80acb9c2e6a02f746d450fa5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/lib/benchmark/organic-java/upstream.py\", line 319, in <module>",
+        "    sys.exit(main())",
+        "             ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/lib/benchmark/organic-java/upstream.py\", line 302, in main",
+        "    bind(CASES[args.example], args.output)",
+        "    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/lib/benchmark/organic-java/upstream.py\", line 280, in bind",
+        "    record = json.loads(path.read_text())",
+        "                        ~~~~~~~~~~~~~~^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 788, in read_text",
+        "    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:",
+        "         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 772, in open",
+        "    return io.open(self, mode, buffering, encoding, errors, newline)",
+        "           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/filip/code/in-the-loop/verification/.state/work/20261121-092910-355-build-avro-mapred-build-with-the-dec/examples/355-avro-writable-buffer-limit/records/build-avro-mapred/build-parent.json'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/build-avro-mapred/fix-upstream.json",
+      "change": "added",
+      "bytes": 6106,
+      "sha256": "5e16c0787b34204ce3ae5a158a6e2606c75c3aa5a855c03a76773b10f29fa407",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/build-avro-mapred/parent-TEST-org.apache.avro.hadoop.io.TestAvroDatumConverterFactory.xml.gz",
+      "change": "added",
+      "bytes": 4391,
+      "sha256": "ad2f88d472236bc50882bada0a59b08794fd7607cbae5ef7b9fed07c12e0bc47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/build-avro-mapred/parent-upstream.json",
+      "change": "added",
+      "bytes": 7796,
+      "sha256": "d3cc652fe0c5d0c08a0889c225c3fca3e6e39299cadc39bb6bc9e2822184cdfc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T09:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/355-avro-writable-buffer-limit/records/build-avro-mapred/fix-upstream.json",
+      "examples/355-avro-writable-buffer-limit/records/build-avro-mapred/parent-TEST-org.apache.avro.hadoop.io.TestAvroDatumConverterFactory.xml.gz",
+      "examples/355-avro-writable-buffer-limit/records/build-avro-mapred/parent-upstream.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff"
+}

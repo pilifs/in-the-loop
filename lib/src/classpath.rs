@@ -846,7 +846,8 @@ impl ClassPath {
 
     pub(crate) fn surrogate_arithmetic(owner: &str, name: &str, descriptor: &str) -> bool {
         owner == "java/lang/Character" && matches!((name, descriptor),
-            ("isSurrogate", "(C)Z") | ("isSupplementaryCodePoint", "(I)Z")
+            ("isSurrogate" | "isHighSurrogate" | "isLowSurrogate", "(C)Z") | ("isSupplementaryCodePoint", "(I)Z")
+            | ("charCount", "(I)I")
             | ("highSurrogate" | "lowSurrogate", "(I)C"))
     }
 
