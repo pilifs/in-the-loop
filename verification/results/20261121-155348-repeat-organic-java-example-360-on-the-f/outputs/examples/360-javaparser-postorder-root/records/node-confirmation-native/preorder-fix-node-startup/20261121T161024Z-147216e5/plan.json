@@ -1,0 +1,258 @@
+{
+  "plan": {
+    "example": "360",
+    "task": "preorder-fix-node-startup",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "preorder-fix-node-startup",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "file": "claims/preorder-node-startup.json",
+      "sha256": "e89a6b1215d2bd4dd94f2f3d8bbfed24910f662cda0e9ea0d291713d08459b3a",
+      "property": "preorder",
+      "claimKind": "property",
+      "statement": "Preorder returns the original root first and preserves the order of the package and name.",
+      "assume": "code >= 0 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "17d60200e6a2fd682032fb6c6bcf24986f929eb9fbb9dc3b64ad79e5c84f1273"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "242770e76443be836d369f6f2d1b36c6992e180e2b201ea1215598863a397f9a"
+        }
+      ],
+      "boundEnvironment": {
+        "jdk": "21.0.13"
+      },
+      "adapter": {
+        "entry": "organic.TreeOrder#preorder(I)I",
+        "mapping": "Preorder returns the original root first and preserves the order of the package and name. Its original receiver and direct outcome are indexed in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2
+      },
+      "observedInitializers": {
+        "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+      },
+      "key": "12a6356b35cec02c"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/javaparser/javaparser",
+        "commit": "6529f264066e31bd9e78c71111ade3a20142d285",
+        "parent": "e0eb16b8870fc05c03ab794e502dd76f97422e26",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "javaparser-core",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "17"
+        },
+        "capturedBuild": {
+          "path": "records/build-historical/build-fix.json",
+          "sha256": "2a29cb8bb88d185048cb98b39375eb7d11130758dd24a7644e4460e19cbe48b5"
+        },
+        "adapters": [
+          "adapter/organic/TreeOrder.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/preorder-fix-node-startup"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-155348-repeat-organic-java-example-360-on-the-f/examples/360-javaparser-postorder-root",
+    "network": true
+  },
+  "inputs": {
+    "example": "360",
+    "task": "preorder-fix-node-startup",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "preorder-fix-node-startup",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "file": "claims/preorder-node-startup.json",
+      "sha256": "e89a6b1215d2bd4dd94f2f3d8bbfed24910f662cda0e9ea0d291713d08459b3a",
+      "property": "preorder",
+      "claimKind": "property",
+      "statement": "Preorder returns the original root first and preserves the order of the package and name.",
+      "assume": "code >= 0 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "17d60200e6a2fd682032fb6c6bcf24986f929eb9fbb9dc3b64ad79e5c84f1273"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "242770e76443be836d369f6f2d1b36c6992e180e2b201ea1215598863a397f9a"
+        }
+      ],
+      "boundEnvironment": {
+        "jdk": "21.0.13"
+      },
+      "adapter": {
+        "entry": "organic.TreeOrder#preorder(I)I",
+        "mapping": "Preorder returns the original root first and preserves the order of the package and name. Its original receiver and direct outcome are indexed in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2
+      },
+      "observedInitializers": {
+        "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+      },
+      "key": "12a6356b35cec02c"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/javaparser/javaparser",
+        "commit": "6529f264066e31bd9e78c71111ade3a20142d285",
+        "parent": "e0eb16b8870fc05c03ab794e502dd76f97422e26",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "javaparser-core",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "17"
+        },
+        "capturedBuild": {
+          "path": "records/build-historical/build-fix.json",
+          "sha256": "2a29cb8bb88d185048cb98b39375eb7d11130758dd24a7644e4460e19cbe48b5"
+        },
+        "adapters": [
+          "adapter/organic/TreeOrder.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/TreeOrder.java",
+        "sha256": "d7145bf220668f8b7cf53b5e3138d5222114b749e3f8e1c404fd60fea662a84d"
+      }
+    ]
+  },
+  "key": "1011e7c0f802b719a975c465dc5984200dbb7274a0b1b213a8ec3036e59b4d56"
+}
