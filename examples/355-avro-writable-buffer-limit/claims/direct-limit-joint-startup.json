@@ -1,0 +1,36 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "direct-limit",
+  "statement": "Under the narrower direct nested converter entry, capacity is retained and the logical limit rejects the first excluded byte.",
+  "assume": "code >= 0 && code < 21",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.WritableBuffer#directLimit(I)I",
+    "mapping": "Under the narrower direct nested converter entry, capacity is retained and the logical limit rejects the first excluded byte. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 21
+  },
+  "observedInitializers": {
+    "org.apache.avro.Schema": "7efe08d0f2a9a920472517c9fb2942ff38fbe1dca71c7b88b843067446941b42"
+  },
+  "observedRuntime": {
+    "processors": 2,
+    "preinitializeTogether": true
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13"
+  },
+  "notes": [
+    "Before the checked call, the subject JVM initializes Schema and captures every application class initialized with it in one object table. The converter, writable, bounds and 21 selectors follow the same public entry as the direct-limit task."
+  ]
+}

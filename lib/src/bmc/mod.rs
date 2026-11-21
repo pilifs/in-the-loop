@@ -942,6 +942,8 @@ struct Path {
     /// The state of initialization of each application class the path has used (JVMS §5.5); a class absent is not
     /// initialized yet.
     classes: BTreeMap<String, ClassState>,
+    /// Static values an initializer snapshot on this path could not represent.
+    unheld_statics: Rc<BTreeMap<(String, String), String>>,
     /// The static fields of application classes the path has written, by declaring class and name; one it has not
     /// is its `ConstantValue`, or zero or null.
     statics: BTreeMap<(String, String), Val>,
@@ -1102,6 +1104,7 @@ fn frames_alike(a: &Path, b: &Path) -> bool {
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
         && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.discard_result == g.discard_result && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
         && a.classes == b.classes
+        && a.unheld_statics == b.unheld_statics
         && a.statics.len() == b.statics.len()
         && a.statics.iter().zip(&b.statics).all(|((k, x), (l, y))| k == l && mergeable(x, y))
 }
@@ -1455,13 +1458,11 @@ struct Engine<'a> {
     supers: HashMap<String, Rc<Vec<String>>>,
     /// Whether the engine runs a class's `<clinit>`, by class ([`gaps::runs_initializer`]).
     runs: HashMap<String, bool>,
-    /// The observed initializers ([`Options::observed`]), and the static fields an observation taken so far holds
-    /// no value of, each with what it was ([`Engine::unheld_static`]).
+    /// The observed initializers ([`Options::observed`]).
     observed: std::sync::Arc<crate::observed::Observations>,
     previous: Option<std::sync::Arc<crate::relocate::Previous>>,
     /// [`Options::calls_as_one_function`].
     calls_as_one_function: bool,
-    unheld: HashMap<(String, String), String>,
     /// The time spent decoding methods, and reading witnesses out of models (their solving and encoding apart).
     decoding: Duration,
     witness: Duration,
@@ -1585,7 +1586,6 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         observed: options.observed.clone(),
         previous: options.previous.clone(),
         calls_as_one_function: options.calls_as_one_function,
-        unheld: HashMap::new(),
         decoding: Duration::ZERO,
         witness: Duration::ZERO,
     };
@@ -1762,7 +1762,13 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        let mut first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), unheld_statics: Default::default(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        let snapshots = engine.observed.clone();
+        for (root, _) in snapshots.iter().filter(|(_, o)| o.joint_fields.is_some()) {
+            if let Err(stop) = engine.take_observed(&mut first, root) {
+                break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop))));
+            }
+        }
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -4835,7 +4841,7 @@ impl<'a> Engine<'a> {
         let class = &path.objects[o].class;
         // Observed enum constants carry their own fields and the two verified bootstrap getters.
         // A private field added by a JDK (for example its cached hash) has no observed value.
-        if self.is_observed(class) && self.cp.is_subtype(class, crate::observed::ENUM) {
+        if (self.is_observed(class) || self.observed.values().any(|o| o.joint_fields.as_ref().is_some_and(|m| m.contains_key(class)))) && self.cp.is_subtype(class, crate::observed::ENUM) {
             let declaring = self.cp.resolve_field(owner, name, descriptor).ok_or_else(|| Stop::Unsupported(format!("no field {}.{name}", owner.replace('/', "."))))?;
             if declaring == crate::observed::ENUM && !matches!((name, descriptor), ("name", "Ljava/lang/String;") | ("ordinal", "I")) {
                 return unsupported(format!("reads or writes java.lang.Enum.{name}, outside the observed state of {}", class.replace('/', ".")));
@@ -6152,7 +6158,7 @@ mod tests {
     /// object's now. Before, the records kept the old numbers: the first named the array that moved into its place.
     #[test]
     fn a_calls_record_names_its_result_by_the_number_a_merge_gives_it() {
-        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), unheld_statics: Default::default(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
         // The state reaches the third object alone; the first was a call's result and nothing holds it now.
         path.statics.insert(("app/A".into(), "kept".into()), Val::R(Some(2)));
         path.calls = Rc::new(vec![ties::Call::returning(1, Val::R(Some(0))), ties::Call::returning(2, Val::R(Some(2)))]);
@@ -6172,7 +6178,7 @@ mod tests {
             let mut path = Path {
                 frames: Vec::new(), cond: vec![condition], models: Vec::new(), undecided: false,
                 resumed: false, objects: vec![string.clone(), string], literals: BTreeMap::new(),
-                classes: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(),
+                classes: BTreeMap::new(), unheld_statics: Default::default(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(),
                 statics: BTreeMap::from([
                     (("app/Caller".into(), "a".into()), Val::R(Some(first))),
                     (("app/Caller".into(), "b".into()), Val::R(Some(second))),

@@ -260,6 +260,12 @@ class RecipesTest(unittest.TestCase):
         self.assertNotEqual(workflow.claim_key(scoped.claim), plan.claim["key"])
         self.assertIn(("--observed-runtime", '{"emptyEnvironment":true,"processors":2}'),
                       [(a.flag, a.value) for a in recipes.translate(scoped).arguments])
+        eager = {"observedInitializers": plan.claim["observedInitializers"],
+                 "observedRuntime": {**settings, "preinitializeTogether": True}}
+        src = replay_candidate.source("p.C#check(I)I", eager, [{"name": "n", "type": "int", "value": 1}], ["n"])
+        self.assertLess(src.index("Class.forName("), src.index("p.C.check("))
+        self.assertIn("availableProcessors() != 2", src)
+        self.assertIn("System.getenv().isEmpty()", src)
         self.assertIsInstance(recipes.translate(replace(original, claim={**original.claim, "observedRuntime": settings})), interfaces.Unsupported)
         recipe = recipes.translate(plan)
         name, state = next(iter(plan.claim["observedInitializers"].items()))

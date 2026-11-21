@@ -112,6 +112,42 @@ fn proving(target: &str, assert: &str, name: &str) -> property::Options {
 }
 
 #[test]
+fn jointly_initialized_statics_share_one_heap_before_the_entry_runs() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    for (entry, claim, args, expected) in [
+        ("shared", "result", vec![], "true"),
+        ("touchedFirst", "!result", vec!["write"], "false"),
+    ] {
+        let jvm = Command::new("java").arg("-cp").arg(&c.app).arg("oc.JointStartup").args(args).output().unwrap();
+        assert!(jvm.status.success());
+        assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), expected);
+        let mut o = proving(&format!("oc.JointStartup#{entry}"), claim, entry);
+        o.observed_initializers = vec!["oc.JointStartup$Root".into()];
+        o.observed_runtime.preinitialize_together = true;
+        let run = property::run(&o).unwrap();
+        assert_eq!(run.verdict, Verdict::Verified, "{}", run.output);
+        assert!(run.stated.unwrap().assumptions.iter().any(|a| a.text.contains("before the checked entry") && a.text.contains("oc.JointStartup$Store")));
+    }
+}
+
+#[test]
+fn a_joint_snapshot_refuses_opaque_reads_and_overlapping_roots() {
+    jvmcontract::tool_tier!();
+    if classes().is_none() { return }
+    let mut o = proving("oc.JointStartup#readsOpaque", "result", "joint-opaque");
+    o.observed_initializers = vec!["oc.JointStartup$Root".into()];
+    o.observed_runtime.preinitialize_together = true;
+    let opaque = property::run(&o).unwrap();
+    assert_eq!(opaque.verdict, Verdict::Unverifiable, "{}", opaque.output);
+    assert!(opaque.output.contains("Store.opaque") && opaque.output.contains("StringBuilder"), "{}", opaque.output);
+    o.observed_initializers.push("oc.JointStartup$Store".into());
+    let overlap = property::run(&o).unwrap();
+    assert_eq!(overlap.verdict, Verdict::Unverifiable, "{}", overlap.output);
+    assert!(overlap.output.contains("snapshots overlap"), "{}", overlap.output);
+}
+
+#[test]
 fn observed_enum_constants_keep_their_aliases_and_both_declaring_classes_fields() {
     jvmcontract::tool_tier!();
     let Some(c) = classes() else { return };

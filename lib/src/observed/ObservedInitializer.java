@@ -303,6 +303,7 @@ public final class ObservedInitializer {
         String display = Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag();
         String zone = java.util.TimeZone.getDefault().getID();
         Path log = args.length > 1 ? Path.of(args[1]) : null;
+        boolean together = args.length == 3 && args[2].equals("together");
         boolean emptyEnvironment = emptyEnvironment();
         Properties original = System.getProperties();
         Recording recording = new Recording();
@@ -320,6 +321,9 @@ public final class ObservedInitializer {
             return;
         }
         System.setProperties(original);
+        // Reflection and serialization can initialize additional classes. The boundary is
+        // the return of Class.forName, before the observer inspects any subject fields.
+        byte[] logged = together ? Files.readAllBytes(log) : null;
         // The JDK's settings the initialization changed, read again after it: the check runs what follows under the
         // ones before it.
         List<String> changed = new ArrayList<>();
@@ -336,16 +340,17 @@ public final class ObservedInitializer {
         }
         changed.addAll(recording.changedFrom(original));
         // Alone, the class is what another initialization's is compared with: described in full.
-        String state = new Dump(log == null).of(c);
         if (log == null) {
             System.out.println("@observed {\"jdk\":" + text(jdk) + ",\"fixedProcessors\":" + fixedProcessors()
-                    + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment()) + "," + state + "}");
+                    + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment()) + "," + new Dump(true).of(c) + "}");
             return;
         }
         // The classes the initialization initialized: what the JVM logged after the mark, of the class path.
-        byte[] logged = Files.readAllBytes(log);
+        Dump dump = new Dump(false);
+        String fields = together ? null : dump.fieldsOf(c);
+        if (!together) logged = Files.readAllBytes(log);
         String after = new String(logged, (int) Math.min(mark, logged.length), (int) Math.max(0, logged.length - mark), StandardCharsets.UTF_8);
-        StringBuilder initialized = new StringBuilder();
+        Map<String, Class<?>> members = new LinkedHashMap<>();
         List<String> seen = new ArrayList<>();
         Matcher m = INITIALIZING.matcher(after);
         while (m.find()) {
@@ -359,14 +364,34 @@ public final class ObservedInitializer {
                 k = Class.forName(internal.replace('/', '.'), false, app);
             }
             catch (Throwable t) {
+                // HotSpot's hidden classes have no resolvable binary name or independently addressable statics.
+                if (together && !internal.contains("+0x") && !internal.contains("/0x"))
+                    throw new IllegalStateException("cannot bind logged class " + internal, t);
                 continue;
             }
             if (k == c || k.getClassLoader() != app || k.getName().startsWith(ObservedInitializer.class.getName())) {
                 continue;
             }
-            initialized.append(initialized.length() == 0 ? "" : ",").append("{\"name\":").append(text(internal)).append(",\"sha256\":")
-                    .append(text(sha256(app, internal))).append(',').append(new Dump(true).of(k)).append('}');
+            // An initializer may have caught another class's initialization failure.
+            // An erroneous member cannot be installed as successfully initialized.
+            if (together) Class.forName(k.getName(), true, app);
+            members.put(internal, k);
         }
+        if (together) {
+            if (!seen.contains(c.getName().replace('.', '/')))
+                throw new IllegalStateException("the root's initialization was absent from the JVM log");
+            dump.owners.add(c);
+            dump.owners.addAll(members.values());
+            fields = dump.fieldsOf(c);
+        }
+        StringBuilder initialized = new StringBuilder();
+        for (var member : members.entrySet()) {
+            String name = member.getKey();
+            Class<?> k = member.getValue();
+            initialized.append(initialized.length() == 0 ? "" : ",").append("{\"name\":").append(text(name)).append(",\"sha256\":")
+                    .append(text(sha256(app, name))).append(',').append(together ? dump.fieldsOf(k) : new Dump(true).of(k)).append('}');
+        }
+        String state = fields + "," + dump.objects();
         StringBuilder properties = new StringBuilder();
         for (String key : recording.order) {
             String value = recording.read.get(key);
@@ -386,7 +411,8 @@ public final class ObservedInitializer {
         System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + ",\"on\":{\"sha256\":" + text(sha256(app, internal))
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
-                + text(display) + "},\"zone\":" + text(zone) + ",\"fixedProcessors\":" + fixedProcessors() + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment())
+                + text(display) + "},\"zone\":" + text(zone) + ",\"preinitializeTogether\":" + together
+                + ",\"fixedProcessors\":" + fixedProcessors() + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment())
                 + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
                 + (recording.whole == null ? "null" : text(recording.whole)) + ",\"changed\":[" + changes + "],\"initialized\":[" + initialized + "]}}");
     }
@@ -478,6 +504,7 @@ public final class ObservedInitializer {
     private static final class Dump {
         private final IdentityHashMap<Object, Integer> ids = new IdentityHashMap<>();
         private final List<String> objects = new ArrayList<>();
+        private final java.util.Set<Class<?>> owners = new java.util.HashSet<>();
         private final boolean describe;
         private Class<?> owner;
 
@@ -487,6 +514,14 @@ public final class ObservedInitializer {
 
         /** `"fields":[...],"objects":[...]` of the class's static fields. */
         String of(Class<?> c) {
+            return fieldsOf(c) + "," + objects();
+        }
+
+        String objects() {
+            return "\"objects\":[" + String.join(",", objects) + "]";
+        }
+
+        String fieldsOf(Class<?> c) {
             owner = c;
             StringBuilder fields = new StringBuilder();
             for (Field f : c.getDeclaredFields()) {
@@ -506,7 +541,7 @@ public final class ObservedInitializer {
                 }
                 fields.append("{\"name\":\"").append(f.getName()).append("\",\"value\":").append(value).append('}');
             }
-            return "\"fields\":[" + fields + "],\"objects\":[" + String.join(",", objects) + "]";
+            return "\"fields\":[" + fields + "]";
         }
 
         /** A value not held: what it is, and where describing, its description or why there is none. */
@@ -560,7 +595,7 @@ public final class ObservedInitializer {
             List<Class<?>> hierarchy = new ArrayList<>();
             boolean hasField = false;
             for (Class<?> c = type; c != Object.class; c = c.getSuperclass()) {
-                if (c == Enum.class && type == owner && type.isEnum()) return hierarchy;
+                if (c == Enum.class && (type == owner || owners.contains(type)) && type.isEnum()) return hierarchy;
                 if (c == null || c.getClassLoader() != ClassLoader.getSystemClassLoader()) return null;
                 hierarchy.add(c);
                 for (Field f : c.getDeclaredFields()) {

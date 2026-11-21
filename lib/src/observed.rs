@@ -48,6 +48,12 @@
 //!   not describe (an object of the JDK it has no reading of, one whose class extends a JDK class with state) is
 //!   refused, with why. A lambda's hidden class is named by what it was defined from (`R$$Lambda`), without the
 //!   address a JVM appends to its name, which differs from run to run (`claims.Hooked`, `lib/tests/claims.rs`).
+//! - With `--observed-runtime '{"preinitializeTogether":true}'`, startup precedes the checked entry. The named
+//!   root and its successfully initialized application classes are captured in one JVM with a shared object
+//!   table. The checker binds every class file, installs the fields and all represented aliases, and refuses
+//!   overlapping captures, absent application supertypes and reads of opaque state. This scope includes any
+//!   cross-class registration the JVM made. It assumes that unrecorded external state and aliases do not affect
+//!   the checked call. The ordinary first-use observation still compares each transitive class independently.
 //! - The default locale: one whose language is Turkish, Azeri or Lithuanian is refused, since the check takes the
 //!   JVM's default to be none of them ([`crate::bmc::strings::LOCALE_ASSUMPTION`]); any other is stated. The default
 //!   time zone (which the JDK reads from `user.timezone` or the machine, as `ob.Zoned`'s `TimeZone.getDefault()`
@@ -139,6 +145,8 @@ pub struct Observed {
     /// Each static field the class declares, by name.
     pub fields: BTreeMap<String, Slot>,
     pub objects: Vec<Object>,
+    /// If requested, the other initialized application classes share the root's object table.
+    pub(crate) joint_fields: Option<BTreeMap<String, BTreeMap<String, Slot>>>,
     /// For a class of the previous version of a pair ([`observe_previous`]): its own name, the one it was observed
     /// under on the previous version's class path. The check holds it under another.
     pub previous: Option<String>,
@@ -197,6 +205,7 @@ pub type Observations = BTreeMap<String, Observed>;
 pub struct Runtime {
     pub processors: Option<std::num::NonZeroI32>,
     pub empty_environment: bool,
+    pub preinitialize_together: bool,
 }
 
 impl std::str::FromStr for Runtime {
@@ -204,7 +213,7 @@ impl std::str::FromStr for Runtime {
     fn from_str(text: &str) -> Result<Self, Self::Err> {
         let r: Self = serde_json::from_str(text).map_err(|e| format!("invalid observed runtime: {e}"))?;
         if r == Self::default() || r.processors.is_some_and(|n| n.get() < 1) {
-            return Err("provide a positive processors count or emptyEnvironment=true".into());
+            return Err("provide a positive processors count, emptyEnvironment=true or preinitializeTogether=true".into());
         }
         Ok(r)
     }
@@ -227,14 +236,18 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
         let each: Vec<String> = bound.properties.iter().map(|(k, v)| match v { Some(v) => format!("{k} = {v:?}"), None => format!("{k}, not set") }).collect();
         format!("it read the system properties {}, and the result holds where each is as it was", each.join("; "))
     };
-    let initialized = if bound.initialized.is_empty() {
+    let initialized = if let Some(members) = &observed.joint_fields {
+        let names: Vec<_> = members.keys().map(|name| name.replace('/', ".")).collect();
+        format!("; before the checked entry, one JVM snapshot supplies this class and {} other initialized application classes [{}], including their cross-class static writes and shared object identities", members.len(), names.join(", "))
+    } else if bound.initialized.is_empty() {
         String::new()
     } else {
         let names: Vec<String> = bound.initialized.iter().map(|i| i.name.replace('/', ".")).collect();
         format!("; it initialized {} besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements)", names.join(", "))
     };
+    let ownership = if observed.joint_fields.is_some() { "its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call" } else { "the objects it leaves are held by no other class" };
     format!(
-        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the class first thing on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{processors}{environment}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the class first thing on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{processors}{environment}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and {ownership})",
         class.replace('/', "."),
         bound.vendor,
         short(&bound.sha256),
@@ -285,7 +298,8 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         let log = dir.join(format!("{binary}.init.log"));
         let line = jvm.run(&binary, Some(&log))?;
         let observed = parse(&binary, &line)?;
-        if runtime.empty_environment && !observed.on.empty_environment
+        if runtime.preinitialize_together != observed.joint_fields.is_some()
+            || runtime.empty_environment && !observed.on.empty_environment
             || runtime.processors.is_some_and(|n| observed.on.fixed_processors != Some(n.get())) {
             return Err(Error::new(format!("--observed-initializer {binary}: the observing JVM did not confirm its requested process settings")));
         }
@@ -304,6 +318,7 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
             if tool_sha256(&tool, &other.name)?.as_deref() != Some(other.sha256.as_str()) {
                 return Err(Error::new(format!("--observed-initializer {binary}: its initialization initialized {name}, whose class file the JVM read is not the one the tool reads of it on this class path")));
             }
+            if observed.joint_fields.is_some() { continue; }
             if !alone.contains_key(&other.name) {
                 let line = jvm.run(&name, None)?;
                 alone.insert(other.name.clone(), state(&name, &line, &observed.on)?);
@@ -352,6 +367,7 @@ impl Jvm {
         command.arg("-cp").arg(&self.class_path).arg(CLASS).arg(binary);
         if let Some(log) = log {
             command.arg(log);
+            if self.runtime.preinitialize_together { command.arg("together"); }
         }
         let mut child = command
             .current_dir(&self.dir)
@@ -418,7 +434,8 @@ fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::Class
         for (i, part) in chain.iter().enumerate() {
             let mismatch = || Error::new(format!("--observed-initializer {binary}: immutable value {} does not match its selected application class bytes or complete field layout", part.name));
             if part.name == ENUM {
-                if i != 1 || chain.len() != 2 || chain[0].name != binary.replace('.', "/")
+                let owner = &chain[0].name;
+                if i != 1 || chain.len() != 2 || (*owner != binary.replace('.', "/") && !observed.joint_fields.as_ref().is_some_and(|m| m.contains_key(owner)))
                     || !tool.application(&chain[0].name)?.is_some_and(|cf| cf.is_enum()) || !bind_enum_base(observed, part, tool)? {
                     return Err(mismatch());
                 }
@@ -638,6 +655,16 @@ pub(crate) fn observe_previous_on(classes: &[String], previous: &crate::relocate
             return Err(Error::new(format!("--observed-initializer {binary}: the check holds no copy of the previous version's class")));
         }
         let held = format!("{}/{class}", previous.prefix);
+        if let Some(fields) = observed.joint_fields.take() {
+            let mut relocated = BTreeMap::new();
+            for (name, state) in fields {
+                let Found::Class(copy) = previous.find(&name) else {
+                    return Err(Error::new(format!("--observed-initializer {binary}: the check holds no copy of the jointly initialized previous class {name}")));
+                };
+                relocated.insert(copy, state);
+            }
+            observed.joint_fields = Some(relocated);
+        }
         for object in &mut observed.objects {
             if let Object::Value(chain) = object {
                 for part in chain.iter_mut().filter(|p| p.name != ENUM) {
@@ -730,15 +757,32 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
             _ => return Err(bad("an object")),
         });
     }
-    let mut fields = BTreeMap::new();
-    for f in json.get("fields").and_then(|f| f.as_array()).ok_or_else(|| bad("fields"))? {
-        let name = f.get("name").and_then(|n| n.as_str()).ok_or_else(|| bad("a field"))?;
-        fields.insert(name.to_string(), slot(f.get("value").ok_or_else(|| bad("a field"))?)?);
-    }
+    let fields_of = |state: &serde_json::Value| -> Result<BTreeMap<String, Slot>, Error> {
+        let mut fields = BTreeMap::new();
+        for f in state.get("fields").and_then(|f| f.as_array()).ok_or_else(|| bad("fields"))? {
+            let name = f.get("name").and_then(|n| n.as_str()).ok_or_else(|| bad("a field"))?;
+            let value = slot(f.get("value").ok_or_else(|| bad("a field"))?)?;
+            if fields.insert(name.to_string(), value).is_some() { return Err(bad("a repeated static field")); }
+        }
+        Ok(fields)
+    };
+    let fields = fields_of(&json)?;
     let on = json.get("on").ok_or_else(|| Error::new(format!("--observed-initializer {binary}: the observation does not say what it was observed on (the class file, the class path, the locale, the properties it read, the classes it initialized), and an observation that does not is not taken")))?;
     let text = |v: &serde_json::Value, key: &str| -> Result<String, Error> { v.get(key).and_then(|t| t.as_str()).map(String::from).ok_or_else(|| bad(key)) };
     let list = |key: &str| -> Result<&Vec<serde_json::Value>, Error> { on.get(key).and_then(|l| l.as_array()).ok_or_else(|| bad(key)) };
     let locale = on.get("locale").ok_or_else(|| bad("the locale"))?;
+    let mut state = serde_json::json!({"fields": json.get("fields"), "objects": json.get("objects")});
+    let joint_fields = if on.get("preinitializeTogether").map(|v| v.as_bool().ok_or_else(|| bad("preinitializeTogether"))).transpose()?.unwrap_or(false) {
+        let mut members = BTreeMap::new();
+        for member in list("initialized")? {
+            let name = text(member, "name")?;
+            if member.get("objects").is_some() || name == binary.replace('.', "/") || members.insert(name, fields_of(member)?).is_some() {
+                return Err(bad("the jointly initialized classes or their shared object table"));
+            }
+        }
+        state["jointlyInitialized"] = on["initialized"].clone();
+        Some(members)
+    } else { None };
     let on = On {
         sha256: text(on, "sha256")?,
         from: on.get("from").and_then(|f| f.as_str()).map(String::from),
@@ -764,13 +808,13 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
             .map(|i| Ok(Initialized { name: text(i, "name")?, sha256: text(i, "sha256")?, state: serde_json::json!({ "fields": i.get("fields"), "objects": i.get("objects") }) }))
             .collect::<Result<_, Error>>()?,
     };
-    let mut state = serde_json::json!({"fields": json.get("fields"), "objects": json.get("objects")});
     if let Some(n) = on.fixed_processors { state["fixedProcessors"] = n.into(); }
     if on.empty_environment { state["emptyEnvironment"] = true.into(); }
     let state_sha256 = crate::digest::sha256_hex(state.to_string().as_bytes());
-    let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), state_sha256, fields, objects, previous: None, on };
+    let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), state_sha256, fields, objects, joint_fields, previous: None, on };
     let within = |s: &Slot| !matches!(s, Slot::Object(i) if *i >= observed.objects.len());
-    let all = observed.fields.values().chain(observed.objects.iter().flat_map(|o| match o {
+    let joint_slots = observed.joint_fields.iter().flat_map(|m| m.values()).flat_map(|fields| fields.values());
+    let all = observed.fields.values().chain(joint_slots).chain(observed.objects.iter().flat_map(|o| match o {
         Object::Map(entries) => entries.iter().flat_map(|(k, v)| [k, v]).collect::<Vec<_>>(),
         Object::Array { cells, .. } => cells.iter().collect(),
         Object::Value(chain) => chain.iter().flat_map(|c| c.fields.values()).collect(),
@@ -842,6 +886,17 @@ mod tests {
         let empty = parse("p.C", &line.replace("\"zone\":", "\"emptyEnvironment\":true,\"zone\":")).unwrap();
         assert_ne!(empty.state_sha256, o.state_sha256);
         assert!(state("p.C", r#"{"fields":[],"objects":[]}"#, &empty.on).is_err());
+        let mut joint: serde_json::Value = serde_json::from_str(&line).unwrap();
+        joint["on"]["preinitializeTogether"] = true.into();
+        let captured = |j: &serde_json::Value| parse("p.C", &j.to_string());
+        assert!(captured(&joint).is_err(), "member-local object numbers cannot enter the shared table");
+        joint["on"]["initialized"][0].as_object_mut().unwrap().remove("objects");
+        let first = captured(&joint).unwrap();
+        assert_ne!(first.state_sha256, o.state_sha256);
+        joint["on"]["initialized"][0]["fields"][0]["value"] = serde_json::json!({"o": 2});
+        assert_ne!(first.state_sha256, captured(&joint).unwrap().state_sha256);
+        joint["on"]["initialized"][0]["fields"][0]["value"] = serde_json::json!({"o": 99});
+        assert!(captured(&joint).is_err());
         for invalid in ["0", "-1", "\"3\"", "2147483648"] {
             assert!(parse("p.C", &with_count(invalid)).is_err());
         }
