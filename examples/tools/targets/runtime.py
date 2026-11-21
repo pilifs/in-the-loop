@@ -345,8 +345,10 @@ def _lock_upstream(plan, revision, entry, folder):
         raise Refused.blocked(b) from None
     source = {
         "route": "upstream-build", "repository": recipe["repository"], "revision": revision,
-        "provenance": "the exact commit, fetched from github.com into an isolated checkout and built there by its "
-                      "recorded recipe with its own build tool; the original sources stay untouched",
+        "provenance": ("the exact commit, fetched from " + ("the named local Git repository" if
+                       runtime_upstream.LOCAL_GIT.fullmatch(recipe["repository"]) else "github.com") +
+                       " into an isolated checkout and built there by its recorded recipe with its own build tool; "
+                       "the original sources stay untouched"),
         "history": {"commit": recipe["commit"], **({"parent": recipe["parent"]} if recipe["parent"] else {})},
         "upstream": {k: recipe[k] for k in ("tool", "argv", "jdk")},
         **_controls_source(folder, entry),
@@ -366,9 +368,8 @@ def _lock_slice(plan, revision, entry, folder):
     the slice's recipe (the files compiled, the JDK and the javac flags, checked as sidecar.py checks them) and the
     JARs it is compiled against, each by fixed coordinates, an allowed URL and a recorded sha256. Nothing is fetched."""
     repository, commit, parent = entry.get("repository"), entry.get("commit"), entry.get("parent")
-    if not isinstance(repository, str) or not runtime_upstream.REPOSITORY.match(repository.removesuffix(".git")):
-        raise Refused("lock", f"revision {revision}: {repository!r} is not an https repository on github.com, the one "
-                              f"host commits are fetched from")
+    if not runtime_upstream.repository_allowed(repository):
+        raise Refused("lock", f"revision {revision}: {repository!r} is not an https repository on github.com or a named local Git source")
     for what, sha in (("commit", commit), ("recorded parent", parent)):
         if (what == "commit" or sha is not None) and (not isinstance(sha, str) or not FULL_SHA.match(sha)):
             raise Refused("lock", f"revision {revision}: its {what} {sha!r} is not a full commit")
@@ -397,9 +398,10 @@ def _lock_slice(plan, revision, entry, folder):
     matches = _slice_matches(revision, recipe.get("matches"))
     source = {
         "route": "source-slice", "repository": repository, "revision": revision,
-        "provenance": "an extracted source slice: the named files of the exact commit, fetched from github.com, compiled "
-                      "alone by the recorded JDK and flags against the recorded JARs; never the commit's own build, "
-                      "and a narrower scope than it",
+        "provenance": ("an extracted source slice: the named files of the exact commit, fetched from " +
+                       ("the named local Git repository" if runtime_upstream.LOCAL_GIT.fullmatch(repository) else "github.com") +
+                       ", compiled alone by the recorded JDK and flags against the recorded JARs; never the commit's "
+                       "own build, and a narrower scope than it"),
         "history": {"commit": commit, **({"parent": parent} if parent else {})},
         "slice": {"files": list(files), "jdk": jdk, "flags": list(flags), **({"matches": matches} if matches else {}),
                   **({"companionClasses": recipe["companionClasses"]} if recipe.get("companionClasses") else {}),
@@ -547,9 +549,9 @@ def _lock_mutant(plan, revision, entry, folder):
             raise Refused("lock", f"{what}'s patch modifies {', '.join(other)}: on the published-artifact route only "
                                   f"Java sources are recompiled into a copy of the base JAR, so a resource or build "
                                   f"change can't be made; the upstream-build route can")
-        if not runtime_upstream.REPOSITORY.match(str(entry.get("repository", "")).removesuffix(".git")):
+        if not runtime_upstream.repository_allowed(entry.get("repository")):
             raise Refused("lock", f"{what}: its sources are checked out from the repository, and "
-                                  f"{entry.get('repository')!r} is not an https repository on github.com")
+                                  f"{entry.get('repository')!r} is not an https repository on github.com or a named local Git source")
     if route == "source-slice":
         compiled = (base.get("slice") or {}).get("files") or []
         other = [f for f in files if f not in compiled]
@@ -963,7 +965,7 @@ def _published_mutant(plan, source, folder, workdir, build, toolchain, acquired)
     copy of it (mutant/<the base JAR's name>). The base JAR stays an artifact (role `base`), off the classpath. That
     the commit's files are the JAR's sources is the sidecar's linkage, recorded and not checked here."""
     m = source["mutant"]
-    if not plan.network:
+    if not plan.network and not runtime_upstream.LOCAL_GIT.fullmatch(source["repository"]):
         raise Refused("acquire", "a published-route mutant's sources are checked out from github.com, and the task's plan "
                                  "allows no acquisition (network: false)", needs="acquisition",
                       next="plan the task with acquisition (TaskPlan.network)")
@@ -1164,7 +1166,7 @@ def _prepare_slice(plan, revision, locked, workdir):
     build, toolchain = _builder(source, workdir)
     acquired, log, cache = [], [], runtime_maven.Cache()
     try:
-        if not plan.network:
+        if not plan.network and not runtime_upstream.LOCAL_GIT.fullmatch(source["repository"]):
             raise Refused("acquire", "a source slice is checked out from github.com, and the task's plan allows no "
                                      "acquisition (network: false)", needs="acquisition",
                           next="plan the task with acquisition (TaskPlan.network)")

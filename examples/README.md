@@ -745,6 +745,16 @@ whether it is static, the receiver as a record of its components, and the argume
 name the expression that computed them, and a record it is called on is built from those values. `foundInputs` are the
 inputs before shrinking. Counterexamples recorded before 2026-11-05 have no `witness`.
 
+### Local source pairs
+
+Set `TARGETS_LOCAL_GIT_ROOT` to an absolute directory and place the source repository under a name such as `review`. Use `local-git:review` for `history.repository` and the two exact Git commit IDs for the revisions. The normal plan, preparation and replay commands accept this identity. A source slice can run offline when all pinned dependency JARs are in the target cache.
+
+For two directories of regular source files, import their bytes and executable modes into a fresh name. The command prints a history entry. Its commits identify the supplied trees, including local edits, and the second has the first as its local parent. Existing Git metadata is omitted. GitHub acquisition continues to use an HTTPS GitHub repository and full commit IDs.
+
+```sh
+python3 examples/tools/targets/local_pair.py before/ after/ "$TARGETS_LOCAL_GIT_ROOT" review
+```
+
 ## Add an example
 
 Take the next free number; constructed and real-world examples share the sequence. Numbers 280–329 are reserved for

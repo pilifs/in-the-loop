@@ -30,6 +30,33 @@ from targets import test_runtime as base  # noqa: E402  (its helpers; its tests 
 sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
 from cost_tier import cost  # noqa: E402
 
+
+class LocalPairTest(unittest.TestCase):
+    def test_named_pair_checks_out_exact_bytes_without_a_remote(self):
+        from targets import local_pair
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            old, new, store = (root / n for n in ("old", "new", "store"))
+            for directory, data in ((old, b"before\r\n"), (new, b"after\0")):
+                directory.mkdir()
+                (directory / "caller.dat").write_bytes(data)
+            history = local_pair.import_pair(old, new, store, "review")
+            with mock.patch.dict(os.environ, {"TARGETS_LOCAL_GIT_ROOT": str(store)}):
+                home = root / "home"
+                home.mkdir()
+                found = {}
+                recipe = {**history["revisions"]["new"], "repository": history["repository"]}
+                runtime_upstream.checkout(runtime_upstream.Steps(root, []), recipe, root / "checkout", home, found)
+                self.assertEqual((root / "checkout/caller.dat").read_bytes(), b"after\0")
+                self.assertEqual(found["parentChecked"], history["revisions"]["old"]["commit"])
+                self.assertEqual(found["fetchedFrom"], "local-git:review")
+                self.assertFalse(runtime_upstream.repository_allowed("local-git:../elsewhere"))
+                (store / "escape").symlink_to(root)
+                with self.assertRaises(runtime_maven.Blocked):
+                    runtime_upstream.local_repository("local-git:escape")
+            with self.assertRaisesRegex(ValueError, "already exists"):
+                local_pair.import_pair(old, new, store, "review")
+
 GIT_ENV = {"PATH": "/usr/bin:/bin", "HOME": "/nonexistent", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
            "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.invalid", "GIT_COMMITTER_NAME": "t",
            "GIT_COMMITTER_EMAIL": "t@example.invalid", "GIT_AUTHOR_DATE": "2026-01-01T00:00:00Z",

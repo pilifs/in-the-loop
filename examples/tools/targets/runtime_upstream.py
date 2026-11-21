@@ -48,6 +48,7 @@ from targets import runtime_jdk, runtime_maven
 from targets.runtime_maven import Blocked
 
 REPOSITORY = re.compile(r"^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+LOCAL_GIT = re.compile(r"local-git:([A-Za-z0-9][A-Za-z0-9_-]{0,79})")
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 TOOLS = {"maven": "mvn", "maven-wrapper": "./mvnw", "gradle": "gradle", "gradle-wrapper": "./gradlew"}
 # Options preparation sets itself: a recipe that sets them would choose its own repositories or local repository.
@@ -68,6 +69,25 @@ WRAPPER_DIST = re.compile(r"^https://repo\.maven\.apache\.org/maven2/org/apache/
 REMOTE = None  # tests only: a callable from a repository URL to a local repository to fetch from instead
 
 
+def repository_allowed(name):
+    return isinstance(name, str) and bool(LOCAL_GIT.fullmatch(name) or REPOSITORY.fullmatch(name.removesuffix(".git")))
+
+
+def local_repository(name):
+    """Resolve an operator-supplied local repository name within the explicitly configured store."""
+    match = LOCAL_GIT.fullmatch(name)
+    if not match:
+        return None
+    root = os.environ.get("TARGETS_LOCAL_GIT_ROOT")
+    if root and Path(root).is_absolute():
+        store = Path(root).resolve()
+        source = (store / match[1]).resolve()
+        if source.is_relative_to(store) and source.is_dir():
+            return source
+    raise Blocked("acquire", f"local Git source {name} is unavailable under TARGETS_LOCAL_GIT_ROOT",
+                  needs="the pinned local Git objects", next="supply the absolute store containing the named repository")
+
+
 def check_recipe(revision, entry):
     """The upstream-build entry's repository, commit, optional parent and build (tool, argv, jdk), checked offline:
     an https repository on github.com, full commits, a known tool whose argv starts with its own command, a JDK by
@@ -77,8 +97,8 @@ def check_recipe(revision, entry):
         raise Blocked("lock", f"revision {revision}: {why}", needs=needs, next=next)
 
     repository = entry.get("repository")
-    if not isinstance(repository, str) or not REPOSITORY.match(repository.removesuffix(".git")):
-        refuse(f"{repository!r} is not an https repository on github.com, the one host commits are fetched from")
+    if not repository_allowed(repository):
+        refuse(f"{repository!r} is not an https repository on github.com or a named local Git source")
     commit, parent = entry.get("commit"), entry.get("parent")
     if not isinstance(commit, str) or not FULL_SHA.match(commit):
         refuse(f"{commit!r} is not a full commit: a branch, tag or short SHA can name other sources later")
@@ -152,20 +172,22 @@ def checkout(steps, recipe, dest, home, found):
     parentChecked), so a refusal still says what was checked out."""
     url, commit, parent = recipe["repository"], recipe["commit"], recipe["parent"]
     source, protocols = url, ["-c", "protocol.allow=never", "-c", "protocol.https.allow=always"]
-    if REMOTE is not None:  # tests: a local repository stands in for github.com
+    local = local_repository(url)
+    if local:
+        source, protocols = local.as_uri(), ["-c", "protocol.allow=never", "-c", "protocol.file.allow=always"]
+    elif REMOTE is not None:  # tests: a local repository stands in for github.com
         source, protocols = str(REMOTE(url)), ["-c", "protocol.allow=never", "-c", "protocol.file.allow=always"]
     git = [_git(), "-c", "core.hooksPath=/dev/null", "-c", "transfer.fsckObjects=true", "-c", "core.autocrlf=false",
            "-c", "advice.detachedHead=false", "-c", "init.defaultBranch=checkout", *protocols]
     env = {"PATH": "/usr/bin:/bin", "HOME": str(home), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
            "GIT_TERMINAL_PROMPT": "0", **BASE_ENV}
-    needs = "the exact commit, fetched from github.com"
+    needs = f"the exact commit in {url}"
     steps.must("git-init", git + ["init", "-q", dest], steps.workdir, env, GIT_TIMEOUT, "acquire", needs,
                "check that git works; nothing was fetched")
     depth = 2 if parent else 1
     steps.must("git-fetch", git + ["-C", dest, "fetch", "--no-tags", "--no-recurse-submodules", f"--depth={depth}",
                                    source, commit], steps.workdir, env, GIT_TIMEOUT, "acquire", needs,
-               f"check that {commit} is in {url} (fetched by full commit, as github.com allows) and that the network "
-               f"is up: a network failure is infrastructure, not a finding")
+               f"check availability of {commit} in {url} and read logs/git-fetch.log")
     steps.must("git-checkout", git + ["-C", dest, "checkout", "-q", "--detach", commit], steps.workdir, env,
                GIT_TIMEOUT, "acquire", needs, "read logs/git-checkout.log")
 
