@@ -14,7 +14,9 @@ from accept import descriptor_parameters
 RETURNS = {"I": ("int", "0", "Long.toString(result)"), "J": ("long", "0", "Long.toString(result)"),
            "Z": ("boolean", "false", "Boolean.toString(result)"),
            "[I": ("int[]", "null", "java.util.Arrays.toString(result)"),
-           "[J": ("long[]", "null", "java.util.Arrays.toString(result)")}
+           "[J": ("long[]", "null", "java.util.Arrays.toString(result)"),
+           "Ljava/lang/String;": ("java.lang.String", "null",
+                                 'result == null ? "null" : java.util.Arrays.toString(result.chars().toArray())')}
 
 
 def supported(entry, claim):
@@ -22,7 +24,7 @@ def supported(entry, claim):
     if not descriptor or descriptor.split(")")[-1] not in RETURNS or claim.get("throws"):
         return False
     params = descriptor_parameters(descriptor)
-    return params is not None and all(t in ("boolean", "int", "long", "int[]", "long[]") for t in params)
+    return params is not None and all(t in ("boolean", "int", "long", "int[]", "long[]", "java.lang.String") for t in params)
 
 
 def snapshot_assertion(assertion, inputs, names):
@@ -78,19 +80,25 @@ def quantified(expression):
     return expression
 
 
-def source(entry, claim, inputs, names):
+def source(entry, claim, inputs, names, *, argument_expression=None, helper=""):
     """Render a replay of the selected public static entry. Inputs have already been type checked."""
     owner, method, descriptor = runtime_jar.parse_target(entry)
     statements = []
     for arg in inputs:
         value = arg["value"]
-        if value is None:
+        if argument_expression is not None and len(inputs) == 1:
+            literal = argument_expression
+        elif value is None:
             literal = "null"
         elif isinstance(value, dict):
             literal = names[value["same"]]
         elif isinstance(value, list):
             suffix = "L" if arg["type"] == "long[]" else ""
             literal = "new " + arg["type"] + "{" + ",".join(str(n) + suffix for n in value) + "}"
+        elif arg["type"] == "java.lang.String":
+            data = value.encode("utf-16-be", "surrogatepass")
+            units = [str(int.from_bytes(data[i:i+2], "big")) for i in range(0, len(data), 2)]
+            literal = "new String(new char[]{" + ",".join(units) + "})"
         elif type(value) is bool:
             literal = str(value).lower()
         elif arg["type"] == "long":
@@ -132,7 +140,7 @@ def source(entry, claim, inputs, names):
         else:
             raise ValueError(f"replay cannot observe {o}")
         statements.append(f"System.out.println({expr});")
-    return "class CandidateReplay { public static void main(String[] args) {\n" + "\n".join(statements) + "\n} }\n"
+    return "class CandidateReplay { public static void main(String[] args) {\n" + "\n".join(statements) + "\n} " + helper + "}\n"
 
 
 def check(plan, prepared, inputs, work, entry=None):

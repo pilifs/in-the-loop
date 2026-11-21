@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-044031-original-ci-group-5-run-unmodified-maven",
+  "title": "Original CI group 5 run unmodified Maven upgrade revisions",
+  "description": "Run the ordinary Maven verify lifecycle on both original revisions in clean isolated checkouts. Use the owning reactor module and its prerequisites, preserve historical CI configuration digests, actual fresh JUnit test outcomes, setup failures and timings. A passing lifecycle without tests receives its own disposition. Cases: compsuite-i-36, compsuite-i-103, compsuite-i-37, compsuite-i-80.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation"
+  ],
+  "links": {},
+  "expected": "Both revisions produce honest CI availability, test counts and fresh named outcomes where present. A wrapper exit alone gives no case result.",
+  "submitted": {
+    "at": "2026-11-21T04:40:31+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "bwrap",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "25m",
+    "memoryLimit": "6G",
+    "timeout": "150m"
+  },
+  "steps": [
+    {
+      "name": "Run original Maven lifecycle",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/original-ci/05 --case compsuite-i-36 --case compsuite-i-103 --case compsuite-i-37 --case compsuite-i-80",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/original-ci/05"
+  ]
+}

@@ -39,6 +39,9 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
                     or inputs[earlier]["type"] != expected["type"] or inputs[earlier]["value"] is None
                     or not any(name in group and inputs[earlier]["name"] in group for group in aliases)):
                 return f"{name} has an alias outside its planned domain"
+        elif expected["type"] == "java.lang.String":
+            if not isinstance(data, str) or len(data.encode("utf-16-be", "surrogatepass")) // 2 > bound:
+                return f"{name} is outside the planned UTF-16 string bound {bound}"
         elif expected["type"] == "boolean":
             if type(data) is not bool:
                 return f"{name} is outside the planned boolean domain"
