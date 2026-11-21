@@ -61,6 +61,8 @@ class UpgradeReviewTest(unittest.TestCase):
             scope["cases"] = [{"args": ["run"], "expected": {"return": "7"}}]
             spec.write_text(json.dumps(scope))
             probe.write_text("public class UpgradeProbe { public static String observe(String[] x) { "
+                             "System.out.println(\"UPGRADE-OBSERVATION return invalid!\"); "
+                             "System.err.println(\"UPGRADE-DETAIL invalid!\"); "
                              "return Integer.toString(app.Real.wrapper()); } }")
             result = upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
             self.assertEqual((result["status"], result["differences"]), ("changed", [0]))

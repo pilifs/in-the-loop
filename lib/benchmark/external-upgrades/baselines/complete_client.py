@@ -61,7 +61,7 @@ def side(case, rev, repo, args, socketdir):
         older=case["origin"].startswith("CompSuite") or case["id"] in ("ea-async-27","whatjdk-12","incremental-analysis-28","reflector-35")
         jdk=args.jdk8 if older else args.jdk21;maven=args.maven8 if older else args.maven
         argv=[*reactor,"-Dmaven.test.skip=true","-DincludeScope=runtime","-Dmdep.outputFile=target/upgrade-runtime.cp",
-              "package","org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"]
+              args.phase,"org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"]
         original.update(subjectJdk=jdk.name,jdkReleaseSha256=digest(jdk/"release"),goals=argv)
         log=area/"package.log"
         releases = maven_mirror.declared_releases(project, case.get("repositoryPoms", []))
@@ -114,6 +114,8 @@ def main():
     ap.add_argument("--maven",type=Path,default=home/".sdkman/candidates/maven/current")
     ap.add_argument("--maven8",type=Path,default=home/".cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3")
     ap.add_argument("--seconds",type=int,default=420)
+    ap.add_argument("--phase", choices=("package", "compile"), default="package",
+                    help="compile retains original classes and processed resources when packaging tooling is unavailable")
     args=ap.parse_args()
     cases={c["id"]:c for c in read(HERE/"corpus.json")["cases"]};repos=read(args.repositories)
     args.output.mkdir(parents=True,exist_ok=True)

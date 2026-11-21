@@ -10,17 +10,20 @@ import com.sun.jdi.event.*;
 import com.sun.jdi.request.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
 
 /** Observe an actual entry in the child JVM launched here. The class files on its classpath are untouched. */
 public final class UpgradeTrace {
-    private static Thread forward(InputStream input) {
+    private static Thread forward(InputStream input, OutputStream output) {
         Thread thread = new Thread(() -> {
             try {
                 byte[] buffer = new byte[8192];
                 int count;
-                while ((count = input.read(buffer)) != -1) System.out.write(buffer, 0, count);
+                while ((count = input.read(buffer)) != -1) output.write(buffer, 0, count);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -65,6 +68,7 @@ public final class UpgradeTrace {
         launch.get("home").setValue(args[1]);
         launch.get("options").setValue("-Xmx384m -Duser.timezone=UTC -Duser.language=en -Duser.country=US "
                 + quote("-Djava.io.tmpdir=" + args[2]) + " " + quote("-Duser.home=" + args[2])
+                + " " + quote("-Dupgrade.observation.file=" + Paths.get(args[2], "observation.txt"))
                 + " -verbose:class -cp " + quote(args[3]));
         StringBuilder main = new StringBuilder("UpgradeObservation");
         for (String argument : Arrays.copyOfRange(args, 5, args.length)) main.append(' ').append(quote(argument));
@@ -72,7 +76,8 @@ public final class UpgradeTrace {
         launch.get("suspend").setValue("true");
         VirtualMachine vm = connector.launch(launch);
         Process child = vm.process();
-        Thread stdout = forward(child.getInputStream()), stderr = forward(child.getErrorStream());
+        OutputStream diagnostics = Files.newOutputStream(Paths.get(args[2], "child.stderr"));
+        Thread stdout = forward(child.getInputStream(), System.out), stderr = forward(child.getErrorStream(), diagnostics);
         boolean hit = false, finished = false;
         try {
             ClassPrepareRequest prepare = vm.eventRequestManager().createClassPrepareRequest();
@@ -105,6 +110,7 @@ public final class UpgradeTrace {
             if (!finished && child.isAlive()) child.destroy();
             stdout.join();
             stderr.join();
+            diagnostics.close();
         }
         int status = child.waitFor();
         if (hit) System.err.println("UPGRADE-HIT " + entry);

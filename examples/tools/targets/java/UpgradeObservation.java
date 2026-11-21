@@ -1,5 +1,10 @@
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.io.BufferedWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -30,12 +35,19 @@ public final class UpgradeObservation {
         Method observe = Class.forName(args[0]).getMethod("observe", String[].class);
         String[] inputs = Arrays.copyOfRange(args, 1, args.length);
         for (int i = 0; i < inputs.length; i++) inputs[i] = decode(inputs[i]);
+        try (BufferedWriter output = Files.newBufferedWriter(Paths.get(System.getProperty("upgrade.observation.file")),
+                StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
+            observe(output, observe, inputs);
+        }
+    }
+
+    private static void observe(BufferedWriter output, Method observe, String[] inputs) throws Exception {
         try {
             String returned = (String) observe.invoke(null, (Object) inputs);
-            System.out.println("UPGRADE-OBSERVATION return " + encode(returned));
+            output.write("UPGRADE-OBSERVATION return " + encode(returned) + "\n");
         } catch (InvocationTargetException exception) {
             Throwable thrown = exception.getCause();
-            System.out.println("UPGRADE-OBSERVATION throw " + thrown.getClass().getName());
+            output.write("UPGRADE-OBSERVATION throw " + thrown.getClass().getName() + "\n");
             StringBuilder detail = new StringBuilder();
             Throwable cause = thrown;
             for (int depth=0; cause!=null && depth<4; depth++, cause=cause.getCause()) {
@@ -44,9 +56,9 @@ public final class UpgradeObservation {
                 if (cause.getStackTrace().length != 0)
                     detail.append(" at ").append(cause.getStackTrace()[0]);
             }
-            System.out.println("UPGRADE-DETAIL " + encode(detail.toString()));
+            output.write("UPGRADE-DETAIL " + encode(detail.toString()) + "\n");
             for (StackTraceElement frame : thrown.getStackTrace()) {
-                System.out.println("UPGRADE-FRAME " + frame.getClassName() + "#" + frame.getMethodName());
+                output.write("UPGRADE-FRAME " + frame.getClassName() + "#" + frame.getMethodName() + "\n");
             }
         }
     }

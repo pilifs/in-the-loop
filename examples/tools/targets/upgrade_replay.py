@@ -52,7 +52,7 @@ def check_input(path, entry, dependency):
             "preparation": doc.get("scope"), "compiledClasses": doc.get("compiledClasses"), "resources": doc.get("resources")}
 
 
-def parse_output(text, caller, original, dependency):
+def parse_output(text, caller, original, dependency, observation_text=None):
     loaded = {}
     for line in text.splitlines():
         if m := LOAD.match(line):
@@ -61,14 +61,15 @@ def parse_output(text, caller, original, dependency):
     if loaded.get(caller.split("#")[0]) != {original}:
         raise ValueError("the JVM did not load the declared caller from the selected original client JAR")
     operands = sorted(name for name, origins in loaded.items() if origins == {dependency})
-    messages = [line[len(MARK):] for line in text.splitlines() if line.startswith(MARK)]
+    records = (observation_text if observation_text is not None else text).splitlines()
+    messages = [line[len(MARK):] for line in records if line.startswith(MARK)]
     if len(messages) != 1:
         raise ValueError("the scenario did not produce exactly one return or exception")
     kind, _, value = messages[0].partition(" ")
     if kind == "return":
         observation = {"return": None if value == "-" else base64.b64decode(value,validate=True).decode("utf-16-be","surrogatepass")}
     elif kind == "throw":
-        if "UPGRADE-FRAME " + caller.split("(")[0] not in text.splitlines():
+        if "UPGRADE-FRAME " + caller.split("(")[0] not in records:
             raise ValueError("exception occurred outside the declared original caller")
         observation = {"throws": value}
     else:
@@ -197,8 +198,12 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                             raise
                     if child.returncode:
                         raise ValueError(f"{side} input {index}: JVM exit {child.returncode}: {stderr.decode(errors='replace')[-500:]}")
-                    child_output = stdout.decode(errors="replace")
-                    detail = next((line[len("UPGRADE-DETAIL "):] for line in child_output.splitlines()
+                    child_output = stdout.decode(errors="replace") + "\n" + (run_dir / "child.stderr").read_text(errors="replace")
+                    observation_file = run_dir / "observation.txt"
+                    if not observation_file.is_file():
+                        raise ValueError(f"{side} input {index}: the application stopped before producing its observation")
+                    observation_text = observation_file.read_text(encoding="utf-8")
+                    detail = next((line[len("UPGRADE-DETAIL "):] for line in observation_text.splitlines()
                                    if line.startswith("UPGRADE-DETAIL ")), "")
                     if detail:
                         detail = base64.b64decode(detail, validate=True).decode("utf-16-be", "surrogatepass")
@@ -206,7 +211,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if "UPGRADE-HIT " + caller not in stderr.decode(errors="replace").splitlines():
                         raise ValueError(f"{side} input {index}: the original caller method was never entered. {detail}")
                     trial_record["qualifiedMethodEntries"] += 1
-                    observation,classes=parse_output(child_output,caller,files[0],dependency)
+                    observation,classes=parse_output(child_output,caller,files[0],dependency,observation_text)
                     trials.append(observation)
                     operand_classes.update(classes)
                 if trials[0]!=trials[1]:

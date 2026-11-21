@@ -155,6 +155,7 @@ def serve(repository, socket_directory, byte_limit, releases=()):
             finally:
                 server.shutdown()
                 worker.join()
+                (socket_directory / "central.sock").unlink(missing_ok=True)
     finally:
         os.close(fd)
 
