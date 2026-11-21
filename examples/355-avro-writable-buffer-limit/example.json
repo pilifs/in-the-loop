@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "355",
+  "title": "Logical buffer limits through Avro's Hadoop converter",
+  "summary": "The original converter factory must preserve the physical capacity and expose exactly the BytesWritable logical prefix.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "buffer-bounds",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Avro",
+    "file": "lang/java/mapred/src/main/java/org/apache/avro/hadoop/io/AvroDatumConverterFactory.java",
+    "symbol": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The original converter factory must preserve the physical capacity and expose exactly the BytesWritable logical prefix."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/avro",
+    "url": "https://github.com/apache/avro/pull/3878"
+  },
+  "notes": [
+    "The frozen independent observation table has 21 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+  ]
+}

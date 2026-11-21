@@ -68,6 +68,66 @@ V2 replays a third relevant main historical change. Togglz obeyed both flag bool
 
 The two missing-class diagnoses distinguish removal of Spring ErrorCoded from the Lucene codec's newly required PointsFormat return type on a classpath lacking it both times. Exact repeated original JVM inputs, JAR hashes, debugger evidence and independent fresh class lookups support the scoped findings. Seven native and finite groups and the final original CI job passed. Verified 12 tool and JDK digests, 467 product files, ten workload inputs, all applied result hashes, all 32 caller bindings, both repeats, the machine scorecard, 32 regenerated reports and all local links. Both affected test groups passed, including 58 Rust binaries.
 
+### Record verification results for 6 job(s)
+
+change `torsqylrpknz` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+Outputs applied for 0 of the 6 job(s); 4 declared or produced none; 2 kept under outputs/, not applied (the job didn't pass). 20261121-062836-rebuild-original-java-upgrades-for-the-m: failed: 1 failed step(s) in 49.9s, peak 460.3 MiB (estimated 8m00s, 2.0 GiB); 5 output file(s) changed 20261121-062836-rebuild-original-java-upgrades-for-the-t: failed: 1 failed step(s) in 50.1s, peak 230.5 MiB (estimated 8m00s, 2.0 GiB); 5 output file(s) changed 20261121-062837-restore-complete-original-maven-modules: failed: 1 failed step(s) in 50.1s, peak 308.7 MiB (estimated 5m00s, 2.0 GiB) 20261121-062848-group-2-original-java-modules-for-caller: failed: 1 failed step(s) in 50.2s, peak 302.3 MiB (estimated 5m00s, 2.0 GiB) 20261121-062849-group-3-original-java-modules-for-caller: failed: 1 failed step(s) in 49.9s, peak 272.4 MiB (estimated 5m00s, 2.0 GiB) 20261121-062849-group-4-original-java-modules-for-caller: failed: 1 failed step(s) in 49.3s, peak 283.9 MiB (estimated 5m00s, 2.0 GiB) Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that a runner in the agent's workspace killed the watcher's runs of six jobs (VF-051)
+
+change `pvukkvwsxwzm` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+The external-upgrade-evaluation agent ran pipeline.py run in its own workspace while the watcher's runner had its six new Maven jobs running. The two checkouts' runners share systemd scope names, so the second stopped the first's scopes and all six results read SIGTERM after 50 s. Nothing locks across checkouts. Documentation only.
+
+### Record verification results for 1 job(s)
+
+change `npwptvqusrvz` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-063426-module-recovery-3-original-maven-classpa: passed: 1 passed step(s) in 51.3s, peak 998.1 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+change `wzzpqmlvssvr` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+Outputs applied for 3 of the 3 job(s). 20261121-063426-module-recovery-1-original-maven-classpa: passed: 1 passed step(s) in 1m21s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-063426-module-recovery-2-original-maven-classpa: passed: 1 passed step(s) in 1m21s, peak 1.4 GiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-063426-module-recovery-4-original-maven-classpa: passed: 1 passed step(s) in 1m22s, peak 900.5 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `zqvqnwqspqxl` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-064106-replay-group-01-with-exact-jvm-early-fai: passed: 2 passed step(s) in 46.9s, peak 745.4 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-064106-replay-group-02-with-exact-jvm-early-fai: passed: 1 passed step(s) in 38.7s, peak 146.2 MiB (estimated 5m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 6 job(s)
+
+change `luuqmvmnmrns` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+Outputs applied for 6 of the 6 job(s). 20261121-064106-replay-group-03-with-exact-jvm-early-fai: passed: 2 passed step(s) in 1m20s, peak 625.3 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-064106-replay-group-04-with-exact-jvm-early-fai: passed: 2 passed step(s) in 1m31s, peak 525.6 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-064107-replay-group-05-with-exact-jvm-early-fai: passed: 2 passed step(s) in 1m25s, peak 856.0 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-064107-replay-group-06-with-exact-jvm-early-fai: passed: 2 passed step(s) in 1m12s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-064107-restore-languagetool-derby-original-buil: passed: 2 passed step(s) in 1m40s, peak 2.0 GiB (estimated 5m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261121-064107-restore-languagetool-lucene-original-bui: passed: 2 passed step(s) in 1m26s, peak 1.3 GiB (estimated 5m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `mmummtrmnryq` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-065458-current-upgrade-group-06-native-and-fini: passed: 2 passed step(s) in 27.3s, peak 133.1 MiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 9 job(s)
+
+change `luzmkvmkovko` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+Outputs applied for 9 of the 9 job(s). 20261121-065458-current-upgrade-group-01-native-and-fini: passed: 4 passed step(s) in 48.9s, peak 560.6 MiB (estimated 6m00s, 2.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261121-065458-current-upgrade-group-02-native-and-fini: passed: 2 passed step(s) in 59.5s, peak 311.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-065458-current-upgrade-group-03-native-and-fini: passed: 2 passed step(s) in 1m05s, peak 131.4 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-065458-current-upgrade-group-04-native-and-fini: passed: 2 passed step(s) in 1m12s, peak 192.6 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-065458-current-upgrade-group-05-native-and-fini: passed: 2 passed step(s) in 59.5s, peak 133.9 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-065459-current-upgrade-group-07-native-and-fini: passed: 4 passed step(s) in 1m41s, peak 2.4 GiB (estimated 6m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-065459-restored-deltaspike-original-maven-ci-on: passed: 3 passed step(s) in 32.1s, peak 573.3 MiB (estimated 6m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-065459-restored-derby-original-maven-ci-on-both: passed: 2 passed step(s) in 3m55s, peak 2.3 GiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-065459-restored-lucene-original-maven-ci-on-bot: passed: 2 passed step(s) in 54.9s, peak 1.5 GiB (estimated 6m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `lpmrululwqmo` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-070717-final-v2-group-06-original-caller-and-mi: passed: 2 passed step(s) in 25.3s, peak 132.1 MiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 7 job(s)
+
+change `mlowsnvomywl` · [log `5bef768930b9`](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz)
+
+Outputs applied for 7 of the 7 job(s). 20261121-070716-final-v2-group-01-original-caller-and-mi: passed: 4 passed step(s) in 1m12s, peak 800.6 MiB (estimated 6m00s, 2.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261121-070716-final-v2-group-02-original-caller-and-mi: passed: 2 passed step(s) in 58.1s, peak 311.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-03-original-caller-and-mi: passed: 2 passed step(s) in 1m03s, peak 132.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-04-original-caller-and-mi: passed: 2 passed step(s) in 1m10s, peak 196.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-togglz-original-ci-and-named-featu: passed: 3 passed step(s) in 1m12s, peak 1.7 GiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-05-original-caller-and-mi: passed: 2 passed step(s) in 57.7s, peak 137.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-07-original-caller-and-mi: passed: 4 passed step(s) in 1m45s, peak 2.5 GiB (estimated 6m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fcc5-5fc1-7e53-87f8-6d5752212109/5bef768930b9187f63869cae0ebdbfa421df7c57dff91cb6d9a56b9a47ac0c26.jsonl.gz) has every step in between: reasoning, tool calls and their results.

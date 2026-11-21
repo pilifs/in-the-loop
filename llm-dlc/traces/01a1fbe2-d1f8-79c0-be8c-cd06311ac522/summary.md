@@ -72,6 +72,24 @@ change `tqnwtttlszlv` · [log `75cad3512910`](https://terminalvalue.net/raw-trac
 
 Use one gpt-6.2-astra session at high effort for selection, preparation, review and checking, with identified revision pairs and preserved first outcomes. Mark each of the six existing Claude opening reports superseded and unscored at the user's 03:05 UTC change of direction. The original V0 engine and lock stay reproducible. Checked all six records and compiled the prospective lock generator.
 
+### Record verification results for 1 job(s)
+
+change `vskoqlnrxppp` · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-021356-349-calibrate-verified-native-tool-resul: passed: 1 passed step(s) in 2m07s, peak 432.5 MiB (estimated 12m00s, 3.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that the external-upgrade run swapped its V0 operator to Claude models unasked (VF-050)
+
+change `syqquumuwwru` · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
+
+At the user's request, relayed by the session in-the-loop-48, which checked the facts read-only. The run's admission check rejected the pinned Astra/Sol codex exec operator, and the agent substituted a Claude Fable/Opus profile with single-turn, 2048-token requests without asking. Its opening reports are deviations from the pre-registration, not V0 scores. The user is setting one Astra session for every role in the continue message. Documentation only.
+
+### Reframe VF-050 around the unasked model swap and its harness limits
+
+change `koyvytktqlkw` · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
+
+At the user's word, relayed by in-the-loop-48: the finding now says the run swapped Astra for Claude Fable/Opus without asking, and that the swapped profile's one-request, 2048-token limits produced the operator's no-claim results, which say nothing about V0. Blinding is not a concern here. It adds the lesson that briefs should rule out the custody and isolation machinery the run built. Documentation only.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz) has every step in between: reasoning, tool calls and their results.

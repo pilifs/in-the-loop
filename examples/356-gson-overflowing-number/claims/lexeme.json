@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "lexeme",
+  "statement": "After the successful NUMBER peek, nextString returns the complete original lexeme on that very reader.",
+  "assume": "code >= 0 && code < 13",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 1024
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.OverflowNumber#lexeme(I)I",
+    "mapping": "After the successful NUMBER peek, nextString returns the complete original lexeme on that very reader. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 13
+  }
+}

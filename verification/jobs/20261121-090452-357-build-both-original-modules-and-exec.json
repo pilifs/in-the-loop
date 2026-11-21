@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-090452-357-build-both-original-modules-and-exec",
+  "title": "357 build both original modules and execute the landed gson regression",
+  "description": "Build both pinned revisions of https://github.com/google/gson PR 3137 on JDK 21. Record the original production class, ordered runtime closure, and fresh named Surefire reports. Transplant only the landed test sources to the parent.",
+  "kind": "real-world",
+  "capabilities": [
+    "organic-java-pr",
+    "original-upstream-test"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/organic-java/cases.json"
+    ]
+  },
+  "expected": "Original JARs captured on both revisions, the historical tests fail on the parent and pass on the fix.",
+  "submitted": {
+    "at": "2026-11-21T09:04:52+00:00",
+    "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+  },
+  "requires": [
+    "maven",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "8m",
+    "memoryLimit": "7G",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Build and run both original revisions",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 357 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output examples/357-gson-repeated-bom/records/upstream",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/357-gson-repeated-bom/records/upstream"
+  ]
+}

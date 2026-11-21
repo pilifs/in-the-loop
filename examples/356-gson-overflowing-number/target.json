@@ -1,0 +1,169 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "gson-overflowing-number",
+    "family": "gson",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/google/gson",
+    "revisions": {
+      "parent": {
+        "commit": "ed2397502708ebaba53643e5c3d60e0974d7045f"
+      },
+      "fix": {
+        "commit": "004e7a4949e08b430e3c8996998ee5a17ff9423a",
+        "parent": "ed2397502708ebaba53643e5c3d60e0974d7045f"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/organic/OverflowNumber.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "gson",
+        "-am",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;"
+    },
+    {
+      "id": "token-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+      "claim": "claims/token.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "token-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+      "claim": "claims/token.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "lexeme-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "claim": "claims/lexeme.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "lexeme-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "claim": "claims/lexeme.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "controls-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "claim": "claims/controls.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "controls-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "claim": "claims/controls.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/organic/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

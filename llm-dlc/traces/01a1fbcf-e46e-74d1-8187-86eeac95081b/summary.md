@@ -48,6 +48,12 @@ A distinct live Commons Text diagnostic reproduced the refusal after two request
 
 The fixed profile and launch digests were rechecked on a real scoped H2 intake, which stopped at the original GitHub-only source boundary with zero inference. The new Commons Text run starts fresh and has its own release, clock and report store within the same 4 CPU, 16 GiB, 250000 token and two-hour budgets.
 
+### Record verification results for 1 job(s)
+
+change `kmrtkksrmmyy` · [log `492977d37529`](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/492977d37529ae41a693f035d2cf23705bb453607abf0a61acfb934e6ae59330.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-015236-run-both-stock-aws-compcheck-settings-wi: passed: 1 passed step(s) in 1m01s, peak 3.8 GiB (estimated 8m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/492977d37529ae41a693f035d2cf23705bb453607abf0a61acfb934e6ae59330.jsonl.gz) has every step in between: reasoning, tool calls and their results.

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "controls",
+  "statement": "10 is a number with its original text. The 00 and 01 controls fail during peek.",
+  "assume": "code >= 10 && code < 13",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 1024
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.OverflowNumber#lexeme(I)I",
+    "mapping": "10 is a number with its original text. The 00 and 01 controls fail during peek. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 13
+  }
+}

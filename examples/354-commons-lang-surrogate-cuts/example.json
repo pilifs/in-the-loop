@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "354",
+  "title": "UTF-16 cuts through Commons Lang's public string operations",
+  "summary": "Truncation copies exactly the complete UTF-16 tokens inside the original window. Abbreviation also keeps surrogate pairs intact.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Lang",
+    "file": "src/main/java/org/apache/commons/lang3/StringUtils.java",
+    "symbol": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Truncation copies exactly the complete UTF-16 tokens inside the original window. Abbreviation also keeps surrogate pairs intact."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-lang",
+    "url": "https://github.com/apache/commons-lang/pull/1719"
+  },
+  "notes": [
+    "The frozen independent observation table has 1515 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+  ]
+}

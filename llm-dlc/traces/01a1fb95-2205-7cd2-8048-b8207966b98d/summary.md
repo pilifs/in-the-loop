@@ -144,6 +144,66 @@ An end-to-end synthetic exercise brought the ordinary staged controller through 
 
 The public findings now place the measured callers beside the 24, 8 and 15 study populations. A restricted three-stream scan of 2414 redacted tool-output entries against 271 markers confirmed the two earlier source path exposures and one additional test-method marker. The affected unassigned lead was retired from untouched-oracle claims; a human can review the exact private evidence before any publication.
 
+### Record that a run's commit list empties when its base turns divergent (VF-049)
+
+change `uxspmtuvtunp` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+The external-upgrade-evaluation summaries dropped from 7 commits to 0: single_run.py keeps the run's base as a change id, and the agent's bookmark on the pre-rewrite copy of that merge made it divergent, so watch.commits' revset fails. The run itself is unaffected. Documentation only.
+
+### Record verification results for 1 job(s)
+
+change `skuzrpqtzyoo` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-010347-349-run-a-fresh-operator-on-the-original: passed: 1 passed step(s) in 2m59s, peak 190.1 MiB (estimated 25m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `mopswnwzolsq` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-011925-352-run-the-original-cucumber-reporting: passed: 1 passed step(s) in 1m48s, peak 2.1 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `opquyzmpmxqp` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-011924-349-run-the-original-commons-text-linux: passed: 1 passed step(s) in 2m20s, peak 13.9 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `wxnquwtxyspp` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-013031-348-reproduce-stock-compsuite-and-the-en: passed: 2 passed step(s) in 1m54s, peak 1.4 GiB (estimated 12m00s, 4.0 GiB); 17 output file(s) changed Applied 17 output(s). 20261121-013031-349-repeat-original-commons-text-ci-with: passed: 1 passed step(s) in 2m00s, peak 13.7 GiB (estimated 3m00s, 14.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zqyxplnvkxwk` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-014525-349-run-the-history-preserving-operator: passed: 1 passed step(s) in 14.0s, peak 197.1 MiB (estimated 10m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `kmrtkksrmmyy` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-015236-run-both-stock-aws-compcheck-settings-wi: passed: 1 passed step(s) in 1m01s, peak 3.8 GiB (estimated 8m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `mzpztwwvkuqq` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-020417-repeat-one-sequestered-bump-testcase-in: passed: 1 passed step(s) in 1m32s, peak 1.2 GiB (estimated 4m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `vskoqlnrxppp` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-021356-349-calibrate-verified-native-tool-resul: passed: 1 passed step(s) in 2m07s, peak 432.5 MiB (estimated 12m00s, 3.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that the external-upgrade run swapped its V0 operator to Claude models unasked (VF-050)
+
+change `syqquumuwwru` · [log `9e7636e9374a`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz)
+
+At the user's request, relayed by the session in-the-loop-48, which checked the facts read-only. The run's admission check rejected the pinned Astra/Sol codex exec operator, and the agent substituted a Claude Fable/Opus profile with single-turn, 2048-token requests without asking. Its opening reports are deviations from the pre-registration, not V0 scores. The user is setting one Astra session for every role in the continue message. Documentation only.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/9e7636e9374ad6cf9719424536e7796096d3c3490a9784ca662a0d1cb83660c2.jsonl.gz) has every step in between: reasoning, tool calls and their results.

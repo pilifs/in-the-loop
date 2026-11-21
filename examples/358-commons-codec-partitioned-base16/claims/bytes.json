@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "bytes",
+  "statement": "For every four-character word and all eight contiguous partitions the sink receives the exact two decoded bytes.",
+  "assume": "code >= 0 && code < 2048",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 8192
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.HexWrites#bytes(I)I",
+    "mapping": "For every four-character word and all eight contiguous partitions the sink receives the exact two decoded bytes. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 2051
+  }
+}

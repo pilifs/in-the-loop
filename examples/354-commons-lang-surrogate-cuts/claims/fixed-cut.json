@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "fixed-cut",
+  "statement": "On a😀b every offset and width from zero to five retains exactly the complete tokens in the window.",
+  "assume": "code >= 0 && code < 36",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.SurrogateCuts#fixedCut(I)I",
+    "mapping": "On a😀b every offset and width from zero to five retains exactly the complete tokens in the window. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 1515
+  }
+}

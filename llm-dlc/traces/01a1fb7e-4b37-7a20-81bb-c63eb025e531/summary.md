@@ -58,6 +58,36 @@ Job 20261121-013031-348-reproduce-stock-compsuite-and-the-en runs the unaltered 
 
 Verified all named XML, compressed original logs, both first-report digests and source-built fixture class origins. The documented CompSuite runtime started and its unmodified info command found the expected test. All 41 affected test groups passed, as did all four scoring regressions. All example plans, oracle and repository integration checks passed. The Commons Text form still records the frozen importer failure to produce canonical artifact receipts.
 
+### Record verification results for 1 job(s)
+
+change `oorpsslqmmsp` · [log `b088678461ff`](https://terminalvalue.net/raw-traces/01a1fb7e-4b37-7a20-81bb-c63eb025e531/b088678461ffce76300da49503ba9a71f740f1b9e2426b5dfdd9e859946da9a8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-001750-351-run-standalone-jbmc-on-both-original: passed: 1 passed step(s) in 10m00s, peak 4.9 GiB (estimated 6m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that a run's commit list empties when its base turns divergent (VF-049)
+
+change `uxspmtuvtunp` · [log `b088678461ff`](https://terminalvalue.net/raw-traces/01a1fb7e-4b37-7a20-81bb-c63eb025e531/b088678461ffce76300da49503ba9a71f740f1b9e2426b5dfdd9e859946da9a8.jsonl.gz)
+
+The external-upgrade-evaluation summaries dropped from 7 commits to 0: single_run.py keeps the run's base as a change id, and the agent's bookmark on the pre-rewrite copy of that merge made it divergent, so watch.commits' revset fails. The run itself is unaffected. Documentation only.
+
+### Record verification results for 1 job(s)
+
+change `skuzrpqtzyoo` · [log `b088678461ff`](https://terminalvalue.net/raw-traces/01a1fb7e-4b37-7a20-81bb-c63eb025e531/b088678461ffce76300da49503ba9a71f740f1b9e2426b5dfdd9e859946da9a8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-010347-349-run-a-fresh-operator-on-the-original: passed: 1 passed step(s) in 2m59s, peak 190.1 MiB (estimated 25m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `mopswnwzolsq` · [log `b088678461ff`](https://terminalvalue.net/raw-traces/01a1fb7e-4b37-7a20-81bb-c63eb025e531/b088678461ffce76300da49503ba9a71f740f1b9e2426b5dfdd9e859946da9a8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-011925-352-run-the-original-cucumber-reporting: passed: 1 passed step(s) in 1m48s, peak 2.1 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `opquyzmpmxqp` · [log `b088678461ff`](https://terminalvalue.net/raw-traces/01a1fb7e-4b37-7a20-81bb-c63eb025e531/b088678461ffce76300da49503ba9a71f740f1b9e2426b5dfdd9e859946da9a8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-011924-349-run-the-original-commons-text-linux: passed: 1 passed step(s) in 2m20s, peak 13.9 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fb7e-4b37-7a20-81bb-c63eb025e531/b088678461ffce76300da49503ba9a71f740f1b9e2426b5dfdd9e859946da9a8.jsonl.gz) has every step in between: reasoning, tool calls and their results.

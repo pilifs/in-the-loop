@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "plain",
+  "statement": "The original StringReader delivers the same exact code units when read without a cap.",
+  "assume": "code >= 0 && code < 9",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 1024
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.BomReader#plain(I)I",
+    "mapping": "The original StringReader delivers the same exact code units when read without a cap. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 9
+  }
+}

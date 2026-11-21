@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "356",
+  "title": "An overflowing accumulator and its original JSON number text",
+  "summary": "On the same strict JsonReader, every one-digit extension of 2⁶⁴ is a number and retains all 21 decimal characters.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "deserialization",
+    "integer-overflow",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Gson",
+    "file": "gson/src/main/java/com/google/gson/stream/JsonReader.java",
+    "symbol": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "On the same strict JsonReader, every one-digit extension of 2⁶⁴ is a number and retains all 21 decimal characters."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/gson",
+    "url": "https://github.com/google/gson/pull/3034"
+  },
+  "notes": [
+    "The frozen independent observation table has 13 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+  ]
+}

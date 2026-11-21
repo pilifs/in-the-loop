@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "357",
+  "title": "A byte-order mark across short JsonReader reads",
+  "summary": "A lenient reader consumes exactly the initial mark for zero, one or two marks across three distinct short-read schedules.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "side-effecting-read",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Gson",
+    "file": "gson/src/main/java/com/google/gson/stream/JsonReader.java",
+    "symbol": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A lenient reader consumes exactly the initial mark for zero, one or two marks across three distinct short-read schedules."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/gson",
+    "url": "https://github.com/google/gson/pull/3137"
+  },
+  "notes": [
+    "The frozen independent observation table has 9 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+  ]
+}

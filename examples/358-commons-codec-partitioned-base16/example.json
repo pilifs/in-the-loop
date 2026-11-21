@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "358",
+  "title": "Half-byte retention across sliced base16 stream writes",
+  "summary": "A public decoding stream receives one backing byte array at its actual changing offsets. Closing it yields the mathematically decoded bytes.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "buffer-bounds",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Codec",
+    "file": "src/main/java/org/apache/commons/codec/binary/Base16.java",
+    "symbol": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A public decoding stream receives one backing byte array at its actual changing offsets. Closing it yields the mathematically decoded bytes."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-codec",
+    "url": "https://github.com/apache/commons-codec/pull/135"
+  },
+  "notes": [
+    "The frozen independent observation table has 2051 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+  ]
+}

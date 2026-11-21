@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "353",
+  "title": "Saturating counts through a live Guava multiset sum",
+  "summary": "Two independently populated backing multisets expose their capped mathematical sum through lookup, size and entry iteration.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "integer-overflow",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Guava",
+    "file": "guava/src/com/google/common/collect/Multisets.java",
+    "symbol": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Two independently populated backing multisets expose their capped mathematical sum through lookup, size and entry iteration."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/guava",
+    "url": "https://github.com/google/guava/pull/8509"
+  },
+  "notes": [
+    "The frozen independent observation table has 49 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "direct-limit",
+  "statement": "Under the narrower direct nested converter entry, capacity is retained and the logical limit rejects the first excluded byte.",
+  "assume": "code >= 0 && code < 21",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.WritableBuffer#directLimit(I)I",
+    "mapping": "Under the narrower direct nested converter entry, capacity is retained and the logical limit rejects the first excluded byte. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 21
+  }
+}
