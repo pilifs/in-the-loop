@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-21 04:29 UTC (5272 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -3541,6 +3541,12 @@ Outputs applied for 1 of the 1 job(s). 20261121-070717-final-v2-group-06-origina
 change `mlowsnvomywl` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
 
 Outputs applied for 7 of the 7 job(s). 20261121-070716-final-v2-group-01-original-caller-and-mi: passed: 4 passed step(s) in 1m12s, peak 800.6 MiB (estimated 6m00s, 2.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261121-070716-final-v2-group-02-original-caller-and-mi: passed: 2 passed step(s) in 58.1s, peak 311.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-03-original-caller-and-mi: passed: 2 passed step(s) in 1m03s, peak 132.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-04-original-caller-and-mi: passed: 2 passed step(s) in 1m10s, peak 196.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-togglz-original-ci-and-named-featu: passed: 3 passed step(s) in 1m12s, peak 1.7 GiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-05-original-caller-and-mi: passed: 2 passed step(s) in 57.7s, peak 137.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-07-original-caller-and-mi: passed: 4 passed step(s) in 1m45s, peak 2.5 GiB (estimated 6m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `mwmwxqnzkvwp` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-080529-v3-cause-group-06-original-java-upgrade: passed: 2 passed step(s) in 25.7s, peak 132.7 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-080529-v3-cause-group-07-original-java-upgrade: passed: 2 passed step(s) in 18.2s, peak 644.2 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ## Conversation
 
