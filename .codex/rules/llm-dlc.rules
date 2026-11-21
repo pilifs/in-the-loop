@@ -6,4 +6,9 @@ prefix_rule(pattern = ["python3", "llm-dlc/tools/sync.py", ["commit", "check", "
 prefix_rule(pattern = ["jj", ["status", "diff", "log", "show", "trace-commit"]], decision = "allow")
 prefix_rule(pattern = ["python3", "llm-dlc/tools/sync.py", "review", "accept"], decision = "forbidden")
 prefix_rule(pattern = ["python3", "llm-dlc/tools/sync.py", "allow", ["approve", "add", "vouch"]], decision = "forbidden")
+# Delegating redaction decisions to a run's watcher is a person's to switch on (sync.py delegate on CODE). The
+# watcher's own forms (delegate approve, withhold, mask) and `delegate status` stay open.
+prefix_rule(pattern = ["python3", "llm-dlc/tools/sync.py", "delegate", "on"], decision = "forbidden")
+# The private archive's tokens and the delegation key (~/.config/in-the-loop/) are read by the tools alone. A prefix
+# rule cannot name every command that might read a file, so that part is CLAUDE.md's rule here, not this file's.
 prefix_rule(pattern = ["python3", "llm-dlc/tools/single_run.py", "message"], decision = "forbidden")

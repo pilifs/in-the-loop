@@ -196,6 +196,21 @@ class Promote(Promotion):
         self.assertEqual((after["id"], after["gate"]["ran_here"], "last_failure" in after), (state["id"], True, False))
 
     @cost("tool")
+    def test_a_fault_of_the_tools_is_recorded_as_why_the_promotion_stopped_and_the_same_command_continues(self):
+        base = self.remote_ref("main")
+        self.traced("A slice", {"lib/b.txt": "two\n"})
+        head = self.checkpointed()
+        with mock.patch.object(promote, "scan_candidate", side_effect=RuntimeError("a made-up fault")):
+            with self.assertRaisesRegex(RuntimeError, "a made-up fault"):
+                self.run_promote("--rev", "@-")
+        state = self.state(base, head)
+        self.assertEqual(self.remote_ref("main"), base)
+        self.assertEqual(state["last_failure"]["reason"], "the command failed: RuntimeError: a made-up fault")
+        status, _, err = self.run_promote("--rev", head)
+        after = self.state(base, head)
+        self.assertEqual((status, self.remote_ref("main"), after["id"], "last_failure" in after), (0, state["candidate"], state["id"], False), err)
+
+    @cost("tool")
     def test_develop_moving_on_does_not_enlarge_the_frozen_set_and_takes_the_record_in_by_a_merge(self):
         base = self.remote_ref("main")
         self.traced("A slice", {"lib/b.txt": "two\n"})

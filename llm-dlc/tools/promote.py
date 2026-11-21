@@ -463,6 +463,10 @@ def inside(s, path: Path, skipped: str | None) -> int:
         print(f"not promoted: {e}\n{REMOTE}/{MAIN} is at {(where or 'nothing')[:12]}. The promotion {state['id']} is kept as it stands "
               f"({path}); the same command continues it", file=sys.stderr)
         return 1
+    except Exception as e:  # a fault of the tools, not a refusal: the record still says where it stopped and why
+        state["last_failure"] = {"at": utc(), "stage": state.get("stage"), "reason": f"the command failed: {type(e).__name__}: {e}"[:500]}
+        save(s, path, state)
+        raise
     print(f"promotion {state['id']} finished in {time.perf_counter() - started:.0f} s")
     return 0
 

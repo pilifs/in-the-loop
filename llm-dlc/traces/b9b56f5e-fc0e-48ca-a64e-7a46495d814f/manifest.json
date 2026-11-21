@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T19:38:49.779Z",
-  "duration_seconds": 9687,
+  "ended": "2026-11-21T19:45:01.232Z",
+  "duration_seconds": 10059,
   "stats": {
     "turns": 6,
-    "api_calls": 444,
-    "tool_calls": 516,
-    "tool_errors": 11,
+    "api_calls": 480,
+    "tool_calls": 552,
+    "tool_errors": 12,
     "compactions": 2,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 888,
-      "output_tokens": 666018,
-      "cache_read_input_tokens": 132778346,
-      "cache_creation_input_tokens": 1343399
+      "input_tokens": 960,
+      "output_tokens": 687429,
+      "cache_read_input_tokens": 144110115,
+      "cache_creation_input_tokens": 1387538
     }
   },
   "tools": {
-    "Bash": 423,
+    "Bash": 459,
     "Read": 44,
     "Edit": 32,
     "Write": 17
@@ -88,24 +88,24 @@
     {
       "index": 2,
       "started": "2026-11-21T19:12:09.670Z",
-      "ended": "2026-11-21T19:38:49.779Z",
+      "ended": "2026-11-21T19:45:01.232Z",
       "turns": 1,
-      "api_calls": 143,
+      "api_calls": 179,
       "usage": {
-        "input_tokens": 286,
-        "output_tokens": 113130,
-        "cache_read_input_tokens": 25450037,
-        "cache_creation_input_tokens": 278743
+        "input_tokens": 358,
+        "output_tokens": 134541,
+        "cache_read_input_tokens": 36781806,
+        "cache_creation_input_tokens": 322882
       },
-      "peak_context_tokens": 293648
+      "peak_context_tokens": 337787
     }
   ],
   "log": {
-    "sha256": "0e6af0cdfd7d56bb0a208b1f98c893bdb955a8081ac5927902743f9f964a196f",
-    "bytes": 11404820,
-    "lines": 3927,
-    "gzip_bytes": 1840518,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/0e6af0cdfd7d56bb0a208b1f98c893bdb955a8081ac5927902743f9f964a196f.jsonl.gz"
+    "sha256": "94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09",
+    "bytes": 11840133,
+    "lines": 4180,
+    "gzip_bytes": 1890055,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -212,6 +212,14 @@
       "summary": "Keep an example's per-case records as one pack a folder, read in place; hold the records to a budget in check",
       "body": "The records' rule of VF-053 (the user's decision 5: seal the records, show 359 restores, then slim them by rule). A native-selector run writes two files for each admitted selector; over examples 340 to 359 that was 16,376 of the 22,103 files their records held, one folder with 2,865 entries. examples/tools/targets/case_pack.py keeps such a folder as cases.tar.gz beside where it was: the same bytes under the same names, written so that the same files give the same pack. The validator (native_selectors.validate_result) reads a case from the folder or from the pack and compares its digest either way, so a plain checkout checks every case as before and nothing has to be fetched from the private archive, which a public reader cannot read. A selector run packs its own output at its end.\n\nApplied in one pass to examples 341, 345, 347, 354 and 359: 16,376 files became 45 packs (37.0 MB to 0.9 MB), the twenty examples' records went from 22,103 files to 5,772, and no folder has more than 1,000 entries. Shown: each of the five handoffs (workflow_handoff.py handoff NNN, and --revision fix for 354 and 359) is byte for byte what it was; the five sealed originals restored from the store with artifacts.py fetch equal the packed records file for file (case_pack.py verify --against, 16,376 members); with one packed case of 359 removed, and then with one byte of it changed, its record became ineligible (does not exist; different raw checker output) while the other 39 established results stayed, and matched again with the pack put back; validate_example.py passes for the five. Not cut: the bytes of the large per-execution files (execution.json, 125 MB in 319 files), which are few and read whole; what to keep of them is a question about the evidence, for the user.\n\nThe budget: sync.py check reports more than 50 loose per-case files in one cases/ folder as an error that names the command, and more than 2,000 files under one example's records/ or 1,000 entries in one folder as a warning (none of either now; 50 ms). It also warns at 100 commits on neither develop nor main. The checkpoint's scan now reads a gzip blob as what it opens to, every member and whatever follows the last, and refuses one that opens to more than 256 MiB: without that, a credential inside a pack would have left unseen (POLICY 3, so each kept verdict is worked out once more).\n\nAlso in this commit, from the brief's acceptance table and VF-053: a test that kills the collector (SIGKILL) with a result's folder wiped and again with the result written, and collects again, with the earlier result sealed before the wipe; the watcher's private analysis reads an occurrence its machine never held from the store alone (shown on a disk store; on the real restricted bucket it is the watcher's to run); prune_workspaces.py counts a file as recoverable when the archive holds its exact bytes verified in the store, and its tests no longer read the machine's own archive; both run skills have the watcher say, with each verdict or merge, what waits on a person. VF-053 records what was done against each of its needs and stays open for the user.",
       "log_sha256": "0e6af0cdfd7d56bb0a208b1f98c893bdb955a8081ac5927902743f9f964a196f"
+    },
+    {
+      "change_id": "oxyxvyskqqwmwnwnqpxmouyoknlwqrmv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the run report; a promotion stopped by a fault of the tools says so; Codex may not switch delegation on",
+      "body": "The results page of the plumbing run gains its report at the end of cycle 2: no real promotion was made (it is at the user's word; origin/main is unchanged and origin/develop holds cycle 1 since the watcher's first checkpoint), the archive's inventory and the restores shown, timings before and after, the custody gaps still open, and the paths and commands a later reorganisation has to keep. It also records a second rehearsal of the whole line against a bare remote on disk, with the record rendered in the candidate by the new code: 27 commits checkpointed in one scan of 12.7 s, the commit that packs the records opened and scanned in 3.0 s, a dry run with no blocker, and a promotion whose record of 15 files put main and develop at the same commit; check --rendered in the candidate reported 0 errors.\n\nTwo small changes came out of that rehearsal and the review of the leftovers. promote.py: when the candidate's side stops on an exception that is not a refusal, the promotion's state now records it as the reason, as it does for a refusal, and the same command continues the same promotion (the first attempt of the rehearsal stopped on the harness's own outdated stand-in and left no reason). .codex/rules: switching delegated redaction on is forbidden to Codex as it is to Claude Code; the watcher's own forms stay open.",
+      "log_sha256": "94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09"
     }
   ],
   "logs": {
@@ -267,6 +275,12 @@
       "bytes": 4028424,
       "lines": 1130,
       "gzip_bytes": 695749,
+      "url": null
+    },
+    "94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09": {
+      "bytes": 11840133,
+      "lines": 4180,
+      "gzip_bytes": 1890055,
       "url": null
     },
     "b41a9df5f7f6ea692511239f0c0ec3e28488e9db1db909a06a0d4d06fe0fe00a": {
