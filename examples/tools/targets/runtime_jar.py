@@ -17,6 +17,7 @@ class-file reader, offline; nothing here runs Java. Runtime stream's.
 """
 
 import hashlib
+import re
 import struct
 import zipfile
 from pathlib import Path
@@ -93,6 +94,17 @@ def feature_needed(jar):
 _FIXED = {3: 4, 4: 4, 5: 8, 6: 8, 7: 2, 8: 2, 9: 4, 10: 4, 11: 4, 12: 4, 15: 3, 16: 2, 17: 4, 18: 4, 19: 2, 20: 2}
 
 
+def modified_utf8(data):
+    """Read a CONSTANT_Utf8 (JVMS 4.4.7), retaining isolated Java UTF-16 surrogates."""
+    if re.search(rb"[\x00\xf0-\xff]", data):
+        raise ValueError("literal NUL or four-byte sequence in class-file modified UTF-8")
+    text = data.replace(b"\xc0\x80", b"\0").decode("utf-8", "surrogatepass")
+    if b"\xed" in data:
+        # A supplementary character is stored as two encoded UTF-16 code units.
+        return text.encode("utf-16-be", "surrogatepass").decode("utf-16-be", "surrogatepass")
+    return text
+
+
 def _pool(data):
     """The constant pool as {index: (tag, value)} and the offset just after it."""
     if data[:4] != b"\xca\xfe\xba\xbe":
@@ -104,7 +116,9 @@ def _pool(data):
         offset += 1
         if tag == 1:
             length = struct.unpack_from(">H", data, offset)[0]
-            pool[i] = (1, data[offset + 2: offset + 2 + length].decode("utf-8", "surrogatepass"))
+            if offset + 2 + length > len(data):
+                raise ValueError(f"truncated modified UTF-8 at constant pool entry {i}")
+            pool[i] = (1, modified_utf8(data[offset + 2: offset + 2 + length]))
             offset += 2 + length
         elif tag in _FIXED:
             size = _FIXED[tag]

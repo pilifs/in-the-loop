@@ -220,6 +220,15 @@ class PrepareTest(FixtureCopy):
 
 
 class JarTest(unittest.TestCase):
+    def test_modified_utf8_keeps_java_names_and_literal_code_units(self):
+        read = runtime_jar.modified_utf8
+        self.assertEqual(read(b"a\xc0\x80b"), "a\0b")
+        self.assertEqual(read(b"\xed\xa0\x81\xed\xb0\x80"), "\U00010400")
+        self.assertEqual(read(b"\xed\xa0\x81x\xed\xb0\x80"), "\ud801x\udc00")
+        for malformed in (b"\0", b"\xc0\x81", b"\xed\xa0", b"\xf0\x90\x90\x80"):
+            with self.subTest(malformed=malformed), self.assertRaises(ValueError):
+                read(malformed)
+
     def test_the_class_reader_sees_declarations_and_calls(self):
         out = Path(manifest()["dir"])
         gate = runtime_jar.read_class(out / "after.jar", "fixture/Gate")
