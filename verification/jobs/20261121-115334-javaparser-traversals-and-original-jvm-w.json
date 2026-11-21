@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-115334-javaparser-traversals-and-original-jvm-w",
+  "title": "JavaParser traversals and original JVM witnesses from observed Node startup",
+  "description": "Run all eight separately registered Node-startup tasks on the two original JavaParser Maven artifacts, including the preserved preorder and nonempty controls. Re-test the native candidates for postorder and iterator exhaustion on the original ambient JVM claims. Preserve accepted receipts, rejected attempts, class identities and fresh replays.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer",
+    "jvm:counterexample"
+  ],
+  "links": {
+    "examples": [
+      "360"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T11:53:34+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "15m",
+    "notes": "On the original fixed and parent JDK 21 inputs, one Node observation and native claim took approximately two seconds. The public workflow also prepares both artifacts, qualifies independent JVM replays and records receipts."
+  },
+  "steps": [
+    {
+      "name": "Prove the Node-startup traversal claims",
+      "run": "python3 examples/tools/build.py 360 --tasks postorder-parent-node-startup,postorder-fix-node-startup,terminal-parent-node-startup,terminal-fix-node-startup,preorder-parent-node-startup,preorder-fix-node-startup,nonempty-parent-node-startup,nonempty-fix-node-startup --checker-seconds 60",
+      "cwd": "."
+    },
+    {
+      "name": "Replay the traversal counterexample on the original claim",
+      "run": "python3 examples/tools/build.py 360 --original-witness postorder-parent --from-task postorder-parent-node-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Replay the iterator counterexample on the original claim",
+      "run": "python3 examples/tools/build.py 360 --original-witness terminal-parent --from-task terminal-parent-node-startup",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/360-javaparser-postorder-root/receipts",
+    "examples/360-javaparser-postorder-root/records/original-witnesses"
+  ]
+}

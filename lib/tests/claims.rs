@@ -669,8 +669,14 @@ fn a_class_literal_says_whether_it_is_an_array_class_and_another_class_is_the_jd
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).arg("claims.Arrayed").output().expect("java runs");
-    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
-    for method in ["arrayed", "ofAnArray", "assignableOfAnArray"] { proved(classes, &format!("claims.Arrayed#{method}"), 2); }
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true true true true true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
+    for method in ["arrayed", "ofAnArray", "assignableOfAnArray", "boxedClass", "classCasts"] { proved(classes, &format!("claims.Arrayed#{method}"), 2); }
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = jvmcontract::interp::Machine::new(&cp);
+    for flag in [0, 1] {
+        use jvmcontract::interp::Value;
+        assert_eq!(machine.call_static("claims/Arrayed", "classCasts", "(Z)Z", vec![Value::Int(flag)]).unwrap(), Some(Value::Int(1)));
+    }
     for (method, call) in [("opaqueIsArray", "java.lang.Class.isArray()"), ("opaqueAssignable", "java.lang.Class.isAssignableFrom(java.lang.Class)")] {
         // Under strict the run stops at the opaque receiver's `getClass()`; under assume that gives a Class the engine holds
         // no literal of, and the run stops at the call on it.
@@ -1249,7 +1255,7 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.ListConversions").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits", "liveIterator", "nestedView", "arrayView"] {
+    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits", "liveIterator", "nestedView", "arrayView", "callbacks"] {
         let o = run(&options(classes, &format!("claims.ListConversions#{name}"), 4, &format!("list-image-{name}")));
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(!o.stated.unwrap().assumptions.iter().any(|a| a.text.contains("java.util.ArrayList is the tool's model")));
@@ -1259,6 +1265,7 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
     for sized in [0, 1] {
         assert_eq!(machine.call_static("claims/ListConversions", "snapshots", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
         assert_eq!(machine.call_static("claims/ListConversions", "liveIterator", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
+        assert_eq!(machine.call_static("claims/ListConversions", "callbacks", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
         assert_eq!(machine.call_static("claims/ListConversions", "nestedView", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
     }
     assert_eq!(machine.call_static("claims/ListConversions", "storesPrefix", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
@@ -1396,6 +1403,10 @@ fn enum_tables_and_sequential_collectors_use_the_actual_iterator() {
     for name in ["discard", "reset"] {
         proved(classes, &format!("claims.IteratorCollection#{name}"), 4);
         for n in [0, 1] { assert_eq!(machine.call_static("claims/IteratorCollection", name, "(Z)Z", vec![Value::Int(n)]).unwrap(), Some(Value::Int(1))); }
+    }
+    proved(classes, "claims.IteratorCollection#stackFrames", 16);
+    for n in [0, 1] {
+        assert_eq!(machine.call_static("claims/IteratorCollection", "stackFrames", "(Z)Z", vec![Value::Int(n)]).unwrap(), Some(Value::Int(1)));
     }
     let wrong = run(&options(classes, "claims.IteratorCollection#wrong", 4, "iterator-bulk-override"));
     assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);

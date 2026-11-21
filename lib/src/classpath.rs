@@ -842,11 +842,14 @@ impl ClassPath {
         let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
         if !sublist && !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
+            | ("java/lang/Class", "cast", "(Ljava/lang/Object;)Ljava/lang/Object;")
+            | ("java/lang/Class", "cannotCastMsg", "(Ljava/lang/Object;)Ljava/lang/String;")
             | ("java/util/ArrayList", "<init>", "()V" | "(I)V")
             | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
             | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
             | ("java/util/ArrayList", "clear", "()V")
             | ("java/util/ArrayList", "iterator", "()Ljava/util/Iterator;")
+            | ("java/util/ArrayList", "forEach", "(Ljava/util/function/Consumer;)V")
             | ("java/util/ArrayList", "subList", "(II)Ljava/util/List;")
             | ("java/util/AbstractList", "subListRangeCheck", "(III)V")
             | ("java/util/AbstractList", "clear", "()V")

@@ -1029,6 +1029,12 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             _ => unsupported(format!("Iterator.{name}")),
         },
         Native::Class(t) => match name {
+            "cast" | "cannotCastMsg" => {
+                let Some((cf, method)) = m.cp.library_image_method("java/lang/Class", name, descriptor) else {
+                    return unsupported("Class.cast requires its selected JDK bytecode");
+                };
+                m.invoke(&cf, &method, vec![Value::Ref(r), args[0]])
+            }
             "getName" | "getTypeName" => Ok(Some(m.new_string(t.class_get_name()))),
             "getSimpleName" => {
                 let simple = match &t {
@@ -1561,6 +1567,17 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
                 None => Native::Iterator { elements, position: 0, immutable: !mutable },
             };
             Some(Value::Ref(m.alloc_native(iterator)))
+        }
+        ("forEach", "(Ljava/util/function/Consumer;)V") if m.array_list_mod_count.contains_key(&r) => {
+            if args[0] == Value::Null { return Err(m.npe()); }
+            let version = m.array_list_mod_count[&r];
+            for index in 0..len {
+                let Object::Native(Native::List { elements: live, .. }) = m.heap.get(r) else { return unsupported("ArrayList.forEach receiver lost its storage") };
+                let Some(&element) = live.get(index) else { return unsupported("ArrayList.forEach lost an element without a structural change") };
+                m.call_virtual(args[0], "java/util/function/Consumer", "accept", "(Ljava/lang/Object;)V", vec![element])?;
+                if m.array_list_mod_count.get(&r) != Some(&version) { return Err(m.throw("java/util/ConcurrentModificationException", None)); }
+            }
+            None
         }
         ("forEach", _) => {
             for e in elements {
