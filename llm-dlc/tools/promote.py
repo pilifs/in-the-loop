@@ -541,7 +541,10 @@ def build(s, path: Path, state: dict) -> None:
         raise Blocked(f"{len(orig['unverified'])} original(s) of the frozen set are not verified in the private archive (run "
                       "`python3 llm-dlc/tools/artifacts.py status`, and `upload --drain` once the store answers):\n  "
                       + "\n  ".join(orig["unverified"][:50]))
-    if s.cmd_check() != 0:  # before the upload: a log with a leak must not reach the CDN
+    # The frozen commits wrote their sessions' manifests alone: the summaries, the metrics and the overview are
+    # rendered here, once, from the logs just taken (sync.py, RENDERING), and checked as rendered.
+    s.cmd_sync([])
+    if s.cmd_check(["--rendered"]) != 0:  # before the upload: a log with a leak must not reach the CDN
         raise Blocked("the trace check failed in the candidate; nothing was uploaded")
     if s.cmd_upload(include_at=True) != 0:
         raise Blocked("a log could not be uploaded; what was verified is kept, and the same command goes on from there")
@@ -594,7 +597,7 @@ def build(s, path: Path, state: dict) -> None:
     changed = git(s, "diff", "--name-only", "--no-renames", head, candidate).stdout.decode().splitlines()
     if strays := [p for p in changed if not is_record(p)]:
         raise Blocked(f"the publication record {candidate[:12]} changes files that are not generated records: {', '.join(strays[:5])}")
-    if s.cmd_check() != 0:
+    if s.cmd_check(["--rendered"]) != 0:
         raise Blocked("the trace check failed on the publication record")
     if problems := s.publication_gate(candidate):
         raise Blocked("the publication record is not what was checked:\n  " + "\n  ".join(problems[:20]))

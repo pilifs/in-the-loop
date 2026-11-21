@@ -50,6 +50,7 @@ class Promotion(Sandbox):
                            "ITL_ORIGINALS_RESERVE": "0", "ITL_ORIGINALS_UPLOAD": "manual", "ITL_PROMOTE_WORKSPACE": str(self.candidate)})
         self.covered, self.suite_passes, self.suite_runs, self.upload_fails, self.check_status = None, True, 0, False, 0
         mine = {"cmd_check": lambda *a, **k: self.check_status, "cmd_upload": self.fake_upload, "write_index": self.fake_index,
+                "cmd_sync": lambda *a, **k: None,
                 "publication_gate": lambda rev: [], "cmd_regenerate": lambda args: self.fake_index() or 0}
         self.mine = [mock.patch.object(sync, name, value) for name, value in mine.items()]
         self.mine += [mock.patch.object(promote, "run_inside", self.inside),

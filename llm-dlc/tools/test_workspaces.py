@@ -53,7 +53,7 @@ class Workspaces(unittest.TestCase):
         values = {"REPO": root, "CHANGES": llm, "TRACES": llm / "traces", "INDEX": llm / "index.json",
                   "CHANGES_README": llm / "README.md", "TRACES_README": llm / "traces" / "README.md",
                   "METRICS_ROLLUP": llm / "traces" / "metrics.json", "SESSION_NOTES": llm / "session-notes",
-                  "DECISIONS": llm / "decisions", "PRICING": PRICING}
+                  "DECISIONS": llm / "decisions", "PRICING": PRICING, "STATE": self.base_dir / "state"}
         with contextlib.ExitStack() as stack:
             for name, value in values.items():
                 stack.enter_context(mock.patch.object(sync, name, value))
@@ -124,6 +124,37 @@ class Workspaces(unittest.TestCase):
             change = self.traced("A trailer naming no session here", "no-such-session", "c" * 64)
             errors, _ = sync.check_trailers(sync.all_manifests())
         self.assertEqual(errors, [f"change {change[:12]}: session no-such-session has no manifest"])
+
+    def test_a_published_commit_is_read_once_and_still_checked_against_the_manifests_as_they_are_now(self):
+        with self.at(self.a):
+            self.add_session("session-a", "a" * 64, "Made-up A")
+            published = self.traced("A's change", "session-a", "a" * 64)
+            self.run_jj("config", "set", "--repo", 'revset-aliases."immutable_heads()"', published)
+            mutable = self.traced("Not published yet", "session-a", "a" * 64)
+            counts = lambda: (sync.perf.counters["traced commits read"], sync.perf.counters["traced commits known from the cursor"])
+            before = counts()
+            self.assertEqual(sync.check_trailers(sync.all_manifests()), ([], []))
+            self.assertEqual(tuple(b - a for a, b in zip(before, counts())), (2, 0))  # both read; the published one kept
+            before = counts()
+            self.assertEqual(sync.check_trailers(sync.all_manifests()), ([], []))
+            self.assertEqual(tuple(b - a for a, b in zip(before, counts())), (1, 1))  # only the mutable one read again
+            # The manifests change under a commit that is not read again: it is judged against them as they are now.
+            m = sync.load_manifest("session-a")
+            sync.manifest_path("session-a").write_text(json.dumps({**m, "logs": {}}))
+            errors, _ = sync.check_trailers(sync.all_manifests())
+            self.assertEqual(sorted(errors), sorted(f"change {c[:12]}: points at log {'a' * 12} that the manifest does not list" for c in (published, mutable)))
+            sync.manifest_path("session-a").write_text(json.dumps(m))
+            # The commit stops being published (the bookmark that made it so is gone): nothing kept is trusted.
+            self.run_jj("config", "set", "--repo", 'revset-aliases."immutable_heads()"', "none()")
+            before = counts()
+            self.assertEqual(sync.check_trailers(sync.all_manifests()), ([], []))
+            self.assertEqual(tuple(b - a for a, b in zip(before, counts())), (2, 0))
+            with mock.patch.dict(os.environ, {"LLM_TRACES_FULL": "1"}):  # a full audit reads every commit
+                self.run_jj("config", "set", "--repo", 'revset-aliases."immutable_heads()"', published)
+                sync.check_trailers(sync.all_manifests())
+                before = counts()
+                sync.check_trailers(sync.all_manifests())
+                self.assertEqual(tuple(b - a for a, b in zip(before, counts())), (2, 0))
 
     def test_regenerating_after_a_merge_takes_the_merged_sessions_logs_from_their_workspace_checked(self):
         import gzip

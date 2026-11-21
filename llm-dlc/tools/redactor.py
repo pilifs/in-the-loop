@@ -463,16 +463,30 @@ class CheckCache(LocalCache):
         self.used.add(key)
         self.entries[key] = value
 
-    def snapshot(self, path: Path) -> tuple[str, int, bytes | None, bytes] | None:
+    def snapshot(self, path: Path, by_stat: bool = True) -> tuple[str, int, bytes | None, bytes] | None:
         """(SHA-256, length, content or None, .gz bytes) of a stored snapshot, None if there is no
         file. The content is decompressed only when these .gz bytes were not seen before; the
-        caller decompresses the returned .gz bytes when it needs it, never the file again."""
+        caller decompresses the returned .gz bytes when it needs it, never the file again.
+
+        A snapshot is named by its content and never rewritten, so one whose .gz bytes were hashed
+        before is recognised by its path, size, time and inode ("stat:..." -> that hash) and its
+        bytes are not hashed again: hashing every stored log was a quarter of each check. A cache
+        that is not trusted (--full) holds no such entry, and `by_stat=False` (an upload, which
+        must go by the bytes it is about to send) never reads one."""
         try:
             gz = path.read_bytes()
+            st = path.stat()
         except FileNotFoundError:
             return None
-        with perf.phase("hash gz"):
-            key = "gz:" + sha256(gz)
+        seen = f"stat:{path}:{st.st_size}:{st.st_mtime_ns}:{st.st_ino}"
+        known = self.get(seen) if by_stat and len(gz) == st.st_size else None
+        if isinstance(known, str) and self.entries.get("gz:" + known) is not None:
+            perf.count("snapshots found by stat, not hashed")
+            key = "gz:" + known
+        else:
+            with perf.phase("hash gz"):
+                key = "gz:" + sha256(gz)
+            self.put(seen, key[3:])
         if (entry := self.get(key)) is not None:
             perf.count("snapshot cache hits")
             return entry["sha256"], entry["bytes"], None, gz

@@ -142,15 +142,22 @@ llm-dlc/infra/langfuse/up.sh              # optional: Langfuse on http://localho
 
 ## How a commit points at its session
 
-Each commit message ends with three lines that point at all of this:
+Each commit message ends with a line that points at all of this:
+
+```
+LLM-Trace: <session-id> sha256:<sha256>
+```
+
+`python3 llm-dlc/tools/sync.py trace REV` says what it resolves to now: the session and its summary, and the log, which is public at `https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz` once a promotion has uploaded it and pending until then. Commits made before 2026-11-21 also carry two links above that line, to the summary on `main` and to the log's URL:
 
 ```
 LLM-Trace-Summary: https://github.com/<owner>/<repo>/blob/main/llm-dlc/traces/<session-id>/summary.md
 LLM-Trace-Log: https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
-LLM-Trace: <session-id> sha256:<sha256>
 ```
 
-The first two are links for readers. The last is the identifier: the SHA-256 of the uncompressed log at the moment of the commit, so the log can be verified.
+A commit writes its session's manifest and nothing else that is generated: the summaries, the metrics, the index and the overview are rendered at a promotion, so on `develop` they describe the sessions as of the last one ([`specification.md`](specification.md#workflow), *Rendering*).
+
+The `LLM-Trace` line is the identifier: the SHA-256 of the uncompressed log at the moment of the commit, so the log can be verified.
 [`specification.md`](specification.md) has the full specification: identifiers, invariants, storage and redaction.
 
 ## Procedure for agents

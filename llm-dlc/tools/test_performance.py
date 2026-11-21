@@ -1014,9 +1014,8 @@ class Fingerprints(unittest.TestCase):
                 self.assertNotEqual(sync.sync_cache(r).fingerprint, first)
 
 
-class Incremental(unittest.TestCase):
-    """sync (and so commit) skips a session whose state is the one recorded after its last sync, and
-    a skipped session is one that syncing again would leave as it is."""
+class SyncFixture(unittest.TestCase):
+    """Two made-up sessions in a made-up project folder, and sync.py pointed at a repository of its own."""
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -1057,6 +1056,11 @@ class Incremental(unittest.TestCase):
             sync.cmd_sync(list(args))
         files = {p.relative_to(sync.TRACES): p.read_bytes() for p in sorted(sync.TRACES.rglob("*")) if p.is_file()}
         return sorted(c.args[0].stem for c in process.call_args_list), files
+
+
+class Incremental(SyncFixture):
+    """sync (and so commit) skips a session whose state is the one recorded after its last sync, and
+    a skipped session is one that syncing again would leave as it is."""
 
     def test_only_a_session_whose_inputs_or_outputs_changed_is_synced(self):
         self.assertEqual(self.synced()[0], ["s1", "s2"])
@@ -1125,6 +1129,100 @@ class Incremental(unittest.TestCase):
                 self.assertLessEqual(wanted, {x[0] for x in state["commits"]}, sid)
 
 
+class Rendering(SyncFixture):
+    """An ordinary commit's sync writes a session's manifest and leaves what is generated from it for the next
+    rendering; `check` compares the generated files only when it is asked to."""
+
+    def test_a_commits_sync_writes_the_manifest_alone_and_the_next_rendering_catches_up(self):
+        _, first = self.synced()  # the sessions' first sync: everything is made, so that links resolve
+        self.assertTrue(all(Path(sid) / name in first for sid in ("s1", "s2") for name in ("manifest.json", "summary.md", "metrics.json")))
+        self.grow("s1", 2)
+        with mock.patch.object(sync, "process", wraps=sync.process) as process:
+            sync.cmd_sync([], render=False)  # as `sync.py commit` calls it
+        self.assertEqual([c.args[0].stem for c in process.call_args_list], ["s1"])
+        sync.write_index.assert_called_once()  # by the first sync alone
+        after = {p.relative_to(sync.TRACES): p.read_bytes() for p in sorted(sync.TRACES.rglob("*")) if p.is_file()}
+        changed = sorted(str(p) for p in after if after[p] != first.get(p))
+        self.assertEqual([c for c in changed if "logs" not in c], ["s1/manifest.json"])
+        self.assertEqual(json.loads(after[Path("s1/manifest.json")])["stats"]["turns"], 5)
+        # Nothing changed since, and the session is still owed its rendering: a sync by hand gives it, once.
+        synced, rendered = self.synced()
+        self.assertEqual(synced, ["s1"])
+        self.assertNotEqual(rendered[Path("s1/summary.md")], after[Path("s1/summary.md")])
+        self.assertNotEqual(rendered[Path("s1/metrics.json")], after[Path("s1/metrics.json")])
+        self.assertIn(b"made-up prompt 1", rendered[Path("s1/summary.md")])
+        self.assertEqual(self.synced()[0], [])
+        self.assertEqual(sync.write_index.call_count, 3)  # by each sync that renders, never by the commit's
+
+    def test_check_compares_generated_files_only_when_asked(self):
+        self.synced()
+        self.grow("s1", 2)
+        sync.cmd_sync([], render=False)
+        manifests, redact = sync.all_manifests(), MadeUpRedactor()
+        behind = "s1: metrics.json does not match the log and manifest (run sync)"
+        self.assertIn(behind, sync.check_sessions(manifests, redact, False)[0])                      # as a promotion asks
+        self.assertEqual(sync.check_sessions(manifests, redact, False, rendered=False)[0], [])       # as a commit asks
+        with mock.patch.object(sync, "render_traces_readme", return_value="another overview"), \
+                mock.patch.object(sync, "INDEX", sync.TRACES / "no-index.json"), \
+                mock.patch.object(sync, "metrics_files", return_value=[]), mock.patch.object(sync, "render_rollup", return_value="x"), \
+                mock.patch.object(sync, "render_loops", return_value=("x", "y")), mock.patch.object(sync, "DECISIONS", sync.REPO / "decisions"):
+            self.assertEqual(sync.check_global_files(manifests, redact, rendered=False), [])
+            self.assertIn("llm-dlc/traces/README.md does not match the manifests (run sync)", sync.check_global_files(manifests, redact))
+
+
+class Trailers(unittest.TestCase):
+    """A commit is stamped with its session and log, and nothing that is only true after a promotion."""
+    SID, OTHER = "11111111-2222-4333-8444-555555555555", "99999999-2222-4333-8444-555555555555"
+
+    def test_a_new_commit_carries_the_identifier_alone_and_older_links_are_taken_out_with_their_trailer(self):
+        with mock.patch.object(sync, "repo_web_url", return_value="https://forge.example/owner/repo"):
+            stamped = sync.set_trailer("Made-up summary\n\nMade-up body.", self.SID, "a" * 64)
+            self.assertEqual(stamped, f"Made-up summary\n\nMade-up body.\n\nLLM-Trace: {self.SID} sha256:{'a' * 64}\n")
+            self.assertEqual(sync.session_trailers(stamped), [(self.SID, "a" * 64)])
+            # A change stamped the older way and stamped again (the working copy is, at every sync): its two links
+            # go with the old identifier, and another session's lines and other trailers stay as they are.
+            old = ("Made-up summary\n\nCo-Authored-By: Someone <someone@example.com>\n"
+                   f"LLM-Trace-Summary: https://forge.example/owner/repo/blob/main/llm-dlc/traces/{self.SID}/summary.md\n"
+                   f"LLM-Trace-Log: https://terminalvalue.net/raw-traces/{self.SID}/{'a' * 64}.jsonl.gz\n"
+                   f"LLM-Trace: {self.SID} sha256:{'a' * 64}\n"
+                   f"LLM-Trace-Summary: https://forge.example/owner/repo/blob/main/llm-dlc/traces/{self.OTHER}/summary.md\n"
+                   f"LLM-Trace: {self.OTHER} sha256:{'c' * 64}\n")
+            again = sync.set_trailer(old, self.SID, "b" * 64)
+        self.assertEqual(again.count(self.SID), 1)
+        self.assertIn(f"LLM-Trace: {self.SID} sha256:{'b' * 64}\n", again)
+        self.assertIn(f"/traces/{self.OTHER}/summary.md\nLLM-Trace: {self.OTHER} sha256:{'c' * 64}\n", again)
+        self.assertIn("Co-Authored-By: Someone", again)
+        self.assertEqual(sorted(sync.session_trailers(again)), sorted([(self.SID, "b" * 64), (self.OTHER, "c" * 64)]))
+        self.assertEqual(sync.commit_summary(again), "Made-up summary")
+
+    def test_trace_says_what_a_commits_trailer_resolves_to(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            row = "\t".join(["k" * 32, "c" * 40, "false", json.dumps(f"Made-up summary\n\nLLM-Trace: {self.SID} sha256:{'a' * 64}\n"
+                                                                       f"LLM-Trace: {self.OTHER} sha256:{'b' * 64}\n")])
+            manifest = {"title": "A made-up session", "logs": {"a" * 64: {"url": None}}}
+            with mock.patch.object(sync, "REPO", root), mock.patch.object(sync, "TRACES", root / "llm-dlc" / "traces"), \
+                    mock.patch.object(sync, "jj", return_value=sync.subprocess.CompletedProcess([], 0, row + "\n", "")), \
+                    mock.patch.object(sync, "workspace_roots", return_value=[]), mock.patch("sys.stdout", io.StringIO()) as out:
+                sync.manifest_path(self.SID).parent.mkdir(parents=True)
+                sync.manifest_path(self.SID).write_text(json.dumps(manifest))
+                self.assertEqual(sync.cmd_trace(["made-up-rev"]), 0)
+                pending = out.getvalue()
+                sync.log_path(self.SID, "a" * 64).parent.mkdir(parents=True)
+                sync.log_path(self.SID, "a" * 64).write_bytes(b"x")
+                sync.cmd_trace([])
+                stored = out.getvalue()[len(pending):]
+                manifest["logs"]["a" * 64]["url"] = "https://cdn.example/a.jsonl.gz"
+                sync.manifest_path(self.SID).write_text(json.dumps(manifest))
+                sync.cmd_trace([])
+                public = out.getvalue()[len(pending) + len(stored):]
+        self.assertIn("A made-up session", pending)
+        self.assertIn(f"log      {'a' * 12}  pending, and stored in no workspace of this machine", pending)
+        self.assertIn(f"session {self.OTHER}  (no manifest of it in this checkout", pending)
+        self.assertIn("pending: stored in this workspace; a promotion uploads it", stored)
+        self.assertIn("public  https://cdn.example/a.jsonl.gz", public)
+
+
 class CommitChecks(unittest.TestCase):
     """commit runs the check after it has committed, with the redactor its sync used, so agents need
     no separate `check`; its notes are counted rather than listed."""
@@ -1135,12 +1233,13 @@ class CommitChecks(unittest.TestCase):
             ok = lambda *a, **k: sync.subprocess.CompletedProcess(a, 0, "", "")
             with mock.patch.object(sync, "jj", side_effect=lambda *a: calls.append(("jj",) + a[:1]) or ok()), \
                  mock.patch.object(sync, "jj_commits", return_value=[{"change_id": "k" * 32}]), \
-                 mock.patch.object(sync, "cmd_sync", side_effect=lambda a: calls.append(("sync",)) or redact), \
+                 mock.patch.object(sync, "cmd_sync", side_effect=lambda a, **k: calls.append(("sync", k)) or redact), \
                  mock.patch.object(sync, "cmd_check", side_effect=lambda a, **k: calls.append(("check", k)) or found), \
                  mock.patch("sys.stdout", io.StringIO()), mock.patch("sys.stderr", io.StringIO()) as err:
                 self.assertEqual(sync.cmd_commit(["-m", "Made-up summary", "-m", "Made-up body"]), expected)
             # the diff is the look at whether the commit changed the verification queue (nudge_queue)
-            self.assertEqual(calls, [("jj", "describe"), ("sync",), ("jj", "new"), ("jj", "diff"),
+            # the sync writes manifests alone (render off): the generated files wait for a promotion
+            self.assertEqual(calls, [("jj", "describe"), ("sync", {"render": False}), ("jj", "new"), ("jj", "diff"),
                                      ("check", {"redact": redact, "notes_listed": False})])
             self.assertEqual("found errors" in err.getvalue(), bool(found))
 
@@ -1161,7 +1260,8 @@ class CommitChecks(unittest.TestCase):
         self.assertIn("note  n1", listed)
         self.assertNotIn("note ", counted)
         self.assertIn("warn  made-up warning", counted)
-        self.assertIn("2 note(s) needing no action (sync.py check lists them)", counted)
+        self.assertIn("3 note(s) needing no action (sync.py check lists them)", counted)  # n1, n2, and what is not compared
+        self.assertIn("rendered at a promotion", listed)
 
 
 class PublicationGate(unittest.TestCase):
