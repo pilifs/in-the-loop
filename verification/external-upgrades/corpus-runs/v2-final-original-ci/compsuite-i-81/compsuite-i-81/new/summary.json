@@ -1,0 +1,75 @@
+{
+  "revision": "f74b56a98f000d3ab3913e90f3f47b2746809356",
+  "historicalCiFiles": {
+    ".travis.yml": {
+      "sha256": "8a1bfcaf39a9d06678e87d6557705e3faf8a679afc08b361f4093bca19cebe2e",
+      "mavenCommandLines": [
+        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true -DskipTests=true -B install\"",
+        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true test\""
+      ]
+    }
+  },
+  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
+  "module": "deltaspike",
+  "goals": [
+    "-pl",
+    "deltaspike",
+    "-am",
+    "verify"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client with a serial public Maven mirror",
+  "declaredReleaseRepositories": [
+    "https://repository.jboss.org/nexus/repository/public-jboss/"
+  ],
+  "resolver": {
+    "cachedRequests": 1490
+  },
+  "exit": 1,
+  "seconds": 18.07,
+  "logSha256": "5914385b2693b8e564079ec031755c8ada1d7775601dcd67289bd0ebb31d05a7",
+  "freshReports": {
+    "tests": 180,
+    "failures": 0,
+    "errors": 2,
+    "skipped": 0,
+    "named": [
+      {
+        "class": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategyTest",
+        "method": "testIsActiveWithNoParam",
+        "outcome": "error",
+        "type": "org.junit.experimental.theories.internal.ParameterizedAssertionError",
+        "message": "testIsActiveWithNoParam(DATA_POINTS[0])"
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategyTest",
+        "method": "testIsActiveWithNoParam",
+        "outcome": "error",
+        "type": "org.junit.experimental.theories.internal.ParameterizedAssertionError",
+        "message": "testIsActiveWithNoParam(DATA_POINTS[0])"
+      },
+      {
+        "class": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategyTest",
+        "method": "testIsActiveWithParam",
+        "outcome": "error",
+        "type": "org.junit.experimental.theories.internal.ParameterizedAssertionError",
+        "message": "testIsActiveWithParam(DATA_POINTS[0])"
+      }
+    ],
+    "reportCount": 38,
+    "reportsSha256": "54bdd9ab863c9392afc751ead8f34ec4a83ce3ab5075bef68b260a27becdc92e"
+  },
+  "diagnostic": [
+    "SEVERE: Could not find script engine for: some language that doesn't exist",
+    "SEVERE: Could not evaluate script for feature FEATURE: <eval>:1:1 Expected an operand but found =",
+    "org.junit.experimental.theories.internal.ParameterizedAssertionError: testIsActiveWithNoParam(DATA_POINTS[0])",
+    "org.junit.experimental.theories.internal.ParameterizedAssertionError: testIsActiveWithParam(DATA_POINTS[0])",
+    "Tests in error:"
+  ],
+  "namedTest": "DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}

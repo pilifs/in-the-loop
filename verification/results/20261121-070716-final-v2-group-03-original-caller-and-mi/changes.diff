@@ -1,0 +1,3464 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-native/03/current/commons-text-775.json
+@@ -0,0 +1,662 @@
++{
++  "id": "commons-text-775",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.text.WordUtils#capitalizeFully",
++  "observer": "Capitalize words with two delimiters and preserve their separators.",
++  "revisions": {
++    "old": "2b02f079f088a41e5bda78274872b3af3863a560",
++    "new": "267f1d14a96824e60451bcb3e8e1fb8a7e882a10"
++  },
++  "result": "open",
++  "readerSha256": "c7839d4ddbb898e9f1a6a55b6bf93d796cb9e839db1a81a0eb369032efcf8d0a",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "2b02f079f088a41e5bda78274872b3af3863a560",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "orderedSha256": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "descriptors": [
++        "(Ljava/lang/String;)Ljava/lang/String;",
++        "(Ljava/lang/String;[C)Ljava/lang/String;"
++      ]
++    },
++    "new": {
++      "commit": "267f1d14a96824e60451bcb3e8e1fb8a7e882a10",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "orderedSha256": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "descriptors": [
++        "(Ljava/lang/String;)Ljava/lang/String;",
++        "(Ljava/lang/String;[C)Ljava/lang/String;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/String;)Ljava/lang/String;",
++      "(Ljava/lang/String;[C)Ljava/lang/String;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String)",
++    "exit": 1,
++    "seconds": 0.068,
++    "outputSha256": "bf745a9df236a5674316ae8bef3ef2f7468cc4dc8040fe2e4f509fa30aaa84a9",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String)",
++      "domain": "str: String of \u2264 8 code units, not null",
++      "counterexample": null,
++      "proof": null,
++      "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
++      "statement": "$WORK/checker-jan5hxhs/overload-0/harness/EquivalenceHarness.java",
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String) cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
++          "uri": null,
++          "line": 222
++        }
++      ],
++      "output": "\u2717 org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String) cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation\n",
++      "work": "$WORK/checker-jan5hxhs/overload-0",
++      "search": {
++        "engine": "native",
++        "checker": "jvmcontract's own checker (Bitwuzla)",
++        "seconds": 0.015696462,
++        "properties": 1,
++        "unwind": 16,
++        "max_array_length": 8,
++        "stage": null,
++        "native": {
++          "paths": 3,
++          "merges": 0,
++          "solver_calls": 5,
++          "solving_seconds": 0.003287593,
++          "gates_evaluated": 64,
++          "evaluating_seconds": 9.999e-06,
++          "divisions": 0,
++          "divisions_built": 0,
++          "multiplications": 0,
++          "multiplications_built": 0,
++          "word_operations": 51,
++          "variables": 370,
++          "clauses": 1,
++          "seconds": 0.012670457,
++          "loading_seconds": 0.001702073,
++          "decoding_seconds": 0.000145399,
++          "encoding_seconds": 0.000341639,
++          "witness_seconds": 0.0
++        },
++        "gap_mode": "strict",
++        "gaps": [
++          {
++            "id": "jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13",
++            "kind": "jdk-reference-method",
++            "call": "java.lang.String.toLowerCase(java.util.Locale)",
++            "sites": [
++              "before.org.apache.commons.text.WordUtils.capitalizeFully:251"
++            ],
++            "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++            "treatment": "refused"
++          },
++          {
++            "id": "jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13",
++            "kind": "jdk-primitive-method",
++            "call": "java.lang.String.codePointAt(int)",
++            "sites": [
++              "before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131"
++            ],
++            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++            "treatment": "refused"
++          }
++        ],
++        "deadline_seconds": 44.0,
++        "runs": [
++          {
++            "checker": "native",
++            "purpose": "proof",
++            "stage": null,
++            "budget_seconds": 44.0,
++            "seconds": 0.013,
++            "ended": "no-verdict",
++            "ending": "no-verdict",
++            "phases": {
++              "loading": 0.002,
++              "lowering": 0.0,
++              "symbolic": 0.007,
++              "encoding": 0.0,
++              "solving": 0.003,
++              "trace": 0.0,
++              "other": 0.0
++            },
++            "formula": {
++              "variables": 370,
++              "clauses": 1
++            }
++          }
++        ],
++        "phases": {
++          "seconds": 0.063,
++          "setup": 0.001,
++          "harness": 0.0,
++          "gaps": 0.0,
++          "contracts": 0.0,
++          "runs": 0.013,
++          "replay": 0.0,
++          "jvm": 0.0,
++          "other": 0.05
++        }
++      },
++      "stated": {
++        "kind": "regression",
++        "domain": {
++          "parameters": [
++            {
++              "name": "str",
++              "type": "java.lang.String",
++              "kind": "value",
++              "null": false,
++              "max_length": 8
++            }
++          ],
++          "shared_arrays": false,
++          "text": "str: String of \u2264 8 code units, not null"
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result, equal in both versions",
++          "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++        },
++        "bounds": {
++          "unwind": 16,
++          "max_array_length": null,
++          "complete": false,
++          "max_value_length": 8
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++          "classes": 40,
++          "jdk": "21.0.13",
++          "values": [
++            {
++              "source": "jvmcontract String model 8: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++              "jdk": "25.0.5",
++              "level": "tested",
++              "leaves_out": [
++                "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++              ]
++            }
++          ]
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (Bitwuzla)",
++          "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
++          "fallback": null,
++          "sat": {
++            "solver": "Bitwuzla",
++            "version": "0.8.2",
++            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
++            "configuration": [
++              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
++              "sat-solver cadical",
++              "produce-models",
++              "otherwise Bitwuzla's default options",
++              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
++              "the run's deadline through Bitwuzla's termination callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null
++      }
++    },
++    "firstBlocker": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation"
++  },
++  "firstBlocker": "review the recorded exact overloads",
++  "nativeOverloads": [
++    {
++      "target": "org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String)",
++      "exit": 1,
++      "seconds": 0.068,
++      "outputSha256": "bf745a9df236a5674316ae8bef3ef2f7468cc4dc8040fe2e4f509fa30aaa84a9",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String)",
++        "domain": "str: String of \u2264 8 code units, not null",
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
++        "statement": "$WORK/checker-jan5hxhs/overload-0/harness/EquivalenceHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String) cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
++            "uri": null,
++            "line": 222
++          }
++        ],
++        "output": "\u2717 org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String) cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation\n",
++        "work": "$WORK/checker-jan5hxhs/overload-0",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (Bitwuzla)",
++          "seconds": 0.015696462,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 3,
++            "merges": 0,
++            "solver_calls": 5,
++            "solving_seconds": 0.003287593,
++            "gates_evaluated": 64,
++            "evaluating_seconds": 9.999e-06,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "word_operations": 51,
++            "variables": 370,
++            "clauses": 1,
++            "seconds": 0.012670457,
++            "loading_seconds": 0.001702073,
++            "decoding_seconds": 0.000145399,
++            "encoding_seconds": 0.000341639,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13",
++              "kind": "jdk-reference-method",
++              "call": "java.lang.String.toLowerCase(java.util.Locale)",
++              "sites": [
++                "before.org.apache.commons.text.WordUtils.capitalizeFully:251"
++              ],
++              "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++              "treatment": "refused"
++            },
++            {
++              "id": "jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13",
++              "kind": "jdk-primitive-method",
++              "call": "java.lang.String.codePointAt(int)",
++              "sites": [
++                "before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 44.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 44.0,
++              "seconds": 0.013,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.002,
++                "lowering": 0.0,
++                "symbolic": 0.007,
++                "encoding": 0.0,
++                "solving": 0.003,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 370,
++                "clauses": 1
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.063,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.013,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.05
++          }
++        },
++        "stated": {
++          "kind": "regression",
++          "domain": {
++            "parameters": [
++              {
++                "name": "str",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 8
++              }
++            ],
++            "shared_arrays": false,
++            "text": "str: String of \u2264 8 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result, equal in both versions",
++            "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 8
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 8: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (Bitwuzla)",
++            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
++            "fallback": null,
++            "sat": {
++              "solver": "Bitwuzla",
++              "version": "0.8.2",
++              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
++              "configuration": [
++                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
++                "sat-solver cadical",
++                "produce-models",
++                "otherwise Bitwuzla's default options",
++                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
++                "the run's deadline through Bitwuzla's termination callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "firstBlocker": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation"
++    },
++    {
++      "target": "org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String, char[])",
++      "exit": 1,
++      "seconds": 0.11,
++      "outputSha256": "b12e0fc4bdd88f4db541d7792427c3acffea9dafb0c0f09db20e6b85de050319",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String, char[])",
++        "domain": "str: String of \u2264 8 code units, not null \u00d7 delimiters: char[] of length \u2264 8, not null",
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 3 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.HashSet.<init>()V@jdk-21.0.13 (java.util.HashSet.<init>() at before.org.apache.commons.text.WordUtils.generateIsDelimiterFunction:304); jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
++        "statement": "$WORK/checker-jan5hxhs/overload-1/harness/EquivalenceHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String, char[]) cannot be verified: the tool's own checker met 3 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.HashSet.<init>()V@jdk-21.0.13 (java.util.HashSet.<init>() at before.org.apache.commons.text.WordUtils.generateIsDelimiterFunction:304); jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
++            "uri": null,
++            "line": 251
++          }
++        ],
++        "output": "\u2717 org.apache.commons.text.WordUtils#capitalizeFully(java.lang.String, char[]) cannot be verified: the tool's own checker met 3 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.HashSet.<init>()V@jdk-21.0.13 (java.util.HashSet.<init>() at before.org.apache.commons.text.WordUtils.generateIsDelimiterFunction:304); jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation\n",
++        "work": "$WORK/checker-jan5hxhs/overload-1",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (Bitwuzla)",
++          "seconds": 0.05298476,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 27,
++            "merges": 0,
++            "solver_calls": 48,
++            "solving_seconds": 0.030545377,
++            "gates_evaluated": 377,
++            "evaluating_seconds": 9.4819e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "word_operations": 70,
++            "variables": 549,
++            "clauses": 1,
++            "seconds": 0.049530826,
++            "loading_seconds": 0.00268437,
++            "decoding_seconds": 0.000188184,
++            "encoding_seconds": 0.000810185,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-constructor:java.util.HashSet.<init>()V@jdk-21.0.13",
++              "kind": "jdk-constructor",
++              "call": "java.util.HashSet.<init>()",
++              "sites": [
++                "before.org.apache.commons.text.WordUtils.generateIsDelimiterFunction:304"
++              ],
++              "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
++              "treatment": "refused"
++            },
++            {
++              "id": "jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13",
++              "kind": "jdk-reference-method",
++              "call": "java.lang.String.toLowerCase(java.util.Locale)",
++              "sites": [
++                "before.org.apache.commons.text.WordUtils.capitalizeFully:251"
++              ],
++              "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++              "treatment": "refused"
++            },
++            {
++              "id": "jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13",
++              "kind": "jdk-primitive-method",
++              "call": "java.lang.String.codePointAt(int)",
++              "sites": [
++                "before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 89.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 89.0,
++              "seconds": 0.05,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.003,
++                "lowering": 0.0,
++                "symbolic": 0.015,
++                "encoding": 0.001,
++                "solving": 0.031,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 549,
++                "clauses": 1
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.105,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.05,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.055
++          }
++        },
++        "stated": {
++          "kind": "regression",
++          "domain": {
++            "parameters": [
++              {
++                "name": "str",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 8
++              },
++              {
++                "name": "delimiters",
++                "type": "char[]",
++                "kind": "array",
++                "null": false,
++                "max_length": 8
++              }
++            ],
++            "shared_arrays": false,
++            "text": "str: String of \u2264 8 code units, not null \u00d7 delimiters: char[] of length \u2264 8, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result, equal in both versions",
++            "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
++            "arrays": [
++              "delimiters"
++            ]
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": 8,
++            "complete": false,
++            "max_value_length": 8
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 8: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (Bitwuzla)",
++            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
++            "fallback": null,
++            "sat": {
++              "solver": "Bitwuzla",
++              "version": "0.8.2",
++              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
++              "configuration": [
++                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
++                "sat-solver cadical",
++                "produce-models",
++                "otherwise Bitwuzla's default options",
++                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
++                "the run's deadline through Bitwuzla's termination callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "firstBlocker": "the tool's own checker met 3 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.HashSet.<init>()V@jdk-21.0.13 (java.util.HashSet.<init>() at before.org.apache.commons.text.WordUtils.generateIsDelimiterFunction:304); jdk-reference-method:java.lang.String.toLowerCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.toLowerCase(java.util.Locale) at before.org.apache.commons.text.WordUtils.capitalizeFully:251); jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at before.org.apache.commons.text.WordUtils.applyWordCaseTransform:131). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation"
++    }
++  ],
++  "elapsedSeconds": 0.245,
++  "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-native/03/current/compsuite-i-62.json
+@@ -0,0 +1,324 @@
++{
++  "id": "compsuite-i-62",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor#invoke",
++  "observer": "Invoke the validated service with an excluded group and observe its validation outcome.",
++  "revisions": {
++    "old": "28119f2ae62ff9101e874a70a87baa639ecc681b",
++    "new": "a7daf452b1db8a548d67b64d030d7d04f862b016"
++  },
++  "result": "open",
++  "readerSha256": "c7839d4ddbb898e9f1a6a55b6bf93d796cb9e839db1a81a0eb369032efcf8d0a",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "28119f2ae62ff9101e874a70a87baa639ecc681b",
++      "sourceSha256": "9eb274dfd2728850d7ea39c0aeeac48e5c4ba6a897f87f9b484b14280a7ebaee",
++      "scope": "complete original Maven production module",
++      "module": "fluent-validator-spring/pom.xml",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "fluent-validator-spring",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 7,
++      "resources": 0,
++      "seconds": 8.53,
++      "orderedSha256": [
++        "42f6e83d20ad0c62805dd875b90b3760e8ca3d3a3cf6dc778c2cf294f6166eee",
++        "6793fa349841bbde89e8e3fb7484d63c75c3bc810823f1a037c5f53ff409652f",
++        "58dd32d1ce92c4663cf309861f15c1d79d866a8f031820b58601041cf49187f2",
++        "4af0b2f6f72292a1e72d61bd3f05c55aeed2d5d492f50279102ff3a80c88b346",
++        "f39d7ba7253e35f5ac48081ec1bc28c5df9b32ac4b7db20853e5a8e76bf7b0ed",
++        "a3b0ffa8ae2b2f2387ebdfdce29086d3955d2a46ce7da802c2ba6ae47fa2f1bf",
++        "610d23db8ece7268e93930562d89b91546c79fc80f3966baf433e5e93110b118",
++        "5fd94735743ed06252c83158a24c290fcbf94b3f599b1bcec3bdc8c80979bed7",
++        "787e7e247da8008c699bafd8e086ccae13e6f3cac3c07ca1c698e44f917b42de",
++        "f4a555e3be0cccdfa2c9b7f8adb2dda4e1d1cbc22b079d8e9981589eab8f4cec",
++        "a326348b542eb94a2eb37824a7238c1107a95bfc2282dbfc931ab4efdeedbae3",
++        "fd39869701b056c8dd8527f66b24bc3a88b342cdd8275fb85742adfd12b156c1",
++        "b1808c62a5af5445cafcc03891d520aeddfb5a654b75e1bc436183ea41307353",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "67be5e81179ab9ae660f9ae9d89c6b8f859bcb18e0f94a8abb2d0176c68d16ef",
++        "a75fe8ec8abdfa0064ec3c0f3ea01f0246c7c37316fe5d1db291429e3bdf77c5",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "dba4c3c10321c86a48d689354fbfd9772a65e51e780d1e5378a5ece2e426a8f8",
++        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
++        "4f8d56a7994cb065c60bb5e81db9fa3681cc306e9eff059ec1ff15211de39224",
++        "ebc2552acf5d09d67bf75ac2388c115b55aaea2fc35e7d8022e2186b6e874251"
++      ],
++      "callerClassSha256": "f053bb3dd7b5a6ab77a76285b75ee3a32a9944161e598f89c6e99f4f6845b266",
++      "descriptors": [
++        "(Lorg/aopalliance/intercept/MethodInvocation;)Ljava/lang/Object;"
++      ]
++    },
++    "new": {
++      "commit": "a7daf452b1db8a548d67b64d030d7d04f862b016",
++      "sourceSha256": "9eb274dfd2728850d7ea39c0aeeac48e5c4ba6a897f87f9b484b14280a7ebaee",
++      "scope": "complete original Maven production module",
++      "module": "fluent-validator-spring/pom.xml",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "fluent-validator-spring",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "dependencyRelocations": [
++        {
++          "from": "org.hibernate:hibernate-validator:6.1.0.Final",
++          "to": "org.hibernate.validator:hibernate-validator:6.1.0.Final",
++          "pomSha256": "8bf660662621d57249708b1d0c2752b786f4ce9b442325ddfbc43f40919f3d82"
++        }
++      ],
++      "stage": "artifacts ready",
++      "compiledClasses": 7,
++      "resources": 0,
++      "seconds": 10.04,
++      "orderedSha256": [
++        "42f6e83d20ad0c62805dd875b90b3760e8ca3d3a3cf6dc778c2cf294f6166eee",
++        "6793fa349841bbde89e8e3fb7484d63c75c3bc810823f1a037c5f53ff409652f",
++        "cc4c020f2802dc8a3d47912ff552ee064dfb76fcc5258f66e4b6a7b926ead637",
++        "ea1d7ffd07733231054b8119d310c0f21da26fe798d61a23361eb4a974fc95fa",
++        "b42d42428f3d922c892a909fa043287d577c0c5b165ad9b7d568cebf87fc9ea4",
++        "cb914bfe888da7d9162e965ac8b0d6f28f2f32eca944a00fbbf6dd3cf1aacc13",
++        "c2bfcc21467351d0f9a1558822b72dbac2b21f6b9f700a44fc6b345491ef3c88",
++        "5fd94735743ed06252c83158a24c290fcbf94b3f599b1bcec3bdc8c80979bed7",
++        "787e7e247da8008c699bafd8e086ccae13e6f3cac3c07ca1c698e44f917b42de",
++        "f4a555e3be0cccdfa2c9b7f8adb2dda4e1d1cbc22b079d8e9981589eab8f4cec",
++        "a326348b542eb94a2eb37824a7238c1107a95bfc2282dbfc931ab4efdeedbae3",
++        "fd39869701b056c8dd8527f66b24bc3a88b342cdd8275fb85742adfd12b156c1",
++        "b1808c62a5af5445cafcc03891d520aeddfb5a654b75e1bc436183ea41307353",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "67be5e81179ab9ae660f9ae9d89c6b8f859bcb18e0f94a8abb2d0176c68d16ef",
++        "a75fe8ec8abdfa0064ec3c0f3ea01f0246c7c37316fe5d1db291429e3bdf77c5",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "dba4c3c10321c86a48d689354fbfd9772a65e51e780d1e5378a5ece2e426a8f8",
++        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
++        "4f8d56a7994cb065c60bb5e81db9fa3681cc306e9eff059ec1ff15211de39224",
++        "ebc2552acf5d09d67bf75ac2388c115b55aaea2fc35e7d8022e2186b6e874251"
++      ],
++      "callerClassSha256": "f053bb3dd7b5a6ab77a76285b75ee3a32a9944161e598f89c6e99f4f6845b266",
++      "descriptors": [
++        "(Lorg/aopalliance/intercept/MethodInvocation;)Ljava/lang/Object;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Lorg/aopalliance/intercept/MethodInvocation;)Ljava/lang/Object;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)",
++    "exit": 1,
++    "seconds": 0.333,
++    "outputSha256": "4110ae52514a7d7133db2c60b627eec63d023a8106487ca85d16d53c650800fa",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)",
++      "domain": "this: a FluentValidateInterceptor made by its constructor, FluentValidateInterceptor(), from any arguments it accepts \u00d7 invocation: an implementation of MethodInvocation that answers none of its abstract methods",
++      "counterexample": null,
++      "proof": null,
++      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13 (java.util.LinkedHashSet.<init>() at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:219). With --gaps assume it assumes instead that java.util.LinkedHashSet.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "statement": "$WORK/checker-32l57_p3/overload-0/harness/EquivalenceHarness.java",
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor#invoke(org.aopalliance.intercept.MethodInvocation) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13 (java.util.LinkedHashSet.<init>() at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:219). With --gaps assume it assumes instead that java.util.LinkedHashSet.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++          "uri": null,
++          "line": 133
++        }
++      ],
++      "output": "\u2717 com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor#invoke(org.aopalliance.intercept.MethodInvocation) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13 (java.util.LinkedHashSet.<init>() at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:219). With --gaps assume it assumes instead that java.util.LinkedHashSet.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
++      "work": "$WORK/checker-32l57_p3/overload-0",
++      "search": {
++        "engine": "native",
++        "checker": "jvmcontract's own checker (Bitwuzla)",
++        "seconds": 0.026036844,
++        "properties": 1,
++        "unwind": 16,
++        "max_array_length": 8,
++        "stage": null,
++        "native": {
++          "paths": 1,
++          "merges": 0,
++          "solver_calls": 0,
++          "solving_seconds": 0.0,
++          "gates_evaluated": 0,
++          "evaluating_seconds": 0.0,
++          "divisions": 0,
++          "divisions_built": 0,
++          "multiplications": 0,
++          "multiplications_built": 0,
++          "variables": 1,
++          "clauses": 1,
++          "seconds": 0.009382122,
++          "loading_seconds": 0.001285368,
++          "decoding_seconds": 0.000347159,
++          "encoding_seconds": 2.515e-06,
++          "witness_seconds": 0.0
++        },
++        "gap_mode": "strict",
++        "gaps": [
++          {
++            "id": "jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13",
++            "kind": "jdk-constructor",
++            "call": "java.util.LinkedHashSet.<init>()",
++            "sites": [
++              "org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:219"
++            ],
++            "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
++            "treatment": "refused"
++          }
++        ],
++        "deadline_seconds": 90.0,
++        "runs": [
++          {
++            "checker": "native",
++            "purpose": "proof",
++            "stage": null,
++            "budget_seconds": 90.0,
++            "seconds": 0.009,
++            "ended": "no-verdict",
++            "ending": "no-verdict",
++            "phases": {
++              "loading": 0.001,
++              "lowering": 0.0,
++              "symbolic": 0.008,
++              "encoding": 0.0,
++              "solving": 0.0,
++              "trace": 0.0,
++              "other": 0.0
++            },
++            "formula": {
++              "variables": 1,
++              "clauses": 1
++            }
++          }
++        ],
++        "phases": {
++          "seconds": 0.328,
++          "setup": 0.001,
++          "harness": 0.001,
++          "gaps": 0.0,
++          "contracts": 0.0,
++          "runs": 0.009,
++          "replay": 0.0,
++          "jvm": 0.0,
++          "other": 0.318
++        }
++      },
++      "stated": {
++        "kind": "regression",
++        "domain": {
++          "parameters": [
++            {
++              "name": "this",
++              "type": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor",
++              "kind": "object",
++              "null": false
++            },
++            {
++              "name": "invocation",
++              "type": "org.aopalliance.intercept.MethodInvocation",
++              "kind": "object",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "this: a FluentValidateInterceptor made by its constructor, FluentValidateInterceptor(), from any arguments it accepts \u00d7 invocation: an implementation of MethodInvocation that answers none of its abstract methods",
++          "input_objects": [
++            2,
++            2
++          ]
++        },
++        "assumptions": [
++          {
++            "kind": "constructible",
++            "text": "either version's constructor FluentValidateInterceptor() accepts the arguments of this: an input both versions' constructors reject is skipped, and one that only one version's reject is a difference, on the exception, so the statement is about the objects both versions can build, and that they can build the same ones",
++            "basis": "harness"
++          },
++          {
++            "kind": "environment",
++            "text": "invocation is an implementation of org.aopalliance.intercept.MethodInvocation the check gives: it answers none of the interface's abstract methods; both versions are given one of the same values, and an implementation that answers a call another way (a value that changes between calls, an exception) is outside the statement",
++            "basis": "harness"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result, equal in both versions",
++          "exceptions": "whether it throws, and which of 17 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest, then the checked exceptions either version declares, java.lang.Exception, java.lang.Throwable; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
++          "objects": [
++            "this: applicationContext.getId(), applicationContext.getApplicationName(), applicationContext.getDisplayName(), applicationContext.getStartupDate(), applicationContext.getBeanDefinitionCount(), registry.applicationContext.getId(), registry.applicationContext.getApplicationName(), registry.applicationContext.getDisplayName(), registry.applicationContext.getStartupDate(), registry.applicationContext.getBeanDefinitionCount(), locale, hibernateDefaultErrorCode"
++          ],
++          "identities": [
++            "this.applicationContext == this.registry.applicationContext"
++          ]
++        },
++        "bounds": {
++          "unwind": 16,
++          "max_array_length": null,
++          "complete": false
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++          "classes": 40,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (Bitwuzla)",
++          "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
++          "fallback": null,
++          "sat": {
++            "solver": "Bitwuzla",
++            "version": "0.8.2",
++            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
++            "configuration": [
++              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
++              "sat-solver cadical",
++              "produce-models",
++              "otherwise Bitwuzla's default options",
++              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
++              "the run's deadline through Bitwuzla's termination callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null
++      }
++    },
++    "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13 (java.util.LinkedHashSet.<init>() at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:219). With --gaps assume it assumes instead that java.util.LinkedHashSet.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption"
++  },
++  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13 (java.util.LinkedHashSet.<init>() at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:219). With --gaps assume it assumes instead that java.util.LinkedHashSet.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++  "elapsedSeconds": 0.427,
++  "sourceSha256": "9eb274dfd2728850d7ea39c0aeeac48e5c4ba6a897f87f9b484b14280a7ebaee"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-native/03/current/compsuite-i-80.json
+@@ -0,0 +1,517 @@
++{
++  "id": "compsuite-i-80",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of",
++  "observer": "Construct a stream with a short logger name and observe its fully qualified name.",
++  "revisions": {
++    "old": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++    "new": "938bbeb343eb5fd465517c713fe9065ce997058a"
++  },
++  "result": "open",
++  "readerSha256": "c7839d4ddbb898e9f1a6a55b6bf93d796cb9e839db1a81a0eb369032efcf8d0a",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052"
++      ],
++      "orderedSha256": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052"
++      ],
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++      ]
++    },
++    "new": {
++      "commit": "938bbeb343eb5fd465517c713fe9065ce997058a",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"
++      ],
++      "orderedSha256": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"
++      ],
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++      "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++      "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++      "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class)",
++    "exit": 1,
++    "seconds": 0.005,
++    "outputSha256": "fc936974d64868cf32df711f58752505e6f0b0b31bc7fc29b91e954053d5ab4c",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 50
++        }
++      ],
++      "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-x1vccyy3/overload-0"
++    },
++    "firstBlocker": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  "firstBlocker": "review the recorded exact overloads",
++  "nativeOverloads": [
++    {
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class)",
++      "exit": 1,
++      "seconds": 0.005,
++      "outputSha256": "fc936974d64868cf32df711f58752505e6f0b0b31bc7fc29b91e954053d5ab4c",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++            "uri": null,
++            "line": 50
++          }
++        ],
++        "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++        "work": "$WORK/checker-x1vccyy3/overload-0"
++      },
++      "firstBlocker": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++    },
++    {
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class, java.lang.String)",
++      "exit": 1,
++      "seconds": 0.006,
++      "outputSha256": "16fbf533b6a9a2d53768e8cd34198276ed8cf0501efdd49a07991e2bf67518d4",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class, java.lang.String)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class, java.lang.String) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++            "uri": null,
++            "line": 65
++          }
++        ],
++        "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class, java.lang.String) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++        "work": "$WORK/checker-x1vccyy3/overload-1"
++      },
++      "firstBlocker": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++    },
++    {
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.String)",
++      "exit": 1,
++      "seconds": 0.052,
++      "outputSha256": "1bc4c332f5e4bab1ff50c08ef34971559181ad76c54352e6dcea3ee1b8e454ba",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.String)",
++        "domain": "name: String of \u2264 8 code units, not null",
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13 (java.lang.String.contains(java.lang.CharSequence) at before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++        "statement": "$WORK/checker-x1vccyy3/overload-2/harness/EquivalenceHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.String) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13 (java.lang.String.contains(java.lang.CharSequence) at before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++            "uri": null,
++            "line": 78
++          }
++        ],
++        "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.String) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13 (java.lang.String.contains(java.lang.CharSequence) at before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++        "work": "$WORK/checker-x1vccyy3/overload-2",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (Bitwuzla)",
++          "seconds": 0.00941898,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 1,
++            "merges": 0,
++            "solver_calls": 0,
++            "solving_seconds": 0.0,
++            "gates_evaluated": 0,
++            "evaluating_seconds": 0.0,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "word_operations": 2,
++            "variables": 163,
++            "clauses": 1,
++            "seconds": 0.007717882,
++            "loading_seconds": 0.000523188,
++            "decoding_seconds": 0.000131375,
++            "encoding_seconds": 8.3848e-05,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13",
++              "kind": "jdk-primitive-method",
++              "call": "java.lang.String.contains(java.lang.CharSequence)",
++              "sites": [
++                "before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 44.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 44.0,
++              "seconds": 0.008,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.001,
++                "lowering": 0.0,
++                "symbolic": 0.007,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 163,
++                "clauses": 1
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.048,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.008,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.039
++          }
++        },
++        "stated": {
++          "kind": "regression",
++          "domain": {
++            "parameters": [
++              {
++                "name": "name",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 8
++              }
++            ],
++            "shared_arrays": false,
++            "text": "name: String of \u2264 8 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result, a Slf4jStream compared field by field (log.getName(), log.isTraceEnabled(), log.isDebugEnabled(), log.isInfoEnabled(), log.isWarnEnabled(), log.isErrorEnabled()), two nulls agreeing",
++            "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 8
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 8: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (Bitwuzla)",
++            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
++            "fallback": null,
++            "sat": {
++              "solver": "Bitwuzla",
++              "version": "0.8.2",
++              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
++              "configuration": [
++                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
++                "sat-solver cadical",
++                "produce-models",
++                "otherwise Bitwuzla's default options",
++                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
++                "the run's deadline through Bitwuzla's termination callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13 (java.lang.String.contains(java.lang.CharSequence) at before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
++    },
++    {
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(org.slf4j.Logger)",
++      "exit": 1,
++      "seconds": 0.046,
++      "outputSha256": "db1487a199701a687de81b10c17a91666d6d91122f4731be11c83ae841e166cd",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(org.slf4j.Logger)",
++        "domain": "log: an implementation of Logger that answers none of its abstract methods",
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13 (before.org.slf4j.Logger.getName() at EquivalenceHarness.check). With --gaps assume it assumes instead that before.org.slf4j.Logger.getName() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++        "statement": "$WORK/checker-x1vccyy3/overload-3/harness/EquivalenceHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(org.slf4j.Logger) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13 (before.org.slf4j.Logger.getName() at EquivalenceHarness.check). With --gaps assume it assumes instead that before.org.slf4j.Logger.getName() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++            "uri": null,
++            "line": 42
++          }
++        ],
++        "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(org.slf4j.Logger) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13 (before.org.slf4j.Logger.getName() at EquivalenceHarness.check). With --gaps assume it assumes instead that before.org.slf4j.Logger.getName() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
++        "work": "$WORK/checker-x1vccyy3/overload-3",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (Bitwuzla)",
++          "seconds": 0.00557624,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 1,
++            "merges": 0,
++            "solver_calls": 0,
++            "solving_seconds": 0.0,
++            "gates_evaluated": 0,
++            "evaluating_seconds": 0.0,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 1,
++            "clauses": 1,
++            "seconds": 0.004551175,
++            "loading_seconds": 0.000346447,
++            "decoding_seconds": 0.000112321,
++            "encoding_seconds": 0.0,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13",
++              "kind": "jdk-reference-method",
++              "call": "before.org.slf4j.Logger.getName()",
++              "sites": [
++                "EquivalenceHarness.check"
++              ],
++              "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 89.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 89.0,
++              "seconds": 0.005,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.004,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 1,
++                "clauses": 1
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.042,
++            "setup": 0.0,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.005,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.037
++          }
++        },
++        "stated": {
++          "kind": "regression",
++          "domain": {
++            "parameters": [
++              {
++                "name": "log",
++                "type": "org.slf4j.Logger",
++                "kind": "object",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "log: an implementation of Logger that answers none of its abstract methods",
++            "input_objects": [
++              1,
++              1
++            ]
++          },
++          "assumptions": [
++            {
++              "kind": "environment",
++              "text": "log is an implementation of org.slf4j.Logger the check gives: it answers none of the interface's abstract methods; both versions are given one of the same values, and an implementation that answers a call another way (a value that changes between calls, an exception) is outside the statement",
++              "basis": "harness"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result, a Slf4jStream compared field by field (log.getName(), log.isTraceEnabled(), log.isDebugEnabled(), log.isInfoEnabled(), log.isWarnEnabled(), log.isErrorEnabled()), two nulls agreeing",
++            "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
++            "identities": [
++              "result.log == log"
++            ]
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (Bitwuzla)",
++            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
++            "fallback": null,
++            "sat": {
++              "solver": "Bitwuzla",
++              "version": "0.8.2",
++              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
++              "configuration": [
++                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
++                "sat-solver cadical",
++                "produce-models",
++                "otherwise Bitwuzla's default options",
++                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
++                "the run's deadline through Bitwuzla's termination callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13 (before.org.slf4j.Logger.getName() at EquivalenceHarness.check). With --gaps assume it assumes instead that before.org.slf4j.Logger.getName() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption"
++    }
++  ],
++  "elapsedSeconds": 0.171,
++  "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-native/03/current/ea-async-27.json
+@@ -0,0 +1,187 @@
++{
++  "id": "ea-async-27",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.ea.async.instrumentation.Transformer#transform",
++  "observer": "Transform an async method holding an uninitialized value across await and read completion and result.",
++  "revisions": {
++    "old": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
++    "new": "a99e044708fac3654f621649d89bf1820bcd44a0"
++  },
++  "result": "open",
++  "readerSha256": "c7839d4ddbb898e9f1a6a55b6bf93d796cb9e839db1a81a0eb369032efcf8d0a",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
++      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++      "scope": "complete original Maven production module",
++      "module": "async/pom.xml",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "async",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 24,
++      "resources": 1,
++      "seconds": 8.61,
++      "orderedSha256": [
++        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
++        "f2820ea6ef069b83f37d805f5cec58b2872a25650f5f95b4f3cc572156323df0",
++        "62b2c0d818fde5c52cf6404aa10836dbb170a2c3fa8466e656f0f991732fa01f",
++        "02317d9ed739dab470a96f44de712fde51a811362ca26852b34324388e61257c",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
++      "descriptors": [
++        "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
++        "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
++      ]
++    },
++    "new": {
++      "commit": "a99e044708fac3654f621649d89bf1820bcd44a0",
++      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++      "scope": "complete original Maven production module",
++      "module": "async/pom.xml",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "async",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 24,
++      "resources": 1,
++      "seconds": 10.41,
++      "orderedSha256": [
++        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
++        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
++        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
++      "descriptors": [
++        "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
++        "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
++      "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++    "exit": 1,
++    "seconds": 0.015,
++    "outputSha256": "e15a9e948949ed2681aed432ed3584de6d1c19cbbfa28fccd079670304f6ca06",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 146
++        }
++      ],
++      "output": "\u2717 com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-zu0velj0/overload-0"
++    },
++    "firstBlocker": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  "firstBlocker": "review the recorded exact overloads",
++  "nativeOverloads": [
++    {
++      "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++      "exit": 1,
++      "seconds": 0.015,
++      "outputSha256": "e15a9e948949ed2681aed432ed3584de6d1c19cbbfa28fccd079670304f6ca06",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++            "uri": null,
++            "line": 146
++          }
++        ],
++        "output": "\u2717 com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++        "work": "$WORK/checker-zu0velj0/overload-0"
++      },
++      "firstBlocker": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++    },
++    {
++      "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader)",
++      "exit": 1,
++      "seconds": 0.029,
++      "outputSha256": "aeb9371e76f2a1bf1a63ef83cd6326d951a8c9fc4d8ff9b411a228048db3d172",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++            "uri": null,
++            "line": 226
++          }
++        ],
++        "output": "\u2717 com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++        "work": "$WORK/checker-zu0velj0/overload-1"
++      },
++      "firstBlocker": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++    }
++  ],
++  "elapsedSeconds": 0.116,
++  "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-native/03/current/incremental-analysis-28.json
+@@ -0,0 +1,267 @@
++{
++  "id": "incremental-analysis-28",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search",
++  "observer": "Inspect the original class selection and the referenced class names in a small build.",
++  "revisions": {
++    "old": "f4633c66214da5bca3761136e88c71ec3b1eead0",
++    "new": "4e33671a32cbad26d39404389165d07c35770070"
++  },
++  "result": "open",
++  "readerSha256": "c7839d4ddbb898e9f1a6a55b6bf93d796cb9e839db1a81a0eb369032efcf8d0a",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "f4633c66214da5bca3761136e88c71ec3b1eead0",
++      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
++        "5ae4f6a5f844d34db58ada075bdb31b58de138e54288a0b9e6a3996329993cb6",
++        "635c839cad0212b7e9a27dea5823928b5b7010e5ca2d17985fb688d84d48fdb3",
++        "a94ad5b4d2bbbd20b6f38165751bddceb227420eb92c36160116fb5eaa157b9e",
++        "0e8aff5fe29b7b7c8e643d75eafc98cd754a3ceb5d215908cd69dd366b0286dd",
++        "229b10c12289bc0e28e3b9b64de3a61a6b736eb8afa145fdf4c33ff008736cb5",
++        "75e3810c681735e7a088294668f893667d193c87905e5bc976e03ccd939602c6",
++        "47ebf67979b231bf215ed967a63b2a142c8a2c1c7b219c0206559985e802b836",
++        "7ad0a3b98a9c284d6abc5beaf53f25ba4c4eb2b46b2402698a58774017c00dc0",
++        "0ab4654db5d86c019107dccad0d9c6c7fa8b3a9847e0a1f0b21b8384e43d9941",
++        "2cafa2629da49edd54eb4df6d15f628c2d80eec293f37cd561f1fe78e7bcff9d",
++        "9a84f5863407acf2bf9cf280cd02f5a518952a386de61df3b8c5db8cfdec725d",
++        "3f74c7c7b9c924769cf3c5b4d52d21aa63e9a2ccbf16f5d26c30ebb31b99699d",
++        "9e9a57439a98034732e94d841bb7065b56e3a065654361ca9cc07135e9fbe17c",
++        "807e9bc9e28d57ec0cb6daf04c317b3e13de5899c0282ee0f76c009198739350",
++        "1f10b2204cc77c919301f20ff90461c3df1b6e6cb148be1c2d22107f4851d423",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "11eec6fcc7a47c50c8d7fb7ac69920c33c70cb8df6b7a0d8eb751c813fb1928a",
++        "2254aa20804aaa804085830ae0b6e9105989c97849d2037e892872d13247c30a",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "aba7980581027ad5fc74a27ee4d64aad74932fdb32694967242d03fc50290d1f",
++        "8f3a655545fc5b4cbf12b5eb8a154fccb0c1144423a1450511f44005a3d574a2",
++        "b2931d41740490a8d931cbe0cfe9ac20deb66cca606e679f52522f7f534c9fd7",
++        "4df7a6a7be64b35bbccf60b5c115697f9ea3421d22674ae67135dde375fcca1f",
++        "3b0559bb8432f28937efe6ca193ef54a8506d0075d73fd7406b9b116c6a11063",
++        "5a15fdba22669e0fdd06e10dcce6320879e1f7398fbc910cd0677b50672a78c4",
++        "5fedab561b430bfaef520f06d269e21e999e564fb893465aa2d7d21ed06527ab",
++        "9e2434820dd2ba44ad70a66e5b2a9993a2a8b047ceabc3e850e4858cbf3f91c3"
++      ],
++      "orderedSha256": [
++        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
++        "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
++      ],
++      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
++      "descriptors": [
++        "(Ljava/nio/file/Path;Ljava/util/Set;)Ljava/util/stream/Stream;",
++        "(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;"
++      ]
++    },
++    "new": {
++      "commit": "4e33671a32cbad26d39404389165d07c35770070",
++      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
++        "5ae4f6a5f844d34db58ada075bdb31b58de138e54288a0b9e6a3996329993cb6",
++        "635c839cad0212b7e9a27dea5823928b5b7010e5ca2d17985fb688d84d48fdb3",
++        "a94ad5b4d2bbbd20b6f38165751bddceb227420eb92c36160116fb5eaa157b9e",
++        "0e8aff5fe29b7b7c8e643d75eafc98cd754a3ceb5d215908cd69dd366b0286dd",
++        "229b10c12289bc0e28e3b9b64de3a61a6b736eb8afa145fdf4c33ff008736cb5",
++        "75e3810c681735e7a088294668f893667d193c87905e5bc976e03ccd939602c6",
++        "47ebf67979b231bf215ed967a63b2a142c8a2c1c7b219c0206559985e802b836",
++        "7ad0a3b98a9c284d6abc5beaf53f25ba4c4eb2b46b2402698a58774017c00dc0",
++        "0ab4654db5d86c019107dccad0d9c6c7fa8b3a9847e0a1f0b21b8384e43d9941",
++        "2cafa2629da49edd54eb4df6d15f628c2d80eec293f37cd561f1fe78e7bcff9d",
++        "9a84f5863407acf2bf9cf280cd02f5a518952a386de61df3b8c5db8cfdec725d",
++        "3f74c7c7b9c924769cf3c5b4d52d21aa63e9a2ccbf16f5d26c30ebb31b99699d",
++        "9e9a57439a98034732e94d841bb7065b56e3a065654361ca9cc07135e9fbe17c",
++        "807e9bc9e28d57ec0cb6daf04c317b3e13de5899c0282ee0f76c009198739350",
++        "1f10b2204cc77c919301f20ff90461c3df1b6e6cb148be1c2d22107f4851d423",
++        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
++        "11eec6fcc7a47c50c8d7fb7ac69920c33c70cb8df6b7a0d8eb751c813fb1928a",
++        "2254aa20804aaa804085830ae0b6e9105989c97849d2037e892872d13247c30a",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "aba7980581027ad5fc74a27ee4d64aad74932fdb32694967242d03fc50290d1f",
++        "8f3a655545fc5b4cbf12b5eb8a154fccb0c1144423a1450511f44005a3d574a2",
++        "b2931d41740490a8d931cbe0cfe9ac20deb66cca606e679f52522f7f534c9fd7",
++        "4df7a6a7be64b35bbccf60b5c115697f9ea3421d22674ae67135dde375fcca1f",
++        "3b0559bb8432f28937efe6ca193ef54a8506d0075d73fd7406b9b116c6a11063",
++        "5a15fdba22669e0fdd06e10dcce6320879e1f7398fbc910cd0677b50672a78c4",
++        "5fedab561b430bfaef520f06d269e21e999e564fb893465aa2d7d21ed06527ab",
++        "9e2434820dd2ba44ad70a66e5b2a9993a2a8b047ceabc3e850e4858cbf3f91c3"
++      ],
++      "orderedSha256": [
++        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
++        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
++      ],
++      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
++      "descriptors": [
++        "(Ljava/nio/file/Path;Ljava/util/Set;)Ljava/util/stream/Stream;",
++        "(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/nio/file/Path;Ljava/util/Set;)Ljava/util/stream/Stream;",
++      "(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set)",
++    "exit": 1,
++    "seconds": 0.052,
++    "outputSha256": "4ab4e072fd9f6c1453638b5b0346e0fa48c5ffda4d21de4aeb40d4cd3d58bfe9",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++          "uri": null,
++          "line": 107
++        }
++      ],
++      "output": "\u2717 com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++      "work": "$WORK/checker-mspkxn4r/overload-0"
++    },
++    "firstBlocker": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++  },
++  "firstBlocker": "review the recorded exact overloads",
++  "nativeOverloads": [
++    {
++      "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set)",
++      "exit": 1,
++      "seconds": 0.052,
++      "outputSha256": "4ab4e072fd9f6c1453638b5b0346e0fa48c5ffda4d21de4aeb40d4cd3d58bfe9",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++            "uri": null,
++            "line": 107
++          }
++        ],
++        "output": "\u2717 com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++        "work": "$WORK/checker-mspkxn4r/overload-0"
++      },
++      "firstBlocker": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++    },
++    {
++      "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.util.stream.Stream)",
++      "exit": 1,
++      "seconds": 0.036,
++      "outputSha256": "aa2829524382d23c05fdc0247cfe982ff398aff8c72fefd0c609a65c4906c758",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.util.stream.Stream)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.util.stream.Stream) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++            "uri": null,
++            "line": 60
++          }
++        ],
++        "output": "\u2717 com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.util.stream.Stream) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++        "work": "$WORK/checker-mspkxn4r/overload-1"
++      },
++      "firstBlocker": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++    }
++  ],
++  "elapsedSeconds": 0.157,
++  "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-native/03/current/whatjdk-12.json
+@@ -0,0 +1,106 @@
++{
++  "id": "whatjdk-12",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.iodesystems.whatjdk.ClassEntryExtractor#next",
++  "observer": "Read an ordinary Java class and observe its class entry and referenced types.",
++  "revisions": {
++    "old": "206adaf9371d37dd308122f5f17e0f7cdaf3568c",
++    "new": "e5574c3c06f9db307b96baa5937f9c19039df605"
++  },
++  "result": "open",
++  "readerSha256": "c7839d4ddbb898e9f1a6a55b6bf93d796cb9e839db1a81a0eb369032efcf8d0a",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "206adaf9371d37dd308122f5f17e0f7cdaf3568c",
++      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8"
++      ],
++      "orderedSha256": [
++        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8"
++      ],
++      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
++      "descriptors": [
++        "()Lcom/iodesystems/whatjdk/ClassEntry;",
++        "()Ljava/lang/Object;"
++      ]
++    },
++    "new": {
++      "commit": "e5574c3c06f9db307b96baa5937f9c19039df605",
++      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085"
++      ],
++      "orderedSha256": [
++        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085"
++      ],
++      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
++      "descriptors": [
++        "()Lcom/iodesystems/whatjdk/ClassEntry;",
++        "()Ljava/lang/Object;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "()Lcom/iodesystems/whatjdk/ClassEntry;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.iodesystems.whatjdk.ClassEntryExtractor#next()",
++    "exit": 1,
++    "seconds": 0.01,
++    "outputSha256": "3435985dfbf796bb4fc152eb8cb60da9cfb9a9b077ad53312b9f9f48aa2ec9ec",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.iodesystems.whatjdk.ClassEntryExtractor#next()",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.iodesystems.whatjdk.ClassEntryExtractor#next() cannot be verified: next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet",
++          "uri": null,
++          "line": 37
++        }
++      ],
++      "output": "\u2717 com.iodesystems.whatjdk.ClassEntryExtractor#next() cannot be verified: next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet\n",
++      "work": "$WORK/checker-2amvn0j8/overload-0"
++    },
++    "firstBlocker": "next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet"
++  },
++  "firstBlocker": "next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet",
++  "elapsedSeconds": 0.066,
++  "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-finite/03/commons-text-775.json
+@@ -0,0 +1,249 @@
++{
++  "entry": "org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
++  "observer": "The exact capitalized string and separators returned for the specified ASCII words and delimiters.",
++  "domainBasis": "Within these explicitly listed inputs, lower-case each word and uppercase its initial. Empty strings and null pass through. UTC and English locale are fixed.",
++  "cases": [
++    {
++      "args": [
++        "hELLO wORLD",
++        " "
++      ],
++      "expected": {
++        "return": "Hello World"
++      }
++    },
++    {
++      "args": [
++        "rED,bLUE",
++        ","
++      ],
++      "expected": {
++        "return": "Red,Blue"
++      }
++    },
++    {
++      "args": [
++        "twO-FOLD nAME",
++        "- "
++      ],
++      "expected": {
++        "return": "Two-Fold Name"
++      }
++    },
++    {
++      "args": [
++        "",
++        ","
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        null,
++        " "
++      ],
++      "expected": {
++        "return": null
++      }
++    }
++  ],
++  "operandScope": "runtime",
++  "probeSha256": "d075eede429cd8b293b7c4b565618886e40721f9caaa8cafe1a4a8bcd3640ebc",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "0c743a41b737519d631100cac2b373643bb8126aa81ba212dfede4b364d78345",
++  "lookupSha256": "9741b5b930d633aad3a52416527d8bc3b67a5935d9edd2f506100506dfa9e9b7",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "2b02f079f088a41e5bda78274872b3af3863a560",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "classpath": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "dependency": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Hello World"
++            },
++            {
++              "return": "Hello World"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Red,Blue"
++            },
++            {
++              "return": "Red,Blue"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Two-Fold Name"
++            },
++            {
++              "return": "Two-Fold Name"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.StringUtils"
++      ]
++    },
++    "new": {
++      "commit": "267f1d14a96824e60451bcb3e8e1fb8a7e882a10",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "classpath": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "dependency": "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Hello World"
++            },
++            {
++              "return": "Hello World"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Red,Blue"
++            },
++            {
++              "return": "Red,Blue"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Two-Fold Name"
++            },
++            {
++              "return": "Two-Fold Name"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.StringUtils"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeClassLookup": "e78038c73163797a854e1fc4fd20fc892ccbe87ab2e51185ac5da972d9439bd7",
++    "UpgradeObservation": "4458672664859b208593e55a5a3197334370d3a2663d504a8f74a206981bdc45",
++    "UpgradeProbe": "d493ac559de33d9feb35ed18760fd1c91ad99df64f00f14dbe86ec6a0c6855ef",
++    "UpgradeTrace": "f4c79150d4d539f31e65e9f154b4f3c6d0a6adce73a391e8284aad0de8b4aa95"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 11.612,
++  "specSha256": "ff7e04724696598bb9beb16167305590e56097f75dfb5cabe2eb41a7f7ac5bdb"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-finite/03/compsuite-i-62.json
+@@ -0,0 +1,10 @@
++{
++  "status": "open",
++  "entry": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor#invoke",
++  "revisions": {
++    "old": "28119f2ae62ff9101e874a70a87baa639ecc681b",
++    "new": "a7daf452b1db8a548d67b64d030d7d04f862b016"
++  },
++  "reason": "No finite caller observation is registered for this scope.",
++  "elapsedSeconds": 0.0
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-finite/03/compsuite-i-80.json
+@@ -0,0 +1,182 @@
++{
++  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++  "observer": "Observe the logger name behind the INFO output stream for a caller-relative short name and for an explicit full name.",
++  "domainBasis": "The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger. Both original POMs select logback-classic 1.1.2 for the registered test, including its logback-core dependency. That backend is fixed across the two runs. With the production API alone the old and new versions both used NOP.",
++  "cases": [
++    {
++      "args": [
++        "MyLogger"
++      ],
++      "expected": {
++        "return": "UpgradeProbe.MyLogger"
++      }
++    },
++    {
++      "args": [
++        "example.full.name"
++      ],
++      "expected": {
++        "return": "example.full.name"
++      }
++    }
++  ],
++  "operandScope": "runtime",
++  "probeSha256": "6fc25fee9e5643ede0b9e3908a61807d4a0563b8d7a0a0b1aa5ed171e305bed4",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "0c743a41b737519d631100cac2b373643bb8126aa81ba212dfede4b364d78345",
++  "lookupSha256": "9741b5b930d633aad3a52416527d8bc3b67a5935d9edd2f506100506dfa9e9b7",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "classpath": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22",
++        "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
++      ],
++      "dependency": "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "UpgradeProbe.MyLogger"
++            },
++            {
++              "return": "UpgradeProbe.MyLogger"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "example.full.name"
++            },
++            {
++              "return": "example.full.name"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.slf4j.ILoggerFactory",
++        "org.slf4j.Logger",
++        "org.slf4j.LoggerFactory",
++        "org.slf4j.helpers.NOPLoggerFactory",
++        "org.slf4j.helpers.SubstituteLoggerFactory",
++        "org.slf4j.spi.LocationAwareLogger",
++        "org.slf4j.spi.LoggerFactoryBinder"
++      ]
++    },
++    "new": {
++      "commit": "938bbeb343eb5fd465517c713fe9065ce997058a",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "classpath": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5",
++        "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22",
++        "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
++      ],
++      "dependency": "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.slf4j.ILoggerFactory",
++        "org.slf4j.IMarkerFactory",
++        "org.slf4j.Logger",
++        "org.slf4j.LoggerFactory",
++        "org.slf4j.Marker",
++        "org.slf4j.event.LoggingEvent",
++        "org.slf4j.helpers.BasicMDCAdapter",
++        "org.slf4j.helpers.BasicMDCAdapter$1",
++        "org.slf4j.helpers.BasicMarkerFactory",
++        "org.slf4j.helpers.MarkerIgnoringBase",
++        "org.slf4j.helpers.NOPLogger",
++        "org.slf4j.helpers.NOPLoggerFactory",
++        "org.slf4j.helpers.NOPMDCAdapter",
++        "org.slf4j.helpers.NOPServiceProvider",
++        "org.slf4j.helpers.NamedLoggerBase",
++        "org.slf4j.helpers.SubstituteLoggerFactory",
++        "org.slf4j.helpers.SubstituteServiceProvider",
++        "org.slf4j.helpers.Util",
++        "org.slf4j.spi.LoggingEventBuilder",
++        "org.slf4j.spi.MDCAdapter",
++        "org.slf4j.spi.SLF4JServiceProvider"
++      ]
++    }
++  },
++  "status": "changed",
++  "originalFixtures": [],
++  "runtimeCompanions": [
++    {
++      "mavenPath": "ch/qos/logback/logback-classic/1.1.2/logback-classic-1.1.2.jar",
++      "sha256": "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22"
++    },
++    {
++      "mavenPath": "ch/qos/logback/logback-core/1.1.2/logback-core-1.1.2.jar",
++      "sha256": "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
++    }
++  ],
++  "originalInvocation": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeClassLookup": "906648b9ea753c3ae3f6055492bf4192cd042ae708b6fea1f6129bf485f882eb",
++    "UpgradeObservation": "159f2bf0ba81aac6c441266b6daa215d5037ae87d7776769ff59df58ddc504d0",
++    "UpgradeProbe": "5998336ad04eddf16db692500cb64b2af4d27499c36ac8bd0d869cfeec53f718",
++    "UpgradeTrace": "0a551b0a850f4da3a445f361979b522d0b5e9fc01361131ef62673e3c8265bd1"
++  },
++  "differences": [
++    0,
++    1
++  ],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 5.237,
++  "specSha256": "a266a2725a59aa69863c56e11b0489f4e14c66c72d3416a367a86e854b9fac44"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-finite/03/ea-async-27.json
+@@ -0,0 +1,419 @@
++{
++  "entry": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
++  "observer": "Transform and execute eight fixed bytecode/future combinations. Read completion at return and the eventual integer.",
++  "domainBasis": "Each class has zero through three extra uninitialized stack copies across await. The already resolved input completes synchronously. The pending input completes after the argument is supplied. The generated function constructs the integer represented by that argument. The same original class bytes are passed on both releases.",
++  "cases": [
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjAHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAhAAQAAgAAABW7ABBZK8AAErgAGMAAGrcAHbgAILAAAAAAACIAAAAEAAEADgAA",
++        "true",
++        "100"
++      ],
++      "expected": {
++        "return": "true/100"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjAHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAhAAQAAgAAABW7ABBZK8AAErgAGMAAGrcAHbgAILAAAAAAACIAAAAEAAEADgAA",
++        "false",
++        "101"
++      ],
++      "expected": {
++        "return": "false/101"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjEHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAjAAUAAgAAABe7ABBZWSvAABK4ABjAABq3AB1XuAAgsAAAAAAAIgAAAAQAAQAOAAA=",
++        "true",
++        "110"
++      ],
++      "expected": {
++        "return": "true/110"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjEHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAjAAUAAgAAABe7ABBZWSvAABK4ABjAABq3AB1XuAAgsAAAAAAAIgAAAAQAAQAOAAA=",
++        "false",
++        "111"
++      ],
++      "expected": {
++        "return": "false/111"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjIHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAlAAYAAgAAABm7ABBZWVkrwAASuAAYwAAatwAdV1e4ACCwAAAAAAAiAAAABAABAA4AAA==",
++        "true",
++        "120"
++      ],
++      "expected": {
++        "return": "true/120"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjIHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAlAAYAAgAAABm7ABBZWVkrwAASuAAYwAAatwAdV1e4ACCwAAAAAAAiAAAABAABAA4AAA==",
++        "false",
++        "121"
++      ],
++      "expected": {
++        "return": "false/121"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjMHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAnAAcAAgAAABu7ABBZWVlZK8AAErgAGMAAGrcAHVdXV7gAILAAAAAAACIAAAAEAAEADgAA",
++        "true",
++        "130"
++      ],
++      "expected": {
++        "return": "true/130"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjMHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAnAAcAAgAAABu7ABBZWVlZK8AAErgAGMAAGrcAHVdXV7gAILAAAAAAACIAAAAEAAEADgAA",
++        "false",
++        "131"
++      ],
++      "expected": {
++        "return": "false/131"
++      }
++    }
++  ],
++  "operandScope": "runtime",
++  "probeSha256": "d27b7bd79486cbc164fd45498f24cb24f0f18833b40b31fe160492b38b79c612",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "0c743a41b737519d631100cac2b373643bb8126aa81ba212dfede4b364d78345",
++  "lookupSha256": "9741b5b930d633aad3a52416527d8bc3b67a5935d9edd2f506100506dfa9e9b7",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
++      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
++      "classpath": [
++        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
++        "f2820ea6ef069b83f37d805f5cec58b2872a25650f5f95b4f3cc572156323df0",
++        "62b2c0d818fde5c52cf6404aa10836dbb170a2c3fa8466e656f0f991732fa01f",
++        "02317d9ed739dab470a96f44de712fde51a811362ca26852b34324388e61257c",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "dependency": "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 24,
++      "resources": 1,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/100"
++            },
++            {
++              "return": "true/100"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/101"
++            },
++            {
++              "return": "false/101"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/110"
++            },
++            {
++              "return": "true/110"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/111"
++            },
++            {
++              "return": "false/111"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/120"
++            },
++            {
++              "return": "true/120"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 5,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/121"
++            },
++            {
++              "return": "false/121"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 6,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/130"
++            },
++            {
++              "return": "true/130"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 7,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/131"
++            },
++            {
++              "return": "false/131"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.AnnotationVisitor",
++        "org.objectweb.asm.AnnotationWriter",
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ByteVector",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.ClassWriter",
++        "org.objectweb.asm.Context",
++        "org.objectweb.asm.CurrentFrame",
++        "org.objectweb.asm.FieldVisitor",
++        "org.objectweb.asm.FieldWriter",
++        "org.objectweb.asm.Frame",
++        "org.objectweb.asm.Handle",
++        "org.objectweb.asm.Handler",
++        "org.objectweb.asm.Label",
++        "org.objectweb.asm.MethodVisitor",
++        "org.objectweb.asm.MethodWriter",
++        "org.objectweb.asm.ModuleVisitor",
++        "org.objectweb.asm.ModuleWriter",
++        "org.objectweb.asm.Opcodes",
++        "org.objectweb.asm.Symbol",
++        "org.objectweb.asm.SymbolTable",
++        "org.objectweb.asm.SymbolTable$Entry",
++        "org.objectweb.asm.Type"
++      ]
++    },
++    "new": {
++      "commit": "a99e044708fac3654f621649d89bf1820bcd44a0",
++      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
++      "classpath": [
++        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
++        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
++        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "dependency": "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 24,
++      "resources": 1,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/100"
++            },
++            {
++              "return": "true/100"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/101"
++            },
++            {
++              "return": "false/101"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/110"
++            },
++            {
++              "return": "true/110"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/111"
++            },
++            {
++              "return": "false/111"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/120"
++            },
++            {
++              "return": "true/120"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 5,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/121"
++            },
++            {
++              "return": "false/121"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 6,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/130"
++            },
++            {
++              "return": "true/130"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 7,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/131"
++            },
++            {
++              "return": "false/131"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.AnnotationVisitor",
++        "org.objectweb.asm.AnnotationWriter",
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ByteVector",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassTooLargeException",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.ClassWriter",
++        "org.objectweb.asm.Context",
++        "org.objectweb.asm.CurrentFrame",
++        "org.objectweb.asm.FieldVisitor",
++        "org.objectweb.asm.FieldWriter",
++        "org.objectweb.asm.Frame",
++        "org.objectweb.asm.Handle",
++        "org.objectweb.asm.Handler",
++        "org.objectweb.asm.Label",
++        "org.objectweb.asm.MethodTooLargeException",
++        "org.objectweb.asm.MethodVisitor",
++        "org.objectweb.asm.MethodWriter",
++        "org.objectweb.asm.ModuleVisitor",
++        "org.objectweb.asm.ModuleWriter",
++        "org.objectweb.asm.Opcodes",
++        "org.objectweb.asm.Symbol",
++        "org.objectweb.asm.SymbolTable",
++        "org.objectweb.asm.SymbolTable$Entry",
++        "org.objectweb.asm.Type"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeClassLookup": "906648b9ea753c3ae3f6055492bf4192cd042ae708b6fea1f6129bf485f882eb",
++    "UpgradeObservation": "159f2bf0ba81aac6c441266b6daa215d5037ae87d7776769ff59df58ddc504d0",
++    "UpgradeProbe$1": "92bfade61d193455621fb76ee748ede8d628742399186ac09c23973742a90a52",
++    "UpgradeProbe$AF": "ec59f52e6c5b3b10c7864b8945a89a98836e374915b1fbe9a775d80c24d77e44",
++    "UpgradeProbe$Loader": "6df9b262cec70d26ab314e6951d7b9a1a3ccd3a1c743955e1488f8d222dc80a4",
++    "UpgradeProbe": "840979dac8afabb76c8e3be534eec34429c2e09d83246ad25610b4bb0c77176b",
++    "UpgradeTrace": "0a551b0a850f4da3a445f361979b522d0b5e9fc01361131ef62673e3c8265bd1"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 21.094,
++  "specSha256": "122eb0714c3ec4b4d856cab8aa17709903691056cbc15e9173bb92502c3daa0b"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-finite/03/incremental-analysis-28.json
+@@ -0,0 +1,286 @@
++{
++  "entry": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;",
++  "observer": "Which compiled classes should be analysed for one changed source file? Compare the original finder\u2019s selected binary names.",
++  "domainBasis": "Two independently inspected classfiles carry SourceFile values Empty.java and Numbers.java. A matching changed source selects its class, and an unrelated source selects none. The two earlier input files have no SourceFile attribute and supply explicit negative controls.",
++  "cases": [
++    {
++      "args": [
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAApFbXB0eS5qYXZhDAAEAAUBABhldmFsdWF0aW9uL2ZpeHR1cmUvRW1wdHkBABBqYXZhL2xhbmcvT2JqZWN0ACEAAgADAAAAAAABAAEABAAFAAEABgAAABEAAQABAAAABSq3AAGxAAAAAAABAAcAAAACAAg=",
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAAxOdW1iZXJzLmphdmEMAAQABQEAGmV2YWx1YXRpb24vZml4dHVyZS9OdW1iZXJzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAQAHAAAAAgAI",
++        "Empty"
++      ],
++      "expected": {
++        "return": "evaluation.fixture.Empty"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAApFbXB0eS5qYXZhDAAEAAUBABhldmFsdWF0aW9uL2ZpeHR1cmUvRW1wdHkBABBqYXZhL2xhbmcvT2JqZWN0ACEAAgADAAAAAAABAAEABAAFAAEABgAAABEAAQABAAAABSq3AAGxAAAAAAABAAcAAAACAAg=",
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAAxOdW1iZXJzLmphdmEMAAQABQEAGmV2YWx1YXRpb24vZml4dHVyZS9OdW1iZXJzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAQAHAAAAAgAI",
++        "Numbers"
++      ],
++      "expected": {
++        "return": "evaluation.fixture.Numbers"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAApFbXB0eS5qYXZhDAAEAAUBABhldmFsdWF0aW9uL2ZpeHR1cmUvRW1wdHkBABBqYXZhL2xhbmcvT2JqZWN0ACEAAgADAAAAAAABAAEABAAFAAEABgAAABEAAQABAAAABSq3AAGxAAAAAAABAAcAAAACAAg=",
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAAxOdW1iZXJzLmphdmEMAAQABQEAGmV2YWx1YXRpb24vZml4dHVyZS9OdW1iZXJzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAQAHAAAAAgAI",
++        "Missing"
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQACgoAAwAHBwAIBwAJAQAGPGluaXQ+AQADKClWAQAEQ29kZQwABAAFAQAYZXZhbHVhdGlvbi9maXh0dXJlL0VtcHR5AQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAA==",
++        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFJAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAaZXZhbHVhdGlvbi9maXh0dXJlL051bWJlcnMBABBqYXZhL2xhbmcvT2JqZWN0AQAFbGFiZWwAMQAEAAUAAAACAAIABgAHAAAAGQAIAAkAAQAKAAAAAgALAAMAAQAMAA0AAQAOAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEADwAQAAEADgAAABAAAgACAAAABBsEYKwAAAAAAAEADwARAAEADgAAABIABAADAAAABh8UAAJhrQAAAAAAAA==",
++        "Empty"
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQACgoAAwAHBwAIBwAJAQAGPGluaXQ+AQADKClWAQAEQ29kZQwABAAFAQAYZXZhbHVhdGlvbi9maXh0dXJlL0VtcHR5AQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAA==",
++        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFJAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAaZXZhbHVhdGlvbi9maXh0dXJlL051bWJlcnMBABBqYXZhL2xhbmcvT2JqZWN0AQAFbGFiZWwAMQAEAAUAAAACAAIABgAHAAAAGQAIAAkAAQAKAAAAAgALAAMAAQAMAA0AAQAOAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEADwAQAAEADgAAABAAAgACAAAABBsEYKwAAAAAAAEADwARAAEADgAAABIABAADAAAABh8UAAJhrQAAAAAAAA==",
++        "Numbers"
++      ],
++      "expected": {
++        "return": ""
++      }
++    }
++  ],
++  "operandScope": "runtime",
++  "probeSha256": "d25fa528e50e13e335630043ef7cdcb89affbd22e89757e14d918149a38a8270",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "0c743a41b737519d631100cac2b373643bb8126aa81ba212dfede4b364d78345",
++  "lookupSha256": "9741b5b930d633aad3a52416527d8bc3b67a5935d9edd2f506100506dfa9e9b7",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "f4633c66214da5bca3761136e88c71ec3b1eead0",
++      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
++      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
++      "classpath": [
++        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
++        "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
++      ],
++      "dependency": "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "evaluation.fixture.Empty"
++            },
++            {
++              "return": "evaluation.fixture.Empty"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "evaluation.fixture.Numbers"
++            },
++            {
++              "return": "evaluation.fixture.Numbers"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.Context"
++      ]
++    },
++    "new": {
++      "commit": "4e33671a32cbad26d39404389165d07c35770070",
++      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
++      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
++      "classpath": [
++        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
++        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
++      ],
++      "dependency": "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "evaluation.fixture.Empty"
++            },
++            {
++              "return": "evaluation.fixture.Empty"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "evaluation.fixture.Numbers"
++            },
++            {
++              "return": "evaluation.fixture.Numbers"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.Context"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeClassLookup": "e78038c73163797a854e1fc4fd20fc892ccbe87ab2e51185ac5da972d9439bd7",
++    "UpgradeObservation": "4458672664859b208593e55a5a3197334370d3a2663d504a8f74a206981bdc45",
++    "UpgradeTrace": "f4c79150d4d539f31e65e9f154b4f3c6d0a6adce73a391e8284aad0de8b4aa95",
++    "com/worksap/tools/spotbugs/maven/incremental/UpgradeProbe": "a3fb84ee8e67f33ab95a2af9a7f8e66ca7e18f76f716586683d20e88117ada9e"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 12.705,
++  "specSha256": "09c3f0c599d933898e5cfcbcd0bf283147380e2b297ec515184e1ae71a205981"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-final-finite/03/whatjdk-12.json
+@@ -0,0 +1,219 @@
++{
++  "entry": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
++  "observer": "Read the classfile, fields and methods delivered by the original WhatJDK archive reader. The four inputs cover reference arrays, overloads, a long field and an empty class.",
++  "domainBasis": "The input bytes and classfile declarations were fixed independently of application execution. Each class is packaged as the only member of a ZIP and consumed through the original archive iterator.",
++  "cases": [
++    {
++      "args": [
++        "yv66vgAAADQAEAoAAwANBwAOBwAPAQAFdG90YWwBAAFKAQAFbmFtZXMBABNbTGphdmEvbGFuZy9TdHJpbmc7AQAGPGluaXQ+AQADKClWAQAEQ29kZQEABmNob29zZQEAKChbTGphdmEvbGFuZy9TdHJpbmc7SSlMamF2YS9sYW5nL09iamVjdDsMAAgACQEAJmV2YWx1YXRpb24vZml4dHVyZS9BcnJheXNBbmRSZWZlcmVuY2VzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAIABAAEAAUAAAABAAYABwAAAAIAAQAIAAkAAQAKAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEACwAMAAEACgAAABAAAgADAAAABCscMrAAAAAAAAA="
++      ],
++      "expected": {
++        "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQACgoAAwAHBwAIBwAJAQAGPGluaXQ+AQADKClWAQAEQ29kZQwABAAFAQAYZXZhbHVhdGlvbi9maXh0dXJlL0VtcHR5AQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAA=="
++      ],
++      "expected": {
++        "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFKAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAcZXZhbHVhdGlvbi9maXh0dXJlL0xvbmdGaWVsZAEAEGphdmEvbGFuZy9PYmplY3QBAAVsYWJlbAAxAAQABQAAAAIAAgAGAAcAAAAZAAgACQABAAoAAAACAAsAAwABAAwADQABAA4AAAARAAEAAQAAAAUqtwABsQAAAAAAAQAPABAAAQAOAAAAEAACAAIAAAAEGwRgrAAAAAAAAQAPABEAAQAOAAAAEgAEAAMAAAAGHxQAAmGtAAAAAAAA"
++      ],
++      "expected": {
++        "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFJAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAaZXZhbHVhdGlvbi9maXh0dXJlL051bWJlcnMBABBqYXZhL2xhbmcvT2JqZWN0AQAFbGFiZWwAMQAEAAUAAAACAAIABgAHAAAAGQAIAAkAAQAKAAAAAgALAAMAAQAMAA0AAQAOAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEADwAQAAEADgAAABAAAgACAAAABBsEYKwAAAAAAAEADwARAAEADgAAABIABAADAAAABh8UAAJhrQAAAAAAAA=="
++      ],
++      "expected": {
++        "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++      }
++    }
++  ],
++  "operandScope": "runtime",
++  "probeSha256": "872f10271ddc3fb0b3bf843c4ee11297bd31e6c01fdfe9852a7a74d12680dc14",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "0c743a41b737519d631100cac2b373643bb8126aa81ba212dfede4b364d78345",
++  "lookupSha256": "9741b5b930d633aad3a52416527d8bc3b67a5935d9edd2f506100506dfa9e9b7",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "206adaf9371d37dd308122f5f17e0f7cdaf3568c",
++      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
++      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
++      "classpath": [
++        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8"
++      ],
++      "dependency": "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++            },
++            {
++              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++            },
++            {
++              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            },
++            {
++              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            },
++            {
++              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.Context"
++      ]
++    },
++    "new": {
++      "commit": "e5574c3c06f9db307b96baa5937f9c19039df605",
++      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
++      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
++      "classpath": [
++        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085"
++      ],
++      "dependency": "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++            },
++            {
++              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++            },
++            {
++              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            },
++            {
++              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            },
++            {
++              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.Context"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeClassLookup": "e78038c73163797a854e1fc4fd20fc892ccbe87ab2e51185ac5da972d9439bd7",
++    "UpgradeObservation": "4458672664859b208593e55a5a3197334370d3a2663d504a8f74a206981bdc45",
++    "UpgradeTrace": "f4c79150d4d539f31e65e9f154b4f3c6d0a6adce73a391e8284aad0de8b4aa95",
++    "com/iodesystems/whatjdk/UpgradeProbe$1": "513889c08c5463fca230569f7cc3be52e30afbc41b72c9c97cd9586657753827",
++    "com/iodesystems/whatjdk/UpgradeProbe": "2eea25b749f3563b19628dc08a40c80e7ec322c603a9c5e137bacadfdadf5a68"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 10.306,
++  "specSha256": "2a4b25018cdfde34a5d83d652d50a1b49cf3699f123c7a4cfd08b5c48c60f7f2"
++}

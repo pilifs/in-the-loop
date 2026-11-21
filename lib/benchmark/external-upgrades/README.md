@@ -40,6 +40,8 @@ When a scenario throws before entering its selected method, `build.py --review-u
 
 For a missing-class exception the workflow also tries the exact binary name on both original classpaths in fresh JVMs, with initialization disabled. It records every provider visible at the subject JDK's release and the symbolic references in each version of the upgraded JAR. This identifies a class that the old caller actually loaded and a newly required class that neither classpath supplies. An unrelated string literal contributes no linkage evidence.
 
+Check the current published measurements with `python3 lib/benchmark/external-upgrades/pin.py --check lib/benchmark/external-upgrades/v2.json` and `python3 lib/benchmark/external-upgrades/current_report.py --check`. The report command checks the source commit and output hashes of all seven caller batches, the original caller bindings, both repetitions and the independent class lookups. [Current 32-case report](../../../llm-dlc/loops/external-upgrade-current-cases.md)
+
 ## Reproduce an open calibration
 
 Examples 348 and 349 include a source-build reproduction in their own folders. For 350, 351 or 352, obtain the two commits and the JARs in that example's `materials.json`. Give the script the local Git repository, directory of named JARs, recorded subject JDK and an empty output location. It checks every JAR digest, the parent relationship, the POM-only tracked diff, loaded class origins and the original caller's observations. For the two named JUnit 4 tests it requires the specified class and method to appear exactly once in fresh Surefire XML.

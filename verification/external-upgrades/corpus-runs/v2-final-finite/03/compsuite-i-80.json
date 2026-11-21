@@ -1,0 +1,182 @@
+{
+  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
+  "observer": "Observe the logger name behind the INFO output stream for a caller-relative short name and for an explicit full name.",
+  "domainBasis": "The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger. Both original POMs select logback-classic 1.1.2 for the registered test, including its logback-core dependency. That backend is fixed across the two runs. With the production API alone the old and new versions both used NOP.",
+  "cases": [
+    {
+      "args": [
+        "MyLogger"
+      ],
+      "expected": {
+        "return": "UpgradeProbe.MyLogger"
+      }
+    },
+    {
+      "args": [
+        "example.full.name"
+      ],
+      "expected": {
+        "return": "example.full.name"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "6fc25fee9e5643ede0b9e3908a61807d4a0563b8d7a0a0b1aa5ed171e305bed4",
+  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
+  "tracerSha256": "0c743a41b737519d631100cac2b373643bb8126aa81ba212dfede4b364d78345",
+  "lookupSha256": "9741b5b930d633aad3a52416527d8bc3b67a5935d9edd2f506100506dfa9e9b7",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
+      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
+      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
+      "classpath": [
+        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
+        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
+        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
+        "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22",
+        "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
+      ],
+      "dependency": "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 11,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "UpgradeProbe.MyLogger"
+            },
+            {
+              "return": "UpgradeProbe.MyLogger"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "example.full.name"
+            },
+            {
+              "return": "example.full.name"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.slf4j.ILoggerFactory",
+        "org.slf4j.Logger",
+        "org.slf4j.LoggerFactory",
+        "org.slf4j.helpers.NOPLoggerFactory",
+        "org.slf4j.helpers.SubstituteLoggerFactory",
+        "org.slf4j.spi.LocationAwareLogger",
+        "org.slf4j.spi.LoggerFactoryBinder"
+      ]
+    },
+    "new": {
+      "commit": "938bbeb343eb5fd465517c713fe9065ce997058a",
+      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
+      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
+      "classpath": [
+        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
+        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
+        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5",
+        "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22",
+        "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
+      ],
+      "dependency": "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 11,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "NOP"
+            },
+            {
+              "return": "NOP"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "NOP"
+            },
+            {
+              "return": "NOP"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.slf4j.ILoggerFactory",
+        "org.slf4j.IMarkerFactory",
+        "org.slf4j.Logger",
+        "org.slf4j.LoggerFactory",
+        "org.slf4j.Marker",
+        "org.slf4j.event.LoggingEvent",
+        "org.slf4j.helpers.BasicMDCAdapter",
+        "org.slf4j.helpers.BasicMDCAdapter$1",
+        "org.slf4j.helpers.BasicMarkerFactory",
+        "org.slf4j.helpers.MarkerIgnoringBase",
+        "org.slf4j.helpers.NOPLogger",
+        "org.slf4j.helpers.NOPLoggerFactory",
+        "org.slf4j.helpers.NOPMDCAdapter",
+        "org.slf4j.helpers.NOPServiceProvider",
+        "org.slf4j.helpers.NamedLoggerBase",
+        "org.slf4j.helpers.SubstituteLoggerFactory",
+        "org.slf4j.helpers.SubstituteServiceProvider",
+        "org.slf4j.helpers.Util",
+        "org.slf4j.spi.LoggingEventBuilder",
+        "org.slf4j.spi.MDCAdapter",
+        "org.slf4j.spi.SLF4JServiceProvider"
+      ]
+    }
+  },
+  "status": "changed",
+  "originalFixtures": [],
+  "runtimeCompanions": [
+    {
+      "mavenPath": "ch/qos/logback/logback-classic/1.1.2/logback-classic-1.1.2.jar",
+      "sha256": "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22"
+    },
+    {
+      "mavenPath": "ch/qos/logback/logback-core/1.1.2/logback-core-1.1.2.jar",
+      "sha256": "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
+    }
+  ],
+  "originalInvocation": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "906648b9ea753c3ae3f6055492bf4192cd042ae708b6fea1f6129bf485f882eb",
+    "UpgradeObservation": "159f2bf0ba81aac6c441266b6daa215d5037ae87d7776769ff59df58ddc504d0",
+    "UpgradeProbe": "5998336ad04eddf16db692500cb64b2af4d27499c36ac8bd0d869cfeec53f718",
+    "UpgradeTrace": "0a551b0a850f4da3a445f361979b522d0b5e9fc01361131ef62673e3c8265bd1"
+  },
+  "differences": [
+    0,
+    1
+  ],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 5.237,
+  "specSha256": "a266a2725a59aa69863c56e11b0489f4e14c66c72d3416a367a86e854b9fac44"
+}

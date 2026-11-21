@@ -1,0 +1,70 @@
+{
+  "revision": "f74b56a98f000d3ab3913e90f3f47b2746809356",
+  "historicalCiFiles": {
+    ".travis.yml": {
+      "sha256": "8a1bfcaf39a9d06678e87d6557705e3faf8a679afc08b361f4093bca19cebe2e",
+      "mavenCommandLines": [
+        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true -DskipTests=true -B install\"",
+        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true test\""
+      ]
+    }
+  },
+  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
+  "module": "deltaspike",
+  "goals": [
+    "-pl",
+    "deltaspike",
+    "-am",
+    "-Dtest=DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
+    "-DfailIfNoTests=false",
+    "-Dsurefire.failIfNoSpecifiedTests=false",
+    "test"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client with a serial public Maven mirror",
+  "declaredReleaseRepositories": [
+    "https://repository.jboss.org/nexus/repository/public-jboss/"
+  ],
+  "resolver": {
+    "cachedRequests": 1474
+  },
+  "exit": 1,
+  "seconds": 13.68,
+  "logSha256": "d5aea35a3ef8c8193791278bd74c5576cc2848b931604689570fedbc0ef49102",
+  "freshReports": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0,
+    "named": [
+      {
+        "class": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategyTest",
+        "method": "testIsActiveWithNoParam",
+        "outcome": "error",
+        "type": "org.junit.experimental.theories.internal.ParameterizedAssertionError",
+        "message": "testIsActiveWithNoParam(DATA_POINTS[0])"
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategyTest",
+        "method": "testIsActiveWithNoParam",
+        "outcome": "error",
+        "type": "org.junit.experimental.theories.internal.ParameterizedAssertionError",
+        "message": "testIsActiveWithNoParam(DATA_POINTS[0])"
+      }
+    ],
+    "reportCount": 1,
+    "reportsSha256": "5d305530db0d1ce2131c5cab82e99fb8b908a71d588a8346db4ea83bd158d262"
+  },
+  "diagnostic": [
+    "org.junit.experimental.theories.internal.ParameterizedAssertionError: testIsActiveWithNoParam(DATA_POINTS[0])",
+    "Tests in error:",
+    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.19.1:test (default-test) on project togglz-deltaspike: There are test failures.",
+    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+  ],
+  "namedTest": "DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}
