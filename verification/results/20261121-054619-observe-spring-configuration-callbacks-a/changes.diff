@@ -1,0 +1,466 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-recovery-2/03/commons-vfs-55c96cfd.json
+@@ -0,0 +1,292 @@
++{
++  "entry": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;",
++  "observer": "The original VFS FTP client classifies a file, a directory and an absent path on a real loopback FTP server.",
++  "domainBasis": "The server root contains one actual file and one actual directory. The Apache FTPServer and MINA versions come from the original project test environment and are held fixed on both sides. Each observation has its own temporary root and listener. The FTPServer parent POM specifies SLF4J API 1.7.36. It is supplied on both sides.",
++  "cases": [
++    {
++      "args": [
++        "entry.dat"
++      ],
++      "expected": {
++        "return": "file"
++      }
++    },
++    {
++      "args": [
++        "folder"
++      ],
++      "expected": {
++        "return": "folder"
++      }
++    },
++    {
++      "args": [
++        "absent"
++      ],
++      "expected": {
++        "return": "missing"
++      }
++    }
++  ],
++  "probeSha256": "4ea04f15b63a8780eaf0579017f7ae0de05e47676e90654504bfe1047e8e2d33",
++  "launcherSha256": "807dfe7c538df322ab8d36aa13b60fedfe4a27f5577d7c2fcb032d6b0c5b3ebc",
++  "tracerSha256": "df39feab8ae0e9f741e3c85df006ad18897afba826fa8853b79f56d47a54f276",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "callerClassSha256": "56e3fe517109be83901bf58f67aa716564d59d5b71484f4dd531ba8979561462",
++      "classpath": [
++        "bfd7c51763d0d156a80183e0e681bb5ccee4bac899450b507a285ab93b4516b7",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
++        "18279abb21abd74e10bb60d5ac6fa044044cc40f1b34d62418e906f50d4212ec",
++        "36e47834dfa4225448aaaa5460b304f26e99e837c4a80ef5b41d090735be9b07",
++        "b75036dc5102d3aad419e74cc7c0c2f573dded48b8c97c6b070d5daed1ed0c62",
++        "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0"
++      ],
++      "dependency": "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 361,
++      "resources": 6,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "file"
++            },
++            {
++              "return": "file"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "folder"
++            },
++            {
++              "return": "folder"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "missing"
++            },
++            {
++              "return": "missing"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.net.DefaultSocketFactory",
++        "org.apache.commons.net.MalformedServerReplyException",
++        "org.apache.commons.net.ProtocolCommandListener",
++        "org.apache.commons.net.ProtocolCommandSupport",
++        "org.apache.commons.net.SocketClient",
++        "org.apache.commons.net.ftp.Configurable",
++        "org.apache.commons.net.ftp.DeflateSocket",
++        "org.apache.commons.net.ftp.DelegateSocket",
++        "org.apache.commons.net.ftp.DurationUtils",
++        "org.apache.commons.net.ftp.FTP",
++        "org.apache.commons.net.ftp.FTPClient",
++        "org.apache.commons.net.ftp.FTPClient$HostnameResolver",
++        "org.apache.commons.net.ftp.FTPClient$NatServerResolverImpl",
++        "org.apache.commons.net.ftp.FTPClient$PropertiesSingleton",
++        "org.apache.commons.net.ftp.FTPClientConfig",
++        "org.apache.commons.net.ftp.FTPCmd",
++        "org.apache.commons.net.ftp.FTPConnectionClosedException",
++        "org.apache.commons.net.ftp.FTPFile",
++        "org.apache.commons.net.ftp.FTPFileEntryParser",
++        "org.apache.commons.net.ftp.FTPFileEntryParserImpl",
++        "org.apache.commons.net.ftp.FTPFileFilter",
++        "org.apache.commons.net.ftp.FTPFileFilters",
++        "org.apache.commons.net.ftp.FTPListParseEngine",
++        "org.apache.commons.net.ftp.FTPReply",
++        "org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl",
++        "org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory",
++        "org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory",
++        "org.apache.commons.net.ftp.parser.FTPTimestampParser",
++        "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
++        "org.apache.commons.net.ftp.parser.ParserInitializationException",
++        "org.apache.commons.net.ftp.parser.RegexFTPFileEntryParserImpl",
++        "org.apache.commons.net.ftp.parser.UnixFTPEntryParser",
++        "org.apache.commons.net.io.CRLFLineReader",
++        "org.apache.commons.net.io.CopyStreamListener",
++        "org.apache.commons.net.io.FromNetASCIIInputStream",
++        "org.apache.commons.net.io.SocketInputStream",
++        "org.apache.commons.net.io.SocketOutputStream",
++        "org.apache.commons.net.io.ToNetASCIIOutputStream",
++        "org.apache.commons.net.util.ListenerList"
++      ]
++    },
++    "new": {
++      "commit": "55c96cfd2bdabe455058826ad86788f120b1425d",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "callerClassSha256": "56e3fe517109be83901bf58f67aa716564d59d5b71484f4dd531ba8979561462",
++      "classpath": [
++        "bfd7c51763d0d156a80183e0e681bb5ccee4bac899450b507a285ab93b4516b7",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
++        "18279abb21abd74e10bb60d5ac6fa044044cc40f1b34d62418e906f50d4212ec",
++        "36e47834dfa4225448aaaa5460b304f26e99e837c4a80ef5b41d090735be9b07",
++        "b75036dc5102d3aad419e74cc7c0c2f573dded48b8c97c6b070d5daed1ed0c62",
++        "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0"
++      ],
++      "dependency": "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 361,
++      "resources": 6,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "file"
++            },
++            {
++              "return": "file"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "folder"
++            },
++            {
++              "return": "folder"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "missing"
++            },
++            {
++              "return": "missing"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.net.DefaultSocketFactory",
++        "org.apache.commons.net.MalformedServerReplyException",
++        "org.apache.commons.net.ProtocolCommandListener",
++        "org.apache.commons.net.ProtocolCommandSupport",
++        "org.apache.commons.net.SocketClient",
++        "org.apache.commons.net.ftp.Configurable",
++        "org.apache.commons.net.ftp.DeflateSocket",
++        "org.apache.commons.net.ftp.DelegateSocket",
++        "org.apache.commons.net.ftp.DurationUtils",
++        "org.apache.commons.net.ftp.FTP",
++        "org.apache.commons.net.ftp.FTPClient",
++        "org.apache.commons.net.ftp.FTPClient$HostnameResolver",
++        "org.apache.commons.net.ftp.FTPClient$NatServerResolverImpl",
++        "org.apache.commons.net.ftp.FTPClient$PropertiesSingleton",
++        "org.apache.commons.net.ftp.FTPClientConfig",
++        "org.apache.commons.net.ftp.FTPCmd",
++        "org.apache.commons.net.ftp.FTPConnectionClosedException",
++        "org.apache.commons.net.ftp.FTPFile",
++        "org.apache.commons.net.ftp.FTPFileEntryParser",
++        "org.apache.commons.net.ftp.FTPFileEntryParserImpl",
++        "org.apache.commons.net.ftp.FTPFileFilter",
++        "org.apache.commons.net.ftp.FTPFileFilters",
++        "org.apache.commons.net.ftp.FTPListParseEngine",
++        "org.apache.commons.net.ftp.FTPReply",
++        "org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl",
++        "org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory",
++        "org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory",
++        "org.apache.commons.net.ftp.parser.FTPTimestampParser",
++        "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
++        "org.apache.commons.net.ftp.parser.ParserInitializationException",
++        "org.apache.commons.net.ftp.parser.RegexFTPFileEntryParserImpl",
++        "org.apache.commons.net.ftp.parser.UnixFTPEntryParser",
++        "org.apache.commons.net.io.CRLFLineReader",
++        "org.apache.commons.net.io.CopyStreamListener",
++        "org.apache.commons.net.io.FromNetASCIIInputStream",
++        "org.apache.commons.net.io.SocketInputStream",
++        "org.apache.commons.net.io.SocketOutputStream",
++        "org.apache.commons.net.io.ToNetASCIIOutputStream",
++        "org.apache.commons.net.util.ListenerList"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [
++    {
++      "mavenPath": "org/apache/ftpserver/ftpserver-core/1.2.1/ftpserver-core-1.2.1.jar",
++      "sha256": "18279abb21abd74e10bb60d5ac6fa044044cc40f1b34d62418e906f50d4212ec"
++    },
++    {
++      "mavenPath": "org/apache/ftpserver/ftplet-api/1.2.1/ftplet-api-1.2.1.jar",
++      "sha256": "36e47834dfa4225448aaaa5460b304f26e99e837c4a80ef5b41d090735be9b07"
++    },
++    {
++      "mavenPath": "org/apache/mina/mina-core/2.2.5/mina-core-2.2.5.jar",
++      "sha256": "b75036dc5102d3aad419e74cc7c0c2f573dded48b8c97c6b070d5daed1ed0c62"
++    },
++    {
++      "mavenPath": "org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar",
++      "sha256": "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0"
++    }
++  ],
++  "originalInvocation": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "5250b5aa950b68fe3b5b27f7be7cee52444f205549663ff9696808ad717b97f7",
++    "UpgradeTrace": "0da1d77eab253424d58a4b7e9e7d2ebe722c1dc096ade72312475614313c252d",
++    "org/apache/commons/vfs2/provider/ftp/UpgradeProbe": "49b259f48e5ade10907dd4ac4fc96972ade025016dbbe5f42933126a30256edb"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 12.075,
++  "specSha256": "583609b96f9eaf85d3c4ec59877a5ac8ca50a9f96b906cb49e31e2389882727d"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-recovery-2/03/compsuite-i-103.json
+@@ -0,0 +1,168 @@
++{
++  "entry": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V",
++  "observer": "Register two first-priority Nacos property sources through the original Spring refresh and read which one wins over the system property.",
++  "domainBasis": "The original developer test requires the source named first to head the environment and override user.name. The original Nacos HTTP handler supplies the input property on loopback. Two distinct returned values test precedence as well as source registration.",
++  "cases": [
++    {
++      "args": [
++        "nacos-a"
++      ],
++      "expected": {
++        "return": "first/nacos-a"
++      }
++    },
++    {
++      "args": [
++        "nacos-b"
++      ],
++      "expected": {
++        "return": "first/nacos-b"
++      }
++    }
++  ],
++  "probeSha256": "e9ac84a2018955a5edd7093c8457e30e75da9a0a5029bc2d052c3e4a5e36df46",
++  "launcherSha256": "807dfe7c538df322ab8d36aa13b60fedfe4a27f5577d7c2fcb032d6b0c5b3ebc",
++  "tracerSha256": "df39feab8ae0e9f741e3c85df006ad18897afba826fa8853b79f56d47a54f276",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "callerClassSha256": "1f5801c2fb830ff042e5d5e0d558eb056b6b7de9a20c8785d7c0eead36c82fb7",
++      "classpath": [
++        "3c3fc343031172787035b4950b77c9b38a12bf5d59b1ee3cf9aa0a1a4c6fe0e4",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "5c7ab868509a6b1214ebe557bfcf489cfac6e1ae4c4a39181b0fe66621fbe32e",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "dependency": "5c7ab868509a6b1214ebe557bfcf489cfac6e1ae4c4a39181b0fe66621fbe32e",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 82,
++      "resources": 3,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "first/nacos-a"
++            },
++            {
++              "return": "first/nacos-a"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 1,
++          "observations": []
++        }
++      ]
++    },
++    "new": {
++      "commit": "67693f18a9427f1d46b6769fd4da3282207a37c7",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "callerClassSha256": "1f5801c2fb830ff042e5d5e0d558eb056b6b7de9a20c8785d7c0eead36c82fb7",
++      "classpath": [
++        "3c3fc343031172787035b4950b77c9b38a12bf5d59b1ee3cf9aa0a1a4c6fe0e4",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "94459936895f669c8bdd794be79850b73a9b980cc01a4aec88f373f150002b70",
++        "db6ec0aa5330ab84a78933fd2c27db83581e3f0adbc1a562013c8647b3935dbd",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "dependency": "94459936895f669c8bdd794be79850b73a9b980cc01a4aec88f373f150002b70",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 82,
++      "resources": 3
++    }
++  },
++  "status": "open",
++  "originalFixtures": [
++    {
++      "kind": "java",
++      "file": "TestConfiguration.java",
++      "source": "nacos-spring-context/src/test/java/com/alibaba/nacos/spring/test/TestConfiguration.java",
++      "sha256": "c3de9b6936001340d79aa534ff7d78cb943abc832bfa5be0398ddc12ce59a9ca",
++      "class": "com.alibaba.nacos.spring.test.TestConfiguration"
++    },
++    {
++      "kind": "java",
++      "file": "TestApplicationHolder.java",
++      "source": "nacos-spring-context/src/test/java/com/alibaba/nacos/spring/test/TestApplicationHolder.java",
++      "sha256": "20d58613a946e6b7766f43e87651f7d133e732594c94d8b0609f239477247f59",
++      "class": "com.alibaba.nacos.spring.test.TestApplicationHolder"
++    },
++    {
++      "kind": "java",
++      "file": "NacosConfigHttpHandler.java",
++      "source": "nacos-spring-samples/nacos-embedded-webserver/src/main/java/com/alibaba/nacos/embedded/web/server/NacosConfigHttpHandler.java",
++      "sha256": "43a51dd0bc6bc01fc4c299c5e27e97d25d544012f01c48c527c00a19e825d3b9",
++      "class": "com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler"
++    }
++  ],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V",
++  "invocationVia": "org.springframework.context.support.AbstractApplicationContext#refresh()V",
++  "probeClasses": {
++    "UpgradeObservation": "1256d91e4c0016731af534c5a9f816c7ddf526a82c2b90a6d30cd316bbbd63a6",
++    "UpgradeProbe$Settings": "b02af8264cd3ea2207108fe74b4af3cc953c43fff61ae739fcb498ba32a369a8",
++    "UpgradeProbe": "4db0b7db9c0289b462a83b5a9b11624fe66290e12988e8c170b8923d57a4adb2",
++    "UpgradeTrace": "e3989345cc5fade07c7584ac542d301d1e358bb81c5cbcf9e3c3b8edbeeddbd1",
++    "com/alibaba/nacos/embedded/web/server/NacosConfigHttpHandler$1": "640a758aae113badb595076f63f90b59ad53b93acd11e903d799f1879be46942",
++    "com/alibaba/nacos/embedded/web/server/NacosConfigHttpHandler$LongPolling": "dd3ce10e416f478ba21c67a0244425a63665ad0e212c48eb6d4a87cd325a7266",
++    "com/alibaba/nacos/embedded/web/server/NacosConfigHttpHandler": "91e4c8f9bbd54d6e36cfb11c2b9bf2451cfd8d291b8c3bbcf1b946f2bed742ec",
++    "com/alibaba/nacos/spring/test/TestApplicationHolder": "0f55c1d3446a20c9c68f33e41b4863bffedd13b64dc446d04d8825a405455eb5",
++    "com/alibaba/nacos/spring/test/TestConfiguration": "7812aba44a215047fe6cee82afef54420d8b0bd516a526b3c397105863b5d081"
++  },
++  "stoppedAt": {
++    "side": "old",
++    "input": 1,
++    "repetition": 1
++  },
++  "reason": "Only base64 data is allowed",
++  "specSha256": "734d3cfdad16811a1328b24558d0030fc1f9b3847255e5189de429c454d4a14b",
++  "elapsedSeconds": 4.236
++}

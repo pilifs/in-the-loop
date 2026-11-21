@@ -1,0 +1,271 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/declared-modules/02/compsuite-i-81.json
+@@ -0,0 +1,49 @@
++{
++  "old": {
++    "commit": "3418531ea79f1c858f008d5ec4fa83d0251601db",
++    "sourceSha256": "1c9b4b626b3f6cb02384d0bc8f5c5ae64208331d655ed3cedd75dd396f4ea740",
++    "scope": "complete original Maven production module",
++    "module": "deltaspike/pom.xml",
++    "subjectJdk": "8.0.512.0+9-tem",
++    "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++    "goals": [
++      "-pl",
++      "deltaspike",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=target/upgrade-runtime.cp",
++      "package",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++    ],
++    "declaredReleaseRepositories": [
++      "https://repository.jboss.org/nexus/repository/public-jboss/"
++    ],
++    "stage": "original Maven build unavailable",
++    "exit": 1,
++    "diagnostic": [
++      "[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.tree:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.commons:jar:3.1.0, org.slf4j:com.springsource.slf4j.api:jar:1.6.1, org.slf4j:com.springsource.slf4j.nop:jar:1.6.1, org.apache.maven:com.springsource.org.apache.maven.plugin-api:jar:3.0.4: Could not find artifact org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0 in isolated-central (http://127.0.0.1:43105/) -> [Help 1]",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
++    ],
++    "logTail": [
++      "[INFO] Total time:  14.359 s",
++      "[INFO] Finished at: 2026-11-21T05:49:54Z",
++      "[INFO] ------------------------------------------------------------------------",
++      "[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.tree:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.commons:jar:3.1.0, org.slf4j:com.springsource.slf4j.api:jar:1.6.1, org.slf4j:com.springsource.slf4j.nop:jar:1.6.1, org.apache.maven:com.springsource.org.apache.maven.plugin-api:jar:3.0.4: Could not find artifact org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0 in isolated-central (http://127.0.0.1:43105/) -> [Help 1]",
++      "[ERROR] ",
++      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++      "[ERROR] ",
++      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
++    ],
++    "logSha256": "afa6b5540cb6629b9f50e5927cd93e3e8961c52c4132ca25b8f45b764dc2dc10",
++    "seconds": 15.76
++  },
++  "new": {
++    "stage": "original Maven build unavailable",
++    "diagnostic": [
++      "[Errno 98] Address already in use"
++    ]
++  }
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-recovery-2/02/compsuite-i-81.json
+@@ -0,0 +1,8 @@
++{
++  "status": "open",
++  "reason": "[Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds/compsuite-i-81/old/prepared.json'",
++  "entry": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
++  "specSha256": "9c51f18b9175df976b0ea34426dfaac8369d7f540eceab418b0724e3b52a88f3",
++  "probeSha256": "6868ed02d1ba570cc051d5f7a9587ae9da1e81c0adb7855f3e01218361f8ee8b",
++  "elapsedSeconds": 0.0
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-recovery/02/compsuite-i-81/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] --- org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) @ togglz-project ---
++                    
++[WARNING] The POM for org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0 is missing, no dependency information available
++[WARNING] The POM for org.objectweb.asm:com.springsource.org.objectweb.asm.tree:jar:3.1.0 is missing, no dependency information available
++[WARNING] The POM for org.objectweb.asm:com.springsource.org.objectweb.asm.commons:jar:3.1.0 is missing, no dependency information available
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                   
++[WARNING] The POM for org.slf4j:com.springsource.slf4j.api:jar:1.6.1 is missing, no dependency information available
++[WARNING] The POM for org.slf4j:com.springsource.slf4j.nop:jar:1.6.1 is missing, no dependency information available
++[WARNING] The POM for org.apache.maven:com.springsource.org.apache.maven.plugin-api:jar:3.0.4 is missing, no dependency information available
++                    
++                    
++                   
++                    
++                   
++                   
++                    
++                    
++                   
++                    
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Togglz 2.6.0.Final:
++[INFO] 
++[INFO] Togglz ............................................. FAILURE [  3.637 s]
++[INFO] Togglz - Core Framework ............................ SKIPPED
++[INFO] Togglz - DeltaSpike integration .................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  4.538 s
++[INFO] Finished at: 2026-11-21T05:50:08Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.tree:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.commons:jar:3.1.0, org.slf4j:com.springsource.slf4j.api:jar:1.6.1, org.slf4j:com.springsource.slf4j.nop:jar:1.6.1, org.apache.maven:com.springsource.org.apache.maven.plugin-api:jar:3.0.4: Could not find artifact org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0 in isolated-central (http://127.0.0.1:35355/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-recovery/02/compsuite-i-81/new/summary.json
+@@ -0,0 +1,53 @@
++{
++  "revision": "f74b56a98f000d3ab3913e90f3f47b2746809356",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "8a1bfcaf39a9d06678e87d6557705e3faf8a679afc08b361f4093bca19cebe2e",
++      "mavenCommandLines": [
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true -DskipTests=true -B install\"",
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true test\""
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "deltaspike",
++  "goals": [
++    "-pl",
++    "deltaspike",
++    "-am",
++    "-Dtest=DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repository.jboss.org/nexus/repository/public-jboss/"
++  ],
++  "resolver": {
++    "cachedRequests": 686,
++    "upstreamHttp404": 12
++  },
++  "exit": 1,
++  "seconds": 5.91,
++  "logSha256": "1f81c549d02c98c15e1dd051667bcbd2a0f341784d8b72a04547192f3133dfea",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.tree:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.commons:jar:3.1.0, org.slf4j:com.springsource.slf4j.api:jar:1.6.1, org.slf4j:com.springsource.slf4j.nop:jar:1.6.1, org.apache.maven:com.springsource.org.apache.maven.plugin-api:jar:3.0.4: Could not find artifact org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0 in isolated-central (http://127.0.0.1:35355/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
++  ],
++  "namedTest": "DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-recovery/02/compsuite-i-81/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] --- org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) @ togglz-project ---
++                    
++[WARNING] The POM for org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0 is missing, no dependency information available
++[WARNING] The POM for org.objectweb.asm:com.springsource.org.objectweb.asm.tree:jar:3.1.0 is missing, no dependency information available
++[WARNING] The POM for org.objectweb.asm:com.springsource.org.objectweb.asm.commons:jar:3.1.0 is missing, no dependency information available
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                   
++[WARNING] The POM for org.slf4j:com.springsource.slf4j.api:jar:1.6.1 is missing, no dependency information available
++[WARNING] The POM for org.slf4j:com.springsource.slf4j.nop:jar:1.6.1 is missing, no dependency information available
++[WARNING] The POM for org.apache.maven:com.springsource.org.apache.maven.plugin-api:jar:3.0.4 is missing, no dependency information available
++                    
++                    
++                   
++                    
++                   
++                   
++                    
++                    
++                   
++                    
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Togglz 2.6.0.Final:
++[INFO] 
++[INFO] Togglz ............................................. FAILURE [  4.029 s]
++[INFO] Togglz - Core Framework ............................ SKIPPED
++[INFO] Togglz - DeltaSpike integration .................... SKIPPED
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  5.021 s
++[INFO] Finished at: 2026-11-21T05:50:02Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.tree:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.commons:jar:3.1.0, org.slf4j:com.springsource.slf4j.api:jar:1.6.1, org.slf4j:com.springsource.slf4j.nop:jar:1.6.1, org.apache.maven:com.springsource.org.apache.maven.plugin-api:jar:3.0.4: Could not find artifact org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0 in isolated-central (http://127.0.0.1:38681/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-recovery/02/compsuite-i-81/old/summary.json
+@@ -0,0 +1,53 @@
++{
++  "revision": "3418531ea79f1c858f008d5ec4fa83d0251601db",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "8a1bfcaf39a9d06678e87d6557705e3faf8a679afc08b361f4093bca19cebe2e",
++      "mavenCommandLines": [
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true -DskipTests=true -B install\"",
++        "- \"mvn -P ${CONTAINER} -DJBOSS_REPO=true test\""
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "deltaspike",
++  "goals": [
++    "-pl",
++    "deltaspike",
++    "-am",
++    "-Dtest=DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repository.jboss.org/nexus/repository/public-jboss/"
++  ],
++  "resolver": {
++    "cachedRequests": 686,
++    "upstreamHttp404": 12
++  },
++  "exit": 1,
++  "seconds": 6.39,
++  "logSha256": "dbf55b8518d9e03c52c71bfedce8069b3c899e5a1922cf03064ad1247608edb8",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor (bundlor) on project togglz-project: Execution bundlor of goal org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE:bundlor failed: Plugin org.eclipse.virgo.bundlor:org.eclipse.virgo.bundlor.maven:1.1.2.RELEASE or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.tree:jar:3.1.0, org.objectweb.asm:com.springsource.org.objectweb.asm.commons:jar:3.1.0, org.slf4j:com.springsource.slf4j.api:jar:1.6.1, org.slf4j:com.springsource.slf4j.nop:jar:1.6.1, org.apache.maven:com.springsource.org.apache.maven.plugin-api:jar:3.0.4: Could not find artifact org.objectweb.asm:com.springsource.org.objectweb.asm:jar:3.1.0 in isolated-central (http://127.0.0.1:38681/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
++  ],
++  "namedTest": "DeltaSpikePropertyActivationStrategyTest#testIsActiveWithNoParam",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
