@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-063426-module-recovery-4-original-maven-classpa",
+  "title": "Module recovery 4 original Maven classpaths for caller comparison",
+  "description": "Repeat the original module workload on one host runner. Earlier processes on two checkout-local queues shared a systemd unit name and terminated before producing evidence. Rebuild both original Maven revisions and their processed resources for compsuite-i-62, compsuite-i-85, compsuite-i-94, compsuite-i-81. Record failures on the original build and both ordered runtime classpaths when available.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation"
+  ],
+  "links": {
+    "jobs": [
+      "20261121-062849-group-4-original-java-modules-for-caller"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T06:34:26+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "memoryLimit": "6G",
+    "timeout": "70m"
+  },
+  "steps": [
+    {
+      "name": "Rebuild original Maven modules",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/modules-4 --phase compile --case compsuite-i-62 --case compsuite-i-85 --case compsuite-i-94 --case compsuite-i-81",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-4"
+  ]
+}

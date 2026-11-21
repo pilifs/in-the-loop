@@ -1,0 +1,1311 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer/current/commons-fileupload-377.json
+@@ -0,0 +1,96 @@
++{
++  "id": "commons-fileupload-377",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData",
++  "observer": "Read a multipart body up to its boundary and observe the exact payload.",
++  "revisions": {
++    "old": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++    "new": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "orderedSha256": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "descriptors": [
++        "(Ljava/io/OutputStream;)J"
++      ]
++    },
++    "new": {
++      "commit": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "orderedSha256": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "descriptors": [
++        "(Ljava/io/OutputStream;)J"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/io/OutputStream;)J"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream)",
++    "exit": 1,
++    "seconds": 0.017,
++    "outputSha256": "8d3346df602a067cbc9f94148c9fd7a4a9d0cbbcb7efc755334bf9c07ea85029",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream) cannot be verified: readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++          "uri": null,
++          "line": 796
++        }
++      ],
++      "output": "\u2717 org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream) cannot be verified: readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use\n",
++      "work": "$WORK/checker-_mla7u7e/overload-0"
++    },
++    "firstBlocker": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use"
++  },
++  "firstBlocker": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++  "elapsedSeconds": 4.854,
++  "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer/current/commons-validator-86e32931.json
+@@ -0,0 +1,126 @@
++{
++  "id": "commons-validator-86e32931",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString",
++  "observer": "Read a named property from a bean and observe the exact string or missing-value result.",
++  "revisions": {
++    "old": "a952e2fbe2b2226c72083f74cf66562a3118225f",
++    "new": "86e32931594e3437cd8614311f5da7bc0c62613c"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "a952e2fbe2b2226c72083f74cf66562a3118225f",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 4,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230"
++      ],
++      "orderedSha256": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    },
++    "new": {
++      "commit": "86e32931594e3437cd8614311f5da7bc0c62613c",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 4,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230"
++      ],
++      "orderedSha256": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString(java.lang.Object, java.lang.String)",
++    "exit": 1,
++    "seconds": 0.019,
++    "outputSha256": "df8285ccd9d18eb29f1397fa5f5de43429423bc8f7285e6961995f5f8b4b6073",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString(java.lang.Object, java.lang.String)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString(java.lang.Object, java.lang.String) cannot be verified: parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 116
++        }
++      ],
++      "output": "\u2717 org.apache.commons.validator.util.ValidatorUtils#getValueAsString(java.lang.Object, java.lang.String) cannot be verified: parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-563_y7xy/overload-0"
++    },
++    "firstBlocker": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  "firstBlocker": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 10.075,
++  "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer/current/commons-vfs-55c96cfd.json
+@@ -0,0 +1,148 @@
++{
++  "id": "commons-vfs-55c96cfd",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType",
++  "observer": "Classify the remote entry from its parsed FTP file type.",
++  "revisions": {
++    "old": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
++    "new": "55c96cfd2bdabe455058826ad86788f120b1425d"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 110,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "orderedSha256": [
++        "1b2e9c4eb2f437d32bf81aea814bbebcbb4b7f8621ec10eb9865bb67f060cb11",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "callerClassSha256": "c40103ecf7ddfeea2cbb3304822ed00d069d52c7763737a38a5f2b2c59f451c7",
++      "descriptors": [
++        "()Lorg/apache/commons/vfs2/FileType;"
++      ]
++    },
++    "new": {
++      "commit": "55c96cfd2bdabe455058826ad86788f120b1425d",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 110,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "orderedSha256": [
++        "1b2e9c4eb2f437d32bf81aea814bbebcbb4b7f8621ec10eb9865bb67f060cb11",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "callerClassSha256": "c40103ecf7ddfeea2cbb3304822ed00d069d52c7763737a38a5f2b2c59f451c7",
++      "descriptors": [
++        "()Lorg/apache/commons/vfs2/FileType;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "()Lorg/apache/commons/vfs2/FileType;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()",
++    "exit": 1,
++    "seconds": 0.1,
++    "outputSha256": "510bde2d22d628b0354e0fb67ac24177ff939596a0f59fb498d3edaa1f773604",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType() cannot be verified: doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly",
++          "uri": null,
++          "line": 368
++        }
++      ],
++      "output": "\u2717 org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType() cannot be verified: doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly\n",
++      "work": "$WORK/checker-_sz8tsvl/overload-0"
++    },
++    "firstBlocker": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly"
++  },
++  "firstBlocker": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly",
++  "elapsedSeconds": 13.191,
++  "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer/current/compsuite-i-103.json
+@@ -0,0 +1,184 @@
++{
++  "id": "compsuite-i-103",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory",
++  "observer": "Register a property source and inspect its precedence and returned property.",
++  "revisions": {
++    "old": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++    "new": "67693f18a9427f1d46b6769fd4da3282207a37c7"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 73,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "5c7ab868509a6b1214ebe557bfcf489cfac6e1ae4c4a39181b0fe66621fbe32e",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "orderedSha256": [
++        "00364e1b306fd073ccac8c69882396255f27bd454346783dbdfdb82aa4497a05",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "5c7ab868509a6b1214ebe557bfcf489cfac6e1ae4c4a39181b0fe66621fbe32e",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "callerClassSha256": "1aaffbdb969acc793e2d3a2428b78b652e55dc6261e2e6f99ba456677ff1f714",
++      "descriptors": [
++        "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++      ]
++    },
++    "new": {
++      "commit": "67693f18a9427f1d46b6769fd4da3282207a37c7",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 73,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "94459936895f669c8bdd794be79850b73a9b980cc01a4aec88f373f150002b70",
++        "db6ec0aa5330ab84a78933fd2c27db83581e3f0adbc1a562013c8647b3935dbd",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "orderedSha256": [
++        "00364e1b306fd073ccac8c69882396255f27bd454346783dbdfdb82aa4497a05",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "94459936895f669c8bdd794be79850b73a9b980cc01a4aec88f373f150002b70",
++        "db6ec0aa5330ab84a78933fd2c27db83581e3f0adbc1a562013c8647b3935dbd",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "callerClassSha256": "1aaffbdb969acc793e2d3a2428b78b652e55dc6261e2e6f99ba456677ff1f714",
++      "descriptors": [
++        "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)",
++    "exit": 1,
++    "seconds": 0.129,
++    "outputSha256": "0350f02f01259d7f34ea260f811a1c544afa19fb6fe3f0d3b72e604921c18522",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory) cannot be verified: postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 98
++        }
++      ],
++      "output": "\u2717 com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory) cannot be verified: postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-8794iaj4/overload-0"
++    },
++    "firstBlocker": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  "firstBlocker": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++  "elapsedSeconds": 0.225,
++  "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer/current/compsuite-i-36.json
+@@ -0,0 +1,122 @@
++{
++  "id": "compsuite-i-36",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.jupiter.common.util.Reflects#fastInvoke",
++  "observer": "Choose and invoke an overloaded service method on the supplied arguments.",
++  "revisions": {
++    "old": "2b16d7aba2137a57c0d84665cfda2a2b82df6be9",
++    "new": "9c5a614e5875c5cf03434510c25b9f2b3505342a"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "2b16d7aba2137a57c0d84665cfda2a2b82df6be9",
++      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 58,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d",
++        "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91"
++      ],
++      "orderedSha256": [
++        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
++        "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
++      ],
++      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
++      ]
++    },
++    "new": {
++      "commit": "9c5a614e5875c5cf03434510c25b9f2b3505342a",
++      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 58,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d",
++        "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91"
++      ],
++      "orderedSha256": [
++        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
++        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
++      ],
++      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.jupiter.common.util.Reflects#fastInvoke(java.lang.Object, java.lang.String, java.lang.Class[], java.lang.Object[])",
++    "exit": 1,
++    "seconds": 0.039,
++    "outputSha256": "4c5b13eb0b83dfd58a745944619437a545a499060aa86ba1407b1428c7b09581",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.jupiter.common.util.Reflects#fastInvoke(java.lang.Object, java.lang.String, java.lang.Class[], java.lang.Object[])",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.jupiter.common.util.Reflects#fastInvoke(java.lang.Object, java.lang.String, java.lang.Class[], java.lang.Object[]) cannot be verified: parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 89
++        }
++      ],
++      "output": "\u2717 org.jupiter.common.util.Reflects#fastInvoke(java.lang.Object, java.lang.String, java.lang.Class[], java.lang.Object[]) cannot be verified: parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-2z5xl4gi/overload-0"
++    },
++    "firstBlocker": "parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  "firstBlocker": "parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 0.137,
++  "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer/current/compsuite-i-37.json
+@@ -0,0 +1,44 @@
++{
++  "id": "compsuite-i-37",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "net.glxn.qrgen.javase.QRCode#file",
++  "observer": "Produce a QR image file from ordinary text with the default Java SE encoder.",
++  "revisions": {
++    "old": "5d75d78080f7209e4ea15d3a08def04198741c7a",
++    "new": "da2fc8cfba0e8ec28967256689a799b14babb04b"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "5d75d78080f7209e4ea15d3a08def04198741c7a",
++      "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR] Failed to execute goal on project javase: Could not resolve dependencies for project net.glxn.qrgen:javase:jar:2.5.0: Failure to find net.glxn.qrgen:core:jar:2.5.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced -> [Help 1]",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
++      ]
++    },
++    "new": {
++      "commit": "da2fc8cfba0e8ec28967256689a799b14babb04b",
++      "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR] Failed to execute goal on project javase: Could not resolve dependencies for project net.glxn.qrgen:javase:jar:2.5.0: Failure to find net.glxn.qrgen:core:jar:2.5.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced -> [Help 1]",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
++      ]
++    }
++  },
++  "firstBlocker": "original Maven classpath",
++  "elapsedSeconds": 2.012,
++  "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer/current/compsuite-i-80.json
+@@ -0,0 +1,517 @@
++{
++  "id": "compsuite-i-80",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of",
++  "observer": "Construct a stream with a short logger name and observe its fully qualified name.",
++  "revisions": {
++    "old": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++    "new": "938bbeb343eb5fd465517c713fe9065ce997058a"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052"
++      ],
++      "orderedSha256": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052"
++      ],
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++      ]
++    },
++    "new": {
++      "commit": "938bbeb343eb5fd465517c713fe9065ce997058a",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"
++      ],
++      "orderedSha256": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"
++      ],
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++      "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++      "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++      "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class)",
++    "exit": 1,
++    "seconds": 0.008,
++    "outputSha256": "ff008b8f66ae515dbc4f6203f44edfe756f76dac284d9f775e4f2e0255b85122",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 50
++        }
++      ],
++      "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-p9x5be44/overload-0"
++    },
++    "firstBlocker": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  "firstBlocker": "review the recorded exact overloads",
++  "nativeOverloads": [
++    {
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class)",
++      "exit": 1,
++      "seconds": 0.008,
++      "outputSha256": "ff008b8f66ae515dbc4f6203f44edfe756f76dac284d9f775e4f2e0255b85122",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++            "uri": null,
++            "line": 50
++          }
++        ],
++        "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++        "work": "$WORK/checker-p9x5be44/overload-0"
++      },
++      "firstBlocker": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++    },
++    {
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class, java.lang.String)",
++      "exit": 1,
++      "seconds": 0.007,
++      "outputSha256": "f094497e5f0459cf0d14a0f65a26b7044b1f463ead43a6fb6e430f891116d1db",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class, java.lang.String)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class, java.lang.String) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++            "uri": null,
++            "line": 65
++          }
++        ],
++        "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.Class, java.lang.String) cannot be verified: parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++        "work": "$WORK/checker-p9x5be44/overload-1"
++      },
++      "firstBlocker": "parameter klass has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++    },
++    {
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.String)",
++      "exit": 1,
++      "seconds": 0.063,
++      "outputSha256": "a7a1f40cb227d983c3d2dd24f17e732de53b94ca2316b27a08660876560fef8d",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.String)",
++        "domain": "name: String of \u2264 8 code units, not null",
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13 (java.lang.String.contains(java.lang.CharSequence) at before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++        "statement": "$WORK/checker-p9x5be44/overload-2/harness/EquivalenceHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.String) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13 (java.lang.String.contains(java.lang.CharSequence) at before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++            "uri": null,
++            "line": 78
++          }
++        ],
++        "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(java.lang.String) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13 (java.lang.String.contains(java.lang.CharSequence) at before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++        "work": "$WORK/checker-p9x5be44/overload-2",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (Bitwuzla)",
++          "seconds": 0.010426534,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 1,
++            "merges": 0,
++            "solver_calls": 0,
++            "solving_seconds": 0.0,
++            "gates_evaluated": 0,
++            "evaluating_seconds": 0.0,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "word_operations": 2,
++            "variables": 163,
++            "clauses": 1,
++            "seconds": 0.008508127,
++            "loading_seconds": 0.00063434,
++            "decoding_seconds": 0.000119143,
++            "encoding_seconds": 0.00011131,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13",
++              "kind": "jdk-primitive-method",
++              "call": "java.lang.String.contains(java.lang.CharSequence)",
++              "sites": [
++                "before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 44.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 44.0,
++              "seconds": 0.009,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.001,
++                "lowering": 0.0,
++                "symbolic": 0.008,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 163,
++                "clauses": 1
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.059,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.009,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.048
++          }
++        },
++        "stated": {
++          "kind": "regression",
++          "domain": {
++            "parameters": [
++              {
++                "name": "name",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 8
++              }
++            ],
++            "shared_arrays": false,
++            "text": "name: String of \u2264 8 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result, a Slf4jStream compared field by field (log.getName(), log.isTraceEnabled(), log.isDebugEnabled(), log.isInfoEnabled(), log.isWarnEnabled(), log.isErrorEnabled()), two nulls agreeing",
++            "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 8
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 8: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (Bitwuzla)",
++            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
++            "fallback": null,
++            "sat": {
++              "solver": "Bitwuzla",
++              "version": "0.8.2",
++              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
++              "configuration": [
++                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
++                "sat-solver cadical",
++                "produce-models",
++                "otherwise Bitwuzla's default options",
++                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
++                "the run's deadline through Bitwuzla's termination callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13 (java.lang.String.contains(java.lang.CharSequence) at before.org.zeroturnaround.exec.stream.CallerLoggerUtil.getName:53). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
++    },
++    {
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(org.slf4j.Logger)",
++      "exit": 1,
++      "seconds": 0.044,
++      "outputSha256": "b746e513a2ea49cd7636db8f85aafa1ff0bb6bd02ade56d1b58f7a48b2642fdc",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(org.slf4j.Logger)",
++        "domain": "log: an implementation of Logger that answers none of its abstract methods",
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13 (before.org.slf4j.Logger.getName() at EquivalenceHarness.check). With --gaps assume it assumes instead that before.org.slf4j.Logger.getName() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++        "statement": "$WORK/checker-p9x5be44/overload-3/harness/EquivalenceHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(org.slf4j.Logger) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13 (before.org.slf4j.Logger.getName() at EquivalenceHarness.check). With --gaps assume it assumes instead that before.org.slf4j.Logger.getName() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++            "uri": null,
++            "line": 42
++          }
++        ],
++        "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(org.slf4j.Logger) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13 (before.org.slf4j.Logger.getName() at EquivalenceHarness.check). With --gaps assume it assumes instead that before.org.slf4j.Logger.getName() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
++        "work": "$WORK/checker-p9x5be44/overload-3",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (Bitwuzla)",
++          "seconds": 0.00554029,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 1,
++            "merges": 0,
++            "solver_calls": 0,
++            "solving_seconds": 0.0,
++            "gates_evaluated": 0,
++            "evaluating_seconds": 0.0,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 1,
++            "clauses": 1,
++            "seconds": 0.004469823,
++            "loading_seconds": 0.000374793,
++            "decoding_seconds": 0.000126016,
++            "encoding_seconds": 0.0,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13",
++              "kind": "jdk-reference-method",
++              "call": "before.org.slf4j.Logger.getName()",
++              "sites": [
++                "EquivalenceHarness.check"
++              ],
++              "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 89.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 89.0,
++              "seconds": 0.004,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.004,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 1,
++                "clauses": 1
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.04,
++            "setup": 0.0,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.004,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.035
++          }
++        },
++        "stated": {
++          "kind": "regression",
++          "domain": {
++            "parameters": [
++              {
++                "name": "log",
++                "type": "org.slf4j.Logger",
++                "kind": "object",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "log: an implementation of Logger that answers none of its abstract methods",
++            "input_objects": [
++              1,
++              1
++            ]
++          },
++          "assumptions": [
++            {
++              "kind": "environment",
++              "text": "log is an implementation of org.slf4j.Logger the check gives: it answers none of the interface's abstract methods; both versions are given one of the same values, and an implementation that answers a call another way (a value that changes between calls, an exception) is outside the statement",
++              "basis": "harness"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result, a Slf4jStream compared field by field (log.getName(), log.isTraceEnabled(), log.isDebugEnabled(), log.isInfoEnabled(), log.isWarnEnabled(), log.isErrorEnabled()), two nulls agreeing",
++            "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
++            "identities": [
++              "result.log == log"
++            ]
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (Bitwuzla)",
++            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
++            "fallback": null,
++            "sat": {
++              "solver": "Bitwuzla",
++              "version": "0.8.2",
++              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
++              "configuration": [
++                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
++                "sat-solver cadical",
++                "produce-models",
++                "otherwise Bitwuzla's default options",
++                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
++                "the run's deadline through Bitwuzla's termination callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:before.org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13 (before.org.slf4j.Logger.getName() at EquivalenceHarness.check). With --gaps assume it assumes instead that before.org.slf4j.Logger.getName() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption"
++    }
++  ],
++  "elapsedSeconds": 0.178,
++  "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer/current/reflector-35.json
+@@ -0,0 +1,50 @@
++{
++  "id": "reflector-35",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator",
++  "observer": "Generate the original reflection adapter and inspect the resulting callable class.",
++  "revisions": {
++    "old": "a7421542ac2b34670c7c261539fc253d77526afc",
++    "new": "b8a65d35911580a469964aa722f4cd989c1a5382"
++  },
++  "result": "open",
++  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
++  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
++  "sides": {
++    "old": {
++      "commit": "a7421542ac2b34670c7c261539fc253d77526afc",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "original source compilation",
++      "exit": 1,
++      "diagnostic": [
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-bpovzqzi/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:25: error: constructor AsmClassGenerator in class AsmClassGenerator cannot be applied to given types;",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-bpovzqzi/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:32: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-bpovzqzi/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:34: error: cannot find symbol",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-bpovzqzi/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:35: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-bpovzqzi/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:36: error: incompatible types: String cannot be converted to val"
++      ]
++    },
++    "new": {
++      "commit": "b8a65d35911580a469964aa722f4cd989c1a5382",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "original source compilation",
++      "exit": 1,
++      "diagnostic": [
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-dvraxaog/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:25: error: constructor AsmClassGenerator in class AsmClassGenerator cannot be applied to given types;",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-dvraxaog/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:32: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-dvraxaog/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:34: error: cannot find symbol",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-dvraxaog/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:35: error: incompatible types: String cannot be converted to val",
++        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds/compile-dvraxaog/source/src/main/java/ru/progrm_jarvis/reflector/bytecode/asm/AsmClassGenerator.java:36: error: incompatible types: String cannot be converted to val"
++      ]
++    }
++  },
++  "firstBlocker": "original source compilation",
++  "elapsedSeconds": 10.675,
++  "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0"
++}

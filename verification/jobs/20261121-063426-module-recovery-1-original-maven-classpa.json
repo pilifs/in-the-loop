@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-063426-module-recovery-1-original-maven-classpa",
+  "title": "Module recovery 1 original Maven classpaths for caller comparison",
+  "description": "Repeat the original module workload on one host runner. Earlier processes on two checkout-local queues shared a systemd unit name and terminated before producing evidence. Build both historical revisions with their actual processed resources and dependencies. Record the causal build diagnostic when a historical release is unavailable. This group covers compsuite-i-4, compsuite-i-70, compsuite-i-103, reflector-35.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation"
+  ],
+  "links": {
+    "jobs": [
+      "20261121-062837-restore-complete-original-maven-modules"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T06:34:26+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "memoryLimit": "6G",
+    "timeout": "70m"
+  },
+  "steps": [
+    {
+      "name": "Rebuild the original owning Maven modules",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-103 --case reflector-35",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1"
+  ]
+}
