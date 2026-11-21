@@ -196,6 +196,43 @@ class UpgradeReviewTest(unittest.TestCase):
         self.assertEqual(edges["read", "()Ljava/lang/String;"], [("app/Client", "fallback", "()Ljava/lang/String;")])
 
     @cost("tool")
+    def test_wrapped_field_error_uses_the_live_instruction_and_both_jvm_lookups(self):
+        home = runtime_jdk.home("21")
+        if not home:
+            self.skipTest("requires JDK 21")
+        jdk = Path(home)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            client = """public static int call() { return 7; }
+                public static int prepare() {
+                    try { return (int) dep.Number.flag; }
+                    catch (LinkageError e) { e.setStackTrace(new StackTraceElement[0]); throw new IllegalStateException(e); }
+                }"""
+            prepared, dependencies = self.prepared_pair(root, jdk, client, {
+                "old": "public static int flag = 4;", "new": "public static long flag = 4;"})
+            # Deploy the same precompiled consumer on both dependency versions.
+            new = json.loads(prepared[1].read_text())
+            new["classpath"][0] = json.loads(prepared[0].read_text())["classpath"][0]
+            prepared[1].write_text(json.dumps(new))
+            probe = root / "UpgradeProbe.java"
+            probe.write_text("public class UpgradeProbe { public static String observe(String[] x) { "
+                             "app.Real.prepare(); return Integer.toString(app.Real.call()); } }")
+            spec = root / "scope.json"
+            spec.write_text(json.dumps({"entry": "app.Real#call()I", "observer": "service response", "basis": "control",
+                "probeClass": "UpgradeProbe", "cases": [{"args": [], "expected": {"return": "7"}}]}))
+            result = upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
+            self.assertEqual(result["status"], "open")
+            link = result["beforeEntryComparison"][0]["memberLinkage"]
+            instruction = link["instruction"]
+            self.assertEqual((instruction["opcode"], instruction["name"], instruction["descriptor"]), ("getstatic", "flag", "I"))
+            self.assertEqual((link["sides"]["old"]["lookup"], link["sides"]["new"]["lookup"]), ("found", "missing"))
+            self.assertEqual(instruction["ownerJarSha256"], dependencies[1])
+            loc = instruction["location"]
+            raw = (root / "old/app/Real.class").read_bytes()
+            self.assertIsNone(runtime_jar.member_at_code_index(raw, "prepare", "()I", loc["codeIndex"],
+                              code_sha256=loc["methodCodeSha256"], pool_sha256="different pool"))
+
+    @cost("tool")
     def test_old_loaded_type_is_absent_on_the_new_jvm_and_a_string_is_not_a_type_reference(self):
         home = runtime_jdk.home("21")
         if not home:

@@ -12,24 +12,34 @@ import zipfile
 from targets import runtime_jar
 
 
-def inspect_side(name, prepared, feature, jdk, helpers, temp, env, deadline):
-    files, operand, binding = prepared
+def lookup(arguments, marker, files, jdk, helpers, temp, env, deadline):
     proc = subprocess.run([str(jdk/"bin/java"), "-Xmx64m", "-Djava.io.tmpdir="+str(temp),
-                           "-classpath", os.pathsep.join(map(str, [helpers, *files])), "UpgradeClassLookup", name],
+                           "-classpath", os.pathsep.join(map(str, [helpers, *files])), "UpgradeClassLookup", *arguments],
                           cwd=temp, env=env, capture_output=True, text=True, check=True,
                           timeout=max(0.01, deadline - time.monotonic()))
-    marks = [s.removeprefix("UPGRADE-LOOKUP ") for s in proc.stdout.splitlines() if s.startswith("UPGRADE-LOOKUP ")]
+    marks = [s[len(marker):] for s in proc.stdout.splitlines() if s.startswith(marker)]
     if len(marks) != 1:
-        raise ValueError("the fresh JVM did not report exactly one class lookup")
-    state, _, origin = marks[0].partition(" ")
-    lookup = {"outcome": state}
-    if state == "found" and origin.startswith("file:"):
+        raise ValueError("the fresh JVM did not report exactly one lookup")
+    return marks[0]
+
+
+def file_binding(origin, files, binding):
+    if origin.startswith("file:"):
         path = Path(unquote(urlsplit(origin).path)).resolve()
         if path in files:
-            lookup["classpathIndex"] = files.index(path)
-            lookup["jarSha256"] = binding["classpath"][files.index(path)]
+            index = files.index(path)
+            return {"classpathIndex": index, "jarSha256": binding["classpath"][index]}
+    return {}
+
+
+def inspect_side(name, prepared, feature, jdk, helpers, temp, env, deadline):
+    files, operand, binding = prepared
+    state, _, origin = lookup([name], "UPGRADE-LOOKUP ", files, jdk, helpers, temp, env, deadline).partition(" ")
+    resolution = {"outcome": state}
+    if state == "found":
+        resolution.update(file_binding(origin, files, binding))
     if state == "linkage":
-        lookup["error"] = origin
+        resolution["error"] = origin
     target = name.replace(".", "/")
     providers, users = [], []
     for index, jar in enumerate(files):
@@ -57,11 +67,69 @@ def inspect_side(name, prepared, feature, jdk, helpers, temp, env, deadline):
                                       "classSha256": hashlib.sha256(data).hexdigest()})
         if time.monotonic() >= deadline:
             raise TimeoutError("missing-class inspection reached the case deadline")
-    return {"lookup": lookup, "providers": providers, "referringClassesInUpgrade": users}
+    return {"lookup": resolution, "providers": providers, "referringClassesInUpgrade": users}
+
+
+MEMBER_ERRORS = {"java.lang.NoSuchFieldError", "java.lang.NoSuchMethodError", "java.lang.IncompatibleClassChangeError"}
+
+
+def observed_member(failure, loaded, files, binding, feature):
+    if not failure["causes"] or failure["causes"][-1] not in MEMBER_ERRORS:
+        return
+    event = failure if len(failure["causes"]) == 1 else failure.get("rootThrow", {})
+    frame = event.get("throwLocation")
+    if not frame:
+        return
+    owner, name, descriptor = runtime_jar.parse_target(frame["entry"])
+    data = runtime_jar.effective_class(files[frame["classpathIndex"]], runtime_jar.internal(owner), feature)
+    if data is None:
+        return
+    operand = runtime_jar.member_at_code_index(data, name, descriptor, frame["codeIndex"],
+                code_sha256=frame.get("methodCodeSha256"), pool_sha256=frame.get("constantPoolSha256"))
+    if not operand:
+        return
+    origins = loaded.get(operand["owner"], set())
+    if len(origins) == 1 and next(iter(origins)) in files:
+        index = files.index(next(iter(origins)))
+        failure["memberInstruction"] = {**operand, "location": frame, "executingClassSha256": hashlib.sha256(data).hexdigest(),
+                                        "ownerJarSha256": binding["classpath"][index]}
+
+
+def compare_member(instruction, error, prepared, feature, jdk, helpers, temp, env, deadline):
+    owner, name, desc, opcode = (instruction[k] for k in ("owner", "name", "descriptor", "opcode"))
+    caller = runtime_jar.internal(instruction["location"]["entry"].partition("#")[0])
+    sides = {}
+    for side, (files, _, binding) in prepared.items():
+        response = lookup([owner, name, desc, opcode], "UPGRADE-MEMBER ", files, jdk, helpers, temp, env, deadline)
+        status, kind, origin = response.split(" ", 2)
+        result = {"lookup": status, "ownerKind": kind, **file_binding(origin, files, binding)}
+        if "jarSha256" not in result:
+            return None
+        # Use the executing class from the captured event on the new side, and classpath order on the old.
+        candidates = [files[instruction["location"]["classpathIndex"]]] if side == "new" else files
+        for jar in candidates:
+            data = runtime_jar.effective_class(jar, caller, feature)
+            if data is not None:
+                result["executingClassSha256"] = hashlib.sha256(data).hexdigest()
+                result["referenceKinds"] = runtime_jar.member_reference_kinds(data, (runtime_jar.internal(owner), name, desc))
+                break
+        sides[side] = result
+    new = sides["new"]
+    if (new["jarSha256"] != instruction["ownerJarSha256"] or new.get("executingClassSha256") != instruction["executingClassSha256"]
+            or instruction["referenceKind"] not in new.get("referenceKinds", [])):
+        return None
+    if error == "java.lang.IncompatibleClassChangeError" and opcode == "invokeinterface" and new["ownerKind"] == "class":
+        reason = "interface invocation resolved to a class"
+    elif (new["lookup"] == "missing" and error == ("java.lang.NoSuchMethodError" if desc.startswith("(") else "java.lang.NoSuchFieldError")):
+        reason = "the member at the throwing instruction is absent"
+    else:
+        return None
+    return {"reason": reason, "instruction": instruction, "sides": sides}
 
 
 def diagnose(report, prepared, old_loaded, feature, jdk, helpers, temp, env, deadline):
     evidence = {}
+    members = {}
     for row in report["beforeEntryComparison"]:
         index = row["input"]
         before, after = (report["sides"][s]["trials"][index] for s in ("old", "new"))
@@ -69,6 +137,17 @@ def diagnose(report, prepared, old_loaded, feature, jdk, helpers, temp, env, dea
                 before["qualifiedMethodEntries"] != 2 or before["observations"] != [report["cases"][index]["expected"]] * 2):
             continue
         failure = after["beforeEntry"][0]
+        instruction = failure.get("memberInstruction")
+        if instruction:
+            error = failure["causes"][-1]
+            key = (instruction["location"]["entry"], instruction["location"]["codeIndex"], error)
+            if key not in members:
+                try:
+                    members[key] = compare_member(instruction, error, prepared, feature, jdk, helpers, temp, env, deadline)
+                except (ValueError, OSError, subprocess.SubprocessError, zipfile.BadZipFile):
+                    members[key] = None
+            if members[key]:
+                row["memberLinkage"] = members[key]
         if failure["causes"][-1:] != ["java.lang.ClassNotFoundException"]:
             continue
         name = failure.get("lastCauseMessage", "")

@@ -349,16 +349,43 @@ def debug_attributes(data):
     return found
 
 
+def _member_ref(pool, value):
+    owner, nat = value
+    name, desc = pool[nat][1]
+    return _class_name(pool, owner), _utf8(pool, name), _utf8(pool, desc)
+
+
 def references(data):
     """{(owner, name, descriptor)} of every Methodref and InterfaceMethodref in the class's constant pool."""
     pool, _ = _pool(data)
-    out = set()
-    for tag, value in pool.values():
-        if tag in (10, 11):
-            owner, nat = value
-            name, desc = pool[nat][1]
-            out.add((_class_name(pool, owner), _utf8(pool, name), _utf8(pool, desc)))
-    return out
+    return {_member_ref(pool, value) for tag, value in pool.values() if tag in (10, 11)}
+
+
+def member_reference_kinds(data, operand):
+    pool, _ = _pool(data)
+    kinds = {9: "field", 10: "method", 11: "interface method"}
+    return sorted({kinds[tag] for tag, value in pool.values() if tag in kinds and _member_ref(pool, value) == operand})
+
+
+def member_at_code_index(data, name, descriptor, index, *, code_sha256, pool_sha256):
+    """Resolve the field or method instruction at a bytecode index reported by a live JVM."""
+    pool, declarations, _ = _declarations(data, with_code=True)
+    _, code, _ = declarations.get((name, descriptor), (None, None, None))
+    if (not code or not 0 <= index <= len(code) - 3 or hashlib.sha256(code).hexdigest() != code_sha256
+            or hashlib.sha256(data[10:_pool(data)[1]]).hexdigest() != pool_sha256):
+        return None
+    opcodes = ("getstatic", "putstatic", "getfield", "putfield", "invokevirtual", "invokespecial",
+               "invokestatic", "invokeinterface")
+    opcode = code[index]
+    if not 0xb2 <= opcode <= 0xb9:
+        return None
+    tag, value = pool[struct.unpack_from(">H", code, index + 1)[0]]
+    allowed = (9,) if opcode <= 0xb5 else (11,) if opcode == 0xb9 else (10,) if opcode == 0xb6 else (10, 11)
+    if tag not in allowed:
+        return None
+    owner, member, desc = _member_ref(pool, value)
+    return {"opcode": opcodes[opcode - 0xb2], "owner": owner.replace("/", "."), "name": member,
+            "descriptor": desc, "referenceKind": {9: "field", 10: "method", 11: "interface method"}[tag]}
 
 
 def type_references(data, target):

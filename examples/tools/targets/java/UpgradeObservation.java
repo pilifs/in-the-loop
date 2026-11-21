@@ -53,6 +53,10 @@ public final class UpgradeObservation {
         }
     }
 
+    private static String rootMessage(Throwable cause) {
+        return encode(cause.getMessage());
+    }
+
     // The debugger binds this argument to the very object observed at a JVM exception event.
     private static void writeFailure(BufferedWriter output, Throwable thrown) throws Exception {
         output.write("UPGRADE-OBSERVATION throw " + thrown.getClass().getName() + "\n");
@@ -66,7 +70,7 @@ public final class UpgradeObservation {
             if (cause.getStackTrace().length != 0) detail.append(" at ").append(cause.getStackTrace()[0]);
             output.write("UPGRADE-CAUSE " + cause.getClass().getName() + "\n");
         }
-        output.write("UPGRADE-LAST-CAUSE " + encode(last.getMessage()) + "\n");
+        output.write("UPGRADE-LAST-CAUSE " + rootMessage(last) + "\n");
         output.write("UPGRADE-DETAIL " + encode(detail.toString()) + "\n");
     }
 }

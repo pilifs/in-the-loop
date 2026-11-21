@@ -107,10 +107,22 @@ def throw_evidence(debugger_marks, loaded, files, artifact_hashes, dependency, r
     if last_message != "-":
         evidence["lastCauseMessage"] = base64.b64decode(last_message, validate=True).decode("utf-16-be", "surrogatepass")[:500]
     stacks = [s.removeprefix("UPGRADE-THROW-STACK ") for s in debugger_marks if s.startswith("UPGRADE-THROW-STACK ")]
-    if len(stacks) != 1:
-        return evidence
+    if len(stacks) == 1:
+        evidence.update(bound_throw_stack(stacks[0], loaded, files, artifact_hashes, dependency))
+    if len(evidence["causes"]) > 1:
+        marker = "UPGRADE-ROOT-STACK " + evidence["causes"][-1] + " "
+        roots = [line[len(marker):] for line in debugger_marks if line.startswith(marker)]
+        if len(roots) == 1:
+            root = bound_throw_stack(roots[0], loaded, files, artifact_hashes, dependency, include_first=True)
+            if root.get("firstObserved"):
+                evidence["rootThrow"] = root["firstObserved"]
+    return evidence
+
+
+def bound_throw_stack(encoded, loaded, files, artifact_hashes, dependency, *, include_first=False):
+    evidence = {"frames": [], "observerCodeIndex": None}
     events = []
-    for line in base64.b64decode(stacks[0], validate=True).decode("utf-8").splitlines():
+    for line in base64.b64decode(encoded, validate=True).decode("utf-8").splitlines():
         if line == "truncated":
             return evidence
         if line == "event":
@@ -123,7 +135,13 @@ def throw_evidence(debugger_marks, loaded, files, artifact_hashes, dependency, r
         if fields[0] == "escape":
             events[-1]["escapingMember"] = fields[1]
             continue
-        entry, code_index, source_line = fields
+        if fields[0] == "methodBytes":
+            if "throwLocation" in events[-1]:
+                events[-1]["throwLocation"].update(methodCodeSha256=base64.b64decode(fields[1],validate=True).hex(),
+                                                   constantPoolSha256=base64.b64decode(fields[2],validate=True).hex())
+            continue
+        is_location = fields[0] == "location"
+        entry, code_index, source_line = fields[1:] if is_location else fields
         origins = loaded.get(entry.partition("#")[0], set())
         if len(origins) != 1:
             continue
@@ -131,10 +149,15 @@ def throw_evidence(debugger_marks, loaded, files, artifact_hashes, dependency, r
         if jar not in files:
             continue
         index = files.index(jar)
-        events[-1]["frames"].append({"entry": entry, "codeIndex": int(code_index), "sourceLine": int(source_line),
-                                     "artifact": "client" if index == 0 else "upgrade" if jar == dependency else "classpath",
-                                     "classpathIndex": index, "jarSha256": artifact_hashes[index]})
+        frame = {"entry": entry, "codeIndex": int(code_index), "sourceLine": int(source_line),
+                 "artifact": "client" if index == 0 else "upgrade" if jar == dependency else "classpath",
+                 "classpathIndex": index, "jarSha256": artifact_hashes[index]}
+        events[-1]["frames"].append(frame)
+        if is_location:
+            events[-1]["throwLocation"] = frame
     if events:
+        if include_first:
+            evidence["firstObserved"] = events[0]
         for event in events:
             for frame in event["frames"]:
                 if frame["artifact"] == "client" and frame["entry"] == event.get("escapingMember"):
@@ -163,6 +186,17 @@ def compare_before_entry(sides, domain):
               and old["qualifiedMethodEntries"] == 2 and old["observations"] == [case["expected"]] * 2
               and old["loadedUpgradeOnEachReplay"] and new["loadedUpgradeOnEachReplay"]):
             result.update(status="reproduced earlier failure", before=case["expected"], after={"throws": observed[0]["throws"]})
+        if (new.get("repeatableBeforeEntry") and old["qualifiedMethodEntries"] == 2
+                and old["observations"] == [case["expected"]] * 2 and old["loadedUpgradeOnEachReplay"]):
+            root = observed[0].get("rootThrow")
+            binding = sides["new"]
+            runtime_count = binding.get("frameworkFixtures", {}).get("runtimeCount", len(binding["classpath"]))
+            if root and root["observerCodeIndex"] is not None and binding.get("operandScope", "runtime") == "runtime":
+                for frame in root["frames"]:
+                    if (0 < frame["classpathIndex"] < runtime_count and frame["jarSha256"] not in sides["old"]["classpath"]):
+                        result["changedRuntimeCause"] = {"type": observed[0]["causes"][-1], "frame": frame,
+                                                         "observerCodeIndex": root["observerCodeIndex"]}
+                        break
         comparisons.append(result)
     return comparisons
 
@@ -332,6 +366,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     report["stoppedAt"] = {"side": side, "input": index, "repetition": trial+1}
                     previous = early or trials
                     trace_exception = previous[0].get("throws", "") if previous else ""
+                    if early and len(early[0]["causes"]) > 1:
+                        trace_exception += "," + early[0]["causes"][-1]
                     child_output, marks, observation_text = run(run_dir, trace_exception)
                     detail = next((line[len("UPGRADE-DETAIL "):] for line in observation_text.splitlines()
                                    if line.startswith("UPGRADE-DETAIL ")), "")
@@ -346,9 +382,11 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                             # Re-execute with exception events limited to the escaping type. Ordinary
                             # successful checks pay no cost for tracing library-internal exceptions.
                             run_dir = temp / f"{side}-{index}-{trial}-throw"
-                            child_output, marks, observation_text = run(run_dir, outcome["throws"])
+                            cause_names = [line[len("UPGRADE-CAUSE "):] for line in observation_text.splitlines()
+                                           if line.startswith("UPGRADE-CAUSE ")] or [outcome["throws"]]
+                            child_output, marks, observation_text = run(run_dir, ",".join(dict.fromkeys([outcome["throws"], cause_names[-1]])))
                         if (typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + caller in marks
-                                or (trace_exception and trace_exception != outcome["throws"])):
+                                or (trace_exception and trace_exception.split(",")[0] != outcome["throws"])):
                             raise ValueError(f"{side} input {index}: inconsistent failure before the original caller")
                         loaded = class_origins(child_output)
                         classes = [name for name, origins in loaded.items() if origins == {dependency}]
@@ -356,6 +394,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         loaded_each_time = loaded_each_time and bool(classes)
                         evidence = throw_evidence(marks, loaded, files, side_record["classpath"],
                                                   dependency, observation_text.splitlines())
+                        upgrade_linkage.observed_member(evidence, loaded, files, side_record, int(identity["feature"]))
                         early.append({**outcome, **evidence})
                         trial_record["beforeEntry"] = early
                         if first_early is None:

@@ -16,10 +16,12 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
@@ -57,16 +59,19 @@ public final class UpgradeTrace {
     }
 
     private static void install(VirtualMachine vm, ReferenceType type, String owner, String method,
-                                String descriptor, String exception) {
+                                String descriptor, Set<String> exceptions) {
         if (type.name().equals(owner)) breakpoint(vm, type, method, descriptor, "entry");
-        if (exception.isEmpty()) return;
-        if (type.name().equals(exception)) {
+        if (exceptions.isEmpty()) return;
+        if (exceptions.contains(type.name())) {
             ExceptionRequest request = vm.eventRequestManager().createExceptionRequest(type, true, true);
+            request.putProperty("exactException", type);
             request.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
             request.enable();
         }
-        if (type.name().equals("UpgradeObservation"))
+        if (type.name().equals("UpgradeObservation")) {
             breakpoint(vm, type, "writeFailure", "(Ljava/io/BufferedWriter;Ljava/lang/Throwable;)V", "failure");
+            breakpoint(vm, type, "rootMessage", "(Ljava/lang/Throwable;)Ljava/lang/String;", "root");
+        }
     }
 
     private static void watch(VirtualMachine vm, String name) {
@@ -78,6 +83,10 @@ public final class UpgradeTrace {
 
     // A Java Throwable can have its stack replaced. Snapshot the actual throwing thread and
     // retain only events below observe(). The catcher selects the escaping object by JDI identity.
+    private static String digest(byte[] bytes) throws Exception {
+        return Base64.getEncoder().encodeToString(MessageDigest.getInstance("SHA-256").digest(bytes));
+    }
+
     private static List<String> throwingStack(ExceptionEvent event, String observer, String entry,
                                                Set<Long> sites) throws Exception {
         List<String> result = new ArrayList<>();
@@ -91,6 +100,7 @@ public final class UpgradeTrace {
             if (member.indexOf('\t') >= 0 || member.indexOf('\r') >= 0 || member.indexOf('\n') >= 0)
                 return null;
             if (member.equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) {
+                if (event.virtualMachine().classesByName(observer).size() != 1) return null;
                 result.add("observer\t" + location.codeIndex());
                 if (escapesEntry && sites.contains(location.codeIndex())) result.add("escape\t" + entry);
                 return result;
@@ -100,8 +110,18 @@ public final class UpgradeTrace {
             if (catcher != null && method.equals(catcher.method())) caughtBelow = true;
             if (member.equals(entry) && !caughtBelow) escapesEntry = true;
             // A class loaded by two class loaders cannot be attributed by a name in the JVM load log.
-            if (event.virtualMachine().classesByName(type.name()).size() == 1)
-                result.add(member + "\t" + location.codeIndex() + "\t" + location.lineNumber());
+            if (event.virtualMachine().classesByName(type.name()).size() == 1) {
+                String origin = result.isEmpty() && location.equals(event.location()) ? "location\t" : "";
+                result.add(origin + member + "\t" + location.codeIndex() + "\t" + location.lineNumber());
+                if (!origin.isEmpty() && !method.isNative() && event.virtualMachine().canGetBytecodes()
+                        && event.virtualMachine().canGetConstantPool()) {
+                    String error = event.exception().referenceType().name();
+                    if (error.equals("java.lang.NoSuchFieldError") || error.equals("java.lang.NoSuchMethodError")
+                            || error.equals("java.lang.IncompatibleClassChangeError")) {
+                        result.add("methodBytes\t" + digest(method.bytecodes()) + "\t" + digest(type.constantPool()));
+                    }
+                }
+            }
         }
         return null;
     }
@@ -126,7 +146,9 @@ public final class UpgradeTrace {
         String owner = entry.substring(0, hash);
         String method = entry.substring(hash + 1, paren);
         String descriptor = entry.substring(paren);
-        String observer = args[5], exception = args[6];
+        String observer = args[5];
+        Set<String> exceptions = new LinkedHashSet<>();
+        if (!args[6].isEmpty()) exceptions.addAll(Arrays.asList(args[6].split(",")));
         Set<Long> sites = new HashSet<>();
         for (String index : args[4].split(",")) sites.add(Long.parseLong(index));
         LaunchingConnector connector = Bootstrap.virtualMachineManager().defaultConnector();
@@ -148,21 +170,22 @@ public final class UpgradeTrace {
         boolean finished = false;
         Map<String, List<String>> thrown = new LinkedHashMap<>();
         try {
-            List<String> watched = exception.isEmpty() ? Arrays.asList(owner)
-                    : Arrays.asList(owner, exception, "UpgradeObservation");
+            Set<String> watched = new LinkedHashSet<>(exceptions);
+            watched.add(owner);
+            if (!exceptions.isEmpty()) watched.add("UpgradeObservation");
             for (String name : watched) {
                 watch(vm, name);
                 for (ReferenceType type : vm.classesByName(name))
-                    if (type.isPrepared()) install(vm, type, owner, method, descriptor, exception);
+                    if (type.isPrepared()) install(vm, type, owner, method, descriptor, exceptions);
             }
             while (!finished) {
                 EventSet events = vm.eventQueue().remove();
                 for (Event event : events) {
                     if (event instanceof ClassPrepareEvent) {
-                        install(vm, ((ClassPrepareEvent) event).referenceType(), owner, method, descriptor, exception);
+                        install(vm, ((ClassPrepareEvent) event).referenceType(), owner, method, descriptor, exceptions);
                     } else if (event instanceof ExceptionEvent) {
                         ExceptionEvent raised = (ExceptionEvent) event;
-                        if (!raised.exception().referenceType().name().equals(exception)) continue;
+                        if (!raised.exception().referenceType().equals(raised.request().getProperty("exactException"))) continue;
                         String id = raised.thread().uniqueID() + "/" + raised.exception().uniqueID();
                         List<String> stack = throwingStack(raised, observer, entry, sites);
                         if (stack != null) {
@@ -181,12 +204,16 @@ public final class UpgradeTrace {
                         }
                     } else if (event instanceof BreakpointEvent) {
                         BreakpointEvent point = (BreakpointEvent) event;
-                        if ("failure".equals(point.request().getProperty("purpose"))) {
-                            ObjectReference escaping = (ObjectReference) point.thread().frame(0).getArgumentValues().get(1);
-                            List<String> stack = thrown.get(point.thread().uniqueID() + "/" + escaping.uniqueID());
-                            if (stack != null && escaping.referenceType().name().equals(exception))
-                                System.err.println("UPGRADE-THROW-STACK " + Base64.getEncoder().encodeToString(
+                        String purpose = (String) point.request().getProperty("purpose");
+                        if (purpose.equals("failure") || purpose.equals("root")) {
+                            boolean root = purpose.equals("root");
+                            ObjectReference cause = (ObjectReference) point.thread().frame(0).getArgumentValues().get(root ? 0 : 1);
+                            List<String> stack = thrown.get(point.thread().uniqueID() + "/" + cause.uniqueID());
+                            if (stack != null) {
+                                String marker = root ? "UPGRADE-ROOT-STACK " + cause.referenceType().name() + " " : "UPGRADE-THROW-STACK ";
+                                System.err.println(marker + Base64.getEncoder().encodeToString(
                                         String.join("\n", stack).getBytes(StandardCharsets.UTF_8)));
+                            }
                         } else if (vm.classesByName(owner).size() == 1 && vm.classesByName(observer).size() == 1) {
                             String site = invocation(point, observer, sites);
                             if (site != null) {
