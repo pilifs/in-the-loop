@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 15:15 UTC (5511 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -3005,6 +3005,12 @@ Outputs applied for 2 of the 2 job(s). 20261121-075424-v3-dispatch-group-06-orig
 change `vnsvswuvyvom` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 After landing external-upgrade-evaluation the default run failed in test_acceptance.py on example 348. The stale index entry is fixed by build.py --index-only (348 is now executable, with its generated-keys receipt listed). The remaining failure, an unresolved conclusion marked as expected, is the agent's to settle and is recorded as VF-052. test_acceptance.py now fails only that one subtest.
+
+### Record verification results for 2 job(s)
+
+change `uyvsoxnnrtxw` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-094513-357-utf16-native-checks-on-the-original: passed: 1 passed step(s) in 5.4s, peak 128.6 MiB (estimated 5m00s, 3.0 GiB); 75 output file(s) changed Applied 75 output(s). 20261121-095047-354-cover-the-original-utf-16-truncation: passed: 1 passed step(s) in 4.8s, peak 207.8 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
 ## Conversation
 
