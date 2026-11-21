@@ -1,0 +1,307 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-081221-v3-final-group-02-original-java-upgrade",
+  "title": "V3 final group 02 original Java upgrade caller replays",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 57.8s, peak 311.4 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-081221-v3-final-group-02-original-java-upgrade.json",
+    "sha256": "f8172d08ebbf36f13c2af1685673bf582eaa7acdfb74d4e80adf9cd8fdbb5a2e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-081221-v3-final-group-02-original-java-upgrade",
+      "title": "V3 final group 02 original Java upgrade caller replays",
+      "description": "Repeat the corpus with JDBC driver selection checked in fresh JVMs when the original caller reports no suitable driver. Bind provider declarations and classfile versions to the original JARs and keep the downstream operation open. Retain the qualified dispatch and runtime linkage evidence. Run strict native and finite checks on both revisions, keeping original intake failures, pre-entry exceptions, and per-input replay evidence. Cases compsuite-i-10, compsuite-i-103, compsuite-i-29, compsuite-i-36, compsuite-i-37, compsuite-i-39.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T08:12:21+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "6G",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "Run native checking for each original pair",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/v3-final-native/02 --case compsuite-i-10 --case compsuite-i-103 --case compsuite-i-29 --case compsuite-i-36 --case compsuite-i-37 --case compsuite-i-39",
+          "cwd": "."
+        },
+        {
+          "name": "Replay scoped original caller behavior",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/external-upgrades/corpus-runs/v3-final-finite/02 --case compsuite-i-10 --case compsuite-i-103 --case compsuite-i-29 --case compsuite-i-36 --case compsuite-i-37 --case compsuite-i-39",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/v3-final-native/02",
+        "verification/external-upgrades/corpus-runs/v3-final-finite/02"
+      ]
+    }
+  },
+  "sourceCommit": "83ae65d6afb1beec8e1a9237787df69693c7968d",
+  "startedAt": "2026-11-21T08:21:45+00:00",
+  "finishedAt": "2026-11-21T08:22:51+00:00",
+  "wallSeconds": 66.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2618191,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 326537216,
+    "wallSeconds": 57.8,
+    "cpuSeconds": 62.4,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run native checking for each original pair",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/v3-final-native/02 --case compsuite-i-10 --case compsuite-i-103 --case compsuite-i-29 --case compsuite-i-36 --case compsuite-i-37 --case compsuite-i-39",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 3.229,
+      "cpuSeconds": 2.973,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 326537216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-native-checking-for-each-o.log",
+        "lines": 6,
+        "bytes": 1299,
+        "sha256": "0212a17581eeb22a6ea7043abf43bafecdb4d2ea1d7c40024a38395723a75628",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-10 current open review the recorded exact overloads",
+        "compsuite-i-39 current open review the recorded exact overloads",
+        "compsuite-i-29 current open runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use",
+        "compsuite-i-36 current open parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co",
+        "compsuite-i-103 current open postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibab",
+        "compsuite-i-37 current open review the recorded exact overloads"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Replay scoped original caller behavior",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/external-upgrades/corpus-runs/v3-final-finite/02 --case compsuite-i-10 --case compsuite-i-103 --case compsuite-i-29 --case compsuite-i-36 --case compsuite-i-37 --case compsuite-i-39",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 54.538,
+      "cpuSeconds": 59.465,
+      "cpuThrottledSeconds": 7.768,
+      "peakMemoryBytes": 149446656,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-replay-scoped-original-caller.log",
+        "lines": 12,
+        "bytes": 1183,
+        "sha256": "2afb20e1fa0e373ee94d23398305f0b45f747f964ccae476496c3380ae3ab876",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "open new input 0: the original caller method was never entered. java.lang.NoClassDefFoundError: org/apache/lucene/codecs/PointsFormat at java.lang.Class.getDeclaredConstructors0(Native Method) caused by java.lang.ClassNotFoundException: org.apache.lucene.codecs.PointsFormat at java.net.URLClassLoade",
+        "compsuite-i-10 open",
+        "open new input 0: the original caller method was never entered. java.lang.NoClassDefFoundError: org/springframework/core/ErrorCoded at java.lang.ClassLoader.defineClass1(Native Method) caused by java.lang.ClassNotFoundException: org.springframework.core.ErrorCoded at java.net.URLClassLoader.findClas",
+        "compsuite-i-103 open",
+        "changed com.uber.profiling.Arguments#runConfigProvider()V",
+        "compsuite-i-29 changed",
+        "changed org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+        "compsuite-i-36 changed",
+        "preserved net.glxn.qrgen.javase.QRCode#file()Ljava/io/File;",
+        "compsuite-i-37 preserved",
+        "preserved com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+        "compsuite-i-39 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-10.json",
+      "change": "added",
+      "bytes": 18643,
+      "sha256": "ed703c048b7358679adec537fd69489d12e98f100d8d3719fb43d95d38ef845a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-103.json",
+      "change": "added",
+      "bytes": 10847,
+      "sha256": "0b49942e71dec4af188268c8312af1266bfe53f4ed74cec477fe4b341c07d2fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-29.json",
+      "change": "added",
+      "bytes": 7513,
+      "sha256": "43af3e9a82139026fdb84470c3640ae273182a026451e3a3f61de6f331472657",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-36.json",
+      "change": "added",
+      "bytes": 7524,
+      "sha256": "4a46bc03e1004917e32907ae8c4ff744fb60b0b14ae33232e4f43f5207f92792",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 10628,
+      "sha256": "65cb1f2476fbc1194605ef8a5686fb57730aeec06ed2dcc85db7f2192d6c2255",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-39.json",
+      "change": "added",
+      "bytes": 13491,
+      "sha256": "e655c43ef3a662a62fc7b3f0a10810571dbcf85c6270b579fb687693e2bfebe5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-10.json",
+      "change": "added",
+      "bytes": 79459,
+      "sha256": "e305cecf3aef9af1968eea3f6c5a2dc56ff60907b8bb4c53828b77b5cfc95d31",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-103.json",
+      "change": "added",
+      "bytes": 36217,
+      "sha256": "4c11dc067bdc998430dc58b7444282197de1b948d2e5e99a4951054404bbca0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-29.json",
+      "change": "added",
+      "bytes": 46265,
+      "sha256": "9953bb3f32f346d2a074093aee39df9bb383827774772c52e6243ad4c4667db3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-36.json",
+      "change": "added",
+      "bytes": 12050,
+      "sha256": "e53c6838b5bec36162f65382904d32e4edae486c45384332a1b7370ab69bbbaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 18249,
+      "sha256": "d0b9351e62c595fc065248497399eae0f62cc2f804a7bcf12a50e76b549e670d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-39.json",
+      "change": "added",
+      "bytes": 11713,
+      "sha256": "c120305b7e6882a5c1d5eaab114466e918315046b798687928f06cde9ef11523",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T08:26:32+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-10.json",
+      "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-103.json",
+      "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-29.json",
+      "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-36.json",
+      "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-37.json",
+      "verification/external-upgrades/corpus-runs/v3-final-native/02/current/compsuite-i-39.json",
+      "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-10.json",
+      "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-103.json",
+      "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-29.json",
+      "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-36.json",
+      "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-37.json",
+      "verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-39.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

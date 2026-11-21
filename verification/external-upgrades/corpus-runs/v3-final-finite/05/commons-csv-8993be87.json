@@ -1,0 +1,345 @@
+{
+  "entry": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+  "observer": "Read all records through the original parser. Compare each field in order up to end of input.",
+  "domainBasis": "The four CSV literals cover a quoted separator, doubled quotes, embedded LF, empty fields and multiple records. An independent CSV reader supplies the expected field sequences. Length prefixes preserve the field boundaries.",
+  "cases": [
+    {
+      "args": [
+        "a,b\r\n"
+      ],
+      "expected": {
+        "return": "[1:a1:b]"
+      }
+    },
+    {
+      "args": [
+        "\"a,b\",c\r\n"
+      ],
+      "expected": {
+        "return": "[3:a,b1:c]"
+      }
+    },
+    {
+      "args": [
+        "\"a\"\"b\",\"x\ny\"\r\n"
+      ],
+      "expected": {
+        "return": "[3:a\"b3:x\ny]"
+      }
+    },
+    {
+      "args": [
+        "a,,c\n,,\n"
+      ],
+      "expected": {
+        "return": "[1:a0:1:c]|[0:0:0:]"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "394bfa23dc95f65fa739ec04091eafb7480891e5f188640c99dea1512c5a71d2",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "97c84e20fb87602237e7e9fcbfb3389300f87c34b2bb03cd7e8dcd7521b13b65",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
+      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
+      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+      "classpath": [
+        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "dependency": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 19,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a1:b]"
+            },
+            {
+              "return": "[1:a1:b]"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a,b1:c]"
+            },
+            {
+              "return": "[3:a,b1:c]"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a\"b3:x\ny]"
+            },
+            {
+              "return": "[3:a\"b3:x\ny]"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            },
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.input.AbstractInputStream",
+        "org.apache.commons.io.input.Input",
+        "org.apache.commons.io.input.ReaderInputStream",
+        "org.apache.commons.io.input.UnsynchronizedBufferedReader",
+        "org.apache.commons.io.input.UnsynchronizedReader",
+        "org.apache.commons.io.output.AppendableOutputStream"
+      ]
+    },
+    "new": {
+      "commit": "8993be875a32fdc336780b1610a2e002d320571e",
+      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
+      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+      "classpath": [
+        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "dependency": "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 19,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a1:b]"
+            },
+            {
+              "return": "[1:a1:b]"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a,b1:c]"
+            },
+            {
+              "return": "[3:a,b1:c]"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a\"b3:x\ny]"
+            },
+            {
+              "return": "[3:a\"b3:x\ny]"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            },
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.input.AbstractInputStream",
+        "org.apache.commons.io.input.Input",
+        "org.apache.commons.io.input.ReaderInputStream",
+        "org.apache.commons.io.input.UnsynchronizedBufferedReader",
+        "org.apache.commons.io.input.UnsynchronizedReader",
+        "org.apache.commons.io.output.AppendableOutputStream"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+    "codeIndices": [
+      19
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "ee3e7335330fd9dadd3850772de3f4874e1929ba32e6e553a61fffc3613b40f9",
+    "UpgradeObservation": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
+    "UpgradeTrace": "f94b6d38f2dcf58747b52a3485fd3fd844d387f40873f29d0bd0caf3c99bef70",
+    "org/apache/commons/csv/UpgradeProbe": "561db0dc507bf575bf4f0f851bd27bf27a22e75a8cc696d68409a04d8dc65da5"
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 10.625,
+  "specSha256": "9cb096cb64288f28ee19ec9a83eb0407fc2d868b5b1580114bdbd8dbf7dafb0a"
+}

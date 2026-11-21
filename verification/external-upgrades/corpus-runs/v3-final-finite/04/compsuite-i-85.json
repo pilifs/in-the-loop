@@ -1,0 +1,1325 @@
+{
+  "entry": "pl.com.bottega.ecommerce.sales.application.impl.OrderingServiceImpl#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V",
+  "observer": "Confirm the original Spring-backed order with its current offer or after a change in quantity.",
+  "domainBasis": "The unchanged OrderingTest expects confirmation to succeed for its current offer and to reject its stale offer with OfferChangedExcpetion. Both inputs use the original test profile, persistence mapping and request/session scopes.",
+  "cases": [
+    {
+      "args": [
+        "stale"
+      ],
+      "expected": {
+        "return": "offer-changed"
+      }
+    },
+    {
+      "args": [
+        "current"
+      ],
+      "expected": {
+        "return": "confirmed"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "986b81388ad52c229b83ed4e834ea72e98ef73cc2e6580926ab8ca3190ac82a1",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "97c84e20fb87602237e7e9fcbfb3389300f87c34b2bb03cd7e8dcd7521b13b65",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "a1a0cf597e430cf58afe627cd5a724fa33665d2e",
+      "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd",
+      "callerClassSha256": "bac35eb58634394e8dbe722f029c69ef71110744ea287e7ef52c222e9d41305b",
+      "classpath": [
+        "ef8398c2cd8fba84185b252b546d93f40bbccdf88d9da28a8a5ce8cbeb6bc42b",
+        "dbfabfcf63611a43b3eef40d9a58e973df35bc0eedb95acef358c267bed30506",
+        "dea2fe7895033bdbbe2c1688ad08a0588d9d9b0f17d53349081cc20dda31353e",
+        "5674d2dd1641e6068207effa45b8a633129695c1ab5773bc6b1a2ad3cb31fcd1",
+        "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c",
+        "ac2126dfbcd8d398e4b64cd0fdca21d2d64ff46e59326004de2d636b37036c35",
+        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
+        "bacfb6460317d421aa2906d9e63c293b69dc1a5dac480d0f6416df50796a4bb3",
+        "eeec97d5987dc8d525285fab888bab4c68a2ef1412335f73aba2b804f88a6cb5",
+        "cea2405cf0f5427e226cd4957973e8b3d83091dea2f6383a7168192c790ecd06",
+        "2db20262b9cdd89907513575d0d6cb6fcb10fe9e9f484731e2f1a19c05c58e85",
+        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
+        "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370",
+        "5f7c2d94073be6e8cf196d95b934b54384debe48026ab1c354668eba6cf8eb87",
+        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+        "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f",
+        "8e4e3d5ef7d44274ca19c5b9ea0a00e7796aa06153337164a8d81effb3d4affa",
+        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
+        "d746d344f43af77c79cefb40f8c787d472cb58326eb21ba649dd3ee6c8089bef",
+        "1a5d8da8f2d31f069fd8cbd8b9abdc888b17f31c25ca42af10eb43bbb1a626ba",
+        "7f9e44b6bd0dc899c69b0d81c903fee8771ee60152ac3ce003f5909b03b9eb26",
+        "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044",
+        "f374dfb5a6f3985cd95e7d7c4a3b32d380e4f26f62fec4f6fc8021104d0c2431",
+        "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
+        "1ba81c1000b878f8592b41907aa7c0c07ab6e62c0217e75f0003b0b682f6bb8f",
+        "b47ce0110d82853a2b94a56196c461148e7400d4caf38d73654a3d56d7384199",
+        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
+        "feb4b5b2e79a63b72ec47a693b1cf35cf1cea1f60a2bb2615bf21f74c7a60bb0",
+        "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
+        "8ba2177cfebc7c51a2c31427f572f7f8fefd13701a89661175ce376c1e478a5f",
+        "7b52f4d3ad41b7ed71f5b6b11833113b7e08326c8ef70d2dedf0b430c7ba5341",
+        "f8265e29325141351d97be28157c33e54979185c071c8e9e3f6b6206600518cd",
+        "c1a251e50dce780d55071c2373a19825c54c7625bd807f22b67ac65f3a8768aa",
+        "c1b81ad9bed9cec9da9df975ac1af252341313bd6af42a7442a1328e90a4d932",
+        "f97483ba0944b9fa133aa29638764ddbeadb51ec3dbc02074c58fa2caecd07fa",
+        "c5694b55d92527479382f254199b3c6b1d8780f652ad61e9ca59919887f491a8",
+        "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
+      ],
+      "dependency": "dbfabfcf63611a43b3eef40d9a58e973df35bc0eedb95acef358c267bed30506",
+      "preparation": "original production runtime followed by original Maven test classes, resources and companions",
+      "compiledClasses": 170,
+      "resources": 6,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "c80ad01a25e172fe9a2f5a5bcc0bb422fceafb05d9a58c4b8d792ea4808aca70",
+      "frameworkFixtures": {
+        "runtimeCount": 32,
+        "testClassesSha256": "f8265e29325141351d97be28157c33e54979185c071c8e9e3f6b6206600518cd"
+      },
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "offer-changed"
+            },
+            {
+              "return": "offer-changed"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 157,
+              "dispatchedTo": "com.sun.proxy.$Proxy62#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V"
+            },
+            {
+              "observerCodeIndex": 157,
+              "dispatchedTo": "com.sun.proxy.$Proxy62#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "confirmed"
+            },
+            {
+              "return": "confirmed"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 157,
+              "dispatchedTo": "com.sun.proxy.$Proxy62#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V"
+            },
+            {
+              "observerCodeIndex": 157,
+              "dispatchedTo": "com.sun.proxy.$Proxy62#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.hibernate.ejb.AbstractEntityManagerImpl",
+        "org.hibernate.ejb.AbstractQueryImpl",
+        "org.hibernate.ejb.AvailableSettings",
+        "org.hibernate.ejb.Ejb3Configuration",
+        "org.hibernate.ejb.Ejb3Configuration$1",
+        "org.hibernate.ejb.Ejb3Configuration$Ejb3EntityNotFoundDelegate",
+        "org.hibernate.ejb.Ejb3Configuration$ScanningContext",
+        "org.hibernate.ejb.EntityManagerFactoryImpl",
+        "org.hibernate.ejb.EntityManagerFactoryImpl$HibernatePersistenceUnitUtil",
+        "org.hibernate.ejb.EntityManagerFactoryImpl$JpaMetaModelPopulationSetting",
+        "org.hibernate.ejb.EntityManagerImpl",
+        "org.hibernate.ejb.HibernateEntityManager",
+        "org.hibernate.ejb.HibernateEntityManagerFactory",
+        "org.hibernate.ejb.HibernateEntityManagerImplementor",
+        "org.hibernate.ejb.HibernatePersistence",
+        "org.hibernate.ejb.HibernatePersistence$1",
+        "org.hibernate.ejb.HibernateQuery",
+        "org.hibernate.ejb.QueryImpl",
+        "org.hibernate.ejb.QueryImpl$ParameterImpl",
+        "org.hibernate.ejb.TransactionImpl",
+        "org.hibernate.ejb.cfg.spi.IdentifierGeneratorStrategyProvider",
+        "org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider",
+        "org.hibernate.ejb.criteria.CriteriaBuilderImpl",
+        "org.hibernate.ejb.engine.spi.EJB3CascadeStyle",
+        "org.hibernate.ejb.engine.spi.EJB3CascadeStyle$1",
+        "org.hibernate.ejb.engine.spi.EJB3CascadingAction",
+        "org.hibernate.ejb.engine.spi.EJB3CascadingAction$1",
+        "org.hibernate.ejb.event.BeanCallback",
+        "org.hibernate.ejb.event.Callback",
+        "org.hibernate.ejb.event.CallbackHandlerConsumer",
+        "org.hibernate.ejb.event.CallbackResolver",
+        "org.hibernate.ejb.event.EJB3AutoFlushEventListener",
+        "org.hibernate.ejb.event.EJB3DeleteEventListener",
+        "org.hibernate.ejb.event.EJB3FlushEntityEventListener",
+        "org.hibernate.ejb.event.EJB3FlushEventListener",
+        "org.hibernate.ejb.event.EJB3MergeEventListener",
+        "org.hibernate.ejb.event.EJB3PersistEventListener",
+        "org.hibernate.ejb.event.EJB3PersistOnFlushEventListener",
+        "org.hibernate.ejb.event.EJB3PostDeleteEventListener",
+        "org.hibernate.ejb.event.EJB3PostInsertEventListener",
+        "org.hibernate.ejb.event.EJB3PostLoadEventListener",
+        "org.hibernate.ejb.event.EJB3PostUpdateEventListener",
+        "org.hibernate.ejb.event.EJB3SaveEventListener",
+        "org.hibernate.ejb.event.EJB3SaveOrUpdateEventListener",
+        "org.hibernate.ejb.event.EntityCallbackHandler",
+        "org.hibernate.ejb.event.HibernateEntityManagerEventListener",
+        "org.hibernate.ejb.event.JpaIntegrator",
+        "org.hibernate.ejb.event.JpaIntegrator$1",
+        "org.hibernate.ejb.event.JpaIntegrator$2",
+        "org.hibernate.ejb.event.ListenerCallback",
+        "org.hibernate.ejb.internal.EntityManagerFactoryRegistry",
+        "org.hibernate.ejb.internal.EntityManagerMessageLogger",
+        "org.hibernate.ejb.internal.EntityManagerMessageLogger_$logger",
+        "org.hibernate.ejb.metamodel.AbstractAttribute",
+        "org.hibernate.ejb.metamodel.AbstractIdentifiableType",
+        "org.hibernate.ejb.metamodel.AbstractIdentifiableType$1",
+        "org.hibernate.ejb.metamodel.AbstractIdentifiableType$Builder",
+        "org.hibernate.ejb.metamodel.AbstractManagedType",
+        "org.hibernate.ejb.metamodel.AbstractManagedType$1",
+        "org.hibernate.ejb.metamodel.AbstractManagedType$2",
+        "org.hibernate.ejb.metamodel.AbstractManagedType$Builder",
+        "org.hibernate.ejb.metamodel.AbstractType",
+        "org.hibernate.ejb.metamodel.AttributeFactory",
+        "org.hibernate.ejb.metamodel.AttributeFactory$1",
+        "org.hibernate.ejb.metamodel.AttributeFactory$2",
+        "org.hibernate.ejb.metamodel.AttributeFactory$3",
+        "org.hibernate.ejb.metamodel.AttributeFactory$4",
+        "org.hibernate.ejb.metamodel.AttributeFactory$5",
+        "org.hibernate.ejb.metamodel.AttributeFactory$6",
+        "org.hibernate.ejb.metamodel.AttributeFactory$7",
+        "org.hibernate.ejb.metamodel.AttributeFactory$AttributeContext",
+        "org.hibernate.ejb.metamodel.AttributeFactory$AttributeMetadata",
+        "org.hibernate.ejb.metamodel.AttributeFactory$BaseAttributeMetadata",
+        "org.hibernate.ejb.metamodel.AttributeFactory$MemberResolver",
+        "org.hibernate.ejb.metamodel.AttributeFactory$PluralAttributeMetadata",
+        "org.hibernate.ejb.metamodel.AttributeFactory$PluralAttributeMetadataImpl",
+        "org.hibernate.ejb.metamodel.AttributeFactory$PluralAttributeMetadataImpl$1",
+        "org.hibernate.ejb.metamodel.AttributeFactory$SingularAttributeMetadata",
+        "org.hibernate.ejb.metamodel.AttributeFactory$SingularAttributeMetadataImpl",
+        "org.hibernate.ejb.metamodel.AttributeFactory$SingularAttributeMetadataImpl$1",
+        "org.hibernate.ejb.metamodel.AttributeFactory$ValueContext",
+        "org.hibernate.ejb.metamodel.AttributeFactory$ValueContext$ValueClassification",
+        "org.hibernate.ejb.metamodel.AttributeImplementor",
+        "org.hibernate.ejb.metamodel.BasicTypeImpl",
+        "org.hibernate.ejb.metamodel.EmbeddableTypeImpl",
+        "org.hibernate.ejb.metamodel.EntityTypeImpl",
+        "org.hibernate.ejb.metamodel.MappedSuperclassTypeImpl",
+        "org.hibernate.ejb.metamodel.MetadataContext",
+        "org.hibernate.ejb.metamodel.MetamodelImpl",
+        "org.hibernate.ejb.metamodel.PluralAttributeImpl",
+        "org.hibernate.ejb.metamodel.PluralAttributeImpl$Builder",
+        "org.hibernate.ejb.metamodel.PluralAttributeImpl$CollectionAttributeImpl",
+        "org.hibernate.ejb.metamodel.PluralAttributeImpl$ListAttributeImpl",
+        "org.hibernate.ejb.metamodel.PluralAttributeImpl$MapAttributeImpl",
+        "org.hibernate.ejb.metamodel.PluralAttributeImpl$SetAttributeImpl",
+        "org.hibernate.ejb.metamodel.SingularAttributeImpl",
+        "org.hibernate.ejb.metamodel.SingularAttributeImpl$Identifier",
+        "org.hibernate.ejb.metamodel.SingularAttributeImpl$Version",
+        "org.hibernate.ejb.packaging.AbstractJarVisitor",
+        "org.hibernate.ejb.packaging.ClassFilter",
+        "org.hibernate.ejb.packaging.Entry",
+        "org.hibernate.ejb.packaging.FileFilter",
+        "org.hibernate.ejb.packaging.FileZippedJarVisitor",
+        "org.hibernate.ejb.packaging.Filter",
+        "org.hibernate.ejb.packaging.JarVisitor",
+        "org.hibernate.ejb.packaging.JarVisitorFactory",
+        "org.hibernate.ejb.packaging.JavaElementFilter",
+        "org.hibernate.ejb.packaging.NativeScanner",
+        "org.hibernate.ejb.packaging.NativeScanner$1",
+        "org.hibernate.ejb.packaging.NativeScanner$2",
+        "org.hibernate.ejb.packaging.NativeScanner$3",
+        "org.hibernate.ejb.packaging.NativeScanner$StateJarVisitor",
+        "org.hibernate.ejb.packaging.PackageFilter",
+        "org.hibernate.ejb.packaging.Scanner",
+        "org.hibernate.ejb.util.CacheModeHelper",
+        "org.hibernate.ejb.util.CacheModeHelper$1",
+        "org.hibernate.ejb.util.ConfigurationHelper",
+        "org.hibernate.ejb.util.LockModeTypeHelper",
+        "org.hibernate.ejb.util.LockModeTypeHelper$1",
+        "org.hibernate.ejb.util.NamingHelper",
+        "org.hibernate.ejb.util.NamingHelper$1",
+        "org.hibernate.ejb.util.PersistenceUtilHelper$MetadataCache"
+      ]
+    },
+    "new": {
+      "commit": "f500f1ea3c84932963cdf847fea48a98f2f492d0",
+      "sourceSha256": "a54816897a25bef62c2c93bb42866d044cf21f74a249872361b6759c95a6b2bd",
+      "callerClassSha256": "bac35eb58634394e8dbe722f029c69ef71110744ea287e7ef52c222e9d41305b",
+      "classpath": [
+        "ef8398c2cd8fba84185b252b546d93f40bbccdf88d9da28a8a5ce8cbeb6bc42b",
+        "daf3e3b0c40878bbc934d56b11b646193187399522a77f4e6405757580fbb3a9",
+        "cb914bfe888da7d9162e965ac8b0d6f28f2f32eca944a00fbbf6dd3cf1aacc13",
+        "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70",
+        "4870e2639b354a71dcdc72a943793a90aaabd710563cfae3a442b4a57c755af9",
+        "1f58b77470d8d147a0538d515347dd322f49a83b9e884b8970051160464b65b3",
+        "303d0546c3e950cc3beaca00dfcbf2632d4eca530e4e446391bf193cbc2a71a3",
+        "457d8e1c0c80d1e320a792ec35e7c180694ba05182d7ecf7dabdb4e5a8a12fe2",
+        "f106351abd941110226745ed103c85863b3f04e9fa82ddea1084639ae0c5336c",
+        "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a",
+        "04f4354548a30827e126bdf6fcbe3640789ad8335a6f3f0762bf7f9f74e51fbf",
+        "7923e21f030a9964d70a0e48007ca873280c66ddf0f0620b2d969852c23d5653",
+        "aba81efa678b621203fb89aeff81d6f126f7a9dd709401e5609c42976684ae23",
+        "a2cdc2f2f8eb893728832568dc54d080eb5a1495edb3b66e51b97122a60a0d87",
+        "43516d19beae35909e04d06af6c0c58c17bc94e0070c85e8dc9929ca640dc91d",
+        "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734",
+        "58caabc40c9f74b0b5993fd868e0f64a50c0759094e6a251aaafad98edfc7a3b",
+        "fa5e31395c39c2e7d46aca0f81f72060931607b2fa41bd36038eb2cb6fb93326",
+        "0e1dec40a1ede965941251eda968aeee052cc4f50378bc316cc48e8159bdbeb4",
+        "953e1e83b2be7c3ea2f88da86c13614f47e9e71d3578c8521d7f187756b63962",
+        "fbc29e662aaf8741c1c0bdb1c725f120bb4b3a37644957e5ea83ba516029893c",
+        "aab4de3006808c09d25dd4ff4a3611cfb63c95463cfd99e73d2e1680d229a33b",
+        "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393",
+        "88b955a0df57880a26a74708bc34f74dcaf8ebf4e78843a28b50eae945732b06",
+        "45fecfa5c8217ce1f3652ab95179790ec8cc0dec0384bca51cbeb94a293d9f2f",
+        "34975dde1c6920f1a39791142235689bc3cd357e24d05edd8ff93b885bd68d60",
+        "6443e10ba2e259fb821d9b6becf10db5316285fc30c53cec9d7b19a3877e7fdf",
+        "95b05d9590af4154c6513b9c5dc1fb2e55b539972ba0a9ef28e9a0c01d83ad77",
+        "785861db11ca1bd0d1956682b974ad73eb19cd3e01a4b3fa82d62eca97210aec",
+        "a2ef5fb4990b914a31176c51f6137f6f04253dd165420985051f9fd4fb032128",
+        "1e3bfcfe9efdb40e9d3c084c9bcf8597e492e30294c7e40b56ed18a67c2838cd",
+        "5578b71b37999a5eaed3fea0d14aa61c60c6ec6328256f2b63472f336318baf4",
+        "a4ae6ac1a66334eeffdd237409c15103e6b7013f085b3add87b1198174939e55",
+        "a310a50b9bdc44aaf36362dc9bb212235a147ffa8ef72dc9544a39c329eabbc3",
+        "2db20262b9cdd89907513575d0d6cb6fcb10fe9e9f484731e2f1a19c05c58e85",
+        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
+        "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370",
+        "5f7c2d94073be6e8cf196d95b934b54384debe48026ab1c354668eba6cf8eb87",
+        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+        "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f",
+        "8e4e3d5ef7d44274ca19c5b9ea0a00e7796aa06153337164a8d81effb3d4affa",
+        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
+        "d746d344f43af77c79cefb40f8c787d472cb58326eb21ba649dd3ee6c8089bef",
+        "1a5d8da8f2d31f069fd8cbd8b9abdc888b17f31c25ca42af10eb43bbb1a626ba",
+        "7f9e44b6bd0dc899c69b0d81c903fee8771ee60152ac3ce003f5909b03b9eb26",
+        "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044",
+        "f374dfb5a6f3985cd95e7d7c4a3b32d380e4f26f62fec4f6fc8021104d0c2431",
+        "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
+        "1ba81c1000b878f8592b41907aa7c0c07ab6e62c0217e75f0003b0b682f6bb8f",
+        "b47ce0110d82853a2b94a56196c461148e7400d4caf38d73654a3d56d7384199",
+        "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9",
+        "feb4b5b2e79a63b72ec47a693b1cf35cf1cea1f60a2bb2615bf21f74c7a60bb0",
+        "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
+        "8ba2177cfebc7c51a2c31427f572f7f8fefd13701a89661175ce376c1e478a5f",
+        "7b52f4d3ad41b7ed71f5b6b11833113b7e08326c8ef70d2dedf0b430c7ba5341",
+        "f8265e29325141351d97be28157c33e54979185c071c8e9e3f6b6206600518cd",
+        "c1a251e50dce780d55071c2373a19825c54c7625bd807f22b67ac65f3a8768aa",
+        "c1b81ad9bed9cec9da9df975ac1af252341313bd6af42a7442a1328e90a4d932",
+        "f97483ba0944b9fa133aa29638764ddbeadb51ec3dbc02074c58fa2caecd07fa",
+        "c5694b55d92527479382f254199b3c6b1d8780f652ad61e9ca59919887f491a8",
+        "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
+      ],
+      "dependency": "daf3e3b0c40878bbc934d56b11b646193187399522a77f4e6405757580fbb3a9",
+      "preparation": "original production runtime followed by original Maven test classes, resources and companions",
+      "compiledClasses": 170,
+      "resources": 6,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "f38208092af6c94c49601cdce9590e16946227de1fef8084f98ae68e0fdea612",
+      "frameworkFixtures": {
+        "runtimeCount": 56,
+        "testClassesSha256": "f8265e29325141351d97be28157c33e54979185c071c8e9e3f6b6206600518cd"
+      },
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "org.springframework.beans.factory.BeanCreationException",
+              "causes": [
+                "org.springframework.beans.factory.BeanCreationException",
+                "javax.persistence.PersistenceException",
+                "org.hibernate.NotYetImplementedFor6Exception"
+              ],
+              "frames": [],
+              "observerCodeIndex": 277,
+              "lastCauseMessage": "org.hibernate.persister.entity.AbstractEntityPersister",
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                    "codeIndex": 9,
+                    "sourceLine": 5947,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#lambda$prepareMappingModel$3(Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;Ljava/lang/String;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                    "codeIndex": 2,
+                    "sourceLine": 5714,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#processSubPart(Ljava/lang/String;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess$SubPartMappingProducer;)Lorg/hibernate/metamodel/mapping/ModelPart;",
+                    "codeIndex": 62,
+                    "sourceLine": 96,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#prepareMappingModel(Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)V",
+                    "codeIndex": 161,
+                    "sourceLine": 5712,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#execute()V",
+                    "codeIndex": 90,
+                    "sourceLine": 66,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#process(Ljava/util/Map;Lorg/hibernate/metamodel/spi/RuntimeModelCreationContext;)V",
+                    "codeIndex": 11,
+                    "sourceLine": 31,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.model.domain.internal.MappingMetamodelImpl#finishInitialization(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/BootstrapContext;Lorg/hibernate/engine/spi/SessionFactoryImplementor;)V",
+                    "codeIndex": 88,
+                    "sourceLine": 208,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.internal.RuntimeMetamodelsImpl#finishInitialization(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/BootstrapContext;Lorg/hibernate/internal/SessionFactoryImpl;)V",
+                    "codeIndex": 23,
+                    "sourceLine": 47,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.internal.SessionFactoryImpl#<init>(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/SessionFactoryOptions;)V",
+                    "codeIndex": 632,
+                    "sourceLine": 304,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.boot.internal.SessionFactoryBuilderImpl#build()Lorg/hibernate/SessionFactory;",
+                    "codeIndex": 21,
+                    "sourceLine": 453,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl#build()Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 20,
+                    "sourceLine": 1240,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider#createContainerEntityManagerFactory(Ljavax/persistence/spi/PersistenceUnitInfo;Ljava/util/Map;)Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 55,
+                    "sourceLine": 60,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean#createNativeEntityManagerFactory()Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 235,
+                    "sourceLine": 343,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean#afterPropertiesSet()V",
+                    "codeIndex": 217,
+                    "sourceLine": 319,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#invokeInitMethods(Ljava/lang/String;Ljava/lang/Object;Lorg/springframework/beans/factory/support/RootBeanDefinition;)V",
+                    "codeIndex": 109,
+                    "sourceLine": 1637,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#initializeBean(Ljava/lang/String;Ljava/lang/Object;Lorg/springframework/beans/factory/support/RootBeanDefinition;)Ljava/lang/Object;",
+                    "codeIndex": 61,
+                    "sourceLine": 1574,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#doCreateBean(Ljava/lang/String;Lorg/springframework/beans/factory/support/RootBeanDefinition;[Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 235,
+                    "sourceLine": 545,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean(Ljava/lang/String;Lorg/springframework/beans/factory/support/RootBeanDefinition;[Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 169,
+                    "sourceLine": 482,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory$1#getObject()Ljava/lang/Object;",
+                    "codeIndex": 16,
+                    "sourceLine": 306,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(Ljava/lang/String;Lorg/springframework/beans/factory/ObjectFactory;)Ljava/lang/Object;",
+                    "codeIndex": 132,
+                    "sourceLine": 230,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean(Ljava/lang/String;Ljava/lang/Class;[Ljava/lang/Object;Z)Ljava/lang/Object;",
+                    "codeIndex": 375,
+                    "sourceLine": 302,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory#getBean(Ljava/lang/String;)Ljava/lang/Object;",
+                    "codeIndex": 5,
+                    "sourceLine": 197,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#getBean(Ljava/lang/String;)Ljava/lang/Object;",
+                    "codeIndex": 9,
+                    "sourceLine": 1054,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#finishBeanFactoryInitialization(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V",
+                    "codeIndex": 79,
+                    "sourceLine": 829,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#refresh()V",
+                    "codeIndex": 54,
+                    "sourceLine": 538,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  }
+                ],
+                "observerCodeIndex": 35,
+                "throwLocation": {
+                  "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                  "codeIndex": 9,
+                  "sourceLine": 5947,
+                  "artifact": "classpath",
+                  "classpathIndex": 3,
+                  "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                }
+              }
+            },
+            {
+              "throws": "org.springframework.beans.factory.BeanCreationException",
+              "causes": [
+                "org.springframework.beans.factory.BeanCreationException",
+                "javax.persistence.PersistenceException",
+                "org.hibernate.NotYetImplementedFor6Exception"
+              ],
+              "frames": [],
+              "observerCodeIndex": 277,
+              "lastCauseMessage": "org.hibernate.persister.entity.AbstractEntityPersister",
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                    "codeIndex": 9,
+                    "sourceLine": 5947,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#lambda$prepareMappingModel$3(Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;Ljava/lang/String;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                    "codeIndex": 2,
+                    "sourceLine": 5714,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#processSubPart(Ljava/lang/String;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess$SubPartMappingProducer;)Lorg/hibernate/metamodel/mapping/ModelPart;",
+                    "codeIndex": 62,
+                    "sourceLine": 96,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#prepareMappingModel(Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)V",
+                    "codeIndex": 161,
+                    "sourceLine": 5712,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#execute()V",
+                    "codeIndex": 90,
+                    "sourceLine": 66,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#process(Ljava/util/Map;Lorg/hibernate/metamodel/spi/RuntimeModelCreationContext;)V",
+                    "codeIndex": 11,
+                    "sourceLine": 31,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.model.domain.internal.MappingMetamodelImpl#finishInitialization(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/BootstrapContext;Lorg/hibernate/engine/spi/SessionFactoryImplementor;)V",
+                    "codeIndex": 88,
+                    "sourceLine": 208,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.internal.RuntimeMetamodelsImpl#finishInitialization(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/BootstrapContext;Lorg/hibernate/internal/SessionFactoryImpl;)V",
+                    "codeIndex": 23,
+                    "sourceLine": 47,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.internal.SessionFactoryImpl#<init>(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/SessionFactoryOptions;)V",
+                    "codeIndex": 632,
+                    "sourceLine": 304,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.boot.internal.SessionFactoryBuilderImpl#build()Lorg/hibernate/SessionFactory;",
+                    "codeIndex": 21,
+                    "sourceLine": 453,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl#build()Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 20,
+                    "sourceLine": 1240,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider#createContainerEntityManagerFactory(Ljavax/persistence/spi/PersistenceUnitInfo;Ljava/util/Map;)Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 55,
+                    "sourceLine": 60,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean#createNativeEntityManagerFactory()Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 235,
+                    "sourceLine": 343,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean#afterPropertiesSet()V",
+                    "codeIndex": 217,
+                    "sourceLine": 319,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#invokeInitMethods(Ljava/lang/String;Ljava/lang/Object;Lorg/springframework/beans/factory/support/RootBeanDefinition;)V",
+                    "codeIndex": 109,
+                    "sourceLine": 1637,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#initializeBean(Ljava/lang/String;Ljava/lang/Object;Lorg/springframework/beans/factory/support/RootBeanDefinition;)Ljava/lang/Object;",
+                    "codeIndex": 61,
+                    "sourceLine": 1574,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#doCreateBean(Ljava/lang/String;Lorg/springframework/beans/factory/support/RootBeanDefinition;[Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 235,
+                    "sourceLine": 545,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean(Ljava/lang/String;Lorg/springframework/beans/factory/support/RootBeanDefinition;[Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 169,
+                    "sourceLine": 482,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory$1#getObject()Ljava/lang/Object;",
+                    "codeIndex": 16,
+                    "sourceLine": 306,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(Ljava/lang/String;Lorg/springframework/beans/factory/ObjectFactory;)Ljava/lang/Object;",
+                    "codeIndex": 132,
+                    "sourceLine": 230,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean(Ljava/lang/String;Ljava/lang/Class;[Ljava/lang/Object;Z)Ljava/lang/Object;",
+                    "codeIndex": 375,
+                    "sourceLine": 302,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory#getBean(Ljava/lang/String;)Ljava/lang/Object;",
+                    "codeIndex": 5,
+                    "sourceLine": 197,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#getBean(Ljava/lang/String;)Ljava/lang/Object;",
+                    "codeIndex": 9,
+                    "sourceLine": 1054,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#finishBeanFactoryInitialization(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V",
+                    "codeIndex": 79,
+                    "sourceLine": 829,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#refresh()V",
+                    "codeIndex": 54,
+                    "sourceLine": 538,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  }
+                ],
+                "observerCodeIndex": 35,
+                "throwLocation": {
+                  "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                  "codeIndex": 9,
+                  "sourceLine": 5947,
+                  "artifact": "classpath",
+                  "classpathIndex": 3,
+                  "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                }
+              }
+            }
+          ],
+          "loadedUpgradeOnEachReplay": false,
+          "repeatableBeforeEntry": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "org.springframework.beans.factory.BeanCreationException",
+              "causes": [
+                "org.springframework.beans.factory.BeanCreationException",
+                "javax.persistence.PersistenceException",
+                "org.hibernate.NotYetImplementedFor6Exception"
+              ],
+              "frames": [],
+              "observerCodeIndex": 277,
+              "lastCauseMessage": "org.hibernate.persister.entity.AbstractEntityPersister",
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                    "codeIndex": 9,
+                    "sourceLine": 5947,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#lambda$prepareMappingModel$3(Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;Ljava/lang/String;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                    "codeIndex": 2,
+                    "sourceLine": 5714,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#processSubPart(Ljava/lang/String;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess$SubPartMappingProducer;)Lorg/hibernate/metamodel/mapping/ModelPart;",
+                    "codeIndex": 62,
+                    "sourceLine": 96,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#prepareMappingModel(Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)V",
+                    "codeIndex": 161,
+                    "sourceLine": 5712,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#execute()V",
+                    "codeIndex": 90,
+                    "sourceLine": 66,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#process(Ljava/util/Map;Lorg/hibernate/metamodel/spi/RuntimeModelCreationContext;)V",
+                    "codeIndex": 11,
+                    "sourceLine": 31,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.model.domain.internal.MappingMetamodelImpl#finishInitialization(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/BootstrapContext;Lorg/hibernate/engine/spi/SessionFactoryImplementor;)V",
+                    "codeIndex": 88,
+                    "sourceLine": 208,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.internal.RuntimeMetamodelsImpl#finishInitialization(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/BootstrapContext;Lorg/hibernate/internal/SessionFactoryImpl;)V",
+                    "codeIndex": 23,
+                    "sourceLine": 47,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.internal.SessionFactoryImpl#<init>(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/SessionFactoryOptions;)V",
+                    "codeIndex": 632,
+                    "sourceLine": 304,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.boot.internal.SessionFactoryBuilderImpl#build()Lorg/hibernate/SessionFactory;",
+                    "codeIndex": 21,
+                    "sourceLine": 453,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl#build()Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 20,
+                    "sourceLine": 1240,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider#createContainerEntityManagerFactory(Ljavax/persistence/spi/PersistenceUnitInfo;Ljava/util/Map;)Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 55,
+                    "sourceLine": 60,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean#createNativeEntityManagerFactory()Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 235,
+                    "sourceLine": 343,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean#afterPropertiesSet()V",
+                    "codeIndex": 217,
+                    "sourceLine": 319,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#invokeInitMethods(Ljava/lang/String;Ljava/lang/Object;Lorg/springframework/beans/factory/support/RootBeanDefinition;)V",
+                    "codeIndex": 109,
+                    "sourceLine": 1637,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#initializeBean(Ljava/lang/String;Ljava/lang/Object;Lorg/springframework/beans/factory/support/RootBeanDefinition;)Ljava/lang/Object;",
+                    "codeIndex": 61,
+                    "sourceLine": 1574,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#doCreateBean(Ljava/lang/String;Lorg/springframework/beans/factory/support/RootBeanDefinition;[Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 235,
+                    "sourceLine": 545,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean(Ljava/lang/String;Lorg/springframework/beans/factory/support/RootBeanDefinition;[Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 169,
+                    "sourceLine": 482,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory$1#getObject()Ljava/lang/Object;",
+                    "codeIndex": 16,
+                    "sourceLine": 306,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(Ljava/lang/String;Lorg/springframework/beans/factory/ObjectFactory;)Ljava/lang/Object;",
+                    "codeIndex": 132,
+                    "sourceLine": 230,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean(Ljava/lang/String;Ljava/lang/Class;[Ljava/lang/Object;Z)Ljava/lang/Object;",
+                    "codeIndex": 375,
+                    "sourceLine": 302,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory#getBean(Ljava/lang/String;)Ljava/lang/Object;",
+                    "codeIndex": 5,
+                    "sourceLine": 197,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#getBean(Ljava/lang/String;)Ljava/lang/Object;",
+                    "codeIndex": 9,
+                    "sourceLine": 1054,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#finishBeanFactoryInitialization(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V",
+                    "codeIndex": 79,
+                    "sourceLine": 829,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#refresh()V",
+                    "codeIndex": 54,
+                    "sourceLine": 538,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  }
+                ],
+                "observerCodeIndex": 35,
+                "throwLocation": {
+                  "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                  "codeIndex": 9,
+                  "sourceLine": 5947,
+                  "artifact": "classpath",
+                  "classpathIndex": 3,
+                  "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                }
+              }
+            },
+            {
+              "throws": "org.springframework.beans.factory.BeanCreationException",
+              "causes": [
+                "org.springframework.beans.factory.BeanCreationException",
+                "javax.persistence.PersistenceException",
+                "org.hibernate.NotYetImplementedFor6Exception"
+              ],
+              "frames": [],
+              "observerCodeIndex": 277,
+              "lastCauseMessage": "org.hibernate.persister.entity.AbstractEntityPersister",
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                    "codeIndex": 9,
+                    "sourceLine": 5947,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#lambda$prepareMappingModel$3(Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;Ljava/lang/String;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                    "codeIndex": 2,
+                    "sourceLine": 5714,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#processSubPart(Ljava/lang/String;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess$SubPartMappingProducer;)Lorg/hibernate/metamodel/mapping/ModelPart;",
+                    "codeIndex": 62,
+                    "sourceLine": 96,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.persister.entity.AbstractEntityPersister#prepareMappingModel(Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)V",
+                    "codeIndex": 161,
+                    "sourceLine": 5712,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#execute()V",
+                    "codeIndex": 90,
+                    "sourceLine": 66,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.mapping.internal.MappingModelCreationProcess#process(Ljava/util/Map;Lorg/hibernate/metamodel/spi/RuntimeModelCreationContext;)V",
+                    "codeIndex": 11,
+                    "sourceLine": 31,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.model.domain.internal.MappingMetamodelImpl#finishInitialization(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/BootstrapContext;Lorg/hibernate/engine/spi/SessionFactoryImplementor;)V",
+                    "codeIndex": 88,
+                    "sourceLine": 208,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.metamodel.internal.RuntimeMetamodelsImpl#finishInitialization(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/BootstrapContext;Lorg/hibernate/internal/SessionFactoryImpl;)V",
+                    "codeIndex": 23,
+                    "sourceLine": 47,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.internal.SessionFactoryImpl#<init>(Lorg/hibernate/boot/spi/MetadataImplementor;Lorg/hibernate/boot/spi/SessionFactoryOptions;)V",
+                    "codeIndex": 632,
+                    "sourceLine": 304,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.boot.internal.SessionFactoryBuilderImpl#build()Lorg/hibernate/SessionFactory;",
+                    "codeIndex": 21,
+                    "sourceLine": 453,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl#build()Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 20,
+                    "sourceLine": 1240,
+                    "artifact": "classpath",
+                    "classpathIndex": 3,
+                    "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider#createContainerEntityManagerFactory(Ljavax/persistence/spi/PersistenceUnitInfo;Ljava/util/Map;)Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 55,
+                    "sourceLine": 60,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean#createNativeEntityManagerFactory()Ljavax/persistence/EntityManagerFactory;",
+                    "codeIndex": 235,
+                    "sourceLine": 343,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean#afterPropertiesSet()V",
+                    "codeIndex": 217,
+                    "sourceLine": 319,
+                    "artifact": "classpath",
+                    "classpathIndex": 46,
+                    "jarSha256": "e04167c92de1772d271bb99fbe5c1a8543e780feab1e82ca57455dba5a9ff044"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#invokeInitMethods(Ljava/lang/String;Ljava/lang/Object;Lorg/springframework/beans/factory/support/RootBeanDefinition;)V",
+                    "codeIndex": 109,
+                    "sourceLine": 1637,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#initializeBean(Ljava/lang/String;Ljava/lang/Object;Lorg/springframework/beans/factory/support/RootBeanDefinition;)Ljava/lang/Object;",
+                    "codeIndex": 61,
+                    "sourceLine": 1574,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#doCreateBean(Ljava/lang/String;Lorg/springframework/beans/factory/support/RootBeanDefinition;[Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 235,
+                    "sourceLine": 545,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean(Ljava/lang/String;Lorg/springframework/beans/factory/support/RootBeanDefinition;[Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 169,
+                    "sourceLine": 482,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory$1#getObject()Ljava/lang/Object;",
+                    "codeIndex": 16,
+                    "sourceLine": 306,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(Ljava/lang/String;Lorg/springframework/beans/factory/ObjectFactory;)Ljava/lang/Object;",
+                    "codeIndex": 132,
+                    "sourceLine": 230,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean(Ljava/lang/String;Ljava/lang/Class;[Ljava/lang/Object;Z)Ljava/lang/Object;",
+                    "codeIndex": 375,
+                    "sourceLine": 302,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.beans.factory.support.AbstractBeanFactory#getBean(Ljava/lang/String;)Ljava/lang/Object;",
+                    "codeIndex": 5,
+                    "sourceLine": 197,
+                    "artifact": "classpath",
+                    "classpathIndex": 40,
+                    "jarSha256": "140315856dc38b4c2429e59620d83cde099e785201d592d17ca6bab7f6d90a4f"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#getBean(Ljava/lang/String;)Ljava/lang/Object;",
+                    "codeIndex": 9,
+                    "sourceLine": 1054,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#finishBeanFactoryInitialization(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V",
+                    "codeIndex": 79,
+                    "sourceLine": 829,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  },
+                  {
+                    "entry": "org.springframework.context.support.AbstractApplicationContext#refresh()V",
+                    "codeIndex": 54,
+                    "sourceLine": 538,
+                    "artifact": "classpath",
+                    "classpathIndex": 37,
+                    "jarSha256": "a62c996f2636ec1a13fc0f109a9a936071bfab96bd51e7aa53fbf1e1ed488370"
+                  }
+                ],
+                "observerCodeIndex": 35,
+                "throwLocation": {
+                  "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+                  "codeIndex": 9,
+                  "sourceLine": 5947,
+                  "artifact": "classpath",
+                  "classpathIndex": 3,
+                  "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+                }
+              }
+            }
+          ],
+          "loadedUpgradeOnEachReplay": false,
+          "repeatableBeforeEntry": true
+        }
+      ],
+      "loadedDependencyClasses": []
+    }
+  },
+  "status": "open",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "pl.com.bottega.ecommerce.sales.application.api.service.OrderingService#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V",
+    "codeIndices": [
+      157
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "pl.com.bottega.ecommerce.sales.application.impl.OrderingServiceImpl#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V",
+  "invocationVia": "pl.com.bottega.ecommerce.sales.application.api.service.OrderingService#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V",
+  "probeClasses": {
+    "UpgradeClassLookup": "5798bc3abba0faa9f4ea37eecf63bfbf49201c10e1d63cb40d21f05f6c7f0e66",
+    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+    "UpgradeProbe": "114aa8c9ce29c895c740dd886f5654ae82480a8ef7c61fbadcd1a090912c6ef7",
+    "UpgradeTrace": "5aa19a293f77c1a06fc0a85e5533a8b762466d666e57935a4c306f21ef599184"
+  },
+  "stoppedAt": {
+    "side": "new",
+    "input": 0,
+    "repetition": 1,
+    "exception": "org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [configurationContext.xml]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1578) caused by javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.persistenceException(EntityManagerFactoryBuilderImpl.java:1317) caused by org.hibernate.N"
+  },
+  "reason": "new input 0: the original caller method was never entered. org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [configurationContext.xml]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1578) caused by javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.persistenceException(EntityManagerFactoryBuilderImpl.java:1317) caused by org.hibernate.N",
+  "beforeEntryComparison": [
+    {
+      "input": 0,
+      "status": "unqualified",
+      "changedRuntimeCause": {
+        "type": "org.hibernate.NotYetImplementedFor6Exception",
+        "frame": {
+          "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+          "codeIndex": 9,
+          "sourceLine": 5947,
+          "artifact": "classpath",
+          "classpathIndex": 3,
+          "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+        },
+        "observerCodeIndex": 35
+      }
+    },
+    {
+      "input": 1,
+      "status": "unqualified",
+      "changedRuntimeCause": {
+        "type": "org.hibernate.NotYetImplementedFor6Exception",
+        "frame": {
+          "entry": "org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;",
+          "codeIndex": 9,
+          "sourceLine": 5947,
+          "artifact": "classpath",
+          "classpathIndex": 3,
+          "jarSha256": "436730c9a63718d0c82fae8fec3112c6c2077ac2e768b9a343e26484aad38f70"
+        },
+        "observerCodeIndex": 35
+      }
+    }
+  ],
+  "elapsedSeconds": 25.649,
+  "specSha256": "e5bfd040fa909c98e69e31e48dcac88cb2b7c7d79d92dd9d7ff51835641e0f39"
+}
