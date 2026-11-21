@@ -4814,6 +4814,12 @@ change `mzvlutwkznpt` · [log `2ca989ac0352`](https://terminalvalue.net/raw-trac
 
 The user's brief, copied unchanged from their analysis folder, for a single-agent run on Astra 6.2 at max effort that continues run 7's Codex session once the plumbing and lib-architecture runs have ended: Avro byte conversions first (#3878's startup, construction and buffer facts proved once, then reused for #729), JavaParser as a test of whether the startup technique travels. Documentation only.
 
+### Say where the domain foundations brief's ZIP is, and that the repository holds the same files
+
+change `kmtwlolrlsrq` · [log `2ca989ac0352`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2ca989ac0352eff5ea82b70f5c75664ab0a16c5c3e95f44553ce08aae66d32ff.jsonl.gz)
+
+At the user's word: the ZIP the brief cites is ~/code/scripts/analysis/organic-java-pr-campaign.zip on the VM, run 7's own artifacts packaged for the external agent that wrote the brief. A note under 'Evidence for the VM agent' points the agent at the same files in the checkout and the private archive. Documentation only.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2ca989ac0352eff5ea82b70f5c75664ab0a16c5c3e95f44553ce08aae66d32ff.jsonl.gz) has every step in between: reasoning, tool calls and their results.
