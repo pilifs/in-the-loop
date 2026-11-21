@@ -1,0 +1,184 @@
+{
+  "entry": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+  "observer": "Resolve and invoke an overloaded method for a boxed integer paired with a StringBuilder or a String.",
+  "domainBasis": "The service signatures and boxed-integer/StringBuilder setup mirror the original developer test. The expected overload accepts the exact boxed argument and the most specific compatible reference type.",
+  "cases": [
+    {
+      "args": [
+        "builder"
+      ],
+      "expected": {
+        "return": "Integer/CharSequence"
+      }
+    },
+    {
+      "args": [
+        "string"
+      ],
+      "expected": {
+        "return": "Integer/String"
+      }
+    }
+  ],
+  "probeSha256": "3ccb46f10d338e79e21a0b680c926a06ffec1a551839b43fd21a0e7d67351d6c",
+  "launcherSha256": "e26820797fb29befb3e3e9ee7b89e7ab9c4e32bf8ec239ac899c6426304abcb8",
+  "tracerSha256": "651ddfa6387ea984252798bbf151e316c53ff4e7ec418c27be98d380b2f8f61c",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "2b16d7aba2137a57c0d84665cfda2a2b82df6be9",
+      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
+      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
+      "classpath": [
+        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+        "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
+        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
+        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
+        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
+        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
+        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
+        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
+      ],
+      "dependency": "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 58,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "Integer/CharSequence"
+            },
+            {
+              "return": "Integer/CharSequence"
+            }
+          ]
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "Integer/String"
+            },
+            {
+              "return": "Integer/String"
+            }
+          ]
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.AnnotationVisitor",
+        "org.objectweb.asm.AnnotationWriter",
+        "org.objectweb.asm.ByteVector",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.ClassWriter",
+        "org.objectweb.asm.CurrentFrame",
+        "org.objectweb.asm.Edge",
+        "org.objectweb.asm.FieldVisitor",
+        "org.objectweb.asm.FieldWriter",
+        "org.objectweb.asm.Frame",
+        "org.objectweb.asm.Item",
+        "org.objectweb.asm.Label",
+        "org.objectweb.asm.MethodVisitor",
+        "org.objectweb.asm.MethodWriter",
+        "org.objectweb.asm.ModuleVisitor",
+        "org.objectweb.asm.ModuleWriter",
+        "org.objectweb.asm.Type"
+      ]
+    },
+    "new": {
+      "commit": "9c5a614e5875c5cf03434510c25b9f2b3505342a",
+      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
+      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
+      "classpath": [
+        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
+        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
+        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
+        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
+        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
+        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
+        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
+      ],
+      "dependency": "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 58,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "throws": "java.lang.IllegalArgumentException"
+            },
+            {
+              "throws": "java.lang.IllegalArgumentException"
+            }
+          ]
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "throws": "java.lang.IllegalArgumentException"
+            },
+            {
+              "throws": "java.lang.IllegalArgumentException"
+            }
+          ]
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.AnnotationVisitor",
+        "org.objectweb.asm.AnnotationWriter",
+        "org.objectweb.asm.ByteVector",
+        "org.objectweb.asm.ClassTooLargeException",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.ClassWriter",
+        "org.objectweb.asm.CurrentFrame",
+        "org.objectweb.asm.Edge",
+        "org.objectweb.asm.FieldVisitor",
+        "org.objectweb.asm.FieldWriter",
+        "org.objectweb.asm.Frame",
+        "org.objectweb.asm.Label",
+        "org.objectweb.asm.MethodTooLargeException",
+        "org.objectweb.asm.MethodVisitor",
+        "org.objectweb.asm.MethodWriter",
+        "org.objectweb.asm.ModuleVisitor",
+        "org.objectweb.asm.ModuleWriter",
+        "org.objectweb.asm.Symbol",
+        "org.objectweb.asm.SymbolTable",
+        "org.objectweb.asm.SymbolTable$Entry",
+        "org.objectweb.asm.Type"
+      ]
+    }
+  },
+  "status": "changed",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "originalInvocation": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeObservation": "186209e7dcc65932aea9cc7ea6523c2851e63af79114e8e28c7d7a5d0878e8cd",
+    "UpgradeProbe$Impl": "37d8c0c73cd3ca011af528eb7d59ec77ae9b59658d19dbc45eb9e9b2332fda74",
+    "UpgradeProbe$Service": "bd5245f2da25c67e689ac3b0052d6abdac040dd853eea6351627ef3320fd32e6",
+    "UpgradeProbe": "f2d8258ee6f042456223d7225a168d5d01a536c1f3604550c9c253d3183b8a3d",
+    "UpgradeTrace": "353cd796f74cd5042d331c1574c95204830e13e9733a894aa4685cf1fda7d9ed"
+  },
+  "differences": [
+    0,
+    1
+  ],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 5.047,
+  "specSha256": "a26e44e5da9470f3308c685b1997f07f20bb4e3718b27da44728b4d0fe220cfa"
+}

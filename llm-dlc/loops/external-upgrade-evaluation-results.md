@@ -1,19 +1,28 @@
 # Can the verifier help review a dependency upgrade?
 
-ReflectASM's upgrade from ASM 5.1 to 7.2 prevents its caller from constructing a working interface accessor. With the original dependencies, replacing a map entry returned `"one"` and the map size stayed at 2. After the upgrade the same call threw `IllegalArgumentException`. A plain-object companion still worked. The product recorded the actual caller method entry and dependency classes on every repeat. In separate clients it preserved exact decompression bytes, CSV fields and configuration-independent formatting over the stated finite inputs. [ReflectASM recovery](../../verification/external-upgrades/corpus-runs/finite-callers/03/compsuite-i-38.json)
+The profiler upgrade ignored a tag-specific configuration. On `tag1`, the interval changed from 9001 to 9000 and I/O profiling switched from off to on. The fallback configuration agreed on both versions. In WhatJDK, both original build lifecycles ran zero tests. The verifier exercised its real iterator on four distinct class files and preserved the expected declarations. [Profiler counterexample](../../verification/external-upgrades/corpus-runs/v1-finite/02/compsuite-i-29.json) · [WhatJDK preservation](../../verification/external-upgrades/corpus-runs/v1-finite/03/whatjdk-12.json)
 
-| Evaluation | V0 | Current measured recovery |
-|---|---|---|
-| Main, 12 reported changes | 0/12 | 2/12 replayed on the original caller |
-| Main, 12 routine upgrades | 0/12 | 12/12 scoped preservation decisions on real JVMs |
-| Transfer, four changes and four routine upgrades | 0/8 | 4/8 gained, with two changes and two preservations. Both versions missed four. |
-| Advisory pilot, three teams and five upgrades each | 0/15 decisions | The retrospective change threshold is 8/12. |
+| Maintainer question | Frozen V0 | Frozen V1 |
+|---|---:|---|
+| Main historical changes reproduced on the registered caller | 0/12 | 2/12 |
+| Main routine claims established on the original finite scope | 0/12 | 12/12 |
+| Relevant decisions on the eight transfer clients | 0/8 | 5/8, comprising 2 changes and 3 preservations |
+| Contradicted accepted assurances | 0/24 main | 0/24 main and 0/8 transfer |
+| Prospective maintainer decisions | 0/15 | 0/15 across 0 enrolled teams |
 
-The recovery used case-specific, reviewed observers. It qualified all 12 finite main-set preservation claims and two changes. Each admitted input entered the declared original JVM method twice on both releases, and the runtime loaded classes from the pinned dependency. The four transfer gains cover two represented-family clients and two new-family clients. No accepted scope has a reproduced contradiction. [Machine-readable scorecard](../../verification/external-upgrades/scorecard.json) · [Reports for all 32 upgrades](external-upgrade-case-reports.md)
+V1 uses reviewed, case-specific observers and fresh JVM replays. The automatic native route issued no accepted PR-level decision. Of the eight transfer comparisons, 0 were correct on both versions, 5 on V1 only, 0 on V0 only and 3 on neither. V1 gained 2/4 on represented library families and 3/4 on new families. The same engineering session saw all 32 clients. [V0 product](../../lib/benchmark/external-upgrades/v0.json) · [V1 product](../../lib/benchmark/external-upgrades/v1.json) · [Machine-readable scorecard](../../verification/external-upgrades/scorecard.json) · [All 32 maintainer reports](external-upgrade-case-reports.md)
 
-The JVM profiler ignored the tagged settings after the upgrade. On the tagged input the old client read interval 9001 and the new client read 9000. The untagged fallback still agreed. With the original Logback test backend, ZT-exec’s short and fully qualified logger names both changed to NOP. The earlier production-only replay found NOP before and after. The receiver environment matters to that decision. [JVM profiler replay](../../verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-29.json) · [ZT-exec replay](../../verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-80.json)
+Two additional historical differences localize failures in the original developer tests. Retrofit still decoded the original phone response, while serializing that same phone raised `NoSuchMethodError` after the upgrade. The workbook reader returned one worksheet before the POI upgrade and raised `IncompatibleClassChangeError` while opening the same file afterwards, before it could read the first cell's style. These are additional caller findings outside the registered primary counts. [Outbound Retrofit witness](../../verification/external-upgrades/corpus-runs/operational/01/compsuite-i-1.json) · [Workbook-opening witness](../../verification/external-upgrades/corpus-runs/operational/01/compsuite-i-70.json)
 
-The corrected Apache Configuration observers distinguished an absent list from an empty one. The bytecode analysis now uses two classes with independently checked SourceFile attributes and two controls without them. Those three routine comparisons and the Cucumber report count all preserved their specified outcomes. The Retrofit response decoder, async transformation on fixed bytecode, and QR image round trip also preserved their observations. Their published change cases still lack a counterexample on those particular operations. [Recovery receipts](../../verification/external-upgrades/corpus-runs/finite-recovery)
+The original Nacos context placed the named property source first for both distinct input values. The upgraded runtime lacked Spring's `ErrorCoded` class during startup. The property-ordering claim stays open. The next engineering priority is locating the first observable failure in a real framework application, before a proposed downstream business operation can run. The pilot requires 8/12 relevant primary changes, 8/12 routine preservations and zero unresolved contradicted assurances. Three consenting teams and five consecutive eligible upgrades each are needed once those gates are met. [Nacos outcome](../../verification/external-upgrades/corpus-runs/v1-finite/02/compsuite-i-103.json)
+
+24 of 32 pairs had both original artifacts ready in the V0 native run and 25 of 32 did in the V1 native comparison. The V1 native workflow took 0.2 s median, 12.9 s maximum per case on the retained inputs. The 27 assisted observation attempts took 9.2 s median, 20.4 s maximum. Each native case used the same 90-second checker allowance as V0. The finite checker had a 120-second per-case deadline. Verification batches requested two CPUs and 2 GiB of memory with a 6 GiB cap. These stage timings exclude the earlier engineering work and queue delay. End-to-end human minutes, per-case inference costs and PR turnaround were not measured. [Native receipts](../../verification/external-upgrades/corpus-runs/v1) · [Finite JVM receipts](../../verification/external-upgrades/corpus-runs/v1-finite)
+
+Five pairs that V0 could not prepare also ran from complete original Maven modules. Across both V1 preparation routes, 29 of 32 pairs had both original artifacts available. [Complete-module native receipts](../../verification/external-upgrades/corpus-runs/v1-complete)
+
+Of the ten unanswered main decisions, three lacked a build or dependency, three reached a native operation without a qualified caller result, and two failed before the selected entry. In the last two, the finite observation was preserved and the registered historical change was not reproduced. [Per-case diagnostics](external-upgrade-case-reports.md)
+
+Every previously qualified registered result in the engineering corpus retained its disposition in the final repeat. To repeat a case, restore its pinned Git revisions and Maven inputs, select the recorded checker and run its registered observation. [Reproduction commands](../../lib/benchmark/external-upgrades/README.md#run-the-engineering-corpus) · [V1 source manifest](../../lib/benchmark/external-upgrades/v1-files.json.gz)
 
 Since 03:05 UTC on 21 November, one gpt-6.2-astra session operates and reviews every case. The six Claude calibration reports and the earlier custody procedure are superseded. Public revision IDs and expected observations may be recorded directly. [Engineering protocol](../../lib/benchmark/external-upgrades/protocol.md#active-engineering-protocol-from-0305-utc-on-21-november)
 
@@ -44,6 +53,24 @@ The pinned native workflow left all five disclosed claims open. The JDBC, time, 
 The release-aware native loader cleared all four multi-release blockers in the main set. Three then exposed an ambiguous `read` overload and one reached receiver construction. The exact-overload pass invoked each common declaration at its actual parameter types. It issued no relevant assurance on its own. On Cucumber Reporting the native route reached the paired checker's restriction on declared checked exceptions. The classpath and JVM route outcomes are reported independently. [Native reruns](../../verification/external-upgrades/corpus-runs/multi-release) · [Overload reruns](../../verification/external-upgrades/corpus-runs/overloads)
 
 The finite checker also established both unchanged string claims. Commons Text returned identical UTF-16 units on all 156 fields admitted by its guard. Cucumber Reporting returned the same three-digit duration on all 18 deserialized inputs. Neither case produced a differing input. [Commons Text finite proof](../../examples/349-commons-text-csv-upgrade/records/finite-proofs/20261121T045926Z-6851c0bf/preservation.json) · [Cucumber Reporting finite proof](../../examples/352-cucumber-duration/records/finite-proofs/20261121T045926Z-69ee0144/format.json)
+
+Rocker’s finite comparison refuted exact diagnostic preservation on the invalid declaration, and the valid declaration remained accepted. The AWS public SDK round trip preserved both the ordinary instant and the extreme instant. The native Cucumber duration proof advanced past the checked-exception declaration and stopped at Jackson’s reflective class lookup. Its 18-input finite result remains established. [Rocker finite result](../../examples/350-rocker-with-declaration/records/finite-proofs/20261121T054107Z-8e1552a0/diagnostic.json) · [AWS finite result](../../examples/351-aws-joda-instant/records/finite-proofs/20261121T054107Z-8c64b0da/roundtrip.json) · [Native Cucumber diagnostic](../../verification/results/20261121-053029-352-compare-original-formatter-paths-pas/outputs/examples/352-cucumber-duration/receipts/format/20261121T054114Z-547f1d14/records/verifier-output.txt)
+
+The original SLF4J backend explains ZT-exec’s change to NOP logger names. The corrected Apache Configuration probes preserve a missing list as null. The bytecode source-name checks use two classes with independently confirmed SourceFile attributes and two without that attribute. [Qualified ZT-exec replay](../../verification/external-upgrades/corpus-runs/v1-finite/03/compsuite-i-80.json) · [Configuration recovery](../../verification/external-upgrades/corpus-runs/v1-finite/04/commons-configuration-565.json) · [Source-name recovery](../../verification/external-upgrades/corpus-runs/v1-finite/03/incremental-analysis-28.json)
+
+### Time to first recorded job evidence
+
+These are wall times from submission and within the runner. Per-repair coding time was not instrumented. The initial Commons Text and multi-release jobs advanced intake and reported the next blocker.
+
+| Repair or control | Submission to completion | Job execution | Outcome |
+|---|---:|---:|---|
+| Legal modified UTF-8 in Commons Text | 366 s | 11 s | [failed](../../verification/results/20261121-033202-replay-both-commons-text-csv-tasks-after/result.json) |
+| JDK identity and CSV controls | 267 s | 10 s | [passed](../../verification/results/20261121-034615-349-qualify-fresh-csv-replays-with-confi/result.json) |
+| JDBC array witness and control | 386 s | 12 s | [passed](../../verification/results/20261121-040719-348-qualify-original-jdbc-arrays-across/result.json) |
+| Release-specific JAR selection | 655 s | 229 s | [failed](../../verification/results/20261121-042108-352-check-the-actual-duration-caller-thr/result.json) |
+| Exact overloads across sixteen clients | 813 s | 256 s | [passed](../../verification/results/20261121-043003-overload-recovery-group-1-compare-sixtee/result.json) |
+| Finite UTF-16 CSV domain | 716 s | 12 s | [passed](../../verification/results/20261121-044738-349-exhaust-actual-csv-fields-with-lossl/result.json) |
+| Three original routine fixture repairs | 1143 s | 61 s | [passed](../../verification/results/20261121-051151-caller-recovery-1-check-original-fixture/result.json) |
 
 ## Historical calibration treatments
 

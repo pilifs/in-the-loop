@@ -1,0 +1,203 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-055813-pinned-v1-finite-caller-group-5-replay-o",
+  "title": "Pinned V1 finite caller group 5 replay original Java application behavior",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 47.9s, peak 139.8 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-055813-pinned-v1-finite-caller-group-5-replay-o.json",
+    "sha256": "19a701815b019a4c869a05d02f9eab721187196a495c8d63f2f5055d09345c55",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-055813-pinned-v1-finite-caller-group-5-replay-o",
+      "title": "Pinned V1 finite caller group 5 replay original Java application behavior",
+      "description": "Use the pinned, byte-identified observer runtime on each original application. Check both fresh JVM repetitions per admitted input and both ordered classpaths. Compare with independent old expectations. Cases cucumber-reporting-1198, commons-beanutils-440, commons-csv-8993be87, reflector-35, commons-fileupload-377.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "expected": "Every selected upgrade retains its actual outcome, including missing inputs and open proof obligations.",
+      "submitted": {
+        "at": "2026-11-21T05:58:13+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m",
+        "memoryLimit": "6G",
+        "timeout": "110m"
+      },
+      "steps": [
+        {
+          "name": "Run the pinned original workloads",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json --preparations \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds --maven-cache \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository --complete \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules-plus --complete \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete --complete \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules --output verification/external-upgrades/corpus-runs/v1-finite/05 --case cucumber-reporting-1198 --case commons-beanutils-440 --case commons-csv-8993be87 --case reflector-35 --case commons-fileupload-377",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/v1-finite/05"
+      ]
+    }
+  },
+  "sourceCommit": "17726c80d0c9f086b7d78f1a3b0e6f5e5e1959e9",
+  "startedAt": "2026-11-21T06:02:28+00:00",
+  "finishedAt": "2026-11-21T06:03:25+00:00",
+  "wallSeconds": 57.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 219776,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 146546688,
+    "wallSeconds": 47.9,
+    "cpuSeconds": 50.0,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the pinned original workloads",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json --preparations \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds --maven-cache \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository --complete \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules-plus --complete \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete --complete \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules --output verification/external-upgrades/corpus-runs/v1-finite/05 --case cucumber-reporting-1198 --case commons-beanutils-440 --case commons-csv-8993be87 --case reflector-35 --case commons-fileupload-377",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6600.0,
+      "cancelled": false,
+      "wallSeconds": 47.946,
+      "cpuSeconds": 49.962,
+      "cpuThrottledSeconds": 6.974,
+      "peakMemoryBytes": 146546688,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-pinned-original-worklo.log",
+        "lines": 10,
+        "bytes": 1048,
+        "sha256": "6455132c1a786aa51c01ea04c433dd04a3059e9928a56ff8f21132832a8a3796",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+        "cucumber-reporting-1198 preserved",
+        "preserved org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
+        "commons-beanutils-440 preserved",
+        "preserved org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+        "commons-csv-8993be87 preserved",
+        "open old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvi",
+        "reflector-35 open",
+        "preserved org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+        "commons-fileupload-377 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-finite/05/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 7400,
+      "sha256": "fd2ecbeaff301f608b87bd062766861d2a39c818094585ede6c4d403976f5d57",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-finite/05/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 9017,
+      "sha256": "72893bdbd691743991caee1a7bfe2e90fd17ad7f8832790a7f86751f7f23289a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-finite/05/commons-fileupload-377.json",
+      "change": "added",
+      "bytes": 9375,
+      "sha256": "5f9ff3d80f46812ee4b32fb21fbe27ee72dec70ef1814638c8250c5c24c1454b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-finite/05/cucumber-reporting-1198.json",
+      "change": "added",
+      "bytes": 8979,
+      "sha256": "693bd115b50015dbc542a520780828145a71a79357728b620eab7fa02338485f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-finite/05/reflector-35.json",
+      "change": "added",
+      "bytes": 5987,
+      "sha256": "978e1bdc35f4c0d298df2c68816d34c4fcd0278ddfc7e8303adda94d5cbda6db",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T06:03:44+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/v1-finite/05/commons-beanutils-440.json",
+      "verification/external-upgrades/corpus-runs/v1-finite/05/commons-csv-8993be87.json",
+      "verification/external-upgrades/corpus-runs/v1-finite/05/commons-fileupload-377.json",
+      "verification/external-upgrades/corpus-runs/v1-finite/05/cucumber-reporting-1198.json",
+      "verification/external-upgrades/corpus-runs/v1-finite/05/reflector-35.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

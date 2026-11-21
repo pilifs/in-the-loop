@@ -8,9 +8,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.esotericsoftware.reflectasm.MethodAccess#get`. Construct an interface method accessor and invoke replace on a populated concurrent map.
 
-**Result** Changed on 1 of 2 inputs. Input 0 produced {"return": "one/2"} before and {"throws": "java.lang.IllegalArgumentException"} after. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/03/compsuite-i-38.json)
+**Result** Changed on 1 of 2 inputs. Input 0 produced {"return": "one/2"} before and {"throws": "java.lang.IllegalArgumentException"} after. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/01/compsuite-i-38.json)
 
-**Scope** The original developer test expects the previous map value and two entries. Object declares no exported accessor methods in this adapter. The complete-module reference records both outcomes. Each input ran twice per revision on fresh JVMs. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). Original developer test: old failed before tests, no matching testcase, new failed before tests, no matching testcase. V0 took 0.1 s on this prepared workflow.
+**Scope** The original developer test expects the previous map value and two entries. Object declares no exported accessor methods in this adapter. The complete-module reference records both outcomes. Each input ran twice per revision on fresh JVMs. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). The original developer test recorded old failed before tests, no matching testcase, new failed before tests, no matching testcase. V0 took 0.1 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 4.8 s.
 
 **Review action** Check whether the new caller behavior is acceptable before moving the pin. The recorded input supplies a regression test.
 
@@ -20,11 +20,11 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `retrofit2.converter.wire.WireResponseBodyConverter#convert`. Deserialize a serialized phone response and read the phone number.
 
-**Result** Preserved the original expected observation on all 2 admitted inputs. The reported historical change was not reproduced on this observer. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-1.json)
+**Result** Preserved the original expected observation on all 2 admitted inputs. The reported historical change was not reproduced on this observer. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/01/compsuite-i-1.json)
 
-**Scope** The checked-in generated Phone message has a length-delimited string in protobuf field 1. The first body is byte-for-byte the historical developer test. The short-string companion uses the same wire rule. Each input ran twice per revision on fresh JVMs. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). Original developer test: old passed, new error (java.lang.NoSuchMethodError). V0 took 138.4 s on this prepared workflow.
+**Scope** The checked-in generated Phone message has a length-delimited string in protobuf field 1. The first body is byte-for-byte the historical developer test. The short-string companion uses the same wire rule. Each input ran twice per revision on fresh JVMs. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). The original developer test recorded old passed, new error (java.lang.NoSuchMethodError). V0 took 138.4 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 5.2 s.
 
-**Review action** Keep the scoped result. The historical change still needs a reproducing input before it can inform this decision.
+**Review action** Keep the scoped result. The historical change still needs a reproducing input before it can inform this decision. Serialize a real Phone through the other half of the registered request/response test and read the outbound protobuf bytes. The old result was {"return": "Cg4oNTE5KSA4NjctNTMwOQ=="} and the new result was {"throws": "java.lang.NoSuchMethodError"}. [Additional original caller](../../verification/external-upgrades/corpus-runs/operational/01/compsuite-i-1.json)
 
 ## excel-streaming-reader · compsuite-i-70
 
@@ -32,11 +32,11 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle`. Read the style of an unformatted cell from the original spreadsheet.
 
-**Result** Open. new input 0: the original caller method was never entered. java.lang.IncompatibleClassChangeError: Found class org.apache.poi.util.POILogger, but interface was expected at org.apache.poi.openxml4j.opc.PackageRelationshipCollection.parseRelationshipsPart(PackageRelationshipCollection.java:303). [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/03/compsuite-i-70.json)
+**Result** Open. New input 0: the original caller method was never entered. java.lang.IncompatibleClassChangeError: Found class org.apache.poi.util.POILogger, but interface was expected at org.apache.poi.openxml4j.opc.PackageRelationshipCollection.parseRelationshipsPart(PackageRelationshipCollection.java:303). [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/01/compsuite-i-70.json)
 
-**Scope** The original pair and caller source were checked. The finite observer lacks a qualified original expectation. Original module CI old passed (41 tests), new tests or lifecycle failed (41 tests). Original developer test: old passed, new error (java.lang.IncompatibleClassChangeError). V0 took 63.0 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. The old runtime independently matched the expected result twice on 1 input(s). The paired claim remains open. Original module CI old passed (41 tests), new tests or lifecycle failed (41 tests). The original developer test recorded old passed, new error (java.lang.IncompatibleClassChangeError). V0 took 63.0 s on this prepared workflow. The matched V1 native stage took 0.7 s. The finite caller stage took 3.7 s.
 
-**Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
+**Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result. Open the actual original spreadsheet with StreamingReader and read its worksheet count. The old result was {"return": "1"} and the new result was {"throws": "java.lang.IncompatibleClassChangeError"}. [Additional original caller](../../verification/external-upgrades/corpus-runs/operational/01/compsuite-i-70.json)
 
 ## languagetool · compsuite-i-10
 
@@ -44,9 +44,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.languagetool.languagemodel.LuceneLanguageModel#getCount`. Look up a unigram and an adjacent token pair in the original language index.
 
-**Result** Open. old original Maven classpath: no diagnostic was emitted. [Evidence](../../verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-10.json)
+**Result** Open. Old original Maven classpath: [ERROR] Failed to execute goal on project languagetool-core: Could not resolve dependencies for project org.languagetool:languagetool-core:jar:4.6: Failure to find biz.k11i:xgboost-predictor:jar:0.3.0 in https://repo.maven.apache.org/maven2 was cached in the local repos. [Evidence](../../verification/external-upgrades/corpus-runs/v1/01/current/compsuite-i-10.json)
 
-**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). Original developer test: old failed before tests, no matching testcase, new failed before tests, no matching testcase. V0 took 54.8 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). The original developer test recorded old failed before tests, no matching testcase, new failed before tests, no matching testcase. V0 took 54.8 s on this prepared workflow. The matched V1 native stage took 12.9 s.
 
 **Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
 
@@ -56,9 +56,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `pl.com.bottega.ecommerce.sales.application.impl.OrderingServiceImpl#confirm`. Confirm a previously calculated offer after changing the order quantity.
 
-**Result** Open. new original classpath: The selected module did not resolve the changed coordinate on its runtime classpath.. [Evidence](../../verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-85.json)
+**Result** Open. Parameter orderId has type pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId, which is outside the objects a regression check makes: pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId has 2 constructors; an object made by one of several is not supported yet. [Evidence](../../verification/external-upgrades/corpus-runs/v1-complete/01/current/compsuite-i-85.json)
 
-**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old passed (3 tests), new tests or lifecycle failed (3 tests). Original developer test: old passed, new error (java.lang.IllegalStateException). V0 took 57.3 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old passed (3 tests), new tests or lifecycle failed (3 tests). The original developer test recorded old passed, new error (java.lang.IllegalStateException). V0 took 57.3 s on this prepared workflow. The matched V1 native stage took 3.6 s. Native checking also ran on both complete original modules in 0.3 s.
 
 **Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
 
@@ -68,9 +68,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.languagetool.dev.wikipedia.atom.MatchDatabase#add`. Store, list and update spelling matches using the database-backed caller.
 
-**Result** Open. old original Maven classpath: no diagnostic was emitted. [Evidence](../../verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-9.json)
+**Result** Open. Old original Maven classpath: [ERROR] Failed to execute goal on project languagetool-wikipedia: Could not resolve dependencies for project org.languagetool:languagetool-wikipedia:jar:4.6: Failure to find biz.k11i:xgboost-predictor:jar:0.3.0 in https://repo.maven.apache.org/maven2 was cached in the l. [Evidence](../../verification/external-upgrades/corpus-runs/v1/01/current/compsuite-i-9.json)
 
-**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). Original developer test: old failed before tests, no matching testcase, new failed before tests, no matching testcase. V0 took 150.3 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). The original developer test recorded old failed before tests, no matching testcase, new failed before tests, no matching testcase. V0 took 150.3 s on this prepared workflow. The matched V1 native stage took 4.8 s.
 
 **Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
 
@@ -80,9 +80,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory`. Resolve the factory for an explicitly registered configuration namespace.
 
-**Result** Open. old input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-4.json)
+**Result** Open. New input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/01/compsuite-i-4.json)
 
-**Scope** The original pair and caller source were checked. The finite observer lacks a qualified original expectation. Original module CI old failed before tests (0 tests), new tests or lifecycle failed (332 tests). Original developer test: old failed before tests, no matching testcase, new error (java.lang.ExceptionInInitializerError). V0 took 64.5 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. The old runtime independently matched the expected result twice on 2 input(s). The paired claim remains open. Original module CI old failed before tests (0 tests), new tests or lifecycle failed (332 tests). The original developer test recorded old failed before tests, no matching testcase, new error (java.lang.ExceptionInInitializerError). V0 took 64.5 s on this prepared workflow. The matched V1 native stage took 0.2 s. The finite caller stage took 4.6 s. With restored upstream inputs, the named test recorded old passed, new error.
 
 **Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
 
@@ -92,9 +92,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor#invoke`. Invoke the validated service with an excluded group and observe its validation outcome.
 
-**Result** Open. old original Maven classpath: no diagnostic was emitted. [Evidence](../../verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-62.json)
+**Result** Open. The tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13 (java.util.LinkedHashSet.<init>() at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:219). With --gaps assu. [Evidence](../../verification/external-upgrades/corpus-runs/v1-complete/01/current/compsuite-i-62.json)
 
-**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old passed (94 tests), new tests or lifecycle failed (64 tests). Original developer test: old passed, new error (java.lang.IllegalStateException). V0 took 50.4 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old passed (94 tests), new tests or lifecycle failed (64 tests). The original developer test recorded old passed, new error (java.lang.IllegalStateException). V0 took 50.4 s on this prepared workflow. The matched V1 native stage took 1.8 s. Native checking also ran on both complete original modules in 0.4 s.
 
 **Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
 
@@ -104,9 +104,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.alibaba.citrus.service.form.impl.validation.DateValidator#validate`. Validate dates on either side of the configured minimum and read the field state.
 
-**Result** Open. old original Maven classpath: no diagnostic was emitted. [Evidence](../../verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-94.json)
+**Result** Open. Validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: com.alibaba.citrus.service.form.impl.validation.DateValidator extends com.alibaba.citrus.s. [Evidence](../../verification/external-upgrades/corpus-runs/v1-complete/01/current/compsuite-i-94.json)
 
-**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old tests or lifecycle failed (1153 tests), new tests or lifecycle failed (1153 tests). Original developer test: old passed, new error (java.lang.NoSuchFieldError). V0 took 55.7 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old tests or lifecycle failed (1153 tests), new tests or lifecycle failed (1153 tests). The original developer test recorded old passed, new error (java.lang.NoSuchFieldError). V0 took 55.7 s on this prepared workflow. The matched V1 native stage took 2.4 s. Native checking also ran on both complete original modules in 0.2 s.
 
 **Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
 
@@ -116,9 +116,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue`. Read a configured feature flag and observe whether the caller activates the feature.
 
-**Result** Open. old original Maven classpath: no diagnostic was emitted. [Evidence](../../verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-81.json)
+**Result** Open. Old Maven build could not load the original Bundlor packaging plugin. Its SpringSource ASM 3.1.0, SLF4J and Maven plugin API JARs were unavailable in the recorded release repositories. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/01/compsuite-i-81.json)
 
-**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). Original developer test: old failed before tests, no matching testcase, new failed before tests, no matching testcase. V0 took 141.1 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. The finite attempt did not qualify both original executions. Original module CI old failed before tests (0 tests), new failed before tests (0 tests). The original developer test recorded old failed before tests, no matching testcase, new failed before tests, no matching testcase. V0 took 141.1 s on this prepared workflow. The matched V1 native stage took 6.0 s. The finite caller stage took 0.0 s. With restored upstream inputs, the named test recorded old failed before tests, new failed before tests.
 
 **Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
 
@@ -128,9 +128,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.ea.async.instrumentation.Transformer#transform`. Transform and execute an asynchronous method and read its eventual result.
 
-**Result** Preserved the original expected observation on all 2 admitted inputs. The reported historical change was not reproduced on this observer. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/03/compsuite-i-39.json)
+**Result** Preserved the original expected observation on all 2 admitted inputs. The reported historical change was not reproduced on this observer. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/02/compsuite-i-39.json)
 
-**Scope** The input bytecode awaits and returns its completed Task argument. Its class bytes are fixed on the original ASM version. The upstream test expects hello; the second input verifies that the returned value follows its own argument. Each input ran twice per revision on fresh JVMs. Original module CI old passed (106 tests), new tests or lifecycle failed (106 tests). Original developer test: old passed, new error (java.lang.IllegalArgumentException). V0 took 62.6 s on this prepared workflow.
+**Scope** The input bytecode awaits and returns its completed Task argument. Its class bytes are fixed on the original ASM version. The upstream test expects hello; the second input verifies that the returned value follows its own argument. Each input ran twice per revision on fresh JVMs. Original module CI old passed (106 tests), new tests or lifecycle failed (106 tests). The original developer test recorded old passed, new error (java.lang.IllegalArgumentException). V0 took 62.6 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 5.6 s.
 
 **Review action** Keep the scoped result. The historical change still needs a reproducing input before it can inform this decision.
 
@@ -140,9 +140,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.uber.profiling.Arguments#runConfigProvider`. Apply a configuration provider and read the resulting interval and tag.
 
-**Result** Changed on 1 of 2 inputs. Input 0 produced {"return": "tag1/9001/false"} before and {"return": "tag1/9000/true"} after. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-29.json)
+**Result** Changed on 1 of 2 inputs. Input 0 produced {"return": "tag1/9001/false"} before and {"return": "tag1/9000/true"} after. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/02/compsuite-i-29.json)
 
-**Scope** The declared provider supplies input settings only. An exact tag1 has an explicit override, while a different tag uses root values. Both expectations follow the original configuration contract and historical test. Each input ran twice per revision on fresh JVMs. Original module CI old passed (69 tests), new tests or lifecycle failed (64 tests). Original developer test: old passed, new failure (java.lang.AssertionError). V0 took 56.7 s on this prepared workflow.
+**Scope** The declared provider supplies input settings only. An exact tag1 has an explicit override, while a different tag uses root values. Both expectations follow the original configuration contract and historical test. Each input ran twice per revision on fresh JVMs. Original module CI old passed (69 tests), new tests or lifecycle failed (64 tests). The original developer test recorded old passed, new failure (java.lang.AssertionError). V0 took 56.7 s on this prepared workflow. The matched V1 native stage took 0.3 s. The finite caller stage took 6.4 s.
 
 **Review action** Check whether the new caller behavior is acceptable before moving the pin. The recorded input supplies a regression test.
 
@@ -152,9 +152,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.jupiter.common.util.Reflects#fastInvoke`. Choose and invoke an overloaded service method on the supplied arguments.
 
-**Result** Changed on 2 of 2 inputs. Input 0 produced {"return": "Integer/CharSequence"} before and {"throws": "java.lang.IllegalArgumentException"} after. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-36.json)
+**Result** Changed on 2 of 2 inputs. Input 0 produced {"return": "Integer/CharSequence"} before and {"throws": "java.lang.IllegalArgumentException"} after. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/02/compsuite-i-36.json)
 
-**Scope** The service signatures and boxed-integer/StringBuilder setup mirror the original developer test. The expected overload accepts the exact boxed argument and the most specific compatible reference type. Each input ran twice per revision on fresh JVMs. Original module CI old passed (3 tests), new tests or lifecycle failed (3 tests). Original developer test: old passed, new error (java.lang.IllegalArgumentException). V0 took 60.3 s on this prepared workflow.
+**Scope** The service signatures and boxed-integer/StringBuilder setup mirror the original developer test. The expected overload accepts the exact boxed argument and the most specific compatible reference type. Each input ran twice per revision on fresh JVMs. Original module CI old passed (3 tests), new tests or lifecycle failed (3 tests). The original developer test recorded old passed, new error (java.lang.IllegalArgumentException). V0 took 60.3 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 5.0 s.
 
 **Review action** Check whether the new caller behavior is acceptable before moving the pin. The recorded input supplies a regression test.
 
@@ -164,9 +164,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory`. Register a property source and inspect its precedence and returned property.
 
-**Result** Open. postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.Nacos. [Evidence](../../verification/external-upgrades/corpus-runs/overloads/02/current/compsuite-i-103.json)
+**Result** Open. New input 0: the original caller method was never entered. java.lang.NoClassDefFoundError: org/springframework/core/ErrorCoded at java.lang.ClassLoader.defineClass1(Native Method) caused by java.lang.ClassNotFoundException: org.springframework.core.ErrorCoded at java.net.URLClassLoader.findClass(URL. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/02/compsuite-i-103.json)
 
-**Scope** The original pair and caller source were checked. Native checking has yet to establish the specified caller observation. Original module CI old passed (48 tests), new tests or lifecycle failed (55 tests). Original developer test: old passed, new error (java.lang.NoClassDefFoundError). V0 took 131.6 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. The old runtime independently matched the expected result twice on 2 input(s). The paired claim remains open. Original module CI old passed (48 tests), new tests or lifecycle failed (55 tests). The original developer test recorded old passed, new error (java.lang.NoClassDefFoundError). V0 took 131.6 s on this prepared workflow. The matched V1 native stage took 0.2 s. The finite caller stage took 6.1 s.
 
 **Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
 
@@ -176,9 +176,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `net.glxn.qrgen.javase.QRCode#file`. Produce a QR image file from ordinary text with the default Java SE encoder.
 
-**Result** Preserved the original expected observation on all 3 admitted inputs. The reported historical change was not reproduced on this observer. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/04/compsuite-i-37.json)
+**Result** Preserved the original expected observation on all 3 admitted inputs. The reported historical change was not reproduced on this observer. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/02/compsuite-i-37.json)
 
-**Scope** The submitted text is its own independent round-trip expectation. Each image is read through Java ImageIO and decoded with its corresponding ZXing runtime. The historical test only asserted that the returned file was non-null. Each input ran twice per revision on fresh JVMs. Original module CI old passed (66 tests), new passed (66 tests). Original developer test: old passed, new passed. V0 took 61.8 s on this prepared workflow.
+**Scope** The submitted text is its own independent round-trip expectation. Each image is read through Java ImageIO and decoded with its corresponding ZXing runtime. The historical test only asserted that the returned file was non-null. Each input ran twice per revision on fresh JVMs. Original module CI old passed (66 tests), new passed (66 tests). The original developer test recorded old passed, new passed. V0 took 61.8 s on this prepared workflow. The matched V1 native stage took 1.8 s. Native checking also ran on both complete original modules in 0.1 s. The finite caller stage took 8.9 s.
 
 **Review action** Keep the scoped result. The historical change still needs a reproducing input before it can inform this decision.
 
@@ -188,9 +188,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of`. Construct a stream with a short logger name and observe its fully qualified name.
 
-**Result** Changed on 2 of 2 inputs. Input 0 produced {"return": "UpgradeProbe.MyLogger"} before and {"return": "NOP"} after. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-80.json)
+**Result** Changed on 2 of 2 inputs. Input 0 produced {"return": "UpgradeProbe.MyLogger"} before and {"return": "NOP"} after. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/03/compsuite-i-80.json)
 
-**Scope** The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger. Both original POMs select logback-classic 1.1.2 for the registered test, including its logback-core dependency. That backend is fixed across the two runs. With the production API alone the old and new versions both used NOP. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (90 tests), new tests or lifecycle failed (90 tests). Original developer test: old passed, new failure (org.junit.ComparisonFailure). V0 took 57.9 s on this prepared workflow.
+**Scope** The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger. Both original POMs select logback-classic 1.1.2 for the registered test, including its logback-core dependency. That backend is fixed across the two runs. With the production API alone the old and new versions both used NOP. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (90 tests), new tests or lifecycle failed (90 tests). The original developer test recorded old passed, new failure (org.junit.ComparisonFailure). V0 took 57.9 s on this prepared workflow. The matched V1 native stage took 0.2 s. The finite caller stage took 5.2 s.
 
 **Review action** Check whether the new caller behavior is acceptable before moving the pin. The recorded input supplies a regression test.
 
@@ -200,9 +200,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.ea.async.instrumentation.Transformer#transform`. Transform an async method holding an uninitialized value across await and read completion and result.
 
-**Result** Preserved the original expected observation on all 8 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/06/ea-async-27.json)
+**Result** Preserved the original expected observation on all 8 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/03/ea-async-27.json)
 
-**Scope** Each class has zero through three extra uninitialized stack copies across await. The already resolved input completes synchronously. The pending input completes after the argument is supplied. The generated function constructs the integer represented by that argument. The same original class bytes are passed on both releases. Each input ran twice per revision on fresh JVMs. Original module CI old passed (106 tests), new passed (106 tests). V0 took 0.1 s on this prepared workflow.
+**Scope** Each class has zero through three extra uninitialized stack copies across await. The already resolved input completes synchronously. The pending input completes after the argument is supplied. The generated function constructs the integer represented by that argument. The same original class bytes are passed on both releases. Each input ran twice per revision on fresh JVMs. Original module CI old passed (106 tests), new passed (106 tests). V0 took 0.1 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 20.4 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -212,9 +212,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.iodesystems.whatjdk.ClassEntryExtractor#next`. Read an ordinary Java class and observe its class entry and referenced types.
 
-**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/06/whatjdk-12.json)
+**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/03/whatjdk-12.json)
 
-**Scope** The input bytes and classfile declarations were fixed independently of application execution. Each class is packaged as the only member of a ZIP and consumed through the original archive iterator. Each input ran twice per revision on fresh JVMs. Original module CI old zero tests (0 tests), new zero tests (0 tests). V0 took 145.0 s on this prepared workflow.
+**Scope** The input bytes and classfile declarations were fixed independently of application execution. Each class is packaged as the only member of a ZIP and consumed through the original archive iterator. Each input ran twice per revision on fresh JVMs. Original module CI old zero tests (0 tests), new zero tests (0 tests). V0 took 145.0 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 9.6 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -224,9 +224,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search`. Inspect the original class selection and the referenced class names in a small build.
 
-**Result** Preserved the original expected observation on all 5 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/01/incremental-analysis-28.json)
+**Result** Preserved the original expected observation on all 5 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/03/incremental-analysis-28.json)
 
-**Scope** Two independently inspected classfiles carry SourceFile values Empty.java and Numbers.java. A matching changed source selects its class, and an unrelated source selects none. The two earlier input files have no SourceFile attribute and supply explicit negative controls. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (3 tests), new tests or lifecycle failed (3 tests). V0 took 62.7 s on this prepared workflow.
+**Scope** Two independently inspected classfiles carry SourceFile values Empty.java and Numbers.java. A matching changed source selects its class, and an unrelated source selects none. The two earlier input files have no SourceFile attribute and supply explicit negative controls. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (3 tests), new tests or lifecycle failed (3 tests). V0 took 62.7 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 11.6 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -236,9 +236,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.text.WordUtils#capitalizeFully`. Capitalize words with two delimiters and preserve their separators.
 
-**Result** Preserved the original expected observation on all 5 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/03/commons-text-775.json)
+**Result** Preserved the original expected observation on all 5 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/03/commons-text-775.json)
 
-**Scope** Within these explicitly listed inputs, lower-case each word and uppercase its initial. Empty strings and null pass through. UTC and English locale are fixed. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (11 tests), new tests or lifecycle failed (11 tests). V0 took 55.6 s on this prepared workflow.
+**Scope** Within these explicitly listed inputs, lower-case each word and uppercase its initial. Empty strings and null pass through. UTC and English locale are fixed. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (11 tests), new tests or lifecycle failed (11 tests). V0 took 55.6 s on this prepared workflow. The matched V1 native stage took 0.3 s. The finite caller stage took 10.9 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -248,9 +248,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read`. Decode an XZ stream and observe the exact decompressed bytes.
 
-**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-767.json)
+**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/04/commons-compress-767.json)
 
-**Scope** The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (2904 tests), new tests or lifecycle failed (3107 tests). V0 took 149.6 s on this prepared workflow.
+**Scope** The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (2904 tests), new tests or lifecycle failed (3107 tests). V0 took 149.6 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 10.8 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -260,9 +260,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read`. Decode a framed LZ4 stream including its checksum and read the exact payload.
 
-**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-822.json)
+**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/04/commons-compress-822.json)
 
-**Scope** The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (3456 tests), new tests or lifecycle failed (3300 tests). V0 took 62.6 s on this prepared workflow.
+**Scope** The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (3456 tests), new tests or lifecycle failed (3300 tests). V0 took 62.6 s on this prepared workflow. The matched V1 native stage took 0.2 s. The finite caller stage took 10.1 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -272,9 +272,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.configuration2.JSONConfiguration#read`. Read a JSON configuration and observe nested scalar and list values.
 
-**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/01/commons-configuration-565.json)
+**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/04/commons-configuration-565.json)
 
-**Scope** The literals specify their scalar or ordered sequence. For an absent key AbstractConfiguration.getList(Class, String) delegates to the overload with a null default. List elements in this finite domain contain no comma or bracket. The initial observer dereferenced that missing list; this observer retains null. Each input ran twice per revision on fresh JVMs. Original module CI old passed (3011 tests), new passed (3011 tests). V0 took 54.1 s on this prepared workflow.
+**Scope** The literals specify their scalar or ordered sequence. For an absent key AbstractConfiguration.getList(Class, String) delegates to the overload with a null default. List elements in this finite domain contain no comma or bracket. The initial observer dereferenced that missing list; this observer retains null. Each input ran twice per revision on fresh JVMs. Original module CI old passed (3011 tests), new passed (3011 tests). V0 took 54.1 s on this prepared workflow. The matched V1 native stage took 0.4 s. The finite caller stage took 18.5 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -284,9 +284,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.configuration2.YAMLConfiguration#read`. Read a YAML configuration and observe scalar and sequence values.
 
-**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/01/commons-configuration-601.json)
+**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/04/commons-configuration-601.json)
 
-**Scope** The literals specify their scalar or ordered sequence. For an absent key AbstractConfiguration.getList(Class, String) delegates to the overload with a null default. List elements in this finite domain contain no comma or bracket. The initial observer dereferenced that missing list; this observer retains null. Each input ran twice per revision on fresh JVMs. Original module CI old passed (3012 tests), new passed (3012 tests). V0 took 60.1 s on this prepared workflow.
+**Scope** The literals specify their scalar or ordered sequence. For an absent key AbstractConfiguration.getList(Class, String) delegates to the overload with a null default. List elements in this finite domain contain no comma or bracket. The initial observer dereferenced that missing list; this observer retains null. Each input ran twice per revision on fresh JVMs. Original module CI old passed (3012 tests), new passed (3012 tests). V0 took 60.1 s on this prepared workflow. The matched V1 native stage took 0.5 s. The finite caller stage took 16.9 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -296,9 +296,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `net.masterthought.cucumber.ReportBuilder#generateReports`. Generate report files from a small valid report and inspect the output resources.
 
-**Result** Preserved the original expected observation on all 1 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/03/cucumber-reporting-1220.json)
+**Result** Preserved the original expected observation on all 1 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/04/cucumber-reporting-1220.json)
 
-**Scope** The upstream input contains one feature with one passed step. The report API exposes those counts and writes its overview-features.html page under the default report directory. Each input ran twice per revision on fresh JVMs. Original module CI old passed (665 tests), new passed (665 tests). V0 took 136.4 s on this prepared workflow.
+**Scope** The upstream input contains one feature with one passed step. The report API exposes those counts and writes its overview-features.html page under the default report directory. Each input ran twice per revision on fresh JVMs. Original module CI old passed (665 tests), new passed (665 tests). V0 took 136.4 s on this prepared workflow. The matched V1 native stage took 0.4 s. The finite caller stage took 6.1 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -308,9 +308,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `net.masterthought.cucumber.util.StepNameFormatter#format`. Render argument spans in a step name and preserve surrounding characters.
 
-**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/04/cucumber-reporting-1198.json)
+**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/05/cucumber-reporting-1198.json)
 
-**Scope** Escape HTML characters in the original step text, then mark the specified nonempty argument span at its zero-based offset. Empty and absent argument lists contribute no marks. Each input ran twice per revision on fresh JVMs. Original module CI old passed (664 tests), new passed (664 tests). V0 took 61.6 s on this prepared workflow.
+**Scope** Escape HTML characters in the original step text, then mark the specified nonempty argument span at its zero-based offset. Empty and absent argument lists contribute no marks. Each input ran twice per revision on fresh JVMs. Original module CI old passed (664 tests), new passed (664 tests). V0 took 61.6 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 14.5 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -320,9 +320,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod`. Resolve an overloaded public method and observe the selected declaration.
 
-**Result** Preserved the original expected observation on all 5 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/01/commons-beanutils-440.json)
+**Result** Preserved the original expected observation on all 5 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/05/commons-beanutils-440.json)
 
-**Scope** An exact public overload wins. Short is assignable only to Number. Boolean matches none of the three reference parameters. Each input ran twice per revision on fresh JVMs. Original module CI old passed (1315 tests), new passed (1315 tests). V0 took 58.7 s on this prepared workflow.
+**Scope** An exact public overload wins. Short is assignable only to Number. Boolean matches none of the three reference parameters. Each input ran twice per revision on fresh JVMs. Original module CI old passed (1315 tests), new passed (1315 tests). V0 took 58.7 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 12.6 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -332,9 +332,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.csv.CSVParser#nextRecord`. Read CSV records containing quoted separators and embedded line endings.
 
-**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/02/commons-csv-8993be87.json)
+**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/05/commons-csv-8993be87.json)
 
-**Scope** The four CSV literals cover a quoted separator, doubled quotes, embedded LF, empty fields and multiple records. An independent CSV reader supplies the expected field sequences. Length prefixes preserve the field boundaries. Each input ran twice per revision on fresh JVMs. Original module CI old passed (914 tests), new passed (914 tests). V0 took 62.0 s on this prepared workflow.
+**Scope** The four CSV literals cover a quoted separator, doubled quotes, embedded LF, empty fields and multiple records. An independent CSV reader supplies the expected field sequences. Length prefixes preserve the field boundaries. Each input ran twice per revision on fresh JVMs. Original module CI old passed (914 tests), new passed (914 tests). V0 took 62.0 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 9.6 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -344,9 +344,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator`. Generate the original reflection adapter and inspect the resulting callable class.
 
-**Result** Open. old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvis.ref. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/04/reflector-35.json)
+**Result** Open. Old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvis.ref. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/05/reflector-35.json)
 
-**Scope** The original pair and caller source were checked. The finite observer lacks a qualified original expectation. Original module CI old zero tests (0 tests), new zero tests (0 tests). V0 took 128.3 s on this prepared workflow.
+**Scope** The original pair and caller source were checked. The finite attempt did not qualify both original executions. Original module CI old zero tests (0 tests), new zero tests (0 tests). V0 took 128.3 s on this prepared workflow. The matched V1 native stage took 11.3 s. Native checking also ran on both complete original modules in 0.2 s. The finite caller stage took 1.1 s.
 
 **Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
 
@@ -356,9 +356,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.fileupload2.core.MultipartInput#readBodyData`. Read a multipart body up to its boundary and observe the exact payload.
 
-**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/05/commons-fileupload-377.json)
+**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/05/commons-fileupload-377.json)
 
-**Scope** The framing and headers are fixed and syntactically separate from the independently supplied payload. The expected count is the number of payload bytes and their encoding is lossless. Each input ran twice per revision on fresh JVMs. Original module CI old passed (49 tests), new passed (49 tests). V0 took 64.8 s on this prepared workflow.
+**Scope** The framing and headers are fixed and syntactically separate from the independently supplied payload. The expected count is the number of payload bytes and their encoding is lossless. Each input ran twice per revision on fresh JVMs. Original module CI old passed (49 tests), new passed (49 tests). V0 took 64.8 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 9.2 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
@@ -368,11 +368,11 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType`. Classify the remote entry from its parsed FTP file type.
 
-**Result** Open. old input 0: the original caller method was never entered. java.lang.NoClassDefFoundError: org/slf4j/LoggerFactory at org.apache.ftpserver.usermanager.impl.PropertiesUserManager.<init>(PropertiesUserManager.java:117) caused by java.lang.ClassNotFoundException: org.slf4j.LoggerFactory at java.base/jd. [Evidence](../../verification/external-upgrades/corpus-runs/finite-recovery/04/commons-vfs-55c96cfd.json)
+**Result** Preserved the original expected observation on all 3 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/06/commons-vfs-55c96cfd.json)
 
-**Scope** The original pair and caller source were checked. The finite observer lacks a qualified original expectation. Original module CI old tests or lifecycle failed (3201 tests), new tests or lifecycle failed (3201 tests). V0 took 57.4 s on this prepared workflow.
+**Scope** The server root contains one actual file and one actual directory. The Apache FTPServer and MINA versions come from the original project test environment and are held fixed on both sides. Each observation has its own temporary root and listener. The FTPServer parent POM specifies SLF4J API 1.7.36. It is supplied on both sides. Each input ran twice per revision on fresh JVMs. Original module CI old tests or lifecycle failed (3201 tests), new tests or lifecycle failed (3201 tests). V0 took 57.4 s on this prepared workflow. The matched V1 native stage took 0.2 s. The finite caller stage took 12.9 s.
 
-**Review action** Use the existing CI evidence for this review. The named open step still needs a qualified caller result.
+**Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 
 ## commons-validator · commons-validator-86e32931
 
@@ -380,9 +380,9 @@ Each report names the original consumer, the scope actually checked and the next
 
 **Caller-visible behavior** `org.apache.commons.validator.util.ValidatorUtils#getValueAsString`. Read a named property from a bean and observe the exact string or missing-value result.
 
-**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/finite-callers/03/commons-validator-86e32931.json)
+**Result** Preserved the original expected observation on all 4 admitted inputs. [Evidence](../../verification/external-upgrades/corpus-runs/v1-finite/06/commons-validator-86e32931.json)
 
-**Scope** Two public bean getters return the supplied string and integer 7. String conversion preserves the exact string or null and renders the integer in decimal. Each input ran twice per revision on fresh JVMs. Original module CI old passed (990 tests), new passed (990 tests). V0 took 52.9 s on this prepared workflow.
+**Scope** Two public bean getters return the supplied string and integer 7. String conversion preserves the exact string or null and renders the integer in decimal. Each input ran twice per revision on fresh JVMs. Original module CI old passed (990 tests), new passed (990 tests). V0 took 52.9 s on this prepared workflow. The matched V1 native stage took 0.1 s. The finite caller stage took 10.9 s.
 
 **Review action** Retain this caller expectation for the scoped dependency review. Use the ordinary test suite for the remaining application behavior.
 

@@ -1,0 +1,247 @@
+{
+  "entry": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+  "observer": "Read all records through the original parser. Compare each field in order up to end of input.",
+  "domainBasis": "The four CSV literals cover a quoted separator, doubled quotes, embedded LF, empty fields and multiple records. An independent CSV reader supplies the expected field sequences. Length prefixes preserve the field boundaries.",
+  "cases": [
+    {
+      "args": [
+        "a,b\r\n"
+      ],
+      "expected": {
+        "return": "[1:a1:b]"
+      }
+    },
+    {
+      "args": [
+        "\"a,b\",c\r\n"
+      ],
+      "expected": {
+        "return": "[3:a,b1:c]"
+      }
+    },
+    {
+      "args": [
+        "\"a\"\"b\",\"x\ny\"\r\n"
+      ],
+      "expected": {
+        "return": "[3:a\"b3:x\ny]"
+      }
+    },
+    {
+      "args": [
+        "a,,c\n,,\n"
+      ],
+      "expected": {
+        "return": "[1:a0:1:c]|[0:0:0:]"
+      }
+    }
+  ],
+  "probeSha256": "394bfa23dc95f65fa739ec04091eafb7480891e5f188640c99dea1512c5a71d2",
+  "launcherSha256": "e26820797fb29befb3e3e9ee7b89e7ab9c4e32bf8ec239ac899c6426304abcb8",
+  "tracerSha256": "651ddfa6387ea984252798bbf151e316c53ff4e7ec418c27be98d380b2f8f61c",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
+      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
+      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+      "classpath": [
+        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "dependency": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 19,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a1:b]"
+            },
+            {
+              "return": "[1:a1:b]"
+            }
+          ]
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a,b1:c]"
+            },
+            {
+              "return": "[3:a,b1:c]"
+            }
+          ]
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a\"b3:x\ny]"
+            },
+            {
+              "return": "[3:a\"b3:x\ny]"
+            }
+          ]
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            },
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            }
+          ]
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.input.AbstractInputStream",
+        "org.apache.commons.io.input.Input",
+        "org.apache.commons.io.input.ReaderInputStream",
+        "org.apache.commons.io.input.UnsynchronizedBufferedReader",
+        "org.apache.commons.io.input.UnsynchronizedReader",
+        "org.apache.commons.io.output.AppendableOutputStream"
+      ]
+    },
+    "new": {
+      "commit": "8993be875a32fdc336780b1610a2e002d320571e",
+      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
+      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+      "classpath": [
+        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "dependency": "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 19,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a1:b]"
+            },
+            {
+              "return": "[1:a1:b]"
+            }
+          ]
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a,b1:c]"
+            },
+            {
+              "return": "[3:a,b1:c]"
+            }
+          ]
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a\"b3:x\ny]"
+            },
+            {
+              "return": "[3:a\"b3:x\ny]"
+            }
+          ]
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            },
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            }
+          ]
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.input.AbstractInputStream",
+        "org.apache.commons.io.input.Input",
+        "org.apache.commons.io.input.ReaderInputStream",
+        "org.apache.commons.io.input.UnsynchronizedBufferedReader",
+        "org.apache.commons.io.input.UnsynchronizedReader",
+        "org.apache.commons.io.output.AppendableOutputStream"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "originalInvocation": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeObservation": "fcda918ba14858ea18a3a4e7624d513ba5edd112a1e294d3d5540872242967d7",
+    "UpgradeTrace": "1649a788fb94e621d1d4f826ad5e374c44eb0b969b10ac02a8bd808f50116c2b",
+    "org/apache/commons/csv/UpgradeProbe": "561db0dc507bf575bf4f0f851bd27bf27a22e75a8cc696d68409a04d8dc65da5"
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 9.594,
+  "specSha256": "9cb096cb64288f28ee19ec9a83eb0407fc2d868b5b1580114bdbd8dbf7dafb0a"
+}

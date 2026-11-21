@@ -1,0 +1,243 @@
+{
+  "id": "commons-configuration-565",
+  "build": "current",
+  "operator": {
+    "model": "gpt-6.2-astra",
+    "effort": "high"
+  },
+  "entry": "org.apache.commons.configuration2.JSONConfiguration#read",
+  "observer": "Read a JSON configuration and observe nested scalar and list values.",
+  "revisions": {
+    "old": "b485cdac96378f862237a6ad2fe3c8f57ae0612c",
+    "new": "d2101a20e2b74ced47ae57dd3b6d1d90b03d409b"
+  },
+  "result": "open",
+  "readerSha256": "911a5c41eefacae4379bf72f99fc0b79e8fb9f72835fe2ecf4b32de1cd580222",
+  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
+  "sides": {
+    "old": {
+      "commit": "b485cdac96378f862237a6ad2fe3c8f57ae0612c",
+      "sourceSha256": "ce4b6691d57cadf47427d2f90e19ab399ac4dddb9317b9c5d60a2feceef34b31",
+      "subjectJdk": "21.0.13.0+9-tem",
+      "stage": "artifacts ready",
+      "scope": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 108,
+      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
+      "compilerClasspathSha256": [
+        "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+        "76434bd2dd778ab140d84b3c6ffa40c40fe6219909f5ed1d8b8977c5ae8e50c8",
+        "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+        "707a09e86ed1cf5516cdabdf1710d8fe201b6e26e7233870dce1d0ccf2a468d1",
+        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4",
+        "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
+        "adf9dfb77a44f7b6e2dba3779cfa7142ab8a1f618eb7a9741083822e8d14be13",
+        "4018736ede2d321034e8517ea90baefb31831a8608afccc446d8a699fb1d00d4",
+        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
+        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+        "226cb33a644995b084b3bdd42f2eb861509e6db71d7a343d411ee321387b0860",
+        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
+        "3a1ddcf05420a9181bd9cacb6062a3edc493e14d555961ad50e1a6360eb1e75f",
+        "b6697a5d8facb81aa75e5a46d959d4256da9ce3b40d33f3b5bbd42a8b1ed5722",
+        "c658ea360a70faeeadb66fb3c90a702e4142a0ab7768f9ae9828678e0d9ad4dc",
+        "33d3a5bda82c7d2f1b898685faa954f1fc34f7b0ae5c2f6ccc6d051e8a10973b",
+        "ef779af5d29a9dde8cc70ce0341f5c6f7735e23edff9685ceaa9d35359b7bb7f",
+        "510bdda75a7a6186c5bf33b851239488a1450906ae5757121f2e1cc48a7e108f",
+        "8aa5740d80b5a5025508b41bbadbaa1fb3772267c628b2e30681a4f45f8b8931",
+        "056bc4d3e5e53ce821450fa97b3f9e0f8dde125cf6da6884353bb1f09582e1d9",
+        "d541ebd1316f53374991e836ad52f32c11bf465cb6672d397f0444814528ef8b",
+        "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f",
+        "7eb4084596ae25bd3c61698e48e8d0ab65a9260758884ed5cbb9c6e55c44a56a"
+      ],
+      "orderedSha256": [
+        "34f3dae098453b5b0a6a643add8d06674859b246ff143899a02ed1303f9bf63b",
+        "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+        "76434bd2dd778ab140d84b3c6ffa40c40fe6219909f5ed1d8b8977c5ae8e50c8",
+        "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+        "707a09e86ed1cf5516cdabdf1710d8fe201b6e26e7233870dce1d0ccf2a468d1",
+        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4",
+        "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
+        "adf9dfb77a44f7b6e2dba3779cfa7142ab8a1f618eb7a9741083822e8d14be13",
+        "4018736ede2d321034e8517ea90baefb31831a8608afccc446d8a699fb1d00d4",
+        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
+        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+        "226cb33a644995b084b3bdd42f2eb861509e6db71d7a343d411ee321387b0860",
+        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
+        "3a1ddcf05420a9181bd9cacb6062a3edc493e14d555961ad50e1a6360eb1e75f",
+        "b6697a5d8facb81aa75e5a46d959d4256da9ce3b40d33f3b5bbd42a8b1ed5722",
+        "ef779af5d29a9dde8cc70ce0341f5c6f7735e23edff9685ceaa9d35359b7bb7f",
+        "510bdda75a7a6186c5bf33b851239488a1450906ae5757121f2e1cc48a7e108f",
+        "8aa5740d80b5a5025508b41bbadbaa1fb3772267c628b2e30681a4f45f8b8931",
+        "056bc4d3e5e53ce821450fa97b3f9e0f8dde125cf6da6884353bb1f09582e1d9",
+        "d541ebd1316f53374991e836ad52f32c11bf465cb6672d397f0444814528ef8b",
+        "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f",
+        "7eb4084596ae25bd3c61698e48e8d0ab65a9260758884ed5cbb9c6e55c44a56a"
+      ],
+      "callerClassSha256": "1f9eb97076ebf47a370bba3528fca9e067a334675674dc0a3185f97c704fbdee",
+      "descriptors": [
+        "(Ljava/io/InputStream;)V",
+        "(Ljava/io/Reader;)V"
+      ]
+    },
+    "new": {
+      "commit": "d2101a20e2b74ced47ae57dd3b6d1d90b03d409b",
+      "sourceSha256": "ce4b6691d57cadf47427d2f90e19ab399ac4dddb9317b9c5d60a2feceef34b31",
+      "subjectJdk": "21.0.13.0+9-tem",
+      "stage": "artifacts ready",
+      "scope": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 108,
+      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
+      "compilerClasspathSha256": [
+        "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+        "76434bd2dd778ab140d84b3c6ffa40c40fe6219909f5ed1d8b8977c5ae8e50c8",
+        "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+        "707a09e86ed1cf5516cdabdf1710d8fe201b6e26e7233870dce1d0ccf2a468d1",
+        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4",
+        "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
+        "adf9dfb77a44f7b6e2dba3779cfa7142ab8a1f618eb7a9741083822e8d14be13",
+        "4018736ede2d321034e8517ea90baefb31831a8608afccc446d8a699fb1d00d4",
+        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
+        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+        "226cb33a644995b084b3bdd42f2eb861509e6db71d7a343d411ee321387b0860",
+        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
+        "3a1ddcf05420a9181bd9cacb6062a3edc493e14d555961ad50e1a6360eb1e75f",
+        "b6697a5d8facb81aa75e5a46d959d4256da9ce3b40d33f3b5bbd42a8b1ed5722",
+        "c658ea360a70faeeadb66fb3c90a702e4142a0ab7768f9ae9828678e0d9ad4dc",
+        "33d3a5bda82c7d2f1b898685faa954f1fc34f7b0ae5c2f6ccc6d051e8a10973b",
+        "ef779af5d29a9dde8cc70ce0341f5c6f7735e23edff9685ceaa9d35359b7bb7f",
+        "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a",
+        "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7",
+        "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430",
+        "d541ebd1316f53374991e836ad52f32c11bf465cb6672d397f0444814528ef8b",
+        "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f",
+        "7eb4084596ae25bd3c61698e48e8d0ab65a9260758884ed5cbb9c6e55c44a56a"
+      ],
+      "orderedSha256": [
+        "34f3dae098453b5b0a6a643add8d06674859b246ff143899a02ed1303f9bf63b",
+        "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+        "76434bd2dd778ab140d84b3c6ffa40c40fe6219909f5ed1d8b8977c5ae8e50c8",
+        "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+        "707a09e86ed1cf5516cdabdf1710d8fe201b6e26e7233870dce1d0ccf2a468d1",
+        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4",
+        "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
+        "adf9dfb77a44f7b6e2dba3779cfa7142ab8a1f618eb7a9741083822e8d14be13",
+        "4018736ede2d321034e8517ea90baefb31831a8608afccc446d8a699fb1d00d4",
+        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
+        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+        "226cb33a644995b084b3bdd42f2eb861509e6db71d7a343d411ee321387b0860",
+        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
+        "3a1ddcf05420a9181bd9cacb6062a3edc493e14d555961ad50e1a6360eb1e75f",
+        "b6697a5d8facb81aa75e5a46d959d4256da9ce3b40d33f3b5bbd42a8b1ed5722",
+        "ef779af5d29a9dde8cc70ce0341f5c6f7735e23edff9685ceaa9d35359b7bb7f",
+        "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a",
+        "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7",
+        "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430",
+        "d541ebd1316f53374991e836ad52f32c11bf465cb6672d397f0444814528ef8b",
+        "5b4a0a0cd0e751ded431c162442bdbdd53328d1f8bb2bae5fc1bbeee0f66d80f",
+        "7eb4084596ae25bd3c61698e48e8d0ab65a9260758884ed5cbb9c6e55c44a56a"
+      ],
+      "callerClassSha256": "1f9eb97076ebf47a370bba3528fca9e067a334675674dc0a3185f97c704fbdee",
+      "descriptors": [
+        "(Ljava/io/InputStream;)V",
+        "(Ljava/io/Reader;)V"
+      ]
+    }
+  },
+  "declarations": {
+    "common": [
+      "(Ljava/io/InputStream;)V",
+      "(Ljava/io/Reader;)V"
+    ],
+    "removed": [],
+    "added": []
+  },
+  "native": {
+    "target": "org.apache.commons.configuration2.JSONConfiguration#read(java.io.InputStream)",
+    "exit": 1,
+    "seconds": 0.169,
+    "outputSha256": "1794105def59ace127fc59067cb7d12f66055d0261b7fa46353fb5511cd68d47",
+    "outcome": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "org.apache.commons.configuration2.JSONConfiguration#read(java.io.InputStream)",
+      "domain": null,
+      "counterexample": null,
+      "proof": null,
+      "problem": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly",
+      "statement": null,
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "org.apache.commons.configuration2.JSONConfiguration#read(java.io.InputStream) cannot be verified: read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly",
+          "uri": null,
+          "line": 76
+        }
+      ],
+      "output": "\u2717 org.apache.commons.configuration2.JSONConfiguration#read(java.io.InputStream) cannot be verified: read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly\n",
+      "work": "$WORK/checker-m2q6m7ev/overload-0"
+    },
+    "firstBlocker": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly"
+  },
+  "firstBlocker": "review the recorded exact overloads",
+  "nativeOverloads": [
+    {
+      "target": "org.apache.commons.configuration2.JSONConfiguration#read(java.io.InputStream)",
+      "exit": 1,
+      "seconds": 0.169,
+      "outputSha256": "1794105def59ace127fc59067cb7d12f66055d0261b7fa46353fb5511cd68d47",
+      "outcome": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "org.apache.commons.configuration2.JSONConfiguration#read(java.io.InputStream)",
+        "domain": null,
+        "counterexample": null,
+        "proof": null,
+        "problem": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "org.apache.commons.configuration2.JSONConfiguration#read(java.io.InputStream) cannot be verified: read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly",
+            "uri": null,
+            "line": 76
+          }
+        ],
+        "output": "\u2717 org.apache.commons.configuration2.JSONConfiguration#read(java.io.InputStream) cannot be verified: read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly\n",
+        "work": "$WORK/checker-m2q6m7ev/overload-0"
+      },
+      "firstBlocker": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly"
+    },
+    {
+      "target": "org.apache.commons.configuration2.JSONConfiguration#read(java.io.Reader)",
+      "exit": 1,
+      "seconds": 0.159,
+      "outputSha256": "e7edfb1b0db36a43f7167651c6e0803cbe9ce9063356b8e812fcf18ac21d1d6a",
+      "outcome": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "org.apache.commons.configuration2.JSONConfiguration#read(java.io.Reader)",
+        "domain": null,
+        "counterexample": null,
+        "proof": null,
+        "problem": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "org.apache.commons.configuration2.JSONConfiguration#read(java.io.Reader) cannot be verified: read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly",
+            "uri": null,
+            "line": 85
+          }
+        ],
+        "output": "\u2717 org.apache.commons.configuration2.JSONConfiguration#read(java.io.Reader) cannot be verified: read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly\n",
+        "work": "$WORK/checker-m2q6m7ev/overload-1"
+      },
+      "firstBlocker": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration extends org.apache.commons.configuration2.AbstractYAMLBasedConfiguration; a class made by its constructor must extend Object directly"
+    }
+  ],
+  "elapsedSeconds": 0.449,
+  "sourceSha256": "ce4b6691d57cadf47427d2f90e19ab399ac4dddb9317b9c5d60a2feceef34b31"
+}
