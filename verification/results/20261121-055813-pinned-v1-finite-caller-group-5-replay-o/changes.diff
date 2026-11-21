@@ -1,0 +1,1118 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v1-finite/05/commons-beanutils-440.json
+@@ -0,0 +1,244 @@
++{
++  "entry": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
++  "observer": "The formal parameter type of the accessible overload selected for five distinct real Java argument types.",
++  "domainBasis": "An exact public overload wins. Short is assignable only to Number. Boolean matches none of the three reference parameters.",
++  "cases": [
++    {
++      "args": [
++        "Integer"
++      ],
++      "expected": {
++        "return": "java.lang.Integer"
++      }
++    },
++    {
++      "args": [
++        "Short"
++      ],
++      "expected": {
++        "return": "java.lang.Number"
++      }
++    },
++    {
++      "args": [
++        "Number"
++      ],
++      "expected": {
++        "return": "java.lang.Number"
++      }
++    },
++    {
++      "args": [
++        "String"
++      ],
++      "expected": {
++        "return": "java.lang.String"
++      }
++    },
++    {
++      "args": [
++        "Boolean"
++      ],
++      "expected": {
++        "return": null
++      }
++    }
++  ],
++  "probeSha256": "305ce195312f3be8afc75c8daf2f6e90a26b1f4f45dee5f6e17a20c29afeb211",
++  "launcherSha256": "e26820797fb29befb3e3e9ee7b89e7ab9c4e32bf8ec239ac899c6426304abcb8",
++  "tracerSha256": "651ddfa6387ea984252798bbf151e316c53ff4e7ec418c27be98d380b2f8f61c",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "389264ff96c9e361ecb830a9813eae3f86f38d3a",
++      "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681",
++      "callerClassSha256": "2dc9d226e39da6b615b13ada741d55943f92e16c787bb0e31d3057c636ad1223",
++      "classpath": [
++        "51b4ddd2f12410716d80513b6f8fed73689f1f87915821b782ff60b4efc23103",
++        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++      ],
++      "dependency": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 80,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Integer"
++            },
++            {
++              "return": "java.lang.Integer"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Number"
++            },
++            {
++              "return": "java.lang.Number"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Number"
++            },
++            {
++              "return": "java.lang.Number"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.String"
++            },
++            {
++              "return": "java.lang.String"
++            }
++          ]
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.ArrayUtils",
++        "org.apache.commons.lang3.ClassUtils",
++        "org.apache.commons.lang3.reflect.AccessibleObjects",
++        "org.apache.commons.lang3.reflect.MemberUtils",
++        "org.apache.commons.lang3.reflect.MemberUtils$Executable",
++        "org.apache.commons.lang3.reflect.MethodUtils"
++      ]
++    },
++    "new": {
++      "commit": "5dc228566038283964a4f665c147282d462babdd",
++      "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681",
++      "callerClassSha256": "2dc9d226e39da6b615b13ada741d55943f92e16c787bb0e31d3057c636ad1223",
++      "classpath": [
++        "51b4ddd2f12410716d80513b6f8fed73689f1f87915821b782ff60b4efc23103",
++        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++      ],
++      "dependency": "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 80,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Integer"
++            },
++            {
++              "return": "java.lang.Integer"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Number"
++            },
++            {
++              "return": "java.lang.Number"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Number"
++            },
++            {
++              "return": "java.lang.Number"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.String"
++            },
++            {
++              "return": "java.lang.String"
++            }
++          ]
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.ArrayUtils",
++        "org.apache.commons.lang3.ClassUtils",
++        "org.apache.commons.lang3.reflect.AccessibleObjects",
++        "org.apache.commons.lang3.reflect.MemberUtils",
++        "org.apache.commons.lang3.reflect.MemberUtils$Executable",
++        "org.apache.commons.lang3.reflect.MethodUtils"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "fcda918ba14858ea18a3a4e7624d513ba5edd112a1e294d3d5540872242967d7",
++    "UpgradeProbe$Choices": "593caf9a9710453e14e99bdc147c55e9c381e33ab93579424736a6f439999283",
++    "UpgradeProbe": "8c36fae6c827c05cb33e3178d10656876bf627ef681b55f49596be914e7c0047",
++    "UpgradeTrace": "1649a788fb94e621d1d4f826ad5e374c44eb0b969b10ac02a8bd808f50116c2b"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 12.574,
++  "specSha256": "351ce19e5bab4f3aa0d1f06b9021c031d36595345660b53978b4afcb035930c6"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v1-finite/05/commons-csv-8993be87.json
+@@ -0,0 +1,247 @@
++{
++  "entry": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
++  "observer": "Read all records through the original parser. Compare each field in order up to end of input.",
++  "domainBasis": "The four CSV literals cover a quoted separator, doubled quotes, embedded LF, empty fields and multiple records. An independent CSV reader supplies the expected field sequences. Length prefixes preserve the field boundaries.",
++  "cases": [
++    {
++      "args": [
++        "a,b\r\n"
++      ],
++      "expected": {
++        "return": "[1:a1:b]"
++      }
++    },
++    {
++      "args": [
++        "\"a,b\",c\r\n"
++      ],
++      "expected": {
++        "return": "[3:a,b1:c]"
++      }
++    },
++    {
++      "args": [
++        "\"a\"\"b\",\"x\ny\"\r\n"
++      ],
++      "expected": {
++        "return": "[3:a\"b3:x\ny]"
++      }
++    },
++    {
++      "args": [
++        "a,,c\n,,\n"
++      ],
++      "expected": {
++        "return": "[1:a0:1:c]|[0:0:0:]"
++      }
++    }
++  ],
++  "probeSha256": "394bfa23dc95f65fa739ec04091eafb7480891e5f188640c99dea1512c5a71d2",
++  "launcherSha256": "e26820797fb29befb3e3e9ee7b89e7ab9c4e32bf8ec239ac899c6426304abcb8",
++  "tracerSha256": "651ddfa6387ea984252798bbf151e316c53ff4e7ec418c27be98d380b2f8f61c",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
++      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
++      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
++      "classpath": [
++        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
++        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
++      ],
++      "dependency": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 19,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[1:a1:b]"
++            },
++            {
++              "return": "[1:a1:b]"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[3:a,b1:c]"
++            },
++            {
++              "return": "[3:a,b1:c]"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[3:a\"b3:x\ny]"
++            },
++            {
++              "return": "[3:a\"b3:x\ny]"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[1:a0:1:c]|[0:0:0:]"
++            },
++            {
++              "return": "[1:a0:1:c]|[0:0:0:]"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.io.build.AbstractOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
++        "org.apache.commons.io.build.AbstractOriginSupplier",
++        "org.apache.commons.io.build.AbstractStreamBuilder",
++        "org.apache.commons.io.build.AbstractSupplier",
++        "org.apache.commons.io.file.DeleteOption",
++        "org.apache.commons.io.file.PathUtils",
++        "org.apache.commons.io.function.IOSupplier",
++        "org.apache.commons.io.input.AbstractInputStream",
++        "org.apache.commons.io.input.Input",
++        "org.apache.commons.io.input.ReaderInputStream",
++        "org.apache.commons.io.input.UnsynchronizedBufferedReader",
++        "org.apache.commons.io.input.UnsynchronizedReader",
++        "org.apache.commons.io.output.AppendableOutputStream"
++      ]
++    },
++    "new": {
++      "commit": "8993be875a32fdc336780b1610a2e002d320571e",
++      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
++      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
++      "classpath": [
++        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
++        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
++        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
++      ],
++      "dependency": "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 19,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[1:a1:b]"
++            },
++            {
++              "return": "[1:a1:b]"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[3:a,b1:c]"
++            },
++            {
++              "return": "[3:a,b1:c]"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[3:a\"b3:x\ny]"
++            },
++            {
++              "return": "[3:a\"b3:x\ny]"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[1:a0:1:c]|[0:0:0:]"
++            },
++            {
++              "return": "[1:a0:1:c]|[0:0:0:]"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.io.build.AbstractOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
++        "org.apache.commons.io.build.AbstractOriginSupplier",
++        "org.apache.commons.io.build.AbstractStreamBuilder",
++        "org.apache.commons.io.build.AbstractSupplier",
++        "org.apache.commons.io.file.DeleteOption",
++        "org.apache.commons.io.file.PathUtils",
++        "org.apache.commons.io.function.IOSupplier",
++        "org.apache.commons.io.input.AbstractInputStream",
++        "org.apache.commons.io.input.Input",
++        "org.apache.commons.io.input.ReaderInputStream",
++        "org.apache.commons.io.input.UnsynchronizedBufferedReader",
++        "org.apache.commons.io.input.UnsynchronizedReader",
++        "org.apache.commons.io.output.AppendableOutputStream"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "fcda918ba14858ea18a3a4e7624d513ba5edd112a1e294d3d5540872242967d7",
++    "UpgradeTrace": "1649a788fb94e621d1d4f826ad5e374c44eb0b969b10ac02a8bd808f50116c2b",
++    "org/apache/commons/csv/UpgradeProbe": "561db0dc507bf575bf4f0f851bd27bf27a22e75a8cc696d68409a04d8dc65da5"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 9.594,
++  "specSha256": "9cb096cb64288f28ee19ec9a83eb0407fc2d868b5b1580114bdbd8dbf7dafb0a"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v1-finite/05/commons-fileupload-377.json
+@@ -0,0 +1,257 @@
++{
++  "entry": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
++  "observer": "Exact bytes and byte count from a single ordinary MIME part, including empty, binary and multiline bodies.",
++  "domainBasis": "The framing and headers are fixed and syntactically separate from the independently supplied payload. The expected count is the number of payload bytes and their encoding is lossless.",
++  "cases": [
++    {
++      "args": [
++        ""
++      ],
++      "expected": {
++        "return": "0:"
++      }
++    },
++    {
++      "args": [
++        "aGVsbG8="
++      ],
++      "expected": {
++        "return": "5:aGVsbG8="
++      }
++    },
++    {
++      "args": [
++        "bGluZTENCmxpbmUy"
++      ],
++      "expected": {
++        "return": "12:bGluZTENCmxpbmUy"
++      }
++    },
++    {
++      "args": [
++        "AP8NCgE="
++      ],
++      "expected": {
++        "return": "5:AP8NCgE="
++      }
++    }
++  ],
++  "probeSha256": "9f6de3d93cdb33bf38a5394aff4698342312446d9ef5a98077c58c05d16ca898",
++  "launcherSha256": "e26820797fb29befb3e3e9ee7b89e7ab9c4e32bf8ec239ac899c6426304abcb8",
++  "tracerSha256": "651ddfa6387ea984252798bbf151e316c53ff4e7ec418c27be98d380b2f8f61c",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "classpath": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "dependency": "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "0:"
++            },
++            {
++              "return": "0:"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5:aGVsbG8="
++            },
++            {
++              "return": "5:aGVsbG8="
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "12:bGluZTENCmxpbmUy"
++            },
++            {
++              "return": "12:bGluZTENCmxpbmUy"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5:AP8NCgE="
++            },
++            {
++              "return": "5:AP8NCgE="
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.io.Charsets",
++        "org.apache.commons.io.CloseableURLConnection",
++        "org.apache.commons.io.IOUtils",
++        "org.apache.commons.io.StandardLineSeparator",
++        "org.apache.commons.io.build.AbstractOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
++        "org.apache.commons.io.build.AbstractOriginSupplier",
++        "org.apache.commons.io.build.AbstractStreamBuilder",
++        "org.apache.commons.io.build.AbstractSupplier",
++        "org.apache.commons.io.file.DeleteOption",
++        "org.apache.commons.io.file.PathUtils",
++        "org.apache.commons.io.function.IOSupplier",
++        "org.apache.commons.io.output.AbstractByteArrayOutputStream",
++        "org.apache.commons.io.output.AppendableWriter",
++        "org.apache.commons.io.output.ByteArrayOutputStream",
++        "org.apache.commons.io.output.NullOutputStream",
++        "org.apache.commons.io.output.NullWriter",
++        "org.apache.commons.io.output.QueueOutputStream",
++        "org.apache.commons.io.output.StringBuilderWriter",
++        "org.apache.commons.io.output.ThresholdingOutputStream",
++        "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream"
++      ]
++    },
++    "new": {
++      "commit": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "classpath": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "dependency": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "0:"
++            },
++            {
++              "return": "0:"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5:aGVsbG8="
++            },
++            {
++              "return": "5:aGVsbG8="
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "12:bGluZTENCmxpbmUy"
++            },
++            {
++              "return": "12:bGluZTENCmxpbmUy"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5:AP8NCgE="
++            },
++            {
++              "return": "5:AP8NCgE="
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.io.Charsets",
++        "org.apache.commons.io.CloseableURLConnection",
++        "org.apache.commons.io.IOUtils",
++        "org.apache.commons.io.StandardLineSeparator",
++        "org.apache.commons.io.build.AbstractOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
++        "org.apache.commons.io.build.AbstractOriginSupplier",
++        "org.apache.commons.io.build.AbstractStreamBuilder",
++        "org.apache.commons.io.build.AbstractSupplier",
++        "org.apache.commons.io.file.DeleteOption",
++        "org.apache.commons.io.file.PathUtils",
++        "org.apache.commons.io.function.IOSupplier",
++        "org.apache.commons.io.input.CharSequenceReader",
++        "org.apache.commons.io.output.AbstractByteArrayOutputStream",
++        "org.apache.commons.io.output.AppendableWriter",
++        "org.apache.commons.io.output.ByteArrayOutputStream",
++        "org.apache.commons.io.output.NullOutputStream",
++        "org.apache.commons.io.output.NullWriter",
++        "org.apache.commons.io.output.QueueOutputStream",
++        "org.apache.commons.io.output.StringBuilderWriter",
++        "org.apache.commons.io.output.ThresholdingOutputStream",
++        "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "fcda918ba14858ea18a3a4e7624d513ba5edd112a1e294d3d5540872242967d7",
++    "UpgradeProbe": "afd54c7ed179e8fc6721d5cb242348a31c510182995d5a7f7378e6153bc9f909",
++    "UpgradeTrace": "1649a788fb94e621d1d4f826ad5e374c44eb0b969b10ac02a8bd808f50116c2b"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 9.227,
++  "specSha256": "82ca90561de07cc179ce2e8f21e86b5a8bad62056e61de6c43debb43795e2024"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v1-finite/05/cucumber-reporting-1198.json
+@@ -0,0 +1,245 @@
++{
++  "entry": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
++  "observer": "The exact escaped and highlighted text returned for empty, ordinary and HTML-sensitive step arguments.",
++  "domainBasis": "Escape HTML characters in the original step text, then mark the specified nonempty argument span at its zero-based offset. Empty and absent argument lists contribute no marks.",
++  "cases": [
++    {
++      "args": [
++        "a & b",
++        "[]"
++      ],
++      "expected": {
++        "return": "a &amp; b"
++      }
++    },
++    {
++      "args": [
++        "eat red now",
++        "[{\"val\":\"red\",\"offset\":4}]"
++      ],
++      "expected": {
++        "return": "eat <b>red</b> now"
++      }
++    },
++    {
++      "args": [
++        "a<b",
++        "[{\"val\":\"<\",\"offset\":1}]"
++      ],
++      "expected": {
++        "return": "a<b>&lt;</b>b"
++      }
++    },
++    {
++      "args": [
++        "",
++        "[]"
++      ],
++      "expected": {
++        "return": ""
++      }
++    }
++  ],
++  "probeSha256": "e4958c2f8aa4e3b085a2c62fa43f65d82833b2164ad0303ee606b2df07aab768",
++  "launcherSha256": "e26820797fb29befb3e3e9ee7b89e7ab9c4e32bf8ec239ac899c6426304abcb8",
++  "tracerSha256": "651ddfa6387ea984252798bbf151e316c53ff4e7ec418c27be98d380b2f8f61c",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "b0ec5fc9ea2dbd5ab980f69234a0dd66fa93504d",
++      "sourceSha256": "4e9cd56bddbd5f6df390cff126ac1746edce3599ff426d244708b130e8acad48",
++      "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
++      "classpath": [
++        "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
++        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
++        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
++        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
++        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
++        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
++        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
++        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
++        "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
++        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
++        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
++        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
++        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
++        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
++        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
++        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
++        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
++      ],
++      "dependency": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 3,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "a &amp; b"
++            },
++            {
++              "return": "a &amp; b"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "eat <b>red</b> now"
++            },
++            {
++              "return": "eat <b>red</b> now"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "a<b>&lt;</b>b"
++            },
++            {
++              "return": "a<b>&lt;</b>b"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.ArrayUtils",
++        "org.apache.commons.lang3.Range",
++        "org.apache.commons.lang3.Range$ComparableComparator",
++        "org.apache.commons.lang3.StringUtils",
++        "org.apache.commons.lang3.Validate",
++        "org.apache.commons.lang3.stream.LangCollectors",
++        "org.apache.commons.lang3.stream.LangCollectors$SimpleCollector",
++        "org.apache.commons.lang3.stream.Streams"
++      ]
++    },
++    "new": {
++      "commit": "bf97b9ef1d60f9959a61379c3b3a682350e8e583",
++      "sourceSha256": "4e9cd56bddbd5f6df390cff126ac1746edce3599ff426d244708b130e8acad48",
++      "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
++      "classpath": [
++        "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
++        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
++        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
++        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
++        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
++        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
++        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
++        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
++        "4905090022def3809e97963832fc8b2421fda800853c94d3cdbf1ad3011d9756",
++        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
++        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
++        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
++        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
++        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
++        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
++        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
++        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
++      ],
++      "dependency": "4905090022def3809e97963832fc8b2421fda800853c94d3cdbf1ad3011d9756",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 3,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "a &amp; b"
++            },
++            {
++              "return": "a &amp; b"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "eat <b>red</b> now"
++            },
++            {
++              "return": "eat <b>red</b> now"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "a<b>&lt;</b>b"
++            },
++            {
++              "return": "a<b>&lt;</b>b"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.ArrayUtils",
++        "org.apache.commons.lang3.Range",
++        "org.apache.commons.lang3.Range$ComparableComparator",
++        "org.apache.commons.lang3.StringUtils",
++        "org.apache.commons.lang3.Validate",
++        "org.apache.commons.lang3.stream.LangCollectors",
++        "org.apache.commons.lang3.stream.LangCollectors$SimpleCollector",
++        "org.apache.commons.lang3.stream.Streams"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "fcda918ba14858ea18a3a4e7624d513ba5edd112a1e294d3d5540872242967d7",
++    "UpgradeProbe": "63a87dfa181cacb80de7cbc9a395d65c1fc7d6094308bc4c58fb1959b993a4b3",
++    "UpgradeTrace": "1649a788fb94e621d1d4f826ad5e374c44eb0b969b10ac02a8bd808f50116c2b"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 14.535,
++  "specSha256": "0508ebde7f7bdfe033720ff36cbe8d00f2e6066f6a760c4a298c7d382b7b498a"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v1-finite/05/reflector-35.json
+@@ -0,0 +1,110 @@
++{
++  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;",
++  "observer": "Generate and invoke an empty-constructor adapter on two actual classes.",
++  "domainBasis": "Both selected classes have accessible argument-free constructors. A working public generator should produce a fresh instance with each requested class identity. An original runtime that cannot create the adapter remains open.",
++  "cases": [
++    {
++      "args": [
++        "object"
++      ],
++      "expected": {
++        "return": "java.lang.Object"
++      }
++    },
++    {
++      "args": [
++        "example"
++      ],
++      "expected": {
++        "return": "UpgradeProbe$Example"
++      }
++    }
++  ],
++  "probeSha256": "e6e071ee6216c086f33481aa4506a9c90dea09339d664622a50365b5f37cfe86",
++  "launcherSha256": "e26820797fb29befb3e3e9ee7b89e7ab9c4e32bf8ec239ac899c6426304abcb8",
++  "tracerSha256": "651ddfa6387ea984252798bbf151e316c53ff4e7ec418c27be98d380b2f8f61c",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "a7421542ac2b34670c7c261539fc253d77526afc",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
++      "classpath": [
++        "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
++        "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
++        "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
++        "71c4f78e437b8fdcd9cc0dfd2abea8c089eb677005a6a5cff320206cc52b46cc",
++        "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
++        "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
++        "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
++      ],
++      "dependency": "71c4f78e437b8fdcd9cc0dfd2abea8c089eb677005a6a5cff320206cc52b46cc",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 65,
++      "resources": 0,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 0,
++          "observations": []
++        }
++      ]
++    },
++    "new": {
++      "commit": "b8a65d35911580a469964aa722f4cd989c1a5382",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
++      "classpath": [
++        "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
++        "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
++        "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
++        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++        "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
++        "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
++        "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
++      ],
++      "dependency": "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 65,
++      "resources": 0
++    }
++  },
++  "status": "open",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "186209e7dcc65932aea9cc7ea6523c2851e63af79114e8e28c7d7a5d0878e8cd",
++    "UpgradeProbe$Example": "a281cf0d889fcfd18518dd6ec1cfae895ab2c7afd504675348dfb8d52a366d2b",
++    "UpgradeProbe": "ec049071a82ba41fe8b7debc2419feee209a9e54b328c646f036724c2b89eefa",
++    "UpgradeTrace": "353cd796f74cd5042d331c1574c95204830e13e9733a894aa4685cf1fda7d9ed"
++  },
++  "stoppedAt": {
++    "side": "old",
++    "input": 0,
++    "repetition": 1,
++    "exception": "java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvis.reflector.util.ObjectUtil.orDefault(ObjectUtil.java:10)"
++  },
++  "reason": "old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvis.reflector.util.ObjectUtil.orDefault(ObjectUtil.java:10)",
++  "specSha256": "02fe49c91ac7610570f3904d6a10aa4c8fcddc17c1df53c3df28b7573cccbdf7",
++  "elapsedSeconds": 1.119
++}
