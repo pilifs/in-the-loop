@@ -4,6 +4,22 @@
 
 The current campaign uses one gpt-6.2-astra session for all roles and keeps its upgrade pairs, expected observations and first results in the repository. The six earlier Claude opening reports are superseded. [Active protocol](protocol.md#active-engineering-protocol-from-0305-utc-on-21-november)
 
+## Run the engineering corpus
+
+The [corpus](corpus.json) holds 32 original upgrade pairs, their source and Maven identities, selected consumer methods and observations. Twelve main cases come from CompSuite's reported changes and twelve from routine upstream upgrades. A registry entry identifies a historical expectation. Only a reproduced caller observation can establish its actual outcome. Each half of the eight transfer cases includes two represented families and two new ones.
+
+Populate a local Git cache with the pinned objects. A JSON map from case ID to an existing Git repository can also be used. Run the comparison as a verification job. The 32 first reports use the same prepared artifacts for V0 and the repaired reader. CompSuite source builds use the Java 8 installation, current upstreams use Java 21, and the native verifier uses Java 21. The original-module preparations for two clients also carry their complete original runtime classpaths. The other preparations compile the indicated original source and its javac-discovered dependencies against the original module's Maven compile classpath, then check the caller on the separately resolved runtime classpath. Reports keep build, availability and method-level evidence distinct from a maintainer decision.
+
+```sh
+python3 lib/benchmark/external-upgrades/corpus_sources.py "$TMPDIR/upgrade-sources"
+python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current \
+  --repositories "$TMPDIR/upgrade-sources/repos.json" --work "$TMPDIR/upgrade-builds" \
+  --maven-cache "$HOME/.cache/in-the-loop/external-upgrades/maven/repository" \
+  --output "$TMPDIR/upgrade-results" --set main
+```
+
+Each report records the original commits, exact caller bytes, classpath hashes when available, concrete preparation or checker diagnostic and elapsed time. The V0 checker digest is checked before starting. In a checkout or queue archive without Git history, place V0's `examples/tools/targets/runtime_jar.py` at `$TMPDIR/upgrade-builds/v0-runtime_jar.py`. Its digest is checked before use. The CLI refuses to overwrite a first report.
+
 ## Reproduce an open calibration
 
 Examples 348 and 349 include a source-build reproduction in their own folders. For 350, 351 or 352, obtain the two commits and the JARs in that example's `materials.json`. Give the script the local Git repository, directory of named JARs, recorded subject JDK and an empty output location. It checks every JAR digest, the parent relationship, the POM-only tracked diff, loaded class origins and the original caller's observations. For the two named JUnit 4 tests it requires the specified class and method to appear exactly once in fresh Surefire XML.

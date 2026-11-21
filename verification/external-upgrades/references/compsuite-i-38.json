@@ -1,0 +1,100 @@
+{
+  "old": {
+    "revisions": "7cab65bb46ccd17b07ad05dd6b83d92a695477fc",
+    "classpath": [
+      "a7476f32e41def3b390ac14c59ad6c799dde874555c15d891667527bbd06e5d7",
+      "d2da399a9967c69f0a21739256fa79d284222c223082cacadc17372244764b54"
+    ],
+    "trials": [
+      {
+        "companion": [
+          "get#1(Object)=returned reflectasm.java.lang.ObjectMethodAccess",
+          "get#2(Object)=returned reflectasm.java.lang.ObjectMethodAccess",
+          "sameAccessClass=true",
+          "superclass=com.esotericsoftware.reflectasm.MethodAccess",
+          "methodNames.length=0",
+          "parameterTypes.length=0",
+          "returnTypes.length=0"
+        ],
+        "entry": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class)",
+        "observation": [
+          "get#1(ConcurrentMap)=returned reflectasm.java.util.concurrent.ConcurrentMapMethodAccess",
+          "get#2(ConcurrentMap)=returned reflectasm.java.util.concurrent.ConcurrentMapMethodAccess",
+          "invoke(replace,first,foo)=java.lang.String:one",
+          "invoke(size)=java.lang.Integer:2",
+          "someMap.size()=2"
+        ],
+        "reached": true,
+        "run_id": "1bc380be-b6a0-433c-8ed0-9ca159ec9419"
+      },
+      {
+        "companion": [
+          "get#1(Object)=returned reflectasm.java.lang.ObjectMethodAccess",
+          "get#2(Object)=returned reflectasm.java.lang.ObjectMethodAccess",
+          "sameAccessClass=true",
+          "superclass=com.esotericsoftware.reflectasm.MethodAccess",
+          "methodNames.length=0",
+          "parameterTypes.length=0",
+          "returnTypes.length=0"
+        ],
+        "entry": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class)",
+        "observation": [
+          "get#1(ConcurrentMap)=returned reflectasm.java.util.concurrent.ConcurrentMapMethodAccess",
+          "get#2(ConcurrentMap)=returned reflectasm.java.util.concurrent.ConcurrentMapMethodAccess",
+          "invoke(replace,first,foo)=java.lang.String:one",
+          "invoke(size)=java.lang.Integer:2",
+          "someMap.size()=2"
+        ],
+        "reached": true,
+        "run_id": "61bfe5e0-7cb9-4833-80b7-ac45d67b90db"
+      }
+    ]
+  },
+  "new": {
+    "revisions": "5c636af1a65b92fa570582628a27aa1e7d29f24b",
+    "classpath": [
+      "a7476f32e41def3b390ac14c59ad6c799dde874555c15d891667527bbd06e5d7",
+      "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672"
+    ],
+    "trials": [
+      {
+        "companion": [
+          "get#1(Object)=returned reflectasm.java.lang.ObjectMethodAccess",
+          "get#2(Object)=returned reflectasm.java.lang.ObjectMethodAccess",
+          "sameAccessClass=true",
+          "superclass=com.esotericsoftware.reflectasm.MethodAccess",
+          "methodNames.length=0",
+          "parameterTypes.length=0",
+          "returnTypes.length=0"
+        ],
+        "entry": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class)",
+        "observation": [
+          "get(ConcurrentMap) threw java.lang.IllegalArgumentException: Class versions V1_5 or less must use F_NEW frames. @ org.objectweb.asm.MethodWriter.visitFrame(MethodWriter.java:779)"
+        ],
+        "reached": true,
+        "run_id": "82e57307-a990-4e52-9a77-2eabc8266f6a"
+      },
+      {
+        "companion": [
+          "get#1(Object)=returned reflectasm.java.lang.ObjectMethodAccess",
+          "get#2(Object)=returned reflectasm.java.lang.ObjectMethodAccess",
+          "sameAccessClass=true",
+          "superclass=com.esotericsoftware.reflectasm.MethodAccess",
+          "methodNames.length=0",
+          "parameterTypes.length=0",
+          "returnTypes.length=0"
+        ],
+        "entry": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class)",
+        "observation": [
+          "get(ConcurrentMap) threw java.lang.IllegalArgumentException: Class versions V1_5 or less must use F_NEW frames. @ org.objectweb.asm.MethodWriter.visitFrame(MethodWriter.java:779)"
+        ],
+        "reached": true,
+        "run_id": "b851c185-d17f-417e-a040-58bfe0d2b06a"
+      }
+    ]
+  },
+  "id": "compsuite-i-38",
+  "entry": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class)",
+  "scope": "Classpath: the complete original production-only reflectasm client JAR (sha256 a7476f32..., unchanged source pair 7cab65bb.../5c636af1...) followed by the exact Maven production runtime dependency, org/ow2/asm/asm/5.1 (old) or 7.2 (new). No test classes, no junit and no test-only search artifacts are used. The primary input, caller path, semantics and representation are unchanged from the original testInvokeInterface bytecode and the prior observer: MethodAccess.get(ConcurrentMap.class) twice, then invoke replace and size on a ConcurrentHashMap holding first=one and second=two. In new, the primary is expected to reproduce the recorded IllegalArgumentException from MethodWriter.visitFrame(MethodWriter.java:779) via MethodAccess.get, with reached=true. Only the companion input changed, from test-only MethodAccessTest$EmptyClass to java.lang.Object.class. The rendering uses only the JDK standard library plus the public MethodAccess API. The schema keys are entry, reached, observation and companion. The expected companion values are derived from MethodAccess.get source analysis and have not yet been executed under this observer. They should be confirmed by running it old/new on the production-only classpath.",
+  "callerConsequence": "With ASM 7.2, a caller of MethodAccess.get(ConcurrentMap.class) receives java.lang.IllegalArgumentException('Class versions V1_5 or less must use F_NEW frames.') instead of a usable MethodAccess. The caller never gets to invoke 'replace' (which returned \"one\" on the old version) or 'size' (which returned 2). Because the shade plugin relocates org.objectweb.asm into the released jar, a release built with this POM would ship the failing behavior to downstream consumers whatever ASM version they have on their own classpath."
+}
