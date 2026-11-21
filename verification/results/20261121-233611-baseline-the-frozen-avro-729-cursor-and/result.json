@@ -1,0 +1,256 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-233611-baseline-the-frozen-avro-729-cursor-and",
+  "title": "Baseline the frozen Avro 729 cursor and decimal claims",
+  "status": "failed",
+  "summary": "failed: 2 failed step(s) in 0.4s, peak 10.9 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "declared output examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native was not produced",
+    "declared output examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite was not produced",
+    "step 1 (Freeze native outcomes) exited 2, expected 0",
+    "step 2 (Check all finite JVM inputs) exited 2, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-233611-baseline-the-frozen-avro-729-cursor-and.json",
+    "sha256": "bc71a95bda85aa8c6d173b624e7be10e2e9b28a1822e71f12d1aeb13fbc4ab37",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-233611-baseline-the-frozen-avro-729-cursor-and",
+      "title": "Baseline the frozen Avro 729 cursor and decimal claims",
+      "description": "Use the original Maven artifacts, independent twelve-window oracle and strict native checker before buffer support changes. Repeat the bounded calls on the original JVMs. Record a native refusal as a baseline, preserving the successful replay and finite results.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvm:finite-domain"
+      ],
+      "links": {
+        "examples": [
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:36:11+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Freeze native outcomes",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route native",
+          "cwd": "."
+        },
+        {
+          "name": "Check all finite JVM inputs",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route finite",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native",
+        "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite"
+      ]
+    }
+  },
+  "sourceCommit": "ca072c349c384adecf3cce4a35325fa369699e27",
+  "startedAt": "2026-11-21T23:38:04+00:00",
+  "finishedAt": "2026-11-21T23:42:00+00:00",
+  "wallSeconds": 236.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2411852,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 11427840,
+    "wallSeconds": 0.4,
+    "cpuSeconds": 0.1,
+    "memoryOfEstimate": 0.01,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 193.975,
+      "cpuSeconds": 194.144,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2368311296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "32bc868fac233bc56cb0a480d512ed1ca0a44d891470fb790a499f30360ec3a0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-233611-baseline-the-frozen-avro-729-cursor-and/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 13s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Freeze native outcomes",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route native",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 2,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.059,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 11427840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-freeze-native-outcomes.log",
+        "lines": 4,
+        "bytes": 265,
+        "sha256": "ab6d2cda615cc3166e95fb3a61477dd5950e3a35dbf047540798cf5582aecc17",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "usage: run.py [-h] [--stage STAGE] --route {native,finite} [--seconds SECONDS]",
+        "              [--tasks TASKS]",
+        "              {353,354,355,356,357,358,359,360}",
+        "run.py: error: argument example: invalid choice: '361' (choose from 353, 354, 355, 356, 357, 358, 359, 360)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check all finite JVM inputs",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route finite",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 2,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.059,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 11427840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-all-finite-jvm-inputs.log",
+        "lines": 4,
+        "bytes": 265,
+        "sha256": "ab6d2cda615cc3166e95fb3a61477dd5950e3a35dbf047540798cf5582aecc17",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "usage: run.py [-h] [--stage STAGE] --route {native,finite} [--seconds SECONDS]",
+        "              [--tasks TASKS]",
+        "              {353,354,355,356,357,358,359,360}",
+        "run.py: error: argument example: invalid choice: '361' (choose from 353, 354, 355, 356, 357, 358, 359, 360)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-21T23:42:53+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "ec4f1b474008009431b3da859a7a51a821fffe2e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ec4f1b474008009431b3da859a7a51a821fffe2e/jvmcontract",
+    "built": true
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T234200Z-255431fb4f18cdd0",
+      "outputs": "20261121T234200Z-264926ec4323c390",
+      "workdir": "20261121T234211Z-9075226292339ab5"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261121-233611-baseline-the-frozen-avro-729-cursor-and"
+}
