@@ -57,8 +57,8 @@ public final class Outside {
         }
     }
 
-    public static void trim(String s) {
-        if (s != null && s.trim().length() > s.length()) {
+    public static void strip(String s) {
+        if (s != null && s.strip().length() > s.length()) {
             throw new AssertionError();
         }
     }

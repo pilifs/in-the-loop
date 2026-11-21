@@ -470,6 +470,7 @@ pub fn get_static_jdk(m: &mut Machine, class: &str, name: &str) -> Exec<Value> {
 
 pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
     let native = match class {
+        "java/util/Properties" if m.cp.properties_method(class, class, "<init>", "()V", true).is_some() => return m.new_instance(class),
         crate::models::CONCURRENT_MAP if m.cp.concurrent_map_method("<init>", "()V").is_some() => return m.new_instance(class),
         "java/lang/StringBuilder" | "java/lang/StringBuffer" => Native::StringBuilder(JStr::new()),
         // A String the program constructs: `<init>` gives it its contents (`invoke_special_jdk`).
@@ -929,7 +930,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             let value = string_method(m, &s, name, descriptor, &args)?;
             // The JDK returns the String itself where a substring is its whole range or nothing is lowered, and
             // the literal "" for any other empty substring: `==` sees which.
-            if let (true, Value::Ref(made)) = (matches!(name, "substring" | "toLowerCase" | "concat"), value) {
+            if let (true, Value::Ref(made)) = (matches!(name, "substring" | "toLowerCase" | "concat" | "trim"), value) {
                 let content = match m.heap.get(made) {
                     Object::Native(Native::String(t)) => Some(t.units().to_vec()),
                     _ => None,
@@ -937,6 +938,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 match content {
                     Some(units) if units == s.units() => return Ok(Some(Value::Ref(r))),
                     Some(units) if units.is_empty() && name == "substring" => return Ok(Some(m.intern_units(&[]))),
+                    Some(_) if name == "trim" => { m.trimmed.insert(made); }
                     _ => {}
                 }
             }

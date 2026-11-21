@@ -6,21 +6,34 @@ use super::*;
 /// A private heap key which cannot be a JVM field name (JVMS 4.2.2).
 pub(super) const IMAGE: &str = "<JDK.HashMap>";
 const MAP: &str = "java/util/HashMap";
-const CONCURRENT_IMAGE: &str = "<JDK.ConcurrentHashMap>";
+pub(super) const CONCURRENT_IMAGE: &str = "<JDK.ConcurrentHashMap>";
+const PROPERTIES_IMAGE: &str = "<JDK.Properties>";
 
 impl Engine<'_> {
     pub(super) fn image_map_call(&mut self, path: &mut Path, o: usize, special: bool, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
         let class = &path.objects[o].class;
         let (owner, name, descriptor) = (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str());
-        if class == crate::models::CONCURRENT_MAP && !path.objects[o].assumed && !path.objects[o].given
-            && !path.objects[o].unknown && (!special || owner == class) {
-            let fresh = special && name == "<init>" && descriptor == "()V";
-            if fresh || path.objects[o].fields.contains_key(CONCURRENT_IMAGE) {
-                let (cf, method) = self.cp.concurrent_map_method(name, descriptor)?;
-                if fresh { path.objects[o].fields.insert(CONCURRENT_IMAGE.into(), Val::I(self.b.constant(1, 32))); }
-                let mut full = vec![Val::R(Some(o))];
-                full.extend_from_slice(args);
-                return Some(self.enter_method(path, owner, cf, method, full));
+        if matches!(class.as_str(), crate::models::CONCURRENT_MAP | "java/util/Properties")
+            && !path.objects[o].assumed && !path.objects[o].given && !path.objects[o].unknown {
+            let concurrent = class == crate::models::CONCURRENT_MAP;
+            let marker = if concurrent { CONCURRENT_IMAGE } else { PROPERTIES_IMAGE };
+            let fresh = special && owner == class && name == "<init>";
+            if concurrent && fresh && descriptor == "(I)V" && !matches!(args, [Val::I(n)] if self.b.constant_value(n).is_some()) {
+                // The existing capacity check handles a symbolic size without assuming the JDK fields.
+                return None;
+            }
+            if fresh || path.objects[o].fields.contains_key(marker) {
+                let selected = if concurrent {
+                    if special && owner != class { None } else { self.cp.concurrent_map_method(name, descriptor) }
+                } else {
+                    self.cp.properties_method(class, owner, name, descriptor, special)
+                };
+                if let Some((cf, method)) = selected {
+                    if fresh { path.objects[o].fields.insert(marker.into(), Val::I(self.b.constant(1, 32))); }
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend_from_slice(args);
+                    return Some(self.enter_method(path, owner, cf, method, full));
+                }
             }
         }
         let marked = path.objects[o].fields.contains_key(IMAGE);

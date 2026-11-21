@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -104,8 +105,32 @@ public final class LiveMapViews {
                 && keys != separate.keySet() && keys.isEmpty() && keys.getMappedValue() == null;
     }
 
+    static final class ThrowingHash {
+        @Override public int hashCode() { throw new IllegalStateException(); }
+    }
+
+    public static boolean initialProperties() {
+        Properties defaults = new Properties(4);
+        Properties values = new Properties(defaults);
+        values.putAll(defaults);
+        values.putAll(values);
+        if (!values.isEmpty() || defaults.size() != 0 || values.getProperty("absent") != null
+                || !"fallback".equals(values.getProperty("absent", "fallback")) || values.containsKey("absent")
+                || values.entrySet().iterator().hasNext()) return false;
+        try { new Properties(-1); return false; } catch (IllegalArgumentException expected) { }
+        try { values.getProperty(null); return false; } catch (NullPointerException expected) { }
+        try { values.get(new ThrowingHash()); return false; } catch (IllegalStateException expected) { return true; }
+    }
+
+    public static boolean losesNonEmptyProperties() {
+        Properties values = new Properties();
+        values.putAll(Collections.singletonMap("k", "value"));
+        return values.isEmpty();
+    }
+
     public static void main(String[] args) {
         if (!remove(true) || !remove(false) || !collisions() || !mixed() || !copies() || insertionOrder()
-                || !packedValue(false) || !packedValue(true) || !backedSets() || !concurrentViews()) throw new AssertionError();
+                || !packedValue(false) || !packedValue(true) || !backedSets() || !concurrentViews() || !initialProperties()
+                || losesNonEmptyProperties()) throw new AssertionError();
     }
 }

@@ -1,0 +1,36 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-155808-check-proof-reuse-after-adding-utf-16-tr",
+  "title": "Check proof reuse after adding UTF-16 trimming to the String model",
+  "description": "Run the existing integrated quote-family regression after the String model identity change. Cold and reused claims must agree and preserve the dependency keys for the checked model.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "proof-reuse"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T15:58:08+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "Verify cold and reused quote-family proofs",
+      "run": "cargo test --manifest-path lib/Cargo.toml --profile test-fast --test application_core_joint j1_the_quote_family_composes_the_four_streams -- --ignored --exact",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
