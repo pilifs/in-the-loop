@@ -1,0 +1,202 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-064106-replay-group-02-with-exact-jvm-early-fai",
+  "title": "Replay group 02 with exact JVM early failure evidence",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 38.7s, peak 146.2 MiB (estimated 5m00s, 2.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-064106-replay-group-02-with-exact-jvm-early-fai.json",
+    "sha256": "858f56959b52526d8ab787861451162d2952d933125ed5550a69df827c91eddf",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-064106-replay-group-02-with-exact-jvm-early-fai",
+      "title": "Replay group 02 with exact JVM early failure evidence",
+      "description": "Exercise the unchanged registered observations. Record independently matched returns and errors. For failures before the selected method, match the escaping object to two live debugger stacks and keep the downstream question open. Cases compsuite-i-103, compsuite-i-29, compsuite-i-36, compsuite-i-37, compsuite-i-39.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T06:41:06+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "memoryLimit": "6G",
+        "timeout": "70m"
+      },
+      "steps": [
+        {
+          "name": "Replay the reviewed observer on each original classpath",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-replay/02 --case compsuite-i-103 --case compsuite-i-29 --case compsuite-i-36 --case compsuite-i-37 --case compsuite-i-39",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/early-failure-replay/02"
+      ]
+    }
+  },
+  "sourceCommit": "b1cd677a86022e7b2a0ce0095c29dcd4bba3b024",
+  "startedAt": "2026-11-21T06:46:22+00:00",
+  "finishedAt": "2026-11-21T06:47:09+00:00",
+  "wallSeconds": 47.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 798292,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 153337856,
+    "wallSeconds": 38.7,
+    "cpuSeconds": 43.0,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay the reviewed observer on each original classpath",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-replay/02 --case compsuite-i-103 --case compsuite-i-29 --case compsuite-i-36 --case compsuite-i-37 --case compsuite-i-39",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4200.0,
+      "cancelled": false,
+      "wallSeconds": 38.676,
+      "cpuSeconds": 43.003,
+      "cpuThrottledSeconds": 4.961,
+      "peakMemoryBytes": 153337856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-the-reviewed-observer-o.log",
+        "lines": 10,
+        "bytes": 826,
+        "sha256": "a9981e205568e1a3a3e68e01732fb3f903693f28142c023c51b9c7aaa00b8dd8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "open new input 0: the original caller method was never entered. java.lang.NoClassDefFoundError: org/springframework/core/ErrorCoded at java.lang.ClassLoader.defineClass1(Native Method) caused by java.lang.ClassNotFoundException: org.springframework.core.ErrorCoded at java.net.URLClassLoader.findClas",
+        "compsuite-i-103 open",
+        "changed com.uber.profiling.Arguments#runConfigProvider()V",
+        "compsuite-i-29 changed",
+        "changed org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+        "compsuite-i-36 changed",
+        "preserved net.glxn.qrgen.javase.QRCode#file()Ljava/io/File;",
+        "compsuite-i-37 preserved",
+        "preserved com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+        "compsuite-i-39 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-103.json",
+      "change": "added",
+      "bytes": 33270,
+      "sha256": "e625bce35f3ad41b7c1bf6c729b922585aecc765a9253da3fd4993b2624fcc4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-29.json",
+      "change": "added",
+      "bytes": 44174,
+      "sha256": "609420ff116bb269c35b1aa1c081eb0a45e6bccdbe2425aa658fb0bc2cd1e073",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-36.json",
+      "change": "added",
+      "bytes": 7331,
+      "sha256": "daf9d887c920969cf90e1210e45208931acac174c489470eacb61b61769f01b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 15493,
+      "sha256": "1707ea5aac095264a1ba46f55302790d4f8ccc8ca7aef57ed3ea52288828b5f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-39.json",
+      "change": "added",
+      "bytes": 9091,
+      "sha256": "9badd10b43885b0418f16af929a9daedfa7f348ab21c07d98c630c8cacadb01a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T06:47:34+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-103.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-29.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-36.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-37.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/02/compsuite-i-39.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
