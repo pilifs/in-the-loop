@@ -12,29 +12,29 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T16:30:25.817Z",
-  "duration_seconds": 154376,
+  "ended": "2026-11-21T23:22:02.846Z",
+  "duration_seconds": 179073,
   "stats": {
-    "turns": 23,
-    "api_calls": 7371,
-    "tool_calls": 18426,
-    "tool_errors": 550,
-    "compactions": 23,
+    "turns": 25,
+    "api_calls": 7424,
+    "tool_calls": 18579,
+    "tool_errors": 552,
+    "compactions": 25,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 12673335,
-      "output_tokens": 3913313,
-      "cache_read_input_tokens": 2252824704,
+      "input_tokens": 12880184,
+      "output_tokens": 3943970,
+      "cache_read_input_tokens": 2268260096,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 10536,
-    "exec": 6841,
+    "Bash": 10640,
+    "exec": 6882,
     "apply_patch": 699,
     "send_message": 148,
+    "wait": 83,
     "sleep": 82,
-    "wait": 75,
     "wait_agent": 14,
     "send_message_to_user_async": 10,
     "followup_task": 8,
@@ -679,24 +679,52 @@
     {
       "index": 23,
       "started": "2026-11-21T14:25:42.920Z",
-      "ended": "2026-11-21T16:30:25.817Z",
+      "ended": "2026-11-21T16:38:42.544Z",
       "turns": 2,
-      "api_calls": 357,
+      "api_calls": 382,
       "usage": {
-        "input_tokens": 1099979,
-        "output_tokens": 221211,
-        "cache_read_input_tokens": 127834240,
+        "input_tokens": 1115267,
+        "output_tokens": 235160,
+        "cache_read_input_tokens": 141414656,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 536922
+      "peak_context_tokens": 550543
+    },
+    {
+      "index": 24,
+      "started": "2026-11-21T16:38:42.555Z",
+      "ended": "2026-11-21T16:41:22.996Z",
+      "turns": 0,
+      "api_calls": 8,
+      "usage": {
+        "input_tokens": 24504,
+        "output_tokens": 4311,
+        "cache_read_input_tokens": 236800,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 37431
+    },
+    {
+      "index": 25,
+      "started": "2026-11-21T16:41:23.003Z",
+      "ended": "2026-11-21T23:22:02.846Z",
+      "turns": 2,
+      "api_calls": 20,
+      "usage": {
+        "input_tokens": 167057,
+        "output_tokens": 12397,
+        "cache_read_input_tokens": 1618176,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 136333
     }
   ],
   "log": {
-    "sha256": "7b59aad03b126881b01cc4678f352abb20554321dbadcc64585e552a0ada97ce",
-    "bytes": 168041527,
-    "lines": 58138,
-    "gzip_bytes": 67058470,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/7b59aad03b126881b01cc4678f352abb20554321dbadcc64585e552a0ada97ce.jsonl.gz"
+    "sha256": "299ccb5dc0ca588df276253368b29b2afcf9d1922d6670fd5bc94e7699006b7c",
+    "bytes": 170299437,
+    "lines": 58595,
+    "gzip_bytes": 67887008,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/299ccb5dc0ca588df276253368b29b2afcf9d1922d6670fd5bc94e7699006b7c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3190,43 +3218,51 @@
     },
     {
       "change_id": "nmyusuwoxrvqlopkoqnzykvlsyqtmosw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "525ea6593eacbf51d380c2905d337c14cd71f940",
+      "immutable": true,
       "summary": "Execute JDK map-backed sets and fresh concurrent key views (verification pending)",
       "body": "The verifier and interpreter execute Collections.newSetFromMap on the selected JDK. Its backing map controls mutation, validation and iteration. A freshly constructed exact ConcurrentHashMap runs the JDK count and key-view methods with its own fields and cached view identity. Explicitly modeled or uninitialized maps cannot borrow that representation.\n\nThe physical JVM, interpreter and strict checker passed the shared-map mutation, nonempty and null rejection, and concurrent view identity controls on Temurin 21.0.13 and 25.0.5. The changed selection passed all 58 Rust test binaries. The original bounded Avro factory progressed through its map-backed set to Hadoop Configuration.REGISTRY with the previous three-root startup digest. Job 20261121-145625-follow-the-original-avro-factory-through repeats the claim on the original 124-entry closure.",
       "log_sha256": "c3e3835dfbe60c51e4e173afe6615ac0c745b83e85037907f016dbe402c4854e"
     },
     {
       "change_id": "rnwoytzkzkwytqstmtqtmkzymrnmrnpl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6eb868c487a2a5f491ee1c82c7d9b07d8c98e7c4",
+      "immutable": true,
       "summary": "Verify null-valued weak registries across JVM startup (verification pending)",
       "body": "An opt-in joint snapshot retains the identity of exact WeakHashMaps whose current values are all null. Collection can remove keys while preserving that invariant. On qualified JDK images the checker can read or register a null value with a key that inherits Object.equals and hashCode. It still refuses membership, iteration, callbacks and a non-null write. Earlier startup digests remain reproducible. The campaign recount now discovers each recorded native stage.\n\nPhysical and native controls on Temurin 21 and 25 checked shared aliases, a nonempty registry, repeated registration, a deliberately false result and unsupported operations. All 46 changed test groups passed, the cost inventory lint passed and example 355 replayed both revisions on all 21 inputs. The original factory progressed through Configuration.REGISTRY to Credentials startup. Explicitly initializing Credentials as a fourth root reached Configuration.deprecationContext in the actual property lookup. Job 20261121-151148-verify-the-real-avro-factory-with-its-ob repeats both newly registered scopes.",
       "log_sha256": "21018089ba52014bbc2d819c1675f899c2f7c3c118f209bf0f8988adc162f910"
     },
     {
       "change_id": "uxpllquntupsmrxvlplprytzmmotttsm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "48c0842b87a8b336d6bad5752947043992d00117",
+      "immutable": true,
       "summary": "Bind selected startup receivers and their configuration lookup tables (verification pending)",
       "body": "A joint JVM observation can bind explicitly named application objects, their complete inherited field layouts, references back to themselves, and their aliases. An exact atomic reference retains its shared cell. An exact HashMap captures all String and null keys for read-only lookups, including a present key with a null or opaque value. An unsupported mutation or inspection stops the proof. The previous side of a pair retains its own relocated object and field types.\n\nPhysical JVM and native controls on Temurin 21 and 25 covered cycles, field hiding, mutation through receiver aliases, atomic cell updates, colliding strings, an isolated surrogate and present-null versus absent entries. All 34 selected test groups passed and the Avro example validated with a fresh two-revision replay. Both original Avro closures independently produced the same 220-class, 1079-object state. The factory passed the deprecation context cell and reached String.trim. Job 20261121-153140-check-avro-factory-lookups-using-the-cap repeats both frozen factory claims.",
       "log_sha256": "8056c7bc608ebed2e72d126ea28618e284d1b03ad3dda40d79c1a7a198a7c52e"
     },
     {
       "change_id": "snonotymzrsrttuquntzlktxuynumxot",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "66bb7a4a37baa918273e3d0cee490b801d7958c7",
+      "immutable": true,
       "summary": "Verify the original Hadoop properties path and Avro factory (verification pending)",
       "body": "The native checker trims bounded UTF-16 strings at code units up to U+0020 and preserves the unchanged receiver. It refuses an identity comparison for equal changed text when the JVM can choose the returned object. The values-conformance inventory and String model identity cover the new operation. Exact fresh Properties objects run the selected JDK constructors, defaults, key lookups, entry iteration and bulk copy. On qualified Temurin builds a single-thread constructor fence, a compare-and-set on the map's own sizeCtl and an in-bounds read of the typed node array preserve the actual JDK allocation and iteration.\n\nThe fixed public Avro factory proved the bounds contract on all 21 admitted inputs after the registered startup. The native parent check found code=1 on the original artifact. JVM, interpreter and native controls checked trimming, source identity, default properties, key exceptions, empty and self copies, and rejection of a lost nonempty input. Both Temurin 21 and 25 passed the focused tests. All 18 values-conformance tests, all 308 library tests, the cost inventory, job validation and all seven changed-test groups passed after updating the string operation count.\n\nJob 20261121-155347-prove-the-original-avro-factory-and-repl checks all eight factory and both nested converter obligations and independently replays the three parent violations at their original ambient entries. Jobs 20261121-155347-repeat-organic-java-example-353-on-the-f through 20261121-155348-repeat-organic-java-example-360-on-the-f recheck all eight upstream pairs on one verifier, including the finite domains, Lang and Eclipse native selectors and JavaParser startup scopes. Job 20261121-155808-check-proof-reuse-after-adding-utf-16-tr runs the integrated proof-cache regression.",
       "log_sha256": "c29e0e0a97c0e4ef5590a5193afdbaf9f793a9e2fbe246f052f2854a135ee41e"
     },
     {
       "change_id": "yqkptkvsvvsvyrmvrotqovxvtlxtnnvo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a6e224e91fea0539a764e6e3e331aa5d0a75accd",
+      "immutable": true,
       "summary": "Record the public Avro factory proofs and the common eight-PR confirmation",
       "body": "The original JobConf(false) factory now has native decisions for all eight obligations under its registered four-root JVM startup. Six properties held and both expected parent violations were found. At capacity one and logical length zero the parent exposed its byte. Independent original JVMs reproduced the bounds and rejected-index witnesses without early initialization. The nested converter and its original parent witness also repeated. The factory proof and its two ambient replays took 100.0 seconds at 1380.1 MiB peak.\n\nAll eight upstream pairs repeated their native and finite checks on verifier 35ba19a31d97. The six primary PRs advanced from 17/46 at baseline and 37/46 in the preceding campaign to 39/46 original-scope native decisions, with 26 establishments and all 13 refutations. Seven Avro universal results retain startup conditions. All 46 primary finite obligations and all 16 transfer finite obligations qualified. The Commons Lang 1515-window and Eclipse Collections 2865-input selector proofs are available through their collector archives. The ambient startup refusals and single-query time limits remain visible.\n\nChecked the 13 collected jobs and all 10599 output hashes against their committed sources. Recounted the original JVM streams on both revisions of all eight PRs, all ten conditional Avro receipts, the original classpaths and the three fresh ambient witnesses. The proof-cache job passed. All eight examples validated, the normal handoffs found both archived selector batches, all 37 documentation links resolved, and the changed test selection passed all 42 groups. The result index covers all 986 collected jobs.",
       "log_sha256": "7b59aad03b126881b01cc4678f352abb20554321dbadcc64585e552a0ada97ce"
+    },
+    {
+      "change_id": "uptrkmuwxsqstrtoxzvznowpvxwrkoos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze the domain foundations baseline (verification pending)",
+      "body": "Bound the historical campaign to its original classpaths, JVM counterexample replays and raw job receipts. Preserve the six-PR and transfer populations, and preselect receiver examples from different libraries before changing the verifier. The archived scorecard recount passed at 39/46 original native outcomes, all five ambient replay digests matched, both changed test groups passed and the job schema validated.\n\nJobs 20261121-232059-domain-foundations-355-ordinary-and-obse and 20261121-232059-domain-foundations-360-ordinary-and-obse repeat strict startup checks on the post-architecture head. Jobs 20261121-232059-domain-foundations-354-larger-unsplit-di and 20261121-232059-domain-foundations-359-larger-unsplit-di measure one 180-second unsplit query per historical timeout at unchanged bounds.",
+      "log_sha256": "299ccb5dc0ca588df276253368b29b2afcf9d1922d6670fd5bc94e7699006b7c"
     }
   ],
   "logs": {
@@ -3427,6 +3463,12 @@
       "lines": 4817,
       "gzip_bytes": 5731519,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/27f3e2c8cff696523eea71114d5387429ade654e0a7dd67468c3d9a7511c2622.jsonl.gz"
+    },
+    "299ccb5dc0ca588df276253368b29b2afcf9d1922d6670fd5bc94e7699006b7c": {
+      "bytes": 170299437,
+      "lines": 58595,
+      "gzip_bytes": 67887008,
+      "url": null
     },
     "2b74ccd0896e706b0e6b806c635e8b18ecd249faa4c2dda036303e65618d8586": {
       "bytes": 93799135,
@@ -4198,5 +4240,6 @@
     }
   },
   "redaction_policy": 5,
-  "generator": "llm-dlc/tools/sync.py"
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
 }

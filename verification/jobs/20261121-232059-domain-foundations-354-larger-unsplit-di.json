@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-232059-domain-foundations-354-larger-unsplit-di",
+  "title": "Domain foundations 354 larger unsplit diagnostic",
+  "description": "Measure one unsplit strict native query with 180 seconds on the same guard, JDK, default solver and bounds. The exact per-input proof already covers the full domain. This measures performance only.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "354"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T23:20:59+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "revision": "3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d",
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check foundation-180s",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 354 --route native --stage foundation-180s --tasks truncate-fix --seconds 180",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/354-commons-lang-surrogate-cuts/records/foundation-180s-native"
+  ]
+}
