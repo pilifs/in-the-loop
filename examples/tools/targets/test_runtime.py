@@ -223,19 +223,30 @@ class JarTest(unittest.TestCase):
     def test_effective_jar_uses_the_highest_eligible_release_and_the_main_manifest(self):
         from io import BytesIO
         import zipfile
-        contents = BytesIO()
-        with zipfile.ZipFile(contents, "w") as jar:
-            for path in ("lib/X.class", "META-INF/versions/8/lib/X.class", "META-INF/versions/017/lib/X.class",
-                         "META-INF/versions/17/lib/X.class", "META-INF/versions/23/lib/X.class",
-                         "META-INF/versions/17/lib/OnlyHere.class", "META-INF/versions/17/META-INF/services/X"):
-                jar.writestr(path, path)
-            jar.writestr("META-INF/MANIFEST.MF", b"Manifest-Version: 1.0\r\nMulti-Release: tr\r\n ue\r\n\r\n")
-        with zipfile.ZipFile(contents) as jar:
+
+        def jar_of(manifest):
+            contents = BytesIO()
+            with zipfile.ZipFile(contents, "w") as jar:
+                for path in ("lib/X.class", "META-INF/versions/8/lib/X.class", "META-INF/versions/017/lib/X.class",
+                             "META-INF/versions/17/lib/X.class", "META-INF/versions/23/lib/X.class",
+                             "META-INF/versions/17/lib/OnlyHere.class", "META-INF/versions/17/META-INF/services/X"):
+                    jar.writestr(path, path)
+                jar.writestr("META-INF/MANIFEST.MF", manifest)
+            return zipfile.ZipFile(contents)
+
+        with jar_of(b"Manifest-Version: 1.0\r\nMulti-Release: true\r\n\r\n") as jar:
             for feature, expected in ((8, "lib/X.class"), (11, "lib/X.class"), (21, "META-INF/versions/17/lib/X.class"),
                                       (25, "META-INF/versions/23/lib/X.class")):
                 self.assertEqual(runtime_jar.effective_entries(jar, feature)["lib/X.class"].filename, expected)
             self.assertIn("lib/OnlyHere.class", runtime_jar.effective_entries(jar, 17))
             self.assertNotIn("META-INF/services/X", runtime_jar.effective_entries(jar, 17))
+        # The same JAR with the value folded over two lines: JDK 17, 21 and 25 load its base entries (the design
+        # review's probe, measured again in llm-dlc/loops/lib-architecture-fast-follow-results.md), where this
+        # reader took the versioned ones, joining the lines first. It is listed as those runtimes read it, and a
+        # class of it a proof is about is bound by what a JVM loads, not by this listing (class_binding.py).
+        with jar_of(b"Manifest-Version: 1.0\r\nMulti-Release: tr\r\n ue\r\n\r\n") as jar:
+            for feature in (8, 21, 25):
+                self.assertEqual(runtime_jar.effective_entries(jar, feature)["lib/X.class"].filename, "lib/X.class")
         second = BytesIO()
         with zipfile.ZipFile(second, "w") as jar:
             jar.writestr("lib/X.class", b"base")
@@ -243,6 +254,30 @@ class JarTest(unittest.TestCase):
             jar.writestr("META-INF/MANIFEST.MF", "Manifest-Version: 1.0\n\nName: lib/X.class\nMulti-Release: true\n")
         with zipfile.ZipFile(second) as jar:
             self.assertEqual(jar.read(runtime_jar.effective_entries(jar, 21)["lib/X.class"]), b"base")
+
+    def test_the_manifest_rule_reads_each_spelling_as_the_jvms_measured_do(self):
+        # The fifteen spellings of lib/tests/class_bindings.rs, with the same readings: the checker's rule and this
+        # one are held to one table, and that table to a JVM there.
+        head = b"Manifest-Version: 1.0\r\n"
+        spellings = (
+            (head + b"Multi-Release: true\r\n\r\n", "enabled"),
+            (head + b"Multi-Release: tr\r\n ue\r\n\r\n", "ambiguous"),
+            (head + b"Multi-Release: tr\r\n ue\r\n\r\nName: fixture/Gate.class\r\nMulti-Release: true\r\n\r\n", "enabled"),
+            (head + b"\r\nName: fixture/Gate.class\r\nMulti-Release: true\r\n\r\n", "disabled"),
+            (head + b"multi-release: TRUE\r\n\r\n", "enabled"),
+            (head + b"Multi-Release: true \r\n\r\n", "disabled"),
+            (head + b"Multi-Release:  true\r\n\r\n", "disabled"),
+            (head + b"Multi-Release: true\r\nMulti-Release: false\r\n\r\n", "disabled"),
+            (head + b"Multi-Release: false\r\nMulti-Release: true\r\n\r\n", "enabled"),
+            (b"Manifest-Version: 1.0\nMulti-Release: true\n\n", "enabled"),
+            (head + b"Multi-Rel\r\n ease: true\r\n\r\n", "ambiguous"),
+            (head + b"Multi-Release: true\r\n", "enabled"),
+            (head + b"Multi-Release: true", "disabled"),
+            (head + b"Multi-Release: yes\r\n\r\n", "disabled"),
+            (head + b"\r\n", "disabled"),
+        )
+        for manifest, expected in spellings:
+            self.assertEqual(runtime_jar.multi_release(manifest), expected, manifest)
 
     def test_modified_utf8_keeps_java_names_and_literal_code_units(self):
         read = runtime_jar.modified_utf8
@@ -1193,6 +1228,29 @@ here = Path(__file__).resolve().parent
 with open(here / "calls.jsonl", "a") as f:
     f.write(json.dumps({{"argv": sys.argv[1:], "cwd": os.getcwd(), "env": dict(os.environ)}}) + "\\n")
 answer = json.loads((here / "mode.json").read_text()).get(sys.argv[1], {{}})
+if sys.argv[1] == "class-bindings" and not answer:
+    # What the real command answers for a JAR with one class file a class and no versioned entry (the fixtures'):
+    # the first entry of the class path that holds the class, its base entry and digest. Nothing else is stood in for.
+    import hashlib, zipfile
+    sides = {{}}
+    for name, side in json.load(sys.stdin)["sides"].items():
+        bindings = []
+        for asked in side.get("classes", []):
+            entry = asked["class"].replace(".", "/") + ".class"
+            for index, path in enumerate(side["classpath"]):
+                with zipfile.ZipFile(path) as z:
+                    if entry in z.namelist():
+                        bindings.append({{"class": asked["class"], "index": index, "provider": path, "entry": entry,
+                                         "sha256": hashlib.sha256(z.read(entry)).hexdigest(), "selected_by": "rule"}})
+                        break
+            else:
+                bindings.append({{"class": asked["class"], "refused": {{"code": "missing-class", "reason": "no entry holds it"}}}})
+        entries = {{}}
+        for index in side.get("listEntries", []):
+            with zipfile.ZipFile(side["classpath"][index]) as z:
+                entries[str(index)] = {{"manifest": "disabled", "entries": {{n: n for n in z.namelist() if not n.endswith("/")}}}}
+        sides[name] = {{"bindings": bindings, "entries": entries}}
+    answer = {{"stdout": json.dumps({{"schema": "jvmcontract-class-bindings/v1", "bound_release": None, "sides": sides}})}}
 sys.stdout.write(answer.get("stdout", ""))
 sys.stderr.write(answer.get("stderr", ""))
 sys.stdout.flush()
@@ -1312,7 +1370,13 @@ class VerifierTest(FixtureCopy):
         self.assertEqual(argv[-1], "--json")
         self.assertFalse([a for a in argv if "adapter" in a or "driver" in a], "the adapter or driver reached the verifier")
         self.assertNotIn("--classpath", argv, "the fixture has no dependencies")
-        [probe, prove] = self.calls()
+        # One process more than the proof and its probe, whatever the number of classes or sides: the checker says
+        # which class file it binds for the entry, under the launch's own environment, before anything is proved.
+        [bindings, probe, prove] = self.calls()
+        self.assertEqual(bindings["argv"], ["class-bindings"])
+        self.assertEqual({k: bindings["env"].get(k) for k in ("JAVA_HOME", "JVMCONTRACT_JAR_RELEASE")},
+                         {k: prove["env"].get(k) for k in ("JAVA_HOME", "JVMCONTRACT_JAR_RELEASE")})
+        self.assertEqual(Path(bindings["cwd"]), self.attempt.resolve())
         self.assertEqual(probe["argv"][:2], ["gaps", "--target"])
         self.assertEqual(prove["argv"], argv[1:])
         self.assertEqual(Path(prove["cwd"]), self.attempt.resolve(), "paths are relative to the attempt directory")
@@ -1410,7 +1474,7 @@ class VerifierTest(FixtureCopy):
         failed = dataclasses.replace(prepared["after"], stage="failed", failedStage="build", diagnostic="no")
         record = runtime.run_verifier(verifier_plan(self.folder), {"after": failed}, self.attempt / "verifier")
         self.assertEqual(record.status, "not-started")
-        self.assertEqual([c["argv"][0] for c in self.calls()], ["gaps", "prove"], "only the first, sound run started")
+        self.assertEqual([c["argv"][0] for c in self.calls()], ["class-bindings", "gaps", "prove"], "only the first, sound run started")
 
     def test_a_kill_a_timeout_and_output_that_is_not_the_outcome_give_no_observations(self):
         plan = verifier_plan(self.folder)

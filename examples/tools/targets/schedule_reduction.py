@@ -11,7 +11,8 @@ import resource
 import tempfile
 import time
 
-from targets import array_induction, interfaces, route, runtime, runtime_jar, runtime_jdk, sidecar, workflow
+import jvm_disassembly
+from targets import interfaces, route, runtime, runtime_jar, runtime_jdk, sidecar, workflow
 
 
 def replace_at(values, index, value):
@@ -217,7 +218,7 @@ def checked_code(jar, home, work, workers):
             raise ValueError("unrepresented seat class or initializer")
         file = work / (name.split("/")[-1] + ".class")
         file.write_bytes(data)
-        classes[name] = (*array_induction.methods(home / "bin/javap", file), runtime.sha256(file))
+        classes[name] = (*jvm_disassembly.methods(home / "bin/javap", file), runtime.sha256(file))
 
     def verify(name, method, desc, opcodes, members, flags=()):
         entry = classes[name][0][method, desc]

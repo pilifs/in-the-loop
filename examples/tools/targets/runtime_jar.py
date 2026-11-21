@@ -43,16 +43,33 @@ def read_class(jar, name):
             return None
 
 
+def multi_release(manifest):
+    """How a manifest's bytes enable multi-release lookup: "enabled", "disabled" or "ambiguous". The rule is the
+    checker's (lib/src/classpath.rs, `multi_release`), held to the same fifteen spellings measured on JDK 17, 21 and
+    25: enabled when the bytes hold `Multi-Release: true` literally (either case, one space) and the main section's
+    attribute, with continuation lines joined and the last value taken, is `true` on a line that is ended. Ambiguous
+    when the joined attribute reads true and the literal is absent (a value folded over two lines): the runtimes
+    measured load the base entries of such a JAR, and a reader that joins lines first the versioned ones."""
+    literal = b"multi-release: true" in manifest.lower()
+    text = manifest.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    main, blank, _ = text.partition(b"\n\n")
+    if not blank:  # no empty line ends the main section: a last line without a line break is not read
+        main = main.rpartition(b"\n")[0]
+    pairs = [(k.lower(), v) for line in main.replace(b"\n ", b"").splitlines() for k, sep, v in [line.partition(b": ")] if sep]
+    values = [v for k, v in pairs if k == b"multi-release"]
+    if not values or values[-1].lower() != b"true":
+        return "disabled"
+    return "enabled" if literal else "ambiguous"
+
+
 def effective_entries(archive, feature):
-    """The logical entries a JVM of the specified feature sees in its original JAR."""
+    """The logical entries a JVM of the specified feature sees in its original JAR: an inventory view, for the tools
+    that list a whole JAR. Which class file stands for a class a proof is about is not decided here but bound
+    (class_binding.py): by the checker's resolver and by what a JVM was seen to load. A JAR whose manifest readers
+    differ on is listed as the runtimes measured read it, by its base entries."""
     entries = {item.filename: item for item in archive.infolist() if not item.is_dir()}
     manifest = entries.get("META-INF/MANIFEST.MF")
-    if not manifest:
-        return entries
-    text = archive.read(manifest).replace(b"\r\n", b"\n").replace(b"\r", b"\n")
-    main = text.partition(b"\n\n")[0].replace(b"\n ", b"")
-    attributes = dict((k.lower(), v) for line in main.splitlines() for k, sep, v in [line.partition(b": ")] if sep)
-    if attributes.get(b"multi-release", b"").lower() != b"true":
+    if not manifest or multi_release(archive.read(manifest)) != "enabled":
         return entries
     ranks = {}
     for name, item in list(entries.items()):

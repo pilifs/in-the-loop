@@ -1,9 +1,20 @@
-"""Decode jvmcontract proof JSON. Legacy untagged output is version zero; an unknown wire version is refused."""
+"""What the example tools make of jvmcontract's proof JSON: labels, result records, counterexamples.
+
+Decoding the bytes and judging how the process ended are the shared reader's, lib/python/jvmcontract_io.py (the
+proof output contract, lib/src/proof_wire.rs): `decode`, `supported_version` and `is_outcome` here are its, under
+the names this module has always had. Legacy untagged output is version zero; an unknown wire version is refused."""
 
 import hashlib
 import json
 from pathlib import Path
 import re
+import sys
+
+_LIB_PYTHON = str(Path(__file__).resolve().parents[2] / "lib/python")
+if _LIB_PYTHON not in sys.path:
+    sys.path.insert(0, _LIB_PYTHON)
+import jvmcontract_io as wire  # noqa: E402
+from jvmcontract_io import is_outcome, supported_version  # noqa: E402,F401  (this module's long-standing names)
 
 
 VERDICT_LABEL = {
@@ -85,29 +96,11 @@ def without_root(value, root):
     return value
 
 
-def supported_version(value):
-    return isinstance(value, dict) and type(value.get("wire_version", 0)) is int and value.get("wire_version", 0) in (0, 1)
-
-
-def is_outcome(value):
-    return supported_version(value) and isinstance(value.get("output"), str)
-
-
 def decode(stdout, command):
-    """Return the ordered raw outcomes of one process without deriving claim eligibility."""
-    try:
-        value = json.loads(stdout)
-    except ValueError as error:
-        return None, f"the verifier's standard output is not JSON: {error}"
-    outcomes = value if command == "prove" else [value]
-    if not isinstance(outcomes, list) or not outcomes:
-        return None, f"the verifier's standard output is not {command}'s --json outcome"
-    for outcome in outcomes:
-        if isinstance(outcome, dict) and not supported_version(outcome):
-            return None, f"unsupported checker wire version {outcome['wire_version']!r}"
-        if not is_outcome(outcome):
-            return None, f"the verifier's standard output is not {command}'s --json outcome"
-    return tuple(outcomes), None
+    """(the ordered raw outcomes of one process, None), or (None, why there are none): the shared reader's decode,
+    as the pair this module's callers take."""
+    decoded = wire.decode(stdout, command)
+    return (decoded.outcomes, None) if decoded.ok else (None, decoded.reason)
 
 
 def json_outcome(proc, root):

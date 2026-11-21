@@ -29,10 +29,37 @@ class ClassifyTest(unittest.TestCase):
     case_x = {"id": "y", "expected": "violation"}
 
     def test_a_verdict_is_held_to_the_expected_answer(self):
+        # The tool ends a refutation with exit 1 (lib/src/proof_wire.rs): a valid one is scored at that exit.
         self.assertEqual(run.classify(self.case_v, {"verdict": "verified"}, measured())["class"], "correct")
-        self.assertEqual(run.classify(self.case_x, {"verdict": "violation"}, measured())["class"], "correct")
+        self.assertEqual(run.classify(self.case_x, {"verdict": "violation"}, measured(exit=1))["class"], "correct")
         self.assertEqual(run.classify(self.case_x, {"verdict": "verified"}, measured())["class"], "false-success")
-        self.assertEqual(run.classify(self.case_v, {"verdict": "violation"}, measured())["class"], "false-alarm")
+        self.assertEqual(run.classify(self.case_v, {"verdict": "violation"}, measured(exit=1))["class"], "false-alarm")
+
+    def test_a_payload_beside_a_wrong_exit_an_unknown_version_or_a_mistyped_field_is_no_answer(self):
+        cases = [
+            ({"verdict": "verified"}, measured(exit=2), "tool failure"),
+            ({"verdict": "verified"}, measured(exit=1), "contradictory exit"),
+            ({"verdict": "violation"}, measured(exit=0), "contradictory exit"),
+            ({"verdict": "verified", "wire_version": 999}, measured(), "unsupported wire version"),
+            ({"verdict": "verified", "stated": {"bounds": {"complete": "false"}}}, measured(), "malformed outcome"),
+            ({"verdict": "verified"}, measured(exit=-9, killed=True), "out of time"),
+            (None, measured(stdout=json.dumps([{"wire_version": 999, "verdict": "verified", "output": ""}])), "unsupported wire version"),
+            (None, measured(stdout=json.dumps([{"verdict": "verified", "output": ""}] * 2)), "not one outcome"),
+        ]
+        for data, m, reason in cases:
+            for case in (self.case_v, self.case_x):
+                record = run.classify({**case, "kind": "property"}, data, m)
+                self.assertEqual((record["class"], record["reason"], record["verdict"]), ("unsupported", reason, "none"), (data, m["exit"]))
+        printed = run.classify(self.case_v, {"verdict": "verified"}, measured(exit=2))["printed"]
+        self.assertEqual(printed, {"verdict": "verified", "wireVersion": 0})
+
+    def test_the_one_outcome_of_a_case_is_decoded_by_the_shared_reader(self):
+        row = {"wire_version": 1, "verdict": "verified", "output": ""}
+        self.assertEqual(run.outcome_of({"kind": "property"}, json.dumps([row])), row)
+        self.assertEqual(run.outcome_of({"kind": "regression"}, json.dumps(row)), row)
+        self.assertEqual(run.outcome_of({"kind": "property"}, json.dumps([{"verdict": "verified", "output": ""}])), {"verdict": "verified", "output": ""})
+        for raw in ("", "panicked", "[]", json.dumps([row, row]), json.dumps(row), json.dumps([{**row, "wire_version": 2}])):
+            self.assertIsNone(run.outcome_of({"kind": "property"}, raw), raw)
 
     def test_a_verified_that_assumed_a_gap_says_so_whichever_way_it_falls(self):
         data = {"verdict": "verified", "search": {"gaps": [{"id": "jdk-constructor:A", "treatment": "assumed"}, {"id": "B", "treatment": "contract"}]}}
@@ -42,13 +69,13 @@ class ClassifyTest(unittest.TestCase):
 
     def test_no_verdict_is_unsupported_with_the_reason(self):
         cases = [
-            ({"verdict": "unverifiable", "advice": {"gaps": []}}, measured(), "needs contracts"),
-            ({"verdict": "unverifiable", "problem": "the solver did not finish within the time limit"}, measured(), "out of time"),
-            ({"verdict": "unverifiable", "search": {"runs": [{"ending": "timeout"}]}}, measured(), "out of time"),
-            ({"verdict": "unverifiable", "search": {"runs": [{"ending": "memory-exhausted"}]}}, measured(), "out of memory"),
-            ({"verdict": "unverifiable", "search": {"gaps": [{"id": "g", "treatment": "refused"}]}}, measured(), "gap"),
-            ({"verdict": "unverifiable", "problem": "the engines disagree"}, measured(), "engines disagree"),
-            ({"verdict": "unverifiable", "problem": "invokedynamic is outside the fragment"}, measured(), "refused"),
+            ({"verdict": "unverifiable", "advice": {"gaps": []}}, measured(exit=1), "needs contracts"),
+            ({"verdict": "unverifiable", "problem": "the solver did not finish within the time limit"}, measured(exit=1), "out of time"),
+            ({"verdict": "unverifiable", "search": {"runs": [{"ending": "timeout"}]}}, measured(exit=1), "out of time"),
+            ({"verdict": "unverifiable", "search": {"runs": [{"ending": "memory-exhausted"}]}}, measured(exit=1), "out of memory"),
+            ({"verdict": "unverifiable", "search": {"gaps": [{"id": "g", "treatment": "refused"}]}}, measured(exit=1), "gap"),
+            ({"verdict": "unverifiable", "problem": "the engines disagree"}, measured(exit=1), "engines disagree"),
+            ({"verdict": "unverifiable", "problem": "invokedynamic is outside the fragment"}, measured(exit=1), "refused"),
             (None, measured(killed=True), "out of time"),
             (None, measured(stderr="panicked"), "no output"),
         ]
@@ -272,11 +299,11 @@ class StagingTest(unittest.TestCase):
         self.assertIsNone(run.witness_size(None))
         data = {"verdict": "violation", "search": {"staging": "staged"},
                 "counterexample": {"inputs": [{"value": [99]}], "found_inputs": [{"value": [1000000, 7, 7]}], "shrink_runs": 12}}
-        record = run.record_of({"id": "y", "expected": "violation"}, "jbmc", "strict", "staged", data, measured(), Path("/w"))
+        record = run.record_of({"id": "y", "expected": "violation"}, "jbmc", "strict", "staged", data, measured(exit=1), Path("/w"))
         self.assertEqual((record["staging"], record["witness"], record["witnessSize"], record["foundSize"], record["shrinkRuns"]),
                          ("staged", "[99]", {"elements": 1, "largest": 99}, {"elements": 3, "largest": 1000000}, 12))
         native = run.record_of({"id": "y", "expected": "violation"}, "native", "strict", None,
-                               {"verdict": "violation", "counterexample": {"inputs": [{"value": 1}]}}, measured(), Path("/w"))
+                               {"verdict": "violation", "counterexample": {"inputs": [{"value": 1}]}}, measured(exit=1), Path("/w"))
         self.assertNotIn("staging", native)
         self.assertNotIn("foundSize", native, "a witness that was not shrunk has no found size")
 

@@ -59,7 +59,7 @@ class ProofRecipe:
                 if adapter is None or not prepared.source["target"].get("adapterCallsTarget"):
                     raise runtime.Refused("claim", "the prepared adapter has no reference to the declared upstream method")
                 owner, method, desc = runtime_jar.parse_target(self.entry)
-                data = runtime_jar.read_class(sides[revision][0] / adapter.path, runtime_jar.internal(owner))
+                data = runtime.bound_class(sides[revision][0], prepared, adapter.path, owner)
                 if not data or (method, desc) not in runtime_jar.methods(data):
                     raise runtime.Refused("claim", "the prepared adapter has no declared checked entry")
                 digest = hashlib.sha256(data).hexdigest()

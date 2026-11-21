@@ -400,6 +400,17 @@ enum Command {
         #[arg(long)]
         rank: Option<u32>,
     },
+    /// Say which exact class file the checker inspects for each class asked about, on an ordered class path and
+    /// the bound runtime (JAVA_HOME, JVMCONTRACT_JAR_RELEASE, JVMCONTRACT_CLASS_OBSERVATIONS): the provider, the
+    /// JAR entry and its SHA-256, or a typed refusal with both digests where two readers would differ; whether it
+    /// declares a method asked about; and which entry stands for each logical name of a JAR. One process answers
+    /// for every side and class of a request (`lib/src/class_bindings.rs` has its JSON). Prints JSON; exits 0
+    /// whether or not a class is refused, and 2 when the request cannot be read.
+    ClassBindings {
+        /// The request file, or `-` for standard input.
+        #[arg(long, default_value = "-")]
+        request: String,
+    },
     /// Print the structure of a class file: constant pool size, members, attributes and bytecode.
     Inspect {
         class_file: PathBuf,
@@ -880,18 +891,6 @@ struct ProveArgs {
     details: bool,
 }
 
-/// The proof wire format is independent of the CLI's human-readable output.
-#[derive(serde::Serialize)]
-struct WireOutcome<'a, T> {
-    wire_version: u8,
-    #[serde(flatten)]
-    outcome: &'a T,
-}
-
-fn wire_outcome<T>(outcome: &T) -> WireOutcome<'_, T> {
-    WireOutcome { wire_version: 1, outcome }
-}
-
 fn main() -> ExitCode {
     match run(Cli::parse()) {
         Ok(code) => ExitCode::from(code as u8),
@@ -991,14 +990,14 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.cache = args.cache;
             let outcome = equivalence::run(&options)?;
             if args.json {
-                println!("{}", serde_json::to_string_pretty(&wire_outcome(&outcome)).expect("serializable"));
+                println!("{}", jvmcontract::proof_wire::equivalence_json(&outcome));
             } else {
                 print!("{}", outcome.output);
                 if args.details {
                     print!("{}", jvmcontract::details::render(outcome.stated.as_ref(), outcome.search.as_ref()));
                 }
             }
-            Ok(outcome.verdict.exit_code())
+            Ok(jvmcontract::proof_wire::exit_code([outcome.verdict]))
         }
         Command::Prove(args) => {
             let declarations = match (&args.properties, &args.target) {
@@ -1015,7 +1014,6 @@ fn run(cli: Cli) -> Result<i32, Error> {
             };
             let mut outcomes = Vec::new();
             let mut findings = Vec::new();
-            let mut exit = 0;
             for (i, declaration) in declarations.iter().enumerate() {
                 let mut options = property::Options::new(&args.classes.classes, &declaration.target);
                 options.classpath = args.classes.classpath_entries();
@@ -1056,7 +1054,6 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.requested_models = args.model.clone();
                 options.stand_ins = args.stand_in.clone();
                 let outcome = property::run(&options)?;
-                exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {
                     print!("{}", outcome.output);
                     if args.details {
@@ -1072,9 +1069,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 }
             }
             if args.json {
-                println!("{}", serde_json::to_string_pretty(&outcomes.iter().map(wire_outcome).collect::<Vec<_>>()).expect("serializable"));
+                println!("{}", jvmcontract::proof_wire::prove_json(&outcomes));
             }
-            Ok(exit)
+            Ok(jvmcontract::proof_wire::exit_code(outcomes.iter().map(|o| o.verdict)))
         }
         Command::Capabilities { paths, each, json, module } => {
             if each {
@@ -1342,6 +1339,12 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let (updated, approved) = jvmcontract::alignment::questions::approve(jvmcontract::alignment::read_hints(&hints)?, &kind, &subject, rank)?;
             jvmcontract::alignment::write_hints(&hints, &updated)?;
             println!("approved  {subject} ({kind}{}): intent approved; evidence {}", rank.map(|r| format!(", rank {r}")).unwrap_or_default(), jvmcontract::alignment::questions::describe(&approved.evidence));
+            Ok(0)
+        }
+        Command::ClassBindings { request } => {
+            let text = if request == "-" { std::io::read_to_string(std::io::stdin())? } else { std::fs::read_to_string(&request).map_err(|e| Error::new(format!("{request}: {e}")))? };
+            let request: jvmcontract::class_bindings::Request = serde_json::from_str(&text).map_err(|e| Error::new(format!("not a class-bindings request: {e}")))?;
+            println!("{}", serde_json::to_string_pretty(&jvmcontract::class_bindings::answer(&request)?).map_err(|e| Error::new(e.to_string()))?);
             Ok(0)
         }
         Command::Inspect { class_file, code } => {

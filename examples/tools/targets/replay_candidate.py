@@ -176,7 +176,7 @@ def check(plan, prepared, inputs, work, entry=None):
             original = p.source["target"]["loadedFrom"]
             holder = original if entry == plan.target else next(a.path for a in arts if a.role == "adapter")
             owner, method, desc = runtime_jar.parse_target(entry)
-            data = runtime_jar.read_class(where / holder, runtime_jar.internal(owner))
+            data = runtime.bound_class(where, p, holder, owner)
             names, _ = runtime_jar.parameter_names(data, method, desc)
             if not all(re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]*", n) for n in names):
                 raise ValueError("invalid parameter name on the prepared entry")
@@ -244,7 +244,7 @@ def evidence_problem(plan, bound, checker, replay, candidate):
         classpath = checker["classpath"][rev]
         if side.get("classpath") != [a["sha256"] for a in classpath]:
             return "the independent replay ran different artifacts"
-        subject = runtime_jar.read_class(runtime._preparation_dir(prepared) / classpath[0]["path"], runtime_jar.internal(owner))
+        subject = runtime.bound_class(runtime._preparation_dir(prepared), prepared, classpath[0]["path"], owner)
         if not subject or side.get("entryClassSha256") != hashlib.sha256(subject).hexdigest():
             return "the independently replayed class differs from the checked entry"
         names, _ = runtime_jar.parameter_names(subject, method, desc)

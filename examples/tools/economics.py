@@ -200,6 +200,15 @@ class Trees:
             self.built[name] = (root / part, classes, why)
 
 
+def helper_words(h):
+    """A helper's row in the table: shared (proved equal), applied by its summary, keeping its body, or as written."""
+    if h["shared"]:
+        return "shared, " + ("found" if h["found"] else "proved")
+    if h.get("action") == "summary-applied":
+        return "by its summary, " + ("found" if h["found"] else "proved")
+    return "keeps its body" if h.get("action") == "keeps-body" else "as written"
+
+
 def measure(outcome, output, wall):
     """What a check's outcome and output say about it: its verdict, how the cache served it, and its time."""
     record = {"verdict": (outcome or {}).get("verdict"), "wall": round(wall, 3)}
@@ -216,7 +225,19 @@ def measure(outcome, output, wall):
     record["cacheNotUsed"] = not_used[1] if not_used else None
     # A hit's report is the stored one: its helper notes are that run's, not this one's.
     helpers = []
-    if not exact:
+    typed = None if exact else build.proof_output.helper_decisions(outcome or {})
+    if typed is not None:
+        # The outcome says it as data (lib/src/proof_wire.rs): `shared` is a helper proved equal, as in the notes'
+        # reading; a summary applied or a body kept is listed with its action, where the notes' patterns saw neither.
+        for d in typed:
+            base = {"callee": d["callee"], "shared": d["action"] == "shared", "seconds": d["seconds"] or 0.0}
+            if d["action"] in ("shared", "summary-applied"):
+                helpers.append({**base, "found": d["source"] == "cache", "key": d["key"],
+                                **({"action": d["action"]} if d["action"] != "shared" else {})})
+            else:
+                helpers.append({**base, "why": d["reasonText"],
+                                **({"action": d["action"]} if d["action"] != "stays-as-written" else {})})
+    elif not exact:
         times = {m[1]: float(m[2]) for m in HELPER_TIME.finditer(output)}
         for m in HELPER_SHARED.finditer(output):
             helpers.append({"callee": m[1], "shared": True, "found": m[2] == "found in the proof cache", "key": m[3], "seconds": times.get(m[1], 0.0)})
@@ -388,7 +409,7 @@ def markdown(report):
     for r in report["runs"]:
         lines += [f"### {r['name']}", "", "| Claim | Verdict | How served | Wall | Checker | Cache | Helpers |", "|---|---|---|---|---|---|---|"]
         for row in r["rows"]:
-            helpers = "; ".join(f"{h['callee']} {'shared, ' + ('found' if h['found'] else 'proved') if h['shared'] else 'as written'}" for h in row.get("helpers", []))
+            helpers = "; ".join(f"{h['callee']} {helper_words(h)}" for h in row.get("helpers", []))
             if row["served"] == "not run":
                 lines.append(f"| {row['id']} | — | not run: {row['why']} | | | | |")
             else:

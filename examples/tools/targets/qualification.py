@@ -251,7 +251,7 @@ def correspondence(plan, prepared, records):
         if not adapter or not p.source["target"].get("adapterCallsTarget"):
             return rows, f"{rev} lacks a prepared adapter calling the upstream target"
         owner, method, desc = runtime_jar.parse_target(recipe["entry"])
-        data = runtime_jar.read_class(where / adapter.path, runtime_jar.internal(owner))
+        data = runtime.bound_class(where, p, adapter.path, owner)
         if not data or (method, desc) not in runtime_jar.methods(data):
             return rows, f"{rev} lacks the declared adapter entry"
         for record in actual:

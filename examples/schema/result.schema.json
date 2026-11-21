@@ -1044,7 +1044,7 @@
       }
     },
     "helpers": {
-      "description": "For a B9 proof run with the proof cache (the example's `approach.cache`): each changed helper of the target the tool offered for a regression proof of its own before the caller's, from the tool's note about it. Null when the run reached no verdict; absent without the cache.",
+      "description": "For a B9 proof run with the proof cache (the example's `approach.cache`): each changed helper of the target the tool offered for a regression proof of its own before the caller's. From the outcome's typed decisions (`helpers`, lib/src/proof_wire.rs) where it has them, and then with `action` and what follows it; from the tool's notes for an outcome from before them, which knew a shared helper and one that stays as written and nothing of summaries. Null when the run reached no verdict; absent without the cache.",
       "type": ["array", "null"],
       "items": {
         "type": "object",
@@ -1052,8 +1052,21 @@
         "additionalProperties": false,
         "properties": {
           "callee": { "description": "The helper, as Class.method.", "type": "string" },
-          "shared": { "description": "Whether its own proof held, so that the caller's proof took it as one function in both versions; its statement then has an assumption of kind `callee` naming that proof's claim.", "type": "boolean" },
-          "note": { "description": "The tool's account: the helper proof's claim and whether it was proved in the run or found in the cache, or why the helper stays as written in both versions (its two versions differ, with the input; no verdict; a cycle).", "type": "string" }
+          "shared": { "description": "Whether its own proof held, so that the caller's proof took it as one function in both versions; its statement then has an assumption of kind `callee` naming that proof's claim. False for a helper applied by a summary: that is `action`'s `summary-applied`, which may hold at some calls and not at others.", "type": "boolean" },
+          "note": { "description": "An account for a person: the helper proof's claim and whether it was proved in the run or found in the cache, or why the helper stays as written in both versions (its two versions differ, with the input; no verdict; a cycle). Nothing is decided by its wording.", "type": "string" },
+          "action": { "description": "What the check did with the helper, as the tool said it: `shared` (proved equal on every input, one function at every call), `summary-applied` (its summary, proved over the fields it reads, applied at each call), `stays-as-written` (no proof of its own to use) or `keeps-body` (no summary to use). Absent from a record read from notes.", "enum": ["shared", "summary-applied", "stays-as-written", "keeps-body"] },
+          "class": { "description": "The helper's declaring class, dotted.", "type": "string" },
+          "descriptor": { "description": "The helper's JVM method descriptor.", "type": "string" },
+          "key": { "description": "The claim key of the proof the action rests on: the helper's own regression proof, or its summary's proof.", "type": "string" },
+          "source": { "description": "Whether that proof was found in the proof cache or made in this run.", "enum": ["cache", "proved-now"] },
+          "reason": { "description": "Why the helper keeps its code, as a code: `cycle`, `no-time`, `check-failed`, `not-applicable`, `not-stored` or `no-summary`.", "enum": ["cycle", "no-time", "check-failed", "not-applicable", "not-stored", "no-summary"] },
+          "summary": {
+            "description": "Of a summary applied: what it reads, and the facts a call must satisfy for it to apply there (with facts it is conditional: a call where they don't hold keeps the helper's body).",
+            "type": "object",
+            "required": ["reads", "facts"],
+            "additionalProperties": false,
+            "properties": { "reads": { "type": "array", "items": { "type": "string" } }, "facts": { "type": "array", "items": { "type": "string" } } }
+          }
         }
       }
     },

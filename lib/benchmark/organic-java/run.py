@@ -24,15 +24,46 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def baseline_inputs():
+# What a baseline is made by, by inventory: the trees and files its fingerprint covers, and the paths a frozen run
+# exports. A pin names its inventory (`inputs` in baseline.json); a pin from before the key is inventory 1, and its
+# fingerprint and export are computed exactly as they were, so an old revision still exports and still matches.
+# Inventory 2 adds lib/python: the proof output reader and the proof methods that moved there
+# (jvmcontract_io.py, jvm_array_induction.py), which the tools under examples/ import and a fingerprint of
+# examples/ alone would miss. It also adds verification/layout.py, which examples/tools/accept.py loads at import
+# since results may be kept by day: an export without it does not start.
+INVENTORIES = {
+    1: {"trees": ("lib/src", "lib/models", "examples/tools/targets"),
+        "files": ("lib/Cargo.lock", "lib/Cargo.toml", "examples/tools/build.py", "examples/tools/checker_output.py"),
+        "export": ("examples/tools", "examples/schema", "examples/tags.json", "lib/src", "lib/models",
+                   "lib/Cargo.toml", "lib/Cargo.lock", "lib/tools")},
+    2: {"trees": ("lib/src", "lib/models", "lib/python", "examples/tools/targets"),
+        "files": ("lib/Cargo.lock", "lib/Cargo.toml", "examples/tools/build.py", "examples/tools/checker_output.py",
+                  "verification/layout.py"),
+        "export": ("examples/tools", "examples/schema", "examples/tags.json", "lib/src", "lib/models", "lib/python",
+                   "lib/Cargo.toml", "lib/Cargo.lock", "lib/tools", "verification/layout.py")},
+}
+CURRENT_INVENTORY = 2  # what a new baseline is pinned with
+
+
+def inventory_of(pin):
+    version = pin.get("inputs", 1)
+    if version not in INVENTORIES:
+        raise ValueError(f"the baseline names input inventory {version!r}, which this runner does not know")
+    return INVENTORIES[version]
+
+
+def baseline_inputs(version=1, root=Path(".")):
+    """(number of files, fingerprint) of the baseline's inputs under `root`, as inventory `version` lists them."""
+    inventory = INVENTORIES[version]
+    root = Path(root)
     selected = []
-    for name in ("lib/src", "lib/models", "examples/tools/targets"):
-        selected.extend(f for f in Path(name).rglob("*") if f.is_file() and "__pycache__" not in f.parts
+    for name in inventory["trees"]:
+        selected.extend(f.relative_to(root) for f in (root / name).rglob("*") if f.is_file() and "__pycache__" not in f.parts
                         and f.suffix in (".rs", ".java", ".py", ".contract", ".json") and not f.name.startswith("test_"))
-    selected.extend(map(Path, ("lib/Cargo.lock", "lib/Cargo.toml", "examples/tools/build.py", "examples/tools/checker_output.py")))
+    selected.extend(map(Path, inventory["files"]))
     h = hashlib.sha256()
     for file in sorted(selected):
-        h.update(file.as_posix().encode() + b"\0" + bytes.fromhex(digest(file)))
+        h.update(file.as_posix().encode() + b"\0" + bytes.fromhex(digest(root / file)))
     return len(selected), h.hexdigest()
 
 
@@ -42,8 +73,7 @@ def frozen_run(case, pin, route):
     original = ROOT / "examples" / case["folder"]
     with tempfile.TemporaryDirectory(prefix="organic-baseline-tree-") as work:
         frozen = Path(work)
-        paths = ["examples/tools", "examples/schema", "examples/tags.json", "lib/src", "lib/models",
-                 "lib/Cargo.toml", "lib/Cargo.lock", "lib/tools"]
+        paths = inventory_of(pin)["export"]
         with subprocess.Popen(["git", "-C", source, "archive", pin["revision"], *paths], stdout=subprocess.PIPE) as proc:
             with tarfile.open(fileobj=proc.stdout, mode="r|") as archive:
                 archive.extractall(frozen, filter="data")
@@ -82,7 +112,8 @@ def main():
     env = dict(os.environ)
     pin = read(HERE / "baseline.json")
     if args.stage == "baseline":
-        if baseline_inputs() != (pin["engineAndWorkflowFiles"], pin["engineAndWorkflowSha256"]):
+        inventory_of(pin)
+        if baseline_inputs(pin.get("inputs", 1)) != (pin["engineAndWorkflowFiles"], pin["engineAndWorkflowSha256"]):
             if env.get("ORGANIC_FROZEN_BASELINE"):
                 parser.error("the exported Git sources differ from the frozen baseline fingerprint")
             return frozen_run(case, pin, args.route)

@@ -78,6 +78,7 @@ from checker_output import (VERDICT_LABEL, advice_record, camel, conclude_outcom
                             no_verdict_label, property_assertion, property_counterexample, property_headline,
                             property_record, search_record, stated_record, typed_call, violation, witness_record,
                             without_root)
+from checker_output import wire as proof_output  # noqa: E402  the proof output contract's reader (lib/python/jvmcontract_io.py)
 import result_format  # noqa: E402  the stored result's format, and the flat view everything here reads
 from targets import route as target_route, sidecar, workflow as target_workflow  # noqa: E402  real-world examples' target.json (llm-dlc/loops/example-targets.md)
 from targets.interfaces import Unsupported  # noqa: E402
@@ -1709,17 +1710,46 @@ def label_assumptions(result):
                                    + ", ".join(f"{k} {v}" for v, k in sorted(levels.items())) + ")")
 
 
-# The note a regression proof with the proof cache prints for each changed helper it offered for a proof of its own
-# (lib/src/proof_cache.rs, Helpers): shared after that proof, or left as written in both versions and why.
+# The note a regression proof with the proof cache printed for each changed helper it offered for a proof of its own
+# (lib/src/proof_cache.rs, Helpers): shared after that proof, or left as written in both versions and why. Read only
+# for an outcome from before the tool said it as data (`helpers`, lib/src/proof_wire.rs): the pattern knows the two
+# notes of that time, and not the two a summary writes.
 HELPER_NOTE = re.compile(r"^note: (?P<callee>[\w.$]+), changed(?:: (?P<shared>.*)|, stays as written in both versions: (?P<why>.*))$", re.M)
+# How a helper proof's source reads (lib/src/proof_wire.rs, ProofSource).
+HELPER_SOURCE_WORDS = {"cache": "found in the proof cache", "proved-now": "proved now and stored in the proof cache"}
 
 
-def helpers_record(output):
+def helpers_record(output, outcome=None):
     """For a B9 proof with the proof cache (`approach.cache`): each changed helper the tool proved, or tried to
-    prove, as a check of its own before the caller's, from its note: its name, whether the caller's proof took it as
-    one function in both versions, and the note's account (the claim of the helper's proof, or why it stays)."""
-    return [{"callee": m["callee"], "shared": m["shared"] is not None, "note": m["shared"] or m["why"]}
-            for m in HELPER_NOTE.finditer(output)]
+    prove, as a check of its own before the caller's: its name, whether the caller's proof took it as one function
+    in both versions, and an account for a person (the claim of the helper's proof, or why it stays).
+
+    From the outcome's typed decisions where it has them, with what they say as data beside (`action`, the claim
+    `key`, its `source`, the `reason` code, a summary's reads and facts): then nothing depends on the wording of a
+    note. `shared` is true only for a helper proved equal on every input, one function at every call; a summary
+    applied at calls is its own action, since it may hold at some calls and not at others. From the notes for an
+    outcome from before the field (`outcome` None, or without `helpers`)."""
+    typed = proof_output.helper_decisions(outcome) if outcome else None
+    if typed is None:
+        return [{"callee": m["callee"], "shared": m["shared"] is not None, "note": m["shared"] or m["why"]}
+                for m in HELPER_NOTE.finditer(output)]
+    return [{"callee": d["callee"], "shared": d["action"] == "shared", "note": helper_account(d), "action": d["action"],
+             "class": d["class"], "descriptor": d["descriptor"],
+             **{k: d[k] for k in ("key", "source", "reason", "summary") if d[k] is not None}} for d in typed]
+
+
+def helper_account(d):
+    """One typed helper decision in words, for a page: made here from its fields, never read back."""
+    how = HELPER_SOURCE_WORDS.get(d["source"], "proved")
+    if d["action"] == "shared":
+        return (f"its two versions have the same outcome, result or exception, on every input, {how} (claim {d['key']}); "
+                "one function in both versions")
+    if d["action"] == "summary-applied":
+        summary = d["summary"] or {"reads": [], "facts": []}
+        where = f" where {' and '.join(summary['facts'])}" if summary["facts"] else ""
+        return (f"its two versions, lifted over the fields it reads ({', '.join(summary['reads'])}), have the same outcome on "
+                f"every value of them and of its arguments{where}, {how} (claim {d['key']})")
+    return d["reasonText"] or d["reason"] or "no reason given"
 
 
 # How each basis of an assumption reads on a page (lib/src/statement.rs, Basis).
@@ -1957,7 +1987,7 @@ def run_tool_equivalence(folder, example, root, module, result):
     result["search"] = search_record(outcome) if completed else None
     result["stated"] = stated_record(outcome) if completed else None
     if example["approach"].get("cache"):
-        result["helpers"] = helpers_record(output) if completed else None
+        result["helpers"] = helpers_record(output, outcome) if completed else None
     remove_stale_templates(folder)
     result.pop("advice", None)
     if completed and (outcome or {}).get("advice"):
@@ -3844,10 +3874,20 @@ def helper_lines(res):
     """What came of the changed helpers a proof with the proof cache offered for proofs of their own, for its page."""
     out = []
     for h in res.get("helpers") or []:
-        if h["shared"]:
+        action = h.get("action") or ("shared" if h["shared"] else "stays-as-written")  # a record from before `action`
+        if action == "shared":
             out.append(f"- `{h['callee']}` changed, and was proved first, as a check of its own: {h['note'].removesuffix('; one function in both versions')}. The "
                        "caller's proof took it as one function in both versions, and its statement names that proof "
                        "among its assumptions.")
+        elif action == "summary-applied":
+            conditional = bool((h.get("summary") or {}).get("facts"))
+            out.append(f"- `{h['callee']}` changed, and has a summary, proved first: {h['note']}. The caller's proof applies it "
+                       "at each call in both versions, on the receiver's state at that call"
+                       + (", and a call where its facts don't hold keeps the helper's body" if conditional else "")
+                       + "; its statement names that proof among its assumptions.")
+        elif action == "keeps-body":
+            out.append(f"- `{h['callee']}` changed, and was offered for a summary, which it does not have: "
+                       f"{h['note']}. It keeps its body in both versions, and the caller's proof runs through it.")
         else:
             out.append(f"- `{h['callee']}` changed, and was offered for a proof of its own, which did not hold: "
                        f"{h['note']}. It stays as written in both versions, and the caller's proof runs through it.")

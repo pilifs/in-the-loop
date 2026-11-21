@@ -966,6 +966,17 @@ fn a_changed_helper_proved_once_is_one_function_in_each_of_its_callers() {
     // The helper's own check is timed apart from the caller's, just before what came of it.
     let timed = second.output.lines().position(|l| l.starts_with("note: Split.share's own check took ") && l.ends_with(" s")).expect("the helper's time");
     assert!(second.output.lines().nth(timed + 1).is_some_and(|l| l.starts_with("note: Split.share, changed: ")), "{}", second.output);
+    // The same decision as data (the proof output contract), and the notes above are rendered from it.
+    use jvmcontract::proof_wire::{HelperAction, ProofSource};
+    let [decision] = second.helpers.as_slice() else { panic!("one helper was asked about: {:?}", second.helpers) };
+    assert_eq!((decision.callee.class.as_str(), decision.callee.method.as_str(), decision.callee.descriptor.as_str()), ("h.Split", "share", "(JI)J"));
+    assert_eq!((decision.action, decision.key.as_deref(), decision.source), (HelperAction::Shared, Some(key.as_str()), Some(ProofSource::Cache)));
+    assert!(decision.reason.is_none() && decision.summary.is_none() && decision.seconds.is_some(), "{decision:?}");
+    assert!(second.output.contains(&decision.note()), "{}\n{}", decision.note(), second.output);
+    let printed: Value = serde_json::from_str(&jvmcontract::proof_wire::equivalence_json(&second)).unwrap();
+    assert_eq!(printed["wire_version"], 1);
+    assert_eq!(printed["helpers"][0]["action"], "shared");
+    assert_eq!(printed["helpers"][0]["callee"], serde_json::json!({ "class": "h.Split", "method": "share", "descriptor": "(JI)J" }));
     assert_eq!(callee_assumptions(&second).iter().map(|a| a.2.clone()).collect::<Vec<_>>(), vec![Some(key.clone())]);
     // The helper proof is part of each caller's claim: its stored statement names it.
     let rerun = check_target(&before, &after, &dir, "split-per-seat-again", "h.Split#perSeat");
@@ -1015,6 +1026,11 @@ fn a_wrong_helper_change_is_not_shared_and_its_caller_s_check_finds_it() {
     assert_eq!(outcome.verdict, jvmcontract::Verdict::Violation, "{}", outcome.output);
     assert!(outcome.output.contains("note: Split.share, changed, stays as written in both versions: its two versions differ, at share("), "{}", outcome.output);
     assert!(callee_assumptions(&outcome).is_empty() && outcome.shared.is_empty());
+    let [decision] = outcome.helpers.as_slice() else { panic!("one helper was asked about: {:?}", outcome.helpers) };
+    assert_eq!((decision.action, decision.key.as_deref(), decision.source), (jvmcontract::proof_wire::HelperAction::StaysAsWritten, None, None));
+    assert_eq!(decision.reason.as_ref().map(|r| r.code), Some(jvmcontract::proof_wire::ReasonCode::NotApplicable));
+    assert!(decision.reason.as_ref().is_some_and(|r| r.text.starts_with("its two versions differ, at share(")), "{decision:?}");
+    assert!(outcome.output.contains(&decision.note()), "{}", outcome.output);
     assert!(outcome.replay.as_ref().is_some_and(|r| r.reproduced), "a counterexample replayed: {:?}", outcome.replay);
     let c = outcome.counterexample.expect("a counterexample");
     assert_ne!(c.before, c.after, "{c:?}");

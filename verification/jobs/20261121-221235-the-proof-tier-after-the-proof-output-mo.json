@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-221235-the-proof-tier-after-the-proof-output-mo",
+  "title": "The proof tier after the proof-output module and the selected class binding, VF-018's three tests apart",
+  "description": "Runs the proof tier's command (lib/tools/test_costs.py run --tier proof prints it) with cargo's --no-fail-fast and without the three heap tests VF-018 tracks (JBMC's timeouts, which no change here touches), as the jobs after examples 287 and 288 did. Two changes of the run of llm-dlc/loops/lib-architecture-fast-follow.md touch what every proof-tier test goes through. Commit 54011d1e moved what prove --json and equivalence --json print, and the process exit, into lib/src/proof_wire.rs, and made a regression check under --cache record what it did with each changed helper as data (equivalence::Outcome.helpers, stored by the proof cache) with the notes rendered from it. Commit bccff265 put every reading of a class's bytes in the checker behind one selection (ClassPath::bind and read_class in lib/src/classpath.rs: provider, JAR entry, bound release, a JVM's observation when one is given). The default tier (unit and tool) passed at both commits; this is the proof tier, which neither ran.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/classpath.rs",
+      "lib/src/proof_wire.rs",
+      "lib/src/equivalence.rs",
+      "lib/src/proof_cache.rs"
+    ],
+    "commits": [
+      "54011d1e",
+      "bccff265"
+    ]
+  },
+  "expected": "exits 0: every proof-tier test but VF-018's three passes",
+  "submitted": {
+    "at": "2026-11-21T22:12:35+00:00",
+    "session": "b9b56f5e-fc0e-48ca-a64e-7a46495d814f"
+  },
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "6G",
+    "duration": "45m",
+    "timeout": "3h",
+    "notes": "the same job after example 288 took 35m47s at 3.4 GiB peak, and after example 287 1h07m at 3.3 GiB"
+  },
+  "steps": [
+    {
+      "name": "proof tier, no fail fast, VF-018's three skipped",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast -- --ignored --test-threads 4 --skip the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
