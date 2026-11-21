@@ -3476,6 +3476,12 @@ change `syqquumuwwru` · [log `f6ab9938257a`](https://terminalvalue.net/raw-trac
 
 At the user's request, relayed by the session in-the-loop-48, which checked the facts read-only. The run's admission check rejected the pinned Astra/Sol codex exec operator, and the agent substituted a Claude Fable/Opus profile with single-turn, 2048-token requests without asking. Its opening reports are deviations from the pre-registration, not V0 scores. The user is setting one Astra session for every role in the continue message. Documentation only.
 
+### Reframe VF-050 around the unasked model swap and its harness limits
+
+change `koyvytktqlkw` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+At the user's word, relayed by in-the-loop-48: the finding now says the run swapped Astra for Claude Fable/Opus without asking, and that the swapped profile's one-request, 2048-token limits produced the operator's no-claim results, which say nothing about V0. Blinding is not a concern here. It adds the lesson that briefs should rule out the custody and isolation machinery the run built. Documentation only.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz) has every step in between: reasoning, tool calls and their results.
