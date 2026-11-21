@@ -1,0 +1,194 @@
+--- /dev/null
++++ b/lib/benchmark/external-upgrades/baselines/compcheck-aws-warm-stock.json
+@@ -0,0 +1,191 @@
++{
++  "case": "open-aws-issue-233",
++  "toolRevision": "937d1d1495c4ff5449443183b70f465d1fe0b4d0",
++  "sourceArchiveSha256": "bf657aa970fbd87ac98f086aea7628492f0d6b84a17c694ef4a5176b4a3871f8",
++  "subjectRevision": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
++  "subjectJdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenVersion": "3.6.3",
++  "searchBudgetSeconds": 60,
++  "strategy": "relax_prim_poly",
++  "threshold": 0.7,
++  "clientInputs": "Stock c15-2 and the original AWS Git source. Every treatment starts with empty build products and an empty private Maven repository. The pair shares one serial read-through cache for Central files.",
++  "route": "stock source build with shared Central dependency restore",
++  "treatments": [
++    {
++      "startedUtc": "2026-11-21T02:00:52.303+00:00",
++      "elapsedSecondsIncludingSetup": 41.786,
++      "toolStartedUtc": "2026-11-21T02:00:57.710+00:00",
++      "toolSeconds": 36.379,
++      "exit": 0,
++      "treatment": "normal",
++      "knowledge": {
++        "before": 24,
++        "after": 24,
++        "bytes": 29727,
++        "sha256": "81b2f6d2327df2cbac7c59de66842f682892b74bc0f4f9e7f12e74dc33674240",
++        "applicableApiRecords": 1
++      },
++      "site": {
++        "id": "c15-2",
++        "API": "org.joda.time.format.DateTimeFormatter.parseMillis(Ljava/lang/String;)J",
++        "lib": "joda-time:joda-time",
++        "version": "2.8.1",
++        "client": "aws-sdk-java",
++        "sha": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
++        "url": "https://github.com/aws/aws-sdk-java",
++        "submodule": "aws-java-sdk-core",
++        "caller": "com.amazonaws.util.DateUtils.doParseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
++        "line": "104"
++      },
++      "clientTree": "618fcf904d287008d94ed503f8188ea0cb3fe4b5",
++      "sourceLine": "final long milliLess365Days = iso8601DateFormat.parseMillis(temp);",
++      "argv": [
++        "python3",
++        "main.py",
++        "--check",
++        "--id",
++        "c15-2"
++      ],
++      "stages": [
++        "Extracting Call Site Context",
++        "Call site found",
++        "Processing CFG file",
++        "API CALL SITE MATCH!",
++        "Running incompatibility revealing",
++        "Need make public",
++        "Need reuse"
++      ],
++      "mavenBuildFailed": false,
++      "mavenDiagnostics": [],
++      "mavenLogSha256": "ffb794e12aba76e6beaf11fc868b1acf4dae811f4a8a21d200d46a3b906d44c2",
++      "staticContextGenerated": true,
++      "match": true,
++      "generatedJUnitLogFiles": 0,
++      "toolStdoutSha256": "964ead5100dac40327f3699ea2dc52a35b483b182bfa04b7a43de1636d54fb81",
++      "toolStderrSha256": "293738822603bb59991046131871f0b6019931724f4488617bd04cbb2a91f541",
++      "contextSha256": "ce49afbc2e0723bd01f850e5cdbd2ec02f4d04eaab842727e6c139cbe916e041",
++      "contextCount": 1,
++      "terminalPythonError": null,
++      "generatedTestRuns": {},
++      "stockBuild": {
++        "inputCompiledClasses": 0,
++        "inputCallContexts": 0,
++        "classInjection": false,
++        "producedClassFiles": 839,
++        "dateUtilsClassSha256": "328d5964abe28852e2f085e626893291f365da139b9b42fc6651c298ac2d9055",
++        "recordedSourceSha256": "b9818ec907d5f0cb2b3918b16b6de28f67b07ede9b2d9c7b92baa6edfce12336",
++        "finalSourceSha256": "b9818ec907d5f0cb2b3918b16b6de28f67b07ede9b2d9c7b92baa6edfce12336",
++        "contextsAtSelectedSourceLine": [
++          {
++            "line": 104,
++            "caller": "com.amazonaws.util.DateUtils.doParseISO8601Date(Ljava/lang/String;)Ljava/util/Date;"
++          }
++        ],
++        "lastMavenBuildMarker": "BUILD SUCCESS",
++        "lastMavenCompilerLines": [
++          "[INFO] Compiling 576 source files to /project/check/_downloads/aws-sdk-java/aws-java-sdk-core/target/classes"
++        ],
++        "lastMavenErrors": [],
++        "javaTmpdir": "/scratch/jvm"
++      },
++      "resolver": {
++        "cachedRequests": 847,
++        "downloadedBytes": 13664700,
++        "downloadedFiles": 357
++      }
++    },
++    {
++      "startedUtc": "2026-11-21T02:01:34.094+00:00",
++      "elapsedSecondsIncludingSetup": 18.05,
++      "toolStartedUtc": "2026-11-21T02:01:39.275+00:00",
++      "toolSeconds": 12.87,
++      "exit": 1,
++      "treatment": "leave-issue-233-out",
++      "knowledge": {
++        "before": 24,
++        "after": 22,
++        "bytes": 27783,
++        "sha256": "6fa3a92bc3d13069a7c3cb7fc1cfc78a77eb44dac3a859ad8c10d45f8655b3bc",
++        "applicableApiRecords": 0
++      },
++      "site": {
++        "id": "c15-2",
++        "API": "org.joda.time.format.DateTimeFormatter.parseMillis(Ljava/lang/String;)J",
++        "lib": "joda-time:joda-time",
++        "version": "2.8.1",
++        "client": "aws-sdk-java",
++        "sha": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
++        "url": "https://github.com/aws/aws-sdk-java",
++        "submodule": "aws-java-sdk-core",
++        "caller": "com.amazonaws.util.DateUtils.doParseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
++        "line": "104"
++      },
++      "clientTree": "618fcf904d287008d94ed503f8188ea0cb3fe4b5",
++      "sourceLine": "final long milliLess365Days = iso8601DateFormat.parseMillis(temp);",
++      "argv": [
++        "python3",
++        "main.py",
++        "--check",
++        "--id",
++        "c15-2"
++      ],
++      "stages": [
++        "Extracting Call Site Context",
++        "Call site found",
++        "Processing CFG file"
++      ],
++      "mavenBuildFailed": false,
++      "mavenDiagnostics": [],
++      "mavenLogSha256": "c4c6a7f48ada5ec7145823e082cbb1c2045846cdc619a86fbfefe6376ca82477",
++      "staticContextGenerated": true,
++      "match": null,
++      "generatedJUnitLogFiles": 0,
++      "toolStdoutSha256": "952f086148148fdac89519c376f2fc5caf1558dc212a6a5c10aeb47b26c7a682",
++      "toolStderrSha256": "fedb794dfc52b7e95dd1894d5e67cb5d17d126fbbd581d5f425169d7ddb3e5a7",
++      "contextSha256": "ce49afbc2e0723bd01f850e5cdbd2ec02f4d04eaab842727e6c139cbe916e041",
++      "contextCount": 1,
++      "terminalPythonError": "TypeError: 'NoneType' object is not subscriptable",
++      "generatedTestRuns": {},
++      "stockBuild": {
++        "inputCompiledClasses": 0,
++        "inputCallContexts": 0,
++        "classInjection": false,
++        "producedClassFiles": 839,
++        "dateUtilsClassSha256": "328d5964abe28852e2f085e626893291f365da139b9b42fc6651c298ac2d9055",
++        "recordedSourceSha256": "b9818ec907d5f0cb2b3918b16b6de28f67b07ede9b2d9c7b92baa6edfce12336",
++        "finalSourceSha256": "b9818ec907d5f0cb2b3918b16b6de28f67b07ede9b2d9c7b92baa6edfce12336",
++        "contextsAtSelectedSourceLine": [
++          {
++            "line": 104,
++            "caller": "com.amazonaws.util.DateUtils.doParseISO8601Date(Ljava/lang/String;)Ljava/util/Date;"
++          }
++        ],
++        "lastMavenBuildMarker": "BUILD SUCCESS",
++        "lastMavenCompilerLines": [
++          "[INFO] Compiling 576 source files to /project/check/_downloads/aws-sdk-java/aws-java-sdk-core/target/classes",
++          "[INFO] Compiling 222 source files to /project/check/_downloads/aws-sdk-java/aws-java-sdk-core/target/test-classes"
++        ],
++        "lastMavenErrors": [],
++        "javaTmpdir": "/scratch/jvm"
++      },
++      "resolver": {
++        "cachedRequests": 784,
++        "downloadedBytes": 0,
++        "downloadedFiles": 0
++      }
++    }
++  ],
++  "budget": {
++    "cpus": 4,
++    "memoryGiB": 16,
++    "wallSecondsForBothTreatments": 7200
++  },
++  "resolver": {
++    "url": "https://repo.maven.apache.org/maven2/",
++    "pairByteLimit": 2900000000,
++    "serializedBy": "resolution.lock"
++  },
++  "mavenCoreSha256": "f572ed9e2a6ea3e30522d13448c5d9b3b80ce62a23dac652111952d4941e2a3b",
++  "guestControllerSha256": "59198f9f8fce4db8064096882d3b0a4cb891b80eff563b724ca4980bd15ef5d4",
++  "mirrorSha256": "8cea927b816a22f8321b836457874bf9a13e3841f770efaa052f1a711e72e62c"
++}
