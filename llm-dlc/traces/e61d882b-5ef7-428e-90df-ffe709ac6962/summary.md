@@ -3826,6 +3826,12 @@ change `qpqlkuyxzxyq` · [log `ff4c580f8499`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 1 of the 1 job(s). 20261121-095939-358-streams-native-checks-on-the-origina: passed: 1 passed step(s) in 7.0s, peak 574.5 MiB (estimated 5m00s, 3.0 GiB); 106 output file(s) changed Applied 106 output(s). Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
+### Record verification results for 1 job(s)
+
+change `ptttkwmwvkkt` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-101427-359-build-reserve-build-with-the-declare: failed: 1 failed step(s) in 19.8s, peak 344.2 MiB (estimated 5m00s, 3.0 GiB); 2 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz) has every step in between: reasoning, tool calls and their results.
