@@ -50,6 +50,14 @@ of `cargo test` because `costs.json` had changed filled a stream's memory and go
 - Once a commit is on `develop` it is immutable for jj (the repository's `immutable_heads()` names
   `develop@origin`): `sync.py commit` no longer stamps it, and `jj describe` on it is refused. Don't work round
   that with `--ignore-immutable`: others have fetched the commit.
+- `sync.py promote --rev REV` builds in the jj workspace `promote` (the folder `REPO-promote`), which is for
+  promotions only: don't work there, and don't remove it (it is moved, not remade, at each promotion; its first
+  checkout takes a minute, and a default run there builds `lib/target` anew). To have the gate reuse a run
+  instead of running one, run the default run on the commit to be promoted, with nothing uncommitted, before
+  asking: a pass of that tree covers the record on top of it. A promotion that stopped is continued by the same
+  command; its state is in `~/.local/state/llm-traces/promotions/`, and nothing there is edited by hand.
+- When `main` moved under a promotion (someone else promoted), merge `main` into the line by an ordinary merge,
+  checkpoint the merge and promote that. Never force `main` or `develop`.
 - Originals are sealed by the tools that produce them (the runner, the collector, `sync.py commit` for
   transcripts) and uploaded in the background. `python3 llm-dlc/tools/artifacts.py status` says what is still on
   this machine only; `upload --drain` finishes what a dead uploader left. Before removing a run directory, a work

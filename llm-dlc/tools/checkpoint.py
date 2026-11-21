@@ -36,10 +36,14 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-POLICY = 1           # bump when a rule below changes what is refused: every kept verdict is then worked out again
+POLICY = 2           # bump when a rule below changes what is refused: every kept verdict is then worked out again
 REMOTE, DEVELOP, MAIN = "origin", "develop", "main"
 MAX_BLOB = 16 << 20  # a larger blob is refused: GitHub warns at 50 MiB and refuses at 100, and none here is meant to be near
 RECEIPT_SCHEMA = "itl-checkpoint/v1"
+# Publication summaries (llm-dlc/artifacts/) are written for the public: each gets the redactor's whole rule set, as
+# a trace file does, and a size limit, so that an unbounded inventory cannot come back into git by this door.
+SUMMARIES = "llm-dlc/artifacts/"
+SUMMARY_MAX, CATALOG_MAX = 64 << 10, 256 << 10
 # Paths that hold raw payloads or private records and are never committed on purpose: each is gitignored, so one
 # among the outgoing objects was forced in or came from a broken ignore file.
 RAW_PATHS = [(re.compile(p), why) for p, why in (
@@ -204,7 +208,9 @@ def scan(s, redact, commits: list[str], blobs: list[tuple[str, int, str]], targe
         if size > MAX_BLOB:
             problems.append(f"{path}: is {size:,} bytes, over the {MAX_BLOB:,} a blob may be (blob {oid[:12]})")
             continue
-        key = f"{oid}:{'trace' if s.trace_owned(path) else 'strict'}"
+        if path.startswith(SUMMARIES) and size > (CATALOG_MAX if path.rsplit("/", 1)[-1].startswith("catalog-") else SUMMARY_MAX):
+            problems.append(f"{path}: is {size:,} bytes, over what a publication summary may be: its detail belongs in the private archive")
+        key = f"{oid}:{'trace' if s.trace_owned(path) or path.startswith(SUMMARIES) else 'strict'}"
         if key in verdicts.entries:
             stats["kept_verdicts"] += 1
             if verdicts.entries[key]:

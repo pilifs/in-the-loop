@@ -95,7 +95,8 @@ CREDENTIAL_FILES = {"writer": "r2-originals-writer", "ordinary": "r2-originals-r
 # unclassified bytes are received into restricted custody, never into ordinary.
 ORDINARY_KINDS = frozenset({
     "job-logs", "job-outputs", "job-diff", "job-result", "job-workdir", "job-run", "example-records",
-    "selector-cases", "trace-log", "decisions", "checkpoint-receipt", "promotion-receipt", "canary",
+    "selector-cases", "trace-log", "decisions", "checkpoint-receipt", "promotion-receipt", "promotion-inventory",
+    "promotion-gate", "canary",
 })
 RESTRICTED_KINDS = frozenset({"session-transcript", "run-record", "watcher-record", "canary-restricted"})
 STATES = ("expected", "locally_sealed", "transferring", "remote_verified", "retryable_error", "missing_input",
@@ -919,6 +920,12 @@ class Archive:
                                 "WHERE access=? AND digest=? AND encoding=?",
                                 (self.worker, at + LEASE_SECONDS, r["access"], r["digest"], r["encoding"]))
         return rows
+
+    def retry_now(self) -> int:
+        """Forget the wait of every transfer that failed, so the next pass tries it at once: for a caller that needs
+        the answer now (a promotion) rather than at the uploader's own pace."""
+        with self.transaction():
+            return self.db.execute("UPDATE objects SET next_try=0 WHERE state='retryable_error'").rowcount
 
     def _settle_object(self, r, state: str, error: str | None = None) -> None:
         with self.transaction():

@@ -1223,7 +1223,7 @@ class PublicationGate(unittest.TestCase):
              mock.patch.object(sync, "jj_commits", return_value=[{"change_id": "k" * 32, "description": desc}]) as pushed:
             errors = sync.publication_gate("bookmarks(exact:\"main\")")
         self.assertEqual(jj.call_args.args[:4], ("log", "--no-graph", "-r", "bookmarks(exact:\"main\")"))
-        self.assertEqual(pushed.call_args.args, ("::(bookmarks(exact:\"main\")) ~ ::remote_bookmarks()",))
+        self.assertEqual(pushed.call_args.args, (f"::(bookmarks(exact:\"main\")) ~ {sync.LOGS_PUBLISHED}",))
         return errors
 
     @cost("tool")

@@ -61,6 +61,13 @@ Commands:
                                 log and waits for nothing; it refuses if what the push would expose holds a
                                 conflict, a raw payload, a credential or an undecided redaction decision
                                 (checkpoint.py). --bootstrap creates `develop` where origin's `main` is
+  sync.py promote --rev REV [--dry-run]
+                                move origin's `main` forward to a commit of `develop`: the commits between
+                                them are frozen, their logs uploaded and their originals accounted for in a
+                                candidate workspace of its own, the record is a commit on top, the default
+                                run must cover that tree, and `main` moves only if it is still where the
+                                promotion found it (promote.py). --dry-run prints the review view and what
+                                would block; --skip-tests REASON is the user's alone
   sync.py check [--remote] [--full]
                                 verify hashes, trailers and redaction (--remote: re-download uploads);
                                 a log already scanned under these rules is not scanned again, --full
@@ -3673,6 +3680,13 @@ def push_revisions(args: list[str]) -> str:
     return " | ".join(picked) if picked else "bookmarks() ~ ::remote_bookmarks()"
 
 
+# The commits whose logs an earlier push published: the ancestors of the remote's bookmarks, less those that are on
+# `develop` alone. A checkpoint publishes code and never a log (checkpoint.py), so a commit that is on the remote's
+# develop and not on its main still has to have its logs uploaded before main may hold it.
+ONLY_ON_DEVELOP = "(::remote_bookmarks(exact:develop) ~ ::trunk())"
+LOGS_PUBLISHED = f"(::remote_bookmarks() ~ {ONLY_ON_DEVELOP})"
+
+
 def git_blob_id(data: bytes, length: int) -> str:
     """The id git gives a file with this content: SHA-1, or SHA-256 in a repository whose object
     ids have 64 digits."""
@@ -3722,7 +3736,7 @@ def publication_gate(revset: str) -> list[str]:
             elif kind != "blob" or mode not in ("100644", "100755") or oid != git_blob_id(checked[path].read_bytes(), len(oid)):
                 errors.append(f"commit {commit[:12]}: {path} differs from the copy that was checked")
     if targets:
-        for c in jj_commits(f"::({revset}) ~ ::remote_bookmarks()"):
+        for c in jj_commits(f"::({revset}) ~ {LOGS_PUBLISHED}"):
             for sid, sha in TRAILER_RE.findall(c["description"]):
                 info = manifests.get(sid, {}).get("logs", {}).get(sha) if sha else None
                 if sha and not (info and (info.get("url") == log_url(sid, sha) or info.get("withdrawn"))):
@@ -4262,6 +4276,9 @@ def run(cmd: str, args: list[str]) -> int:
     elif cmd == "checkpoint":
         import checkpoint  # llm-dlc/tools/checkpoint.py; it is handed this module, which runs as __main__
         return checkpoint.cmd_checkpoint(sys.modules[__name__], args)
+    elif cmd == "promote":
+        import promote  # llm-dlc/tools/promote.py
+        return promote.cmd_promote(sys.modules[__name__], args)
     elif cmd == "upload":
         return cmd_upload()
     elif cmd == "unpublish":

@@ -12,61 +12,79 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T18:02:57.070Z",
-  "duration_seconds": 3935,
+  "ended": "2026-11-21T18:24:35.818Z",
+  "duration_seconds": 5233,
   "stats": {
-    "turns": 1,
-    "api_calls": 132,
-    "tool_calls": 148,
-    "tool_errors": 5,
-    "compactions": 0,
-    "peak_context_tokens": 516107,
+    "turns": 5,
+    "api_calls": 181,
+    "tool_calls": 216,
+    "tool_errors": 7,
+    "compactions": 1,
+    "peak_context_tokens": 521446,
     "usage": {
-      "input_tokens": 264,
-      "output_tokens": 271437,
-      "cache_read_input_tokens": 44065358,
-      "cache_creation_input_tokens": 504490
+      "input_tokens": 362,
+      "output_tokens": 360323,
+      "cache_read_input_tokens": 54605937,
+      "cache_creation_input_tokens": 766993
     }
   },
   "tools": {
-    "Bash": 118,
-    "Read": 19,
-    "Write": 7,
-    "Edit": 4
+    "Bash": 158,
+    "Read": 42,
+    "Write": 10,
+    "Edit": 6
   },
   "files_touched": [
     ".claude/settings.json",
+    "llm-dlc/operating-notes.md",
     "llm-dlc/tools/artifacts.py",
     "llm-dlc/tools/checkpoint.py",
+    "llm-dlc/tools/promote.py",
     "llm-dlc/tools/sync.py",
     "llm-dlc/tools/test_artifacts.py",
     "llm-dlc/tools/test_checkpoint.py",
+    "llm-dlc/tools/test_promote.py",
     "llm-dlc/tools/vm_inventory.py",
     "verification/capture.py",
-    "~/.cache/in-the-loop/tmp/plumbing/rehearse.py"
+    "~/.cache/in-the-loop/tmp/plumbing/rehearse.py",
+    "~/.cache/in-the-loop/tmp/plumbing/rehearse_promote.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-21T16:57:22.471Z",
-      "ended": "2026-11-21T18:02:57.070Z",
+      "ended": "2026-11-21T18:04:18.181Z",
       "turns": 1,
-      "api_calls": 132,
+      "api_calls": 134,
       "usage": {
-        "input_tokens": 264,
-        "output_tokens": 271437,
-        "cache_read_input_tokens": 44065358,
-        "cache_creation_input_tokens": 504490
+        "input_tokens": 268,
+        "output_tokens": 273295,
+        "cache_read_input_tokens": 45102431,
+        "cache_creation_input_tokens": 509829
       },
-      "peak_context_tokens": 516107
+      "peak_context_tokens": 521446
+    },
+    {
+      "index": 1,
+      "started": "2026-11-21T18:06:07.166Z",
+      "ended": "2026-11-21T18:24:35.818Z",
+      "turns": 4,
+      "api_calls": 47,
+      "usage": {
+        "input_tokens": 94,
+        "output_tokens": 87028,
+        "cache_read_input_tokens": 9503506,
+        "cache_creation_input_tokens": 257164
+      },
+      "peak_context_tokens": 268781
     }
   ],
   "log": {
-    "sha256": "8d08815dc7d61808ecbb939c7bb20e94f5916345976f5b19261a78e2653b9e38",
-    "bytes": 4028424,
-    "lines": 1130,
-    "gzip_bytes": 695749,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/8d08815dc7d61808ecbb939c7bb20e94f5916345976f5b19261a78e2653b9e38.jsonl.gz"
+    "sha256": "b41a9df5f7f6ea692511239f0c0ec3e28488e9db1db909a06a0d4d06fe0fe00a",
+    "bytes": 6157526,
+    "lines": 1651,
+    "gzip_bytes": 1146434,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/b41a9df5f7f6ea692511239f0c0ec3e28488e9db1db909a06a0d4d06fe0fe00a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -125,6 +143,14 @@
       "summary": "Record the design of sync.py promote for the next cycle",
       "body": "llm-dlc/loops/llm-dlc-process-plumbing-results.md gains the design of the promotion command as settled against the code in cycle 1: the frozen set from the remote's main and the named develop commit, one standing candidate workspace moved with jj new, the metadata as a commit of its own made by that checkout's own tools, the missing-receipt check, the gate with one narrow exemption for the README's generated session table, the forward-only pushes with the expected main, the summary under llm-dlc/artifacts, and the tests to write. Bookkeeping only: no code changed and no test was run.",
       "log_sha256": "8d08815dc7d61808ecbb939c7bb20e94f5916345976f5b19261a78e2653b9e38"
+    },
+    {
+      "change_id": "xuumpxymnysywswwrrwqzpoqmlykymyk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add sync.py promote: a frozen part of develop becomes main, with its logs, originals and test receipt accounted for",
+      "body": "A promotion is now a command of its own (llm-dlc/tools/promote.py, the specification's new Promotions section). It takes a commit that is already on origin's develop, freezes the commits between main and it (merge parents included; what lands on develop later waits for the next promotion), and builds the publication record in a jj workspace of its own, REPO-promote, so it runs from any workspace whatever is uncommitted there. In the candidate the frozen commits' logs are taken from the workspaces that store them, checked and uploaded; every LLM-Trace must then resolve to a published or withdrawn log, and every original of the frozen jobs, sessions and commits must be remote_verified in the private archive or be a job with no original at all, which is counted as a gap. The record is one commit on the frozen commit holding generated files only: the URLs, the index, and llm-dlc/artifacts/YYYY/MM/DD/promotion-ID.json, a summary of at most 64 KiB (llm-dlc/publication-summary.schema.json) that names the private inventory by occurrence and SHA-256.\n\nThe gate asks for a passed default run covering the record's tree, and runs it in the candidate when none does. default_run.covers now also passes llm-dlc/artifacts/ and a llm-dlc/README.md that differs only in its generated session table (the page's own text is still covered), so a run of the frozen commit's tree covers the record. The gate's record and log are sealed in the archive and must be verified there before main moves; the receipt is outside the tree. main is pushed only if it is still where the promotion found it, forward only, and a lost answer is settled by reading the remote; develop then goes forward to the record, or takes it in by an ordinary merge when it moved meanwhile. The state of a promotion is kept by base and frozen commit, so the same command continues one that stopped and finishes one whose push went out before its end was written. --dry-run prints the review view (source changes by finished change, the test receipt, decisions, logs and originals by state) and changes nothing.",
+      "log_sha256": "b41a9df5f7f6ea692511239f0c0ec3e28488e9db1db909a06a0d4d06fe0fe00a"
     }
   ],
   "logs": {
@@ -162,6 +188,12 @@
       "bytes": 4028424,
       "lines": 1130,
       "gzip_bytes": 695749,
+      "url": null
+    },
+    "b41a9df5f7f6ea692511239f0c0ec3e28488e9db1db909a06a0d4d06fe0fe00a": {
+      "bytes": 6157526,
+      "lines": 1651,
+      "gzip_bytes": 1146434,
       "url": null
     },
     "ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad": {

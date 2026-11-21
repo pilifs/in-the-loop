@@ -331,8 +331,9 @@ interrupts mid-cycle instead: only when the run is doing damage.
 
 When the run has ended, put the budget back (`brief_run.py budget BRIEF --restore`), collect what is back
 (`brief_run.py collect BRIEF`, as `wait` did), triage it as above, and checkpoint the line
-(`python3 llm-dlc/tools/sync.py checkpoint --rev @-`). The default test run is the promotion's: `sync.py push
---bookmark main`, at the user's word, runs it when no passed run covers the commit. Then
+(`python3 llm-dlc/tools/sync.py checkpoint --rev @-`). The default test run is the promotion's: `sync.py promote
+--rev REV` (or `sync.py push --bookmark main`), at the user's word, runs it when no passed run covers the commit;
+`promote --rev REV --dry-run` prints the review view for them beforehand, and changes nothing. Then
 tell the user:
 
 - each loop's last status and whether it is merged, and for the brief its `Done when` table, criterion by
