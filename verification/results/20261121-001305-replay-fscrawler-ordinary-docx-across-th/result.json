@@ -1,0 +1,171 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-001305-replay-fscrawler-ordinary-docx-across-th",
+  "title": "Replay FSCrawler ordinary DOCX across the BUMP POI upgrade",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m08s, peak 1.7 GiB (estimated 5m00s, 4.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Replay original FSCrawler tests and caller fields on the historical runtime) was held back 5m01s by its 2-CPU quota in 2m08s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-001305-replay-fscrawler-ordinary-docx-across-th.json",
+    "sha256": "9fb63f37238dd848714f7ac5f355b0244cf04a684ebb2772806f692202cec0cf",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-001305-replay-fscrawler-ordinary-docx-across-th",
+      "title": "Replay FSCrawler ordinary DOCX across the BUMP POI upgrade",
+      "description": "Use the two original FSCrawler commits and their own archived Maven dependencies on Alpine OpenJDK 11.0.19+7 and Maven 3.9.2. Run the unmodified named testExtractFromDocx and testExtractFromTxt tests inside a networkless unprivileged namespace. Capture exact named test counts, errors, the application content observed through TikaDocParser.generate and the independently loaded extractor on each ordered runtime classpath. The separate nonordinary file reported by the original CI is excluded from rerun.",
+      "kind": "real-world",
+      "capabilities": [
+        "baseline:bump"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/baselines/bump/replay.py"
+        ]
+      },
+      "expected": "Both revisions report actual named outcomes or their first unexecuted build boundary. The normal DOCX and plain-text companion are independently observed when the original test classpath is materialized.",
+      "submitted": {
+        "at": "2026-11-21T00:13:05+00:00",
+        "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+      },
+      "requires": [
+        "bwrap",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "memoryLimit": "6G",
+        "timeout": "20m",
+        "notes": "The first local attempt stopped before Maven initialization: its auxiliary heap maximum was lower than the upstream fixed 1 GiB initial heap. The rerun honors the pinned project heap settings and keeps the 6 GiB outer cap. The original full breaking CI took 2m53s."
+      },
+      "steps": [
+        {
+          "name": "Replay original FSCrawler tests and caller fields on the historical runtime",
+          "run": "python3 -I lib/benchmark/external-upgrades/baselines/bump/replay.py fscrawler --output lib/benchmark/external-upgrades/baselines/bump/fscrawler-replay.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/external-upgrades/baselines/bump/fscrawler-replay.json"
+      ],
+      "supersedes": "20261121-000727-replay-fscrawler-ordinary-docx-across-th"
+    }
+  },
+  "sourceCommit": "aaf9c20b75e0ea6651756296fd20de400b26766d",
+  "startedAt": "2026-11-21T00:21:04+00:00",
+  "finishedAt": "2026-11-21T00:23:17+00:00",
+  "wallSeconds": 133.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 22328,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": "The first local attempt stopped before Maven initialization: its auxiliary heap maximum was lower than the upstream fixed 1 GiB initial heap. The rerun honors the pinned project heap settings and keeps the 6 GiB outer cap. The original full breaking CI took 2m53s."
+  },
+  "usage": {
+    "peakMemoryBytes": 1782579200,
+    "wallSeconds": 129.0,
+    "cpuSeconds": 152.1,
+    "memoryOfEstimate": 0.42,
+    "durationOfEstimate": 0.43
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay original FSCrawler tests and caller fields on the historical runtime",
+      "run": "python3 -I lib/benchmark/external-upgrades/baselines/bump/replay.py fscrawler --output lib/benchmark/external-upgrades/baselines/bump/fscrawler-replay.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 128.957,
+      "cpuSeconds": 152.077,
+      "cpuThrottledSeconds": 301.184,
+      "peakMemoryBytes": 1782579200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-original-fscrawler-test.log",
+        "lines": 2,
+        "bytes": 51,
+        "sha256": "75c7a2cae5ca1f864ea05b67306d55cacf7d20b170ac6cf9d2f798d46f13e303",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fscrawler pre measured",
+        "fscrawler breaking measured"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/bump/fscrawler-replay.json",
+      "change": "added",
+      "bytes": 82293,
+      "sha256": "dc151674a6f8abee8f960d419346892a213b836f3cfcd891c4f5f32457bb4cd4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T00:25:45+00:00",
+    "applied": [
+      "lib/benchmark/external-upgrades/baselines/bump/fscrawler-replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

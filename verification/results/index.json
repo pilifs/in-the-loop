@@ -2,6 +2,35 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261121-001305-replay-fscrawler-ordinary-docx-across-th",
+      "title": "Replay FSCrawler ordinary DOCX across the BUMP POI upgrade",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m08s, peak 1.7 GiB (estimated 5m00s, 4.0 GiB); 1 output file(s) changed",
+      "attention": [
+        "step 1 (Replay original FSCrawler tests and caller fields on the historical runtime) was held back 5m01s by its 2-CPU quota in 2m08s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "baseline:bump"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/baselines/bump/replay.py"
+        ]
+      },
+      "sourceCommit": "aaf9c20b75e0ea6651756296fd20de400b26766d",
+      "finishedAt": "2026-11-21T00:23:17+00:00",
+      "wallSeconds": 129.0,
+      "peakMemoryBytes": 1782579200,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 300.0,
+        "notes": "The first local attempt stopped before Maven initialization: its auxiliary heap maximum was lower than the upstream fixed 1 GiB initial heap. The rerun honors the pinned project heap settings and keeps the 6 GiB outer cap. The original full breaking CI took 2m53s."
+      },
+      "host": "vm-1",
+      "result": "20261121-001305-replay-fscrawler-ordinary-docx-across-th/result.json"
+    },
+    {
       "id": "20261121-001750-348-run-standalone-jbmc-on-both-original",
       "title": "348 run standalone JBMC on both original runtime closures",
       "status": "passed",
