@@ -87,6 +87,10 @@ class RecipesTest(unittest.TestCase):
         self.assertEqual(disposition(raw, method, bounds, 0)[0], "open")
         raw.update(verdict="violation", counterexample={"inputs": []})
         self.assertEqual(disposition(raw, method, bounds, 1)[0], "open")
+        raw["replay"] = {"by": "interpreter", "reproduced": True}
+        self.assertEqual(disposition(raw, method, bounds, 1)[0], "needs-jvm-replay")
+        raw["replay"]["reproduced"] = False
+        self.assertEqual(disposition(raw, method, bounds, 1)[0], "open")
         params = [{"name": "a", "type": "long[]"}]
         values = [{"name": "a", "type": "long[]", "value": [str(-(1 << 63)), str((1 << 63) - 1)]}]
         self.assertIsNone(qualification.witness_problem(values, params, set(), [], 2))
@@ -141,6 +145,21 @@ class RecipesTest(unittest.TestCase):
                 dest.write_bytes(native_selectors.archived_bytes(receipt, name).read_bytes())
             result.write_text(json.dumps(original))
             self.assertEqual(native_selectors.validate_result(folder, plan, result)["status"], "refuted")
+            candidate = deepcopy(original)
+            row = candidate["checked"][0]
+            raw_file = target / row["raw"]
+            original_bytes = raw_file.read_bytes()
+            wire = json.loads(original_bytes)
+            wire[0]["replay"]["by"] = "interpreter"
+            raw_file.write_text(json.dumps(wire))
+            row.update(status="needs-jvm-replay", rawSha256=workflow.file_sha256(raw_file))
+            result.write_text(json.dumps(candidate))
+            self.assertEqual(native_selectors.validate_result(folder, plan, result)["status"], "refuted")
+            candidate.pop("originalJVMReplay")
+            result.write_text(json.dumps(candidate))
+            with self.assertRaisesRegex(ValueError, "lacks an original JVM replay"):
+                native_selectors.validate_result(folder, plan, result)
+            raw_file.write_bytes(original_bytes)
             modified = deepcopy(original)
             modified["originalJVMReplay"]["sides"]["parent-fix"]["program"] = "class Different {}"
             result.write_text(json.dumps(modified))
