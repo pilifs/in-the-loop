@@ -168,6 +168,19 @@
     },
     "changesDiff": {"description": "The file that holds the outputs' changes against the job's commit: changes.diff, a unified diff; or, once collected, changes.diff.gz (that diff gzipped) or changes.stat (a summary of the files it changes) when the diff was over the 1 MiB a commit takes (collected.changesDiff).", "type": "string"},
     "workdir": {"description": "The work directory, kept on the runner (for a job that did not pass, by default).", "type": "string"},
+    "originals": {
+      "description": "Set when the run's original outputs were sealed into the private archive before the logs were cut and the work directory removed (verification/capture.py; llm-dlc/specification.md, Original outputs): the number of this attempt of the job, and the occurrence id of each part that was sealed. `python3 llm-dlc/tools/artifacts.py show ID` says whether an occurrence is pending or verified, and `fetch ID --to DIR` restores it.",
+      "type": "object",
+      "properties": {
+        "attempt": {"type": "integer"},
+        "occurrences": {
+          "type": "object",
+          "properties": {"logs": {"type": "string"}, "outputs": {"type": "string"}, "diff": {"type": "string"}, "workdir": {"type": "string"}},
+          "additionalProperties": {"type": "string"}
+        }
+      },
+      "required": ["attempt", "occurrences"]
+    },
     "collected": {
       "description": "Set when the result was collected into the repo. applied: outputs written to the working copy. conflicts: outputs that changed in the working copy since the job's commit, not applied, kept under outputs/. kept: outputs not applied because the job did not pass.",
       "type": ["object", "null"],

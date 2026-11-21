@@ -53,6 +53,22 @@ def scope_id(job_id):
     return f"{job_id[:30]}-{hashlib.sha256(job_id.encode()).hexdigest()[:8]}"
 
 ROOT = Path(os.environ.get("VERIFY_REPO") or Path(__file__).resolve().parents[1])
+_CAPTURE = []
+
+
+def originals():
+    """verification/capture.py, which hands the runner's and the collector's originals to the private archive before
+    they are shortened, replaced or deleted (llm-dlc/specification.md, "Original outputs"), or None where it is not
+    installed beside this file. It never fails a job or a collect."""
+    if not _CAPTURE:
+        path = Path(__file__).resolve().parent / "capture.py"
+        module = None
+        if path.exists():
+            spec = importlib.util.spec_from_file_location("verification_capture", path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+        _CAPTURE.append(module)
+    return _CAPTURE[0]
 HERE = "verification"
 JOBS = f"{HERE}/jobs"
 RESULTS = f"{HERE}/results"
@@ -943,10 +959,12 @@ class Runner:
         job_id = job["id"]
         started = now()
         run_dir = self.state / "runs" / job_id
+        work = self.state / "work" / job_id
+        capture = originals()
+        attempt = capture.begin(ROOT, self.state, job, source, run_dir, work) if capture else None
         if run_dir.exists():
             shutil.rmtree(run_dir)
         (run_dir / "logs").mkdir(parents=True)
-        work = self.state / "work" / job_id
         result = {
             "$schema": "../../schema/result.schema.json",
             "schema": RESULT_SCHEMA,
@@ -987,6 +1005,10 @@ class Runner:
         result["finishedAt"] = iso(finished)
         result["wallSeconds"] = round((finished - started).total_seconds(), 1)
         self.finish(job, result, job_plan)
+        # Sealed whole, before anything below cuts a log or removes the work directory; the result names what was.
+        sealed = capture.sealed_run(ROOT, self.state, job, attempt, source, run_dir, work, result) if capture else None
+        if sealed:
+            result["originals"] = sealed
         # The run directory keeps the whole logs on this machine; the result gets them whole if short, else cut.
         out = self.state / "results" / job_id
         if out.exists():
@@ -1007,6 +1029,8 @@ class Runner:
         else:
             result["workdir"] = str(work)
             write_json(out / "result.json", result)
+        if capture:
+            capture.sealed_result(ROOT, self.state, job, attempt, source, out / "result.json")
         with self.lock:
             self.running.pop(job_id, None)
             self.finished.append(job_id)
@@ -1599,6 +1623,8 @@ def cmd_collect(args):
         src = state / job_id
         result = json.loads((src / "result.json").read_text())
         dest = ROOT / RESULTS / job_id
+        capture = originals()
+        sealed = capture.before_collect(ROOT, config["runner"]["state_dir"], job_id, src, dest, result) if capture else True
         if dest.exists():
             shutil.rmtree(dest)
         dest.mkdir(parents=True)
@@ -1638,7 +1664,14 @@ def cmd_collect(args):
             result["attention"].append(f"{len(conflicts)} output(s) changed in the working copy since the job's commit and were "
                                        f"not applied (kept under outputs/): rerun the job on the newer commit")
         write_json(dest / "result.json", result)
-        shutil.rmtree(src)
+        if capture:
+            capture.after_collect(ROOT, config["runner"]["state_dir"], job_id, dest, result)
+        if sealed:
+            shutil.rmtree(src)
+        else:  # nothing sealed it and it could not be sealed now: out of collect's way, and kept
+            aside = config["runner"]["state_dir"] / "uncaptured" / f"{job_id}-{now().strftime('%Y%m%dT%H%M%SZ')}"
+            aside.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(src, aside)
         applied_any = applied_any or bool(applied)
         tally["applied"] += bool(applied)
         tally["none"] += not result["outputs"]

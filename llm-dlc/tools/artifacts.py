@@ -674,10 +674,12 @@ class Archive:
     def capture(self, path: Path, kind: str, logical: str, *, run: str | None = None, job: str | None = None,
                 attempt: int | None = None, session: str | None = None, source: dict | None = None,
                 status: str = "complete", expected: list[str] | None = None, exclude=None, notes: dict | None = None,
-                access: str | None = None, deleted: list[str] | None = None, conflicts: list[str] | None = None) -> dict | None:
+                access: str | None = None, deleted: list[str] | None = None, conflicts: list[str] | None = None,
+                sparse: bool = False) -> dict | None:
         """Seal a file or a folder as one occurrence, and acknowledge only once it and its inventory are durable.
         `expected` names the members the producer meant to make: those not found are recorded, and the occurrence
-        is partial. `exclude(relative path, is_dir)` leaves members out, by a rule the caller records in `notes`.
+        is partial. `exclude(relative path, is_dir)` leaves members out, by a rule the caller records in `notes`;
+        with `sparse`, so are the folders that then hold no member.
         Returns the occurrence's record, or None when capture is switched off."""
         if off():
             return None
@@ -725,6 +727,9 @@ class Archive:
                 pack[0].abort()
             raise
         self._settle(members)
+        if sparse:
+            holding = {str(parent) for m in members if m["type"] != "dir" for parent in PurePosixPath(m["path"]).parents}
+            members = [m for m in members if m["type"] != "dir" or m["path"] in holding]
         found = {m["path"] for m in members}
         absent = sorted(e for e in (expected or []) if e not in found and not any(f.startswith(e.rstrip("/") + "/") for f in found))
         record = {"raw": {"bytes": total, "sha256": members[0]["sha256"]} if root_kind == "blob" and members[0]["type"] == "file" else {"bytes": total}}

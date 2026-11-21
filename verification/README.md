@@ -37,6 +37,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | [`README.md`](README.md) | this page: the lifecycle, [submitting a job](#for-agents-making-changes-submitting-a-job), [managing the pipeline](#for-the-agent-managing-the-pipeline), [reading results](#reading-results), [the runner's resources](#running-resources-isolation-configuration), [other backends](#backends-other-machines-and-the-cloud) | |
 | [`pipeline.py`](pipeline.py) | every command: `submit`, `status`, `run`, `prioritize`, `collect`, `report`, `resubmit`, `validate`; [`test_pipeline.py`](test_pipeline.py) tests it | |
 | [`/run-verification`](../.claude/skills/run-verification/SKILL.md) | the procedure of the agent that manages the pipeline, as a skill; [`llm-dlc/tools/verification-loop.sh`](../llm-dlc/tools/verification-loop.sh) runs it unattended | |
+| [`capture.py`](capture.py) | hands each run's originals to the private archive before they are cut or removed (see [Originals](#originals-the-whole-logs-and-outputs)); [`test_capture.py`](test_capture.py) tests it | |
 | [`schema/job.schema.json`](schema/job.schema.json) | the job format | |
 | [`schema/result.schema.json`](schema/result.schema.json) | the result format | |
 | `jobs/ID.json` | one job, committed with the change it verifies | the submitting agent, with `submit` |
@@ -201,6 +202,36 @@ for a longer one to end:
 
 The intervals are the backup, for a job that arrives some other way (a merge, a plain `jj commit`, another
 workspace). Reading the queue is one git call for all the job files, so a look costs a fraction of a second.
+
+## Originals: the whole logs and outputs
+
+The files in `results/` are cut to fit a commit: a log over 2 MB is its head and tail, a diff over 1 MiB a summary,
+a passed job's work directory is deleted, and a rerun of a job replaces what the last run left. Before any of that
+happens, [`capture.py`](capture.py) seals the originals into the private archive
+([`llm-dlc/tools/artifacts.py`](../llm-dlc/tools/artifacts.py); the contract is in
+[the specification](../llm-dlc/specification.md#original-outputs)):
+
+| When | What is sealed | Kind |
+|---|---|---|
+| a job starts and its run directory holds an attempt nobody sealed (its runner was killed) | that attempt's logs, outputs, diff and work directory, as `partial` | as below |
+| the steps have ended, before the logs are cut | every step's whole log | `job-logs` |
+| | the outputs the job produced or changed, with the declared ones that never materialized and the ones it deleted | `job-outputs` |
+| | the whole `changes.diff` | `job-diff` |
+| | for a job that did not pass: what its work directory holds beyond its commit (files identical to the commit are left out) | `job-workdir` |
+| the runner has written `result.json` | that file, before `collect` rewrites it | `job-result` |
+| `collect` is about to replace a result collected earlier | the earlier one | `job-result` |
+| `collect` meets a result staged by a runner that sealed nothing | the staged files, and the whole logs if its run directory is still there | `job-result` and the above |
+| `collect` has written the collected `result.json` | that file, with its conflicts | `job-result` |
+
+Each run of a job is an *attempt*, numbered from 1 on this machine, and `result.json` names the attempt and the
+occurrences under `originals`. To read them: `python3 llm-dlc/tools/artifacts.py list --job ID --include-attempts`,
+then `fetch OCCURRENCE --to DIR`, which lays the files out under `DIR/verification/results/ID/` and verifies every
+byte. An occurrence is `pending` until the uploader (`artifacts.py upload`) has verified it in the store.
+
+This is a shadow of the pipeline, not a step of it: `results/` holds what it held before, and a capture that fails
+(a full disk, a damaged journal) fails no job and no collect. It is said on stderr and in `.state/capture.log`, the
+result then has no `originals`, and `collect` moves a staged result that nothing sealed to `.state/uncaptured/`
+instead of deleting it. `ITL_ORIGINALS_OFF=1` switches capture off; the test runner sets it for every test.
 
 ## Reading results
 

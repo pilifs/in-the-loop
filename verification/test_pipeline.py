@@ -26,6 +26,7 @@ from cost_tier import cost  # noqa: E402
 
 SYSTEMD = pipeline.systemd_works()
 os.environ["VERIFY_MACHINE_CONFIG"] = ""  # this machine's runner settings are not the test repositories'
+os.environ.setdefault("ITL_ORIGINALS_OFF", "1")  # nor is this machine's private archive (verification/capture.py)
 
 
 class Repo:

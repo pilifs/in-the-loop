@@ -12,53 +12,55 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T17:13:29.697Z",
-  "duration_seconds": 967,
+  "ended": "2026-11-21T17:25:29.536Z",
+  "duration_seconds": 1687,
   "stats": {
     "turns": 1,
-    "api_calls": 34,
-    "tool_calls": 46,
-    "tool_errors": 1,
+    "api_calls": 60,
+    "tool_calls": 72,
+    "tool_errors": 2,
     "compactions": 0,
-    "peak_context_tokens": 262456,
+    "peak_context_tokens": 327032,
     "usage": {
-      "input_tokens": 68,
-      "output_tokens": 93025,
-      "cache_read_input_tokens": 5552983,
-      "cache_creation_input_tokens": 250839
+      "input_tokens": 120,
+      "output_tokens": 139292,
+      "cache_read_input_tokens": 13283768,
+      "cache_creation_input_tokens": 315415
     }
   },
   "tools": {
-    "Bash": 25,
+    "Bash": 49,
     "Read": 19,
-    "Write": 2
+    "Write": 4
   },
   "files_touched": [
     "llm-dlc/tools/artifacts.py",
-    "llm-dlc/tools/test_artifacts.py"
+    "llm-dlc/tools/test_artifacts.py",
+    "llm-dlc/tools/vm_inventory.py",
+    "verification/capture.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-21T16:57:22.471Z",
-      "ended": "2026-11-21T17:13:29.697Z",
+      "ended": "2026-11-21T17:25:29.536Z",
       "turns": 1,
-      "api_calls": 34,
+      "api_calls": 60,
       "usage": {
-        "input_tokens": 68,
-        "output_tokens": 93025,
-        "cache_read_input_tokens": 5552983,
-        "cache_creation_input_tokens": 250839
+        "input_tokens": 120,
+        "output_tokens": 139292,
+        "cache_read_input_tokens": 13283768,
+        "cache_creation_input_tokens": 315415
       },
-      "peak_context_tokens": 262456
+      "peak_context_tokens": 327032
     }
   ],
   "log": {
-    "sha256": "1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d",
-    "bytes": 2017364,
-    "lines": 328,
-    "gzip_bytes": 461633,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d.jsonl.gz"
+    "sha256": "6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f",
+    "bytes": 2519976,
+    "lines": 520,
+    "gzip_bytes": 522803,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -69,6 +71,22 @@
       "summary": "Add the private archive of original outputs: spool, journal, verified upload, list and fetch",
       "body": "llm-dlc/tools/artifacts.py is the first piece of the process-plumbing brief (llm-dlc/loops/llm-dlc-process-plumbing.md, section 2). A producer hands the bytes it made to capture before it shortens, replaces or deletes them. They are sealed once into a spool on disk outside the checkout (~/.local/share/in-the-loop/originals), with a full private inventory of every member's path, type, mode, length and SHA-256, and acknowledged only after the intake record and a SQLite journal have them durably. Small files go into bounded packs, large ones into parts, and an append-only file into segments from which any past prefix restores. A restartable uploader commits each attempt before a byte moves, creates each object only if none is there, reads it back with a credential and compares the original bytes with their name, and writes an immutable receipt last, so a fresh machine can rebuild the catalog from the store alone. Ordinary and restricted originals go to separate private R2 buckets; a restricted occurrence is listed in the ordinary one by a stub with no path. list, show and fetch read with the reader's token into a private cache and work offline on a verified hit; missing, pending, restricted or damaged evidence gives a specific unavailable answer. Nothing in the tool deletes a byte, and ITL_ORIGINALS_OFF=1 switches capture off.\n\nVerified by 33 unit tests (llm-dlc/tools/test_artifacts.py): crashes before and after the intake record, after a put and before the receipt, a lease left by a dead worker, two workers on one object, a store that is offline, that loses its answer, that holds other bytes under the same key or a truncated object, a full disk, reused paths, gaps, unsafe manifests and links, and reads from an empty cache and offline. artifacts.py canary passed 11 of 11 checks on the real buckets on 2026-11-21: custody for both classes, a restore from an empty cache, and each token's limits (the ordinary token refused a restricted key, a PUT and a DELETE; the public Worker and the public traces' token read neither class). The contract is in llm-dlc/specification.md, Original outputs; llm-dlc/loops/llm-dlc-process-plumbing-results.md records where the run stands. Nothing calls capture yet: the runner and collector adapters come next.",
       "log_sha256": "1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d"
+    },
+    {
+      "change_id": "uuxktmzymzmpzvqooxoxrsozrkrpmuxz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f"
+    },
+    {
+      "change_id": "pktuwmqtlrqxwmlwtzrzvomkllpsutuu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal each verification run's originals before the pipeline cuts or removes them (shadow mode)",
+      "body": "verification/capture.py hands what the runner and the collector produce to the private archive (llm-dlc/tools/artifacts.py) at the points where an original was lost until now: the whole step logs before they are cut to head and tail, the outputs with the declared ones that never materialized and the ones deleted, the whole changes.diff, what a failed job's work directory holds beyond its commit, the result as the runner wrote it, a collected result that a later collect replaces, a result staged by a runner that sealed nothing, and the result as collected with its conflicts. A run directory left by an attempt whose runner was killed is sealed as partial before the retry reuses its path, and each run of a job is a numbered attempt. result.json names the attempt and the occurrence ids under a new originals field (in the schema).\n\nIt is a shadow of the pipeline: verification/results holds what it held before, pipeline.py gains four calls and a loader, and a capture that fails (a full disk, say) fails no job and no collect, is said on stderr and in .state/capture.log, and makes collect set a staged result aside under .state/uncaptured instead of deleting it. The test runner and test_pipeline.py set ITL_ORIGINALS_OFF=1, so no test seals anything into this machine's archive. artifacts.capture gained sparse, for the work directory's rule.\n\nVerified by verification/test_capture.py (7 tests, each running the pipeline in a throwaway repository with its own spool and store): the middle of a log the result cut restores byte for byte from a fresh cache; a failed job's outputs, diff and work-directory additions restore, and its never-made output is recorded; collect seals the result it replaces and the one it writes, with conflicts; a disk-full capture leaves the job passed, the collect done and the staged files set aside. The tests the change selects passed (35 files, after updating the one that pins the runner's environment). verification/README.md, Originals, describes it.",
+      "log_sha256": "6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f"
     }
   ],
   "logs": {
@@ -76,6 +94,12 @@
       "bytes": 2017364,
       "lines": 328,
       "gzip_bytes": 461633,
+      "url": null
+    },
+    "6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f": {
+      "bytes": 2519976,
+      "lines": 520,
+      "gzip_bytes": 522803,
       "url": null
     }
   },
