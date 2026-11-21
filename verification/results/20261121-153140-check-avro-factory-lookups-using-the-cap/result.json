@@ -1,0 +1,459 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-153140-check-avro-factory-lookups-using-the-cap",
+  "title": "Check Avro factory lookups using the captured configuration objects",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 22.0s, peak 467.3 MiB (estimated 2m00s, 3.0 GiB); 32 output file(s) changed",
+  "attention": [
+    "step 1 (Check the original factory on both revisions) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-153140-check-avro-factory-lookups-using-the-cap.json",
+    "sha256": "33b5520af2afe4c74f2d6bb3e7f18d92a309cc0fb2833b51a16705bea2aec7e5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-153140-check-avro-factory-lookups-using-the-cap",
+      "title": "Check Avro factory lookups using the captured configuration objects",
+      "description": "Recheck the parent and fixed factory bounds claims using the exact application configuration objects and their String-keyed maps, observed on each original 124-entry classpath. Record how far both factories get past the atomic deprecation context. The selector, public calls and input bounds match the frozen original tasks.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T15:31:40+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check the original factory on both revisions",
+          "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage captured-lookups --tasks bounds-parent-lookup-startup,bounds-fix-lookup-startup",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/355-avro-writable-buffer-limit/records/captured-lookups-native"
+      ]
+    }
+  },
+  "sourceCommit": "8677626b64245bc47fd338435708a25b1083557a",
+  "startedAt": "2026-11-21T15:39:53+00:00",
+  "finishedAt": "2026-11-21T15:43:11+00:00",
+  "wallSeconds": 198.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 954280,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 490012672,
+    "wallSeconds": 22.0,
+    "cpuSeconds": 28.3,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.18
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 168.248,
+      "cpuSeconds": 168.441,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2169262080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "032dc4b88edeef890e9124f2a7be0b9911856d85092d0806ed48029cc41192b2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-153140-check-avro-factory-lookups-using-the-cap/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 48s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the original factory on both revisions",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage captured-lookups --tasks bounds-parent-lookup-startup,bounds-fix-lookup-startup",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 22.047,
+      "cpuSeconds": 28.26,
+      "cpuThrottledSeconds": 1.762,
+      "peakMemoryBytes": 490012672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-factory-on.log",
+        "lines": 1,
+        "bytes": 520,
+        "sha256": "ff12debf8e2847adc91a3b720cbdd9a97ce54f1bd98a95f09f4f9775be774ec2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"355\", \"route\": \"native\", \"stage\": \"captured-lookups\", \"workflowExit\": 1, \"seconds\": 21.821, \"checkerSeconds\": 60, \"tasks\": [\"bounds-parent-lookup-startup\", \"bounds-fix-lookup-startup\"], \"verifierCommit\": \"8677626b64245bc47fd338435708a25b1083557a\", \"checkerSha256\": \"021fb3b526808b35e12a9"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f411ca5413f3ba7792c03f37bd82d4b4c04d1f666bf7ae7ec3563f74d2387f65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/plan.json",
+      "change": "added",
+      "bytes": 10748,
+      "sha256": "91b877528e9b26b3529b70aa36a78a9c5b07b7ee07e5b3fe4efe2518553cf8d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 726,
+      "sha256": "11d898ccefd17a8861a2478bc33ba4ce940ef8c0980b580334de46e71b942fbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 6884,
+      "sha256": "7faf736a535eedfbac287568dc15bc2377979a97670125a29c3064a9494acb37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/controls.json",
+      "change": "added",
+      "bytes": 61881,
+      "sha256": "987650f5961c7bf0347bde3fb0950f9cfe17abe534e2806c162c117846ce1b1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/execution.json",
+      "change": "added",
+      "bytes": 412655,
+      "sha256": "dd360541a320fa3b5be318e8656da8868841c020e812044e50a82cb7118bda6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/streams.json",
+      "change": "added",
+      "bytes": 1953,
+      "sha256": "52c50b838c67453ca863ff0d4a349eaa2de6b544f6a742c0405cbca35b5d02ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 548,
+      "sha256": "b58d1a9e581bc03fae08afc35b9511f1c34837d6512af73ae9901bcfe72e162e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/verifier.json",
+      "change": "added",
+      "bytes": 339594,
+      "sha256": "420570e7a19cfce11daf6e14b3b8b77d87fc94909ebccf94d8b02119b83e0453",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/verifier.stdout",
+      "change": "added",
+      "bytes": 36222,
+      "sha256": "cd648dc49fd4f88f4f75fbd0e84ead0fbcef592366937b6fa06cc0aa52019ed3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/result.json",
+      "change": "added",
+      "bytes": 94303,
+      "sha256": "808144e2790339391bd9ebaa9030468e5ea9652df7d42f9c5930635635f829b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/executions/20261121T154300Z-87e1acdd/attempt.json",
+      "change": "added",
+      "bytes": 352253,
+      "sha256": "533eeada27a4526c2d94f2aaa19d040bf5afb6438f669424c705220acfa639e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/executions/20261121T154300Z-87e1acdd/checker.json",
+      "change": "added",
+      "bytes": 52571,
+      "sha256": "2e71217e48545d2256759e5db9d14e300d2c4e354c8f61b56001bb87d5e3929c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/executions/20261121T154300Z-87e1acdd/correspondence.json",
+      "change": "added",
+      "bytes": 7447,
+      "sha256": "59558d95d9e4d691dccf312e416fa5576f4e4304d0c45c2bf2bb9fa2049cc1ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6e556b8edd50bb7b470f92f020911f7ba8a32da171b46a54776c1035a30e2b8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/plan.json",
+      "change": "added",
+      "bytes": 10653,
+      "sha256": "92209997fb234239d625ffd8844170f4bea0955e1332906b009f97c5fcad8966",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 732,
+      "sha256": "ddb2972ea04f81ccff1fa7b5cea5574762a9aad1132c63702596f7938de45308",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5804,
+      "sha256": "94d006f3abcd08f84eda9180f61c9f42344792f55e6a1e4c4e51c69c5aa10510",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/controls.json",
+      "change": "added",
+      "bytes": 60828,
+      "sha256": "08a00b5ba9ed196c36839413c64d2aa4fd057e2542d150795e44e5f25a43a63b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/execution.json",
+      "change": "added",
+      "bytes": 412379,
+      "sha256": "29e67dc67696642f05669924e504d28007f41e362fd3337e222c300452ff17fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/streams.json",
+      "change": "added",
+      "bytes": 1977,
+      "sha256": "e8e1b2a9684aca4faf8e440a8f8776a9281f5b1cf61268a904eab5f0242f0e96",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 548,
+      "sha256": "b58d1a9e581bc03fae08afc35b9511f1c34837d6512af73ae9901bcfe72e162e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/verifier.json",
+      "change": "added",
+      "bytes": 340389,
+      "sha256": "00d70fada00837b472385582fae38970ef6a63227a98d48bdbd8d4475a66160c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/verifier.stdout",
+      "change": "added",
+      "bytes": 36221,
+      "sha256": "2799bcd39303a2bf714d9d7fce1edd7af350c361c0d8fcfb04e3e0d8c65e1ea6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/result.json",
+      "change": "added",
+      "bytes": 95092,
+      "sha256": "aaa82adedd555cebdb1d156fe630e1518c6f1b13a7f82dd1a93d7c441e0dd452",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/executions/20261121T154249Z-a3b2f178/attempt.json",
+      "change": "added",
+      "bytes": 353052,
+      "sha256": "3561f9824c1ab9de6af2985df7a3f8ec19c6a82cb89301c3716531a189230b7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/executions/20261121T154249Z-a3b2f178/checker.json",
+      "change": "added",
+      "bytes": 52948,
+      "sha256": "e6a42034816f19406f18163e4f46f7cd21dd94de5b452b2b60f4ff2aff2412e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/executions/20261121T154249Z-a3b2f178/correspondence.json",
+      "change": "added",
+      "bytes": 7450,
+      "sha256": "226bb61178858d94a8df5450f4e40a237d42369ea835b911fe4d4b316e27205c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/run.json",
+      "change": "added",
+      "bytes": 566,
+      "sha256": "90523d91ee636e41c9e06a0ba0df1a295adeb0d3c3f0e3447820ee3590722a39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/workflow.log",
+      "change": "added",
+      "bytes": 577,
+      "sha256": "11a04660c5d24232bbd3d8848625103c104ecfe70e36d0fb2719dacc01fdb16a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T15:43:40+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/completion.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/plan.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/control-fix-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/control-fix-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/20261121T154300Z-87e1acdd/result.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/executions/20261121T154300Z-87e1acdd/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/executions/20261121T154300Z-87e1acdd/checker.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-fix-lookup-startup/executions/20261121T154300Z-87e1acdd/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/completion.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/plan.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/control-parent-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/control-parent-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/20261121T154249Z-a3b2f178/result.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/executions/20261121T154249Z-a3b2f178/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/executions/20261121T154249Z-a3b2f178/checker.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/bounds-parent-lookup-startup/executions/20261121T154249Z-a3b2f178/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/run.json",
+      "examples/355-avro-writable-buffer-limit/records/captured-lookups-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 2812222,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "cfd8a7c6a3ab9800c80a58c4a4384ed471e2cbc6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cfd8a7c6a3ab9800c80a58c4a4384ed471e2cbc6/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}
