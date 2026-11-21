@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-232627-build-avro-729-decimal-conversion-on-bot",
+  "title": "Build Avro 729 decimal conversion on both original revisions",
+  "description": "Compile the unmodified historical Avro core module with its own Maven recipe. Bind the selected DecimalConversion class and ordered runtime JARs. Run the landed TestGenericLogicalTypes.testDecimalToFromBytes on the parent and the fix, requiring a named parent failure and a fixed pass.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source",
+    "original-upstream-test"
+  ],
+  "links": {
+    "examples": [
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T23:26:27+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "maven"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "6m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Build both original revisions and run the landed test",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/upstream.py 361 --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/361-avro-decimal-buffer-cursor/records/build-historical",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/361-avro-decimal-buffer-cursor/records/build-historical"
+  ]
+}
