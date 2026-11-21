@@ -1,0 +1,150 @@
+{
+  "schema": "external-upgrade-operator-profile/v1",
+  "name": "V0-Claude",
+  "build": "V0",
+  "freezePurpose": "pre-lock first-party Claude execution of the existing team roles and pinned deterministic V0 workflow",
+  "product": {
+    "revision": "e7cdfb6a6edea96c8653ee87a7c1e2ef3f602665",
+    "engineLockSha256": "30fe7ff15836e09c071a09483661817b3103e2b4f11c55596f2d3ba6546357de",
+    "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
+    "sourceManifestSha256": "5e933ee63d3dc71b80bfa8ecac229cb90a076704392ee9b292c8d4c7eb31bc3c",
+    "toolRootSha256": "c7e4657ea1ae2d6f836105cca8a8e8ece1491de368e475d8951dee2ebd471a91"
+  },
+  "client": {
+    "version": "2.1.327 (Claude Code)",
+    "sha256": "343c744baa14bfd38286a7cb90871051f04379956da6c5b803a9e66019a76ac9",
+    "authentication": "ordinary first-party Claude client on the control side",
+    "workingDirectory": "/srv (empty)",
+    "effort": "high",
+    "builtinTools": [],
+    "mcpTool": "mcp__neutral_case__case_command",
+    "restricted": true,
+    "bare": false,
+    "safeMode": false,
+    "strictMcpConfig": true,
+    "slashCommands": false,
+    "sessionPersistence": false,
+    "toolSearch": false
+  },
+  "roles": {
+    "plan": {
+      "model": "claude-fable-5-2",
+      "effort": "high"
+    },
+    "review": {
+      "model": "claude-fable-5-2",
+      "effort": "high"
+    },
+    "setup": {
+      "model": "claude-opus-5-5",
+      "effort": "high"
+    },
+    "proof": {
+      "model": "claude-fable-5-2",
+      "effort": "high"
+    }
+  },
+  "independentReviewer": "fresh isolated case view, same released revision and ordered JARs, proposed claim only",
+  "explicitSettings": {
+    "claudeMdExcludes": [
+      "**/CLAUDE.md",
+      "**/CLAUDE.local.md",
+      "**/AGENTS.md",
+      "**/.claude/rules/**"
+    ],
+    "autoMemoryEnabled": false,
+    "disableAllHooks": true
+  },
+  "oneRequest": {
+    "maxTurns": 1,
+    "maxOutputTokens": 2048,
+    "wireEnvelopeBytes": {
+      "claude-fable-5-2": 10521,
+      "claude-opus-5-5": 5968
+    },
+    "reservation": "twice the full observed first-request byte envelope for this exact role and pinned client, plus 8192 framing tokens, fully ASCII-escaped case prompt bytes, and the maximum generated tokens. The client runs one native request; tool observations return through the same private case on the next budgeted request."
+  },
+  "budget": {
+    "cpus": 4,
+    "memoryGiB": 16,
+    "swapBytes": 0,
+    "wallSeconds": 7200,
+    "checkpointSeconds": 900,
+    "humanReviewMinutes": 15,
+    "uncachedInputPlusOutputTokens": 250000
+  },
+  "tokenAccounting": "input_tokens + cache_creation_input_tokens + output_tokens (reasoning included), across every role; cache reads and actual estimator dollars separate",
+  "neutralPrompt": "Identify which behavior of this application could change for its caller. Check the most consequential preservation or change claim you can justify with the pinned verifier. Record the result as open at the first unsupported operation.",
+  "stagePromptsSha256": "512a47db00d44851ec9654faf88105a68b3af10effaf7cd4c73509f8737cb5e6",
+  "firstPartyEvidence": {
+    "deferred.json": "a521066239d1c603db2b12b779ebbff7b1768621f4f02691f973cb822aa474d3",
+    "live.json": "bc972534493857fb37ee3dd5be87e970143904068edace186d2053742b67f725",
+    "restricted.json": "b536b2c0c1b856e1de63e913cef70970541834ee378a651febd103bcad79c8ce",
+    "safe-mode.json": "f9f86aeef284316fcff82313ac3fc8e3eef7c34010f56ca758557ef15d636391",
+    "single-request.json": "a1196bb9849443d3ea155ad5308299ef5dfbff1834ce0afb20d8895d6b426879"
+  },
+  "estimatedListPrices": {
+    "claude-fable-5-2": {
+      "input": 8,
+      "output": 40,
+      "cache_read": 0.2,
+      "cache_write_5m": 10,
+      "cache_write_1h": 16
+    },
+    "claude-opus-5-5": {
+      "input": 4,
+      "output": 20,
+      "cache_read": 0.2,
+      "cache_write_5m": 5,
+      "cache_write_1h": 8
+    },
+    "gpt-6.2-astra": {
+      "input": 8,
+      "output": 40,
+      "cache_read": 0.4,
+      "cache_write_5m": 10,
+      "cache_write_1h": 20,
+      "long_context": {
+        "above": 272000,
+        "input": 16,
+        "output": 60,
+        "cache_read": 0.8,
+        "cache_write_5m": 20,
+        "cache_write_1h": 40
+      },
+      "as_of": "2026-11-19",
+      "source": "https://developers.openai.com/api/docs/pricing"
+    },
+    "gpt-6.2-sol": {
+      "input": 2,
+      "output": 10,
+      "cache_read": 0.1,
+      "cache_write_5m": 2.5,
+      "cache_write_1h": 5,
+      "long_context": {
+        "above": 272000,
+        "input": 4,
+        "output": 15,
+        "cache_read": 0.2,
+        "cache_write_5m": 5,
+        "cache_write_1h": 10
+      },
+      "as_of": "2026-11-19",
+      "source": "https://developers.openai.com/api/docs/pricing"
+    }
+  },
+  "priceTableSha256": "d8e309588a1c4bdba66a328df899193a7eeba43b514e6f26adbc0354c99596e5",
+  "liveSmokeUsd": 0.08896120000000002,
+  "rolesQualifiedOnSynthetic": true,
+  "normalIntake": "unchanged GitHub-only original route; retain unsupported releases as first reports",
+  "assistedIntake": "separate, explicitly requested local-source diagnostic reaching no original score",
+  "operationalDifference": "The normal team roles and the V0 planner, artifacts and checker are used. The metered launcher slices a stage into one-request native processes with case-file and bounded observation handoffs. This differs from an uninterrupted stock stage and is explicitly labeled in first reports. The first-party synthetic smoke separately demonstrated ordinary two-turn client operation.",
+  "runnerSha256": {
+    "run_case.py": "bd9e272c008fd80843154dab1504c70232cf210d7bde749952ee0a402cfd89e0",
+    "runner_core.py": "7af12f3a52f2c891986ee151eebb3b6e8a7dc540f428db42b80c7c80952af2b9",
+    "reporting.py": "7e372bf43a4d8c1ca6703469cc00a54a7f45257b3e23fe39453f40f5c5519c5e",
+    "stages.json": "512a47db00d44851ec9654faf88105a68b3af10effaf7cd4c73509f8737cb5e6",
+    "freeze_evidence.py": "cf75bb68f329a3ab8393283fedc9ce25001f3973a0b92888db5e7df7ca2cc46a",
+    "broker.py": "d6db7176e9930ee05aa17d3358baed041d9cac3e30ef753b07507b6cf5a0f909"
+  }
+}
