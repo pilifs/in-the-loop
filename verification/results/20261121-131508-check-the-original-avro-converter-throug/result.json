@@ -1,0 +1,334 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-131508-check-the-original-avro-converter-throug",
+  "title": "Check the original Avro converter through schema construction",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 11.4s, peak 365.9 MiB (estimated 2m00s, 3.0 GiB); 17 output file(s) changed",
+  "attention": [
+    "step 1 (Recheck the original converter at the same startup scope) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-131508-check-the-original-avro-converter-throug.json",
+    "sha256": "30442973a847818b60318346509112b5e3a4ba878d31e999496fe4b7b34ef2d3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-131508-check-the-original-avro-converter-throug",
+      "title": "Check the original Avro converter through schema construction",
+      "description": "Repeat the separately frozen 21-input direct converter claim on the exact fixed original classpath and identical joint Schema snapshot. Follow the reserved-set reference into the real Avro constructor, run the physical JDK empty queue and preserve the next instruction the native proof cannot cover.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T13:15:08+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Recheck the original converter at the same startup scope",
+          "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage constructor-transport --tasks direct-limit-fix-joint-startup",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/355-avro-writable-buffer-limit/records/constructor-transport-native"
+      ]
+    }
+  },
+  "sourceCommit": "0e7664ba5823f60cc2718b523d3bccfe68578338",
+  "startedAt": "2026-11-21T13:20:44+00:00",
+  "finishedAt": "2026-11-21T13:24:08+00:00",
+  "wallSeconds": 204.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3329517,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 383700992,
+    "wallSeconds": 11.4,
+    "cpuSeconds": 15.9,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 185.024,
+      "cpuSeconds": 185.302,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2163298304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d0b2dae6d32aed1c4be5f91108bb3b6d24c7c79e27fcd9fb256830cd4d8a7e19",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-131508-check-the-original-avro-converter-throug/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 04s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Recheck the original converter at the same startup scope",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage constructor-transport --tasks direct-limit-fix-joint-startup",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 11.424,
+      "cpuSeconds": 15.904,
+      "cpuThrottledSeconds": 1.107,
+      "peakMemoryBytes": 383700992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-the-original-converter.log",
+        "lines": 1,
+        "bytes": 498,
+        "sha256": "fb33b324f88a880f99ffe3810c6f436e127bd56118956e92f2e997a76fc037c8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"355\", \"route\": \"native\", \"stage\": \"constructor-transport\", \"workflowExit\": 1, \"seconds\": 11.203, \"checkerSeconds\": 60, \"tasks\": [\"direct-limit-fix-joint-startup\"], \"verifierCommit\": \"0e7664ba5823f60cc2718b523d3bccfe68578338\", \"checkerSha256\": \"e52d756fd7b9b571f713b292637d65a9b7df91d3e90"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "1ad10f179f63ecd0dc423a909e5969d32d902b6b47a88cb73c3ba819bcfc8130",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/plan.json",
+      "change": "added",
+      "bytes": 9587,
+      "sha256": "d58197231b8d23f1fcd2b32e4cd64d0c307c91041a3c4c63c27ce012ab851f8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 731,
+      "sha256": "f1324684664832abffea19cbc69a21e847a3fa23c237cac8a7e5c5c3f5a13ac6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 6884,
+      "sha256": "7faf736a535eedfbac287568dc15bc2377979a97670125a29c3064a9494acb37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/controls.json",
+      "change": "added",
+      "bytes": 61896,
+      "sha256": "fa09464f963b3aabc0a75f967b32a3c16f6e01268de8cc399ae7565a77a85805",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/execution.json",
+      "change": "added",
+      "bytes": 166552,
+      "sha256": "76fd000479566186f8fdd49223bd06412f329a579af997a0df15b6c0ddf14422",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/streams.json",
+      "change": "added",
+      "bytes": 1953,
+      "sha256": "a67e8569707790353a6a74c42c04f4f72c59c5ba2ecca67394cd3b290b3ded0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 517,
+      "sha256": "12dd5b90a92b6c2ffeddfd7d371aebda03519eca247de23b478d1ed02e2fddc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/verifier.json",
+      "change": "added",
+      "bytes": 102269,
+      "sha256": "f2361d9ee09202aa2744b814b62ed2e510b3947301111faa2b27a0bf55b181d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 27700,
+      "sha256": "c2f8dacb271e1cb4fbdcaef1ff213e694988ad527c23a7696dc63083d4238ddf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/result.json",
+      "change": "added",
+      "bytes": 84514,
+      "sha256": "0b8fbbd216e97c0660cf77460bac00ce8e0ed94e41e3d60704800db62904710f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/executions/20261121T132357Z-1b5264f5/attempt.json",
+      "change": "added",
+      "bytes": 132262,
+      "sha256": "23a7c3fa7fe596096264fb2e7db7a9b18f5f93ea190afa28a424957097a5a142",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/executions/20261121T132357Z-1b5264f5/checker.json",
+      "change": "added",
+      "bytes": 43484,
+      "sha256": "b7eef0c37fc956c5bedb4e2e10dc4788109bcfad7f7983f52af906890a880a05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/executions/20261121T132357Z-1b5264f5/correspondence.json",
+      "change": "added",
+      "bytes": 7470,
+      "sha256": "d630a9530fe4b5a4aa3004ff0f852c1aeaf280a88049bb083f3540061000d3a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/run.json",
+      "change": "added",
+      "bytes": 540,
+      "sha256": "6950155680b03ff26a8f8d3b91d08d815d26436113464166af1616ccddcd8e4e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/workflow.log",
+      "change": "added",
+      "bytes": 301,
+      "sha256": "09dba3db81432edabe4fb837ddb4cd4cfe2626ff1781b1dbe302fc59013ac788",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T13:24:29+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/completion.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/plan.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/control-fix-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/control-fix-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/result.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/executions/20261121T132357Z-1b5264f5/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/executions/20261121T132357Z-1b5264f5/checker.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/executions/20261121T132357Z-1b5264f5/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/run.json",
+      "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/workflow.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "985d2888a4d7262fc9d1a20ec8faa057b5932077",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/985d2888a4d7262fc9d1a20ec8faa057b5932077/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}
