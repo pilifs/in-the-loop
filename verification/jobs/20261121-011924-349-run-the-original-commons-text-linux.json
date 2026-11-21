@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-011924-349-run-the-original-commons-text-linux",
+  "title": "349 run the original Commons Text Linux CI on both pins",
+  "description": "Reproduce the disclosed merged Commons Text dependency PR from its original Git objects. On both revision trees run the configured Maven lifecycle under Linux and Temurin 21, with no original source or test removed. A networkless guest can request Maven Central release artifacts through one serial, read-through shared public cache. Record full suite test, skip, error and failure counts, original named XML and its hashes, Maven exit, elapsed time and actual cache downloads.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "baseline:original-ci"
+  ],
+  "links": {
+    "examples": [
+      "349"
+    ]
+  },
+  "expected": "Both original Maven processes reach project scanning. Retain operational CI outcomes independently of the job collection exit, including failures before any tests and any failing original test.",
+  "submitted": {
+    "at": "2026-11-21T01:19:24+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "python3",
+    "git",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "4G",
+    "duration": "20m",
+    "memoryLimit": "16G",
+    "timeout": "2h",
+    "notes": "Both original revisions with a populated release cache and serial resolution for missing artifacts. The older offline lifecycle was blocked before tests. The two-hour limit includes both Maven invocations."
+  },
+  "steps": [
+    {
+      "name": "Run the original Linux CI and retain full suite and named records",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 349 --out examples/349-commons-text-csv-upgrade/records/full-linux-ci",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/349-commons-text-csv-upgrade/records/full-linux-ci"
+  ]
+}
