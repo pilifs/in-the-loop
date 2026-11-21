@@ -1,0 +1,35 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-234853-restore-the-original-receiver-cohort-bef",
+  "title": "Restore the original receiver cohort before the 32-case rescore",
+  "description": "Recreate the temporary source trees removed at the end of the external-upgrade campaign. Fetch the 28 original repositories serially, verify each old and new commit and the registered caller source digest, and retain the prepared inputs in the shared VM cache for the receiver recheck.",
+  "kind": "real-world",
+  "capabilities": [
+    "source:provenance"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T23:48:53+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "git"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "6m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Recover and verify the original upstream source pairs",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/receiver_sources.py --work \"$TMPDIR/domain-foundations-receivers\" --output verification/domain-foundations/receiver-sources.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/receiver-sources.json"
+  ]
+}
