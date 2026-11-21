@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "360",
+  "title": "Postorder traversal of the root and its original children",
+  "summary": "Walk two publicly constructed compilation units and compare each returned node by identity, in order, with the objects in the original tree.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "dropped-case",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "JavaParser",
+    "symbol": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+    "file": "javaparser-core/src/main/java/com/github/javaparser/ast/Node.java"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Walk two publicly constructed compilation units and compare each returned node by identity, in order, with the objects in the original tree."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/javaparser/javaparser",
+    "url": "https://github.com/javaparser/javaparser/pull/4538"
+  },
+  "verdictLabel": "Native 2/8 at original scope, 8/8 with observed Node startup, finite JVM 8/8",
+  "notes": [
+    "This is a conditional transfer case outside the six primary PRs. Guava's entry iterator carried the backing count through its nested frames and exhausted normally.",
+    "The independent original-scope grid has 2 inputs. Both revisions use the same declared receiver shapes.",
+    "Postorder findAll on an empty root threw EmptyStackException on the parent and returned the original root once on the fix. Both revisions preserved Name, PackageDeclaration, CompilationUnit order for package com, with receiver identity and preorder as controls.",
+    "The original ambient native run stopped at System.getProperty(\"line.separator\") in LineSeparator initialization. Observing only that enum now retains its constants, names, ordinals and text. This route reaches the printer configuration’s HashSet(Collection) constructor.",
+    "A separately scoped run initialized the original Node on JDK 21.0.13, bound its state digest, and compared 14 other classes with their state after independent initialization. All eight traversal and preservation obligations were decided under that condition. The empty-root postorder and terminal counterexamples also reproduced on the original parent without the startup condition. The other six original native obligations remain open."
+  ]
+}

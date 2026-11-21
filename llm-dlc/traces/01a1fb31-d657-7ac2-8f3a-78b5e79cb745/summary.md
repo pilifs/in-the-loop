@@ -62,6 +62,48 @@ The scorecard seals immutable first reports and evidence and enforces all 24 ori
 
 Pinned native and JBMC invocations were compared before solver launch on identical artifact, observer and bounds. Verification jobs 20261121-000827-348-compare-jbmc-on-the-matched-external and 20261121-000827-351-compare-jbmc-on-the-matched-external run that actual engine comparison. Verification jobs 20261121-000727-replay-fscrawler-ordinary-docx-across-th and 20261121-000727-replay-bump-assertj-guava-enforcer-on-bo rerun the two disclosed BUMP classifications using their content-addressed images. The independent signed reference under curation is excluded from all public calibration counts.
 
+### Record verification results for 2 job(s)
+
+change `xmkzyxymquvz` · [log `10932fbcc064`](https://terminalvalue.net/raw-traces/01a1fb31-d657-7ac2-8f3a-78b5e79cb745/10932fbcc06451f91634143a8b75fc1ddb88c0accf27daebcc55d15a64df0dc7.jsonl.gz)
+
+Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-230733-check-commons-text-pr-586-csv-return-pre: failed: 1 failed step(s) in 2.2s, peak 146.2 MiB (estimated 3m00s, 3.0 GiB); 1 output file(s) changed 20261120-231316-check-returned-h2-keys-through-the-uncha: passed: 1 passed step(s) in 5.4s, peak 151.0 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1 Applied 17 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `vutxuxqnwlps` · [log `10932fbcc064`](https://terminalvalue.net/raw-traces/01a1fb31-d657-7ac2-8f3a-78b5e79cb745/10932fbcc06451f91634143a8b75fc1ddb88c0accf27daebcc55d15a64df0dc7.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-232343-run-the-full-rxjava-jdbc-historical-sure: passed: 1 passed step(s) in 46.3s, peak 419.1 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that the VM lacks disk for BUMP's packaged archive (VF-048)
+
+change `kznutnwvllpm` · [log `10932fbcc064`](https://terminalvalue.net/raw-traces/01a1fb31-d657-7ac2-8f3a-78b5e79cb745/10932fbcc06451f91634143a8b75fc1ddb88c0accf27daebcc55d15a64df0dc7.jsonl.gz)
+
+The external-upgrade-evaluation run's agent found its first blinded builds missing historical Maven plugins and asked about BUMP's 150 GB packaged archive, which doesn't fit on this VM. The user will restart the VM with more storage once no run is under way, and set a note in the run's continue message meanwhile. VF-048 records it, with the agent's open question about fetching public Maven dependencies one at a time. Documentation only.
+
+### Record verification results for 1 job(s)
+
+change `kwopuvyzuups` · [log `10932fbcc064`](https://terminalvalue.net/raw-traces/01a1fb31-d657-7ac2-8f3a-78b5e79cb745/10932fbcc06451f91634143a8b75fc1ddb88c0accf27daebcc55d15a64df0dc7.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-232916-compare-stock-compcheck-knowledge-on-aws: passed: 1 passed step(s) in 19.8s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Note the user's answer to the Maven-resolver question in VF-048
+
+change `yxvunwsmovuo` · [log `10932fbcc064`](https://terminalvalue.net/raw-traces/01a1fb31-d657-7ac2-8f3a-78b5e79cb745/10932fbcc06451f91634143a8b75fc1ddb88c0accf27daebcc55d15a64df0dc7.jsonl.gz)
+
+Through the run's continue message the user exempts Maven and Gradle resolution from public repositories from the web-request limit (serially, one shared cache under ~/.cache/in-the-loop/), and BUMP cases are fetched one by one. Whether the exemption goes into the operating notes is left to the user. Documentation only.
+
+### Record verification results for 5 job(s)
+
+change `yznztvqqwuvt` · [log `10932fbcc064`](https://terminalvalue.net/raw-traces/01a1fb31-d657-7ac2-8f3a-78b5e79cb745/10932fbcc06451f91634143a8b75fc1ddb88c0accf27daebcc55d15a64df0dc7.jsonl.gz)
+
+Outputs applied for 1 of the 5 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-233743-run-assisted-compcheck-on-original-aws-d: passed: 1 passed step(s) in 24.9s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261120-234730-348-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 6.2s, peak 168.6 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234730-349-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 3.1s, peak 156.6 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed 20261120-234730-350-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 4.6s, peak 136.4 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234731-351-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 5.4s, peak 144.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `urmwmrtxmtvl` · [log `10932fbcc064`](https://terminalvalue.net/raw-traces/01a1fb31-d657-7ac2-8f3a-78b5e79cb745/10932fbcc06451f91634143a8b75fc1ddb88c0accf27daebcc55d15a64df0dc7.jsonl.gz)
+
+Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc: failed: 1 failed step(s) in 5.0s, peak 140.2 MiB (estimated 1m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261120-234731-352-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 57.1s, peak 169.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fb31-d657-7ac2-8f3a-78b5e79cb745/10932fbcc06451f91634143a8b75fc1ddb88c0accf27daebcc55d15a64df0dc7.jsonl.gz) has every step in between: reasoning, tool calls and their results.

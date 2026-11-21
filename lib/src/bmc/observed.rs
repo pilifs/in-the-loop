@@ -19,30 +19,97 @@ impl Engine<'_> {
     pub(super) fn take_observed(&mut self, path: &mut Path, class: &str) -> Result<(), Stop> {
         let all = self.observed.clone();
         let observed = &all[class];
-        let cf = self.cp.checker_class(class).ok_or_else(|| Stop::Unsupported(format!("no class {} to give its observed state to", class.replace('/', "."))))?;
-        let mut made: BTreeMap<usize, usize> = BTreeMap::new();
-        for field in cf.fields.iter().filter(|f| f.is_static()) {
-            let key = (class.to_string(), field.name.clone());
-            let value = match observed.fields.get(&field.name) {
-                None => Err("a field the observation does not name".to_string()),
-                Some(slot) => match observed.unheld(slot) {
-                    Some(what) => Err(what),
-                    None => self.observed_value(path, observed, slot, Some(&field.descriptor), &mut made),
-                },
-            };
-            match value {
-                Ok(v) => {
-                    path.statics.insert(key, v);
+        let members = std::iter::once((class, &observed.fields)).chain(observed.joint_fields.iter().flat_map(|m| m.iter().map(|(name, state)| (name.as_str(), state))));
+        if let Some(joint) = &observed.joint_fields {
+            for (owner, _) in members.clone() {
+                if self.cp.checker_class(owner).is_none() { return unsupported(format!("no class {owner} to install from the joint initializer snapshot")); }
+                if path.classes.contains_key(owner) {
+                    return unsupported(format!("the joint initialization snapshots overlap at {owner}; the JVM object identity across separate snapshots is unknown"));
                 }
-                Err(what) => {
-                    self.unheld.insert(key, what);
+                for parent in gaps::initialization_supers(self.cp, owner) {
+                    if self.cp.checker_statics(&parent) && parent != class && !joint.contains_key(&parent) {
+                        return unsupported(format!("joint initialization of {class} does not cover the required supertype {parent} of {owner}"));
+                    }
                 }
             }
+        }
+        let mut made: BTreeMap<usize, usize> = BTreeMap::new();
+        for (owner, fields) in members {
+            let cf = self.cp.checker_class(owner).ok_or_else(|| Stop::Unsupported(format!("no class {owner} to give its observed state to")))?;
+            for field in cf.fields.iter().filter(|f| f.is_static()) {
+                let key = (owner.to_owned(), field.name.clone());
+                let start = path.objects.len();
+                let value = match fields.get(&field.name) {
+                    None => Err("a field the observation does not name".to_string()),
+                    Some(slot) => match observed.unheld(slot) {
+                        Some(what) => Err(what),
+                        None => self.observed_value(path, observed, slot, Some(&field.descriptor), &mut made),
+                    },
+                };
+                match value {
+                    Ok(v) => { path.statics.insert(key, v); }
+                    Err(what) => {
+                        // A partially filled map or array cannot become visible through a second alias.
+                        made.retain(|_, object| *object < start);
+                        if observed.joint_fields.is_some() && matches!(field.descriptor.as_bytes().first(), Some(b'L' | b'[')) {
+                            let reason = format!("the observed static field {}.{} holds {what}. The snapshot supplies no referent to inspect", owner.replace('/', "."), field.name);
+                            path.statics.insert(key, Val::Unobserved(reason.into()));
+                        } else {
+                            Rc::make_mut(&mut path.unheld_statics).insert(key, what);
+                        }
+                    }
+                }
+            }
+            path.classes.insert(owner.to_owned(), ClassState::Done);
         }
         let text = crate::observed::assumption(class, observed);
         self.assumption_ids.insert(text.clone(), format!("observed-initializer:{}:{}:{}", class.replace('/', "."), observed.on.sha256, observed.state_sha256));
         self.assumed.insert(text);
+        for (index, (name, digest)) in observed.additional_roots.iter().enumerate() {
+            let binary = name.replace('/', ".");
+            let text = format!("{binary} was startup root {} in the same JVM as {}, before the checked entry", index + 2, class.replace('/', "."));
+            self.assumption_ids.insert(text.clone(), format!("observed-initializer:{binary}:{digest}:{}", observed.state_sha256));
+            self.assumed.insert(text);
+        }
         Ok(())
+    }
+
+    /// Java locals and application fields can carry an unavailable reference without examining it.
+    /// All other uses stop before dispatch, even a null test or an identity comparison. In particular
+    /// a constructor receiving the value runs its selected application bytecode, including exceptions.
+    pub(super) fn transport_unobserved(&mut self, path: &mut Path, class: &ClassFile, insn: &Insn, reason: &str) -> Option<Step> {
+        let stack = &path.frames.last()?.stack;
+        match insn {
+            Insn::Load(..) | Insn::Store(Kind::Ref, _) | Insn::Nop | Insn::Pop | Insn::Dup | Insn::Swap => return None,
+            Insn::PutField(i) if matches!(stack.as_slice(), [.., Val::R(Some(_)), Val::Unobserved(_)]) => {
+                if let Ok(m) = class.pool.member(*i) {
+                    if self.cp.is_application(&m.owner) && Type::parse(&m.descriptor).is_ok_and(|t| t.is_reference()) { return None; }
+                }
+            }
+            Insn::InvokeSpecial(i) => {
+                if let Ok(m) = class.pool.member(*i) {
+                    if let Some(step) = self.unobserved_constructor(path, &m) { return Some(step); }
+                }
+            }
+            _ => {}
+        }
+        Some(unsupported(format!("{reason} ({insn:?} in {}.{})", class.name.replace('/', "."), path.frames.last()?.method)))
+    }
+
+    fn unobserved_constructor(&mut self, path: &mut Path, member: &crate::classfile::MemberRef) -> Option<Step> {
+        if member.name != "<init>" { return None; }
+        let cf = self.cp.application(&member.owner).ok()??;
+        let body = cf.method("<init>", &member.descriptor).filter(|b| b.code.is_some() && !b.is_static())?.clone();
+        let desc = MethodDescriptor::parse(&member.descriptor).ok()?;
+        let stack = &mut path.frames.last_mut()?.stack;
+        let start = stack.len().checked_sub(desc.params.len() + 1)?;
+        let Val::R(Some(o)) = stack[start] else { return None };
+        if !self.cp.is_subtype(&path.objects[o].class, &member.owner)
+            || desc.params.iter().zip(&stack[start + 1..]).any(|(ty, v)| matches!(v, Val::Unobserved(_)) && !ty.is_reference()) {
+            return None;
+        }
+        let args = stack.split_off(start);
+        Some(self.enter_method(path, &member.owner, cf, body, args))
     }
 
     /// Why a read of the static field is refused, where the observation of its class's initializer holds no value
@@ -52,7 +119,7 @@ impl Engine<'_> {
         if path.statics.contains_key(&key) {
             return None;
         }
-        self.unheld.get(&key).map(|what| {
+        path.unheld_statics.get(&key).map(|what| {
             format!(
                 "reads the static field {}.{name}, which the class's observed initializer left as {what}: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)",
                 declaring.replace('/', ".")

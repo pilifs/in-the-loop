@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-114112-javaparser-traversal-with-its-observed-l",
+  "title": "JavaParser traversal with its observed LineSeparator constants",
+  "description": "Run the frozen postorder, iterator-exhaustion, nonempty and preorder checks on both original Maven artifacts. The separately scoped claims require the byte-checked enum and the actual subject JVM state on JDK 21. Preserve every outcome including the next unsupported operation.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "360"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T11:41:12+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "12m",
+    "notes": "The original 8-task native run took 10 s. Each new task starts an additional small observed JVM."
+  },
+  "steps": [
+    {
+      "name": "Replay both original trees and check eight scoped tasks",
+      "run": "python3 lib/benchmark/organic-java/run.py 360 --route native --stage enum-snapshot --tasks postorder-parent-observed,postorder-fix-observed,terminal-parent-observed,terminal-fix-observed,preorder-parent-observed,preorder-fix-observed,nonempty-parent-observed,nonempty-fix-observed",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/360-javaparser-postorder-root/records/enum-snapshot-native"
+  ]
+}

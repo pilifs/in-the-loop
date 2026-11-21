@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "ordinary-contents",
+  "statement": "The three companion indices preserve their expected exact receiver state.",
+  "assume": "code >= 942 && code < 945",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.InsertBits#contents(I)I",
+    "mapping": "The three companion indices preserve their expected exact receiver state. Its original receiver and direct outcome are indexed in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 2865
+  }
+}

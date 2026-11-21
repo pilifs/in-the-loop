@@ -107,5 +107,28 @@ public final class IteratorCollection {
         List<String> values = StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, 0), false).collect(Collectors.toList());
         return values.isEmpty();
     }
-    public static void main(String[] args) { if (!enums() || !erroneous() || !erased() || !collected() || !discard(false) || !discard(true) || !reset(true) || !reset(false) || wrong()) throw new AssertionError(); }
+
+    public static boolean stackFrames(boolean pushNull) {
+        Stack<Object> stack = new Stack<>();
+        Object root = new Object();
+        Object leaf = pushNull ? null : new Object();
+        List<Object> view = Collections.unmodifiableList(stack);
+        if (stack.push(root) != root || stack.push(leaf) != leaf || stack.peek() != leaf
+                || view.get(0) != root || view.size() != 2) return false;
+        if (stack.pop() != leaf || stack.pop() != root || !view.isEmpty()) return false;
+        try { stack.peek(); return false; } catch (EmptyStackException expected) { }
+        try { stack.pop(); return false; } catch (EmptyStackException expected) { }
+        Iterator<Object> only = Collections.singletonList(root).iterator();
+        if (!only.hasNext() || only.next() != root || only.hasNext()) return false;
+        try { only.next(); return false; } catch (NoSuchElementException expected) { }
+        try { view.add(root); return false; } catch (UnsupportedOperationException expected) { return true; }
+    }
+
+    public static boolean emptyQueues() {
+        java.util.Queue<String> first = new java.util.concurrent.ConcurrentLinkedQueue<>();
+        java.util.Queue<String> second = new java.util.concurrent.ConcurrentLinkedQueue<>();
+        return first != second && first.isEmpty() && first.peek() == null && second.peek() == null;
+    }
+
+    public static void main(String[] args) { if (!enums() || !erroneous() || !erased() || !collected() || !discard(false) || !discard(true) || !reset(true) || !reset(false) || !stackFrames(false) || !stackFrames(true) || wrong()) throw new AssertionError(); }
 }

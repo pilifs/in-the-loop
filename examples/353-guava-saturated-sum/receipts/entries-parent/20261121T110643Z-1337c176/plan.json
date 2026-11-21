@@ -1,0 +1,244 @@
+{
+  "plan": {
+    "example": "353",
+    "task": "entries-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "entries-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+      "file": "claims/entries.json",
+      "sha256": "dd377d627dd051eaa72d8775424218f3b14163c7efdf26af18d5b509e54237a2",
+      "property": "entries",
+      "claimKind": "property",
+      "statement": "The iterator returns exactly the positive key and its saturated count, then rejects next().",
+      "assume": "code >= 0 && code < 49",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 48,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "c91e8f77fc6838d261a4aed974679b1e90c2167a449fe87ef5ea9ae4f7b52de5"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "06e79b50befeb9c77a3e45a2cc8be679a37e5d540230de69071ca44f6369682a"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.SumView#entries(I)I",
+        "mapping": "The iterator returns exactly the positive key and its saturated count, then rejects next(). The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 49
+      },
+      "key": "79fde9fa92863792"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/guava",
+        "commit": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "guava",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/toolchains/build-parent.json",
+          "sha256": "da441ea682e6138848de2f9e372dd583b64286ab9c3e5dc354fdb1eae9dbe5dd"
+        },
+        "adapters": [
+          "adapter/organic/SumView.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/entries-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-105255-353-confirmation-native-checks-on-the-or/examples/353-guava-saturated-sum",
+    "network": true
+  },
+  "inputs": {
+    "example": "353",
+    "task": "entries-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "entries-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+      "file": "claims/entries.json",
+      "sha256": "dd377d627dd051eaa72d8775424218f3b14163c7efdf26af18d5b509e54237a2",
+      "property": "entries",
+      "claimKind": "property",
+      "statement": "The iterator returns exactly the positive key and its saturated count, then rejects next().",
+      "assume": "code >= 0 && code < 49",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 48,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "c91e8f77fc6838d261a4aed974679b1e90c2167a449fe87ef5ea9ae4f7b52de5"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "06e79b50befeb9c77a3e45a2cc8be679a37e5d540230de69071ca44f6369682a"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.SumView#entries(I)I",
+        "mapping": "The iterator returns exactly the positive key and its saturated count, then rejects next(). The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 49
+      },
+      "key": "79fde9fa92863792"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/guava",
+        "commit": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "guava",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/toolchains/build-parent.json",
+          "sha256": "da441ea682e6138848de2f9e372dd583b64286ab9c3e5dc354fdb1eae9dbe5dd"
+        },
+        "adapters": [
+          "adapter/organic/SumView.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/SumView.java",
+        "sha256": "c63835e50bfe6a2a5f6f851a0ce626bd1671a161f84306883785d18b08e1e9b9"
+      }
+    ]
+  },
+  "key": "5953c0841fe341102227e69b03a7afd3df754c0969c6cb428e835e28c44c24d9"
+}

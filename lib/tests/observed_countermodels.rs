@@ -111,6 +111,115 @@ fn proving(target: &str, assert: &str, name: &str) -> property::Options {
     o
 }
 
+#[test]
+fn jointly_initialized_statics_share_one_heap_before_the_entry_runs() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    for (entry, claim, args, expected) in [
+        ("shared", "result", vec![], "true"),
+        ("touchedFirst", "!result", vec!["write"], "false"),
+    ] {
+        let jvm = Command::new("java").arg("-cp").arg(&c.app).arg("oc.JointStartup").args(args).output().unwrap();
+        assert!(jvm.status.success());
+        assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), expected);
+        let mut o = proving(&format!("oc.JointStartup#{entry}"), claim, entry);
+        o.observed_initializers = vec!["oc.JointStartup$Root".into()];
+        o.observed_runtime.preinitialize_together = true;
+        let run = property::run(&o).unwrap();
+        assert_eq!(run.verdict, Verdict::Verified, "{}", run.output);
+        assert!(run.stated.unwrap().assumptions.iter().any(|a| a.text.contains("before the checked entry") && a.text.contains("oc.JointStartup$Store")));
+    }
+}
+
+#[test]
+fn a_joint_snapshot_refuses_opaque_reads_and_preserves_explicit_root_order() {
+    jvmcontract::tool_tier!();
+    if classes().is_none() { return }
+    let mut o = proving("oc.JointStartup#readsOpaque", "result", "joint-opaque");
+    o.observed_initializers = vec!["oc.JointStartup$Root".into()];
+    o.observed_runtime.preinitialize_together = true;
+    let opaque = property::run(&o).unwrap();
+    assert_eq!(opaque.verdict, Verdict::Unverifiable, "{}", opaque.output);
+    assert!(opaque.output.contains("Store.opaque") && opaque.output.contains("StringBuilder"), "{}", opaque.output);
+    let mut states = Vec::new();
+    for (roots, expected) in [(["Root", "Reader"], "result == 7"), (["Reader", "Root"], "result == 0")] {
+        let mut o = proving("oc.JointStartup#recorded", expected, roots[0]);
+        o.observed_initializers = roots.map(|n| format!("oc.JointStartup${n}")).to_vec();
+        o.observed_runtime.preinitialize_together = true;
+        let run = property::run(&o).unwrap();
+        assert_eq!(run.verdict, Verdict::Verified, "{}", run.output);
+        let statement = run.stated.unwrap();
+        let ids: Vec<_> = statement.assumptions.iter().filter_map(|a| a.id.as_deref()).filter(|id| id.starts_with("observed-initializer:")).collect();
+        assert_eq!(ids.len(), 2);
+        assert_eq!(ids[0].rsplit(':').next(), ids[1].rsplit(':').next());
+        states.push(ids[0].rsplit(':').next().unwrap().to_owned());
+    }
+    assert_ne!(states[0], states[1]);
+}
+
+#[test]
+fn a_root_directory_observation_binds_lexical_file_resolution() {
+    jvmcontract::tool_tier!();
+    if classes().is_none() { return }
+    let mut o = proving("oc.JointStartup#atRoot", "result", "root-cwd");
+    o.observed_initializers = vec!["oc.JointStartup$Directory".into()];
+    o.observed_runtime.root_working_directory = true;
+    let run = property::run(&o).unwrap();
+    assert_eq!(run.verdict, Verdict::Verified, "{}", run.output);
+    assert!(run.stated.unwrap().assumptions.iter().any(|a| a.text.contains("absolute-path base both at the Unix root")));
+    let mut c = proving("oc.JointStartup#canonical", "result", "root-canonical");
+    c.observed_initializers = vec!["oc.JointStartup$Canonical".into()];
+    c.observed_runtime.root_working_directory = true;
+    assert!(property::run(&c).unwrap_err().to_string().contains("getCanonicalPath"));
+}
+
+#[test]
+fn an_unobserved_reference_can_cross_an_application_constructor_until_inspected() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(&c.app).args(["oc.JointStartup", "carry"]).output().unwrap();
+    assert!(jvm.status.success());
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true");
+    for (method, verdict) in [("carried", Verdict::Verified), ("inspectsCarried", Verdict::Unverifiable)] {
+        let mut o = proving(&format!("oc.JointStartup#{method}"), "result", method);
+        o.observed_initializers = vec!["oc.JointStartup$Root".into()];
+        o.observed_runtime.preinitialize_together = true;
+        let run = property::run(&o).unwrap();
+        assert_eq!(run.verdict, verdict, "{}", run.output);
+        if verdict == Verdict::Unverifiable {
+            assert!(run.output.contains("Store.opaque") && run.output.contains("inspectsCarried"), "{}", run.output);
+        }
+    }
+}
+
+#[test]
+fn observed_enum_constants_keep_their_aliases_and_both_declaring_classes_fields() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(&c.app).arg("oc.ObservedModes").output().unwrap();
+    assert!(jvm.status.success());
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true true");
+
+    let observed = |entry, owner: &str, work| {
+        let mut o = proving(entry, "result", work);
+        o.observed_initializers = vec![owner.into()];
+        property::run(&o).unwrap()
+    };
+    let own = observed("oc.ObservedModes#matches", "oc.ObservedModes", "enum-fields");
+    assert_eq!(own.verdict, Verdict::Verified, "{}", own.output);
+    assert!(own.stated.unwrap().assumptions.iter().any(|a| a.text.contains("oc.mode, not set")));
+    let borrowed = observed("oc.ObservedModes$Borrower#matches", "oc.ObservedModes$Borrower", "foreign-enum");
+    assert_eq!(borrowed.verdict, Verdict::Unverifiable, "{}", borrowed.output);
+    assert!(borrowed.output.contains("COPIED") && borrowed.output.contains("no value"), "{}", borrowed.output);
+
+    let cp = jvmcontract::classpath::ClassPath::new().with_default_jdk();
+    if cp.load("java/lang/Enum").unwrap().unwrap().class.field("hash").is_some() {
+        let hash = observed("oc.ObservedModes#stableHash", "oc.ObservedModes", "enum-hash");
+        assert_eq!(hash.verdict, Verdict::Unverifiable, "{}", hash.output);
+        assert!(hash.output.contains("java.lang.Enum.hash"), "{}", hash.output);
+    }
+}
+
 /// A class a multi-release JAR holds a class file of for Java 17 on is the one a JVM 17+ runs: `mr.Release.get()`
 /// is 20 there, not the base file's 1. The tool read only the base, and so proved `released() == 1` and
 /// `releasedField() == 1`, found `released() == 20` violated on a witness whose outcome was 1, and, with the class's

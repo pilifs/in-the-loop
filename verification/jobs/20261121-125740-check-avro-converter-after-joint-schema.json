@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-125740-check-avro-converter-after-joint-schema",
+  "title": "Check Avro converter after joint Schema initialization",
+  "description": "Exercise the frozen 21 capacity and logical-length combinations on the original fixed nested converter and its 124-entry classpath. The subject JVM initializes Schema with two processors before entry. Qualify all transitive application class files and the single heap shared by their static fields. Capture the next unsupported operation if the buffer proof is still open.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T12:57:40+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Check the fixed original Avro converter",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage joint-startup --tasks direct-limit-fix-joint-startup",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/joint-startup-native"
+  ]
+}

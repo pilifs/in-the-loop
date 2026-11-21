@@ -38,6 +38,30 @@ The scorecard seals immutable first reports and evidence and enforces all 24 ori
 
 Pinned native and JBMC invocations were compared before solver launch on identical artifact, observer and bounds. Verification jobs 20261121-000827-348-compare-jbmc-on-the-matched-external and 20261121-000827-351-compare-jbmc-on-the-matched-external run that actual engine comparison. Verification jobs 20261121-000727-replay-fscrawler-ordinary-docx-across-th and 20261121-000727-replay-bump-assertj-guava-enforcer-on-bo rerun the two disclosed BUMP classifications using their content-addressed images. The independent signed reference under curation is excluded from all public calibration counts.
 
+### Record verification results for 1 job(s)
+
+change `kwopuvyzuups` · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-232916-compare-stock-compcheck-knowledge-on-aws: passed: 1 passed step(s) in 19.8s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Note the user's answer to the Maven-resolver question in VF-048
+
+change `yxvunwsmovuo` · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
+
+Through the run's continue message the user exempts Maven and Gradle resolution from public repositories from the web-request limit (serially, one shared cache under ~/.cache/in-the-loop/), and BUMP cases are fetched one by one. Whether the exemption goes into the operating notes is left to the user. Documentation only.
+
+### Record verification results for 5 job(s)
+
+change `yznztvqqwuvt` · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
+
+Outputs applied for 1 of the 5 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-233743-run-assisted-compcheck-on-original-aws-d: passed: 1 passed step(s) in 24.9s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261120-234730-348-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 6.2s, peak 168.6 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234730-349-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 3.1s, peak 156.6 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed 20261120-234730-350-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 4.6s, peak 136.4 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234731-351-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 5.4s, peak 144.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `urmwmrtxmtvl` · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
+
+Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc: failed: 1 failed step(s) in 5.0s, peak 140.2 MiB (estimated 1m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261120-234731-352-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 57.1s, peak 169.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz) has every step in between: reasoning, tool calls and their results.

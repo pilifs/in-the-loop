@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "full-length",
+  "statement": "A full five-byte buffer retains its full extent.",
+  "assume": "code >= 20 && code < 21",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.WritableBuffer#bounds(I)I",
+    "mapping": "A full five-byte buffer retains its full extent. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 21
+  },
+  "observedInitializers": {
+    "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+    "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+  },
+  "observedRuntime": {
+    "emptyEnvironment": true,
+    "preinitializeTogether": true,
+    "processors": 2,
+    "rootWorkingDirectory": true
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13"
+  },
+  "notes": [
+    "Before the original entry, the subject JVM initializes Avro Schema and Hadoop BytesWritable in that order with two processors, an empty environment and the Unix root working directory. The two startup roots and all their transitive application statics share one object table. The admitted inputs and public observations match the original claim."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "truncate",
+  "statement": "All strings of up to four a or grin tokens retain exactly the complete tokens in the requested offset and width.",
+  "assume": "code >= 0 && code < 1515",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.SurrogateCuts#truncate(I)I",
+    "mapping": "All strings of up to four a or grin tokens retain exactly the complete tokens in the requested offset and width. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 1515
+  }
+}

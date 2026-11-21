@@ -225,13 +225,15 @@ def disposition(answer, method, bounds, rc):
     elif (
         answer["verdict"] == "violation"
         and rc == 1
-        and (answer.get("replay") or {}).get("by") == "jvm"
         and answer.get("counterexample")
-        and (answer.get("replay") or {}).get("reproduced")
+        and (answer.get("replay") or {}).get("reproduced") is True
     ):
-        return "refuted", None
-    else:
-        return "open", answer.get("problem") or answer.get("output") or answer["verdict"]
+        witness = answer["replay"].get("by")
+        if witness == "jvm":
+            return "refuted", None
+        if witness == "interpreter":
+            return "needs-jvm-replay", None
+    return "open", answer.get("problem") or answer.get("output") or answer["verdict"]
 
 
 def check(plan, prepared, shared, work, out, exe, seconds, first, max_cases, task_start):
@@ -357,7 +359,7 @@ def check(plan, prepared, shared, work, out, exe, seconds, first, max_cases, tas
             )
         verified = {**cases[v], "raw": str((dest / "native.json").relative_to(out)), "reusedInBatch": reused}
         record["checked"].append(verified)
-        if verified["status"] == "refuted":
+        if verified["status"] in ("refuted", "needs-jvm-replay"):
             inputs = [{"name": parameter, "type": "int", "value": v}]
             replay_start = time.monotonic()
             replay = replay_candidate.check(
@@ -467,7 +469,7 @@ def validate_result(folder, plan, path):
         replay = doc.get("originalJVMReplay", {})
         if (
             not checked
-            or checked[-1]["status"] != "refuted"
+            or checked[-1]["status"] not in ("refuted", "needs-jvm-replay")
             or not replay.get("reproduced")
             or replay.get("entry") != entry
         ):

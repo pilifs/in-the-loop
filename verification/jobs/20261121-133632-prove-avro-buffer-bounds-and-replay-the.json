@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-133632-prove-avro-buffer-bounds-and-replay-the",
+  "title": "Prove Avro buffer bounds and replay the parent witness",
+  "description": "Run the fixed and parent nested BytesWritableConverter over every registered capacity and logical length after the same two-root JVM startup, with the original classes and pinned image. Confirm the physical fixed limit and capacity and the parent counterexample. Recheck the resulting native selector through the original parent entry without any startup condition.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T13:36:32+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check the original nested converter on both revisions",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage buffer-wrap --tasks direct-limit-parent-writable-startup,direct-limit-fix-writable-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Replay the native witness on the original parent",
+      "run": "python3 examples/tools/build.py 355 --original-witness direct-limit-parent --from-task direct-limit-parent-writable-startup",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native",
+    "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions",
+    "examples/355-avro-writable-buffer-limit/records/original-witnesses"
+  ]
+}

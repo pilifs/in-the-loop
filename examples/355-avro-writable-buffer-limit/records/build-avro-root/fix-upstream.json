@@ -1,0 +1,177 @@
+{
+  "revision": "f3bb10eaea1f03eb17893bc779eb26213da8177c",
+  "side": "fix",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-pl",
+      "lang/java/mapred",
+      "-am",
+      "-DskipTests",
+      "-Dinvoker.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 90.44,
+    "logSha256": "1a7d2f2e8bacedeed3c1596017058c1158f2402ad61a115eb309183c9975e9d3",
+    "errors": [],
+    "tail": [
+      "[INFO] Apache Avro IPC .................................... SUCCESS [ 13.701 s]",
+      "[INFO] Apache Avro IPC Jetty .............................. SUCCESS [  4.003 s]",
+      "[INFO] Apache Avro Mapred API ............................. SUCCESS [ 16.983 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  01:27 min",
+      "[INFO] Finished at: 2026-11-21T09:59:01Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "providedClasspath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "lang/java/mapred/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=compile",
+      "-Dmdep.outputFile=/project/lang/java/mapred/target/organic-compile.txt"
+    ],
+    "exit": 0,
+    "seconds": 5.85,
+    "logSha256": "03523725e7985c3f2f9634bf81d65690dfc8c41ee567695e7d5bf91e5cfb4d0a",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ avro-mapred ---",
+      "[INFO] Wrote classpath file '/project/lang/java/mapred/target/organic-compile.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  3.393 s",
+      "[INFO] Finished at: 2026-11-21T09:59:14Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "lang/java/mapred/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/lang/java/mapred/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 6.84,
+    "logSha256": "d1d6aefa5e830d769c9e4a5b488128996f9e508e0d5abee2b7ed33bd6cd1baa1",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ avro-mapred ---",
+      "[INFO] Wrote classpath file '/project/lang/java/mapred/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  4.394 s",
+      "[INFO] Finished at: 2026-11-21T09:59:08Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "lang/java/mapred/target/avro-mapred-1.13.0-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "lang/java/mapred/target/avro-mapred-1.13.0-SNAPSHOT.jar",
+        "sha256": "dce9b9276b50fc76cb7ed430c2fa70e2ec0f08fa902a87962d07b7f38857d96d",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "org/apache/avro/hadoop/io/AvroDatumConverterFactory.class",
+    "selectedClassSha256": "75260f02c55da260001681d8c8762e61c750c3f253849cf71c00700e8cb13bc6",
+    "sourceSha256": "f22312d4f8ce30910ac7db9378b47c9bed6b9c887457e00c0436af4917c9dd83",
+    "hostClasspath": "Maven runtime, followed by the original module's compile-only entries including its provided Hadoop client"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "lang/java/mapred",
+        "-am",
+        "-Dmaven.build.cache.enabled=false",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 23.51,
+      "logSha256": "2635572627c2cc74a0cb7f62090d6346a80c5d72d873520571d08d88f05e6113",
+      "errors": [],
+      "tail": [
+        "[INFO] Apache Avro IPC .................................... SUCCESS [  4.719 s]",
+        "[INFO] Apache Avro IPC Jetty .............................. SUCCESS [  0.817 s]",
+        "[INFO] Apache Avro Mapred API ............................. SUCCESS [  3.299 s]",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  21.224 s",
+        "[INFO] Finished at: 2026-11-21T09:59:38Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testSourceSha256": {
+      "lang/java/mapred/src/test/java/org/apache/avro/hadoop/io/TestAvroDatumConverterFactory.java": "42314e365583fe4fe30c9f1d1ce6ff0017bada3b8a5add89d964320ea468b5bb"
+    },
+    "transplant": [],
+    "named": {
+      "TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength": [
+        {
+          "status": "passed",
+          "class": "org.apache.avro.hadoop.io.TestAvroDatumConverterFactory",
+          "method": "convertBytesWritableRespectsLogicalLength",
+          "xmlSha256": "df1b993f09ea5f1111e7e187ef5d2ca69948cb395f9938bcefe2ee2580368fda"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 2914
+  }
+}

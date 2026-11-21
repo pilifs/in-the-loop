@@ -1,0 +1,386 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261121T105632Z-ba9e4328",
+  "task": "contents-fix",
+  "claimKey": "c5dc7698b71289a5",
+  "revisions": [
+    "fix"
+  ],
+  "startedAt": "2026-11-21T10:56:32.764388+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261121-102122-359-build-historical-build-with-the-decl",
+  "sourceCommit": "88866c1dafc86d76b2c905878108da7b0d94ac95",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0023
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.4609
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.5222
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.6249
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 10.4508
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 10.6486
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "fix": {
+      "revision": "88982ba82c3195039ace015ef8ba88ddc979cfe4",
+      "target": {
+        "class": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList",
+        "method": "addAllAtIndex",
+        "descriptor": "(I[Z)Z",
+        "loadedFrom": "built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+        "classSha256": "ccad37b551b9efc1bef066a2898e5be39498d126dd20774c6eb4e778dadf436a",
+        "adapterCalls": [
+          "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#<init>([Z)V",
+          "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+          "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#get(I)Z",
+          "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#size()I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "589872431e831ccfdb7030911d4a6e83d76fbf69f5e7064919da3d3c43db59ac",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "61eb265a42c5a186ab435a1d8dc5d9bc35fac20c327ec51094b84009ad3679f7",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+          "sha256": "10cf64ee6b1c58769a160f870b019fb819b89cba1fa3db01e20f001331b30f75",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/eclipse-collections/eclipse-collections at 88982ba82c3195039ace015ef8ba88ddc979cfe4: eclipse-collections/target/eclipse-collections-12.0.0-SNAPSHOT.jar"
+        },
+        {
+          "path": "lib/org/eclipse/collections/eclipse-collections-api/12.0.0-SNAPSHOT/eclipse-collections-api-12.0.0-SNAPSHOT.jar",
+          "sha256": "fe48f4b5999ef92a6d10e30f6d4e7775317377db77279d5152c4e93b2af5259f",
+          "role": "dependency",
+          "coordinates": "org.eclipse.collections:eclipse-collections-api:12.0.0-SNAPSHOT",
+          "origin": "installed in the build's local repository by the recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "27dcc655f724a2590e6a0a5d35db9d5b7bd09e00569272cfff874571c7c8f03d",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+    "prove",
+    "organic.InsertBits#contents(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+    "--classpath",
+    "prepare/fix/lib/org/eclipse/collections/eclipse-collections-api/12.0.0-SNAPSHOT/eclipse-collections-api-12.0.0-SNAPSHOT.jar",
+    "--assume",
+    "code >= 0 && code < 2865",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "96",
+    "--max-array-length",
+    "64",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "15e32d8b0bb81586c2a4cd37b1aa8eb8b2382d8ed4ee938af3981f00ebf9bc9f",
+    "commit": "88866c1dafc86d76b2c905878108da7b0d94ac95",
+    "libTree": "2d182dd1f729468156da6c7fb83da09a8c0e8d6f",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 96,
+      "maxArrayLength": 64
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "The resulting list has the original prefix, inserted bits and original suffix, or stays intact after an invalid index. Its original receiver and direct outcome are indexed in controls/table.json.",
+      "method": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "revisions": {
+        "fix": {
+          "commit": "88982ba82c3195039ace015ef8ba88ddc979cfe4",
+          "loadedFrom": "built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+          "classSha256": "ccad37b551b9efc1bef066a2898e5be39498d126dd20774c6eb4e778dadf436a",
+          "origin": "built by maven from https://github.com/eclipse-collections/eclipse-collections at 88982ba82c3195039ace015ef8ba88ddc979cfe4: eclipse-collections/target/eclipse-collections-12.0.0-SNAPSHOT.jar",
+          "parameters": {
+            "names": [
+              "index",
+              "source"
+            ],
+            "recordedIn": "LocalVariableTable"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "organic.InsertBits#contents(I)I",
+        "mapping": "The resulting list has the original prefix, inserted bits and original suffix, or stays intact after an invalid index. Its original receiver and direct outcome are indexed in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2865
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "fix": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "61eb265a42c5a186ab435a1d8dc5d9bc35fac20c327ec51094b84009ad3679f7",
+          "role": "adapter"
+        },
+        {
+          "path": "built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+          "sha256": "10cf64ee6b1c58769a160f870b019fb819b89cba1fa3db01e20f001331b30f75",
+          "role": "original"
+        },
+        {
+          "path": "lib/org/eclipse/collections/eclipse-collections-api/12.0.0-SNAPSHOT/eclipse-collections-api-12.0.0-SNAPSHOT.jar",
+          "sha256": "fe48f4b5999ef92a6d10e30f6d4e7775317377db77279d5152c4e93b2af5259f",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "organic.InsertBits#contents(I)I",
+    "entryBindings": {
+      "fix": {
+        "entry": "organic.InsertBits#contents(I)I",
+        "classSha256": "cdb73de25194d5c18944fdc32edbe0bfc81b98278e21f671767fa030262fa64c",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+        "subjectClassSha256": "ccad37b551b9efc1bef066a2898e5be39498d126dd20774c6eb4e778dadf436a"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "checkedEntry": "organic.InsertBits#contents(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 2865"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "96"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "64"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "organic.InsertBits#contents(I)I",
+        "mapping": "The resulting list has the original prefix, inserted bits and original suffix, or stays intact after an invalid index. Its original receiver and direct outcome are indexed in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2865
+      }
+    },
+    "commits": {
+      "fix": "88982ba82c3195039ace015ef8ba88ddc979cfe4"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "6656",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx4300m",
+      "JVMCONTRACT_JAR_RELEASE": "21"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "fix": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+          "gaps",
+          "--target",
+          "organic.InsertBits#contents(int)",
+          "--classes",
+          "prepare/fix/adapter-fix.jar",
+          "--classpath",
+          "prepare/fix/built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+          "--classpath",
+          "prepare/fix/lib/org/eclipse/collections/eclipse-collections-api/12.0.0-SNAPSHOT/eclipse-collections-api-12.0.0-SNAPSHOT.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.065,
+        "stdout": "verifier/probe-fix.stdout",
+        "stderr": "verifier/probe-fix.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.util.BitSet.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.util.BitSet.<init>(int)",
+            "sites": [
+              "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.<init>:73"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.BitSet.set(I)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.BitSet.set(int)",
+            "sites": [
+              "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.<init>:78"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.BitSet.set(IZ)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.BitSet.set(int, boolean)",
+            "sites": [
+              "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.addAllAtIndex:321",
+              "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.addAllAtIndex:326"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.BitSet.get(I)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.BitSet.get(int)",
+            "sites": [
+              "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.addAllAtIndex:321",
+              "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.get:184"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 9.8193,
+      "peakRssBytes": 159682560,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 9.8193,
+    "peakRssBytes": 159682560,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 9.824,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/contents-fix/20261121T105632Z-ba9e4328/result.json",
+  "preparedClaim": "87f770afe101c92c",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.BitSet.<init>(I)V@jdk-21.0.13 (java.util.BitSet.<init>(int) at org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.<init>:73). With --gaps assume it assumes instead that java.util.BitSet.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+  "endedAt": "2026-11-21T10:56:43.413072+00:00"
+}

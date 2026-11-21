@@ -1,0 +1,17 @@
+{
+  "task": "postorder-fix",
+  "scope": "A separate diagnostic on the unchanged public call. No original-scope strict outcome is awarded.",
+  "claimKey": "ad2283d9d395141c",
+  "revision": "6529f264066e31bd9e78c71111ade3a20142d285",
+  "strictStop": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "additionalArguments": [
+    "--observed-initializer",
+    "com.github.javaparser.utils.LineSeparator"
+  ],
+  "boundedDiagnostic": {
+    "verdict": "unverifiable",
+    "problem": "outside the fragment: reads the static field com.github.javaparser.utils.LineSeparator.SYSTEM, which the class's observed initializer left as an object of com.github.javaparser.utils.LineSeparator: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)",
+    "rawSha256": "b5859119f545f2ead1f6d4bae78b96bd134e03775fdf122a786a292b843ba60c"
+  },
+  "capturedBuild": "records/build-historical/build-fix.json"
+}

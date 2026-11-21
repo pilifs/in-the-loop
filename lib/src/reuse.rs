@@ -97,6 +97,7 @@ pub const PROPERTY_OPTIONS: &[(&str, &str)] = &[
     ("lemmas", "what the proof rests on: refused under the cache, which does not key the lemmas"),
     ("summary", "set only by a check that uses the lemma: refused under the cache"),
     ("observed_initializers", "what the proof rests on, an observation on a JVM: refused under the cache, which does not key it (property::run)"),
+    ("observed_runtime", "settings of an observed initializer: its captured state is outside the property-cache key"),
     ("previous", "set only by a regression check made as a property of the pair of versions: refused under the cache"),
     ("requested_models", "what the proof rests on, a model run on request: refused under the cache, which does not key it (property::run)"),
     ("stand_ins", "what the proof rests on, a stand-in sampled on a JVM: refused under the cache, which does not key it (property::run)"),
@@ -231,6 +232,9 @@ fn json<T: Serialize>(v: &T) -> String {
 /// refuse it itself (no such class or method), so that there is nothing to key; an error when it is uncacheable.
 pub fn property_claim(options: &Options) -> Result<Option<CanonicalClaim>, Unsupported> {
     check_fields(&format!("{options:?}"), PROPERTY_OPTIONS)?;
+    if !options.observed_initializers.is_empty() || options.observed_runtime != Default::default() {
+        return Err(uncacheable("the proof uses an observed initializer or its process settings, which the property cache does not key"));
+    }
     if options.decreases.is_some() || options.lemmas.is_some() || options.summary {
         return Err(uncacheable("it is proved by induction or with lemmas (--decreases, --lemmas), which the key does not read: run it without --cache"));
     }
@@ -792,10 +796,12 @@ mod tests {
 
     #[test]
     fn every_field_of_the_property_options_is_named_by_the_projection() {
-        let options = Options::new(&[PathBuf::from("classes")], "shop.Pricing#fee");
+        let mut options = Options::new(&[PathBuf::from("classes")], "shop.Pricing#fee");
         let fields = top_level_fields(&format!("{options:?}"));
         assert_eq!(fields.len(), PROPERTY_OPTIONS.len(), "{fields:?}");
         check_fields(&format!("{options:?}"), PROPERTY_OPTIONS).unwrap();
+        options.observed_runtime.empty_environment = true;
+        assert!(property_claim(&options).unwrap_err().what.contains("observed initializer"));
     }
 
     #[test]

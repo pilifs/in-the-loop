@@ -84,6 +84,18 @@ def source(entry, claim, inputs, names, *, argument_expression=None, helper=""):
     """Render a replay of the selected public static entry. Inputs have already been type checked."""
     owner, method, descriptor = runtime_jar.parse_target(entry)
     statements = []
+    settings = claim.get("observedRuntime", {})
+    if count := settings.get("processors"):
+        statements.append(f'if (Runtime.getRuntime().availableProcessors() != {count}) throw new IllegalStateException("processor count");')
+    if settings.get("emptyEnvironment"):
+        statements.append('if (!System.getenv().isEmpty()) throw new IllegalStateException("process environment");')
+    if settings.get("rootWorkingDirectory"):
+        statements.append('if (!"/".equals(System.getProperty("user.dir")) || !"/".equals(new java.io.File("").getAbsolutePath())) throw new IllegalStateException("working directory");')
+    if settings.get("preinitializeTogether"):
+        for name in sorted(claim["observedInitializers"]):
+            if not re.fullmatch(r"[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*", name):
+                raise ValueError("invalid binary name for JVM initialization")
+            statements.append(f'Class.forName("{name}", true, ClassLoader.getSystemClassLoader());')
     for arg in inputs:
         value = arg["value"]
         if argument_expression is not None and len(inputs) == 1:
@@ -140,7 +152,8 @@ def source(entry, claim, inputs, names, *, argument_expression=None, helper=""):
         else:
             raise ValueError(f"replay cannot observe {o}")
         statements.append(f"System.out.println({expr});")
-    return "class CandidateReplay { public static void main(String[] args) {\n" + "\n".join(statements) + "\n} " + helper + "}\n"
+    throws = " throws ClassNotFoundException" if settings.get("preinitializeTogether") else ""
+    return "class CandidateReplay { public static void main(String[] args)" + throws + " {\n" + "\n".join(statements) + "\n} " + helper + "}\n"
 
 
 def check(plan, prepared, inputs, work, entry=None):
@@ -178,13 +191,19 @@ def check(plan, prepared, inputs, work, entry=None):
             cp = [a for a in arts if a.path in (original, holder) or a.role in ("dependency", "stub")]
             if entry != plan.target:
                 cp.sort(key=lambda a: a.path != holder)
-            command = [str(Path(jdk["home"]) / "bin/java"), "-cp", os.pathsep.join(str(where / a.path) for a in cp), str(path)]
-            result = subprocess.run(command, capture_output=True, text=True, timeout=30, env=runtime._verifier_env(jdk))
+            settings = claim.get("observedRuntime", {})
+            flags = [f"-XX:ActiveProcessorCount={settings['processors']}"] if settings.get("processors") else []
+            command = [str(Path(jdk["home"]) / "bin/java"), *flags, "-cp", os.pathsep.join(str((where / a.path).absolute()) for a in cp), str(path.absolute())]
+            env = {} if settings.get("emptyEnvironment") else runtime._verifier_env(jdk)
+            result = subprocess.run(command, capture_output=True, text=True, timeout=30, env=env,
+                                    cwd="/" if settings.get("rootWorkingDirectory") else None)
             if result.returncode:
                 raise ValueError(f"JVM replay failed on {rev}: {result.stderr[-1000:]}")
             rows = result.stdout.splitlines()
             side = {"entryClassSha256": hashlib.sha256(data).hexdigest(), "classpath": [a.sha256 for a in cp],
                     "program": java, "admitted": bool(rows and rows[0] == "admitted")}
+            if settings:
+                side["observedRuntime"] = settings
             report["sides"][rev] = side
             if rows == ["outside"]:
                 raise ValueError("domain mismatch: the frozen precondition rejects this input")

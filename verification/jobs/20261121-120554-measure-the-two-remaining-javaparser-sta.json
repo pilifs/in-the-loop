@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-120554-measure-the-two-remaining-javaparser-sta",
+  "title": "Measure the two remaining JavaParser startup boundaries on the corrected revision",
+  "description": "Keep the remaining startup boundaries independently reproducible on the same verifier as the traversal proofs. Recheck the fixed original without assumptions, then the same public call with only the observed LineSeparator state, retaining the first refusal in each ordinary strict run. Replaces the earlier attempt stopped by an incomplete verifier build.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "360"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T12:05:54+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "revision": "7dc35cf64662150aeaee63ba50f45757639fc067",
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Run the two less constrained JavaParser claims",
+      "run": "python3 lib/benchmark/organic-java/run.py 360 --route native --stage traversal-boundaries --tasks postorder-fix,postorder-fix-observed",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/360-javaparser-postorder-root/records/traversal-boundaries-native"
+  ]
+}

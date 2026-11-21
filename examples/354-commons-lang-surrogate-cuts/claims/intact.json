@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "intact",
+  "statement": "Cutting precisely around the surrogate pair retains both original UTF-16 units.",
+  "assume": "code >= 8 && code < 9",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.SurrogateCuts#fixedCut(I)I",
+    "mapping": "Cutting precisely around the surrogate pair retains both original UTF-16 units. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 1515
+  }
+}

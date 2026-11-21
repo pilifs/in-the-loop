@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-093202-353-build-guava-testlib-build-with-the-d",
+  "title": "353 build-guava-testlib build with the declared Maven JDKs and original named tests",
+  "description": "Provide the actual compilers selected by the original Maven POM while verifying the application under JDK 21. Retain both fresh named test reports, the compiled class and ordered dependencies including the declared Hadoop host where applicable.",
+  "kind": "real-world",
+  "capabilities": [
+    "organic-java-pr"
+  ],
+  "links": {
+    "examples": [
+      "353"
+    ]
+  },
+  "expected": "Original modules built and assertions fail on the parent and pass on the fix.",
+  "submitted": {
+    "at": "2026-11-21T09:32:02+00:00",
+    "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "maven"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "memoryLimit": "7G",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Build and test both pinned revisions",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 353 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/353-guava-saturated-sum/records/build-guava-testlib",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/353-guava-saturated-sum/records/build-guava-testlib"
+  ]
+}

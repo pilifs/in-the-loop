@@ -1,0 +1,145 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "gson-repeated-bom",
+    "family": "gson",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/google/gson",
+    "revisions": {
+      "parent": {
+        "commit": "216c41b6e70dc04e6856418dd76bb00c854eb6b4"
+      },
+      "fix": {
+        "commit": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
+        "parent": "216c41b6e70dc04e6856418dd76bb00c854eb6b4"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/organic/BomReader.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "gson",
+        "-am",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    },
+    "capturedBuilds": {
+      "parent": "records/upstream/build-parent.json",
+      "fix": "records/upstream/build-fix.json"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;"
+    },
+    {
+      "id": "chunked-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "claim": "claims/chunked.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "chunked-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "claim": "claims/chunked.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "plain-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "claim": "claims/plain.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "plain-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "claim": "claims/plain.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/organic/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

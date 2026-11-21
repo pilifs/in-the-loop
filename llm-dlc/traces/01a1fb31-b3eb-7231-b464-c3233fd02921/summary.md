@@ -168,6 +168,126 @@ A distinct live Commons Text diagnostic reproduced the refusal after two request
 
 The fixed profile and launch digests were rechecked on a real scoped H2 intake, which stopped at the original GitHub-only source boundary with zero inference. The new Commons Text run starts fresh and has its own release, clock and report store within the same 4 CPU, 16 GiB, 250000 token and two-hour budgets.
 
+### Record verification results for 2 job(s)
+
+change `xmkzyxymquvz` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-230733-check-commons-text-pr-586-csv-return-pre: failed: 1 failed step(s) in 2.2s, peak 146.2 MiB (estimated 3m00s, 3.0 GiB); 1 output file(s) changed 20261120-231316-check-returned-h2-keys-through-the-uncha: passed: 1 passed step(s) in 5.4s, peak 151.0 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1 Applied 17 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `vutxuxqnwlps` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-232343-run-the-full-rxjava-jdbc-historical-sure: passed: 1 passed step(s) in 46.3s, peak 419.1 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that the VM lacks disk for BUMP's packaged archive (VF-048)
+
+change `kznutnwvllpm` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+The external-upgrade-evaluation run's agent found its first blinded builds missing historical Maven plugins and asked about BUMP's 150 GB packaged archive, which doesn't fit on this VM. The user will restart the VM with more storage once no run is under way, and set a note in the run's continue message meanwhile. VF-048 records it, with the agent's open question about fetching public Maven dependencies one at a time. Documentation only.
+
+### Record verification results for 1 job(s)
+
+change `kwopuvyzuups` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-232916-compare-stock-compcheck-knowledge-on-aws: passed: 1 passed step(s) in 19.8s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Note the user's answer to the Maven-resolver question in VF-048
+
+change `yxvunwsmovuo` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Through the run's continue message the user exempts Maven and Gradle resolution from public repositories from the web-request limit (serially, one shared cache under ~/.cache/in-the-loop/), and BUMP cases are fetched one by one. Whether the exemption goes into the operating notes is left to the user. Documentation only.
+
+### Record verification results for 5 job(s)
+
+change `yznztvqqwuvt` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 5 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-233743-run-assisted-compcheck-on-original-aws-d: passed: 1 passed step(s) in 24.9s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261120-234730-348-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 6.2s, peak 168.6 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234730-349-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 3.1s, peak 156.6 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed 20261120-234730-350-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 4.6s, peak 136.4 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234731-351-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 5.4s, peak 144.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `urmwmrtxmtvl` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc: failed: 1 failed step(s) in 5.0s, peak 140.2 MiB (estimated 1m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261120-234731-352-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 57.1s, peak 169.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+change `qutnrkoolnku` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 2 of the 3 job(s); 1 declared or produced none. 20261121-000727-replay-fscrawler-ordinary-docx-across-th: failed: 1 failed step(s) in 2.8s, peak 488.7 MiB (estimated 5m00s, 4.0 GiB) 20261121-000827-348-compare-jbmc-on-the-matched-external: passed: 1 passed step(s) in 6.0s, peak 146.2 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-000827-351-compare-jbmc-on-the-matched-external: passed: 1 passed step(s) in 4.8s, peak 116.9 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zqwnltzmwrql` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-000727-replay-bump-assertj-guava-enforcer-on-bo: passed: 1 passed step(s) in 36.1s, peak 1.0 GiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `ztoowyuwunxv` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-001750-348-run-standalone-jbmc-on-both-original: passed: 1 passed step(s) in 16.2s, peak 417.6 MiB (estimated 6m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `nkzwzmrztvns` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-001305-replay-fscrawler-ordinary-docx-across-th: passed: 1 passed step(s) in 2m08s, peak 1.7 GiB (estimated 5m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `oorpsslqmmsp` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-001750-351-run-standalone-jbmc-on-both-original: passed: 1 passed step(s) in 10m00s, peak 4.9 GiB (estimated 6m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that a run's commit list empties when its base turns divergent (VF-049)
+
+change `uxspmtuvtunp` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+The external-upgrade-evaluation summaries dropped from 7 commits to 0: single_run.py keeps the run's base as a change id, and the agent's bookmark on the pre-rewrite copy of that merge made it divergent, so watch.commits' revset fails. The run itself is unaffected. Documentation only.
+
+### Record verification results for 1 job(s)
+
+change `skuzrpqtzyoo` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-010347-349-run-a-fresh-operator-on-the-original: passed: 1 passed step(s) in 2m59s, peak 190.1 MiB (estimated 25m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `mopswnwzolsq` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-011925-352-run-the-original-cucumber-reporting: passed: 1 passed step(s) in 1m48s, peak 2.1 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `opquyzmpmxqp` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-011924-349-run-the-original-commons-text-linux: passed: 1 passed step(s) in 2m20s, peak 13.9 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `wxnquwtxyspp` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-013031-348-reproduce-stock-compsuite-and-the-en: passed: 2 passed step(s) in 1m54s, peak 1.4 GiB (estimated 12m00s, 4.0 GiB); 17 output file(s) changed Applied 17 output(s). 20261121-013031-349-repeat-original-commons-text-ci-with: passed: 1 passed step(s) in 2m00s, peak 13.7 GiB (estimated 3m00s, 14.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zqyxplnvkxwk` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-014525-349-run-the-history-preserving-operator: passed: 1 passed step(s) in 14.0s, peak 197.1 MiB (estimated 10m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `kmrtkksrmmyy` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-015236-run-both-stock-aws-compcheck-settings-wi: passed: 1 passed step(s) in 1m01s, peak 3.8 GiB (estimated 8m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `mzpztwwvkuqq` · [log `9d80cc0d782a`](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-020417-repeat-one-sequestered-bump-testcase-in: passed: 1 passed step(s) in 1m32s, peak 1.2 GiB (estimated 4m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fb31-b3eb-7231-b464-c3233fd02921/9d80cc0d782ac8d4104333c3b00d5288411d722b32e884616c9d8b71f93af50f.jsonl.gz) has every step in between: reasoning, tool calls and their results.

@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-132242-bind-avro-and-hadoop-startup-before-the",
+  "title": "Bind Avro and Hadoop startup before the original calls",
+  "description": "Use both historical artifacts on their original 124-entry closures. Check parent and fixed direct converters and fixed factory bounds after the same measured, ordered initialization of Schema and BytesWritable. The two-CPU JVM has an empty environment and its working directory and lexical File base at the Unix root. Preserve the first checker boundary reached by each entry.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T13:22:42+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check both direct converters and the fixed factory",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage writable-startup --tasks direct-limit-parent-writable-startup,direct-limit-fix-writable-startup,bounds-fix-writable-startup",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/writable-startup-native"
+  ]
+}

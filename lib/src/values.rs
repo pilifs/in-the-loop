@@ -169,8 +169,8 @@ const LIST: &str = "java/util/List";
 /// an `int`, a `short` or a `byte` in the compiler's concatenation its decimal digits, where the String it made had
 /// no content before (for example 290, whose registrations are named `"servlet" + i`). Model 7 adds `getBytes(String)`
 /// with a constant name the JDK takes for UTF-8 (for example 307, whose previous version converts so), and
-/// `getBytes(US_ASCII)` (307's mutation control).
-pub const STRING_MODEL: &str = "jvmcontract String model 8: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
+/// `getBytes(US_ASCII)` (307's mutation control). Model 9 adds UTF-16 array slice construction and code-point reads.
+pub const STRING_MODEL: &str = "jvmcontract String model 10: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
@@ -192,7 +192,7 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
+            "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
             "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
             "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
@@ -882,6 +882,18 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         calls: &["startsWith(Ljava/lang/String;)Z"],
     },
     OperationEvidence {
+        operation: "java.lang.String.<init>([CII)V", family: Family::String, source: STRINGS_SOURCE,
+        admits: "a freshly constructed String copies the requested offset and count from a known UTF-16 array",
+        throws: &[NPE, "java.lang.StringIndexOutOfBoundsException"], leaves_out: &[], level: EvidenceLevel::Tested,
+        sampled_by: &["copiedRange"], calls: &["<init>([CII)V"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.codePointAt(I)I", family: Family::String, source: STRINGS_SOURCE,
+        admits: "a UTF-16 String and any int index; a high surrogate combines only with its following low surrogate",
+        throws: &[NPE, "java.lang.StringIndexOutOfBoundsException"], leaves_out: &[], level: EvidenceLevel::Tested,
+        sampled_by: &["codePointAtUnit"], calls: &["codePointAt(I)I"],
+    },
+    OperationEvidence {
         operation: "java.lang.String.getChars(II[CI)V", family: Family::String, source: STRINGS_SOURCE,
         admits: "proven source and destination ranges, copying raw UTF-16 units and preserving every other destination cell",
         throws: &[NPE], leaves_out: &["a range whose validity depends on the input or is false"], level: EvidenceLevel::Tested,
@@ -1306,7 +1318,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 27);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 29);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 
@@ -1320,7 +1332,8 @@ mod tests {
                 (Family::String, Some(member)) => {
                     assert_eq!(record.calls, [member], "{}", record.operation);
                     let (name, descriptor) = member.split_at(member.find('(').unwrap());
-                    assert!(crate::bmc::models_string_method(STRING, name, descriptor), "{member}");
+                    assert!(crate::bmc::models_string_method(STRING, name, descriptor)
+                        || name == "<init>" && crate::bmc::gaps::modelled_jdk_call(STRING, name, descriptor), "{member}");
                 }
                 (Family::String, None) => assert!(record.calls.is_empty(), "{}: an instruction", record.operation),
                 (Family::List | Family::Map | Family::Call, _) => assert!(!record.calls.is_empty(), "{}", record.operation),

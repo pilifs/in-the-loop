@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "358",
+  "title": "Half-byte retention across sliced base16 stream writes",
+  "summary": "A public decoding stream receives one backing byte array at its actual changing offsets. Closing it yields the mathematically decoded bytes.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "buffer-bounds",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Codec",
+    "file": "src/main/java/org/apache/commons/codec/binary/Base16.java",
+    "symbol": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A public decoding stream receives one backing byte array at its actual changing offsets. Closing it yields the mathematically decoded bytes."
+  },
+  "target": "target.json",
+  "verdictLabel": "Strict native 6/6, finite JVM 6/6",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-codec",
+    "url": "https://github.com/apache/commons-codec/pull/135"
+  },
+  "notes": [
+    "The frozen independent observation table has 2051 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+    "Decoding 4142434445 with writes at offsets 0, 3 and 7 yielded ABCD on the parent and ABCDE on the fix. A single write and a 2+4+4 schedule yielded ABCDE on both. The public stream receives the same source array for every write.",
+    "The same style of a stateful public caller and independent end observation transfers from the Gson reader. This case additionally needed the selected JDK output-stream and byte-array growth bytecode."
+  ]
+}

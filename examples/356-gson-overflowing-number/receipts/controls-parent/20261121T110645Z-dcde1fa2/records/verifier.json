@@ -1,0 +1,431 @@
+{
+  "task": "controls-parent",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/67294fff822a4ae0aa9062484ed0dffc00053f40/jvmcontract",
+      "prove",
+      "organic.OverflowNumber#lexeme(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/gson-2.14.1-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/com/google/errorprone/error_prone_annotations/2.49.0/error_prone_annotations-2.49.0.jar",
+      "--assume",
+      "code >= 10 && code < 13",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "1024",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.031,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "8a4891a9c50c7f2bd62410d871c3f3f7e7289c047b13c6a99a301cb241bd4563",
+      "commit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
+      "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 1024
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "10 is a number with its original text. The 00 and 01 controls fail during peek. The selector identifies the input and direct public observation in controls/table.json.",
+        "method": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+        "revisions": {
+          "parent": {
+            "commit": "ed2397502708ebaba53643e5c3d60e0974d7045f",
+            "loadedFrom": "built/gson-2.14.1-SNAPSHOT.jar",
+            "classSha256": "0c8301667976283989438a30b950db5eb03f7540aca439b7c71330ff3f041d2b",
+            "origin": "built by maven from https://github.com/google/gson at ed2397502708ebaba53643e5c3d60e0974d7045f: gson/target/gson-2.14.1-SNAPSHOT.jar",
+            "parameters": {
+              "names": [],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "organic.OverflowNumber#lexeme(I)I",
+          "mapping": "10 is a number with its original text. The 00 and 01 controls fail during peek. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 13
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "cfcfa1d9743b181a0a1dd7eee9904120541b1855b52f115dde6b6098ece6c0a5",
+            "role": "adapter"
+          },
+          {
+            "path": "built/gson-2.14.1-SNAPSHOT.jar",
+            "sha256": "8878e0cef9943f813b0ae91bd74d226c5222a51fab7e9876c2e3b85b79fd655b",
+            "role": "original"
+          },
+          {
+            "path": "lib/com/google/errorprone/error_prone_annotations/2.49.0/error_prone_annotations-2.49.0.jar",
+            "sha256": "3b1003e51b8ae56fdbd7c71073e81d1683b97e6c4dff5a9151164d59b769d13c",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "organic.OverflowNumber#lexeme(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "organic.OverflowNumber#lexeme(I)I",
+          "classSha256": "a2f9ea1046eb0c0a4574e90639825deec599ab5b6cb888c4645ef0331c9b1317",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+          "subjectClassSha256": "0c8301667976283989438a30b950db5eb03f7540aca439b7c71330ff3f041d2b"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+        "checkedEntry": "organic.OverflowNumber#lexeme(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 10 && code < 13"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "96"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "1024"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "organic.OverflowNumber#lexeme(I)I",
+          "mapping": "10 is a number with its original text. The 00 and 01 controls fail during peek. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 13
+        }
+      },
+      "commits": {
+        "parent": "ed2397502708ebaba53643e5c3d60e0974d7045f"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "6656",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx4300m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/67294fff822a4ae0aa9062484ed0dffc00053f40/jvmcontract",
+            "gaps",
+            "--target",
+            "organic.OverflowNumber#lexeme(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/built/gson-2.14.1-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/parent/lib/com/google/errorprone/error_prone_annotations/2.49.0/error_prone_annotations-2.49.0.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+              "sites": [
+                "com.google.gson.stream.JsonReader.getPath:1719"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append([CII)Ljava/lang/StringBuilder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(char[], int, int)",
+              "sites": [
+                "com.google.gson.stream.JsonReader.nextQuotedValue:1164",
+                "com.google.gson.stream.JsonReader.nextQuotedValue:1174",
+                "com.google.gson.stream.JsonReader.nextQuotedValue:1189",
+                "com.google.gson.stream.JsonReader.nextUnquotedValue:1243",
+                "com.google.gson.stream.JsonReader.nextUnquotedValue:1252"
+              ]
+            },
+            {
+              "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+              "sites": [
+                "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0299,
+        "peakRssBytes": 82518016,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "organic.OverflowNumber#lexeme(int)",
+        "domain": "code: int",
+        "assume": "code >= 10 && code < 13",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 96 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ organic.OverflowNumber#lexeme(int) satisfies `result == 1` on every input where code >= 10 && code < 13 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: lexeme(code=12) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.010743439,
+          "properties": 1,
+          "unwind": 96,
+          "max_array_length": 1024,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 13,
+            "solving_seconds": 9.0038e-05,
+            "gates_evaluated": 307,
+            "evaluating_seconds": 8.145e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 336,
+            "clauses": 1001,
+            "seconds": 0.00955267,
+            "loading_seconds": 0.001175393,
+            "decoding_seconds": 0.000351837,
+            "encoding_seconds": 0.001225194,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.01,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.007,
+                "encoding": 0.001,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 336,
+                "clauses": 1001
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.989,
+              "seconds": 0.005,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.004,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 276,
+                "clauses": 821
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.026,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.015,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.01
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 10 && code < 13",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 96,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found lexeme(code=12).",
+            "witness": "lexeme(code=12)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261121-105255-356-confirmation-native-checks-on-the-or/.build-py/examples-h3_vwj2y/targets/356/controls-parent/20261121T110645Z-dcde1fa2",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261121-105255-356-confirmation-native-checks-on-the-or/.build-py/examples-h3_vwj2y/targets/356/controls-parent/20261121T110645Z-dcde1fa2"
+  }
+}

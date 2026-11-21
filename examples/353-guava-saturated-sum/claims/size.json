@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "size",
+  "statement": "The view size equals the capped sum on the single key.",
+  "assume": "code >= 0 && code < 49",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 48,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.SumView#size(I)I",
+    "mapping": "The view size equals the capped sum on the single key. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 49
+  }
+}

@@ -411,6 +411,13 @@ fn the_modelled_methods_throw_as_the_jdks_do() {
     jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     verified(&cp, "charAtBounds", bounded(3));
+    verified(&cp, "copiedRange", bounded(3));
+    verified(&cp, "nullSlice", bounded(3));
+    let mut unbound = ClassPath::new();
+    unbound.add(compiled().unwrap()).unwrap();
+    no_verdict(&unbound, "nullSlice", bounded(3), "selected JDK constructor");
+    verified(&cp, "codePointAtUnit", bounded(3));
+    refuted(&cp, "firstUnitAlwaysAWholePoint", bounded(3));
     verified(&cp, "startsWithNull", bounded(3));
     verified(&cp, "emptyIsLengthZero", bounded(3));
     let nullable = Parameters { nullable: vec![0], ..bounded(3) };
@@ -849,6 +856,15 @@ const OPERATION_CASES: &[Case] = &[
     case(OPS, "indexOfStringFrom", &[3, C, C, C, 1, C, 0, 3]),
     case(OPS, "indexOfStringFrom", &[1, C, 0, 0, -1, 0, 0, 0]),
     case(OPS, "indexOfStringFrom", &[-1, 0, 0, 0, 0, 0, 0, 0]),
+    case(OPS, "copiedRange", &[HIGH, 1, 1]),
+    case(OPS, "copiedRange", &[LOW, 3, 0]),
+    case(OPS, "copiedRange", &[C, 1, i32::MAX]),
+    case(OPS, "copiedRange", &[-1, -1, 1]),
+    case(OPS, "codePointAtUnit", &[2, SMILE.0, SMILE.1, 0, 0]),
+    case(OPS, "codePointAtUnit", &[2, HIGH, C, 0, 0]),
+    case(OPS, "codePointAtUnit", &[2, SMILE.0, SMILE.1, 0, 1]),
+    case(OPS, "codePointAtUnit", &[1, HIGH, 0, 0, 1]),
+    case(OPS, "codePointAtUnit", &[-1, 0, 0, 0, 0]),
     case(OPS, "copiedUnits", &[1, HIGH, 1]),
     case(OPS, "copiedUnits", &[0, 0, 3]),
     case(OPS, "copiedUnits", &[1, LOW, -1]),
@@ -1189,12 +1205,13 @@ fn every_modelled_operation_has_a_record_its_boundary_cases_hold_on_the_jvm_the_
         .map(|m| m.split_at(m.find('(').unwrap()))
         .collect();
     for (name, descriptor) in &string_records {
-        assert!(bmc::models_string_method("java/lang/String", name, descriptor), "{name}{descriptor}");
+        assert!(bmc::models_string_method("java/lang/String", name, descriptor)
+            || *name == "<init>" && bmc::gaps::modelled_jdk_call("java/lang/String", name, descriptor), "{name}{descriptor}");
     }
     let Some(cp) = checker_classes() else { return };
     let string = cp.load("java/lang/String").unwrap().expect("the JDK's String").class;
     let modelled: Vec<String> = string.methods.iter().filter(|m| bmc::models_string_method("java/lang/String", &m.name, &m.descriptor)).map(|m| format!("{}{}", m.name, m.descriptor)).collect();
-    assert_eq!(modelled.len(), string_records.len(), "a record for each of {modelled:?}");
+    assert_eq!(modelled.len(), string_records.iter().filter(|(name, _)| *name != "<init>").count(), "a record for each of {modelled:?}");
     for record in OPERATIONS {
         assert_eq!(Some(record.jdk().to_string()), bmc::gaps::jdk_release(), "{}: sampled on the JDK the cases run on", record.operation);
         assert!(matches!(record.family, Family::String | Family::List | Family::Map | Family::Call));

@@ -1,0 +1,165 @@
+{
+  "revision": "e0eb16b8870fc05c03ab794e502dd76f97422e26",
+  "side": "parent",
+  "prerequisites": [],
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-pl",
+      "javaparser-core",
+      "-am",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 38.17,
+    "logSha256": "86b4510e5de43c4a8d688c9a8feffaa877a6276c157bbdc5f3ffc969e8d1f75a",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] javaparser-parent .................................. SUCCESS [  1.224 s]",
+      "[INFO] javaparser-core .................................... SUCCESS [ 34.556 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  36.060 s",
+      "[INFO] Finished at: 2026-11-21T10:47:12Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "javaparser-core/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/javaparser-core/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 8.49,
+    "logSha256": "f9ce2621010ae8f4940a9f5da36060b33b090c460a676373c583d8d1f4bc09aa",
+    "errors": [],
+    "tail": [
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ javaparser-core ---",
+      "[INFO] No dependencies found.",
+      "[INFO] Wrote classpath file '/project/javaparser-core/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  5.453 s",
+      "[INFO] Finished at: 2026-11-21T10:47:21Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar",
+        "sha256": "cbe961009b6fafe13085b895a486660a470485ac34316043e20df41188f446a8",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "com/github/javaparser/ast/Node.class",
+    "selectedClassSha256": "f32a7828ec7e1bdecbf5a0f8d5c18f2b14de26e6720d17940c97c569846f3b5b",
+    "sourceSha256": "4fa185a50ebef870d42a18649cfbc43ced342c3db23af1a692b7c3dad25bc902"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "javaparser-core-testing",
+        "-am",
+        "-Dmaven.build.cache.enabled=false",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=NodeTest$PostOrderIteratorTest#rootHasNoChild",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 30.78,
+      "logSha256": "2a476110824ccb1d66c1ce742979abfc5df946276917ad60282b929fc997942d",
+      "errors": [
+        "[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.310 s <<< FAILURE! -- in com.github.javaparser.ast.NodeTest$PostOrderIteratorTest",
+        "[ERROR] com.github.javaparser.ast.NodeTest$PostOrderIteratorTest.rootHasNoChild -- Time elapsed: 0.283 s <<< ERROR!",
+        "[ERROR] Errors: ",
+        "[ERROR]   NodeTest$PostOrderIteratorTest.rootHasNoChild:252 \u00bb EmptyStack",
+        "[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0",
+        "[ERROR] javaparser-core-testing ............................ FAILURE [ 19.798 s]",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.4.0:test (default-test) on project javaparser-core-testing: ",
+        "[ERROR] ",
+        "[ERROR] Please refer to /project/javaparser-core-testing/target/surefire-reports for the individual test results.",
+        "[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]"
+      ],
+      "tail": [
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+        "[ERROR] ",
+        "[ERROR] After correcting the problems, you can resume the build with the command",
+        "[ERROR]   mvn <args> -rf :javaparser-core-testing"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testPrerequisites": [],
+    "testSourceSha256": {
+      "javaparser-core-testing/src/test/java/com/github/javaparser/ast/NodeTest.java": "78eba0d34a51d9c244e18e480df0999cd09d0af53391b1d7b5454c3e551846ab"
+    },
+    "transplant": [
+      "javaparser-core-testing/src/test/java/com/github/javaparser/ast/NodeTest.java"
+    ],
+    "named": {
+      "NodeTest$PostOrderIteratorTest#rootHasNoChild": [
+        {
+          "status": "error",
+          "class": "com.github.javaparser.ast.NodeTest$PostOrderIteratorTest",
+          "method": "rootHasNoChild",
+          "xmlSha256": "690c960455d63e4a500fa16fa9356b1af1bacba5878894e4d89333f7d4e870e0",
+          "failureType": "java.util.EmptyStackException",
+          "message": "",
+          "atNamedTest": true
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 1228,
+    "from https://repo.maven.apache.org/maven2/": 10,
+    "downloadedBytes": 4573007,
+    "downloadedFiles": 10
+  }
+}

@@ -31,7 +31,21 @@ public class Arrayed {
         return c.isAssignableFrom(c);
     }
 
+    public static boolean boxedClass(boolean flag) {
+        Object value = flag ? (Object) Boolean.TRUE : Integer.valueOf(12);
+        Class<?> type = value.getClass();
+        return type == (flag ? Boolean.class : Integer.class) && Number.class.isAssignableFrom(type) == !flag;
+    }
+
+    public static boolean classCasts(boolean invalid) {
+        Object value = invalid ? Integer.valueOf(12) : (Object) new String("ok");
+        if (String.class.cast(null) != null || int.class.cast(null) != null) return false;
+        try { return String.class.cast(value) == value && !invalid; }
+        catch (ClassCastException e) { return invalid && "Cannot cast java.lang.Integer to java.lang.String".equals(e.getMessage()); }
+    }
+
     public static void main(String[] args) {
-        System.out.println(arrayed("a") + " " + ofAnArray() + " " + assignableOfAnArray() + " " + opaqueIsArray() + " " + opaqueAssignable());
+        System.out.println(arrayed("a") + " " + ofAnArray() + " " + assignableOfAnArray() + " " + opaqueIsArray() + " " + opaqueAssignable()
+                + " " + boxedClass(true) + " " + boxedClass(false) + " " + classCasts(true) + " " + classCasts(false));
     }
 }

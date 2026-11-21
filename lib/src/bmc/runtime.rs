@@ -6,11 +6,11 @@
 //! class path and the JDK, which the engine has: each is modelled where the answer is one, under an assumption the
 //! run states ([`CLASS_PATH_ASSUMPTION`]), and stays the JDK call it was elsewhere.
 //!
-//! - `Object.getClass()` of an object of an application class that the run made with `new`, of a String (a final
-//!   class), and of a `Throwable` the run made and no JDK call returned (with `new`, or the engine for the JVM or a
+//! - `Object.getClass()` of an object of an application class that the run made with `new`, a String, an object
+//!   of a final class in the selected JDK image, or a `Throwable` the run made and no JDK call returned (with `new`, or the engine for the JVM or a
 //!   model of a JDK method, as `athrow`'s handlers already take it; its class is the one `new` or the engine's own
 //!   throw named, [`super::throwables`]): that class's literal, the one object a class literal of it is (JLS
-//!   §15.8.2). Of any other object (an array, a lambda's, another JDK class's) it is the JDK call it was.
+//!   §15.8.2). Fresh arrays and exact objects from executed JDK bytecode also carry their runtime class.
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
 //!   `Class.getTypeName()` of the literal of a class that is no array: the same String, as the JDK's returns
 //!   `getName()` for such a class (an array's is its element type's name and `[]`, the JDK call it was).
@@ -257,6 +257,7 @@ pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
             | (CLASS, "getSuperclass" | "getComponentType", "()Ljava/lang/Class;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
             | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z") | (CLASS, "isInstance", "(Ljava/lang/Object;)Z")
+            | (CLASS, "cast", "(Ljava/lang/Object;)Ljava/lang/Object;")
             | ("java/lang/Object", "getClass", "()Ljava/lang/Class;")
             | (THREAD, "getContextClassLoader", "()Ljava/lang/ClassLoader;")
     )
@@ -489,8 +490,11 @@ impl Engine<'_> {
             let o_ = &path.objects[o];
             let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
             let array = o_.is_array() && !o_.assumed && !self.there_before(path, o);
-            let image_object = !o_.assumed && !self.there_before(path, o) && self.cp.state_image_class(&class).is_some();
-            if o_.lambda.is_some() || !(array || image_object || self.cp.is_application(&class) || class == STRING || exception) {
+            let list_storage = class == "java/util/ArrayList" && !self.cp.runs_model(&class) && o_.fields.contains_key("elementData");
+            let image_object = !o_.assumed && !self.there_before(path, o) && (list_storage || self.cp.state_image_class(&class).is_some());
+            let final_image_class = !o_.assumed && self.cp.load(&class).ok().flatten()
+                .is_some_and(|loaded| loaded.origin == crate::classpath::Origin::Jdk && loaded.class.is_final());
+            if o_.lambda.is_some() || !(array || image_object || final_image_class || self.cp.is_application(&class) || class == STRING || exception) {
                 return None;
             }
             let literal = self.literal(path, Literal::Class(class), CLASS);
@@ -588,6 +592,10 @@ impl Engine<'_> {
         let [Val::R(other)] = args else { return None };
         let primitive = |at: usize| path.literals.iter().any(|(l, n)| *n == at && matches!(l, Literal::PrimitiveClass(_)));
         if !primitive(o) && self.class_named(path, o).is_none() { return None; }
+        if matches!(name, "cast" | "cannotCastMsg") {
+            let (cf, method) = self.cp.library_image_method(CLASS, name, descriptor)?;
+            return Some(self.enter_method(path, CLASS, cf, method, vec![Val::R(Some(o)), Val::R(*other)]));
+        }
         if primitive(o) || (name == "isAssignableFrom" && other.is_some_and(primitive)) {
             let truth = match (name, descriptor, other) {
                 ("isInstance", "(Ljava/lang/Object;)Z", _) => FALSE,

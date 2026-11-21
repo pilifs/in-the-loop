@@ -1,0 +1,36 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-104615-organic-java-changes-preserve-quote-fami",
+  "title": "Organic Java changes preserve quote-family proof and cache identity",
+  "description": "Run the targeted proof-tier J1 regression on the repaired String and classpath code. It verifies every quote-family variant, replays the refutations on a JVM, and checks cold and reused proof keys for unchanged and changed value-model inputs.",
+  "kind": "library",
+  "capabilities": [
+    "organic-java-pr",
+    "proof-reuse"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T10:46:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "cargo",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Run the integrated String and object value proof",
+      "run": "cargo test --manifest-path lib/Cargo.toml --profile test-fast --test application_core_joint j1_the_quote_family_composes_the_four_streams -- --ignored --exact",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

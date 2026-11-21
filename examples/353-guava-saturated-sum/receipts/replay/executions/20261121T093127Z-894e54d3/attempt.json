@@ -1,0 +1,45 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261121T093127Z-894e54d3",
+  "task": "replay",
+  "claimKey": "8195b5b222244837",
+  "revisions": [
+    "parent",
+    "fix"
+  ],
+  "startedAt": "2026-11-21T09:31:27.562405+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 600
+  },
+  "strategy": {
+    "engine": null,
+    "gaps": null
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": null,
+  "sourceCommit": null,
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    }
+  ],
+  "status": "refused",
+  "lastCompletedStage": "planned",
+  "refusal": {
+    "interface": "prepare",
+    "owner": "example-targets-runtime",
+    "reason": "revision parent is failed, not artifacts-ready",
+    "stage": "build",
+    "diagnostic": "the recorded build failed (exit 1): mvn --batch-mode --no-transfer-progress -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Dspotless.skip=true -Dspotbugs.skip=true -Dgpg.skip=true -f pom.xml -pl guava -am -Dmaven.test.skip=true install\n[INFO] ------------------------------------------------------------------------\n[ERROR] Failed to execute goal org.mvnsearch:toolchains-maven-plugin:4.5.0:toolchain (download-26-and-surefire-version) on project guava: Cannot find matching toolchain definitions for the following toolchain types:\n[ERROR] jdk [ vendor='temurin' version='26' ]\n[ERROR] testJdk [ vendor='temurin' version='21' ]\n[ERROR] Please make sure you define the required toolchains in your ~/.m2/toolchains.xml file.\n[ERROR] -> [Help 1]\n[ERROR] \n[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.\n[ERROR] Re-run Maven using the -X switch to enable full debug logging.\n[ERROR] \n[ERROR] For more information about the errors and possible solutions, please read the following articles:\n[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException\n[ERROR] \n[ERROR] After correcting the problems, you can resume the build with the command\n[ERROR]   mvn <args> -rf :guava"
+  },
+  "injected": false,
+  "endedAt": "2026-11-21T09:31:37.088367+00:00"
+}

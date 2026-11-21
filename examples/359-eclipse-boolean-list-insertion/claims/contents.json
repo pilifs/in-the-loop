@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "contents",
+  "statement": "The resulting list has the original prefix, inserted bits and original suffix, or stays intact after an invalid index.",
+  "assume": "code >= 0 && code < 2865",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.InsertBits#contents(I)I",
+    "mapping": "The resulting list has the original prefix, inserted bits and original suffix, or stays intact after an invalid index. Its original receiver and direct outcome are indexed in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 2865
+  }
+}

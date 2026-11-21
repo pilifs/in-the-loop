@@ -1,0 +1,230 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "repository": "https://github.com/google/guava",
+    "commit": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+    "class": "com.google.common.collect.Multisets",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "guava",
+        "-am",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    }
+  },
+  "artifacts": [
+    {
+      "path": "built/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+      "sha256": "90ca918ca4eeea6f9b7d43e9eb560a6b4190a44d64866550078cb021645791c5",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/google/guava at 117b5277123e3a2cb1cad35ec8e47c852a3a8858: guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar"
+    },
+    {
+      "path": "lib/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar",
+      "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
+      "role": "dependency",
+      "coordinates": "com.google.guava:failureaccess:1.0.3",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+      "role": "dependency",
+      "coordinates": "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+      "role": "dependency",
+      "coordinates": "org.jspecify:jspecify:1.0.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+      "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
+      "role": "dependency",
+      "coordinates": "com.google.errorprone:error_prone_annotations:2.50.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar",
+      "sha256": "84d3a150518485f8140ea99b8a985656749629f6433c92b80c75b36aba3b099b",
+      "role": "dependency",
+      "coordinates": "com.google.j2objc:j2objc-annotations:3.1",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+      "tree": "cf59f75237d61049b785a219c736664c84d7c019",
+      "parents": [],
+      "fetchedFrom": "https://github.com/google/guava",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+          "sha256": "90ca918ca4eeea6f9b7d43e9eb560a6b4190a44d64866550078cb021645791c5",
+          "auxiliary": false
+        }
+      ],
+      "selectedClass": "com/google/common/collect/Multisets.class",
+      "selectedClassSha256": "a404f0170144858d2796a5134071598f35aa5fb1d4e8054d7ae21da5d26b6075",
+      "sourceSha256": "7bc4ae3902f7ecb63729a6ed5120ccc0403927d5de366292cca829c6ab76875b"
+    },
+    "toolchain": {
+      "jdk": {
+        "feature": "21",
+        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "declaredCompilers": {
+        "11": {
+          "feature": "11",
+          "version": "openjdk version \"11.0.33\" 2026-10-20",
+          "home": "/home/filip/.sdkman/candidates/java/11.0.33.0+10-tem",
+          "release": {
+            "JAVA_VERSION": "11.0.33",
+            "JAVA_RUNTIME_VERSION": "11.0.33+10",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-11.0.33+10",
+            "OS_ARCH": "x86_64"
+          }
+        },
+        "17": {
+          "feature": "17",
+          "version": "openjdk version \"17.0.21\" 2026-10-20",
+          "home": "/home/filip/.sdkman/candidates/java/17.0.21.0+9-tem",
+          "release": {
+            "JAVA_VERSION": "17.0.21",
+            "JAVA_RUNTIME_VERSION": "17.0.21+9",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-17.0.21+9",
+            "OS_ARCH": "x86_64"
+          }
+        },
+        "21": {
+          "feature": "21",
+          "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+          "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "release": {
+            "JAVA_VERSION": "21.0.13",
+            "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+            "OS_ARCH": "x86_64"
+          }
+        },
+        "26": {
+          "feature": "26",
+          "version": "openjdk version \"26.0.2.1\" 2026-08-18",
+          "home": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/jdk-26.0.2.1+1",
+          "release": {
+            "JAVA_VERSION": "26.0.2.1",
+            "JAVA_RUNTIME_VERSION": "26.0.2.1+1",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-26.0.2.1+1",
+            "OS_ARCH": "x86_64"
+          }
+        }
+      }
+    },
+    "steps": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "pom.xml",
+          "-pl",
+          "guava",
+          "-am",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 52.69,
+        "logSha256": "77bcc84d39e7646d79c618ba235782fee68daad52dcae204aeadefe7f07c8360",
+        "errors": [],
+        "tail": [
+          "[INFO] ",
+          "[INFO] Guava Maven Parent ................................. SUCCESS [  1.228 s]",
+          "[INFO] Guava: Google Core Libraries for Java .............. SUCCESS [ 43.574 s]",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  50.250 s",
+          "[INFO] Finished at: 2026-11-21T09:28:22Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "guava/pom.xml",
+          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+          "-DincludeScope=runtime",
+          "-Dmdep.outputFile=/project/guava/target/organic-runtime.txt"
+        ],
+        "exit": 0,
+        "seconds": 7.59,
+        "logSha256": "a0e5b667e4ebe709e5ec996e0e56cabda51bb4fc6f16de83a1333b4835855877",
+        "errors": [],
+        "tail": [
+          "[INFO] ",
+          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ guava ---",
+          "[INFO] Wrote classpath file '/project/guava/target/organic-runtime.txt'.",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  5.492 s",
+          "[INFO] Finished at: 2026-11-21T09:28:30Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ]
+  }
+}

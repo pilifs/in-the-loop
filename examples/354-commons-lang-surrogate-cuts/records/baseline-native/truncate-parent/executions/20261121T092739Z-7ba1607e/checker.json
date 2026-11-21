@@ -1,0 +1,217 @@
+{
+  "argv": [
+    "/home/filip/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract",
+    "prove",
+    "organic.SurrogateCuts#truncate(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+    "--classpath",
+    "prepare/parent/lib/net/bytebuddy/byte-buddy/1.17.5/byte-buddy-1.17.5.jar",
+    "--classpath",
+    "prepare/parent/lib/org/objenesis/objenesis/3.4/objenesis-3.4.jar",
+    "--classpath",
+    "prepare/parent/lib/org/mockito/mockito-inline/4.11.0/mockito-inline-4.11.0.jar",
+    "--classpath",
+    "prepare/parent/lib/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar",
+    "--classpath",
+    "prepare/parent/lib/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar",
+    "--assume",
+    "code >= 0 && code < 1515",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "96",
+    "--max-array-length",
+    "64",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 24.29,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "organic.SurrogateCuts#truncate(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 1515",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at organic.SurrogateCuts.wholeTokens:29). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "organic.SurrogateCuts#truncate(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at organic.SurrogateCuts.wholeTokens:29). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "uri": null,
+          "line": 38
+        }
+      ],
+      "output": "✗ organic.SurrogateCuts#truncate(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13 (java.lang.String.codePointAt(int) at organic.SurrogateCuts.wholeTokens:29). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 24.209359116,
+        "properties": 1,
+        "unwind": 96,
+        "max_array_length": 64,
+        "stage": null,
+        "native": {
+          "paths": 64,
+          "merges": 0,
+          "solver_calls": 556,
+          "solving_seconds": 21.660371824,
+          "gates_evaluated": 111450,
+          "evaluating_seconds": 0.00501679,
+          "divisions": 160,
+          "divisions_built": 139,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 739350,
+          "clauses": 2552220,
+          "seconds": 24.073503231,
+          "loading_seconds": 0.002259433,
+          "decoding_seconds": 0.000184686,
+          "encoding_seconds": 1.941866866,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "jdk-primitive-method:java.lang.String.codePointAt(I)I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.codePointAt(int)",
+            "sites": [
+              "organic.SurrogateCuts.wholeTokens:29"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 60.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 60.0,
+            "seconds": 24.074,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.002,
+              "lowering": 0.0,
+              "symbolic": 0.469,
+              "encoding": 1.942,
+              "solving": 21.66,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 739350,
+              "clauses": 2552220
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 24.239,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 24.074,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.163
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 1515",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 96,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 5998,
+    "sha256": "5f44b444da2aab93f68b56ff6a5169a0057b2d4dc3660f4bdbc881f515effb84"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

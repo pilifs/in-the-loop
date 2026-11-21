@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-092910-355-build-avro-mapred-build-with-the-dec",
+  "title": "355 build-avro-mapred build with the declared Maven JDKs and original named tests",
+  "description": "Provide the actual compilers selected by the original Maven POM while verifying the application under JDK 21. Retain both fresh named test reports, the compiled class and ordered dependencies including the declared Hadoop host where applicable. Package Avro reactor test JARs for its sibling modules and skip the separate cross-JDK invoker suites during artifact installation. After preparing both original artifacts, run the unmodified pinned verifier and finite checks from the two-sided public task plan. The isolated guest has a synthetic passwd entry for its build UID so Hadoop's original JUnit setup can obtain its Unix login.",
+  "kind": "real-world",
+  "capabilities": [
+    "organic-java-pr"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "expected": "Original modules built and assertions fail on the parent and pass on the fix.",
+  "submitted": {
+    "at": "2026-11-21T09:29:10+00:00",
+    "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "maven"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "memoryLimit": "7G",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Build and test both pinned revisions",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred",
+      "cwd": "."
+    },
+    {
+      "name": "Bind the two actual original classpaths",
+      "run": "python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred",
+      "cwd": "."
+    },
+    {
+      "name": "Run the common finite baseline",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred && python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route finite --seconds 180",
+      "cwd": "."
+    },
+    {
+      "name": "Run the common native baseline",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-mapred && python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route native --seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/build-avro-mapred",
+    "examples/355-avro-writable-buffer-limit/records/baseline-finite",
+    "examples/355-avro-writable-buffer-limit/records/baseline-native"
+  ],
+  "stopOnFailure": false
+}

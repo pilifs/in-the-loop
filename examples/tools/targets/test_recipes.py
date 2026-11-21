@@ -87,6 +87,10 @@ class RecipesTest(unittest.TestCase):
         self.assertEqual(disposition(raw, method, bounds, 0)[0], "open")
         raw.update(verdict="violation", counterexample={"inputs": []})
         self.assertEqual(disposition(raw, method, bounds, 1)[0], "open")
+        raw["replay"] = {"by": "interpreter", "reproduced": True}
+        self.assertEqual(disposition(raw, method, bounds, 1)[0], "needs-jvm-replay")
+        raw["replay"]["reproduced"] = False
+        self.assertEqual(disposition(raw, method, bounds, 1)[0], "open")
         params = [{"name": "a", "type": "long[]"}]
         values = [{"name": "a", "type": "long[]", "value": [str(-(1 << 63)), str((1 << 63) - 1)]}]
         self.assertIsNone(qualification.witness_problem(values, params, set(), [], 2))
@@ -141,6 +145,21 @@ class RecipesTest(unittest.TestCase):
                 dest.write_bytes(native_selectors.archived_bytes(receipt, name).read_bytes())
             result.write_text(json.dumps(original))
             self.assertEqual(native_selectors.validate_result(folder, plan, result)["status"], "refuted")
+            candidate = deepcopy(original)
+            row = candidate["checked"][0]
+            raw_file = target / row["raw"]
+            original_bytes = raw_file.read_bytes()
+            wire = json.loads(original_bytes)
+            wire[0]["replay"]["by"] = "interpreter"
+            raw_file.write_text(json.dumps(wire))
+            row.update(status="needs-jvm-replay", rawSha256=workflow.file_sha256(raw_file))
+            result.write_text(json.dumps(candidate))
+            self.assertEqual(native_selectors.validate_result(folder, plan, result)["status"], "refuted")
+            candidate.pop("originalJVMReplay")
+            result.write_text(json.dumps(candidate))
+            with self.assertRaisesRegex(ValueError, "lacks an original JVM replay"):
+                native_selectors.validate_result(folder, plan, result)
+            raw_file.write_bytes(original_bytes)
             modified = deepcopy(original)
             modified["originalJVMReplay"]["sides"]["parent-fix"]["program"] = "class Different {}"
             result.write_text(json.dumps(modified))
@@ -236,6 +255,18 @@ class RecipesTest(unittest.TestCase):
         original = self.plan("310", "same-day")
         self.assertNotEqual(original.claim["key"], plan.claim["key"])
         self.assertEqual(original.artifacts, plan.artifacts)
+        settings = {"processors": 2, "emptyEnvironment": True}
+        scoped = replace(plan, claim={**plan.claim, "observedRuntime": settings})
+        self.assertNotEqual(workflow.claim_key(scoped.claim), plan.claim["key"])
+        self.assertIn(("--observed-runtime", '{"emptyEnvironment":true,"processors":2}'),
+                      [(a.flag, a.value) for a in recipes.translate(scoped).arguments])
+        eager = {"observedInitializers": plan.claim["observedInitializers"],
+                 "observedRuntime": {**settings, "preinitializeTogether": True}}
+        src = replay_candidate.source("p.C#check(I)I", eager, [{"name": "n", "type": "int", "value": 1}], ["n"])
+        self.assertLess(src.index("Class.forName("), src.index("p.C.check("))
+        self.assertIn("availableProcessors() != 2", src)
+        self.assertIn("System.getenv().isEmpty()", src)
+        self.assertIsInstance(recipes.translate(replace(original, claim={**original.claim, "observedRuntime": settings})), interfaces.Unsupported)
         recipe = recipes.translate(plan)
         name, state = next(iter(plan.claim["observedInitializers"].items()))
         model, = plan.claim["namedModels"]

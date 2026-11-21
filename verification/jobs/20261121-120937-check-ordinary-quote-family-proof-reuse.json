@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-120937-check-ordinary-quote-family-proof-reuse",
+  "title": "Check ordinary quote-family proof reuse after adding observed runtime settings",
+  "description": "Run the existing integrated quote-family regression on the new property option projection. Ordinary native claims must keep stable cold and warm proof keys; process-scoped observed initializers must stay outside the general proof cache.",
+  "kind": "library",
+  "capabilities": [
+    "proof-reuse",
+    "observed-initializer"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T12:09:37+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "20m",
+    "notes": "The prior campaign J1 on the same fixture took about two minutes of test time."
+  },
+  "steps": [
+    {
+      "name": "Exercise the quote-family cold and reused proof keys",
+      "run": "cargo test --manifest-path lib/Cargo.toml --profile test-fast --test application_core_joint j1_the_quote_family_composes_the_four_streams -- --ignored --exact",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

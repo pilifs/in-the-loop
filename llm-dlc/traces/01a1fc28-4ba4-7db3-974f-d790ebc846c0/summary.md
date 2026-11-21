@@ -84,6 +84,96 @@ change `mxuwkwnryopt` · [log `1e195ed34407`](https://terminalvalue.net/raw-trac
 
 Discover concrete caller methods and exact overloads from original bytecode, then run a finite, source-reviewed observer on the original classpaths. The debugger sees a real entry into the declared method and descriptor for every input and repetition. JAR origins, exact UTF-16 results or escaping exceptions, independent expectations and stable repeated JVMs qualify each decision. The negative regression loads the client and references a call in an untaken branch, and correctly earns no result. A real ReflectASM probe reproduced the changed behavior with all eight original method-entry checks. Of 42 affected test groups, the history-span test failed while collection was active and passed when repeated; the updated three replay tests and tier lint pass. Jobs 20261121-042207-finite-caller-group-1-qualify-original-a, 20261121-042207-finite-caller-group-2-qualify-original-a, 20261121-042207-finite-caller-group-3-qualify-original-a, 20261121-042207-finite-caller-group-4-qualify-original-a, 20261121-043632-finite-caller-group-5-replay-original-ma, 20261121-043632-finite-caller-group-6-replay-original-ma, 20261121-043003-overload-recovery-group-1-compare-sixtee, 20261121-043003-overload-recovery-group-2-compare-sixtee cover 63 finite inputs across 16 upgrades and a full 32-case exact-overload rerun.
 
+### Record verification results for 1 job(s)
+
+change `kqxstwytnvvk` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-033202-replay-both-commons-text-csv-tasks-after: failed: 1 failed step(s) in 6.6s, peak 156.7 MiB (estimated 2m00s, 2.0 GiB); 24 output file(s) changed; signals: example:task-unexpected×2 Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `uqtwwwqqkqvs` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-034615-349-qualify-fresh-csv-replays-with-confi: passed: 1 passed step(s) in 6.4s, peak 163.9 MiB (estimated 2m00s, 2.0 GiB); 24 output file(s) changed; signals: example:task-as-expected×2 Applied 24 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 8 job(s)
+
+change `zmqvwotuppkl` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 8 of the 8 job(s). 20261121-034247-original-upgrade-corpus-v0-and-class-int: passed: 1 passed step(s) in 3m28s, peak 201.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-02-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m14s, peak 562.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-03-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 807.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-04-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 268.9 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-05-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m07s, peak 276.4 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-06-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m27s, peak 349.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-07-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m19s, peak 278.3 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-08-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m03s, peak 249.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `koonwuvvrvyw` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-035106-348-exhaust-both-jdbc-insert-shapes-on-t: failed: 1 failed step(s) in 0.8s, peak 117.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zpvyzowssmnu` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-040719-348-qualify-original-jdbc-arrays-across: passed: 1 passed step(s) in 7.2s, peak 206.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `vovwwylnknrz` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-042109-multi-release-corpus-group-3-check-eight: passed: 1 passed step(s) in 8.4s, peak 146.7 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-042109-multi-release-corpus-group-4-check-eight: passed: 1 passed step(s) in 16.2s, peak 218.3 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+change `wzvvmponwlxr` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-042108-352-check-the-actual-duration-caller-thr: failed: 1 failed step(s) in 45.5s, peak 131.7 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261121-042108-multi-release-corpus-group-1-check-eight: passed: 1 passed step(s) in 21.8s, peak 555.9 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-042108-multi-release-corpus-group-2-check-eight: passed: 1 passed step(s) in 28.7s, peak 533.5 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 4 job(s)
+
+change `tyoxnostvtrl` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 4 of the 4 job(s). 20261121-042207-finite-caller-group-2-qualify-original-a: passed: 1 passed step(s) in 26.5s, peak 147.6 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-042207-finite-caller-group-3-qualify-original-a: passed: 1 passed step(s) in 26.4s, peak 112.0 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-042207-finite-caller-group-4-qualify-original-a: passed: 1 passed step(s) in 14.4s, peak 128.5 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261121-043632-finite-caller-group-5-replay-original-ma: passed: 1 passed step(s) in 19.4s, peak 117.4 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 4 job(s)
+
+change `owqmwvyonltr` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 4 of the 4 job(s). 20261121-042207-finite-caller-group-1-qualify-original-a: passed: 1 passed step(s) in 32.1s, peak 117.9 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-043003-overload-recovery-group-1-compare-sixtee: passed: 1 passed step(s) in 27.3s, peak 458.2 MiB (estimated 10m00s, 2.0 GiB); 16 output file(s) changed Applied 16 output(s). 20261121-043003-overload-recovery-group-2-compare-sixtee: passed: 1 passed step(s) in 14.8s, peak 211.9 MiB (estimated 10m00s, 2.0 GiB); 16 output file(s) changed Applied 16 output(s). 20261121-043632-finite-caller-group-6-replay-original-ma: passed: 1 passed step(s) in 37.7s, peak 120.5 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `unqxnxwmutpr` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-044031-original-ci-group-1-run-unmodified-maven: passed: 1 passed step(s) in 3m22s, peak 1.0 GiB (estimated 25m00s, 3.0 GiB); 16 output file(s) changed Applied 16 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `zpqqyqqlpslp` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-044031-original-ci-group-2-run-unmodified-maven: passed: 1 passed step(s) in 5m23s, peak 1.4 GiB (estimated 25m00s, 3.0 GiB); 18 output file(s) changed Applied 18 output(s). 20261121-044031-original-ci-group-5-run-unmodified-maven: passed: 1 passed step(s) in 3m42s, peak 5.2 GiB (estimated 25m00s, 3.0 GiB); 16 output file(s) changed Applied 16 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `zqopmrvltzuo` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-044738-349-exhaust-actual-csv-fields-with-lossl: passed: 1 passed step(s) in 8.6s, peak 183.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-044738-352-exhaust-actual-duration-strings-with: passed: 1 passed step(s) in 9.0s, peak 246.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `txvmuukqzrzk` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-044031-original-ci-group-4-run-unmodified-maven: passed: 1 passed step(s) in 14m57s, peak 2.9 GiB (estimated 25m00s, 3.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `ykrqyuzyvnku` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-044031-original-ci-group-3-run-unmodified-maven: passed: 1 passed step(s) in 18m37s, peak 6.0 GiB (estimated 25m00s, 3.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `stvvlzsutxwv` · [log `4b68e2d4a039`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/4b68e2d4a039d4ebf19ceb86d134e5bbde106fc38b254e84187e08bf200ffccd.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-044031-original-ci-group-6-run-unmodified-maven: passed: 1 passed step(s) in 22m57s, peak 2.4 GiB (estimated 25m00s, 3.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ### Run the original Maven lifecycle alongside the 32 upgrade reports (verification pending)
 
 change `xnqqzzvoxrnt` · [log `a03b01a3ad71`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/a03b01a3ad712e287babd0d7d77592cc6ecbac96086763eaac0b504a5292a0f0.jsonl.gz)

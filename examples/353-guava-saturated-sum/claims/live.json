@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "live",
+  "statement": "An existing view and a fresh entry iterator see a backing mutation from six to seven.",
+  "assume": "code >= 0 && code < 1",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 48,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.SumView#live(I)I",
+    "mapping": "An existing view and a fresh entry iterator see a backing mutation from six to seven. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 49
+  }
+}

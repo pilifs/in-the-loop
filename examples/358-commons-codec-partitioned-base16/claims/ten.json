@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "ten",
+  "statement": "The original ten-character input decodes to ABCDE under the 3+4+3 writes.",
+  "assume": "code >= 2048 && code < 2049",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 8192
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.HexWrites#bytes(I)I",
+    "mapping": "The original ten-character input decodes to ABCDE under the 3+4+3 writes. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 2051
+  }
+}

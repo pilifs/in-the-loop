@@ -476,7 +476,7 @@ pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
         "java/util/ArrayList" | "java/util/LinkedList" => Native::List { elements: Vec::new(), mutable: true },
         "java/util/HashMap" | "java/util/LinkedHashMap" | "java/util/TreeMap" => Native::Map { entries: Vec::new(), mutable: true },
         "java/util/HashSet" | "java/util/LinkedHashSet" | "java/util/TreeSet" => Native::Set { elements: Vec::new(), mutable: true },
-        "java/lang/Object" | crate::bmc::runtime::REENTRANT_LOCK => return Ok(Value::Ref(m.alloc(Object::Instance { class: class.into(), fields: Default::default(), base: Base::Object }))),
+        "java/lang/Object" | "java/util/concurrent/ConcurrentLinkedQueue" | crate::bmc::runtime::REENTRANT_LOCK => return Ok(Value::Ref(m.alloc(Object::Instance { class: class.into(), fields: Default::default(), base: Base::Object }))),
         _ if m.cp.is_subtype(class, "java/lang/Throwable") => Native::Throwable { class: class.into(), message: None, cause: None, suppressed: None },
         _ => return unsupported(format!("new {}", class.replace('/', "."))),
     };
@@ -497,6 +497,13 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
     };
     match native {
         Native::Throwable { .. } => {
+            if owner == "java/lang/StringIndexOutOfBoundsException" && m.class_of(r) == owner {
+                if let Some((class, method)) = m.cp.string_range_constructor(owner, descriptor) {
+                    let mut full = vec![Value::Ref(r)];
+                    full.extend(args);
+                    return m.invoke(&class, &method, full);
+                }
+            }
             init_throwable(m, r, owner, descriptor, &args)?;
         }
         Native::StringBuilder(_) => {
@@ -532,9 +539,15 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
                     char_array_units(m, a).ok_or_else(|| Fault::Unsupported("new String of a non-array".into()))?
                 }
                 "([CII)V" => {
-                    let Some(a) = args[0].as_ref() else { return Err(m.npe()) };
-                    let units = char_array_units(m, a).ok_or_else(|| Fault::Unsupported("new String of a non-array".into()))?;
                     let (offset, count) = (args[1].as_int(), args[2].as_int());
+                    let Some(a) = args[0].as_ref() else {
+                        if offset >= 0 && count >= 0 { return Err(m.npe()) }
+                        let Some((class, method)) = m.cp.string_range_constructor(owner, descriptor) else {
+                            return unsupported("String(char[], int, int) exception order needs the selected JDK constructor");
+                        };
+                        return m.invoke(&class, &method, vec![Value::Ref(r), Value::Null, args[1], args[2]]);
+                    };
+                    let units = char_array_units(m, a).ok_or_else(|| Fault::Unsupported("new String of a non-array".into()))?;
                     if offset < 0 || count < 0 || offset as i64 + count as i64 > units.len() as i64 {
                         return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&format!("offset {offset}, count {count}, length {}", units.len()))));
                     }
@@ -1016,6 +1029,12 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             _ => unsupported(format!("Iterator.{name}")),
         },
         Native::Class(t) => match name {
+            "cast" | "cannotCastMsg" => {
+                let Some((cf, method)) = m.cp.library_image_method("java/lang/Class", name, descriptor) else {
+                    return unsupported("Class.cast requires its selected JDK bytecode");
+                };
+                m.invoke(&cf, &method, vec![Value::Ref(r), args[0]])
+            }
             "getName" | "getTypeName" => Ok(Some(m.new_string(t.class_get_name()))),
             "getSimpleName" => {
                 let simple = match &t {
@@ -1548,6 +1567,17 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
                 None => Native::Iterator { elements, position: 0, immutable: !mutable },
             };
             Some(Value::Ref(m.alloc_native(iterator)))
+        }
+        ("forEach", "(Ljava/util/function/Consumer;)V") if m.array_list_mod_count.contains_key(&r) => {
+            if args[0] == Value::Null { return Err(m.npe()); }
+            let version = m.array_list_mod_count[&r];
+            for index in 0..len {
+                let Object::Native(Native::List { elements: live, .. }) = m.heap.get(r) else { return unsupported("ArrayList.forEach receiver lost its storage") };
+                let Some(&element) = live.get(index) else { return unsupported("ArrayList.forEach lost an element without a structural change") };
+                m.call_virtual(args[0], "java/util/function/Consumer", "accept", "(Ljava/lang/Object;)V", vec![element])?;
+                if m.array_list_mod_count.get(&r) != Some(&version) { return Err(m.throw("java/util/ConcurrentModificationException", None)); }
+            }
+            None
         }
         ("forEach", _) => {
             for e in elements {

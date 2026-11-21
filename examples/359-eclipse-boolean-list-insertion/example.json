@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "359",
+  "title": "Boolean list insertion at every boundary in a single word",
+  "summary": "Insert into a real BooleanArrayList, then inspect the same receiver's size and every bit, including after rejection.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Eclipse Collections",
+    "symbol": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+    "file": "eclipse-collections/src/main/java/org/eclipse/collections/impl/list/mutable/primitive/BooleanArrayList.java"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Insert into a real BooleanArrayList, then inspect the same receiver's size and every bit, including after rejection."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/eclipse-collections/eclipse-collections",
+    "url": "https://github.com/eclipse-collections/eclipse-collections/pull/1434"
+  },
+  "verdictLabel": "Strict native 8/8, finite JVM 8/8",
+  "notes": [
+    "This is a conditional transfer case outside the six primary PRs. The Gson and Codec stream checks retained exact content across separate transfers and a later observation.",
+    "The independent original-scope grid has 2865 inputs. Both revisions use the same declared receiver shapes.",
+    "Inserting [false,true] at index zero into [true,false,true] threw IndexOutOfBoundsException on the parent. The fix returned true and produced [false,true,true,false,true]. Indices two and three succeed, and four throws, on both revisions.",
+    "The baseline stopped in BitSet(int). Running the selected JDK BitSet bytecode proved the return over all 2,865 inputs and the preserved cases. The single symbolic content claim reached 60 seconds on both CaDiCaL and Bitwuzla. Checking the original fixed bytecode on every admitted selector established the exact size and complete list contents in 129.6 seconds, with about 90.6 MiB peak native RSS. Both parent properties have counterexamples replayed on the original JVM."
+  ]
+}

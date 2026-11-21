@@ -357,6 +357,8 @@ def _lock_upstream(plan, revision, entry, folder):
     }
     if captured := entry.get("capturedBuild"):
         source["capturedBuild"] = captured
+    if entry.get("orderedClasses"):
+        source["orderedClasses"] = entry["orderedClasses"]
     return recipe["commit"], source
 
 
@@ -733,6 +735,35 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
     return found
 
 
+def _ordered_target(plan, build, source, classpath, original, adapter, dependencies):
+    """Verify explicitly named collisions between dependency JARs against each subject JVM."""
+    workdir = build.workdir
+    target = _check_classpath(plan, workdir, classpath, original, adapter,
+                              ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies)
+    selected = target.get("orderedClasses")
+    if not selected:
+        return target
+    probe = build.compile("class-origins", [HERE / "java/LoadedClasses.java"], [],
+                          compiler=(build.home, ["--release", "8", "-proc:none"]))
+    names = sorted(selected)
+    expected = [f"{name}\t{selected[name][0]['path']}\t{selected[name][0]['classSha256']}" for name in names]
+    cp = os.pathsep.join([str(probe), *(str(workdir / path) for path in classpath)])
+    runtimes = []
+    features = source["jdks"] or [runtime_jdk.identity(build.home)["feature"]]
+    for feature in features:
+        home = runtime_jdk.home(feature)
+        if not home:
+            raise Refused("toolchain", f"the ordered classpath requires its original JDK {feature}")
+        output = build.run(f"loaded-classes-jdk{feature}", [str(Path(home) / "bin/java"),
+                           *CONTROL_FLAGS, "-cp", cp, "LoadedClasses", str(workdir), *names])
+        if output.splitlines() != expected:
+            raise Refused("classpath", "the JVM code source or class digest differs from the first dependency provider")
+        runtimes.append(runtime_jdk.identity(home)["release"])
+    target["jvmClassOrigins"] = {name: selected[name][0] for name in names}
+    target["jvmClassOriginJdks"] = runtimes
+    return target
+
+
 def _builder(source, workdir):
     home = runtime_jdk.build_home()
     if home is None:
@@ -892,17 +923,7 @@ def _prepare_fixture(plan, revision, locked, workdir):
             toolchain["originalCompiler"] = {"jdk": runtime_jdk.identity(home), "flags": fixed["flags"]}
         original = build.jar("original", build.compile("original", sources, compile_path, compiler), f"{revision}.jar", "original", how)
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *dependencies])
-        source["target"] = _check_classpath(plan, workdir, classpath, original, adapter,
-                                            ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies)
-        if selected := source["target"].get("orderedClasses"):
-            probe = HERE / "java/LoadedClasses.java"
-            stdout = build.run("loaded-classes", [str(build.home / "bin/java"), "-cp",
-                               os.pathsep.join(str(workdir / path) for path in classpath), str(probe),
-                               str(workdir), *sorted(selected)])
-            expected = [f"{name}\t{selected[name][0]['path']}\t{selected[name][0]['classSha256']}" for name in sorted(selected)]
-            if stdout.splitlines() != expected:
-                raise Refused("classpath", "the JVM code source or class digest differs from the first dependency provider")
-            source["target"]["jvmClassOrigins"] = {name: selected[name][0] for name in sorted(selected)}
+        source["target"] = _ordered_target(plan, build, source, classpath, original, adapter, dependencies)
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
@@ -1143,7 +1164,8 @@ def _prepare_upstream(plan, revision, locked, workdir):
                           f"{source['mutant']['patch']['sha256']}) was applied to the checkout")
             build.artifacts.append(Artifact(path, digest, role, coordinates=coords, origin=origin))
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [p for p, *_ in built])
-        source["target"] = _check_classpath(plan, workdir, classpath, built[0][0], adapter)
+        dependencies = [path for path, _, role, _, _ in built if role == "dependency"]
+        source["target"] = _ordered_target(plan, build, source, classpath, built[0][0], adapter, dependencies)
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)

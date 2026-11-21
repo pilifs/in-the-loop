@@ -267,7 +267,7 @@ fn differences(start: &Path, back: &Path) -> Result<Vec<(Place, (usize, bool))>,
     if !after.stack.is_empty() {
         return Err("an iteration leaves a value on the operand stack".into());
     }
-    if start.classes != back.classes {
+    if start.classes != back.classes || start.unheld_statics != back.unheld_statics {
         return Err("an iteration initializes a class".into());
     }
     for (key, y) in &back.statics {

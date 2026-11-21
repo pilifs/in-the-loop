@@ -65,11 +65,17 @@
       "type": "object", "minProperties": 1, "propertyNames": { "$ref": "#/$defs/javaClass" },
       "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
     },
+    "observedRuntime": {
+      "description": "Process settings confirmed inside the initializer observer and every comparison JVM.",
+      "type": "object", "minProperties": 1, "additionalProperties": false,
+      "properties": {"processors": {"type": "integer", "minimum": 1, "maximum": 2147483647}, "emptyEnvironment": {"const": true}, "preinitializeTogether": {"const": true}, "rootWorkingDirectory": {"const": true}}
+    },
     "plan": { "description": "A construction plan (`--plan`), in the example's folder.", "$ref": "#/$defs/file" },
     "contracts": { "description": "Gap contracts for `--gaps advised` (`--contracts`), in the example's folder.", "$ref": "#/$defs/file" },
     "notes": { "type": "array", "items": { "type": "string" } }
   },
   "allOf": [
+    { "if": { "required": ["observedRuntime"] }, "then": { "required": ["observedInitializers"] } },
     { "if": { "properties": { "kind": { "const": "property" } } }, "then": { "required": ["assert"] } },
     { "if": { "properties": { "kind": { "enum": ["preservation", "compatibility"] } } }, "then": { "not": { "anyOf": [{ "required": ["assert"] }, { "required": ["throws"] }] } } }
   ],

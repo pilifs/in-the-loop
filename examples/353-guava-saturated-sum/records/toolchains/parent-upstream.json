@@ -1,0 +1,152 @@
+{
+  "revision": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+  "side": "parent",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-pl",
+      "guava",
+      "-am",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 52.69,
+    "logSha256": "77bcc84d39e7646d79c618ba235782fee68daad52dcae204aeadefe7f07c8360",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] Guava Maven Parent ................................. SUCCESS [  1.228 s]",
+      "[INFO] Guava: Google Core Libraries for Java .............. SUCCESS [ 43.574 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  50.250 s",
+      "[INFO] Finished at: 2026-11-21T09:28:22Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "guava/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/guava/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 7.59,
+    "logSha256": "a0e5b667e4ebe709e5ec996e0e56cabda51bb4fc6f16de83a1333b4835855877",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ guava ---",
+      "[INFO] Wrote classpath file '/project/guava/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  5.492 s",
+      "[INFO] Finished at: 2026-11-21T09:28:30Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
+        "sha256": "90ca918ca4eeea6f9b7d43e9eb560a6b4190a44d64866550078cb021645791c5",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "com/google/common/collect/Multisets.class",
+    "selectedClassSha256": "a404f0170144858d2796a5134071598f35aa5fb1d4e8054d7ae21da5d26b6075",
+    "sourceSha256": "7bc4ae3902f7ecb63729a6ed5120ccc0403927d5de366292cca829c6ab76875b"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "guava-tests",
+        "-am",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=MultisetsTest#testSumCountOverflow,MultisetsTest#testSumEntryIteratorOverflow",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 35.29,
+      "logSha256": "fb0aa030627737155b4790dc8d68df532e1080a159626ea0165be75e08e4c3ac",
+      "errors": [
+        "[ERROR] COMPILATION ERROR : ",
+        "[ERROR] Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home",
+        "[ERROR] Guava Testing Library .............................. FAILURE [ 22.426 s]",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.15.0:compile (compile-java9) on project guava-testlib: Compilation failure",
+        "[ERROR] Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home",
+        "[ERROR] /project/guava-testlib/src/module-info.java:[18,32] module not found: com.google.common",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] "
+      ],
+      "tail": [
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+        "[ERROR] ",
+        "[ERROR] After correcting the problems, you can resume the build with the command",
+        "[ERROR]   mvn <args> -rf :guava-testlib"
+      ]
+    },
+    "testSourceSha256": {
+      "guava-tests/test/com/google/common/collect/MultisetsTest.java": "7d5872a7f7f27ee360a916a14580c9daf4ad437d0e6afece43306745985c21cf"
+    },
+    "transplant": [
+      "guava-tests/test/com/google/common/collect/MultisetsTest.java"
+    ],
+    "named": {
+      "MultisetsTest#testSumCountOverflow": [],
+      "MultisetsTest#testSumEntryIteratorOverflow": []
+    }
+  },
+  "mirror": {
+    "cachedRequests": 1554,
+    "from https://repo.maven.apache.org/maven2/": 12,
+    "downloadedBytes": 55234,
+    "downloadedFiles": 12
+  }
+}

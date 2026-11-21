@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 public final class ListConversions {
     public static boolean snapshots(boolean sized) {
         List<String> list = sized ? new ArrayList<>(1) : new ArrayList<>();
-        if (!list.isEmpty()) return false;
+        if (!list.isEmpty() || list.getClass() != ArrayList.class) return false;
         list.add("a");
         list.add(null);
         list.add("c");
@@ -91,6 +91,26 @@ public final class ListConversions {
         return it.next() == "before";
     }
 
+    public static boolean callbacks(boolean structural) {
+        ArrayList<String> list = new ArrayList<>(3);
+        try { list.forEach(null); return false; } catch (NullPointerException expected) { }
+        list.add("first");
+        list.add("old");
+        int[] visits = {0};
+        try {
+            list.forEach(item -> {
+                if (item == "first") {
+                    visits[0]++;
+                    if (structural) list.clear();
+                    else list.set(1, "new");
+                } else if (item == "new") visits[0] += 10;
+            });
+            return !structural && visits[0] == 11;
+        } catch (ConcurrentModificationException expected) {
+            return structural && visits[0] == 1 && list.isEmpty();
+        }
+    }
+
     public static boolean nestedView(boolean invalidate) {
         List<String> root = new ArrayList<>(3);
         root.add("x"); root.add("a"); root.add("b");
@@ -131,6 +151,6 @@ public final class ListConversions {
     public static void main(String[] args) {
         if (!snapshots(false) || !snapshots(true) || !storesPrefix() || !shortCircuit(false) || !shortCircuit(true)
                 || !digits(false) || !digits(true) || !liveIterator(false) || !liveIterator(true) || !nestedView(false) || !nestedView(true)
-                || !arrayView() || !viewEquality() || snapshotIterator() || wrong()) throw new AssertionError();
+                || !arrayView() || !viewEquality() || !callbacks(false) || !callbacks(true) || snapshotIterator() || wrong()) throw new AssertionError();
     }
 }

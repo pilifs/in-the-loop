@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "terminal",
+  "statement": "The actual postorder iterator returns each original object and stays exhausted after the final root.",
+  "assume": "code >= 0 && code < 2",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.TreeOrder#terminal(I)I",
+    "mapping": "The actual postorder iterator returns each original object and stays exhausted after the final root. Its original receiver and direct outcome are indexed in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 2
+  }
+}

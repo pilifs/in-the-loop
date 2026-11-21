@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "chunked",
+  "statement": "Only the initial mark is consumed across reads capped at one, two or one hundred UTF-16 units.",
+  "assume": "code >= 0 && code < 9",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 1024
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.BomReader#chunked(I)I",
+    "mapping": "Only the initial mark is consumed across reads capped at one, two or one hundred UTF-16 units. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 9
+  }
+}

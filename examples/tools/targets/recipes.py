@@ -121,6 +121,8 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
         return refused("models", "the claim states models by file digest, and no route passes these files to the verifier")
     if (claim.get("namedModels") or claim.get("observedInitializers")) and plan.engine != "native":
         return refused("engine", "named models and JVM-observed initializer states require the native checker")
+    if claim.get("observedRuntime") and not claim.get("observedInitializers"):
+        return refused("observedRuntime", "startup settings require a named observed initializer")
     arguments = []
     def add(field, flag, values):
         arguments.extend(Argument(field, flag, str(value)) for value in values)
@@ -162,6 +164,8 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
     add("gaps", "--gaps", [plan.gaps])
     add("namedModels", "--model", claim.get("namedModels") or [])
     add("observedInitializers", "--observed-initializer", sorted(claim.get("observedInitializers") or {}))
+    if "observedRuntime" in claim:
+        add("observedRuntime", "--observed-runtime", [json.dumps(claim["observedRuntime"], sort_keys=True, separators=(",", ":"))])
     for field, flag in (("unwind", "--unwind"), ("maxArrayLength", "--max-array-length")):
         if field in bounds:
             add("bounds." + field, flag, [bounds[field]])

@@ -642,6 +642,8 @@ enum Val {
     J(Bits),
     R(Option<usize>),
     C(Rc<Choice>),
+    /// A reference from a qualified JVM snapshot whose referent is unavailable. Only transport is executable.
+    Unobserved(Rc<str>),
 }
 
 impl Val {
@@ -942,6 +944,8 @@ struct Path {
     /// The state of initialization of each application class the path has used (JVMS §5.5); a class absent is not
     /// initialized yet.
     classes: BTreeMap<String, ClassState>,
+    /// Static values an initializer snapshot on this path could not represent.
+    unheld_statics: Rc<BTreeMap<(String, String), String>>,
     /// The static fields of application classes the path has written, by declaring class and name; one it has not
     /// is its `ConstantValue`, or zero or null.
     statics: BTreeMap<(String, String), Val>,
@@ -1037,6 +1041,7 @@ fn join_key(path: &Path, loops: bool) -> JoinKey {
 /// The value that is `x` where `g` holds and `y` where it doesn't: bits chosen bit by bit, references a
 /// [`Choice`] of both's options. `None` when the two are not of one kind ([`mergeable`]).
 fn choose(b: &mut Blaster, g: Lit, x: &Val, y: &Val) -> Option<Val> {
+    if matches!((x, y), (Val::Unobserved(a), Val::Unobserved(c)) if a == c) { return Some(x.clone()); }
     match (x, y) {
         (Val::I(p), Val::I(q)) => Some(Val::I(if p == q { p.clone() } else { b.ite_bits(g, p, q) })),
         (Val::J(p), Val::J(q)) => Some(Val::J(if p == q { p.clone() } else { b.ite_bits(g, p, q) })),
@@ -1081,6 +1086,7 @@ fn substitute(path: &mut Path, choice: &Rc<Choice>, target: Option<usize>) {
 /// are a [`Choice`] by the condition where they differ.
 fn mergeable(a: &Val, b: &Val) -> bool {
     matches!((a, b), (Val::I(_), Val::I(_)) | (Val::J(_), Val::J(_)) | (Val::R(_) | Val::C(_), Val::R(_) | Val::C(_)))
+        || matches!((a, b), (Val::Unobserved(x), Val::Unobserved(y)) if x == y)
 }
 
 /// Whether two paths at the same join point have states of one shape, so that they can be merged slot by slot and
@@ -1102,6 +1108,7 @@ fn frames_alike(a: &Path, b: &Path) -> bool {
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
         && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.discard_result == g.discard_result && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
         && a.classes == b.classes
+        && a.unheld_statics == b.unheld_statics
         && a.statics.len() == b.statics.len()
         && a.statics.iter().zip(&b.statics).all(|((k, x), (l, y))| k == l && mergeable(x, y))
 }
@@ -1455,13 +1462,11 @@ struct Engine<'a> {
     supers: HashMap<String, Rc<Vec<String>>>,
     /// Whether the engine runs a class's `<clinit>`, by class ([`gaps::runs_initializer`]).
     runs: HashMap<String, bool>,
-    /// The observed initializers ([`Options::observed`]), and the static fields an observation taken so far holds
-    /// no value of, each with what it was ([`Engine::unheld_static`]).
+    /// The observed initializers ([`Options::observed`]).
     observed: std::sync::Arc<crate::observed::Observations>,
     previous: Option<std::sync::Arc<crate::relocate::Previous>>,
     /// [`Options::calls_as_one_function`].
     calls_as_one_function: bool,
-    unheld: HashMap<(String, String), String>,
     /// The time spent decoding methods, and reading witnesses out of models (their solving and encoding apart).
     decoding: Duration,
     witness: Duration,
@@ -1585,7 +1590,6 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         observed: options.observed.clone(),
         previous: options.previous.clone(),
         calls_as_one_function: options.calls_as_one_function,
-        unheld: HashMap::new(),
         decoding: Duration::ZERO,
         witness: Duration::ZERO,
     };
@@ -1762,7 +1766,13 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        let mut first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), unheld_statics: Default::default(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        let snapshots = engine.observed.clone();
+        for (root, _) in snapshots.iter().filter(|(_, o)| o.joint_fields.is_some()) {
+            if let Err(stop) = engine.take_observed(&mut first, root) {
+                break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop))));
+            }
+        }
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -2997,7 +3007,7 @@ impl<'a> Engine<'a> {
                 }
                 let value = match self.pop(path)? {
                     Val::I(b) | Val::J(b) => b,
-                    Val::R(_) | Val::C(_) => return unsupported("arrays of references"),
+                    Val::R(_) | Val::C(_) | Val::Unobserved(_) => return unsupported("arrays of references"),
                 };
                 let index = self.pop_int(path)?;
                 let o = match self.pop_array(path) {
@@ -3636,6 +3646,11 @@ impl<'a> Engine<'a> {
         let frame = path.frames.last().expect("a frame");
         let insn = frame.code.insns[frame.at].clone();
         let class = frame.class.clone();
+        if !self.observed.is_empty() {
+            if let Some(reason) = frame.stack.iter().find_map(|v| match v { Val::Unobserved(s) => Some(s.clone()), _ => None }) {
+                if let Some(step) = self.transport_unobserved(path, &class, &insn, &reason) { return step; }
+            }
+        }
         if matches!(insn, Insn::Load(Kind::Int, _)) {
             if let Some(step) = self.fill_loop(path) { return step; }
         }
@@ -4027,6 +4042,21 @@ impl<'a> Engine<'a> {
                         self.advance(path);
                         return Ok(None);
                     }
+                }
+                if declaring == "java/nio/Buffer" && member.name == "IOOBE_FORMATTER" && member.descriptor == "Ljava/util/function/BiFunction;"
+                    && class.name == declaring && path.frames.last().is_some_and(|f| f.method == "checkIndex") && self.cp.plain_buffer_formatter() {
+                    let key = (declaring, member.name);
+                    let formatter = match path.statics.get(&key) {
+                        Some(v) => v.clone(),
+                        None => {
+                            let v = Val::R(Some(self.alloc(path, "jdk/internal/util/Preconditions$4")));
+                            path.statics.insert(key, v.clone());
+                            v
+                        }
+                    };
+                    self.push(path, formatter);
+                    self.advance(path);
+                    return Ok(None);
                 }
                 if self.cp.numeric_assertion_flag(&declaring, &member.name, &member.descriptor) {
                     let key = (declaring, member.name);
@@ -4833,6 +4863,15 @@ impl<'a> Engine<'a> {
             return Ok(throwables::SUPPRESSED.into());
         }
         let class = &path.objects[o].class;
+        // Observed enum constants carry their own fields and the two verified bootstrap getters.
+        // A private field added by a JDK (for example its cached hash) has no observed value.
+        if (self.is_observed(class) || self.observed.values().any(|o| o.joint_fields.as_ref().is_some_and(|m| m.contains_key(class)))) && self.cp.is_subtype(class, crate::observed::ENUM) {
+            let declaring = self.cp.resolve_field(owner, name, descriptor).ok_or_else(|| Stop::Unsupported(format!("no field {}.{name}", owner.replace('/', "."))))?;
+            if declaring == crate::observed::ENUM && !matches!((name, descriptor), ("name", "Ljava/lang/String;") | ("ordinal", "I")) {
+                return unsupported(format!("reads or writes java.lang.Enum.{name}, outside the observed state of {}", class.replace('/', ".")));
+            }
+            return Ok(self.cp.field_key(class, &declaring, name));
+        }
         // The active model's own bytecode can access representation fields absent from the JDK class.
         // A subclass declaring the same name still has a distinct field.
         if let Some(frame) = path.frames.last().filter(|f| f.class.name == owner && self.cp.runs_model(owner)) {
@@ -4906,6 +4945,21 @@ impl<'a> Engine<'a> {
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
         let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
+        if caller == "jdk/internal/util/Preconditions" && member.owner == caller && member.name == "outOfBoundsCheckIndex"
+            && member.descriptor == "(Ljava/util/function/BiFunction;II)Ljava/lang/RuntimeException;" {
+            let stack = &path.frames.last().expect("a frame").stack;
+            let bound = path.statics.get(&("java/nio/Buffer".into(), "IOOBE_FORMATTER".into()));
+            if matches!((stack.as_slice(), bound), ([.., Val::R(Some(actual)), Val::I(_), Val::I(_)], Some(Val::R(Some(known)))) if actual == known)
+                && self.cp.plain_buffer_formatter() {
+                // The image-qualified adapter discards the formatting result. Execute its real exception constructor.
+                let loaded = self.cp.load("java/nio/Buffer$1").ok().flatten().filter(|l| l.origin == crate::classpath::Origin::Jdk).ok_or_else(|| Stop::Unsupported("missing NIO index formatter".into()))?;
+                let body = loaded.class.method("apply", "(Ljava/lang/String;)Ljava/lang/IndexOutOfBoundsException;").cloned()
+                    .ok_or_else(|| Stop::Unsupported("missing NIO index exception factory".into()))?;
+                self.pop_args(path, 3)?;
+                let r = self.alloc(path, &loaded.class.name);
+                return self.enter_method(path, "java/nio/Buffer$1", loaded.class, body, vec![Val::R(Some(r)), Val::R(None)]);
+            }
+        }
         // Where a version of a pair begins ([`crate::pairing`]): it starts as if it ran alone. What a run can leave
         // for a later one is the static fields, the classes' initialization and the default locale, which the
         // engine holds in the path's statics; every other object is reached through them or through the call's
@@ -5245,6 +5299,13 @@ impl<'a> Engine<'a> {
                     return self.enter_method(path, &member.owner, cf, method, full);
                 }
             }
+            if !path.objects[o].assumed && !path.objects[o].given {
+                if let Some((cf, method)) = self.cp.linked_queue_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
+            }
             if matches!(path.objects[o].class.as_str(), "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
                 && !path.objects[o].assumed && !path.objects[o].given && ClassPath::heap_buffer_owner(&member.owner) {
                 let target = if special { member.owner.clone() } else {
@@ -5272,8 +5333,22 @@ impl<'a> Engine<'a> {
                 self.advance(path);
                 return Ok(None);
             }
-            if special && member.owner == STRING && member.name == "<init>" && matches!(member.descriptor.as_str(), "([C)V" | "(Ljava/lang/String;)V") {
-                if let [Val::R(source)] = args.as_slice() { return self.initialize_string(path, o, *source, &member.descriptor); }
+            if special && member.owner == STRING && member.name == "<init>" {
+                match (member.descriptor.as_str(), args.as_slice()) {
+                    ("([CII)V", [Val::R(source), Val::I(offset), Val::I(count)]) =>
+                        return self.initialize_string_range(path, o, *source, offset, count),
+                    ("([C)V" | "(Ljava/lang/String;)V", [Val::R(source)]) =>
+                        return self.initialize_string(path, o, *source, &member.descriptor),
+                    _ => {}
+                }
+            }
+            if special && member.name == "<init>" && member.owner == "java/lang/StringIndexOutOfBoundsException"
+                && path.objects[o].class == member.owner {
+                if let Some((cf, method)) = self.cp.string_range_constructor(&member.owner, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
             }
             if !special {
                 if let Some((cf, method)) = self.cp.image_default_method(&path.objects[o].class, &member.name, &member.descriptor) {
@@ -5905,7 +5980,7 @@ impl<'a> Engine<'a> {
         }
         let bits = |v: &Val| match v {
             Val::I(b) | Val::J(b) => Some(b.clone()),
-            Val::R(_) | Val::C(_) => None,
+            Val::R(_) | Val::C(_) | Val::Unobserved(_) => None,
         };
         let a: Vec<Bits> = match args.iter().map(bits).collect::<Option<Vec<_>>>() {
             Some(a) => a,
@@ -6129,7 +6204,7 @@ mod tests {
     /// object's now. Before, the records kept the old numbers: the first named the array that moved into its place.
     #[test]
     fn a_calls_record_names_its_result_by_the_number_a_merge_gives_it() {
-        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), unheld_statics: Default::default(), statics: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(), calls: Default::default() };
         // The state reaches the third object alone; the first was a call's result and nothing holds it now.
         path.statics.insert(("app/A".into(), "kept".into()), Val::R(Some(2)));
         path.calls = Rc::new(vec![ties::Call::returning(1, Val::R(Some(0))), ties::Call::returning(2, Val::R(Some(2)))]);
@@ -6149,7 +6224,7 @@ mod tests {
             let mut path = Path {
                 frames: Vec::new(), cond: vec![condition], models: Vec::new(), undecided: false,
                 resumed: false, objects: vec![string.clone(), string], literals: BTreeMap::new(),
-                classes: BTreeMap::new(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(),
+                classes: BTreeMap::new(), unheld_statics: Default::default(), probing: None, unbound_platform_value: None, loose: false, summarized: Default::default(),
                 statics: BTreeMap::from([
                     (("app/Caller".into(), "a".into()), Val::R(Some(first))),
                     (("app/Caller".into(), "b".into()), Val::R(Some(second))),

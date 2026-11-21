@@ -1,0 +1,250 @@
+{
+  "plan": {
+    "example": "360",
+    "task": "postorder-parent-observed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "postorder-parent-observed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "file": "claims/postorder-observed.json",
+      "sha256": "79c6f8f26b91ec5092b035990d945fae5222a2315732b970dda0e3ec12842403",
+      "property": "postorder",
+      "claimKind": "property",
+      "statement": "The public postorder traversal returns the empty root once or the original name, package and root in that order.",
+      "assume": "code >= 0 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "17d60200e6a2fd682032fb6c6bcf24986f929eb9fbb9dc3b64ad79e5c84f1273"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "242770e76443be836d369f6f2d1b36c6992e180e2b201ea1215598863a397f9a"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.TreeOrder#postorder(I)I",
+        "mapping": "The public postorder traversal returns the empty root once or the original name, package and root in that order. Its original receiver and direct outcome are indexed in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2
+      },
+      "observedInitializers": {
+        "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+      },
+      "key": "238b13ba3d65a5a3"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/javaparser/javaparser",
+        "commit": "e0eb16b8870fc05c03ab794e502dd76f97422e26",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "javaparser-core",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "17"
+        },
+        "capturedBuild": {
+          "path": "records/build-historical/build-parent.json",
+          "sha256": "1265afd09271daf1ad220c8ba1fe1fa6b941cd260b4e9c3a7719eae3072170ea"
+        },
+        "adapters": [
+          "adapter/organic/TreeOrder.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/postorder-parent-observed"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-114112-javaparser-traversal-with-its-observed-l/examples/360-javaparser-postorder-root",
+    "network": true
+  },
+  "inputs": {
+    "example": "360",
+    "task": "postorder-parent-observed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "postorder-parent-observed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "file": "claims/postorder-observed.json",
+      "sha256": "79c6f8f26b91ec5092b035990d945fae5222a2315732b970dda0e3ec12842403",
+      "property": "postorder",
+      "claimKind": "property",
+      "statement": "The public postorder traversal returns the empty root once or the original name, package and root in that order.",
+      "assume": "code >= 0 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "17d60200e6a2fd682032fb6c6bcf24986f929eb9fbb9dc3b64ad79e5c84f1273"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "242770e76443be836d369f6f2d1b36c6992e180e2b201ea1215598863a397f9a"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.TreeOrder#postorder(I)I",
+        "mapping": "The public postorder traversal returns the empty root once or the original name, package and root in that order. Its original receiver and direct outcome are indexed in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2
+      },
+      "observedInitializers": {
+        "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+      },
+      "key": "238b13ba3d65a5a3"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/javaparser/javaparser",
+        "commit": "e0eb16b8870fc05c03ab794e502dd76f97422e26",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "javaparser-core",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "17"
+        },
+        "capturedBuild": {
+          "path": "records/build-historical/build-parent.json",
+          "sha256": "1265afd09271daf1ad220c8ba1fe1fa6b941cd260b4e9c3a7719eae3072170ea"
+        },
+        "adapters": [
+          "adapter/organic/TreeOrder.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/TreeOrder.java",
+        "sha256": "d7145bf220668f8b7cf53b5e3138d5222114b749e3f8e1c404fd60fea662a84d"
+      }
+    ]
+  },
+  "key": "4ea624803c76c8cf4a44843b6d01e5fe2421492eb9df17dcee806adf20c3d00c"
+}

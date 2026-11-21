@@ -669,8 +669,14 @@ fn a_class_literal_says_whether_it_is_an_array_class_and_another_class_is_the_jd
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).arg("claims.Arrayed").output().expect("java runs");
-    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
-    for method in ["arrayed", "ofAnArray", "assignableOfAnArray"] { proved(classes, &format!("claims.Arrayed#{method}"), 2); }
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true true true true true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
+    for method in ["arrayed", "ofAnArray", "assignableOfAnArray", "boxedClass", "classCasts"] { proved(classes, &format!("claims.Arrayed#{method}"), 2); }
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = jvmcontract::interp::Machine::new(&cp);
+    for flag in [0, 1] {
+        use jvmcontract::interp::Value;
+        assert_eq!(machine.call_static("claims/Arrayed", "classCasts", "(Z)Z", vec![Value::Int(flag)]).unwrap(), Some(Value::Int(1)));
+    }
     for (method, call) in [("opaqueIsArray", "java.lang.Class.isArray()"), ("opaqueAssignable", "java.lang.Class.isAssignableFrom(java.lang.Class)")] {
         // Under strict the run stops at the opaque receiver's `getClass()`; under assume that gives a Class the engine holds
         // no literal of, and the run stops at the call on it.
@@ -1249,7 +1255,7 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.ListConversions").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits", "liveIterator", "nestedView", "arrayView"] {
+    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits", "liveIterator", "nestedView", "arrayView", "callbacks"] {
         let o = run(&options(classes, &format!("claims.ListConversions#{name}"), 4, &format!("list-image-{name}")));
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(!o.stated.unwrap().assumptions.iter().any(|a| a.text.contains("java.util.ArrayList is the tool's model")));
@@ -1259,6 +1265,7 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
     for sized in [0, 1] {
         assert_eq!(machine.call_static("claims/ListConversions", "snapshots", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
         assert_eq!(machine.call_static("claims/ListConversions", "liveIterator", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
+        assert_eq!(machine.call_static("claims/ListConversions", "callbacks", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
         assert_eq!(machine.call_static("claims/ListConversions", "nestedView", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
     }
     assert_eq!(machine.call_static("claims/ListConversions", "storesPrefix", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
@@ -1329,10 +1336,11 @@ fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
     let mut machine = Machine::new(&cp);
     for mode in [0, 1] {
         assert_eq!(machine.call_static("claims/LiveMapViews", "remove", "(Z)Z", vec![Value::Int(mode)]).unwrap(), Some(Value::Int(1)));
+        assert_eq!(machine.call_static("claims/LiveMapViews", "packedValue", "(Z)Z", vec![Value::Int(mode)]).unwrap(), Some(Value::Int(1)));
     }
     assert_eq!(machine.call_static("claims/LiveMapViews", "collisions", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     assert_eq!(machine.call_static("claims/LiveMapViews", "copies", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
-    for name in ["remove", "collisions", "mixed"] {
+    for name in ["remove", "collisions", "mixed", "packedValue"] {
         let mut options = options(classes, &format!("claims.LiveMapViews#{name}"), 3, name);
         options.unwind = 30;
         let o = run(&options);
@@ -1350,7 +1358,7 @@ fn jdk_readers_and_listener_lists_execute_their_shared_state() {
     assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.ReaderAndListeners").status().unwrap().success());
     let cp = jvmcontract::witness::classpath([classes]).unwrap();
     let mut machine = Machine::new(&cp);
-    for name in ["chars", "listeners"] {
+    for name in ["chars", "listeners", "outputSlices"] {
         proved(classes, &format!("claims.ReaderAndListeners#{name}"), 4);
         for flag in [0, 1] {
             assert_eq!(machine.call_static("claims/ReaderAndListeners", name, "(Z)Z", vec![Value::Int(flag)]).unwrap(), Some(Value::Int(1)));
@@ -1373,6 +1381,8 @@ fn jdk_readers_and_listener_lists_execute_their_shared_state() {
     assert_eq!(unknown.verdict, Verdict::Unverifiable, "{}", unknown.output);
     let wrong = run(&options(classes, "claims.ReaderAndListeners#wrong", 4, "wrong-first-character"));
     assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
+    let stale = run(&options(classes, "claims.ReaderAndListeners#wrongSnapshot", 4, "wrong-output-alias"));
+    assert_eq!(stale.verdict, Verdict::Violation, "{}", stale.output);
     let bad = run(&options(classes, "claims.ReaderAndListeners#invalidRange", 4, "invalid-char-destination"));
     assert_eq!(bad.verdict, Verdict::Unverifiable, "{}", bad.output);
     assert!(bad.output.contains("destination range"), "{}", bad.output);
@@ -1386,7 +1396,7 @@ fn enum_tables_and_sequential_collectors_use_the_actual_iterator() {
     assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.IteratorCollection").status().unwrap().success());
     let cp = jvmcontract::witness::classpath([classes]).unwrap();
     let mut machine = Machine::new(&cp);
-    for name in ["enums", "collected", "erased", "erroneous"] {
+    for name in ["emptyQueues", "enums", "collected", "erased", "erroneous"] {
         proved(classes, &format!("claims.IteratorCollection#{name}"), 4);
         assert_eq!(machine.call_static("claims/IteratorCollection", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     }
@@ -1394,6 +1404,21 @@ fn enum_tables_and_sequential_collectors_use_the_actual_iterator() {
         proved(classes, &format!("claims.IteratorCollection#{name}"), 4);
         for n in [0, 1] { assert_eq!(machine.call_static("claims/IteratorCollection", name, "(Z)Z", vec![Value::Int(n)]).unwrap(), Some(Value::Int(1))); }
     }
+    proved(classes, "claims.IteratorCollection#stackFrames", 16);
+    for n in [0, 1] {
+        assert_eq!(machine.call_static("claims/IteratorCollection", "stackFrames", "(Z)Z", vec![Value::Int(n)]).unwrap(), Some(Value::Int(1)));
+    }
     let wrong = run(&options(classes, "claims.IteratorCollection#wrong", 4, "iterator-bulk-override"));
     assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
+}
+
+#[test]
+fn wrapped_byte_buffers_keep_the_backing_array_and_the_absolute_limit() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.WrappedBuffers").output().unwrap();
+    assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
+    for name in ["window", "whole", "invalid"] {
+        proved(classes, &format!("claims.WrappedBuffers#{name}"), 4);
+    }
 }

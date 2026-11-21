@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "lookup",
+  "statement": "Per-key lookup equals the widened sum capped at Integer.MAX_VALUE.",
+  "assume": "code >= 0 && code < 49",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 48,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.SumView#lookup(I)I",
+    "mapping": "Per-key lookup equals the widened sum capped at Integer.MAX_VALUE. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 49
+  }
+}

@@ -161,6 +161,8 @@ pub struct ClassPath {
     entries: Vec<Entry>,
     jar_release: Option<u32>,
     jdk: Option<JImage>,
+    /// Bootstrap bytecode for String range checks on a selected pre-module JDK.
+    legacy_boot: Option<crate::zip::ZipArchive>,
     /// Whether the tool's models of JDK classes are part of this class path (they are, unless turned off).
     models: bool,
     cache: RefCell<HashMap<String, Option<Loaded>>>,
@@ -169,6 +171,7 @@ pub struct ClassPath {
     /// Whether the own checker runs each class initializer asked about ([`crate::bmc::gaps::runs_initializer`]): a
     /// function of the class path alone.
     pub(crate) initializer_runs: RefCell<HashMap<String, bool>>,
+    plain_buffer_formatter: std::cell::OnceCell<bool>,
     /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
     /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
     pub(crate) observed_initializers: RefCell<std::collections::BTreeSet<String>>,
@@ -192,7 +195,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -240,7 +243,14 @@ impl ClassPath {
 
     /// Uses the JDK found through `JAVA_HOME` or `PATH` for JDK class shapes, if there is one.
     pub fn with_default_jdk(mut self) -> ClassPath {
-        if let Some(jdk) = JImage::open_default() {
+        let legacy = std::env::var_os("JAVA_HOME").map(PathBuf::from).and_then(|home| {
+            if home.join("lib/modules").is_file() { return None }
+            [home.join("jre/lib/rt.jar"), home.join("lib/rt.jar")].into_iter().find(|p| p.is_file())
+        });
+        self.legacy_boot = None;
+        if let Some(archive) = legacy {
+            self.legacy_boot = crate::zip::ZipArchive::open(&archive).ok();
+        } else if let Some(jdk) = JImage::open_default() {
             return self.with_jdk(jdk);
         }
         self.jdk = None;
@@ -258,11 +268,13 @@ impl ClassPath {
             }
         }
         self.jdk = Some(jdk);
+        self.legacy_boot = None;
         self.reset_runtime_caches();
         self
     }
 
     fn reset_runtime_caches(&mut self) {
+        self.plain_buffer_formatter.take();
         self.cache.borrow_mut().clear();
         self.classes.replace(None);
         self.refusals.borrow_mut().clear();
@@ -276,6 +288,23 @@ impl ClassPath {
 
     pub fn has_jdk(&self) -> bool {
         self.jdk.is_some()
+    }
+
+    /// The public constructor itself chooses which exception wins when the array is null and a bound is negative.
+    pub(crate) fn string_range_constructor(&self, owner: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        if !matches!((owner, descriptor), ("java/lang/String", "([CII)V") | ("java/lang/StringIndexOutOfBoundsException", "(I)V")) { return None }
+        let class = if let Some(boot) = &self.legacy_boot {
+            let bytes = boot.read(&format!("{owner}.class")).ok()??;
+            let class = ClassFile::parse(&bytes).ok()?;
+            if class.name != owner { return None }
+            Rc::new(class)
+        } else {
+            let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+            class
+        };
+        let method = class.method("<init>", descriptor)?.clone();
+        method.code.as_ref()?;
+        Some((class, method))
     }
 
     /// The entries, for messages.
@@ -735,11 +764,15 @@ impl ClassPath {
             ("java/util/Arrays", "fill", "([CC)V")
             | ("java/util/Arrays", "fill", "([IIII)V")
             | ("java/util/Arrays", "rangeCheck", "(III)V")
+            | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
+            | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")
             | ("java/util/Arrays", "copyOfRange" | "copyOfRangeByte", "([BII)[B")
             | ("java/util/Arrays", "checkLength", "(II)V")
             | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
+            | ("java/nio/ByteBuffer", "wrap", "([B)Ljava/nio/ByteBuffer;" | "([BII)Ljava/nio/ByteBuffer;")
             | ("java/nio/CharBuffer", "wrap", "([CII)Ljava/nio/CharBuffer;" | "([C)Ljava/nio/CharBuffer;")
             | ("java/lang/String", "decodeASCII", "([BI[CII)I")
+            | ("java/lang/String", "rangeCheck", "([CII)Ljava/lang/Void;")
             | ("java/lang/StringCoding", "countPositives", "([BII)I")
             | ("java/lang/StringLatin1", "inflate", "([BI[CII)V")
             | ("sun/nio/cs/UTF_8", "updatePositions", "(Ljava/nio/Buffer;ILjava/nio/Buffer;I)V")
@@ -751,11 +784,15 @@ impl ClassPath {
             | ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;" | "([Ljava/lang/Object;II)Ljava/util/stream/Stream;")
             | ("java/util/Arrays", "spliterator", "([Ljava/lang/Object;II)Ljava/util/Spliterator;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
+            | ("java/util/Collections", "unmodifiableList", "(Ljava/util/List;)Ljava/util/List;")
+            | ("java/util/Collections", "singletonList", "(Ljava/lang/Object;)Ljava/util/List;")
+            | ("java/util/Collections", "singletonIterator", "(Ljava/lang/Object;)Ljava/util/Iterator;")
             | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
             | ("java/util/Objects", "toString", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;")
             | ("java/util/Objects", "hash", "([Ljava/lang/Object;)I")
             | ("java/util/Objects", "hashCode", "(Ljava/lang/Object;)I")
             | ("java/util/Objects", "checkFromIndexSize", "(III)I")
+            | ("jdk/internal/util/Preconditions", "checkIndex", "(IILjava/util/function/BiFunction;)I")
             | ("jdk/internal/util/Preconditions", "checkFromIndexSize", "(IIILjava/util/function/BiFunction;)I")
             | ("jdk/internal/util/ArraysSupport", "hashCode", "([Ljava/lang/Object;III)I")
             | ("java/util/Arrays", "equals", "([Ljava/lang/Object;[Ljava/lang/Object;)Z")
@@ -786,6 +823,24 @@ impl ClassPath {
                 && class.pool.member(*m).is_ok_and(|ctor| (ctor.owner.as_str(), ctor.name.as_str(), ctor.descriptor.as_str()) == (class_name, "<init>", "()V"))))
     }
 
+    /// These images install Buffer$1 through Preconditions$4. The fixed checkIndex formatter
+    /// converts two plain Integers with "%s". Buffer$1.apply(String) ignores both the message
+    /// and its receiver and constructs a fresh, no-argument IndexOutOfBoundsException.
+    /// Bind the complete classes for the skipped formatting path. Other images run as written.
+    pub(crate) fn plain_buffer_formatter(&self) -> bool {
+        *self.plain_buffer_formatter.get_or_init(|| {
+            let Some(image) = self.jdk() else { return false };
+            let mut code = Vec::new();
+            for owner in ["java/nio/Buffer", "java/nio/Buffer$1", "jdk/internal/util/Preconditions", "jdk/internal/util/Preconditions$4"] {
+                let Ok(Some(bytes)) = image.read_class(owner) else { return false };
+                code.extend(bytes);
+            }
+            matches!(crate::digest::sha256_hex(&code).as_str(),
+                "42e15de022f96d5073fabe25d5528a97bade2de31a6ff39681e0665ba67bfebe" // Temurin 21.0.13
+                | "50d5a86221a41a6b52d2bb0e43cf79432d32d8c4855c11c5969f8b38751cc2a0") // Temurin 25.0.5
+        })
+    }
+
     pub(crate) fn heap_buffer_owner(name: &str) -> bool {
         matches!(name, "java/nio/Buffer" | "java/nio/ByteBuffer" | "java/nio/CharBuffer"
             | "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
@@ -797,11 +852,26 @@ impl ClassPath {
         if !Self::heap_buffer_owner(owner) || !matches!(name, "<init>" | "position" | "limit" | "capacity" | "remaining"
             | "hasRemaining" | "flip" | "rewind" | "clear" | "compact" | "discardMark" | "checkScope"
             | "array" | "hasArray" | "arrayOffset" | "ix" | "isReadOnly" | "isDirect" | "nextGetIndex" | "nextPutIndex"
-            | "get" | "put" | "mark" | "reset") { return None; }
+            | "get" | "put" | "checkIndex" | "createLimitException" | "createPositionException" | "mark" | "reset") { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
         let method = class.method(name, desc)?.clone();
         if method.is_static() || method.code.is_none() { return None; }
         Some((class, method))
+    }
+
+    /// Ordinary instance bytecode on an exact, freshly constructed queue. A path reaching a
+    /// VarHandle still needs the JDK's actual atomic operation; the empty path reads neither handle.
+    pub(crate) fn linked_queue_method(&self, receiver: &str, owner: &str, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+        const QUEUE: &str = "java/util/concurrent/ConcurrentLinkedQueue";
+        if receiver != QUEUE || special && owner != QUEUE { return None; }
+        if !matches!((name, desc), ("<init>", "()V") | ("peek", "()Ljava/lang/Object;") | ("isEmpty", "()Z")
+            | ("first", "()Ljava/util/concurrent/ConcurrentLinkedQueue$Node;")
+            | ("updateHead", "(Ljava/util/concurrent/ConcurrentLinkedQueue$Node;Ljava/util/concurrent/ConcurrentLinkedQueue$Node;)V")) {
+            return None;
+        }
+        let Loaded { class, origin: Origin::Jdk } = self.load(QUEUE).ok()?? else { return None };
+        let method = class.method(name, desc)?.clone();
+        (!method.is_static() && method.code.is_some()).then_some((class, method))
     }
 
     /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
@@ -809,11 +879,14 @@ impl ClassPath {
         let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
         if !sublist && !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
+            | ("java/lang/Class", "cast", "(Ljava/lang/Object;)Ljava/lang/Object;")
+            | ("java/lang/Class", "cannotCastMsg", "(Ljava/lang/Object;)Ljava/lang/String;")
             | ("java/util/ArrayList", "<init>", "()V" | "(I)V")
             | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
             | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
             | ("java/util/ArrayList", "clear", "()V")
             | ("java/util/ArrayList", "iterator", "()Ljava/util/Iterator;")
+            | ("java/util/ArrayList", "forEach", "(Ljava/util/function/Consumer;)V")
             | ("java/util/ArrayList", "subList", "(II)Ljava/util/List;")
             | ("java/util/AbstractList", "subListRangeCheck", "(III)V")
             | ("java/util/AbstractList", "clear", "()V")
@@ -834,9 +907,7 @@ impl ClassPath {
             | ("java/util/ArrayList", "add", "(Ljava/lang/Object;)Z" | "(Ljava/lang/Object;[Ljava/lang/Object;I)V")
             | ("java/util/ArrayList", "grow", "()[Ljava/lang/Object;" | "(I)[Ljava/lang/Object;")
             | ("java/util/ArrayList", "toArray", "()[Ljava/lang/Object;" | "([Ljava/lang/Object;)[Ljava/lang/Object;")
-            | ("java/util/Arrays", "copyOf", "([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;")
-            | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
-            | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")) { return None; }
+            | ("java/util/Arrays", "copyOf", "([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;")) { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
         if (sublist || owner == "java/util/ArrayList$Itr") && class.method("<clinit>", "()V").is_some() { return None; }
         let method = class.method(name, descriptor)?.clone();
@@ -846,7 +917,8 @@ impl ClassPath {
 
     pub(crate) fn surrogate_arithmetic(owner: &str, name: &str, descriptor: &str) -> bool {
         owner == "java/lang/Character" && matches!((name, descriptor),
-            ("isSurrogate", "(C)Z") | ("isSupplementaryCodePoint", "(I)Z")
+            ("isSurrogate" | "isHighSurrogate" | "isLowSurrogate", "(C)Z") | ("isSupplementaryCodePoint", "(I)Z")
+            | ("charCount", "(I)I")
             | ("highSurrogate" | "lowSurrogate", "(I)C"))
     }
 
@@ -971,6 +1043,10 @@ impl ClassPath {
     /// Ordinary single-threaded JDK objects whose instance and static fields both engines
     /// execute from the image. Reader$2 is the CharSequence reader used by newer runtimes.
     pub(crate) fn state_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if matches!(name, "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node") {
+            let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+            return class.method("<clinit>", "()V").is_none().then_some(class);
+        }
         if name == "java/util/EventObject" {
             if self.runs_model(name) { return None; }
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
@@ -978,10 +1054,14 @@ impl ClassPath {
         }
         if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
             | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
+            | "java/io/OutputStream" | "java/io/ByteArrayOutputStream" | "java/io/FilterOutputStream"
             | "java/io/InputStreamReader" | "sun/nio/cs/StreamDecoder" | "jdk/internal/misc/InternalLock" | "java/nio/charset/CodingErrorAction" | "java/nio/ByteOrder"
             | "java/nio/charset/CharsetDecoder" | "java/nio/charset/CoderResult" | "sun/nio/cs/UTF_8$Decoder"
             | "java/util/Comparator" | "java/util/Comparators$NaturalOrderComparator"
-            | "java/util/TimSort" | "java/util/ComparableTimSort"
+            | "java/util/TimSort" | "java/util/ComparableTimSort" | "java/util/BitSet"
+            | "java/util/Stack" | "java/util/Vector" | "java/util/Collections$SingletonList" | "java/util/Collections$1"
+            | "java/util/Collections$UnmodifiableList" | "java/util/Collections$UnmodifiableRandomAccessList"
+            | "java/util/Collections$UnmodifiableCollection$1"
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"
             | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"

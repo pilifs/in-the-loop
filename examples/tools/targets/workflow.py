@@ -147,11 +147,14 @@ def artifact_sources(folder, target, revisions):
                 entry["parent"] = revision["parent"]
         else:
             entry["fixture"] = revision["fixture"]
-        for key in ("fixtureClasspath", "orderedClasses"):
-            if key in defined[source]:
-                if route != "fixture":
-                    return f"revision {source}: {key} requires a fixture"
-                entry[key] = list(defined[source][key])
+        if "fixtureClasspath" in defined[source]:
+            if route != "fixture":
+                return f"revision {source}: fixtureClasspath requires a fixture"
+            entry["fixtureClasspath"] = list(defined[source]["fixtureClasspath"])
+        if "orderedClasses" in defined[source]:
+            if route not in ("fixture", "upstream-build"):
+                return f"revision {source}: orderedClasses requires a fixture or an upstream build"
+            entry["orderedClasses"] = list(defined[source]["orderedClasses"])
         if "fixtureCompiler" in defined[source]:
             compiler = defined[source]["fixtureCompiler"]
             if route != "fixture" or sidecar.slice_flag_problems(compiler["flags"]):
@@ -303,7 +306,7 @@ def source_claim(folder, target, task, controls):
         "gaps": task.get("gaps"), "parent": task.get("parent"),
         "controls": [{"id": c["id"], "kind": c["kind"], **hashed(folder, c["path"])} for c in controls],
     }
-    for field in ("boundEnvironment", "adapter", "namedModels", "observedInitializers"):
+    for field in ("boundEnvironment", "adapter", "namedModels", "observedInitializers", "observedRuntime"):
         if field in stated:
             claim[field] = stated[field]
     claim["key"] = claim_key(claim)
@@ -325,7 +328,7 @@ def claim_key(claim):
         body["models"] = sorted(m["sha256"] for m in claim["models"])
         body["plan"] = claim["plan"] and claim["plan"]["sha256"]
         body["contracts"] = claim["contracts"] and claim["contracts"]["sha256"]
-        for field in ("boundEnvironment", "adapter", "namedModels", "observedInitializers"):
+        for field in ("boundEnvironment", "adapter", "namedModels", "observedInitializers", "observedRuntime"):
             if field in claim:
                 body[field] = claim[field]
     return canonical_digest({"format": CLAIM_VERSION, **body})[:16]

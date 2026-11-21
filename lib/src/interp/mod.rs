@@ -687,6 +687,11 @@ impl<'a> Machine<'a> {
     pub fn call_virtual(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
         let class = self.class_of(r);
+        if let Some((cf, method)) = self.cp.linked_queue_method(&class, owner, name, descriptor, false) {
+            let mut full = vec![receiver];
+            full.extend(args);
+            return self.invoke(&cf, &method, full);
+        }
         if (name, descriptor) == ("equals", "(Ljava/lang/Object;)Z") {
             if let Some(answer) = natives::array_list_equality(self, r, args[0]) {
                 return answer.map(|equal| Some(Value::bool(equal)));
@@ -1241,6 +1246,11 @@ impl<'a> Machine<'a> {
     /// `invokespecial`: constructors, private methods and `super.` calls go to the named class, not the receiver's.
     fn call_special(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
+        if let Some((cf, method)) = self.cp.linked_queue_method(&self.class_of(r), owner, name, descriptor, true) {
+            let mut full = vec![receiver];
+            full.extend(args);
+            return self.invoke(&cf, &method, full);
+        }
         if (owner, name, descriptor) == ("java/lang/Object", "clone", "()Ljava/lang/Object;") {
             if let Object::Instance { class, base: Base::Object, .. } = self.heap.get(r) {
                 if self.cp.application_object(class) {

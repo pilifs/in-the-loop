@@ -1,0 +1,226 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-lang-surrogate-cuts",
+    "family": "commons-lang",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-lang",
+    "revisions": {
+      "parent": {
+        "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b"
+      },
+      "fix": {
+        "commit": "75d85a807d7b66da432a822de6fc75c48134decf",
+        "parent": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/organic/SurrogateCuts.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    },
+    "capturedBuilds": {
+      "parent": "records/upstream/build-parent.json",
+      "fix": "records/upstream/build-fix.json"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;"
+    },
+    {
+      "id": "fixed-cut-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "claim": "claims/fixed-cut.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "fixed-cut-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "claim": "claims/fixed-cut.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "truncate-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "claim": "claims/truncate.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "truncate-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "claim": "claims/truncate.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "abbreviate-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+      "claim": "claims/abbreviate.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "abbreviate-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+      "claim": "claims/abbreviate.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "intact-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "claim": "claims/intact.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "intact-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "claim": "claims/intact.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "width-five-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+      "claim": "claims/width-five.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "width-five-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+      "claim": "claims/width-five.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/organic/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

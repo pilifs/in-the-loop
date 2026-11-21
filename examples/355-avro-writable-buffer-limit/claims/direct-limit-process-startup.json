@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "direct-limit",
+  "statement": "Under the narrower direct nested converter entry, capacity is retained and the logical limit rejects the first excluded byte.",
+  "assume": "code >= 0 && code < 21",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.WritableBuffer#directLimit(I)I",
+    "mapping": "Under the narrower direct nested converter entry, capacity is retained and the logical limit rejects the first excluded byte. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 21
+  },
+  "observedInitializers": {
+    "org.apache.avro.Schema": "46362dd64bbfb47c11ac894616c2e053feaa0280f114c9f73595f49223170821"
+  },
+  "observedRuntime": {
+    "processors": 2
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13"
+  },
+  "notes": [
+    "The original nested converter runs with Schema startup observed on JDK 21.0.13 with two available processors. Each observation is conditional on the complete state and all transitive comparisons qualifying."
+  ]
+}

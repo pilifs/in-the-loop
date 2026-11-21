@@ -64,7 +64,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("toCharArray", "()[C") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
@@ -87,6 +87,10 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
 impl Engine<'_> {
     /// The unit of `s` at the index `at`: a choice among its cells, zero for an index it has no cell for.
     fn unit_at(&mut self, s: &Array, at: &Bits) -> Bits {
+        if let Some(index) = self.b.constant_value(at) {
+            return usize::try_from(index).ok().and_then(|i| s.cells.get(i)).cloned()
+                .unwrap_or_else(|| self.b.constant(0, 16));
+        }
         let mut unit = self.b.constant(0, 16);
         for (i, cell) in s.cells.iter().enumerate().rev() {
             let here = self.b.constant(i as i64, 32);
@@ -348,6 +352,50 @@ impl Engine<'_> {
         Ok(None)
     }
 
+    /// String(char[], offset, count) owns the selected units even if the array is later mutated.
+    pub(super) fn initialize_string_range(&mut self, path: &mut Path, object: usize, source: Option<usize>,
+                                          offset: &Bits, count: &Bits) -> Step {
+        let Some(source) = source else {
+            if let Some((class, method)) = self.cp.string_range_constructor(STRING, "([CII)V") {
+                return self.enter_method(path, STRING, class, method,
+                    vec![Val::R(Some(object)), Val::R(None), Val::I(offset.clone()), Val::I(count.clone())]);
+            }
+            let invalid = self.any(&[self.b.negative(offset), self.b.negative(count)]);
+            let mut assumptions = path.cond.clone();
+            assumptions.push(invalid);
+            if self.solve(&assumptions)? {
+                return unsupported("String(char[], int, int) exception order needs the selected JDK constructor");
+            }
+            return self.raise(path, "java/lang/NullPointerException");
+        };
+        self.keeps(path, Some(object), "initializes a pre-existing String")?;
+        if self.there_before(path, source) {
+            self.reads(path, || "String(char[], int, int) reads an array that existed before the call".into())?;
+        }
+        let Some(chars) = path.objects[source].as_array().filter(|a| a.element == Type::Char).cloned() else {
+            return unsupported("String constructor needs a known char array");
+        };
+        // Subtraction preserves the JDK bound even if offset + count would overflow a Java int.
+        let last_start = self.b.sub(&chars.length, count);
+        let past_end = self.b.slt(&last_start, offset);
+        let invalid = self.any(&[self.b.negative(offset), self.b.negative(count), past_end]);
+        self.branch_throw_or(path, invalid, "java/lang/StringIndexOutOfBoundsException", |engine, path| {
+            let start = engine.b.constant_value(offset).and_then(|n| usize::try_from(n).ok());
+            let room = chars.cells.len().saturating_sub(start.unwrap_or(0));
+            let limit = engine.b.constant_value(count).and_then(|n| usize::try_from(n).ok()).unwrap_or(room).min(room);
+            let cells = if let Some(start) = start {
+                chars.cells.into_iter().skip(start).take(limit).collect()
+            } else {
+                (0..limit).map(|i| {
+                    let index = engine.b.add(offset, &engine.b.constant(i as i64, 32));
+                    engine.unit_at(&chars, &index)
+                }).collect()
+            };
+            path.objects[object].array = Some(Array { element: Type::Char, length: count.clone(), cells, refs: Vec::new() });
+            engine.advance(path);
+        })
+    }
+
     /// String.concat itself runs from the image, so it supplies both its null check and
     /// its return of the receiver for an empty suffix. Its binary helper makes a fresh
     /// String from the two immutable UTF-16 inputs.
@@ -371,6 +419,25 @@ impl Engine<'_> {
     /// The String methods of this module on the String `o` of content `s`: see the module's notes.
     pub(super) fn string_method_on_content(&mut self, path: &mut Path, o: usize, s: &Array, name: &str, descriptor: &str, args: &[Val]) -> Step {
         match (name, descriptor, args) {
+            ("codePointAt", "(I)I", [Val::I(index)]) => {
+                let first = self.unit_at(s, index);
+                let next = self.b.add(index, &self.b.constant(1, 32));
+                let second = self.unit_at(s, &next);
+                let mask = self.b.constant(0xfc00, 16);
+                let high_bits = self.b.and_bits(&first, &mask);
+                let low_bits = self.b.and_bits(&second, &mask);
+                let high = self.b.eq(&high_bits, &self.b.constant(0xd800, 16));
+                let low = self.b.eq(&low_bits, &self.b.constant(0xdc00, 16));
+                let has_second = self.b.ult(&next, &s.length);
+                let pair = self.b.all(&[high, low, has_second]);
+                // The two ten-bit payloads form the low twenty bits before adding U+10000.
+                let payload = [second[..10].to_vec(), first[..10].to_vec(), vec![FALSE; 12]].concat();
+                let supplementary = self.b.add(&payload, &self.b.constant(0x10000, 32));
+                let first = self.b.extend_cell(&Type::Char, &first);
+                let value = self.b.ite_bits(pair, &supplementary, &first);
+                let valid = self.b.ult(index, &s.length);
+                self.branch_throw(path, -valid, "java/lang/StringIndexOutOfBoundsException", Val::I(value))
+            }
             ("toCharArray", "()[C", []) => {
                 let copy = self.alloc(path, "[C");
                 path.objects[copy].array = Some(s.clone());

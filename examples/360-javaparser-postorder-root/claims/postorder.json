@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "postorder",
+  "statement": "The public postorder traversal returns the empty root once or the original name, package and root in that order.",
+  "assume": "code >= 0 && code < 2",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.TreeOrder#postorder(I)I",
+    "mapping": "The public postorder traversal returns the empty root once or the original name, package and root in that order. Its original receiver and direct outcome are indexed in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 2
+  }
+}

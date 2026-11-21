@@ -1,0 +1,29 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "preorder",
+  "statement": "Preorder returns the original root first and preserves the order of the package and name.",
+  "assume": "code >= 0 && code < 2",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.TreeOrder#preorder(I)I",
+    "mapping": "Preorder returns the original root first and preserves the order of the package and name. Its original receiver and direct outcome are indexed in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 2
+  },
+  "observedInitializers": {
+    "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+  },
+  "notes": [
+    "This companion uses the state of the original LineSeparator enum initialized on Temurin 21.0.13 with LF as the line.separator property. The corresponding original task retains unconstrained startup."
+  ]
+}

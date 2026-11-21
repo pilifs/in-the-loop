@@ -92,7 +92,7 @@ impl Engine<'_> {
                 let (cf, method) = self.cp.library_image_method(&cf.name, &m.name, &m.descriptor)?;
                 Some(self.enter_method(path, &m.owner, cf, method, args.to_vec()))
             }
-            ("java/util/ArrayList$Itr" | SUBLIST | VIEW_ITERATOR, LIST, "elementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;", _)
+            (LIST | "java/util/ArrayList$Itr" | SUBLIST | VIEW_ITERATOR, LIST, "elementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;", _)
                 if self.cp.library_image_method(LIST, &m.name, &m.descriptor).is_some() => {
                 Some(self.call(path, LIST, &m.name, &m.descriptor, args.to_vec()))
             }
