@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-21 04:29 UTC (5272 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -3529,6 +3529,12 @@ Outputs applied for 2 of the 2 job(s). 20261121-042109-multi-release-corpus-grou
 change `wzvvmponwlxr` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
 
 Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-042108-352-check-the-actual-duration-caller-thr: failed: 1 failed step(s) in 45.5s, peak 131.7 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261121-042108-multi-release-corpus-group-1-check-eight: passed: 1 passed step(s) in 21.8s, peak 555.9 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-042108-multi-release-corpus-group-2-check-eight: passed: 1 passed step(s) in 28.7s, peak 533.5 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `lpmrululwqmo` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-070717-final-v2-group-06-original-caller-and-mi: passed: 2 passed step(s) in 25.3s, peak 132.1 MiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ## Conversation
 
