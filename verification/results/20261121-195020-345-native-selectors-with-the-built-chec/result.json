@@ -1,0 +1,470 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-195020-345-native-selectors-with-the-built-chec",
+  "title": "345 native selectors with the built checker: the run packs its per-case output and the packed record validates",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 5m15s, peak 156.1 MiB (estimated 10m00s, 1.0 GiB); 21 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-195020-345-native-selectors-with-the-built-chec.json",
+    "sha256": "179cebf43bb0dfbf543ac45227db442daffc12246cb57e5531191cd3a13a57eb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-195020-345-native-selectors-with-the-built-chec",
+      "title": "345 native selectors with the built checker: the run packs its per-case output and the packed record validates",
+      "description": "The selector route of example 345 (four parent-fix tasks, every admitted selector checked natively on the real classpath, as job 20261120-213848-345-parent-fix-exhaust-native-selector-b ran it), on a commit where a run replaces each cases/ folder of its record with cases.tar.gz at its end and the validator reads a case from the folder or from the pack (examples/tools/targets/case_pack.py, VF-053). It replaces job 20261121-194629-345-native-selectors-again-the-run-packs, whose pass shows nothing: that job did not require jvmcontract, its run ended at once with 'no built native checker', and its checks accepted that. Here the first step fails unless the run ended 0 or 1 (1 is what the earlier real run ended with, some of the four claims being refuted) and left a new record with the page task's result in it. The second fails if any folder named cases is left under the example's selector records or the records are over the budget sync.py check holds them to. The third reads the example's claim history, which validates every retained record through the packs, and fails if it does not cite the new record or reports a case as missing, altered or unreadable.",
+      "kind": "example",
+      "capabilities": [
+        "native:finite-partition",
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "345"
+        ],
+        "paths": [
+          "examples/tools/targets/case_pack.py",
+          "examples/tools/targets/native_selectors.py"
+        ]
+      },
+      "expected": "All three steps pass, the first after about three minutes of native checking: a new record is written with its per-case output packed, no loose per-case folder is left, and the claim history cites the new record with no missing or altered case.",
+      "submitted": {
+        "at": "2026-11-21T19:50:20+00:00",
+        "session": "b9b56f5e-fc0e-48ca-a64e-7a46495d814f"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "10m",
+        "memoryLimit": "4G",
+        "timeout": "30m",
+        "notes": "The same run took 2m53s and 139 MiB as job 20261120-213848-345-parent-fix-exhaust-native-selector-b, plus the checker's build when no build of this lib/ tree is cached; the two checks after it take seconds."
+      },
+      "steps": [
+        {
+          "name": "Prove original properties by complete native case analysis",
+          "run": "python3 examples/tools/build.py 345 --native-selectors bytes-parent-fix,count-parent-fix,page-parent-fix,positive-parent-fix --checker-seconds 90 --first 6; code=$?; new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); echo \"selector run exited $code; newest record $new\"; test $code -le 1 && test \"$new\" != 20261120T220835Z-adb5055d && test -f examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/$new/tasks/page-parent-fix/result.json",
+          "cwd": "."
+        },
+        {
+          "name": "No per-case folder is left loose, and the records are within their budget",
+          "run": "new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); python3 examples/tools/targets/case_pack.py budget 345 && python3 examples/tools/targets/case_pack.py verify 345 && test -z \"$(find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix -type d -name cases)\" && test -n \"$(find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/$new -name cases.tar.gz)\" && find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/$new -name cases.tar.gz",
+          "cwd": "."
+        },
+        {
+          "name": "The claim history validates the packed record of this run",
+          "run": "new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); test \"$new\" != 20261120T220835Z-adb5055d && python3 examples/tools/targets/workflow_handoff.py handoff 345 | NEW=$new python3 -c \"import os, sys; t = sys.stdin.read(); bad = [w for w in ('does not exist', 'different raw checker output', 'cannot be read') if w in t]; print(len(t), 'bytes of claim history; cites', os.environ['NEW'], os.environ['NEW'] in t, '; failure phrases', bad); sys.exit(0 if t and not bad and os.environ['NEW'] in t else 1)\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix"
+      ]
+    }
+  },
+  "sourceCommit": "94ff36cb7a3d245a7ebfb50c187a1dfbb8e8b1c0",
+  "startedAt": "2026-11-21T19:53:38+00:00",
+  "finishedAt": "2026-11-21T20:01:54+00:00",
+  "wallSeconds": 496.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4077918,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 600.0,
+    "notes": "The same run took 2m53s and 139 MiB as job 20261120-213848-345-parent-fix-exhaust-native-selector-b, plus the checker's build when no build of this lib/ tree is cached; the two checks after it take seconds."
+  },
+  "usage": {
+    "peakMemoryBytes": 163688448,
+    "wallSeconds": 316.0,
+    "cpuSeconds": 323.1,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.53
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 172.847,
+      "cpuSeconds": 172.957,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2211328000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d525eeb20498f0e90ff14b5b9b01e1f45d00bd057fca615d16a4d869e2d54b8b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-195020-345-native-selectors-with-the-built-chec/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 52s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Prove original properties by complete native case analysis",
+      "run": "python3 examples/tools/build.py 345 --native-selectors bytes-parent-fix,count-parent-fix,page-parent-fix,positive-parent-fix --checker-seconds 90 --first 6; code=$?; new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); echo \"selector run exited $code; newest record $new\"; test $code -le 1 && test \"$new\" != 20261120T220835Z-adb5055d && test -f examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/$new/tasks/page-parent-fix/result.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 314.968,
+      "cpuSeconds": 322.408,
+      "cpuThrottledSeconds": 1.236,
+      "peakMemoryBytes": 163688448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-original-properties-by-c.log",
+        "lines": 5,
+        "bytes": 275,
+        "sha256": "30cda86f1ca919ec88c9f97701e3607034a26187aab5f8da1c1b89fa201a962d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "bytes-parent-fix refuted, 1/96 admitted selectors",
+        "count-parent-fix established, 96/96 admitted selectors",
+        "page-parent-fix refuted, 1/96 admitted selectors",
+        "positive-parent-fix established, 24/24 admitted selectors",
+        "selector run exited 0; newest record 20261121T195639Z-0a4d1c95"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "No per-case folder is left loose, and the records are within their budget",
+      "run": "new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); python3 examples/tools/targets/case_pack.py budget 345 && python3 examples/tools/targets/case_pack.py verify 345 && test -z \"$(find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix -type d -name cases)\" && test -n \"$(find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/$new -name cases.tar.gz)\" && find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/$new -name cases.tar.gz",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.115,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 13090816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-no-per-case-folder-is-left-loo.log",
+        "lines": 5,
+        "bytes": 502,
+        "sha256": "34ba4e40da36b27a66bbdfcb37f792240f41a6c04001c8fcb44851257d626f74",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0 error(s), 0 warning(s)",
+        "345-paged-importer-upgrades: 15 pack(s) read, 1,314 members",
+        "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/01098e3553bfb621135f/cases.tar.gz",
+        "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/16a58d25d055aa427b1c/cases.tar.gz",
+        "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/a7db002e65eb1037bbf4/cases.tar.gz"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "The claim history validates the packed record of this run",
+      "run": "new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); test \"$new\" != 20261120T220835Z-adb5055d && python3 examples/tools/targets/workflow_handoff.py handoff 345 | NEW=$new python3 -c \"import os, sys; t = sys.stdin.read(); bad = [w for w in ('does not exist', 'different raw checker output', 'cannot be read') if w in t]; print(len(t), 'bytes of claim history; cites', os.environ['NEW'], os.environ['NEW'] in t, '; failure phrases', bad); sys.exit(0 if t and not bad and os.environ['NEW'] in t else 1)\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 0.802,
+      "cpuSeconds": 0.599,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 39501824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-the-claim-history-validates-th.log",
+        "lines": 1,
+        "bytes": 89,
+        "sha256": "50a53f8be37fb89ed96feaf2809960ee25b79364bf2a0cfe9bc2d17414791303",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "290044 bytes of claim history; cites 20261121T195639Z-0a4d1c95 True ; failure phrases []"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/01098e3553bfb621135f/Calls.java",
+      "change": "added",
+      "bytes": 7912,
+      "sha256": "23fdcf9901cc45795569d0abacc14f3b698402308965b111eeaa5077e5dfb5a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/01098e3553bfb621135f/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 4827,
+      "sha256": "c53c896beaee48dd933dece412abadfe6fac23e5252e0f05fbc9e9ca1c457081",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/01098e3553bfb621135f/cases.tar.gz",
+      "change": "added",
+      "bytes": 6166,
+      "sha256": "3387773cdcb03c0885d92e65211ab4eee98e0cfe0b28f52d73c5ee9ad5da53f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/16a58d25d055aa427b1c/Calls.java",
+      "change": "added",
+      "bytes": 8008,
+      "sha256": "3db8f8e67902dc3a7aab0f90c2bb43175be89456de9c64440026a185eb150aa7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/16a58d25d055aa427b1c/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 4828,
+      "sha256": "3541f3d65133866cd6efdb98ab1ccf4496c8c4e72809843d4fe1511d7448014c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/16a58d25d055aa427b1c/cases.tar.gz",
+      "change": "added",
+      "bytes": 15601,
+      "sha256": "2c4fbfb7c73e17a2b07ec9d0853ef0265bb2f832f1df354d566134995d890483",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/a7db002e65eb1037bbf4/Calls.java",
+      "change": "added",
+      "bytes": 8008,
+      "sha256": "3056da602ad0e279af8a29e9642dfba1ae6c35108883550146dbea750178747e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/a7db002e65eb1037bbf4/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 4828,
+      "sha256": "2a6b82c9320d24e458fdfad3b6cf60c781aed4cdcb0ce34b220dcc3e6cf9bb4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/a7db002e65eb1037bbf4/cases.tar.gz",
+      "change": "added",
+      "bytes": 1876,
+      "sha256": "d9ab498e84ebe46cd15fe6d646e6c36d8dc52bfe9650ea4c068559fb69b6e5bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/bytes-parent-fix/Admission.java",
+      "change": "added",
+      "bytes": 6658,
+      "sha256": "0640c73001ecad3c8cd0f825bd3e5f8ac0717fe3798b9b6be421f90b407196f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/bytes-parent-fix/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "9f9ec4dca403255ea4ef1acaacccdd42ad67e23101d09346907cd2d355a55c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/bytes-parent-fix/result.json",
+      "change": "added",
+      "bytes": 7309,
+      "sha256": "85e82fd875582e5fdb7f9b8eede438a6606ed3da3b08e295c2a69edb46b07ef3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/count-parent-fix/Admission.java",
+      "change": "added",
+      "bytes": 6658,
+      "sha256": "0640c73001ecad3c8cd0f825bd3e5f8ac0717fe3798b9b6be421f90b407196f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/count-parent-fix/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "9f9ec4dca403255ea4ef1acaacccdd42ad67e23101d09346907cd2d355a55c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/count-parent-fix/result.json",
+      "change": "added",
+      "bytes": 97161,
+      "sha256": "da9d7d4314a068e6a3907b4f56253dca9f075821ea4cfb46738519067f38a049",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/page-parent-fix/Admission.java",
+      "change": "added",
+      "bytes": 6658,
+      "sha256": "0640c73001ecad3c8cd0f825bd3e5f8ac0717fe3798b9b6be421f90b407196f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/page-parent-fix/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "9f9ec4dca403255ea4ef1acaacccdd42ad67e23101d09346907cd2d355a55c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/page-parent-fix/result.json",
+      "change": "added",
+      "bytes": 7518,
+      "sha256": "a95208d3e23e7ef3223aeaa2904f51794889a02270f1cf7540c413b952e6a4a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/positive-parent-fix/Admission.java",
+      "change": "added",
+      "bytes": 8472,
+      "sha256": "097c3be459285b54ece0c40fe5a45b472d81a3a21fafaf59c6d077ba5fd64f58",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/positive-parent-fix/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 3406,
+      "sha256": "e27e45c559188c6e335cf95da67d0c02d1ede807f41e51607f53f907d5a95392",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/positive-parent-fix/result.json",
+      "change": "added",
+      "bytes": 27309,
+      "sha256": "1293430d54ba5c2c84c17bf8e5810b0d79693d496fcdf857703eaadf739731e3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T20:04:38+00:00",
+    "applied": [
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/01098e3553bfb621135f/Calls.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/01098e3553bfb621135f/Calls.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/01098e3553bfb621135f/cases.tar.gz",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/16a58d25d055aa427b1c/Calls.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/16a58d25d055aa427b1c/Calls.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/16a58d25d055aa427b1c/cases.tar.gz",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/a7db002e65eb1037bbf4/Calls.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/a7db002e65eb1037bbf4/Calls.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/calls/a7db002e65eb1037bbf4/cases.tar.gz",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/bytes-parent-fix/Admission.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/bytes-parent-fix/Admission.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/bytes-parent-fix/result.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/count-parent-fix/Admission.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/count-parent-fix/Admission.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/count-parent-fix/result.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/page-parent-fix/Admission.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/page-parent-fix/Admission.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/page-parent-fix/result.json",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/positive-parent-fix/Admission.java",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/positive-parent-fix/Admission.jvm-bytecode",
+      "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix/20261121T195639Z-0a4d1c95/tasks/positive-parent-fix/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "066743ec998a8be317de78fec143ff0c60032b37",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/066743ec998a8be317de78fec143ff0c60032b37/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T200154Z-9074166b60bdc43b",
+      "outputs": "20261121T200154Z-9324176d69901f49",
+      "diff": "20261121T200154Z-952230812f8c8b0c"
+    }
+  }
+}

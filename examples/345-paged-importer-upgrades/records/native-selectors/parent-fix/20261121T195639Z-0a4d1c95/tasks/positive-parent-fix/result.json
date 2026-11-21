@@ -1,0 +1,790 @@
+{
+  "schema": "native-selector-proof/v1",
+  "identity": {
+    "sourceClaim": "02d73a91c1961a1f",
+    "inputsKey": "df6b25906d41149aa585e9abbc6f55f55f7c0730381997ff56b9ff0de174ddc8",
+    "revisions": [
+      "parent-fix"
+    ],
+    "expected": "established",
+    "sourceLocks": {
+      "parent-fix": "0d399372e2abc798ee88f062303de7e6137355c167b70c2120f96484bb8f5586"
+    }
+  },
+  "task": "positive-parent-fix",
+  "revision": "parent-fix",
+  "entry": "importer.Projection#page(I)I",
+  "guard": "code >= 0 && code < 96 && (code & 6) == 0",
+  "parameter": "code",
+  "assertion": "result == 1",
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 96
+  },
+  "envelope": [
+    0,
+    95
+  ],
+  "maxCases": 4096,
+  "admitted": [
+    0,
+    1,
+    8,
+    9,
+    16,
+    17,
+    24,
+    25,
+    32,
+    33,
+    40,
+    41,
+    48,
+    49,
+    56,
+    57,
+    64,
+    65,
+    72,
+    73,
+    80,
+    81,
+    88,
+    89
+  ],
+  "JDK": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "checker": {
+    "commit": "94ff36cb7a3d245a7ebfb50c187a1dfbb8e8b1c0",
+    "libTree": "066743ec998a8be317de78fec143ff0c60032b37",
+    "sha256": "6b60043b7c651f33ec748bf0ae94068c3fa11f290fbb917196eb8de87582cdb9"
+  },
+  "classpath": [
+    {
+      "path": "adapter-parent-fix.jar",
+      "sha256": "bf22b30bf9d9a5acd671d3c9d7a056b8dcc03fd9b279560d39c49485b5a85319",
+      "role": "adapter"
+    },
+    {
+      "path": "parent-fix.jar",
+      "sha256": "5d0a2eefe440fc7795a177e2fc37c8c1cce0d4c77ce5c08128d3f5e9410713cc",
+      "role": "original"
+    },
+    {
+      "path": "libraries/io-parent.jar",
+      "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/csv-fix.jar",
+      "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/codec.jar",
+      "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+      "role": "dependency"
+    }
+  ],
+  "correspondence": [
+    {
+      "revision": "parent-fix",
+      "entry": "importer.Projection#page(I)I",
+      "adapterSha256": "bf22b30bf9d9a5acd671d3c9d7a056b8dcc03fd9b279560d39c49485b5a85319",
+      "adapterClassSha256": "d670e786fe5c9e39e0e42201593288dcb9c4a34253195d72446e3b7c913833b0",
+      "subject": {
+        "class": "importer.PageImporter",
+        "method": "page",
+        "descriptor": "([BZZII)Ljava/util/List;",
+        "loadedFrom": "parent-fix.jar",
+        "classSha256": "b00740383acd7e63b1af061e0101518780826b8625f9576ef040191bfb3f1585",
+        "adapterCalls": [
+          "importer.PageImporter#page([BZZII)Ljava/util/List;",
+          "importer.PageImporter#remaining([BZZ)[B",
+          "importer.PageImporter$Row#fields()Ljava/util/List;",
+          "importer.PageImporter$Row#number()J"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Bits 4 through 0 select BOM, one-byte reads, preview/reset, start minus one and cap minus one. The high bits select one of three literal documents. A fresh input stream is used for each observer.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 96,
+      "disagreements": 0
+    }
+  ],
+  "ruleSha256": "077dda93c315901817d13d540b986aa517cabaeed3509f024a0530649d57e973",
+  "admissionClass": "tasks/positive-parent-fix/Admission.jvm-bytecode",
+  "admissionSha256": "e27e45c559188c6e335cf95da67d0c02d1ede807f41e51607f53f907d5a95392",
+  "callsClass": "calls/01098e3553bfb621135f/Calls.jvm-bytecode",
+  "callsSha256": "c53c896beaee48dd933dece412abadfe6fac23e5252e0f05fbc9e9ca1c457081",
+  "checked": [
+    {
+      "selector": 0,
+      "status": "established",
+      "target": "verificationselectors.Calls#p0()",
+      "exit": 0,
+      "wallSeconds": 1.876,
+      "usage": {
+        "cpuSeconds": 1.8712,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "66446c1ccce36d104e48149001253014edc7b39471106dabfc83051ec6d75a5d",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p0/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 1,
+      "status": "established",
+      "target": "verificationselectors.Calls#p1()",
+      "exit": 0,
+      "wallSeconds": 2.458,
+      "usage": {
+        "cpuSeconds": 2.4527,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "d65c153a3ba1de6ed837491e54687feac2d5849b4d9f6179ed3a27733d5aa13a",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p1/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 8,
+      "status": "established",
+      "target": "verificationselectors.Calls#p8()",
+      "exit": 0,
+      "wallSeconds": 2.48,
+      "usage": {
+        "cpuSeconds": 2.4731,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "e5a2e84601b665aaca403523ee1b856fc3800c8cac453bd9a96e7e12c44e9a1a",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p8/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 9,
+      "status": "established",
+      "target": "verificationselectors.Calls#p9()",
+      "exit": 0,
+      "wallSeconds": 3.069,
+      "usage": {
+        "cpuSeconds": 3.0677,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "efebfddaaf1d4578bd78912176fdacc43c49ac97e163e13726f5c021ea71976f",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p9/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 16,
+      "status": "established",
+      "target": "verificationselectors.Calls#p16()",
+      "exit": 0,
+      "wallSeconds": 1.89,
+      "usage": {
+        "cpuSeconds": 1.8837,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "89d25a7a8ee9f35799da86e452b764b489d3b6ccd385e159495c0b67319d56ec",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p16/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 17,
+      "status": "established",
+      "target": "verificationselectors.Calls#p17()",
+      "exit": 0,
+      "wallSeconds": 2.405,
+      "usage": {
+        "cpuSeconds": 2.4022,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "e1b037f495846b884ba46e69712cd96545a4b638a1ccf5df6c4e5682beca388a",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p17/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 24,
+      "status": "established",
+      "target": "verificationselectors.Calls#p24()",
+      "exit": 0,
+      "wallSeconds": 3.022,
+      "usage": {
+        "cpuSeconds": 2.9839,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "d0605d0c88de929c2dc4eb4f3ad3e2717853f7fb3bd73b28aa1206e20804c7b9",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p24/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 25,
+      "status": "established",
+      "target": "verificationselectors.Calls#p25()",
+      "exit": 0,
+      "wallSeconds": 3.423,
+      "usage": {
+        "cpuSeconds": 3.4216,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "c1420d844f1b23b4fad828241f9cc8daec8f2c2b8fa9cadfe7b8f8eedd4b502b",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p25/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 32,
+      "status": "established",
+      "target": "verificationselectors.Calls#p32()",
+      "exit": 0,
+      "wallSeconds": 1.919,
+      "usage": {
+        "cpuSeconds": 1.9106,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "e5b613490efeb2a4fb18a6b90a032efcc2c7770f25ca9ae29cdfbcf6be1d553b",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p32/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 33,
+      "status": "established",
+      "target": "verificationselectors.Calls#p33()",
+      "exit": 0,
+      "wallSeconds": 2.13,
+      "usage": {
+        "cpuSeconds": 2.1233,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "e0a20de3367a369428b5d10634380f98ddfcefb6e63dced5db7b0682eeae2585",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p33/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 40,
+      "status": "established",
+      "target": "verificationselectors.Calls#p40()",
+      "exit": 0,
+      "wallSeconds": 1.895,
+      "usage": {
+        "cpuSeconds": 1.8854,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "c808b878ce299ffd1f509f62c788d9147fe5b52a22d75939b15ac33c26b4f97a",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p40/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 41,
+      "status": "established",
+      "target": "verificationselectors.Calls#p41()",
+      "exit": 0,
+      "wallSeconds": 2.13,
+      "usage": {
+        "cpuSeconds": 2.1281,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "59aeb580a161e56dc5bf9b77f13425f5558ba0998937eb565c9dd7f8fc182538",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p41/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 48,
+      "status": "established",
+      "target": "verificationselectors.Calls#p48()",
+      "exit": 0,
+      "wallSeconds": 1.794,
+      "usage": {
+        "cpuSeconds": 1.7914,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "aef91669eed54f025d3cd81c0f1a336898893487d17a0ca227c1d430962d985f",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p48/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 49,
+      "status": "established",
+      "target": "verificationselectors.Calls#p49()",
+      "exit": 0,
+      "wallSeconds": 2.167,
+      "usage": {
+        "cpuSeconds": 2.1572,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "082dcf141ec26c3447321df34455c9eba5e48162622358e4b2185530f66cd1cb",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p49/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 56,
+      "status": "established",
+      "target": "verificationselectors.Calls#p56()",
+      "exit": 0,
+      "wallSeconds": 2.387,
+      "usage": {
+        "cpuSeconds": 2.3801,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "c0bef81111eebb03afa2c913073c284ecb17b9662ab10e1af729454321f37bb0",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p56/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 57,
+      "status": "established",
+      "target": "verificationselectors.Calls#p57()",
+      "exit": 0,
+      "wallSeconds": 2.618,
+      "usage": {
+        "cpuSeconds": 2.6129,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "05cb87cc96071aa987b15e7a18cda31cce8769b8b701f4e67bd637bf1b391f90",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p57/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 64,
+      "status": "established",
+      "target": "verificationselectors.Calls#p64()",
+      "exit": 0,
+      "wallSeconds": 1.849,
+      "usage": {
+        "cpuSeconds": 1.8396,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "8fbf992fce933261590eef0c503e8d5c7f4f23f59bd02af3936694536d439815",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p64/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 65,
+      "status": "established",
+      "target": "verificationselectors.Calls#p65()",
+      "exit": 0,
+      "wallSeconds": 2.435,
+      "usage": {
+        "cpuSeconds": 2.4269,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "25e200b8ee3f51595c0b422e7c44946c7b500fce8fda93d2bd1f5b406057517d",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p65/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 72,
+      "status": "established",
+      "target": "verificationselectors.Calls#p72()",
+      "exit": 0,
+      "wallSeconds": 3.072,
+      "usage": {
+        "cpuSeconds": 3.0669,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "30a7303836943cdf35958fec79513a5b1f4e3c39a5aa6adec66b53ff82f4745c",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p72/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 73,
+      "status": "established",
+      "target": "verificationselectors.Calls#p73()",
+      "exit": 0,
+      "wallSeconds": 3.76,
+      "usage": {
+        "cpuSeconds": 3.7505,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "60758f6f4d01e846f2075ae40513fb61245a8dae61abfa61b4040d50f0170974",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p73/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 80,
+      "status": "established",
+      "target": "verificationselectors.Calls#p80()",
+      "exit": 0,
+      "wallSeconds": 1.95,
+      "usage": {
+        "cpuSeconds": 1.9414,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "356fb7ef7f5e57446568e2fc6a050d40e33d83409463d139ff52bf67a9b5eafe",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p80/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 81,
+      "status": "established",
+      "target": "verificationselectors.Calls#p81()",
+      "exit": 0,
+      "wallSeconds": 2.403,
+      "usage": {
+        "cpuSeconds": 2.3992,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "a19a9dabfb69ec1e5d3ed5836babd6735773b3a9306f60b0e79b5ed7e4a8f289",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p81/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 88,
+      "status": "established",
+      "target": "verificationselectors.Calls#p88()",
+      "exit": 0,
+      "wallSeconds": 3.579,
+      "usage": {
+        "cpuSeconds": 3.5728,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "9651a39c8f19b296b7a4f4dd509f299ec30dfd408443daac75e900891ec24816",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p88/native.json",
+      "reusedInBatch": false
+    },
+    {
+      "selector": 89,
+      "status": "established",
+      "target": "verificationselectors.Calls#p89()",
+      "exit": 0,
+      "wallSeconds": 4.197,
+      "usage": {
+        "cpuSeconds": 4.1924,
+        "peakRssBytes": 79556608,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "05b980ebd1b1d643c2bfa49fc1f186d093b277d6a8fd523c3be9ca8c0e7041ff",
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/01098e3553bfb621135f/cases/p89/native.json",
+      "reusedInBatch": false
+    }
+  ],
+  "status": "established",
+  "wallSeconds": 60.9268,
+  "cost": {
+    "preparationAndCorrespondenceSeconds": 0.42945,
+    "checkerWallSeconds": 60.908,
+    "originalWitnessReplaySeconds": 0.0,
+    "endToEndSeconds": 61.35627,
+    "peakNativeRssBytes": 79556608
+  }
+}
