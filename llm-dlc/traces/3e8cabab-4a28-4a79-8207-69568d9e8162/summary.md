@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 15:15 UTC (5511 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -2832,6 +2832,84 @@ change `ormsxnzyqtlq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-trac
 
 The single-agent run next-proof-campaign (session 0cea9d0e-0fe8-427e-8e71-96614b084e11) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
 
+### Record verification results for 12 job(s)
+
+change `nyxsqssntmmx` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 8 of the 12 job(s); 4 kept under outputs/, not applied (the job didn't pass); 1 with outputs not applied because they changed since the job's commit. 20261120-183452-335-prove-guava-signed-means-over-both-e: failed: 1 failed step(s) in 12.4s, peak 277.6 MiB (estimated 4m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×1 20261120-183452-336-check-first-match-and-preservation-a: passed: 1 passed step(s) in 8.0s, peak 224.2 MiB (estimated 6m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). 20261120-183453-336-prove-first-match-for-any-allocated: passed: 1 passed step(s) in 2.0s, peak 124.4 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-183453-342-check-two-real-ticket-calls-on-one-c: failed: 1 failed step(s) in 7.0s, peak 141.3 MiB (estimated 4m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6 20261120-184226-337-check-both-range-fill-roots-at-bound: failed: 1 failed step(s) in 7.5s, peak 142.8 MiB (estimated 6m00s, 2.0 GiB); 56 output file(s) changed; signals: example:task-unexpected×4 20261120-184234-337-bound-64-check-both-range-fill-roots: failed: 1 failed step(s) in 12.8s, peak 139.3 MiB (estimated 6m00s, 2.0 GiB); 56 output file(s) changed; signals: example:task-unexpected×4 20261120-184234-337-certify-caller-any-length-on-the-sel: passed: 1 passed step(s) in 2.8s, peak 121.6 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-184234-337-certify-fill-any-length-on-the-selec: passed: 1 passed step(s) in 2.5s, peak 118.0 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-184235-310-test-native-counterexamples-on-unmod: passed: 1 passed step(s) in 6.4s, peak 200.6 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261120-184235-321-test-native-counterexamples-on-unmod: passed: 2 passed step(s) in 17.0s, peak 386.2 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-184235-327-test-native-counterexamples-on-unmod: passed: 2 passed step(s) in 11.9s, peak 253.1 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-184923-342-explore-compiled-ticket-monitors-wit: passed: 3 passed step(s) in 6.9s, peak 119.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 2 output(s). 1 output(s) not applied: changed since the job's commit. Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `uzvmzmpmymtq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-183453-336-check-first-match-and-preservation-a: passed: 1 passed step(s) in 1m30s, peak 860.0 MiB (estimated 6m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `uzvzrvzzmsxs` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-185734-340-build-the-rejected-treelist-edit-acr: passed: 2 passed step(s) in 57.7s, peak 784.4 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 19 job(s)
+
+change `ptxmmrvsxnyu` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 15 of the 19 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-193913-310-same-day-observed-on-the-importer-ch: passed: 1 passed step(s) in 42.6s, peak 318.3 MiB (estimated 10m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1 Applied 17 output(s). 20261120-193913-321-observed-startup-on-the-importer-che: passed: 1 passed step(s) in 40.6s, peak 427.0 MiB (estimated 3m00s, 2.0 GiB); 122 output file(s) changed; signals: example:task-as-expected×8 Applied 122 output(s). 20261120-193913-327-observed-startup-on-the-importer-che: passed: 1 passed step(s) in 51.1s, peak 240.2 MiB (estimated 3m00s, 2.0 GiB); 152 output file(s) changed; signals: example:task-as-expected×10 Applied 152 output(s). 20261120-193914-331-recheck-counts-and-both-downstream-c: passed: 1 passed step(s) in 2m05s, peak 267.9 MiB (estimated 2m00s, 2.0 GiB); 164 output file(s) changed; signals: example:task-as-expected×11 Applied 164 output(s). 20261120-193914-335-recheck-both-full-width-signed-means: passed: 1 passed step(s) in 14.5s, peak 276.8 MiB (estimated 2m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4 Applied 58 output(s). 20261120-193914-337-range-fill-after-linking-arrays-at-8: passed: 1 passed step(s) in 11.7s, peak 142.5 MiB (estimated 6m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4 Applied 58 output(s). 20261120-193914-338-parent-verify-original-stream-and-pa: passed: 1 passed step(s) in 12.5s, peak 119.6 MiB (estimated 8m00s, 2.0 GiB); 46 output file(s) changed; signals: example:task-as-expected×3 Applied 46 output(s). 20261120-193915-338-fix-verify-original-stream-and-page: passed: 1 passed step(s) in 14.0s, peak 119.3 MiB (estimated 8m00s, 2.0 GiB); 45 output file(s) changed; signals: example:task-as-expected×3 Applied 45 output(s). 20261120-193915-339-fix-verify-original-stream-and-page: passed: 1 passed step(s) in 4.7s, peak 113.2 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×4 Applied 60 output(s). 20261120-193915-339-parent-verify-original-stream-and-pa: passed: 1 passed step(s) in 6.4s, peak 128.5 MiB (estimated 8m00s, 2.0 GiB); 63 output file(s) changed; signals: example:task-as-expected×4 Applied 63 output(s). 20261120-193915-345-fix-fix-verify-original-stream-and-p: failed: 1 failed step(s) in 16.8s, peak 142.8 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-193915-345-fix-parent-verify-original-stream-an: failed: 1 failed step(s) in 16.9s, peak 145.5 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-193915-345-parent-fix-verify-original-stream-an: failed: 1 failed step(s) in 12.6s, peak 140.6 MiB (estimated 8m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-193915-345-parent-parent-verify-original-stream: failed: 1 failed step(s) in 12.3s, peak 145.0 MiB (estimated 8m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-194432-336-validate-array-induction-and-caller: passed: 1 passed step(s) in 1.8s, peak 124.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-194432-337-validate-array-induction-and-caller: passed: 4 passed step(s) in 8.7s, peak 118.6 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed Applied 9 output(s). 20261120-194432-342-retain-every-compiled-monitor-histor: passed: 3 passed step(s) in 7.5s, peak 121.3 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-194432-343-retain-every-compiled-monitor-histor: passed: 2 passed step(s) in 7.2s, peak 120.4 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-194433-344-expose-wrong-monitor-independence-at: passed: 1 passed step(s) in 3.2s, peak 122.3 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zoumnnrvslun` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-193914-337-range-fill-after-linking-arrays-at-6: failed: 1 failed step(s) in 5m50s, peak 1.2 GiB (estimated 6m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×2 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+change `pokvsyosxvwx` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-193912-310-clock-fix-observed-on-the-importer-c: failed: 1 failed step(s) in 10m07s, peak 960.1 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-193913-310-reversal-fix-observed-on-the-importe: failed: 1 failed step(s) in 10m07s, peak 1.8 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-193913-310-reversal-parent-observed-on-the-impo: failed: 1 failed step(s) in 10m08s, peak 1.1 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `opxwxvyvnlkt` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-193914-check-importer-changes-against-jbmc-and: passed: 1 passed step(s) in 15m13s, peak 2.2 GiB (estimated 17m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 6 job(s)
+
+change `kqkymvxpowsk` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 3 of the 6 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-213848-339-parent-exhaust-native-selector-bytec: passed: 1 passed step(s) in 5.6s, peak 122.8 MiB (estimated 2m00s, 2.0 GiB); 37 output file(s) changed Applied 37 output(s). 20261120-213849-310-retry-unchanged-startup-after-proper: failed: 1 failed step(s) in 16.5s, peak 208.7 MiB (estimated 2m00s, 2.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261120-213849-321-retry-unchanged-startup-after-proper: failed: 1 failed step(s) in 28.4s, peak 391.8 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-213849-327-retry-unchanged-startup-after-proper: failed: 1 failed step(s) in 21.6s, peak 225.8 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 20261120-213849-332-check-explicit-jvm-property-writes-v: passed: 1 passed step(s) in 15.8s, peak 145.0 MiB (estimated 3m00s, 2.0 GiB); 85 output file(s) changed; signals: example:task-as-expected×6 Applied 85 output(s). 20261120-213849-340-recheck-rejected-edits-with-inherite: passed: 1 passed step(s) in 9.4s, peak 154.6 MiB (estimated 4m00s, 2.0 GiB); 121 output file(s) changed; signals: example:task-as-expected×8 Applied 121 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 10 job(s)
+
+change `rowyurvquzto` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 8 of the 10 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-213848-345-fix-parent-exhaust-native-selector-b: passed: 1 passed step(s) in 1m54s, peak 159.2 MiB (estimated 15m00s, 2.0 GiB); 269 output file(s) changed Applied 269 output(s). 20261120-213848-345-parent-fix-exhaust-native-selector-b: failed: 1 failed step(s) in 2m53s, peak 138.7 MiB (estimated 15m00s, 2.0 GiB); 119 output file(s) changed 20261120-213848-345-parent-parent-exhaust-native-selecto: passed: 1 passed step(s) in 1m44s, peak 140.0 MiB (estimated 15m00s, 2.0 GiB); 79 output file(s) changed Applied 79 output(s). 20261120-213849-310-reproduce-the-five-finite-solver-sta: passed: 5 passed step(s) in 2m24s, peak 849.0 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). 20261120-213849-337-close-bound-64-through-exact-compile: passed: 1 passed step(s) in 1m57s, peak 290.9 MiB (estimated 5m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4 Applied 58 output(s). 20261120-213850-197-recheck-all-71-heaps-with-the-decode: passed: 1 passed step(s) in 10.9s, peak 126.9 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-213850-321-recover-observed-startup-controls-on: passed: 1 passed step(s) in 40.1s, peak 429.2 MiB (estimated 3m00s, 2.0 GiB); 122 output file(s) changed; signals: example:task-as-expected×8 Applied 122 output(s). 20261120-213850-327-recover-observed-startup-controls-on: passed: 1 passed step(s) in 50.0s, peak 240.7 MiB (estimated 3m00s, 2.0 GiB); 152 output file(s) changed; signals: example:task-as-expected×10 Applied 152 output(s). 20261120-213850-331-recheck-compiler-and-downstream-help: failed: 1 failed step(s) in 2m09s, peak 269.2 MiB (estimated 2m00s, 2.0 GiB); 164 output file(s) changed; signals: example:task-as-expected×10; example:task-unexpected×1 20261120-213851-308-rerun-release-source-and-225-lcs-pai: passed: 2 passed step(s) in 4.4s, peak 88.7 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `uvkkxznpntpm` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-213850-345-fix-fix-recheck-monolithic-native-im: failed: 1 failed step(s) in 4m42s, peak 1.9 GiB (estimated 7m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 4 job(s)
+
+change `myqlyywxzvwr` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 0 of the 4 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-213849-341-retry-streaming-utf-8-and-bom-transf: failed: 1 failed step(s) in 6m17s, peak 1.9 GiB (estimated 12m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6 20261120-213850-345-fix-parent-recheck-monolithic-native: failed: 1 failed step(s) in 4m42s, peak 2.0 GiB (estimated 7m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-213850-345-parent-fix-recheck-monolithic-native: failed: 1 failed step(s) in 4m42s, peak 1.9 GiB (estimated 7m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-213850-345-parent-parent-recheck-monolithic-nat: failed: 1 failed step(s) in 4m41s, peak 2.0 GiB (estimated 7m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
+### Add the readable page of the next-proof-campaign decision record
+
+change `vkykystwxmkn` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The generated Markdown view of single-next-proof-campaign.jsonl, left out of the previous commit.
+
+### Merge the single-agent run next-proof-campaign into the line
+
+change `ormsxnzyqtlq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The single-agent run next-proof-campaign (session 0cea9d0e-0fe8-427e-8e71-96614b084e11) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
+
 ### Record verification results for 5 job(s)
 
 change `yznztvqqwuvt` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
@@ -2843,6 +2921,12 @@ Outputs applied for 1 of the 5 job(s); 4 kept under outputs/, not applied (the j
 change `urmwmrtxmtvl` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc: failed: 1 failed step(s) in 5.0s, peak 140.2 MiB (estimated 1m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261120-234731-352-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 57.1s, peak 169.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that a run's commit list empties when its base turns divergent (VF-049)
+
+change `uxspmtuvtunp` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The external-upgrade-evaluation summaries dropped from 7 commits to 0: single_run.py keeps the run's base as a change id, and the agent's bookmark on the pre-rewrite copy of that merge made it divergent, so watch.commits' revset fails. The run itself is unaffected. Documentation only.
 
 ## Conversation
 

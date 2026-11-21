@@ -18,6 +18,22 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-049: a run's commit list goes empty when its base change turns divergent
+
+- **Status**: open (seen live in the run `external-upgrade-evaluation`; the run itself is unaffected).
+- **Raised**: 2026-11-21 by the watcher of the single-agent run `external-upgrade-evaluation`, from its 01:00 UTC
+  summary ("commits this run: 0", after 7 at 00:30).
+- **Found**: `single_run.py` records a run's base as a change id: `ormsxnzy`, the merge that landed
+  `next-proof-campaign`. `watch.commits` lists `BASE..@-`. Nothing had been pushed since then, so at 23:27 UTC
+  `sync.py commit` rewrote the unpushed commits' trace lines, as it always does, and gave `ormsxnzy` a new commit
+  (`900d6ec8`). At 00:35 the agent created the bookmark `external-upgrade-evaluation-v0` on the old commit
+  `e7cdfb6a`, its frozen V0 product baseline. That kept the old version visible, so `ormsxnzy` is now divergent. The
+  revset fails, and `commits` returns an empty list, in the summaries and in a cycle's question alike. A watcher who
+  read that list alone would see a cycle with no commit.
+- **Needs**: `single_run.py` to keep the base's commit id as well, or to resolve a divergent base to the version that
+  is an ancestor of the workspace's `@`. Decide whether the agent's `-v0` bookmark should outlive the run.
+- **Closes when**: a run whose base is rewritten and pinned by a bookmark still lists its commits.
+
 ### VF-048: the VM lacks the disk for BUMP's 150 GB packaged archive, which the external-upgrade-evaluation brief draws on
 
 - **Status**: open (the user, 2026-11-20: the VM is to be restarted with more storage, which can't happen while the
