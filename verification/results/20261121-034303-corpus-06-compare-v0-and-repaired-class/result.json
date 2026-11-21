@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-034303-corpus-06-compare-v0-and-repaired-class",
+  "title": "Corpus 06 compare V0 and repaired class intake",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m27s, peak 349.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-034303-corpus-06-compare-v0-and-repaired-class.json",
+    "sha256": "5dacb178bf216326e9cf7a3b9af6efe9ad4ac5cad639bd7111ff4372a76fa781",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-034303-corpus-06-compare-v0-and-repaired-class",
+      "title": "Corpus 06 compare V0 and repaired class intake",
+      "description": "Compare the frozen and repaired readers and native checker on the same verified original sources, separate Maven compile/runtime graphs and Java toolchain. Preserve each first result, including dependency and native refusals. Upgrades in this job: commons-compress-767, commons-compress-822, commons-configuration-565, commons-configuration-601.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "expected": "Each original upgrade yields a matched pair of first reports. Open findings are recorded on their actual observer and artifacts.",
+      "submitted": {
+        "at": "2026-11-21T03:43:03+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "2h"
+      },
+      "steps": [
+        {
+          "name": "Compare original upgrade pairs",
+          "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/06 --case commons-compress-767 --case commons-compress-822 --case commons-configuration-565 --case commons-configuration-601",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/intake-1/06"
+      ]
+    }
+  },
+  "sourceCommit": "a123f954888fe1d408110749f034e44086f11647",
+  "startedAt": "2026-11-21T03:45:56+00:00",
+  "finishedAt": "2026-11-21T03:54:31+00:00",
+  "wallSeconds": 515.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2613287,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 366792704,
+    "wallSeconds": 327.0,
+    "cpuSeconds": 96.8,
+    "memoryOfEstimate": 0.17,
+    "durationOfEstimate": 0.45
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare original upgrade pairs",
+      "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/06 --case commons-compress-767 --case commons-compress-822 --case commons-configuration-565 --case commons-configuration-601",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 327.005,
+      "cpuSeconds": 96.843,
+      "cpuThrottledSeconds": 45.414,
+      "peakMemoryBytes": 366792704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-original-upgrade-pairs.log",
+        "lines": 8,
+        "bytes": 546,
+        "sha256": "d792aa7e71a8a5f6b72ec2270e17e508ee0168ff4b2d1413a25ad7fe150856d9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commons-compress-767 V0 open native checker",
+        "commons-compress-767 current open native checker",
+        "commons-compress-822 V0 open expected one method named read, found 2: read(), read(byte[], int, int); name one as read()",
+        "commons-compress-822 current open expected one method named read, found 2: read(), read(byte[], int, int); name one as read()",
+        "commons-configuration-565 V0 open native checker",
+        "commons-configuration-565 current open native checker",
+        "commons-configuration-601 V0 open native checker",
+        "commons-configuration-601 current open native checker"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-compress-767.json",
+      "change": "added",
+      "bytes": 4929,
+      "sha256": "525cd99702ea769857e8466cd2ddbf0ab0baa51b8455867fa872399003ab5c38",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-compress-822.json",
+      "change": "added",
+      "bytes": 5647,
+      "sha256": "6a97c37bc78c5fb730cc650859fd36781a2a6bcb31f6a1094065baf1e21355b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 9952,
+      "sha256": "480a0835b9bb5fe14dfe769ec2edf5cec3f3035fcd813279eb2829d51f621252",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 10141,
+      "sha256": "6dcf107ab2c5d61e39ff48e3bb7207daa718a38c5952b0394dd1e71ce5ffc131",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/06/current/commons-compress-767.json",
+      "change": "added",
+      "bytes": 4933,
+      "sha256": "19a85ad1e31f2128c4f8f77c2021cbbc4ea5bf7f4a72f9933053adf4cfba70fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/06/current/commons-compress-822.json",
+      "change": "added",
+      "bytes": 5652,
+      "sha256": "5106bd943308e5a908801a8b77c9b11a9b88aa88ae5bfe2a457c1423db444ceb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/06/current/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 9957,
+      "sha256": "ada1989e0aa760c4a9c1d895cb0fd6307c81d3e1643383ce574baae2e45c0390",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/06/current/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 10145,
+      "sha256": "49a73c5b29047c0e7202266d4d83a1104a716a1fa913c69f644ae6742688af14",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T03:54:38+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-compress-767.json",
+      "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-compress-822.json",
+      "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-configuration-565.json",
+      "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-configuration-601.json",
+      "verification/external-upgrades/corpus-runs/intake-1/06/current/commons-compress-767.json",
+      "verification/external-upgrades/corpus-runs/intake-1/06/current/commons-compress-822.json",
+      "verification/external-upgrades/corpus-runs/intake-1/06/current/commons-configuration-565.json",
+      "verification/external-upgrades/corpus-runs/intake-1/06/current/commons-configuration-601.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-034247-original-upgrade-corpus-v0-and-class-int",
+  "title": "Original upgrade corpus V0 and class-intake repair 01",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m28s, peak 201.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-034247-original-upgrade-corpus-v0-and-class-int.json",
+    "sha256": "1b106cb57e2f4cfb9d13abb859e7202d38e840b08c4c0cc7d24b244ad50e7e24",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-034247-original-upgrade-corpus-v0-and-class-int",
+      "title": "Original upgrade corpus V0 and class-intake repair 01",
+      "description": "Compare the frozen and repaired readers and native checker on the same verified original sources, separate Maven compile/runtime graphs and Java toolchain. Preserve each first result, including dependency and native refusals. Upgrades in this job: compsuite-i-38, ea-async-27, whatjdk-12, incremental-analysis-28.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "expected": "Each original upgrade yields a matched pair of first reports. Open findings are recorded on their actual observer and artifacts.",
+      "submitted": {
+        "at": "2026-11-21T03:42:47+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "2h"
+      },
+      "steps": [
+        {
+          "name": "Compare original upgrade pairs",
+          "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/01 --case compsuite-i-38 --case ea-async-27 --case whatjdk-12 --case incremental-analysis-28",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/intake-1/01"
+      ]
+    }
+  },
+  "sourceCommit": "a123f954888fe1d408110749f034e44086f11647",
+  "startedAt": "2026-11-21T03:45:56+00:00",
+  "finishedAt": "2026-11-21T03:52:32+00:00",
+  "wallSeconds": 396.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2613287,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 211628032,
+    "wallSeconds": 208.3,
+    "cpuSeconds": 35.4,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.29
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare original upgrade pairs",
+      "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/01 --case compsuite-i-38 --case ea-async-27 --case whatjdk-12 --case incremental-analysis-28",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 208.299,
+      "cpuSeconds": 35.376,
+      "cpuThrottledSeconds": 19.479,
+      "peakMemoryBytes": 211628032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-original-upgrade-pairs.log",
+        "lines": 8,
+        "bytes": 2434,
+        "sha256": "19a63eb475b51c82ea6253e9d3acab4931a833c4b78fc2ad40ea3d21443a0129",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-38 V0 open parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered",
+        "compsuite-i-38 current open parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co",
+        "ea-async-27 V0 open expected one method named transform, found 2: transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]), transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader); name one as transform(java.lang.ClassLoader, java.lang.Strin",
+        "ea-async-27 current open expected one method named transform, found 2: transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]), transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader); name one as transform(java.lang.ClassLoader, java.lang.",
+        "whatjdk-12 V0 open next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of seve",
+        "whatjdk-12 current open next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of",
+        "incremental-analysis-28 V0 open expected one method named search, found 2: search(java.util.stream.Stream), search(java.nio.file.Path, java.util.Set); name one as search(java.util.stream.Stream)",
+        "incremental-analysis-28 current open expected one method named search, found 2: search(java.util.stream.Stream), search(java.nio.file.Path, java.util.Set); name one as search(java.util.stream.Stream)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/01/V0/compsuite-i-38.json",
+      "change": "added",
+      "bytes": 4156,
+      "sha256": "c32a7ac01bbe6a58c79843c1be4f1893c92345bca268c87a07978b4d8e55de23",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/01/V0/ea-async-27.json",
+      "change": "added",
+      "bytes": 5279,
+      "sha256": "5ed2e77caa03d2c467b9b2fa609362666bbf4a6ec4e6ffd91fb4149fb17892b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/01/V0/incremental-analysis-28.json",
+      "change": "added",
+      "bytes": 12780,
+      "sha256": "e1107be4cc25a23af2de3060d9923c8f16e2be67c68a7f094d04cae94b24edff",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/01/V0/whatjdk-12.json",
+      "change": "added",
+      "bytes": 5249,
+      "sha256": "d0a16a8dc8285b43213397c4e4947db87d84663146ec1814bee10b8a01d20f22",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/01/current/compsuite-i-38.json",
+      "change": "added",
+      "bytes": 4161,
+      "sha256": "e7109eb0facd6ce42bd19d188c2a14613e10bf6563e7156940319a1994d0f4a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/01/current/ea-async-27.json",
+      "change": "added",
+      "bytes": 5284,
+      "sha256": "b431f30c72a11f0b749211f9c826cfe7678f50a1511b79a5205a761622af2059",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/01/current/incremental-analysis-28.json",
+      "change": "added",
+      "bytes": 12785,
+      "sha256": "bfa91a92bb2715ad2bc783a5301a1a80126b974241a0904d83fa40fdd945f9c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/01/current/whatjdk-12.json",
+      "change": "added",
+      "bytes": 5254,
+      "sha256": "bc314e062a84bcb6d85bde9b9b9db8cfebb78a8fbe31035b4c303c57ef2f1a86",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T03:54:38+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/intake-1/01/V0/compsuite-i-38.json",
+      "verification/external-upgrades/corpus-runs/intake-1/01/V0/ea-async-27.json",
+      "verification/external-upgrades/corpus-runs/intake-1/01/V0/incremental-analysis-28.json",
+      "verification/external-upgrades/corpus-runs/intake-1/01/V0/whatjdk-12.json",
+      "verification/external-upgrades/corpus-runs/intake-1/01/current/compsuite-i-38.json",
+      "verification/external-upgrades/corpus-runs/intake-1/01/current/ea-async-27.json",
+      "verification/external-upgrades/corpus-runs/intake-1/01/current/incremental-analysis-28.json",
+      "verification/external-upgrades/corpus-runs/intake-1/01/current/whatjdk-12.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

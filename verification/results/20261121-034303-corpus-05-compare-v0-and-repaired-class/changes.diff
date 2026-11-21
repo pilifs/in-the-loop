@@ -1,0 +1,842 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/05/V0/commons-text-775.json
+@@ -0,0 +1,93 @@
++{
++  "id": "commons-text-775",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.text.WordUtils#capitalizeFully",
++  "observer": "Capitalize words with two delimiters and preserve their separators.",
++  "revisions": {
++    "old": "2b02f079f088a41e5bda78274872b3af3863a560",
++    "new": "267f1d14a96824e60451bcb3e8e1fb8a7e882a10"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "2b02f079f088a41e5bda78274872b3af3863a560",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "orderedSha256": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "descriptors": [
++        "(Ljava/lang/String;)Ljava/lang/String;",
++        "(Ljava/lang/String;[C)Ljava/lang/String;"
++      ]
++    },
++    "new": {
++      "commit": "267f1d14a96824e60451bcb3e8e1fb8a7e882a10",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "orderedSha256": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "descriptors": [
++        "(Ljava/lang/String;)Ljava/lang/String;",
++        "(Ljava/lang/String;[C)Ljava/lang/String;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.02,
++    "outputSha256": "d38da883d0b975f8d90d0fb241f64a82bae2faf59648912591eccbc2be7391a8",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.text.WordUtils#capitalizeFully",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "expected one method named capitalizeFully, found 2: capitalizeFully(java.lang.String), capitalizeFully(java.lang.String, char[]); name one as capitalizeFully(java.lang.String)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.text.WordUtils#capitalizeFully cannot be verified: expected one method named capitalizeFully, found 2: capitalizeFully(java.lang.String), capitalizeFully(java.lang.String, char[]); name one as capitalizeFully(java.lang.String)",
++          "uri": null,
++          "line": 1
++        }
++      ],
++      "output": "\u2717 org.apache.commons.text.WordUtils#capitalizeFully cannot be verified: expected one method named capitalizeFully, found 2: capitalizeFully(java.lang.String), capitalizeFully(java.lang.String, char[]); name one as capitalizeFully(java.lang.String)\n",
++      "work": "$WORK/checker-dyn8c7bh"
++    }
++  },
++  "firstBlocker": "expected one method named capitalizeFully, found 2: capitalizeFully(java.lang.String), capitalizeFully(java.lang.String, char[]); name one as capitalizeFully(java.lang.String)",
++  "elapsedSeconds": 55.601,
++  "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/05/V0/compsuite-i-103.json
+@@ -0,0 +1,175 @@
++{
++  "id": "compsuite-i-103",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory",
++  "observer": "Register a property source and inspect its precedence and returned property.",
++  "revisions": {
++    "old": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++    "new": "67693f18a9427f1d46b6769fd4da3282207a37c7"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 73,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "5c7ab868509a6b1214ebe557bfcf489cfac6e1ae4c4a39181b0fe66621fbe32e",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "orderedSha256": [
++        "00364e1b306fd073ccac8c69882396255f27bd454346783dbdfdb82aa4497a05",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "5c7ab868509a6b1214ebe557bfcf489cfac6e1ae4c4a39181b0fe66621fbe32e",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "callerClassSha256": "1aaffbdb969acc793e2d3a2428b78b652e55dc6261e2e6f99ba456677ff1f714",
++      "descriptors": [
++        "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++      ]
++    },
++    "new": {
++      "commit": "67693f18a9427f1d46b6769fd4da3282207a37c7",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 73,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "94459936895f669c8bdd794be79850b73a9b980cc01a4aec88f373f150002b70",
++        "db6ec0aa5330ab84a78933fd2c27db83581e3f0adbc1a562013c8647b3935dbd",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "orderedSha256": [
++        "00364e1b306fd073ccac8c69882396255f27bd454346783dbdfdb82aa4497a05",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "94459936895f669c8bdd794be79850b73a9b980cc01a4aec88f373f150002b70",
++        "db6ec0aa5330ab84a78933fd2c27db83581e3f0adbc1a562013c8647b3935dbd",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "callerClassSha256": "1aaffbdb969acc793e2d3a2428b78b652e55dc6261e2e6f99ba456677ff1f714",
++      "descriptors": [
++        "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.147,
++    "outputSha256": "11bf787e085ccbaafc56fe06ebb4219ffac96ed8b96feed57137d24e3f0923a4",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory cannot be verified: postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 98
++        }
++      ],
++      "output": "\u2717 com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory cannot be verified: postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-zkj7_c59"
++    }
++  },
++  "firstBlocker": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++  "elapsedSeconds": 131.626,
++  "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/05/V0/compsuite-i-37.json
+@@ -0,0 +1,44 @@
++{
++  "id": "compsuite-i-37",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "net.glxn.qrgen.javase.QRCode#file",
++  "observer": "Produce a QR image file from ordinary text with the default Java SE encoder.",
++  "revisions": {
++    "old": "5d75d78080f7209e4ea15d3a08def04198741c7a",
++    "new": "da2fc8cfba0e8ec28967256689a799b14babb04b"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "5d75d78080f7209e4ea15d3a08def04198741c7a",
++      "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR]",
++        "[ERROR]"
++      ]
++    },
++    "new": {
++      "commit": "da2fc8cfba0e8ec28967256689a799b14babb04b",
++      "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR]",
++        "[ERROR]"
++      ]
++    }
++  },
++  "firstBlocker": "original Maven classpath",
++  "elapsedSeconds": 61.817,
++  "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/05/V0/compsuite-i-80.json
+@@ -0,0 +1,97 @@
++{
++  "id": "compsuite-i-80",
++  "build": "V0",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of",
++  "observer": "Construct a stream with a short logger name and observe its fully qualified name.",
++  "revisions": {
++    "old": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++    "new": "938bbeb343eb5fd465517c713fe9065ce997058a"
++  },
++  "result": "open",
++  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
++  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "sides": {
++    "old": {
++      "commit": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052"
++      ],
++      "orderedSha256": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052"
++      ],
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++      ]
++    },
++    "new": {
++      "commit": "938bbeb343eb5fd465517c713fe9065ce997058a",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"
++      ],
++      "orderedSha256": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"
++      ],
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.006,
++    "outputSha256": "f3e8ec0822ab4f1f0b081a791442533afa9a9733e3fb51b08461e6974b00e6bc",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "expected one method named of, found 4: of(org.slf4j.Logger), of(java.lang.Class), of(java.lang.Class, java.lang.String), of(java.lang.String); name one as of(org.slf4j.Logger)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of cannot be verified: expected one method named of, found 4: of(org.slf4j.Logger), of(java.lang.Class), of(java.lang.Class, java.lang.String), of(java.lang.String); name one as of(org.slf4j.Logger)",
++          "uri": null,
++          "line": 1
++        }
++      ],
++      "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of cannot be verified: expected one method named of, found 4: of(org.slf4j.Logger), of(java.lang.Class), of(java.lang.Class, java.lang.String), of(java.lang.String); name one as of(org.slf4j.Logger)\n",
++      "work": "$WORK/checker-i9hj5ncw"
++    }
++  },
++  "firstBlocker": "expected one method named of, found 4: of(org.slf4j.Logger), of(java.lang.Class), of(java.lang.Class, java.lang.String), of(java.lang.String); name one as of(org.slf4j.Logger)",
++  "elapsedSeconds": 57.947,
++  "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/05/current/commons-text-775.json
+@@ -0,0 +1,93 @@
++{
++  "id": "commons-text-775",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.text.WordUtils#capitalizeFully",
++  "observer": "Capitalize words with two delimiters and preserve their separators.",
++  "revisions": {
++    "old": "2b02f079f088a41e5bda78274872b3af3863a560",
++    "new": "267f1d14a96824e60451bcb3e8e1fb8a7e882a10"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "2b02f079f088a41e5bda78274872b3af3863a560",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "orderedSha256": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "descriptors": [
++        "(Ljava/lang/String;)Ljava/lang/String;",
++        "(Ljava/lang/String;[C)Ljava/lang/String;"
++      ]
++    },
++    "new": {
++      "commit": "267f1d14a96824e60451bcb3e8e1fb8a7e882a10",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "orderedSha256": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "descriptors": [
++        "(Ljava/lang/String;)Ljava/lang/String;",
++        "(Ljava/lang/String;[C)Ljava/lang/String;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.014,
++    "outputSha256": "3a2583902db7fe2da89b2964b58e3f881a35a02081789ad6a487e6c4f4385f9b",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.text.WordUtils#capitalizeFully",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "expected one method named capitalizeFully, found 2: capitalizeFully(java.lang.String), capitalizeFully(java.lang.String, char[]); name one as capitalizeFully(java.lang.String)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.text.WordUtils#capitalizeFully cannot be verified: expected one method named capitalizeFully, found 2: capitalizeFully(java.lang.String), capitalizeFully(java.lang.String, char[]); name one as capitalizeFully(java.lang.String)",
++          "uri": null,
++          "line": 1
++        }
++      ],
++      "output": "\u2717 org.apache.commons.text.WordUtils#capitalizeFully cannot be verified: expected one method named capitalizeFully, found 2: capitalizeFully(java.lang.String), capitalizeFully(java.lang.String, char[]); name one as capitalizeFully(java.lang.String)\n",
++      "work": "$WORK/checker-5fs9vstf"
++    }
++  },
++  "firstBlocker": "expected one method named capitalizeFully, found 2: capitalizeFully(java.lang.String), capitalizeFully(java.lang.String, char[]); name one as capitalizeFully(java.lang.String)",
++  "elapsedSeconds": 55.559,
++  "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/05/current/compsuite-i-103.json
+@@ -0,0 +1,175 @@
++{
++  "id": "compsuite-i-103",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory",
++  "observer": "Register a property source and inspect its precedence and returned property.",
++  "revisions": {
++    "old": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++    "new": "67693f18a9427f1d46b6769fd4da3282207a37c7"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 73,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "5c7ab868509a6b1214ebe557bfcf489cfac6e1ae4c4a39181b0fe66621fbe32e",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "orderedSha256": [
++        "00364e1b306fd073ccac8c69882396255f27bd454346783dbdfdb82aa4497a05",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "5c7ab868509a6b1214ebe557bfcf489cfac6e1ae4c4a39181b0fe66621fbe32e",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "callerClassSha256": "1aaffbdb969acc793e2d3a2428b78b652e55dc6261e2e6f99ba456677ff1f714",
++      "descriptors": [
++        "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++      ]
++    },
++    "new": {
++      "commit": "67693f18a9427f1d46b6769fd4da3282207a37c7",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 73,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "94459936895f669c8bdd794be79850b73a9b980cc01a4aec88f373f150002b70",
++        "db6ec0aa5330ab84a78933fd2c27db83581e3f0adbc1a562013c8647b3935dbd",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "orderedSha256": [
++        "00364e1b306fd073ccac8c69882396255f27bd454346783dbdfdb82aa4497a05",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "94459936895f669c8bdd794be79850b73a9b980cc01a4aec88f373f150002b70",
++        "db6ec0aa5330ab84a78933fd2c27db83581e3f0adbc1a562013c8647b3935dbd",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "callerClassSha256": "1aaffbdb969acc793e2d3a2428b78b652e55dc6261e2e6f99ba456677ff1f714",
++      "descriptors": [
++        "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.111,
++    "outputSha256": "492217bb6a4fd6ef9a74d75602b34bb5acf794a7bdd8cd3346e96b67800a60ea",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory cannot be verified: postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 98
++        }
++      ],
++      "output": "\u2717 com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory cannot be verified: postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-9475femb"
++    }
++  },
++  "firstBlocker": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++  "elapsedSeconds": 131.561,
++  "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/05/current/compsuite-i-37.json
+@@ -0,0 +1,44 @@
++{
++  "id": "compsuite-i-37",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "net.glxn.qrgen.javase.QRCode#file",
++  "observer": "Produce a QR image file from ordinary text with the default Java SE encoder.",
++  "revisions": {
++    "old": "5d75d78080f7209e4ea15d3a08def04198741c7a",
++    "new": "da2fc8cfba0e8ec28967256689a799b14babb04b"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "5d75d78080f7209e4ea15d3a08def04198741c7a",
++      "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR]",
++        "[ERROR]"
++      ]
++    },
++    "new": {
++      "commit": "da2fc8cfba0e8ec28967256689a799b14babb04b",
++      "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "original Maven classpath",
++      "exit": 1,
++      "diagnostic": [
++        "[ERROR]",
++        "[ERROR]"
++      ]
++    }
++  },
++  "firstBlocker": "original Maven classpath",
++  "elapsedSeconds": 61.781,
++  "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/intake-1/05/current/compsuite-i-80.json
+@@ -0,0 +1,97 @@
++{
++  "id": "compsuite-i-80",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of",
++  "observer": "Construct a stream with a short logger name and observe its fully qualified name.",
++  "revisions": {
++    "old": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++    "new": "938bbeb343eb5fd465517c713fe9065ce997058a"
++  },
++  "result": "open",
++  "readerSha256": "1eb6fefc9097cbcabe17f4101d7ca9a2ccb5484a36a6b699a2e196625214ea05",
++  "checkerSha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
++  "sides": {
++    "old": {
++      "commit": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052"
++      ],
++      "orderedSha256": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052"
++      ],
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++      ]
++    },
++    "new": {
++      "commit": "938bbeb343eb5fd465517c713fe9065ce997058a",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"
++      ],
++      "orderedSha256": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"
++      ],
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/Class;Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++        "(Lorg/slf4j/Logger;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;"
++      ]
++    }
++  },
++  "native": {
++    "exit": 1,
++    "seconds": 0.005,
++    "outputSha256": "83d4b0b5ed7bb8fca0810b16e5d29236889184a63238edb3bde150cbe0061d4f",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "expected one method named of, found 4: of(org.slf4j.Logger), of(java.lang.Class), of(java.lang.Class, java.lang.String), of(java.lang.String); name one as of(org.slf4j.Logger)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of cannot be verified: expected one method named of, found 4: of(org.slf4j.Logger), of(java.lang.Class), of(java.lang.Class, java.lang.String), of(java.lang.String); name one as of(org.slf4j.Logger)",
++          "uri": null,
++          "line": 1
++        }
++      ],
++      "output": "\u2717 org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of cannot be verified: expected one method named of, found 4: of(org.slf4j.Logger), of(java.lang.Class), of(java.lang.Class, java.lang.String), of(java.lang.String); name one as of(org.slf4j.Logger)\n",
++      "work": "$WORK/checker-ott48dbu"
++    }
++  },
++  "firstBlocker": "expected one method named of, found 4: of(org.slf4j.Logger), of(java.lang.Class), of(java.lang.Class, java.lang.String), of(java.lang.String); name one as of(org.slf4j.Logger)",
++  "elapsedSeconds": 57.897,
++  "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085"
++}

@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-034303-corpus-03-compare-v0-and-repaired-class",
+  "title": "Corpus 03 compare V0 and repaired class intake",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m21s, peak 807.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-034303-corpus-03-compare-v0-and-repaired-class.json",
+    "sha256": "3ab65f950892a9b8526dfd7373cb93850461cc97fd0c0df9b903f20a76516e20",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-034303-corpus-03-compare-v0-and-repaired-class",
+      "title": "Corpus 03 compare V0 and repaired class intake",
+      "description": "Compare the frozen and repaired readers and native checker on the same verified original sources, separate Maven compile/runtime graphs and Java toolchain. Preserve each first result, including dependency and native refusals. Upgrades in this job: compsuite-i-9, compsuite-i-4, compsuite-i-62, compsuite-i-94.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "expected": "Each original upgrade yields a matched pair of first reports. Open findings are recorded on their actual observer and artifacts.",
+      "submitted": {
+        "at": "2026-11-21T03:43:03+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "2h"
+      },
+      "steps": [
+        {
+          "name": "Compare original upgrade pairs",
+          "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/03 --case compsuite-i-9 --case compsuite-i-4 --case compsuite-i-62 --case compsuite-i-94",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/intake-1/03"
+      ]
+    }
+  },
+  "sourceCommit": "a123f954888fe1d408110749f034e44086f11647",
+  "startedAt": "2026-11-21T03:45:56+00:00",
+  "finishedAt": "2026-11-21T03:54:25+00:00",
+  "wallSeconds": 509.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2613287,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 846233600,
+    "wallSeconds": 321.2,
+    "cpuSeconds": 39.3,
+    "memoryOfEstimate": 0.39,
+    "durationOfEstimate": 0.45
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare original upgrade pairs",
+      "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/03 --case compsuite-i-9 --case compsuite-i-4 --case compsuite-i-62 --case compsuite-i-94",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 321.184,
+      "cpuSeconds": 39.296,
+      "cpuThrottledSeconds": 3.031,
+      "peakMemoryBytes": 846233600,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-original-upgrade-pairs.log",
+        "lines": 8,
+        "bytes": 1466,
+        "sha256": "c633deea15bf491c122ca60374648f929cce9312d91aa82b32fb50519b1426f3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-9 V0 open original Maven classpath",
+        "compsuite-i-9 current open original Maven classpath",
+        "compsuite-i-4 V0 open getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's construc",
+        "compsuite-i-4 current open getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's con",
+        "compsuite-i-62 V0 open original Maven classpath",
+        "compsuite-i-62 current open original Maven classpath",
+        "compsuite-i-94 V0 open original Maven classpath",
+        "compsuite-i-94 current open original Maven classpath"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/03/V0/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 10284,
+      "sha256": "9b5f61bd9063824f95df40aa90b27c023b54c0ce12893441d68b908eb2899159",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/03/V0/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 1486,
+      "sha256": "ebc38d3627445e18b731e8c8f44be71ff353dda505b48637cacf0b2a274bd56b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/03/V0/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 1450,
+      "sha256": "9270bb6570c4a9f39daec7159eccffb73baa06475d071a8ec4aca0ca5268e385",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/03/V0/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 1475,
+      "sha256": "ebf5cee0b114105d83226b61c6871c7c9496ef95fed3732d6b1f962120cf3b4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/03/current/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 10290,
+      "sha256": "f4121f8504b0375c9077860e44ff6efafe111849cd331c5548d628fe2a8b9796",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/03/current/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 1492,
+      "sha256": "6d05fdfd94e378caa9ad504ed625c6c0aa2aa217faac27772a3cc48712f548ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/03/current/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 1455,
+      "sha256": "5c869adfc03b01304fd3a8a18dbf398b0d6b128b83ea4df8f59e6321c13f71f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/03/current/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 1480,
+      "sha256": "bfc5c61a29667539c44aa1a0ca39bad80fce4048a4bb4e8e8e08c2754193edc1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T03:54:38+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/intake-1/03/V0/compsuite-i-4.json",
+      "verification/external-upgrades/corpus-runs/intake-1/03/V0/compsuite-i-62.json",
+      "verification/external-upgrades/corpus-runs/intake-1/03/V0/compsuite-i-9.json",
+      "verification/external-upgrades/corpus-runs/intake-1/03/V0/compsuite-i-94.json",
+      "verification/external-upgrades/corpus-runs/intake-1/03/current/compsuite-i-4.json",
+      "verification/external-upgrades/corpus-runs/intake-1/03/current/compsuite-i-62.json",
+      "verification/external-upgrades/corpus-runs/intake-1/03/current/compsuite-i-9.json",
+      "verification/external-upgrades/corpus-runs/intake-1/03/current/compsuite-i-94.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

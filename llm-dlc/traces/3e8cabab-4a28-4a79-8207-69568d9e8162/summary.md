@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 15:15 UTC (5511 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -2939,6 +2939,12 @@ Outputs applied for 1 of the 1 job(s). 20261121-015236-run-both-stock-aws-compch
 change `syqquumuwwru` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 At the user's request, relayed by the session in-the-loop-48, which checked the facts read-only. The run's admission check rejected the pinned Astra/Sol codex exec operator, and the agent substituted a Claude Fable/Opus profile with single-turn, 2048-token requests without asking. Its opening reports are deviations from the pre-registration, not V0 scores. The user is setting one Astra session for every role in the continue message. Documentation only.
+
+### Record verification results for 8 job(s)
+
+change `zmqvwotuppkl` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 8 of the 8 job(s). 20261121-034247-original-upgrade-corpus-v0-and-class-int: passed: 1 passed step(s) in 3m28s, peak 201.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-02-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m14s, peak 562.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-03-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 807.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-04-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 268.9 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-05-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m07s, peak 276.4 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-06-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m27s, peak 349.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-07-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m19s, peak 278.3 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-08-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m03s, peak 249.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ## Conversation
 

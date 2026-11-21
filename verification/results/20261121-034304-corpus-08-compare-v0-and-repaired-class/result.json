@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-034304-corpus-08-compare-v0-and-repaired-class",
+  "title": "Corpus 08 compare V0 and repaired class intake",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m03s, peak 249.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-034304-corpus-08-compare-v0-and-repaired-class.json",
+    "sha256": "c383f657a0001170e70d5f9827181a13db7d11b350e576b53e657135626d09fc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-034304-corpus-08-compare-v0-and-repaired-class",
+      "title": "Corpus 08 compare V0 and repaired class intake",
+      "description": "Compare the frozen and repaired readers and native checker on the same verified original sources, separate Maven compile/runtime graphs and Java toolchain. Preserve each first result, including dependency and native refusals. Upgrades in this job: reflector-35, commons-fileupload-377, commons-vfs-55c96cfd, commons-validator-86e32931.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "expected": "Each original upgrade yields a matched pair of first reports. Open findings are recorded on their actual observer and artifacts.",
+      "submitted": {
+        "at": "2026-11-21T03:43:04+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "2h"
+      },
+      "steps": [
+        {
+          "name": "Compare original upgrade pairs",
+          "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/08 --case reflector-35 --case commons-fileupload-377 --case commons-vfs-55c96cfd --case commons-validator-86e32931",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/intake-1/08"
+      ]
+    }
+  },
+  "sourceCommit": "a123f954888fe1d408110749f034e44086f11647",
+  "startedAt": "2026-11-21T03:45:56+00:00",
+  "finishedAt": "2026-11-21T03:54:08+00:00",
+  "wallSeconds": 492.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2613287,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 261083136,
+    "wallSeconds": 303.7,
+    "cpuSeconds": 85.4,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.42
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare original upgrade pairs",
+      "run": "python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/intake-1/08 --case reflector-35 --case commons-fileupload-377 --case commons-vfs-55c96cfd --case commons-validator-86e32931",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 303.734,
+      "cpuSeconds": 85.409,
+      "cpuThrottledSeconds": 39.278,
+      "peakMemoryBytes": 261083136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-original-upgrade-pairs.log",
+        "lines": 8,
+        "bytes": 2242,
+        "sha256": "c6e71655d430b770bcc8b929cd4b1a207b256e6769b8c0b8e99db296e965c5f8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "reflector-35 V0 open original source compilation",
+        "reflector-35 current open original source compilation",
+        "commons-fileupload-377 V0 open readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no construc",
+        "commons-fileupload-377 current open readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no con",
+        "commons-vfs-55c96cfd V0 open doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.c",
+        "commons-vfs-55c96cfd current open doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apa",
+        "commons-validator-86e32931 V0 open parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans",
+        "commons-validator-86e32931 current open parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, boo"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/08/V0/commons-fileupload-377.json",
+      "change": "added",
+      "bytes": 4555,
+      "sha256": "419174caca4d52501c60108d53913fc5c2e826e4540385f9c7e1a4d40b04a3a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/08/V0/commons-validator-86e32931.json",
+      "change": "added",
+      "bytes": 6983,
+      "sha256": "f69703817942b9b59a181325b6349c79792f52c5d87527d0aadbc7870917e38c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/08/V0/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 8830,
+      "sha256": "b5dfd059b7534c814bcba92b2304f1e763e32e31d1d037d19f66b76487da2348",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/08/V0/reflector-35.json",
+      "change": "added",
+      "bytes": 4337,
+      "sha256": "70a1dbadde4eb16488a7d84f834dd1e9e8b7440f960d7fcbe575ce46a3bf45cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/08/current/commons-fileupload-377.json",
+      "change": "added",
+      "bytes": 4560,
+      "sha256": "54311b3f0c02037270e93d08e2b83cadb3ec7594cf79303e313dfcf10ea5544e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/08/current/commons-validator-86e32931.json",
+      "change": "added",
+      "bytes": 6988,
+      "sha256": "a24f67339c3246548e57d8d8b905f73aff24fa203366ce95febf947f1810b1e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/08/current/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 8834,
+      "sha256": "afb5b7e185e13aea95ca99c17f096bf35311240f8d34448e22059e6204e265a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/intake-1/08/current/reflector-35.json",
+      "change": "added",
+      "bytes": 4342,
+      "sha256": "144c0d952b3f858c735c8933788949e718226a313f847afcc146b237841c6f99",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T03:54:38+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/intake-1/08/V0/commons-fileupload-377.json",
+      "verification/external-upgrades/corpus-runs/intake-1/08/V0/commons-validator-86e32931.json",
+      "verification/external-upgrades/corpus-runs/intake-1/08/V0/commons-vfs-55c96cfd.json",
+      "verification/external-upgrades/corpus-runs/intake-1/08/V0/reflector-35.json",
+      "verification/external-upgrades/corpus-runs/intake-1/08/current/commons-fileupload-377.json",
+      "verification/external-upgrades/corpus-runs/intake-1/08/current/commons-validator-86e32931.json",
+      "verification/external-upgrades/corpus-runs/intake-1/08/current/commons-vfs-55c96cfd.json",
+      "verification/external-upgrades/corpus-runs/intake-1/08/current/reflector-35.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/83bf56dcc1022f4ceeab6b64d20e5c0dfa20408d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

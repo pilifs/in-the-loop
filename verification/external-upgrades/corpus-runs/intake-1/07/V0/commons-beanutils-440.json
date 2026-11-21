@@ -1,0 +1,95 @@
+{
+  "id": "commons-beanutils-440",
+  "build": "V0",
+  "operator": {
+    "model": "gpt-6.2-astra",
+    "effort": "high"
+  },
+  "entry": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod",
+  "observer": "Resolve an overloaded public method and observe the selected declaration.",
+  "revisions": {
+    "old": "389264ff96c9e361ecb830a9813eae3f86f38d3a",
+    "new": "5dc228566038283964a4f665c147282d462babdd"
+  },
+  "result": "open",
+  "readerSha256": "2d69c271b84783a11b102dcacda4a301879c93b2438b53a91cc66de3ea370b61",
+  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
+  "sides": {
+    "old": {
+      "commit": "389264ff96c9e361ecb830a9813eae3f86f38d3a",
+      "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681",
+      "subjectJdk": "21.0.13.0+9-tem",
+      "stage": "artifacts ready",
+      "scope": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 80,
+      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
+      "compilerClasspathSha256": [
+        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
+        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
+        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
+      ],
+      "orderedSha256": [
+        "51b4ddd2f12410716d80513b6f8fed73689f1f87915821b782ff60b4efc23103",
+        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
+        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
+        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
+      ],
+      "callerClassSha256": "2dc9d226e39da6b615b13ada741d55943f92e16c787bb0e31d3057c636ad1223",
+      "descriptors": [
+        "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;"
+      ]
+    },
+    "new": {
+      "commit": "5dc228566038283964a4f665c147282d462babdd",
+      "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681",
+      "subjectJdk": "21.0.13.0+9-tem",
+      "stage": "artifacts ready",
+      "scope": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 80,
+      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
+      "compilerClasspathSha256": [
+        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
+        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
+        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
+      ],
+      "orderedSha256": [
+        "51b4ddd2f12410716d80513b6f8fed73689f1f87915821b782ff60b4efc23103",
+        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
+        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
+        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
+      ],
+      "callerClassSha256": "2dc9d226e39da6b615b13ada741d55943f92e16c787bb0e31d3057c636ad1223",
+      "descriptors": [
+        "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;"
+      ]
+    }
+  },
+  "native": {
+    "exit": 1,
+    "seconds": 0.027,
+    "outputSha256": "94d4284b01f604262464cb7f34d7741e505af432dcf670f765e554c06419086e",
+    "outcome": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod",
+      "domain": null,
+      "counterexample": null,
+      "proof": null,
+      "problem": "parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
+      "statement": null,
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod cannot be verified: parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
+          "uri": null,
+          "line": 230
+        }
+      ],
+      "output": "\u2717 org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod cannot be verified: parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
+      "work": "$WORK/checker-a6plkj2o"
+    }
+  },
+  "firstBlocker": "parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
+  "elapsedSeconds": 58.722,
+  "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681"
+}
