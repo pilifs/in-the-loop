@@ -1,0 +1,344 @@
+{
+  "plan": {
+    "example": "349",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
+    "revisions": [
+      "new",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "csv-fields",
+          "kind": "driver",
+          "path": "driver/calibration/CsvFields.java",
+          "sha256": "963910ab4fbcdc862405c7c13ac9440f1362fc4440c8e5dc388f0a0f631f59ed"
+        },
+        {
+          "id": "csv-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "4b9b79450b08e924cfb09bf077e9828526a01925170b05cf431216d9dd91a5ff"
+        },
+        {
+          "id": "quote-omission",
+          "kind": "mutation",
+          "path": "controls/omit-quote-doubling.patch",
+          "sha256": "56f789f47d8031267f58902c22ee310ac7d1ac8b50ef297a85c8ee939af93127"
+        }
+      ],
+      "key": "3372938f3a461e44"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "new",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-text",
+        "commit": "a8e4f42ef23fe396a7c45df3124157401c0da17c",
+        "published": [
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+            "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+          }
+        ],
+        "slice": {
+          "files": [
+            "src/main/java/org/apache/commons/text/StringEscapeUtils.java",
+            "src/main/java/org/apache/commons/text/translate/AggregateTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/CharSequenceTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/CodePointTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/CsvTranslators.java",
+            "src/main/java/org/apache/commons/text/translate/EntityArrays.java",
+            "src/main/java/org/apache/commons/text/translate/JavaUnicodeEscaper.java",
+            "src/main/java/org/apache/commons/text/translate/LookupTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/NumericEntityEscaper.java",
+            "src/main/java/org/apache/commons/text/translate/NumericEntityUnescaper.java",
+            "src/main/java/org/apache/commons/text/translate/OctalUnescaper.java",
+            "src/main/java/org/apache/commons/text/translate/SinglePassTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/UnicodeEscaper.java",
+            "src/main/java/org/apache/commons/text/translate/UnicodeUnescaper.java",
+            "src/main/java/org/apache/commons/text/translate/UnicodeUnpairedSurrogateRemover.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "8",
+            "-encoding",
+            "ISO-8859-1",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-text",
+        "mutant": {
+          "base": {
+            "revision": "new",
+            "commit": "a8e4f42ef23fe396a7c45df3124157401c0da17c",
+            "published": [
+              {
+                "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+                "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+                "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+              }
+            ],
+            "slice": {
+              "files": [
+                "src/main/java/org/apache/commons/text/StringEscapeUtils.java",
+                "src/main/java/org/apache/commons/text/translate/AggregateTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/CharSequenceTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/CodePointTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/CsvTranslators.java",
+                "src/main/java/org/apache/commons/text/translate/EntityArrays.java",
+                "src/main/java/org/apache/commons/text/translate/JavaUnicodeEscaper.java",
+                "src/main/java/org/apache/commons/text/translate/LookupTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/NumericEntityEscaper.java",
+                "src/main/java/org/apache/commons/text/translate/NumericEntityUnescaper.java",
+                "src/main/java/org/apache/commons/text/translate/OctalUnescaper.java",
+                "src/main/java/org/apache/commons/text/translate/SinglePassTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/UnicodeEscaper.java",
+                "src/main/java/org/apache/commons/text/translate/UnicodeUnescaper.java",
+                "src/main/java/org/apache/commons/text/translate/UnicodeUnpairedSurrogateRemover.java"
+              ],
+              "jdk": "21",
+              "flags": [
+                "--release",
+                "8",
+                "-encoding",
+                "ISO-8859-1",
+                "-g",
+                "-parameters"
+              ]
+            }
+          },
+          "patch": {
+            "path": "controls/omit-quote-doubling.patch",
+            "sha256": "56f789f47d8031267f58902c22ee310ac7d1ac8b50ef297a85c8ee939af93127"
+          },
+          "description": "The constructed sensitivity control leaves embedded quotes single."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/mutant-replay"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-033202-replay-both-commons-text-csv-tasks-after/examples/349-commons-text-csv-upgrade",
+    "network": true
+  },
+  "inputs": {
+    "example": "349",
+    "task": "mutant-replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
+    "revisions": [
+      "new",
+      "mutant"
+    ],
+    "claim": {
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "csv-fields",
+          "kind": "driver",
+          "path": "driver/calibration/CsvFields.java",
+          "sha256": "963910ab4fbcdc862405c7c13ac9440f1362fc4440c8e5dc388f0a0f631f59ed"
+        },
+        {
+          "id": "csv-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "4b9b79450b08e924cfb09bf077e9828526a01925170b05cf431216d9dd91a5ff"
+        },
+        {
+          "id": "quote-omission",
+          "kind": "mutation",
+          "path": "controls/omit-quote-doubling.patch",
+          "sha256": "56f789f47d8031267f58902c22ee310ac7d1ac8b50ef297a85c8ee939af93127"
+        }
+      ],
+      "key": "3372938f3a461e44"
+    },
+    "artifacts": [
+      {
+        "revision": "new",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-text",
+        "commit": "a8e4f42ef23fe396a7c45df3124157401c0da17c",
+        "published": [
+          {
+            "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+            "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+            "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+          }
+        ],
+        "slice": {
+          "files": [
+            "src/main/java/org/apache/commons/text/StringEscapeUtils.java",
+            "src/main/java/org/apache/commons/text/translate/AggregateTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/CharSequenceTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/CodePointTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/CsvTranslators.java",
+            "src/main/java/org/apache/commons/text/translate/EntityArrays.java",
+            "src/main/java/org/apache/commons/text/translate/JavaUnicodeEscaper.java",
+            "src/main/java/org/apache/commons/text/translate/LookupTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/NumericEntityEscaper.java",
+            "src/main/java/org/apache/commons/text/translate/NumericEntityUnescaper.java",
+            "src/main/java/org/apache/commons/text/translate/OctalUnescaper.java",
+            "src/main/java/org/apache/commons/text/translate/SinglePassTranslator.java",
+            "src/main/java/org/apache/commons/text/translate/UnicodeEscaper.java",
+            "src/main/java/org/apache/commons/text/translate/UnicodeUnescaper.java",
+            "src/main/java/org/apache/commons/text/translate/UnicodeUnpairedSurrogateRemover.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "8",
+            "-encoding",
+            "ISO-8859-1",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "mutant",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-text",
+        "mutant": {
+          "base": {
+            "revision": "new",
+            "commit": "a8e4f42ef23fe396a7c45df3124157401c0da17c",
+            "published": [
+              {
+                "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+                "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+                "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+              }
+            ],
+            "slice": {
+              "files": [
+                "src/main/java/org/apache/commons/text/StringEscapeUtils.java",
+                "src/main/java/org/apache/commons/text/translate/AggregateTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/CharSequenceTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/CodePointTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/CsvTranslators.java",
+                "src/main/java/org/apache/commons/text/translate/EntityArrays.java",
+                "src/main/java/org/apache/commons/text/translate/JavaUnicodeEscaper.java",
+                "src/main/java/org/apache/commons/text/translate/LookupTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/NumericEntityEscaper.java",
+                "src/main/java/org/apache/commons/text/translate/NumericEntityUnescaper.java",
+                "src/main/java/org/apache/commons/text/translate/OctalUnescaper.java",
+                "src/main/java/org/apache/commons/text/translate/SinglePassTranslator.java",
+                "src/main/java/org/apache/commons/text/translate/UnicodeEscaper.java",
+                "src/main/java/org/apache/commons/text/translate/UnicodeUnescaper.java",
+                "src/main/java/org/apache/commons/text/translate/UnicodeUnpairedSurrogateRemover.java"
+              ],
+              "jdk": "21",
+              "flags": [
+                "--release",
+                "8",
+                "-encoding",
+                "ISO-8859-1",
+                "-g",
+                "-parameters"
+              ]
+            }
+          },
+          "patch": {
+            "path": "controls/omit-quote-doubling.patch",
+            "sha256": "56f789f47d8031267f58902c22ee310ac7d1ac8b50ef297a85c8ee939af93127"
+          },
+          "description": "The constructed sensitivity control leaves embedded quotes single."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "53ac729385113af3d8faab0b1ff621c2b0de986ef4fcf58b66d6c94e521923b2"
+}
