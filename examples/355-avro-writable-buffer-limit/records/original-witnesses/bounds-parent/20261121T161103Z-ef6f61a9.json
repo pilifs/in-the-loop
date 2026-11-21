@@ -1,0 +1,57 @@
+{
+  "schema": "original-jvm-counterexample/v1",
+  "status": "refuted",
+  "task": "bounds-parent",
+  "sourceKey": "65036c2f5a9041fb",
+  "planKey": "86cb3e520b748909e4b2e7df12a3453fae9f858f704bd0c51210c5b550b8accc",
+  "subject": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+  "revisions": [
+    "parent"
+  ],
+  "entry": "organic.WritableBuffer#bounds(I)I",
+  "inputs": [
+    {
+      "name": "code",
+      "type": "int",
+      "value": 1
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "nativeSource": {
+    "task": "bounds-parent-lookup-startup",
+    "sourceKey": "1041ad1f9448692f",
+    "receipt": "receipts/bounds-parent-lookup-startup/20261121T160939Z-1dd740c8/result.json",
+    "receiptSha256": "c824021f8adf6ff8f889f9bb9b947cbd1b4bb542ec12a098897e139151f15037",
+    "checkerSha256": "6b60043b7c651f33ec748bf0ae94068c3fa11f290fbb917196eb8de87582cdb9",
+    "observedInitializers": {
+      "org.apache.avro.Schema": "540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+      "org.apache.hadoop.io.BytesWritable": "540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+      "org.apache.hadoop.mapred.JobConf": "540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+      "org.apache.hadoop.security.Credentials": "540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64"
+    },
+    "bounds": {
+      "unwind": 64,
+      "maxArrayLength": 128
+    }
+  },
+  "original": {
+    "replay": "receipts/bounds-parent/executions/20261121T161103Z-ef6f61a9/replay.json",
+    "sha256": "b6e50b6f507a6dab52e24a1f6a386b924b066a6cffc4f43ffdb7d24eaa0defa5",
+    "execution": "20261121T161103Z-ef6f61a9",
+    "observedInitializers": [],
+    "bounds": {
+      "unwind": 64,
+      "maxArrayLength": 128
+    },
+    "values": {
+      "parent": [
+        0,
+        null
+      ]
+    }
+  },
+  "derivation": "An admitted input violates the original assertion on original JVM bytecode. The native companion supplied the candidate. Its startup assumptions are unnecessary for this existential refutation."
+}

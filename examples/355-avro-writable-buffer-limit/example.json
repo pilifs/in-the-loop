@@ -30,7 +30,7 @@
     "description": "The original converter factory must preserve the physical capacity and expose exactly the BytesWritable logical prefix."
   },
   "target": "target.json",
-  "verdictLabel": "Strict native 0/10, finite JVM 10/10",
+  "verdictLabel": "Native 3/10 at original scope, 10/10 across observed startup scopes, finite JVM 10/10",
   "source": {
     "kind": "pull-request",
     "repository": "https://github.com/apache/avro",
@@ -42,6 +42,8 @@
     "Class intake now checks the actual source and bytes selected by the subject JVM for declared dependency overlaps. Both historical closures contain 124 entries and seven differing package metadata classes. Native startup reaches Hadoop Configuration from the factory and Avro Schema from the direct route. The initial startup observations stopped at System.getenv and Runtime.availableProcessors respectively.",
     "On the original JDK with two processors and an empty process environment, the factory observation reaches Hadoop Configuration’s use of File.getAbsoluteFile. The nested converter with two processors reaches a write by Avro Schema initialization into Accessor.jsonPropertiesAccessor. It holds a JsonProperties$1 instance after Schema initializes and is null when Accessor initializes alone. These single-class startup claims remain open.",
     "With Schema and BytesWritable initialized together before the entry on JDK 21.0.13, two CPUs, an empty environment and the Unix root working directory, the native checker proved the fixed public nested converter over all 21 registered inputs. At selector 1 the parent leaves a one-byte array readable after its logical length is reduced to zero. The native candidate returned 0 through the original parent adapter in a fresh JVM with ambient startup. The source artifacts, typed inputs, observations and state hashes are in the workflow receipts.",
-    "The eight factory tasks in the same two-root scope reach JobConf initialization. Including JobConf as a third root advances the fixed factory to Collections.newSetFromMap inside Configuration. The original factory scope and the stronger startup scopes are recorded separately."
+    "The eight factory tasks in the earlier two-root scope stopped at JobConf initialization. Adding JobConf as a third root reached Collections.newSetFromMap, then the real Hadoop weak registry once the checker executed the JDK's map-backed set.",
+    "The strict checker decided all eight public factory obligations after Schema, BytesWritable, JobConf and Credentials initialized in that order on Temurin 21.0.13 with two processors, an empty environment and / as the working directory. Both original classpaths gave the same 220-class, 1,079-object state, 540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64. The checker executed new JobConf(false), AvroDatumConverterFactory.create, conversion and the buffer observations. Bounds, prefix and first-index checks cover all 21 inputs on each revision. The separate full-length control fixes capacity and length at five.",
+    "The native parent failed both factory bounds and rejection at selector 1, a one-byte backing array with logical length zero. Two fresh JVM replays admitted that input through the original factory without early initialization. Together with the public nested converter, three original parent obligations have native counterexamples replayed on the original JVM. The seven universal native results retain their stated startup conditions."
   ]
 }

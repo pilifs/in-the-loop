@@ -1,0 +1,239 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/769ee78b99fbe616d0c990908e09569f9c454508/jvmcontract",
+    "prove",
+    "organic.SurrogateCuts#truncate(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+    "--classpath",
+    "prepare/parent/lib/net/bytebuddy/byte-buddy/1.17.5/byte-buddy-1.17.5.jar",
+    "--classpath",
+    "prepare/parent/lib/org/objenesis/objenesis/3.4/objenesis-3.4.jar",
+    "--classpath",
+    "prepare/parent/lib/org/mockito/mockito-inline/4.11.0/mockito-inline-4.11.0.jar",
+    "--classpath",
+    "prepare/parent/lib/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar",
+    "--classpath",
+    "prepare/parent/lib/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar",
+    "--assume",
+    "code >= 0 && code < 1515",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "96",
+    "--max-array-length",
+    "64",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.881,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "violation",
+      "target": "organic.SurrogateCuts#truncate(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 1515",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": {
+        "input": "truncate(code=1486)",
+        "outcome": "0",
+        "values": [
+          "1486"
+        ],
+        "shrink_runs": 0,
+        "inputs": [
+          {
+            "name": "code",
+            "type": "int",
+            "value": 1486
+          }
+        ],
+        "call": {
+          "class": "organic.SurrogateCuts",
+          "class_file": "organic/SurrogateCuts.class",
+          "classes": "after",
+          "method": "truncate",
+          "descriptor": "(I)I",
+          "static": true,
+          "arguments": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 1486,
+              "from": "code"
+            }
+          ]
+        }
+      },
+      "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.7 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "property-violated",
+          "message": "Property of organic.SurrogateCuts#truncate(int) violated: `result == 1` where code >= 0 && code < 1515:\n  truncate(code=1486)\n    outcome: 0",
+          "uri": null,
+          "line": 38
+        }
+      ],
+      "output": "✗ Property of organic.SurrogateCuts#truncate(int) violated: `result == 1` where code >= 0 && code < 1515:\n  truncate(code=1486)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.7 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.65682645,
+        "properties": 1,
+        "unwind": 96,
+        "max_array_length": 64,
+        "stage": "[-100000:100000]",
+        "native": {
+          "paths": 65,
+          "merges": 0,
+          "solver_calls": 297,
+          "solving_seconds": 0.500401849,
+          "gates_evaluated": 165564,
+          "evaluating_seconds": 0.002785001,
+          "divisions": 12,
+          "divisions_built": 12,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 69029,
+          "clauses": 237570,
+          "seconds": 0.636197501,
+          "loading_seconds": 0.001533806,
+          "decoding_seconds": 9.3314e-05,
+          "encoding_seconds": 0.091238531,
+          "witness_seconds": 0.0044228
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 60.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 60.0,
+            "seconds": 0.636,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.002,
+              "lowering": 0.0,
+              "symbolic": 0.039,
+              "encoding": 0.091,
+              "solving": 0.5,
+              "trace": 0.004,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 69029,
+              "clauses": 237570
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.865,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.636,
+          "replay": 0.006,
+          "jvm": 0.176,
+          "other": 0.045
+        }
+      },
+      "replay": {
+        "by": "jvm",
+        "reproduced": true
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 1515",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 96,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 5824,
+    "sha256": "f7eb72b4f62bb842495ddd3002e590ef7565c1972ccb3338b0daca9b674c4d7a"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

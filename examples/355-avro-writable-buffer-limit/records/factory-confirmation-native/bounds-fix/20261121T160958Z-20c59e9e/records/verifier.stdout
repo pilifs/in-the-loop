@@ -1,0 +1,164 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "organic.WritableBuffer#bounds(int)",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 21",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.conf.Configuration.<clinit>()V (org.apache.hadoop.conf.Configuration.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.conf.Configuration.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "organic.WritableBuffer#bounds(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.conf.Configuration.<clinit>()V (org.apache.hadoop.conf.Configuration.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.conf.Configuration.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+        "uri": null,
+        "line": 45
+      }
+    ],
+    "output": "✗ organic.WritableBuffer#bounds(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.conf.Configuration.<clinit>()V (org.apache.hadoop.conf.Configuration.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.conf.Configuration.<clinit>() has run already, and threw nothing, and the verdict names the assumption\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.064621769,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 128,
+      "stage": null,
+      "native": {
+        "paths": 3,
+        "merges": 0,
+        "solver_calls": 2,
+        "solving_seconds": 0.000022202,
+        "gates_evaluated": 91,
+        "evaluating_seconds": 3.417e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 123,
+        "clauses": 302,
+        "seconds": 0.012337312,
+        "loading_seconds": 0.005452276,
+        "decoding_seconds": 0.000034605,
+        "encoding_seconds": 0.000046379,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "class-initializer:org.apache.hadoop.conf.Configuration.<clinit>()V",
+          "kind": "class-initializer",
+          "call": "org.apache.hadoop.conf.Configuration.<clinit>()",
+          "sites": [
+            "organic.WritableBuffer.converted:30"
+          ],
+          "approximation": "has run already, and threw nothing",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.012,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.005,
+            "lowering": 0.0,
+            "symbolic": 0.007,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 123,
+            "clauses": 302
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.119,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.012,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.106
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 21",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

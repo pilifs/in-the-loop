@@ -1,0 +1,246 @@
+{
+  "plan": {
+    "example": "353",
+    "task": "absent-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "absent-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+      "file": "claims/absent.json",
+      "sha256": "60762b94352e4f7e919adb386e6ded2afd817fbe53090129867d49c1c32d2068",
+      "property": "absent",
+      "claimKind": "property",
+      "statement": "A key absent in both backings has count zero.",
+      "assume": "code >= 0 && code < 49",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 48,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "c91e8f77fc6838d261a4aed974679b1e90c2167a449fe87ef5ea9ae4f7b52de5"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "06e79b50befeb9c77a3e45a2cc8be679a37e5d540230de69071ca44f6369682a"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.SumView#absent(I)I",
+        "mapping": "A key absent in both backings has count zero. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 49
+      },
+      "key": "354522479519585d"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/guava",
+        "commit": "ee548013ec9aa94394c9bca2761edaca3be5e1ed",
+        "parent": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "guava",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/toolchains/build-fix.json",
+          "sha256": "4850239c43341781f73fd9af13a7f3349fb78f121a41f371b376743e8b0e000c"
+        },
+        "adapters": [
+          "adapter/organic/SumView.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/absent-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-155347-repeat-organic-java-example-353-on-the-f/examples/353-guava-saturated-sum",
+    "network": true
+  },
+  "inputs": {
+    "example": "353",
+    "task": "absent-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "absent-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+      "file": "claims/absent.json",
+      "sha256": "60762b94352e4f7e919adb386e6ded2afd817fbe53090129867d49c1c32d2068",
+      "property": "absent",
+      "claimKind": "property",
+      "statement": "A key absent in both backings has count zero.",
+      "assume": "code >= 0 && code < 49",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 48,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 48,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "c91e8f77fc6838d261a4aed974679b1e90c2167a449fe87ef5ea9ae4f7b52de5"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "06e79b50befeb9c77a3e45a2cc8be679a37e5d540230de69071ca44f6369682a"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.SumView#absent(I)I",
+        "mapping": "A key absent in both backings has count zero. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 49
+      },
+      "key": "354522479519585d"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/guava",
+        "commit": "ee548013ec9aa94394c9bca2761edaca3be5e1ed",
+        "parent": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "guava",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/toolchains/build-fix.json",
+          "sha256": "4850239c43341781f73fd9af13a7f3349fb78f121a41f371b376743e8b0e000c"
+        },
+        "adapters": [
+          "adapter/organic/SumView.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/SumView.java",
+        "sha256": "c63835e50bfe6a2a5f6f851a0ce626bd1671a161f84306883785d18b08e1e9b9"
+      }
+    ]
+  },
+  "key": "31e31eb2d7dd6d9e235e3f438a5982657f1e7291b25bd7140810fc1b89bc5f7f"
+}

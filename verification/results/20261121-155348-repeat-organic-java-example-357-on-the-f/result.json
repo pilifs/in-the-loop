@@ -1,0 +1,860 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-155348-repeat-organic-java-example-357-on-the-f",
+  "title": "Repeat organic Java example 357 on the factory verifier",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 12.4s, peak 132.2 MiB (estimated 2m00s, 3.0 GiB); 82 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-155348-repeat-organic-java-example-357-on-the-f.json",
+    "sha256": "c379abaf036786626d4a641024af567715d1b1fd9080a24c76560a6864fc2074",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-155348-repeat-organic-java-example-357-on-the-f",
+      "title": "Repeat organic Java example 357 on the factory verifier",
+      "description": "Run the original native and finite JVM contracts on the same checker revision as the Avro factory proof, retaining its successes, refutations and first refusals.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "357"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T15:53:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Repeat the frozen native obligations",
+          "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 357 --route native --stage factory-confirmation",
+          "cwd": "."
+        },
+        {
+          "name": "Repeat the exhaustive original JVM obligations",
+          "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 357 --route finite --stage factory-confirmation",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/357-gson-repeated-bom/records/factory-confirmation-native",
+        "examples/357-gson-repeated-bom/records/factory-confirmation-finite"
+      ]
+    }
+  },
+  "sourceCommit": "35ba19a31d97586a7d9cbcbb757929d4d39c1356",
+  "startedAt": "2026-11-21T16:06:37+00:00",
+  "finishedAt": "2026-11-21T16:09:51+00:00",
+  "wallSeconds": 194.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1226168,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 138653696,
+    "wallSeconds": 12.4,
+    "cpuSeconds": 20.2,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repeat the frozen native obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 357 --route native --stage factory-confirmation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 5.593,
+      "cpuSeconds": 8.186,
+      "cpuThrottledSeconds": 0.412,
+      "peakMemoryBytes": 138653696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repeat-the-frozen-native-oblig.log",
+        "lines": 1,
+        "bytes": 534,
+        "sha256": "1bfe11f870a4cb5c40cac009476a5212507354f12f01a92e3e298cecd29de15b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"357\", \"route\": \"native\", \"stage\": \"factory-confirmation\", \"workflowExit\": 0, \"seconds\": 5.449, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"chunked-parent\", \"chunked-fix\", \"plain-parent\", \"plain-fix\"], \"verifierCommit\": \"35ba19a31d97586a7d9cbcbb757929d4d39c1356\", \"checkerSha256\": \"6b60043"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Repeat the exhaustive original JVM obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 357 --route finite --stage factory-confirmation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 6.81,
+      "cpuSeconds": 11.973,
+      "cpuThrottledSeconds": 0.897,
+      "peakMemoryBytes": 125665280,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-repeat-the-exhaustive-original.log",
+        "lines": 1,
+        "bytes": 524,
+        "sha256": "3fbcd6f7f426f0acf480e8b7558b1c7e534f21df08189cc0abde9ac7ef5a1b56",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"357\", \"route\": \"finite\", \"stage\": \"factory-confirmation\", \"workflowExit\": 0, \"seconds\": 6.612, \"checkerSeconds\": 60, \"tasks\": [\"chunked-parent\", \"chunked-fix\", \"plain-parent\", \"plain-fix\"], \"verifierCommit\": \"35ba19a31d97586a7d9cbcbb757929d4d39c1356\", \"checkerSha256\": \"6b60043b7c651f33e"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "17f6c1b20a95fc43af926e7661dfcb131342c2fa9d980822c63d6b8f7e96f683",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/plan.json",
+      "change": "added",
+      "bytes": 7318,
+      "sha256": "cfda942e138a01d527a6e71102d2cec387197ec746da6a40aef007296d51936a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1194,
+      "sha256": "3d4e08293599e8455f51a5ae6dec0e4bce66a76d20db576aaae97c125348dda1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/controls.json",
+      "change": "added",
+      "bytes": 7560,
+      "sha256": "c4be6d62d34ac60ecde4a1f9125c9bc3a80676aa5177ced4dee22a66be344254",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/execution.json",
+      "change": "added",
+      "bytes": 23805,
+      "sha256": "6f7b7d6add1925affb08e83cfb0d6716e991acc72c551968e56cb572e5f39ef1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "aa13dce2096ca84797b5e5c24d2a801224ae34a9a73641c326bc50946a0055dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "081a28f4af93598102d4c8b08eb4d7b201d6de300af84d22e8ec236011842536",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/verifier.json",
+      "change": "added",
+      "bytes": 16076,
+      "sha256": "1e46bbdd685f9b97c38d9dc0cdceddbe83589638fece97257413222e6e11dc48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5259,
+      "sha256": "6046d89cc94b62cdc0bbcfb4022b4a2f7aac857a7f586d77f04bca72400f687e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/result.json",
+      "change": "added",
+      "bytes": 16912,
+      "sha256": "6fea24677eee8fae334d1a989bc8af7f59c14024b471014a412122b58276a008",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/executions/20261121T160942Z-cdf51c67/attempt.json",
+      "change": "added",
+      "bytes": 13249,
+      "sha256": "28d7d41c8bbc12dfeefdf5b10d2a6988788c7fe79d9940986e856ea5ba8b2cc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/executions/20261121T160942Z-cdf51c67/checker.json",
+      "change": "added",
+      "bytes": 6713,
+      "sha256": "29d81c8bbe85e82deb5615a886f8f31de4d0fe6f95ba5af7f74681f3d813b91c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/executions/20261121T160942Z-cdf51c67/correspondence.json",
+      "change": "added",
+      "bytes": 1316,
+      "sha256": "9292bec91702866c4e97474b7e21b196ea72c53a466d67f2dbf07571fc6e0f10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e3dc39f80b6ec551c1d68d5588b88eebe379e94c0966ebfd06824226907b8736",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/plan.json",
+      "change": "added",
+      "bytes": 7223,
+      "sha256": "682b18b3e485b00259869bba65ae8dec39332b6962d561fabe30be80948cb8c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "17c746a4a02c11018ef558e3c3112b8f06e7d82b462872cb08c39418127a8a12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/controls.json",
+      "change": "added",
+      "bytes": 7542,
+      "sha256": "51e8c71c5043b64d9b1e1a5551c4dbf4afb2d07556c7e0d7d1799a6d818fa8e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/execution.json",
+      "change": "added",
+      "bytes": 27323,
+      "sha256": "34840a1c1a61df206b1420aadf4faccd230f1488877289a58da32c00a166c275",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "b3845ee682038912e95ccb7072b015bd8748383a844122d492d9e4bef504d778",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "7fdb4420245daced827da7242fb6ade68df2ec7e5dbf4c1582f316bae485b31d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/verifier.json",
+      "change": "added",
+      "bytes": 16923,
+      "sha256": "75824c107746edbaceb9158c2a1fe3f1fc732b18cd3bb4acb885717337e6da63",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5962,
+      "sha256": "bf17af98f54942634d4f2ecb436ddf4dd1948d9c3d8d00a5adb27f5ee37c4c2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/result.json",
+      "change": "added",
+      "bytes": 18230,
+      "sha256": "80464be215969da063feb2c83777b9e585b4ef297240646d284831e048f8a108",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/executions/20261121T160942Z-02f5adee/attempt.json",
+      "change": "added",
+      "bytes": 13430,
+      "sha256": "baf0996a7445b9e1e25a7711f2127fdd1c3be6347ec709561b1e3198b23b053f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/executions/20261121T160942Z-02f5adee/checker.json",
+      "change": "added",
+      "bytes": 7469,
+      "sha256": "38d8e474539d50ef5001e49fb72ce948dbd3700118a9c4e1b5d59ba3a08bf9da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/executions/20261121T160942Z-02f5adee/correspondence.json",
+      "change": "added",
+      "bytes": 1319,
+      "sha256": "eb28b8a69f5001aa048e54ecc87a71ebd00bd51ada834c5628b5b6735b399ab6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/executions/20261121T160942Z-02f5adee/replay.json",
+      "change": "added",
+      "bytes": 2104,
+      "sha256": "7741cbf5f50bc0f27102872f437f8438dc5e4c20a2cd1ea5c1920d8b9ec6dad9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8f723dc12f67f29755a900466f0802da158d330435f786d3d1144ec34bacfdbe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/plan.json",
+      "change": "added",
+      "bytes": 7260,
+      "sha256": "6df7ee35202d000f346619a90b90d788ea022ffe7c3f9791902ef8a2944f7f26",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1194,
+      "sha256": "3d4e08293599e8455f51a5ae6dec0e4bce66a76d20db576aaae97c125348dda1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/controls.json",
+      "change": "added",
+      "bytes": 7556,
+      "sha256": "55eae3e27c06e4da47517c15285ad1822904b8988103e9700a364b222e2d11dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/execution.json",
+      "change": "added",
+      "bytes": 23747,
+      "sha256": "9943afaacc563442d1519962511b05b34ec9cb59743c08bc1e756f226141d4d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "3b25edce22dccf0a073055999cc7791b14eb2b70548d00ecbc67d96f57adb812",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 280,
+      "sha256": "e6b733ff99502c8d39a6ee2ca2e990de3f317448aafb485ad121094e4528a63b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/verifier.json",
+      "change": "added",
+      "bytes": 16014,
+      "sha256": "46bc5b2b0aa826e37598ec19a2c9eaa2c0610817e4f19a0055454e6bdb0cfff9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5244,
+      "sha256": "defd56e4d26ee583dd42636e722ff041e903dc22acd96b23f637012002038629",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/result.json",
+      "change": "added",
+      "bytes": 16866,
+      "sha256": "4424ba1a50c8f0c661c977328aad3b147eb7960f3a95e6565d04d25216776d36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/executions/20261121T160943Z-8622cd0d/attempt.json",
+      "change": "added",
+      "bytes": 13204,
+      "sha256": "dbe191c6a1c4926c4097c67f8b9e3d09e68bd2b4228edda703760b5f10e5e5bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/executions/20261121T160943Z-8622cd0d/checker.json",
+      "change": "added",
+      "bytes": 6696,
+      "sha256": "15cd46bd369c49afd4420ca5c5dd6635ab44b1ce7e261ed5c2c78666364d0a99",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/executions/20261121T160943Z-8622cd0d/correspondence.json",
+      "change": "added",
+      "bytes": 1305,
+      "sha256": "e823ae3ea93ce176681b5f0fb3f9acf2c572b69cb5062289a5b74a7deccfae10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ab81fa853c8389e6d1d572ecacad0ebf39a98e9959ea147a81dc512ffa2f6ac4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/plan.json",
+      "change": "added",
+      "bytes": 7169,
+      "sha256": "c49a1f9236e120a207443414e47573209111c605f6fc6760985f1c748b51e044",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "17c746a4a02c11018ef558e3c3112b8f06e7d82b462872cb08c39418127a8a12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/controls.json",
+      "change": "added",
+      "bytes": 7538,
+      "sha256": "0be86f1658447c0bdf90c100a124e222d029d72513511358c0a6516c193a967f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/execution.json",
+      "change": "added",
+      "bytes": 23782,
+      "sha256": "bb52776518c2733afb1dae6eec89dfd4b2fb29d6aa2b50c4e20685c157f01506",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "f06c2fc6673a01615a7c9f325308ca54a409cc9e43d576545284b44739000c60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 280,
+      "sha256": "e6b733ff99502c8d39a6ee2ca2e990de3f317448aafb485ad121094e4528a63b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/verifier.json",
+      "change": "added",
+      "bytes": 16082,
+      "sha256": "2993162d299bc59171fb7726955fb9fa69efc8f1dacac4f1aff6d2dc2274f24c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5249,
+      "sha256": "ee0dafabac34a4af189a733c48f8a771b6f18afaaefedbb981cccd46d719871c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/result.json",
+      "change": "added",
+      "bytes": 16930,
+      "sha256": "35955280bfbe7c5d8be6210efacbc831689c74ed9590ae3ba5670f7f1db13ca5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/executions/20261121T160943Z-322fc6f3/attempt.json",
+      "change": "added",
+      "bytes": 13270,
+      "sha256": "b1c1e20bc05eacb3a93496a221e1c0e3aea986b04197a761b05e359f29ccb42f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/executions/20261121T160943Z-322fc6f3/checker.json",
+      "change": "added",
+      "bytes": 6713,
+      "sha256": "b4e9e8a808e02bb17e0be3492059c7870841ba4a5a3378f1326c335578bff797",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/executions/20261121T160943Z-322fc6f3/correspondence.json",
+      "change": "added",
+      "bytes": 1308,
+      "sha256": "eb99f10ac3aa42ee3892adabc8ac78306531f0987ac79be2578ca368488a77fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0bd6b338536f8901fa8514abea43e81f4d7c4740faedc677919036e37c13a01c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/plan.json",
+      "change": "added",
+      "bytes": 7959,
+      "sha256": "2cd523c35271c3b2811d10da729970798849edbf2973ce4ef09b94d0feb0ba2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1194,
+      "sha256": "3d4e08293599e8455f51a5ae6dec0e4bce66a76d20db576aaae97c125348dda1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "17c746a4a02c11018ef558e3c3112b8f06e7d82b462872cb08c39418127a8a12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/controls.json",
+      "change": "added",
+      "bytes": 15034,
+      "sha256": "14d42b6ec8c42d51312051e6f8e9df334ebefb4c09d37086278aed5e3041f8fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/execution.json",
+      "change": "added",
+      "bytes": 14595,
+      "sha256": "700f81c5cc634e76f53790e450a6bb6f17477efe4031f55e1ef5f9ea2cebedbf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/streams.json",
+      "change": "added",
+      "bytes": 1715,
+      "sha256": "b609bbfe7c86584d854772cb3a05fdaca5a3c536935f6cc171ecf9fc4cb1eee5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/summary.txt",
+      "change": "added",
+      "bytes": 332,
+      "sha256": "2ce51c3581a91608f3ab402b210ed94647403fe9e961f9855555577b6c100ac4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/result.json",
+      "change": "added",
+      "bytes": 8609,
+      "sha256": "5d40cc55f78341af0d723568fd4b2dcfafea550c3c9bc42e10c60387cddc59d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/executions/20261121T160938Z-af69b7cf/attempt.json",
+      "change": "added",
+      "bytes": 6352,
+      "sha256": "09a6b602c2d91fb03764f10097a487d3dce54e5ae9d4da6f8ff1ef376215fd22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/run.json",
+      "change": "added",
+      "bytes": 592,
+      "sha256": "5818445d23ebb38f053ea6b740c72c11069ec4ce00fde4afcd11a4849e6dec70",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-native/workflow.log",
+      "change": "added",
+      "bytes": 1025,
+      "sha256": "6f78f6423a94967034fd340ecebee21dc3658c708f0ad5b33b8d072e4ccb21d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/batch.json",
+      "change": "added",
+      "bytes": 2623,
+      "sha256": "377d30edd1d251db6fa11b894fdb9ad929a7bc32dc5e4132855d7c01458f5136",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/chunked-fix.json",
+      "change": "added",
+      "bytes": 6159,
+      "sha256": "ef031f0b1fdd664ecebfe296b240116b55aad983c8d067fdedfc2187bc26df42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/chunked-parent.json",
+      "change": "added",
+      "bytes": 8285,
+      "sha256": "cf79200a8f2a6ea36064e2d40d2e70d2c8cac7ae995dc629263acdcef361d862",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/plain-fix.json",
+      "change": "added",
+      "bytes": 6140,
+      "sha256": "217114b3b5b7a4febca239ddbfef378ba7e6e07d3008f811abc979dcb5f51ac3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/plain-parent.json",
+      "change": "added",
+      "bytes": 6162,
+      "sha256": "a8ce43f8c8323c3fc8889e30e2f201bad64e139367619fb25d9b3ed72ac0e65e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-finite/run.json",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "25c0bd06eb0cb256b8f85b2674d26d74ad26149c80bbb000a861d837eefa3da9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/factory-confirmation-finite/workflow.log",
+      "change": "added",
+      "bytes": 158,
+      "sha256": "384d47e3fee6ad31a8a286c02ac6be140a23480ad6676fffb3e6a2f15419d463",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T16:10:23+00:00",
+    "applied": [
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/completion.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/plan.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/control-fix-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/control-fix-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/controls.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/execution.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/streams.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/verifier-output.txt",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/verifier.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/verifier.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/records/verifier.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/20261121T160942Z-cdf51c67/result.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/executions/20261121T160942Z-cdf51c67/attempt.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/executions/20261121T160942Z-cdf51c67/checker.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-fix/executions/20261121T160942Z-cdf51c67/correspondence.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/completion.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/plan.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/control-parent-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/control-parent-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/controls.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/execution.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/streams.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/verifier-output.txt",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/verifier.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/verifier.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/records/verifier.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/20261121T160942Z-02f5adee/result.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/executions/20261121T160942Z-02f5adee/attempt.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/executions/20261121T160942Z-02f5adee/checker.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/executions/20261121T160942Z-02f5adee/correspondence.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/chunked-parent/executions/20261121T160942Z-02f5adee/replay.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/completion.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/plan.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/control-fix-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/control-fix-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/controls.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/execution.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/streams.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/verifier-output.txt",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/verifier.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/verifier.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/records/verifier.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/20261121T160943Z-8622cd0d/result.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/executions/20261121T160943Z-8622cd0d/attempt.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/executions/20261121T160943Z-8622cd0d/checker.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-fix/executions/20261121T160943Z-8622cd0d/correspondence.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/completion.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/plan.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/control-parent-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/control-parent-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/controls.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/execution.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/streams.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/verifier-output.txt",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/verifier.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/verifier.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/records/verifier.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/20261121T160943Z-322fc6f3/result.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/executions/20261121T160943Z-322fc6f3/attempt.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/executions/20261121T160943Z-322fc6f3/checker.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/plain-parent/executions/20261121T160943Z-322fc6f3/correspondence.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/completion.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/plan.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/control-fix-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/control-fix-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/control-parent-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/control-parent-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/controls.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/execution.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/streams.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/records/summary.txt",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/20261121T160938Z-af69b7cf/result.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/replay/executions/20261121T160938Z-af69b7cf/attempt.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/run.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-native/workflow.log",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/batch.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/chunked-fix.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/chunked-parent.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/plain-fix.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-finite/20261121T160944Z-3a8572c1/plain-parent.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-finite/run.json",
+      "examples/357-gson-repeated-bom/records/factory-confirmation-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "769ee78b99fbe616d0c990908e09569f9c454508",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/769ee78b99fbe616d0c990908e09569f9c454508/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

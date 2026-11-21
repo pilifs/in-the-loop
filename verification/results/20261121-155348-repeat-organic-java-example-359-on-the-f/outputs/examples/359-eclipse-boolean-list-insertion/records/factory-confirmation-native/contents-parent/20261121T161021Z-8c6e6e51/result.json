@@ -1,0 +1,565 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "bdb679cd1fc2f2b5",
+    "format": 1,
+    "example": "359",
+    "statement": {
+      "approach": "target",
+      "task": "contents-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "contents-parent",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+        "file": "claims/contents.json",
+        "sha256": "1ef54c7b8e01c9755f416e2472d4cbf66bafbacb7a09dd8bf9fc364d468c6cf0",
+        "property": "contents",
+        "claimKind": "property",
+        "statement": "The resulting list has the original prefix, inserted bits and original suffix, or stays intact after an invalid index.",
+        "assume": "code >= 0 && code < 2865",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 96,
+          "maxArrayLength": 64
+        },
+        "explicitBounds": {
+          "unwind": 96,
+          "maxArrayLength": 64
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/organic/Cases.java",
+            "sha256": "b874ed5a092c0f8cf566636f6e5ee6a6089c12a351e8c437bcd7c27e864f866c"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "5dde4d874924fb52bd10bbf7ee53e5578c41cd378a89b28c7f74cc6d4314d303"
+          }
+        ],
+        "adapter": {
+          "entry": "organic.InsertBits#contents(I)I",
+          "mapping": "The resulting list has the original prefix, inserted bits and original suffix, or stays intact after an invalid index. Its original receiver and direct outcome are indexed in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2865
+        },
+        "key": "c5dc7698b71289a5"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 64
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "contents-parent",
+      "sidecar": "2b97e8f56fe81902ca1e30256ce2e49dd10edc6f311b4b97294d51ed581d0843",
+      "revisions": {
+        "parent": "8a34cc65bd5449e4f45c9c39e75d7d92ec2717e6"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "589872431e831ccfdb7030911d4a6e83d76fbf69f5e7064919da3d3c43db59ac"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "61eb265a42c5a186ab435a1d8dc5d9bc35fac20c327ec51094b84009ad3679f7"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "c628b4efe382d596b0fd41960019640d2b2be6c63690e5ee7cd82de580b88a8b"
+        },
+        {
+          "revision": "parent",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "5a95f8c6b49996fa0dfe81d930ea59ee13dc23b5bedf899988ee0446eafdf3ae",
+          "coordinates": "org.eclipse.collections:eclipse-collections-api:12.0.0-SNAPSHOT"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/organic/InsertBits.java": "909546422a25f06531060807632d9a7e61a90877bf9a773c0806eca713891ee3",
+        "claims/contents.json": "1ef54c7b8e01c9755f416e2472d4cbf66bafbacb7a09dd8bf9fc364d468c6cf0",
+        "controls/table.json": "5dde4d874924fb52bd10bbf7ee53e5578c41cd378a89b28c7f74cc6d4314d303",
+        "driver/organic/Cases.java": "b874ed5a092c0f8cf566636f6e5ee6a6089c12a351e8c437bcd7c27e864f866c"
+      },
+      "claimKey": "c5dc7698b71289a5"
+    }
+  },
+  "attempt": {
+    "id": "20261121T161021Z-8c6e6e51",
+    "claim": "bdb679cd1fc2f2b5",
+    "startedAt": "2026-11-21T16:10:21+00:00",
+    "seconds": 17.4,
+    "engine": "native",
+    "options": [
+      "prove",
+      "organic.InsertBits#contents(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/org/eclipse/collections/eclipse-collections-api/12.0.0-SNAPSHOT/eclipse-collections-api-12.0.0-SNAPSHOT.jar",
+      "--assume",
+      "code >= 0 && code < 2865",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "64",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "6b60043b7c651f33ec748bf0ae94068c3fa11f290fbb917196eb8de87582cdb9"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "c93bf01782bb39b079576dd3f57019863b2212a3c9876739bd234369e00411ac",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261121-155348-repeat-organic-java-example-359-on-the-f",
+      "sourceCommit": "35ba19a31d97586a7d9cbcbb757929d4d39c1356",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261121-155348-repeat-organic-java-example-359-on-the-f"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.165,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 17.284,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 96,
+      "maxArrayLength": 64,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "bdb679cd1fc2f2b5",
+    "attempt": "20261121T161021Z-8c6e6e51",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 2865",
+          "verdict": "violation",
+          "domain": "code: int",
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 17.2 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "contents(code=2782)",
+            "contract": "result == 1",
+            "actual": "0",
+            "shrinkRuns": 13,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "value": 2782
+                }
+              ],
+              "call": {
+                "class": "organic.InsertBits",
+                "classFile": "organic/InsertBits.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "contents",
+                "descriptor": "(I)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "code",
+                    "type": "int",
+                    "value": 2782,
+                    "from": "code"
+                  }
+                ],
+                "revision": "parent"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 17.216,
+            "properties": 1,
+            "unwind": 96,
+            "maxArrayLength": 64,
+            "stage": "[-100000:100000]",
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 17.185,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.002,
+                  "lowering": 0.0,
+                  "symbolic": 0.283,
+                  "encoding": 0.618,
+                  "solving": 16.281,
+                  "trace": 0.002,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 89847,
+                  "clauses": 303603
+                }
+              }
+            ],
+            "native": {
+              "paths": 105,
+              "merges": 0,
+              "solverCalls": 2606,
+              "solvingSeconds": 16.280671772,
+              "gatesEvaluated": 529940,
+              "evaluatingSeconds": 0.020157082,
+              "divisions": 1,
+              "divisionsBuilt": 1,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 89847,
+              "clauses": 303603,
+              "seconds": 17.185084474,
+              "loadingSeconds": 0.001693547,
+              "decodingSeconds": 0.00032116,
+              "encodingSeconds": 0.61780129,
+              "witnessSeconds": 0.001612808
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 2865",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 96,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "contents(code=2782)",
+        "contract": "result == 1",
+        "actual": "0",
+        "shrinkRuns": 13,
+        "witness": {
+          "inputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 2782
+            }
+          ],
+          "call": {
+            "class": "organic.InsertBits",
+            "classFile": "organic/InsertBits.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "contents",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 2782,
+                "from": "code"
+              }
+            ],
+            "revision": "parent"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 17.2 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int",
+    "problem": null,
+    "domain": "code: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 2865"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 2865",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "0077027fd5054f80ff19473d20af21ded67acc7df12e62a36b29fedaa6e929d7",
+        "bytes": 628650
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "5f5f2991421df7d50e090dfb0232cf2b2fcf4a009ecc781aa6fd749a26a0c209",
+        "bytes": 530
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "c9db9eda4540aa9527c89e046ac3e635be75ffc12c64385af0a5bda3dc0ef52d",
+        "bytes": 1974
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+        "bytes": 524288
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "9ffe3841a3d7f0d97f28bd221cbfda3bc0c3858a13ea9dc78ef68517edc089f7",
+        "bytes": 524288
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "d875f910ef1cd9e4d208dc666509aec41f5c79de46d0731dbab20fa6784a0b6d",
+        "bytes": 5756
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "bb4b3f89b01c1aed9c20674cfa74e1f6292818322b36ca369ce8331caae231b7",
+        "bytes": 15539
+      }
+    ]
+  }
+}

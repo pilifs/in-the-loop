@@ -1,0 +1,1129 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-155348-repeat-organic-java-example-358-on-the-f",
+  "title": "Repeat organic Java example 358 on the factory verifier",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 24.0s, peak 574.8 MiB (estimated 2m00s, 3.0 GiB); 115 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-155348-repeat-organic-java-example-358-on-the-f.json",
+    "sha256": "6ff656baa0bc26550d1a2654f5f081f6796b93525f63b343b358817ef6d9a3d3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-155348-repeat-organic-java-example-358-on-the-f",
+      "title": "Repeat organic Java example 358 on the factory verifier",
+      "description": "Run the original native and finite JVM contracts on the same checker revision as the Avro factory proof, retaining its successes, refutations and first refusals.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "358"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T15:53:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Repeat the frozen native obligations",
+          "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 358 --route native --stage factory-confirmation",
+          "cwd": "."
+        },
+        {
+          "name": "Repeat the exhaustive original JVM obligations",
+          "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 358 --route finite --stage factory-confirmation",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native",
+        "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite"
+      ]
+    }
+  },
+  "sourceCommit": "35ba19a31d97586a7d9cbcbb757929d4d39c1356",
+  "startedAt": "2026-11-21T16:06:37+00:00",
+  "finishedAt": "2026-11-21T16:10:02+00:00",
+  "wallSeconds": 205.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1226168,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 602710016,
+    "wallSeconds": 24.0,
+    "cpuSeconds": 36.9,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.2
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repeat the frozen native obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 358 --route native --stage factory-confirmation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 9.012,
+      "cpuSeconds": 12.323,
+      "cpuThrottledSeconds": 0.445,
+      "peakMemoryBytes": 602710016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repeat-the-frozen-native-oblig.log",
+        "lines": 1,
+        "bytes": 561,
+        "sha256": "129dedc20bea16481a98f76ff9a907f68e93e61a8fa13fc3277bf19e21dcdfdd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"358\", \"route\": \"native\", \"stage\": \"factory-confirmation\", \"workflowExit\": 0, \"seconds\": 8.731, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"bytes-parent\", \"bytes-fix\", \"ten-parent\", \"ten-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"35ba19a31d97586a7d9cbcbb757929d4d39c1356\""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Repeat the exhaustive original JVM obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 358 --route finite --stage factory-confirmation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 15.03,
+      "cpuSeconds": 24.582,
+      "cpuThrottledSeconds": 1.176,
+      "peakMemoryBytes": 205504512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-repeat-the-exhaustive-original.log",
+        "lines": 1,
+        "bytes": 552,
+        "sha256": "f71e0efd293eacc05e9d55a466f2b0187694fe5bbdf14ebb63c3344ea94fadc6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"358\", \"route\": \"finite\", \"stage\": \"factory-confirmation\", \"workflowExit\": 0, \"seconds\": 14.893, \"checkerSeconds\": 60, \"tasks\": [\"bytes-parent\", \"bytes-fix\", \"ten-parent\", \"ten-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"35ba19a31d97586a7d9cbcbb757929d4d39c1356\", \"checke"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0c0f1f77f0183825262192554a37e7a586f2d427958743b493d33434fbc0ee9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/plan.json",
+      "change": "added",
+      "bytes": 7373,
+      "sha256": "1a401561ca0de33ea7a3c07314f6ecc8fa03e661b4d12decdf0e9b639202b583",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "5580384b244c5b1f904291a87733ac1cefaa5a3c7644f953ffca7a5878066450",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/execution.json",
+      "change": "added",
+      "bytes": 733480,
+      "sha256": "792aedadcd31b57ee42413c12cc2a2767605fe764dc0181d8691511bbbac5a73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "006fe3f3da0df807e8372506d461dd3893529e067c90e5d8b79b3d23796b4e63",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "0f72a430270735d9738e72e39566f5757214fb81b7d5861ab538ef3ed95c36e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/verifier.json",
+      "change": "added",
+      "bytes": 14743,
+      "sha256": "e2a1e67e8a5b0e3c45fef27c1b9cdc9ca0e605e166bc47e618ef2a444a824a92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5273,
+      "sha256": "21d6563abf5edca3a160ab65b173d5768ad711fc3f55f3c43d48636f92b14f94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/result.json",
+      "change": "added",
+      "bytes": 16601,
+      "sha256": "ad88d73241391b23b2b858e094bb2f990ec3d3661ebb3fb46fc7e7acb44bcdf6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/executions/20261121T160943Z-61b4b0f1/attempt.json",
+      "change": "added",
+      "bytes": 11562,
+      "sha256": "9e141df8bdfe530174c70b2139ca3d192b9a21d48fa4ec602f12235fbcea4795",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/executions/20261121T160943Z-61b4b0f1/checker.json",
+      "change": "added",
+      "bytes": 6606,
+      "sha256": "6fa4b83d0390f59ec4c1c1709eec27e98437507b3f4ecaa3308741967f290758",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/executions/20261121T160943Z-61b4b0f1/correspondence.json",
+      "change": "added",
+      "bytes": 1365,
+      "sha256": "b7622aa79f0a116420cf44105ddd84a045ef7a27791dbf68a163bde17ea1949d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "190529d81d01c82f878954ae329ded3dd7b0587b3dfb473ce1519ab4dc60d190",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/plan.json",
+      "change": "added",
+      "bytes": 7278,
+      "sha256": "9431a8259c9a274f431fe98c25cd98fa2537dfa24504a99ca574f02acd1a8170",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "2575222a35b68674da81bd0b4ddb790190276d9fbeeb18863828901b1961babe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/execution.json",
+      "change": "added",
+      "bytes": 732126,
+      "sha256": "d7cca437cc1b171eb4e0836f09b32443d0113daba3a4567ace248530e8a1f962",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "9b72689ad92570b17520ffe15eea108c1dca681a2b800af2fc6b01bbe605de7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 589,
+      "sha256": "1a93f652a3b04c268412fff94951e90a6506b7c42d7ef6a054e47bde2834ce59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/verifier.json",
+      "change": "added",
+      "bytes": 15606,
+      "sha256": "a1370b94da9e0f549c93c40be8abc359d6530264c11b7bea307708eeac319a23",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5997,
+      "sha256": "9068bdc341fb565781e67bc7db8a14db971c3591365ba72e973f6ab82919e040",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/result.json",
+      "change": "added",
+      "bytes": 17939,
+      "sha256": "2032a9ea72d35323dca932661ff3ce6092f4f2ff20e088069f828ff4bef04f31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/executions/20261121T160942Z-66f09554/attempt.json",
+      "change": "added",
+      "bytes": 11741,
+      "sha256": "d5d3c8728aefc5a77f11fee13e4746ed2ba7114da76a7ab2dcc5f77c0f99feb0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/executions/20261121T160942Z-66f09554/checker.json",
+      "change": "added",
+      "bytes": 7380,
+      "sha256": "dae9fe53a5bfb0def67d3519c65db4dd1cd85a619f36fd4d6f265764d2d932b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/executions/20261121T160942Z-66f09554/correspondence.json",
+      "change": "added",
+      "bytes": 1368,
+      "sha256": "37e3678b05b1e8f6d72d165bfb0042d16b4f4850ebdec5e3fb1fb6c8d6b99d3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/executions/20261121T160942Z-66f09554/replay.json",
+      "change": "added",
+      "bytes": 1936,
+      "sha256": "e6b06da9d374806758f096d2a3fd785d7fdfa17d1f2e068c5c96802aa696dbcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "73267a07498542f387daa0f206fa510bb89bad1cfe7d208fef7d20154af89b20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/plan.json",
+      "change": "added",
+      "bytes": 7186,
+      "sha256": "7c44d4c3626056a1ed1e82c340849faae96544ce8295faba276da84fb8b4aba1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "5a90a9daba9190fac8cfbd500d3ec445ae6a7208aaacd0d6b5494973bf6e6441",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/execution.json",
+      "change": "added",
+      "bytes": 733313,
+      "sha256": "9f391184a7ade55b5ee8b44dd2f6f3d797ff3e1503a0753e2d4e6a40a2242442",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "2b4c03a2492de47cea78c88f1ea47ebbf8a88e872e0897717ea5d42da57ad261",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "1d57aec381fadd419f1f4537e05470ad1a6d9bbefa6a97961f7d9319fe2df759",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/verifier.json",
+      "change": "added",
+      "bytes": 14582,
+      "sha256": "67d91715d46c4c11b44e8e43862c12d037eb86008ebf4f615ff499f7a183c121",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5263,
+      "sha256": "699bcbcfc74ff794491ffbc2058587fab7f7f1124d7c8db4f9a1c50606d5c65a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/result.json",
+      "change": "added",
+      "bytes": 16510,
+      "sha256": "30997c2ee43a2d7d672d4148c17fcee4982da900a4a91c78c923cf91f5be3fa4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/executions/20261121T160946Z-e087468f/attempt.json",
+      "change": "added",
+      "bytes": 11407,
+      "sha256": "e971d3d908a9738659be13caacf8affe853fecc79a109e9d48acdde0fa5539b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/executions/20261121T160946Z-e087468f/checker.json",
+      "change": "added",
+      "bytes": 6599,
+      "sha256": "e88ebbea640878c6f9de25a90950dc9a9fc405d42a58f168b08925d27b07f591",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/executions/20261121T160946Z-e087468f/correspondence.json",
+      "change": "added",
+      "bytes": 1310,
+      "sha256": "9fe25bf4d888052f154a183a12e0d121373e2adaa350267184cb71c865aca852",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7adfd1de3cb505c7177932650fd4ff748b5dce09bc1a09325f27a43dabfb49dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/plan.json",
+      "change": "added",
+      "bytes": 7095,
+      "sha256": "4e496ece471cc43c2b2e9912f5873bdecdaf218f25b2cd269c9c9cdbf564d102",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "1576766050c40e109c537a4467afe8329b0977ac2b1766e8d44791315091227e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/execution.json",
+      "change": "added",
+      "bytes": 728657,
+      "sha256": "5a68370fe3f47b6ed8bc841c7e2f377529259a331f594c0fe7e9db1a4b231b31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "462c269486000489af7f98b24e5fc2c87b64fab007360b7960f7e14ed1dd3d4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "1d57aec381fadd419f1f4537e05470ad1a6d9bbefa6a97961f7d9319fe2df759",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/verifier.json",
+      "change": "added",
+      "bytes": 14639,
+      "sha256": "763dc3ea0f1ae4a0c17beccb74a747a55b2f0ec57c736a4f91f72529bd530515",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5263,
+      "sha256": "730ed25b14499d661ac91be34e396e5259f929c51d9810cbe321ec00ce1e0ff4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/result.json",
+      "change": "added",
+      "bytes": 16564,
+      "sha256": "91998f74c66904e7fae30559e1d278d6e5e1417cad20e9ed171a9ba6455d958c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-76d73dca/attempt.json",
+      "change": "added",
+      "bytes": 11468,
+      "sha256": "a5abe83db5594afd4d7acc66239cba33820a0181a4b4ec6368ae61b2f83a2b40",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-76d73dca/checker.json",
+      "change": "added",
+      "bytes": 6608,
+      "sha256": "9920282d2069cef29097026922799a5ba2a6f23336062af2009806978595a59b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-76d73dca/correspondence.json",
+      "change": "added",
+      "bytes": 1313,
+      "sha256": "4d2c31ded09c7e4d82461d43ea408b0a776859d2fea0967cabf3059201c8c709",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "450bc07b256018b52b6437403cc6813fb9473bedf291e57ba2343c68b2658af4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/plan.json",
+      "change": "added",
+      "bytes": 7854,
+      "sha256": "1a3d09e3bc00d2b54f5f5db8f21d04a2309a005c5a1bd8677a01f3d73a06ad10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a4800e94adf636f348ae4be91b663d66698989aa0a169fd0232935289f569452",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/execution.json",
+      "change": "added",
+      "bytes": 418058,
+      "sha256": "3f33c6bf8ef5ff256e3b20325d3c006ce6e659f88e7d1ae922c1491dcde5c09a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/streams.json",
+      "change": "added",
+      "bytes": 1717,
+      "sha256": "5b9fbf0fc9ca1f0b549cd122049f15c2fbdc03fb3e4a02093f31405b6dce2dbd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/summary.txt",
+      "change": "added",
+      "bytes": 5929,
+      "sha256": "3809dc0557e713d08b9e9aa0b8d2298fec83467ee290418b216dd328f26cf2de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/result.json",
+      "change": "added",
+      "bytes": 47864,
+      "sha256": "b2958142faf5fa4b251ca238683fd04d03b2cf70187cd06a7f294eca9f440e92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/executions/20261121T160939Z-0181ab55/attempt.json",
+      "change": "added",
+      "bytes": 5567,
+      "sha256": "293d59f7373ec58e8cc3045ecc5d724353ca70d13e2c749b297606355754444f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/run.json",
+      "change": "added",
+      "bytes": 627,
+      "sha256": "ee7ff219c683fbc3c2312944454dc1ee59414b653790f430d242461470ac19f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "714451cf8d476e9d92823ab23f095af4f66099c22ea211c8ebcfff8c48d3e2ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/plan.json",
+      "change": "added",
+      "bytes": 7205,
+      "sha256": "11631ed8360bd090c89a5b2e9015e7054e71e29a02943d64f2e4452a0f62ee57",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "b83471c1b1ae76497b9902b5cb5b2c0507194406eab90ee1d4bcf68bd4322543",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/execution.json",
+      "change": "added",
+      "bytes": 733353,
+      "sha256": "7a240825561886144d56b9404f44a504b0228e8f4db2e50756f58859092d7e53",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "c1b52fed17bb86e56e5491cd7a2c15e1ffa86c82a05e2940bc1d95fafe1b006a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "597246c13eb18593f5888c0b314f0768ab4f9fa4b24c54c51ae14fd64e02ecab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/verifier.json",
+      "change": "added",
+      "bytes": 14612,
+      "sha256": "5b7cfee0e55cd9a73bb45888824d7ceaad60e9c50a58a921ffa762c60bbd4599",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5260,
+      "sha256": "39129cac39652f8301ea6c4c9b28687d75637a61a0b3fe85740136738bf2c4d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/result.json",
+      "change": "added",
+      "bytes": 16509,
+      "sha256": "6463f478780babc1f91e892e2661e4af5dfd8022fe4a70512203dbe84f3b62e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/executions/20261121T160946Z-0774f207/attempt.json",
+      "change": "added",
+      "bytes": 11446,
+      "sha256": "19c025fac749267b7f162af3509a3ebe5739491264f7e87c7dbe7bb93be24114",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/executions/20261121T160946Z-0774f207/checker.json",
+      "change": "added",
+      "bytes": 6596,
+      "sha256": "34f938c0fb981ccbf4f33dd04d7504d4f2f280cf8d78e35600b5b91bfbc646e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/executions/20261121T160946Z-0774f207/correspondence.json",
+      "change": "added",
+      "bytes": 1326,
+      "sha256": "1266c62dfb4802454ab7a91f3b68f0cb0ddfb7fdcce86b2f0b59744f2133f517",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ab118d823fa9c648bf8db71541fa70ade3fc0847e8d47c2cd1e49a5c4e168e8e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/plan.json",
+      "change": "added",
+      "bytes": 7110,
+      "sha256": "e70eb1b1a1999e722733db225b37de43dc02c3521ca81171cf2aaafb511d1805",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "808824ccc3edd39efc829f47f90817b9adfef25572436d1e6572fb804cfb36e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/execution.json",
+      "change": "added",
+      "bytes": 731771,
+      "sha256": "69cb456a0b030852d6cabfa65a788bf011164815f7f095d03d081b4de303aef0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "9dcb2bc05e3bd0c0d8cf6b20d4451eb0d392628f78977dec04b5023ad37b3cd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 525,
+      "sha256": "65c43ff083b5c3e2623b4a9832bee2882bd0d855c4c1ce93949b99cc4f0d53ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/verifier.json",
+      "change": "added",
+      "bytes": 15172,
+      "sha256": "69fddd4562f621b9fb80cbe99b06c72009a6c2d3ca3515ab1af058fe97cd3d8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5712,
+      "sha256": "0d7fe11e4ffc7cfec1986281fc71118e3eb8bd6fd78f3418e5989d188d1c3733",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/result.json",
+      "change": "added",
+      "bytes": 17317,
+      "sha256": "c004074f5b447c4ff9e87412a16fc6d13ad402982347af5a4c532907d9b19ca6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/executions/20261121T160945Z-23d0088a/attempt.json",
+      "change": "added",
+      "bytes": 11627,
+      "sha256": "788480d0b9fa79ef33455b15598e7145c55dc92c3f005496fe59ee138854e0ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/executions/20261121T160945Z-23d0088a/checker.json",
+      "change": "added",
+      "bytes": 7082,
+      "sha256": "0975eb1620b0fe750744636b4d240cbe3f2923f71c3f87bfd9bb564a61f9114f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/executions/20261121T160945Z-23d0088a/correspondence.json",
+      "change": "added",
+      "bytes": 1329,
+      "sha256": "9af3822bc19d3c89a7a27f61f2759ad5138f144678e7c11cb8ab9876338a0953",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/executions/20261121T160945Z-23d0088a/replay.json",
+      "change": "added",
+      "bytes": 2003,
+      "sha256": "ea89403675311bd7695b2e5e497c02e90ca76850bdcacb27856d5577915aa49f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/workflow.log",
+      "change": "added",
+      "bytes": 1640,
+      "sha256": "75e537c24da4dacdab7b03248bbb3ed92492048e5f9c433dafa35c5c41c2dde5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/batch.json",
+      "change": "added",
+      "bytes": 3654,
+      "sha256": "b246b199c4df35699bd1f9f4d662b79c3ad041e1abd8def7bf98b12f71bffefc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/bytes-fix.json",
+      "change": "added",
+      "bytes": 361726,
+      "sha256": "d6eb454ee71ece6407e2047b4141759bc4681bc109fd0fb14895267565ee93bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/bytes-parent.json",
+      "change": "added",
+      "bytes": 363939,
+      "sha256": "4d2cca2f7711ec3890de7472b7d6a60f101ea5db6e1caefa0eec67896850cc65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/controls-fix.json",
+      "change": "added",
+      "bytes": 4736,
+      "sha256": "c1f4b9c894f57bc979ce8724628b64f4aae2eabbd68a2f92e9bb2d0a9d0b4945",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/controls-parent.json",
+      "change": "added",
+      "bytes": 4757,
+      "sha256": "7bfef483d472c7d3012eb28c4b988ebf0e2fb9a911e77f9b21632470a3b1c3ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/ten-fix.json",
+      "change": "added",
+      "bytes": 4570,
+      "sha256": "fc051aadf58994b86bcabb4f90878059ed7b534641f5f74a18495b7e53f6f175",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/ten-parent.json",
+      "change": "added",
+      "bytes": 6596,
+      "sha256": "ab3f5b96430ad61f2198757042d4ae32b4eb75ae15c5acf6a2e0910201b72f0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/run.json",
+      "change": "added",
+      "bytes": 614,
+      "sha256": "3e88c9ac4c060a5a37b006de6d55a2b60a82622e260cc1e093dfef872bd472ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/workflow.log",
+      "change": "added",
+      "bytes": 237,
+      "sha256": "304797fc4a357410ca62a3411b8f23f3064c1b8e86048de09ee0d0d099f6e2b5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T16:10:23+00:00",
+    "applied": [
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/20261121T160943Z-61b4b0f1/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/executions/20261121T160943Z-61b4b0f1/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/executions/20261121T160943Z-61b4b0f1/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-fix/executions/20261121T160943Z-61b4b0f1/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/20261121T160942Z-66f09554/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/executions/20261121T160942Z-66f09554/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/executions/20261121T160942Z-66f09554/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/executions/20261121T160942Z-66f09554/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/bytes-parent/executions/20261121T160942Z-66f09554/replay.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/20261121T160946Z-e087468f/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/executions/20261121T160946Z-e087468f/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/executions/20261121T160946Z-e087468f/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-fix/executions/20261121T160946Z-e087468f/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/20261121T160946Z-76d73dca/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-76d73dca/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-76d73dca/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-76d73dca/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/records/summary.txt",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/20261121T160939Z-0181ab55/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/replay/executions/20261121T160939Z-0181ab55/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/run.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/20261121T160946Z-0774f207/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/executions/20261121T160946Z-0774f207/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/executions/20261121T160946Z-0774f207/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-fix/executions/20261121T160946Z-0774f207/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/20261121T160945Z-23d0088a/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/executions/20261121T160945Z-23d0088a/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/executions/20261121T160945Z-23d0088a/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/executions/20261121T160945Z-23d0088a/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/ten-parent/executions/20261121T160945Z-23d0088a/replay.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-native/workflow.log",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/batch.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/bytes-fix.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/bytes-parent.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/controls-fix.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/controls-parent.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/ten-fix.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/20261121T160947Z-d3855e3f/ten-parent.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/run.json",
+      "examples/358-commons-codec-partitioned-base16/records/factory-confirmation-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 3371632,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "769ee78b99fbe616d0c990908e09569f9c454508",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/769ee78b99fbe616d0c990908e09569f9c454508/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}
