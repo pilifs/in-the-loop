@@ -80,6 +80,9 @@ def check_operator(doc):
     identifier(doc["build"])
     for key in ("input_sha256", "product_sha256", "profile_sha256", "environment_sha256"):
         hex_digest(doc[key])
+    for key in ("launch_lock_sha256", "staged_root_sha256"):
+        if key in doc:
+            hex_digest(doc[key])
     require(doc["route"] in ROUTES, "unknown evidence route")
     require(isinstance(doc["evidence"], list), "missing evidence list")
     require(doc["route"] in {"open", "unavailable"} or doc["evidence"], "a verdict needs evidence")
@@ -161,7 +164,7 @@ def roster(doc):
     return rows
 
 
-def read_first(root, build, case, locked, product, profile):
+def read_first(root, build, case, locked, product, profile, launch=None):
     folder = root / build / case["case_id"]
     body = (folder / "operator.json").read_bytes()
     digest = (folder / "report.sha256").read_text().strip()
@@ -172,6 +175,9 @@ def read_first(root, build, case, locked, product, profile):
     require((doc["case_id"], doc["build"], doc["input_sha256"], doc["product_sha256"]) ==
             (case["case_id"], build, case["input_sha256"], product), "case, artifact pair or product identity differs")
     require(doc["profile_sha256"] == profile, "operator profile differs from the signed roster")
+    if launch is not None:
+        for field in ("launch_lock_sha256", "staged_root_sha256"):
+            require(doc.get(field) == hex_digest(launch[field]), "per-build launch or staged product root differs")
     require(timestamp(doc["intake_utc"]) >= locked, "operator saw case before cohort lock")
     require(seal["report_sha256"] == digest and timestamp(seal["sealed_utc"]) >= timestamp(doc["finished_utc"]),
             "invalid first report seal")
@@ -230,6 +236,7 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
                          "seconds": seconds, "cache": doc["cache"], "environmentSha256": doc["environment_sha256"],
                          "cpuLimit": doc["cpu_limit"], "memoryGiB": doc["memory_gib"],
                          "profileSha256": doc["profile_sha256"], "clientInMain": case.get("client_in_main"),
+                         "launchLockSha256": doc.get("launch_lock_sha256"), "stagedRootSha256": doc.get("staged_root_sha256"),
                          "transferIntegrity": integrity,
                          "firstActionableUtc": doc["first_actionable_utc"], "humanMinutes": doc["human_minutes"],
                          "uncachedInputTokens": doc["uncached_input_tokens"], "outputTokens": doc["output_tokens"],
@@ -253,7 +260,9 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
 
 
 def paired(reports):
-    old, new = reports
+    require(len(reports) == 2 and sum(r["build"] == "V0" for r in reports) == 1,
+            "a transfer comparison needs one baseline V0 and one repaired build")
+    old, new = sorted(reports, key=lambda r: r["build"] != "V0")
     require(old["phase"] == new["phase"] == "transfer" and old["productSha256"] != new["productSha256"],
             "two distinct frozen products required")
     after = {r["case_id"]: r for r in new["cases"]}
@@ -315,15 +324,14 @@ def main():
             require(build not in sealed, "duplicate product")
             if build == "V0":
                 require(lock == sha(Path(__file__).with_name("v0.json").read_bytes()), "different V0 lock")
-            if study["phase"] == "transfer":
-                freeze = study["products"][build]
-                require(freeze["lock_sha256"] == lock and
-                        timestamp(freeze["frozen_utc"]) <= timestamp(study["release_utc"]),
-                        "product changed after transfer release")
             # Across both products on transfer, verify every seal before reading even one grade.
             release = timestamp(study.get("release_utc", study["locked_utc"]))
             require(release >= timestamp(study["locked_utc"]), "case released before cohort lock")
-            sealed[build] = {c["case_id"]: read_first(args.reports, build, c, release, lock, study["profile_sha256"])
+            freeze = study["products"][build]
+            require(freeze["lock_sha256"] == lock and timestamp(freeze["frozen_utc"]) <= release,
+                    "product or operator launch changed after release")
+            sealed[build] = {c["case_id"]: read_first(args.reports, build, c, release, lock,
+                                                      study["profile_sha256"], freeze)
                              for c in cases}
         reveal_after = max(row[3] for group in sealed.values() for row in group.values())
         results = [score(study, sealed[build], args.grades, build, lock, budget, reveal_after, key)

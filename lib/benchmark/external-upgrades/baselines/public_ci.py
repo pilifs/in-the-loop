@@ -19,6 +19,12 @@ import maven_mirror
 HERE = Path(__file__).resolve().parent
 CACHE = Path.home() / ".cache/in-the-loop/external-upgrades"
 CASES = {
+    "348": {
+        "client": "rxjava-jdbc", "old": "5e04239e1f831878884972fbf72ab1f529b0647d",
+        "new": "735c4108c0ebfd9ad4f350d496e9c74bc0893bb7", "jdk": "8.0.512.0+9-tem",
+        "workflow": ".travis.yml", "argv": ["--batch-mode", "test"],
+        "suite": "com.github.davidmoten.rx.jdbc.DatabaseSyncTest",
+    },
     "349": {
         "client": "commons-text",
         "old": "c252787dca5fe36e1f1f6c131061bbf016b1e1b6", "new": "a8e4f42ef23fe396a7c45df3124157401c0da17c",
@@ -44,20 +50,39 @@ def digest(path):
 def guest(arguments):
     port = maven_mirror.guest_server()
     settings = Path("/work/settings.xml")
-    settings.write_text(f"<settings><mirrors><mirror><id>isolated-central</id><mirrorOf>*</mirrorOf>"
+    settings.write_text(f"<settings><localRepository>/work/repository</localRepository>"
+                        f"<mirrors><mirror><id>isolated-central</id><mirrorOf>*</mirrorOf>"
                         f"<url>http://127.0.0.1:{port}/</url></mirror></mirrors></settings>\n")
+    if arguments[:1] == ["--stock-compsuite"]:
+        default = Path("/work/home/.m2")
+        default.mkdir(exist_ok=True)
+        shutil.copyfile(settings, default / "settings.xml")
+        os.environ["MAVEN_OPTS"] += " -Dmaven.artifact.threads=1 -Daether.connector.basic.threads=1 -Daether.metadataResolver.threads=1"
+        suite = Path("/work/compsuite")
+        (suite / "repos").mkdir()
+        (suite / "repos/rxjava-jdbc").symlink_to("/project")
+        (suite / "logs").mkdir()
+        interpreter = "/opt/python/bin/python3.11"
+        subprocess.run([interpreter, "--version"], check=True)
+        if arguments[1] == "combined":
+            subprocess.run([interpreter, "main.py", "--info", "i-87"], cwd=suite, check=True)
+        flag = {"combined": "--incompat", "old": "--testold", "new": "--testnew"}[arguments[1]]
+        return subprocess.call([interpreter, "main.py", flag, "i-87"], cwd=suite)
     if arguments == ["--smoke"]:
         from urllib.request import urlopen
         path = "junit/junit/4.12/junit-4.12.jar"
         with urlopen(f"http://127.0.0.1:{port}/{path}", timeout=10) as body:
             print(hashlib.sha256(body.read()).hexdigest(), flush=True)
+        if Path("/opt/python/bin/python3.11").exists():
+            subprocess.run(["/opt/python/bin/python3.11", "--version"], check=True)
+            subprocess.run(["/opt/python/bin/python3.11", "/work/compsuite/main.py", "--info", "i-87"], check=True)
         return subprocess.call(["mvn", "--version"])
     return subprocess.call(["mvn", "--settings", str(settings), "-T", "1", "-Dmaven.repo.local=/work/repository",
                             "-Dmaven.artifact.threads=1", "-Daether.connector.basic.threads=1",
                             "-Daether.metadataResolver.threads=1", *arguments])
 
 
-def namespace(project, work, scratch, socket_dir, maven, jdk):
+def namespace(project, work, scratch, socket_dir, maven, jdk, python=None):
     cmd = ["bwrap", "--unshare-all", "--unshare-user", "--disable-userns", "--die-with-parent", "--new-session",
            "--cap-drop", "ALL", "--clearenv", "--ro-bind", "/usr", "/usr"]
     for name in ("bin", "sbin", "lib", "lib64"):
@@ -67,13 +92,18 @@ def namespace(project, work, scratch, socket_dir, maven, jdk):
         elif path.exists():
             cmd += ["--ro-bind", str(path), str(path)]
     cmd += ["--ro-bind", str(maven), "/opt/maven", "--ro-bind", str(jdk), "/opt/jdk"]
+    if python is not None:
+        cmd += ["--ro-bind", str(python), "/opt/python"]
     for file in ("public_ci.py", "maven_mirror.py"):
         cmd += ["--ro-bind", str(HERE / file), "/control/" + file]
-    cmd += ["--bind", str(work), "/work", "--bind", str(project), "/project",
+    hosts = work / "hosts"
+    hosts.write_text("127.0.0.1 localhost ci-host\n::1 localhost ci-host\n")
+    cmd += ["--hostname", "ci-host", "--ro-bind", str(hosts), "/etc/hosts",
+            "--bind", str(work), "/work", "--bind", str(project), "/project",
             "--bind", str(scratch), "/scratch", "--symlink", "/scratch", "/tmp",
             "--ro-bind", str(socket_dir), "/mirror", "--proc", "/proc", "--dev", "/dev"]
     env = {"HOME": "/work/home", "PATH": "/opt/jdk/bin:/opt/maven/bin:/usr/bin", "JAVA_HOME": "/opt/jdk",
-           "MAVEN_OPTS": "-Duser.home=/work/home", "JAVA_TOOL_OPTIONS": "-Djava.io.tmpdir=/scratch/jvm",
+           "MAVEN_OPTS": "-Duser.home=/work/home", "JAVA_TOOL_OPTIONS": "-Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home",
            "TMPDIR": "/scratch", "TZ": "UTC", "LC_ALL": "C.UTF-8", "PYTHONDONTWRITEBYTECODE": "1"}
     for name, value in env.items():
         cmd += ["--setenv", name, value]
@@ -106,7 +136,10 @@ def collect(project, suite, out):
 def run(args):
     case = CASES[args.example]
     repo = args.repo or CACHE / "ci-sources" / (case["client"] + ".git")
-    maven = args.maven.resolve(strict=True)
+    default_maven = (CACHE / "ci-tools/apache-maven-3.6.3" if args.example == "348"
+                     else Path.home() / ".sdkman/candidates/maven/3.10.0")
+    maven = (args.maven or default_maven).resolve(strict=True)
+    python = CACHE / "ci-tools/cpython-3.11.14" if args.stock_compsuite else None
     jdk = (args.jdk or (Path.home() / ".sdkman/candidates/java" / case["jdk"])).resolve(strict=True)
     repository = args.repository.resolve(strict=True)
     source_diff = subprocess.check_output(["git", "-C", repo, "diff", "--name-only", case["old"], case["new"]], text=True)
@@ -126,7 +159,8 @@ def run(args):
         sockets = area / "mirror"
         sockets.mkdir()
         with maven_mirror.serve(repository, sockets, 3 * 1024**3) as counters:
-            for side in (("new",) if args.smoke else ("old", "new")):
+            sides = ("new",) if args.smoke else ("combined", "old", "new") if args.stock_compsuite else ("old", "new")
+            for side in sides:
                 baseline = dict(counters)
                 side_dir = area / side
                 side_dir.mkdir()
@@ -134,16 +168,36 @@ def run(args):
                 (work / "home").mkdir(parents=True)
                 (scratch / "jvm").mkdir(parents=True)
                 subprocess.run(["git", "clone", "--quiet", "--no-checkout", "--no-hardlinks", str(repo), project], check=True)
-                revision = case[side]
+                revision = case["new" if side == "combined" else side]
                 subprocess.run(["git", "-C", project, "checkout", "--quiet", "--detach", revision], check=True)
                 out = args.out / side
                 out.mkdir()
                 log = side_dir / "maven.log"
                 clock = time.monotonic()
+                goals = ["--smoke"] if args.smoke else case["argv"]
+                if args.stock_compsuite:
+                    reference = HERE.parents[3] / "examples/348-rxjava-jdbc-generated-keys/records/compsuite-cli.json"
+                    expected = {r["file"]: r["sha256"] for r in json.loads(reference.read_bytes())["unchangedScriptSources"]}
+                    expected["incompatibilities.json"] = "ceff4d4209e1798db3b008824ba45e05a93bd16ade7afdaaafd404493a82123e"
+                    interpreter = json.loads((reference.parent / "comp-suite-python.json").read_bytes())
+                    if any(digest(python / name) != checksum for name, checksum in interpreter["installedFilesSha256"].items()):
+                        raise ValueError("CompSuite CPython differs from the independently verified distribution")
+                    if evidence["mavenCoreSha256"] != "f572ed9e2a6ea3e30522d13448c5d9b3b80ce62a23dac652111952d4941e2a3b":
+                        raise ValueError("CompSuite reference environment requires the original Maven 3.6.3 core")
+                    suite = work / "compsuite"
+                    suite.mkdir()
+                    for name, checksum in expected.items():
+                        shutil.copyfile(CACHE / "ci-tools/compsuite-6e6d738c8b0c-i87" / name, suite / name)
+                        if digest(suite / name) != checksum:
+                            raise ValueError("original CompSuite script or entry differs")
+                    evidence["compsuiteSources"] = expected
+                    evidence["python311Sha256"] = digest(python / "bin/python3.11")
+                    if not args.smoke:
+                        goals = ["--stock-compsuite", side]
                 with log.open("wb") as stream:
-                    command = namespace(project, work, scratch, sockets, maven, jdk)
+                    command = namespace(project, work, scratch, sockets, maven, jdk, python)
                     try:
-                        status = subprocess.run([*command, *(["--smoke"] if args.smoke else case["argv"])],
+                        status = subprocess.run([*command, *goals],
                                                 stdout=stream, stderr=subprocess.STDOUT,
                                                 timeout=max(1, 7200 - (clock - start))).returncode
                     except subprocess.TimeoutExpired:
@@ -160,6 +214,19 @@ def run(args):
                 row["mavenStarted"] = any("Scanning for projects" in line for line in text)
                 if status == "timeout":
                     row["ciOutcome"] = "timeout"
+                elif args.stock_compsuite and not args.smoke:
+                    row["wrapper"] = goals
+                    row["wrapperMessages"] = text
+                    row["originalMavenLogs"] = {}
+                    for raw in sorted((work / "compsuite/logs").rglob("*.log")):
+                        name = raw.name
+                        original = raw.read_bytes()
+                        (out / (name + ".gz")).write_bytes(gzip.compress(original, mtime=0))
+                        row["originalMavenLogs"][name] = digest(raw)
+                        if b"Scanning for projects" in original:
+                            row["mavenStarted"] = True
+                    row["ciOutcome"] = "wrapper exit and original testcase evidence recorded independently"
+                    row["authoritativeNamedReplay"] = side in {"old", "new"}
                 elif row["counts"]["tests"]:
                     row["ciOutcome"] = "passed" if status == 0 else "failed"
                 else:
@@ -184,10 +251,14 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--repo", type=Path)
     parser.add_argument("--jdk", type=Path)
-    parser.add_argument("--maven", type=Path, default=Path.home() / ".sdkman/candidates/maven/3.10.0")
+    parser.add_argument("--maven", type=Path)
     parser.add_argument("--repository", type=Path, default=CACHE / "maven/repository")
     parser.add_argument("--smoke", action="store_true", help="exercise a cached JAR and Maven startup only")
-    run(parser.parse_args())
+    parser.add_argument("--stock-compsuite", action="store_true", help="348 original CLI and two independent named replays")
+    args = parser.parse_args()
+    if args.stock_compsuite and args.example != "348":
+        parser.error("--stock-compsuite requires the disclosed i-87 case")
+    run(args)
     return 0
 
 

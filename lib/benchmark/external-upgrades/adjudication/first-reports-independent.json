@@ -1,0 +1,91 @@
+{
+  "schema": "external-upgrade-independent-disclosed-first-report-review/v1",
+  "reviewer": "Codex independent open-book evaluator, separate from the two operator attempts and the other first-report adjudicator",
+  "graded_utc": "2026-11-21T01:39:34.403623+00:00",
+  "population": "Two publicly disclosed V0 opening calibrations, excluded from the scored cohorts.",
+  "independent_check": "Verified both operator byte digests, their seal and checkpoint digests, and the two published original-reference signatures. Checked the original named XML and independently enumerated the full published CSV input/output domain. This review preceded access to the other adjudicator’s grade of these first reports.",
+  "grades": [
+    {
+      "case_id": "u-7b26f3c1",
+      "report_sha256": "d9262498d9e9e4af312afab04e0e013d597555fc0405a2b724ab043bd7aadc1b",
+      "sealed_utc": "2026-11-21T01:02:09.298221+00:00",
+      "checkpoint_sha256": "3197e6b7718f8f86d8560916bc5d610d27ef3a33917ff8f1dd46e6109cb48bb3",
+      "elapsed_seconds": 23.288,
+      "first_actionable_utc": null,
+      "example": 348,
+      "subject": "rxjava-jdbc with H2",
+      "reference": {
+        "file": "lib/benchmark/external-upgrades/adjudication/rxjava-review.json",
+        "payload_sha256": "3c5f9ea019de1bc73c99660217a56aafd0e7915c62ae7304a084003137b46068",
+        "signature_verified": true
+      },
+      "reference_observation": "A single two-row insert returned [2] before and [1, 2] after the upgrade. Two separate inserts returned [1, 2] on both versions and stored the same two rows.",
+      "grade": {
+        "relevant_finding": false,
+        "original_scope_decided": false,
+        "availability_evidence_supported": true,
+        "contradicted_assurance": false,
+        "false_alert": false,
+        "false_alert_routine_denominator": false,
+        "incremental_over_ci": false,
+        "actionable_review": false,
+        "primary_reason": "original product intake"
+      },
+      "evidence": "The checkpoint ended in the queue with zero model requests, zero tokens and no receipts. The independent public intake test accepted the GitHub source locator and rejected the neutral local locator for the same source and claim. These records support the reported intake stop. The first report gives no JVM or verifier observation.",
+      "ci_utility": "The original registered test passed before and failed after with the changed key list. The sealed operator report adds no diagnosis of the generated keys or the stored rows.",
+      "action_quality": "The caution against relying on an undecided claim is appropriate. It gives the maintainer no direction on callers that assume a single final key or on the already failing test.",
+      "sources": [
+        "examples/348-rxjava-jdbc-generated-keys/records/jvm-receipt.json",
+        "examples/348-rxjava-jdbc-generated-keys/records/old/trigger-surefire.xml",
+        "examples/348-rxjava-jdbc-generated-keys/records/new/trigger-surefire.xml",
+        "examples/348-rxjava-jdbc-generated-keys/records/whole-suite.json",
+        "lib/benchmark/external-upgrades/operator/evidence/neutral-source-intake.json"
+      ]
+    },
+    {
+      "case_id": "u-d8e01af4",
+      "report_sha256": "a5a287a5b37757d5f3d481fab1552d1e650d28ef1a0b368679ee19d68c484c9f",
+      "sealed_utc": "2026-11-21T01:11:18.399354+00:00",
+      "checkpoint_sha256": "4290d0833d3a841e4f03199adc7d9f391c358ca081baf5061838366e6504b248",
+      "elapsed_seconds": 451.385,
+      "first_actionable_utc": null,
+      "example": 349,
+      "subject": "Apache Commons Text with Commons Lang",
+      "reference": {
+        "file": "examples/349-commons-text-csv-upgrade/records/adjudication.json",
+        "payload_sha256": "20b8946275447a97626aba0cedd83167ef069ba68b0476fabf5e80c877c0cc34",
+        "signature_verified": true
+      },
+      "reference_observation": "All 156 fields of length 0–3 over a, comma, double quote, CR and LF returned the exact independently specified CSV characters on both original classpaths. Omitting quote doubling disagreed on 71 fields.",
+      "grade": {
+        "relevant_finding": false,
+        "original_scope_decided": false,
+        "availability_evidence_supported": true,
+        "contradicted_assurance": false,
+        "false_alert": false,
+        "false_alert_routine_denominator": true,
+        "incremental_over_ci": false,
+        "actionable_review": false,
+        "primary_reason": "token reservation during planning"
+      },
+      "evidence": "The plan-stage checkpoint and 42 completed request records precede the stop. The recorded 196,581 uncached input and 10,533 output tokens leave 42,886 available against a 48,073-token reservation. This supports a planning-budget stop. The report contains no accepted caller claim, verifier receipt or finite CSV replay.",
+      "ci_utility": "All four original CSV tests passed on each side of the reproduced Linux CI run. Each larger suite had 18 errors elsewhere. The first report adds neither finite CSV coverage nor a new issue. The full 156-input coverage belongs to the published independent reference.",
+      "action_quality": "The generic request to read the first unverified step accurately conveys uncertainty. It supplies no CSV field domain, regression to retain or case-specific release decision.",
+      "sources": [
+        "examples/349-commons-text-csv-upgrade/records/full-source-jvm.json",
+        "examples/349-commons-text-csv-upgrade/records/observations-upgrade.jsonl",
+        "examples/349-commons-text-csv-upgrade/records/observations-mutant.jsonl",
+        "examples/349-commons-text-csv-upgrade/records/full-linux-ci/result.json"
+      ]
+    }
+  ],
+  "counts": {
+    "reports": 2,
+    "relevant_original_scope_results": 0,
+    "supported_unavailability_reports": 2,
+    "contradicted_assurances": 0,
+    "false_alerts_on_disclosed_routine": 0,
+    "incremental_findings": 0,
+    "actionable_case_specific_recommendations": 0
+  }
+}

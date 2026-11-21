@@ -42,12 +42,14 @@ class UpgradeScoringTest(unittest.TestCase):
             first = sc.seal_report(source, sealed)
             with self.assertRaisesRegex(ValueError, "already sealed"):
                 sc.seal_report(source, sealed)
-            def read(profile):
-                return sc.read_first(sealed, "V0", case, sc.timestamp(doc["intake_utc"]), DIGEST, profile)
+            def read(profile, launch=None):
+                return sc.read_first(sealed, "V0", case, sc.timestamp(doc["intake_utc"]), DIGEST, profile, launch)
             _, recorded, seconds, _ = read(doc["profile_sha256"])
             self.assertEqual((recorded, seconds), (first, 60))
             with self.assertRaisesRegex(ValueError, "operator profile"):
                 read("5" * 64)
+            with self.assertRaisesRegex(ValueError, "per-build launch"):
+                read(doc["profile_sha256"], {"launch_lock_sha256": DIGEST, "staged_root_sha256": DIGEST})
             (sealed / "V0/u01/evidence/proof.txt").write_bytes(b"unrelated")
             with self.assertRaisesRegex(ValueError, "digest differs"):
                 read(doc["profile_sha256"])
@@ -72,10 +74,11 @@ class UpgradeScoringTest(unittest.TestCase):
         row = {"case_id": "u01", "family": "new", "stratum": "change", "seconds": 12, "cache": "cold",
                "transferIntegrity": blind, "clientInMain": False, "profileSha256": "4" * 64,
                "cpuLimit": 4, "memoryGiB": 16, "environmentSha256": DIGEST, "improvedCapability": None}
-        before = {"phase": "transfer", "productSha256": DIGEST, "cases": [{**row, "credit": False}]}
-        after = {"phase": "transfer", "productSha256": "2" * 64, "cases": [{**row, "credit": True}]}
+        before = {"build": "V0", "phase": "transfer", "productSha256": DIGEST, "cases": [{**row, "credit": False}]}
+        after = {"build": "V1", "phase": "transfer", "productSha256": "2" * 64, "cases": [{**row, "credit": True}]}
         paired = sc.paired([before, after])
         self.assertEqual(paired["byFamily"]["new"]["v1Only"], 1)
+        self.assertEqual(sc.paired([after, before]), paired)
         self.assertIsNone(paired["cases"][0]["transferableRepair"])
         current = after["cases"][0]
         current["improvedCapability"] = "consumer return observation"

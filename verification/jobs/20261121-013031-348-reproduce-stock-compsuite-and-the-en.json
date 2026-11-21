@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-013031-348-reproduce-stock-compsuite-and-the-en",
+  "title": "348 reproduce stock CompSuite and the entire original H2 Maven suite",
+  "description": "Use the documented CompSuite reference tools on its first disclosed example. Invoke unchanged main.py --info and --incompat, and each individual old/new test in separate fresh checkouts with genuine original Git tag identities. Also run the whole Maven JUnit suite on the two original revisions. A networkless guest with CPython 3.11.14, Maven 3.6.3 and Temurin 8 uses a serial public Central cache. Collect wrapper exits and strings independently of actual named Surefire testcase records.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "baseline:original-ci"
+  ],
+  "links": {
+    "examples": [
+      "348"
+    ]
+  },
+  "expected": "Every submitted original Maven process starts. Inspect actual named XML and assertion outcomes even if the wrapper exits zero or its install fails, and report whole-suite totals separately.",
+  "submitted": {
+    "at": "2026-11-21T01:30:31+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "python3",
+    "git",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "4G",
+    "duration": "12m",
+    "memoryLimit": "16G",
+    "timeout": "2h",
+    "notes": "Original provider-only run had 454 tests per pin. The standard Maven lifecycle and one combined plus two independent stock CLI attempts share previously downloaded public dependencies."
+  },
+  "steps": [
+    {
+      "name": "Run stock CLI with the documented tool versions and independent named test worktrees",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 348 --stock-compsuite --out examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm",
+      "cwd": "."
+    },
+    {
+      "name": "Run the whole original Maven test suite on each tag",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 348 --out examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm",
+    "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci"
+  ]
+}
