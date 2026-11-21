@@ -31,7 +31,7 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
             return "the JVM witness does not identify the planned roots by name and type"
         name, data = expected["name"], value["value"]
         if data is None:
-            if expected["type"] in ("int", "long") or name not in nullable:
+            if expected["type"] in ("boolean", "int", "long") or name not in nullable:
                 return f"{name} is null outside its planned domain"
         elif isinstance(data, dict):
             earlier = data.get("same")
@@ -39,6 +39,9 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
                     or inputs[earlier]["type"] != expected["type"] or inputs[earlier]["value"] is None
                     or not any(name in group and inputs[earlier]["name"] in group for group in aliases)):
                 return f"{name} has an alias outside its planned domain"
+        elif expected["type"] == "boolean":
+            if type(data) is not bool:
+                return f"{name} is outside the planned boolean domain"
         elif expected["type"] in ("int", "long"):
             if not signed_input(data, expected["type"]):
                 return f"{name} is outside the planned {expected['type']} domain"
@@ -201,9 +204,9 @@ def attach_observations(plan, controls, replay):
             raise ValueError("the frozen observation table changed")
         table = Table(path)
         [root] = replay["inputs"]
-        if root.get("type") != "int" or type(root.get("value")) is not int:
-            raise ValueError("this table uses one integer case ID")
-        index = root["value"]
+        if (root.get("type"), type(root.get("value"))) not in (("int", int), ("boolean", bool)):
+            raise ValueError("this table needs an integer or boolean selector")
+        index = int(root["value"])
         [(name, field)] = [(k, v) for k, v in table.fields.items() if v.get("entry") == replay["entry"]]
         data = {}
         for rev, side in replay["sides"].items():

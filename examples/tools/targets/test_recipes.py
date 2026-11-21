@@ -14,6 +14,29 @@ from targets import executions, interfaces, qualification, recipes, replay_candi
 
 
 class RecipesTest(unittest.TestCase):
+    def test_boolean_replay_checks_both_values_and_retains_ordered_array_results(self):
+        from targets.finite_check import selector, valid_result
+        entry = "fixture.Keys#read(Z)[I"
+        claim = {"observations": ["result", "exception"]}
+        self.assertTrue(replay_candidate.supported(entry, claim))
+        kind, interval, probe = selector(entry, claim, "combined", 2)
+        self.assertEqual((kind, interval), ("boolean", (0, 1)))
+        self.assertIn('boolean combined = args[0].equals("1");', probe)
+        self.assertIn("java.util.Arrays.toString(result)", probe)
+        self.assertTrue(valid_result([2, 1], "[I"))
+        self.assertFalse(valid_result([True], "[I"))
+        self.assertFalse(valid_result([1 << 31], "[I"))
+        self.assertFalse(valid_result(1, "Z"))
+        with self.assertRaises(ValueError):
+            selector(entry, claim, "combined", 1)
+        parameter = {"name": "combined", "type": "boolean"}
+        for value in (False, True):
+            inputs = [{**parameter, "value": value}]
+            self.assertIsNone(qualification.witness_problem(inputs, [parameter], set(), [], 0))
+            self.assertIn("= " + str(value).lower() + ";", replay_candidate.source(entry, claim, inputs, ["combined"]))
+        for value in (None, 0, 1, "true"):
+            self.assertIsNotNone(qualification.witness_problem([{**parameter, "value": value}], [parameter], {"combined"}, [], 0))
+
     def test_finite_observations_require_complete_inputs_and_the_selected_projection(self):
         from targets.finite_oracle import Table
         from targets.finite_check import envelope, read_rows

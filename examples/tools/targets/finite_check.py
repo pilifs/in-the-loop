@@ -1,6 +1,6 @@
-"""Exhaustively check a bounded integer entry on real JVM bytecode through the public task recipe.
+"""Exhaustively check a bounded integer or boolean entry on real JVM bytecode through the public task recipe.
 
-The outer integer envelope is proved by the syntax of the frozen Java guard. The JVM evaluates the
+The Java guard bounds integer selectors. Boolean selectors cover false and true in separate JVMs. The JVM evaluates the
 entire guard on each point. Each invocation gets a fresh application class loader on its revision's
 ordered classpath. A refutation is also repeated in a separate fresh JVM.
 """
@@ -63,6 +63,30 @@ def envelope(guard, name, limit=LIMIT):
     return low, high
 
 
+def selector(entry, claim, name, limit):
+    """Map a complete primitive domain to the integer indices consumed by the launcher."""
+    descriptor = runtime_jar.parse_target(entry)[2] or ""
+    if descriptor.startswith("(I)"):
+        bounds = envelope(claim["assume"], name, limit)
+        kind, expression = "int", "Integer.parseInt(args[0])"
+    elif descriptor.startswith("(Z)") and limit >= 2:
+        bounds = (0, 1)
+        kind, expression = "boolean", 'args[0].equals("1")'
+    else:
+        raise ValueError("the finite execution strategy needs one bounded int or both boolean values")
+    probe = replay_candidate.source(entry, claim, [{"name": name, "type": kind, "value": expression}], [name])
+    return kind, bounds, probe
+
+
+def valid_result(value, descriptor):
+    """The observable JSON value must have the actual JVM return type and width."""
+    if descriptor == "Z":
+        return type(value) is bool
+    if descriptor.startswith("["):
+        return isinstance(value, list) and all(valid_result(element, descriptor[1:]) for element in value)
+    return type(value) is int and qualification.signed_input(value, {"I": "int", "J": "long"}[descriptor])
+
+
 def read_rows(stdout, low, high, fields, property_):
     lines = iter(stdout.splitlines())
     rows = []
@@ -118,10 +142,10 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
             or any(claim.get(k) for k in ("models", "namedModels", "observedInitializers", "boundEnvironment", "assumptions", "allowedChange",
                                             "contracts", "plan", "throws", "nullable", "mayAlias"))
             or not replay_candidate.supported(recipe.entry, claim)):
-        raise ValueError("a scalar static int/long result with return and exception observations is required")
+        raise ValueError("a supported static entry with return and exception observations is required")
     owner, method, desc = runtime_jar.parse_target(recipe.entry)
-    if desc not in ("(I)I", "(I)J"):
-        raise ValueError("the finite execution strategy requires one int parameter")
+    if not desc.startswith(("(I)", "(Z)")):
+        raise ValueError("the finite execution strategy needs one int or boolean parameter")
     prepared, built = {}, {}
     for rev in plan.revisions:
         p = route.prepare_revision(plan, rev, work / "prepare" / rev, shared["prepared"])
@@ -162,8 +186,7 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
             raise ValueError("the checked entry is not static")
         [name], _ = runtime_jar.parameter_names(data, method, desc)
         names[rev] = name
-        low, high = envelope(claim["assume"], name, case_limit)
-        probe = replay_candidate.source(recipe.entry, claim, [{"type": "int", "name": name, "value": "Integer.parseInt(args[0])"}], [name])
+        kind, (low, high), probe = selector(recipe.entry, claim, name, case_limit)
         directory = work / rev
         directory.mkdir(parents=True)
         (directory / "CandidateReplay.java").write_text(probe)
@@ -177,7 +200,8 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
         prefix = [str(home / "bin/java"), *runtime.CONTROL_FLAGS, "-cp", str(launcher_classes), "IsolatedCases"]
         deadline = time.monotonic() + seconds
         elapsed = 0.0
-        width = CHUNK if high - low + 1 > 4096 else high - low + 1
+        # Fresh JVMs for the two boolean calls also reset platform state such as registered JDBC drivers.
+        width = 1 if kind == "boolean" else CHUNK if high - low + 1 > 4096 else high - low + 1
         outs = []
         for first in range(low, high + 1, width):
             last = min(high, first + width - 1)
@@ -226,7 +250,8 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
               "differences": len(failed), "sides": sides, "jdkRelease": jdk["release"], "correspondence": comparisons,
               "prepareSeconds": round(prep_seconds, 4), "controlSeconds": round(controls_seconds, 4)}
     if failed:
-        value = [{"name": names[plan.revisions[0]], "type": "int", "value": failed[0]}]
+        value = [{"name": names[plan.revisions[0]], "type": kind,
+                  "value": bool(failed[0]) if kind == "boolean" else failed[0]}]
         replay = replay_candidate.check(plan, prepared, value, work / "witness", recipe.entry)
         replay = qualification.attach_observations(plan, controls, replay)
         checker = {"checkedEntry": recipe.entry, "classpath": invocation.classpaths, "jdkRelease": jdk["release"]}
@@ -270,7 +295,7 @@ def campaign(folder, example, target, tasks, seconds, retry, stop_after, case_li
     directory.mkdir(parents=True)
     journal = {"schema": "finite-jvm-batch/v1", "id": batch_id, "retryOf": retry, "order": tasks, "claims": keys,
                "status": "running", "completed": [], "missing": list(tasks), "secondsPerJvm": seconds,
-               "launcherSha256": runtime.sha256(LAUNCHER), "scope": "Each integer starts with a fresh application class loader on the pinned runtime and classpath. Intervals above 4096 use consecutive JVM batches on one total deadline."}
+               "launcherSha256": runtime.sha256(LAUNCHER), "scope": "Each input starts with fresh application classes on its pinned classpath. Boolean selections also start a fresh JVM for each value. Integer intervals above 4096 use consecutive JVM batches on one total deadline."}
     save = lambda: executions.save(directory / "batch.json", journal)
     save()
     shared = {"prepared": {}, "controls": {}}
@@ -337,14 +362,14 @@ def validate_record(plan, record):
             raise ValueError("missing checked entry or classpath")
         rows = side["rows"]
         name = side["parameter"]
-        low, high = envelope(plan.claim["assume"], name, record.get("caseLimit", LIMIT))
-        if high - low + 1 > 4096:
-            expected_chunks = [[start, min(high, start + CHUNK - 1)] for start in range(low, high + 1, CHUNK)]
+        kind, (low, high), program = selector(recipe.entry, plan.claim, name, record.get("caseLimit", LIMIT))
+        if kind == "boolean" or high - low + 1 > 4096:
+            width = 1 if kind == "boolean" else CHUNK
+            expected_chunks = [[start, min(high, start + width - 1)] for start in range(low, high + 1, width)]
             if [chunk["interval"] for chunk in side.get("chunks", [])] != expected_chunks:
                 raise ValueError("the recorded JVM batches do not cover the certified interval exactly")
         if side["interval"] != [low, high] or [r["value"] for r in rows] != list(range(low, high + 1)):
             raise ValueError("the finite evidence does not cover its entire integer envelope")
-        program = replay_candidate.source(recipe.entry, plan.claim, [{"type": "int", "name": name, "value": "Integer.parseInt(args[0])"}], [name])
         if program != side["program"]:
             raise ValueError("the Java probe differs from the frozen guard, assertion or observer")
         stdout = []
@@ -358,7 +383,10 @@ def validate_record(plan, record):
                         raise ValueError("invalid assertion result")
                     stdout.append(json.dumps(row["satisfies"]))
                 values = row["observations"]
-                if len(values) != 2 or values[0] is not None and type(values[0]) is not int or values[1] is not None and not isinstance(values[1], str):
+                returns = runtime_jar.parse_target(recipe.entry)[2].split(")")[-1]
+                if (len(values) != 2 or values[0] is not None and not valid_result(values[0], returns)
+                        or values[1] is not None and (not isinstance(values[1], str) or values[0] is not None)
+                        or values == [None, None] and not returns.startswith("[")):
                     raise ValueError("invalid return or exception observations")
                 stdout.extend(json.dumps(v, ensure_ascii=False) for v in values)
                 admitted[n] = row
@@ -380,7 +408,9 @@ def validate_record(plan, record):
         replay = record["replay"]
         if (replay.get("reproduced") is not True or replay["claimKey"] != plan.claim["key"]
                 or replay["entry"] != recipe.entry or replay["jdkRelease"] != record["jdkRelease"]
-                or replay["inputs"][0]["value"] != failed[0]):
+                or replay["inputs"] != [{"name": record["sides"][plan.revisions[0]]["parameter"],
+                                         "type": kind, "value": bool(failed[0]) if kind == "boolean" else failed[0]}]
+                or type(replay["inputs"][0]["value"]) is not (bool if kind == "boolean" else int)):
             raise ValueError("the finite witness lacks its independent JVM qualification")
         for rev, observed in zip(plan.revisions, outputs):
             side = record["sides"][rev]
