@@ -1,477 +1,33 @@
-"""Inductive verification of a linear Java array traversal on its compiled control-flow graph.
+"""Array induction for the examples: the adapter between an example's declared array contract and the proof method.
 
-An arbitrary signed 32-bit index observes the heap. The base, back edges, each
-return, array access and termination measure are independent SMT obligations.
-Unsupported reachable bytecode prevents certification.
+The method itself is lib/python/jvm_array_induction.py (the walk over the compiled control-flow graph, each rule's
+obligations, the solver's answers): it takes a bound method and a rule, and knows no example. This module finds the
+example and its contract, takes the revision the contract names, prepares its artifacts, loads the classes by the
+prepared class path, refuses a class whose initializer the rule does not qualify, and publishes the record.
+
+    python3 examples/tools/build.py NNN --array-induction CONTRACT
+
+A record names the rule implementation it was made by under `rules`: each file of the method and this one, by
+digest. Records from before the method moved (`java-array-induction-result/v1`) have `rulesSha256` instead, the
+digest of this one file as it then was, when it held the method too.
 """
 
 import argparse
-from dataclasses import dataclass, replace
 import hashlib
 import json
 from pathlib import Path
-import re
-import shutil
 import subprocess
 import tempfile
 import zipfile
 
-from targets import interfaces, route, runtime, runtime_jar, runtime_jdk, sidecar, workflow
+import jvm_array_induction as core  # noqa: E402  (lib/python, on the path through this package)
+# The names other modules have always taken from here: the disassembly reader (the schedule and monitor experiments)
+# and the method's own.
+from jvm_array_induction import Induction, Instruction, State, methods, range_caller, solve  # noqa: E402,F401
 
+from targets import interfaces, route, runtime, runtime_jar, runtime_jdk, sidecar, workflow  # noqa: E402
 
-ZERO = "#x00000000"
-ONE = "#x00000001"
-NEG_ONE = "#xffffffff"
-BV = "(_ BitVec 32)"
-COMPARE = {"eq": "=", "ne": "distinct", "lt": "bvslt", "le": "bvsle", "gt": "bvsgt", "ge": "bvsge"}
-
-
-def term(op, *values):
-    return "(" + " ".join((op, *values)) + ")"
-
-
-def both(*values):
-    return term("and", *values) if len(values) > 1 else values[0] if values else "true"
-
-
-def between(lower, value, upper):
-    return both(term("bvsle", lower, value), term("bvslt", value, upper))
-
-
-def word(value):
-    return f"#x{value & 0xFFFFFFFF:08x}"
-
-
-@dataclass(frozen=True)
-class Instruction:
-    pc: int
-    op: str
-    arg: str
-    member: str
-
-
-def methods(javap, class_file):
-    """Use the pinned JDK disassembler on the exact class file, never a class resolved by javap's search path."""
-    dis = subprocess.check_output([javap, "-p", "-c", "-s", class_file], text=True)
-    parsed = {}
-    header = None
-    key = None
-    for line in dis.splitlines():
-        if re.match(r"^  \S", line):
-            header, key = line.strip(), None
-        elif header and line.startswith("    descriptor:"):
-            if "(" in header or header == "static {};":
-                name = (
-                    "<clinit>" if header == "static {};" else header.split("(")[0].split()[-1].split(".")[-1]
-                )
-                key = (name, line.split()[-1])
-                parsed[key] = {"header": header, "code": [], "handlers": False}
-        elif key and "Exception table:" in line:
-            parsed[key]["handlers"] = True
-        elif key and (match := re.fullmatch(r"\s*(\d+):\s+(\w+)(?:\s+(.*?))?\s*", line)):
-            arg, _, member = (match[3] or "").partition("//")
-            parsed[key]["code"].append(Instruction(int(match[1]), match[2], arg.strip(), member.strip()))
-    return parsed, dis
-
-
-@dataclass
-class State:
-    locals: dict
-    stack: tuple = ()
-    heap: str = "initial"
-    path: tuple = ()
-
-    def push(self, value):
-        return replace(self, stack=(*self.stack, value))
-
-    def pop(self):
-        if not self.stack:
-            raise ValueError("operand stack underflow")
-        return self.stack[-1], replace(self, stack=self.stack[:-1])
-
-
-class Induction:
-    def __init__(self, code, rule):
-        self.code = code
-        self.rule = rule
-        self.cell_bits = 32
-        self.conditions = []
-        self.trace = []
-
-    def vc(self, label, path, conclusion):
-        self.conditions.append((label, both(*path), conclusion))
-
-    def walk(self, method, state, pc, stop=None, path_pcs=()):
-        """Follow actual branch targets; one cut at the selected loop head defines a transition."""
-        instructions = method["code"]
-        if method["handlers"] or "static " not in method["header"]:
-            raise ValueError("this rule requires a static method without exception handlers")
-        positions = {ins.pc: i for i, ins in enumerate(instructions)}
-        while True:
-            if pc == stop:
-                return [("head", state)]
-            if pc in path_pcs or pc not in positions:
-                raise ValueError(f"unrepresented cycle or invalid branch at {pc}")
-            path_pcs = (*path_pcs, pc)
-            index = positions[pc]
-            ins = instructions[index]
-            op, arg = ins.op, ins.arg
-            next_pc = instructions[index + 1].pc if index + 1 < len(instructions) else None
-            if match := re.fullmatch(r"([ail])(load|store)(?:_(\d))?", op):
-                slot = int(match[3] or arg)
-                if match[2] == "load":
-                    state = state.push(state.locals[slot])
-                else:
-                    value, state = state.pop()
-                    state = replace(state, locals={**state.locals, slot: value})
-            elif op.startswith("iconst_"):
-                state = state.push(word(-1 if op == "iconst_m1" else int(op[7:])))
-            elif op in ("bipush", "sipush"):
-                state = state.push(word(int(arg)))
-            elif op in ("iadd", "isub"):
-                right, state = state.pop()
-                left, state = state.pop()
-                state = state.push(term("bvadd" if op == "iadd" else "bvsub", left, right))
-            elif op == "iinc":
-                slot, delta = map(int, arg.split(","))
-                state = replace(
-                    state, locals={**state.locals, slot: term("bvadd", state.locals[slot], word(delta))}
-                )
-            elif op == "lcmp":
-                right, state = state.pop()
-                left, state = state.pop()
-                if self.cell_bits != 64:
-                    raise ValueError("unexpected long comparison in an int traversal")
-                state = state.push(
-                    term(
-                        "ite",
-                        term("=", left, right),
-                        ZERO,
-                        term("ite", term("bvslt", left, right), NEG_ONE, ONE),
-                    )
-                )
-            elif op in ("arraylength", "iaload", "laload", "iastore"):
-                if op != "arraylength" and ((op == "laload") != (self.cell_bits == 64)):
-                    raise ValueError("array opcode and selected cell width disagree")
-                if op == "iastore":
-                    value, state = state.pop()
-                if op != "arraylength":
-                    offset, state = state.pop()
-                ref, state = state.pop()
-                if ref != "@array":
-                    raise ValueError(f"unbound heap reference at {pc}")
-                if op == "arraylength":
-                    state = state.push("length")
-                else:
-                    self.vc(f"safe array access at {pc}", state.path, between(ZERO, offset, "length"))
-                    state = (
-                        state.push(term("select", state.heap, offset))
-                        if op in ("iaload", "laload")
-                        else replace(state, heap=term("store", state.heap, offset, value))
-                    )
-            elif op.startswith("if"):
-                if op.startswith("if_icmp"):
-                    right, state = state.pop()
-                    comparison = op[7:]
-                else:
-                    right, comparison = ZERO, op[2:]
-                left, state = state.pop()
-                guard = term(COMPARE[comparison], left, right)
-                target = int(arg)
-                yes = replace(state, path=(*state.path, guard))
-                no = replace(state, path=(*state.path, term("not", guard)))
-                return self.walk(method, yes, target, stop, path_pcs) + self.walk(
-                    method, no, next_pc, stop, path_pcs
-                )
-            elif op == "goto":
-                pc = int(arg)
-                continue
-            elif op in ("return", "ireturn"):
-                if len(state.stack) != (op == "ireturn"):
-                    raise ValueError(f"unexpected return stack at {pc}")
-                return [(op, state)]
-            elif op == "invokestatic":
-                owner, name, descriptor = self.call(ins)
-                if owner or descriptor != "(III)V":
-                    raise ValueError(f"unsupported helper {ins.member}")
-                args = state.stack[-3:]
-                called = self.code[(name, descriptor)]
-                if len(args) != 3 or any(i.op == "invokestatic" for i in called["code"]):
-                    raise ValueError("unrepresented range-check call")
-                returns = self.walk(called, State(dict(enumerate(args)), heap=state.heap, path=state.path), 0)
-                exits = []
-                for kind, returned in returns:
-                    if kind != "return":
-                        raise ValueError("a range check must return void")
-                    resumed = replace(state, stack=state.stack[:-3], heap=returned.heap, path=returned.path)
-                    exits.extend(self.walk(method, resumed, next_pc, stop, path_pcs))
-                return exits
-            else:
-                # An exception constructor beyond rangeCheck's rejecting branch is permitted only if unreachable.
-                self.vc(f"unreachable {op} at {pc} in {method['header']}", state.path, "false")
-                return []
-            pc = next_pc
-
-    @staticmethod
-    def call(ins):
-        match = re.fullmatch(r"Method (?:(.+)\.)?([\w$]+):(\([^)]*\).+)", ins.member)
-        if not match:
-            raise ValueError(f"unresolved constant-pool call at {ins.pc}: {ins.member}")
-        return match.groups()
-
-    def invariant(self, state):
-        i, heap = state.locals[self.slot], state.heap
-        frame = term("=", heap, "initial")
-        if self.rule == "first-index":
-            prefix = term("=>", between(ZERO, "k", i), term("distinct", term("select", heap, "k"), "target"))
-            return both(term("bvsle", ZERO, i), term("bvsle", i, "length"), frame, prefix)
-        expected = term("ite", between("from", "k", i), "value", term("select", "initial", "k"))
-        return both(
-            term("bvsle", "from", i),
-            term("bvsle", i, "to"),
-            term("=>", between(ZERO, "k", "length"), term("=", term("select", heap, "k"), expected)),
-        )
-
-    def generate(self, name, descriptor):
-        method = self.code[name, descriptor]
-        initial = State({0: "@array", 1: "target", 2: ZERO, 3: "length"})
-        domain = [term("bvsle", ZERO, "length")]
-        if self.rule == "first-index":
-            wrapper = method["code"]
-            if (
-                method["handlers"]
-                or "static " not in method["header"]
-                or descriptor not in ("([II)I", "([JJ)I")
-            ):
-                raise ValueError("first-index requires a static int- or long-array search")
-            wide = descriptor == "([JJ)I"
-            if wide:
-                self.cell_bits = 64
-                # The long target takes two JVM local slots. The indexes remain Java ints.
-                initial = State({0: "@array", 1: "target", 3: ZERO, 4: "length"})
-            if [i.op for i in wrapper] != [
-                "aload_0",
-                "lload_1" if wide else "iload_1",
-                "iconst_0",
-                "aload_0",
-                "arraylength",
-                "invokestatic",
-                "ireturn",
-            ]:
-                raise ValueError("entry does not forward the same array and target with [0,length) bounds")
-            owner, helper, desc = self.call(wrapper[-2])
-            if owner or desc != ("([JJII)I" if wide else "([IIII)I"):
-                raise ValueError(
-                    "array search does not forward to a same-class helper with the checked descriptor"
-                )
-            method = self.code[helper, desc]
-        elif self.rule == "range-fill" and descriptor == "([IIII)V":
-            initial = State({0: "@array", 1: "from", 2: "to", 3: "value"})
-            domain.extend(
-                [term("bvsle", ZERO, "from"), term("bvsle", "from", "to"), term("bvsle", "to", "length")]
-            )
-        else:
-            raise ValueError("unsupported array contract or descriptor")
-        code = method["code"]
-        back = [i for i in code if i.op == "goto" and int(i.arg) <= i.pc]
-        updates = [i for i in code if i.op == "iinc"]
-        if len(back) != 1 or len(updates) != 1:
-            raise ValueError("expected one loop head and one integral cursor")
-        head = int(back[0].arg)
-        self.slot = int(updates[0].arg.split(",")[0])
-        base = self.walk(method, replace(initial, path=tuple(domain)), 0, head)
-        if not base or any(kind != "head" or st.stack for kind, st in base):
-            raise ValueError("entry does not reach the induction head on an empty operand stack")
-        if set(initial.locals).intersection([self.slot]):
-            raise ValueError("the loop cursor aliases an input local")
-        for _, st in base:
-            self.vc("entry establishes invariant", st.path, self.invariant(st))
-            if st.heap != "initial":
-                raise ValueError("unrepresented writes before the loop")
-            # The range-check path facts at entry constrain parameters only. Carry them together with the invariant.
-            abstract = State({**st.locals, self.slot: "cursor"}, heap="heap", path=st.path)
-            abstract = replace(abstract, path=(*abstract.path, self.invariant(abstract)))
-            # Execute the head once, then recognize an edge back to it as a completed iteration.
-            first = next(i for i in code if i.pc == head)
-            if first.op not in ("iload", f"iload_{self.slot}"):
-                raise ValueError("unsupported first instruction of the array loop")
-            if first.op == "iload" and int(first.arg) != self.slot:
-                raise ValueError("the head does not load the selected cursor")
-            begin = code[code.index(first) + 1].pc
-            exits = self.walk(method, abstract.push("cursor"), begin, head)
-            if not any(kind == "head" for kind, _ in exits) or not any(
-                kind.endswith("return") for kind, _ in exits
-            ):
-                raise ValueError("loop lacks a checked return or back edge")
-            for kind, end in exits:
-                if kind == "head":
-                    old = {k: v for k, v in abstract.locals.items() if k != self.slot}
-                    new = {k: v for k, v in end.locals.items() if k != self.slot}
-                    if old != new or end.stack:
-                        raise ValueError("an untracked local or stack value changes across the back edge")
-                    self.vc("iteration preserves invariant", end.path, self.invariant(end))
-                    upper = "length" if self.rule == "first-index" else "to"
-                    before = term("bvsub", upper, "cursor")
-                    after = term("bvsub", upper, end.locals[self.slot])
-                    self.vc(
-                        "nonnegative strictly decreasing Java-int variant",
-                        end.path,
-                        both(
-                            term("bvsle", ZERO, after),
-                            term("bvslt", after, before),
-                            term("bvsle", ZERO, before),
-                        ),
-                    )
-                elif self.rule == "first-index" and kind == "ireturn":
-                    result = end.stack[0]
-                    absent = both(
-                        term("=", result, NEG_ONE),
-                        term(
-                            "=>",
-                            between(ZERO, "k", "length"),
-                            term("distinct", term("select", "initial", "k"), "target"),
-                        ),
-                    )
-                    first = both(
-                        between(ZERO, result, "length"),
-                        term("=", term("select", "initial", result), "target"),
-                        term(
-                            "=>",
-                            between(ZERO, "k", result),
-                            term("distinct", term("select", "initial", "k"), "target"),
-                        ),
-                    )
-                    self.vc("return the earliest match or minus one", end.path, term("or", absent, first))
-                    self.vc("preserve the input heap", end.path, term("=", end.heap, "initial"))
-                elif self.rule == "range-fill" and kind == "return":
-                    cell = term("ite", between("from", "k", "to"), "value", term("select", "initial", "k"))
-                    self.vc(
-                        "return with exactly the range written",
-                        end.path,
-                        term(
-                            "=>", between(ZERO, "k", "length"), term("=", term("select", end.heap, "k"), cell)
-                        ),
-                    )
-                else:
-                    raise ValueError("unexpected return descriptor for the selected contract")
-        self.trace = [{"pc": i.pc, "op": i.op, "argument": i.arg, "member": i.member} for i in code]
-        return domain
-
-
-def solve(induction, domain, work, seconds):
-    solver = shutil.which("z3")
-    if not solver:
-        raise ValueError("Z3 must be on PATH to check array induction obligations")
-    cell_sort = f"(_ BitVec {induction.cell_bits})"
-    lines = ["(set-logic QF_ABV)"] + [
-        f"(declare-const {x} {cell_sort if x in ('target', 'value') else BV})"
-        for x in ("length", "cursor", "target", "k", "from", "to", "value")
-    ]
-    lines += [f"(declare-const {x} (Array {BV} {cell_sort}))" for x in ("initial", "heap", "otherInitial")]
-    lines += [f"(declare-const otherLength {BV})", "(declare-const aliases Bool)"]
-    checks = [
-        ("nonempty input domain", both(*domain), "sat"),
-        ("maximal signed length admitted", both(*domain, term("=", "length", word(2**31 - 1))), "sat"),
-    ]
-    if induction.cell_bits == 64:
-        cell = term("select", "initial", ZERO)
-        checks.append(
-            (
-                "distinct elements can have identical low 32 bits",
-                both(
-                    *domain,
-                    term("bvslt", ZERO, "length"),
-                    term("distinct", cell, "target"),
-                    term("=", term("(_ extract 31 0)", cell), term("(_ extract 31 0)", "target")),
-                ),
-                "sat",
-            )
-        )
-    checks.extend(
-        (label, both(path, term("not", conclusion)), "unsat")
-        for label, path, conclusion in induction.conditions
-    )
-    for index, (_, assertion, _) in enumerate(checks):
-        lines.extend([f"; VC {index}", "(push 1)", f"(assert {assertion})", "(check-sat)", "(pop 1)"])
-    smt = "\n".join(lines) + "\n"
-    (work / "obligations.smt2").write_text(smt)
-    answer = subprocess.run(
-        [solver, "-smt2", str(work / "obligations.smt2")],
-        capture_output=True,
-        text=True,
-        timeout=seconds,
-        check=True,
-    )
-    answers = answer.stdout.split()
-    if len(answers) != len(checks) or any(a not in ("sat", "unsat", "unknown") for a in answers):
-        raise ValueError("incomplete or malformed solver response")
-    return (
-        smt,
-        [
-            {"name": label, "expected": want, "obtained": got}
-            for (label, _, want), got in zip(checks, answers)
-        ],
-        {
-            "version": subprocess.check_output([solver, "--version"], text=True).strip(),
-            "sha256": runtime.sha256(Path(solver)),
-        },
-    )
-
-
-def range_caller(induction, method, domain, helper):
-    """Check each path to the helper, then consume its frame at the actual second-root read."""
-    code = method["code"]
-    calls = [i for i, ins in enumerate(code) if ins.op == "invokestatic"]
-    if (
-        induction.rule != "range-fill"
-        or method["handlers"]
-        or "static " not in method["header"]
-        or len(calls) != 1
-    ):
-        raise ValueError("the caller needs one static range-fill call without exception handlers")
-    at = calls[0]
-    tail = code[at + 1 :]
-    if (
-        induction.call(code[at]) != helper
-        or [ins.op for ins in tail] != ["aload_1", "iload", "iaload", "ireturn"]
-        or tail[1].arg != "5"
-    ):
-        raise ValueError("the caller must read the observed index of the second root after the helper")
-    old_cell = term("ite", "aliases", term("select", "initial", "k"), term("select", "otherInitial", "k"))
-    observed = term("ite", "aliases", term("select", "heap", "k"), term("select", "otherInitial", "k"))
-    wanted = term("ite", both("aliases", between("from", "k", "to")), "value", old_cell)
-    admitted = [
-        *domain,
-        term("bvsle", ZERO, "otherLength"),
-        between(ZERO, "k", "otherLength"),
-        term("=>", "aliases", term("=", "length", "otherLength")),
-    ]
-    entry = State(dict(enumerate(("@array", "@other", "from", "to", "value", "k"))), path=tuple(admitted))
-    paths = induction.walk(method, entry, 0, stop=code[at].pc)
-    if not paths:
-        raise ValueError("no path reaches the range-fill helper")
-    for kind, state in paths:
-        if (
-            kind != "head"
-            or len(state.stack) != 4
-            or state.stack[0] != "@array"
-            or state.heap != "initial"
-            or state.locals != entry.locals
-        ):
-            raise ValueError("unrepresented caller stack, heap, or locals at the helper")
-        _, lower, upper, value = state.stack
-        helper_domain = both(
-            term("bvsle", ZERO, lower), term("bvsle", lower, upper), term("bvsle", upper, "length")
-        )
-        induction.vc("caller establishes the helper precondition", state.path, helper_domain)
-        written = term("ite", between(lower, "k", upper), value, term("select", "initial", "k"))
-        frame = term("=>", between(ZERO, "k", "length"), term("=", term("select", "heap", "k"), written))
-        induction.vc(
-            "caller read follows from the proved frame",
-            [*state.path, helper_domain, frame],
-            term("=", observed, wanted),
-        )
-    return code[at].pc, tail[2].pc
+REPO = Path(__file__).resolve().parents[3]
 
 
 def record_key(folder, target, contract):
@@ -533,9 +89,11 @@ def evidence(folder, target, task):
     return out
 
 
-def run(folder, target, spec, seconds):
+def run(folder, target, spec, seconds, records=None):
+    """Prove one declared contract and publish its record under the example's records, or under `records` when
+    given (a comparison that must not add to the example)."""
     plan, source_key = record_key(folder, target, spec)
-    result_root = folder / "records/array-induction" / spec["id"]
+    result_root = (Path(records) if records else folder / "records/array-induction") / spec["id"]
     (feature,) = next(a for a in plan.artifacts if a["revision"] == spec["revision"])["jdks"]
     home = Path(runtime_jdk.home(feature))
     jmod = home / "jmods/java.base.jmod"
@@ -571,7 +129,8 @@ def run(folder, target, spec, seconds):
         data = load(cls)
         class_file = work / (cls.split("/")[-1] + ".class")
         class_file.write_bytes(data)
-        code, disassembly = methods(home / "bin/javap", class_file)
+        disassembled = methods(home / "bin/javap", class_file)
+        code = disassembled[0]
         if cls.startswith("java/"):
             # Arrays' only initializer on this image records the class's assertion switch.
             init = code.get(("<clinit>", "()V"), {}).get("code", [])
@@ -602,10 +161,9 @@ def run(folder, target, spec, seconds):
                 parent = runtime_jar.super_class(parent_data)
                 if parent:
                     pending.append(parent)
-        induction = Induction(code, spec["rule"])
-        domain = induction.generate(name, descriptor)
-        caller_evidence = None
-        if caller := spec.get("caller"):
+        caller, caller_evidence = spec.get("caller"), None
+        bound_caller = None
+        if caller:
             caller_owner, caller_name, caller_descriptor = runtime_jar.parse_target(caller)
             caller_data = load(caller_owner.replace(".", "/"))
             if (
@@ -617,46 +175,46 @@ def run(folder, target, spec, seconds):
                 raise ValueError("unqualified caller descriptor or initializer")
             caller_file = work / (caller_owner.split(".")[-1] + ".class")
             caller_file.write_bytes(caller_data)
-            caller_code, caller_disassembly = methods(home / "bin/javap", caller_file)
-            called = caller_code[caller_name, caller_descriptor]
-            invocation_pc, observation_pc = range_caller(induction, called, domain, (cls, name, descriptor))
-            disassembly += "\n" + caller_disassembly
+            bound_caller = (caller_file, caller_name, caller_descriptor)
+        proof = core.prove(home / "bin/javap", class_file, name, descriptor, spec["rule"], work, seconds,
+                           owner=cls, caller=bound_caller, disassembled=disassembled)
+        if caller:
             caller_evidence = {
                 "entry": caller,
                 "classSha256": classes[caller_owner.replace(".", "/")]["sha256"],
                 "callee": spec["entry"],
                 "calleeClassSha256": classes[cls]["sha256"],
-                "invocationPc": invocation_pc,
-                "observationPc": observation_pc,
+                **proof.caller,
                 "roots": "the same int array or two distinct int arrays of independent legal lengths",
             }
-        smt, obligations, solver = solve(induction, domain, work, seconds)
-        passed = all(obl["expected"] == obl["obtained"] for obl in obligations)
+        smt, obligations, solver, disassembly = proof.smt, proof.obligations, proof.solver, proof.disassembly
+        passed = proof.passed
         cp = [
             {"path": a.path, "role": a.role, "sha256": a.sha256}
             for a in entries
             if a.role in ("original", "dependency")
         ]
         result = {
-            "schema": "java-array-induction-result/v1",
+            "schema": "java-array-induction-result/v2",
             "sourceKey": source_key,
             "entry": spec["entry"],
             "revision": spec["revision"],
             "rule": spec["rule"],
             "status": "established" if passed else "unresolved",
-            "domain": f"Every non-null, already allocated {'long' if induction.cell_bits == 64 else 'int'} array of legal Java length and all signed scalar inputs"
+            "domain": f"Every non-null, already allocated {'long' if proof.cell_bits == 64 else 'int'} array of legal Java length and all signed scalar inputs"
             + (" with 0 <= from <= to <= length." if spec["rule"] == "range-fill" else "."),
             "preparation": prepared.commit,
             "classpath": cp,
             "classes": classes,
             "jdk": runtime_jdk.identity(home),
-            "rulesSha256": runtime.sha256(Path(__file__)),
-            "heapCellBits": induction.cell_bits,
-            "indexBits": 32,
+            # The rule implementation: the method's files and this adapter, which qualifies the initializers.
+            "rules": core.implementation(extra=[__file__], root=REPO),
+            "heapCellBits": proof.cell_bits,
+            "indexBits": proof.index_bits,
             "javapSha256": runtime.sha256(home / "bin/javap"),
             "solver": solver,
             "solverTimeoutSeconds": seconds,
-            "bytecode": induction.trace,
+            "bytecode": proof.trace,
             "obligations": obligations,
             "certificateSha256": hashlib.sha256(smt.encode()).hexdigest(),
             "disassemblySha256": hashlib.sha256(disassembly.encode()).hexdigest(),
@@ -669,10 +227,66 @@ def run(folder, target, spec, seconds):
         (dest / "obligations.smt2").write_text(smt)
         (dest / "class.javap").write_text(disassembly)
         (dest / "result.json").write_text(json.dumps(result, indent=2) + "\n")
-        print(
-            f"{spec['id']}: {result['status']}, {len(obligations)} solver answers, {dest.relative_to(folder)}"
-        )
+        shown = dest.relative_to(folder) if folder in dest.parents else dest
+        print(f"{spec['id']}: {result['status']}, {len(obligations)} solver answers, {shown}")
         return passed
+
+
+# What a second run of a contract must repeat to be the same result, and what only describes the machine it ran on.
+CLAIM_FIELDS = ("sourceKey", "entry", "revision", "rule", "status", "domain", "preparation", "classpath", "classes", "heapCellBits",
+                "indexBits", "bytecode", "obligations", "certificateSha256", "caller")
+MACHINE_FIELDS = ("jdk", "javapSha256", "solver", "solverTimeoutSeconds", "disassemblySha256")
+
+
+def rules_of(doc):
+    """The rule implementation a record names, in one shape for both formats: {"files": {path: sha256}, "sha256"}.
+    A v1 record's `rulesSha256` is the digest of this one file as it was when it held the method too, and it stays
+    that: it is given as that file's digest, with no combined digest, since none was recorded."""
+    if isinstance(doc.get("rules"), dict):
+        return doc["rules"]
+    if isinstance(doc.get("rulesSha256"), str):
+        return {"files": {"examples/tools/targets/array_induction.py": doc["rulesSha256"]}, "sha256": None}
+    return None
+
+
+def differences(new, stored):
+    """The fields in which two records of one contract differ: (those that are the result, those that describe the
+    machine). A field only one of them has is a difference."""
+    absent = object()
+    differs = lambda fields: [k for k in fields if new.get(k, absent) != stored.get(k, absent)]
+    return differs(CLAIM_FIELDS), differs(MACHINE_FIELDS)
+
+
+def compare(folder, target, spec, seconds):
+    """Prove one declared contract again, into a scratch folder, and compare it with the example's stored records of
+    the same contract and source: True when the newest format's record is repeated in every field that is the
+    result (the named obligations with their expected and obtained answers, the widths, the class digests, the
+    bytecode walked, the status, so an unresolved negative control must be unresolved on the same obligation).
+    Nothing is written to the example."""
+    with tempfile.TemporaryDirectory() as scratch:
+        run(folder, target, spec, seconds, records=scratch)
+        (path,) = (Path(scratch) / spec["id"]).glob("*/result.json")
+        new = json.loads(path.read_text())
+    stored = [(p, json.loads(p.read_text())) for p in sorted((folder / "records/array-induction" / spec["id"]).glob("*/result.json"))]
+    same_source = [(p, d) for p, d in stored if d.get("sourceKey") == new["sourceKey"]]
+    full = [(p, d) for p, d in same_source if all(k in d for k in ("heapCellBits", "indexBits"))]
+    if not full:
+        print(f"{spec['id']}: no stored record of this source in the current format to compare with ({len(stored)} stored)")
+        return False
+    unmet = [(o["name"], o["expected"], o["obtained"]) for o in new["obligations"] if o["expected"] != o["obtained"]]
+    repeated = False
+    for p, d in full:
+        result, machine = differences(new, d)
+        repeated = repeated or not result
+        print(f"{spec['id']}: {new['status']}, {len(new['obligations'])} solver answers, cells {new['heapCellBits']} bits, "
+              f"indices {new['indexBits']} bits; against {p.parent.relative_to(folder)}: "
+              + ("the same result" if not result else "differs in " + ", ".join(result))
+              + (f"; the machine differs in {', '.join(machine)}" if machine else ""))
+    for name, want, got in unmet:
+        print(f"{spec['id']}: unmet: {name}: expected {want}, obtained {got}")
+    made_by = new["rules"]
+    print(f"{spec['id']}: rule implementation {made_by['sha256'][:16]} over {', '.join(made_by['files'])}")
+    return repeated
 
 
 def main(argv):
@@ -680,6 +294,9 @@ def main(argv):
     parser.add_argument("example")
     parser.add_argument("contract")
     parser.add_argument("--checker-seconds", type=int, default=60)
+    parser.add_argument("--compare", action="store_true",
+                        help="prove into a scratch folder and compare with the stored record: exit 0 when the result is "
+                             "repeated, whatever its status, and write nothing to the example")
     args = parser.parse_args(argv)
     import build
 
@@ -690,6 +307,8 @@ def main(argv):
     if len(matches) != 1 or args.checker_seconds <= 0:
         parser.error("expected one declared array contract and a positive solver deadline")
     try:
+        if args.compare:
+            return 0 if compare(folder, target, matches[0], args.checker_seconds) else 1
         return 0 if run(folder, target, matches[0], args.checker_seconds) else 1
     except (OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
         print(f"{args.contract}: unresolved: {exc}")

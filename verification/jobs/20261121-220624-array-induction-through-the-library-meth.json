@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-220624-array-induction-through-the-library-meth",
+  "title": "Array induction through the library method repeats the five stored results (336, 337, 346)",
+  "description": "The array-induction proof method moved from examples/tools/targets/array_induction.py into lib/python/jvm_array_induction.py (with the javap reader in lib/python/jvm_disassembly.py); the examples keep an adapter. Each of the five declared array contracts is proved again at this commit through the extracted method, into a scratch folder, and compared with the example's stored record of the same source: every named obligation with its expected and obtained solver answer, the cell and index widths, the class digests, the bytecode walked, the certificate's digest and the status. A step passes only when Z3 ran and the stored result is repeated. 337's caller-extra-any-length is the negative control: it must stay unresolved on 'caller read follows from the proved frame' (expected unsat, obtained sat), which the comparison counts as repeated. Nothing is written to an example.",
+  "kind": "example",
+  "capabilities": [
+    "native:array-invariant"
+  ],
+  "links": {
+    "examples": [
+      "336",
+      "337",
+      "346"
+    ],
+    "paths": [
+      "lib/python/jvm_array_induction.py",
+      "examples/tools/targets/array_induction.py"
+    ]
+  },
+  "expected": "Five steps exit 0, each printing 'the same result' against a stored record; the fourth also prints the one unmet obligation of the negative control.",
+  "submitted": {
+    "at": "2026-11-21T22:06:24+00:00",
+    "session": "b9b56f5e-fc0e-48ca-a64e-7a46495d814f"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "z3"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "3m",
+    "notes": "All five took 7 s together when probed inline on this machine; the estimate leaves room for a cold artifact preparation."
+  },
+  "steps": [
+    {
+      "name": "336 first-any-length",
+      "run": "python3 examples/tools/build.py 336 --array-induction first-any-length --checker-seconds 60 --compare",
+      "cwd": "."
+    },
+    {
+      "name": "337 fill-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction fill-any-length --checker-seconds 60 --compare",
+      "cwd": "."
+    },
+    {
+      "name": "337 caller-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction caller-any-length --checker-seconds 60 --compare",
+      "cwd": "."
+    },
+    {
+      "name": "337 caller-extra-any-length (negative control)",
+      "run": "set -o pipefail; python3 examples/tools/build.py 337 --array-induction caller-extra-any-length --checker-seconds 60 --compare | tee /dev/stderr | grep -q 'unmet: caller read follows from the proved frame: expected unsat, obtained sat'",
+      "cwd": "."
+    },
+    {
+      "name": "346 first-any-length",
+      "run": "python3 examples/tools/build.py 346 --array-induction first-any-length --checker-seconds 60 --compare",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

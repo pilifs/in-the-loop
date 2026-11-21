@@ -38,8 +38,9 @@ lib/
   tests/               integration tests over Java fixtures compiled at test time (fixtures/), the conformance corpus,
                        and costs.json, every test's cost tier (#tests)
   tools/               the test runner by cost tier and its lint: test_costs.py, cost_tier.py
-  python/              what Python consumers share of the library's contracts: jvmcontract_io.py, the reader of
-                       proof output (#proof-output)
+  python/              what Python consumers share of the library: jvmcontract_io.py, the reader of proof output
+                       (#proof-output); jvm_disassembly.py, a class file's methods as javap prints them; and
+                       jvm_array_induction.py, array induction over a bound method (#array-induction)
   benchmark/           the corpus both engines are measured on, and its results (benchmark/README.md)
   solvers/             the comparison of solvers for the own checker (solvers/README.md)
 ```
@@ -58,7 +59,7 @@ deciding differently. Update the row when a responsibility moves.
 |---|---|---|
 | Proof serialization: what `prove --json` and `equivalence --json` print, the wire version, the process exit | [`src/proof_wire.rs`](src/proof_wire.rs) writes it and [`python/jvmcontract_io.py`](python/jvmcontract_io.py) reads it ([Proof output](#proof-output)) | [`test_proof_output.py`](../examples/tools/targets/test_proof_output.py): one archived row and three changed copies through every reader |
 | Class selection: which bytes stand for a class name on a class path and a JDK | [`src/classpath.rs`](src/classpath.rs)'s `ClassPath::bind` is the checker's selection, and a JVM's is observed, never computed ([The selected class binding](#commands)). The Python tools select nothing by rule: [`class_binding.py`](../examples/tools/targets/class_binding.py) lists a class's class files, binds one by what the JVMs loaded, and the launch guard compares the checker's binding with it | [`tests/class_bindings.rs`](tests/class_bindings.rs): fifteen manifest spellings against the JVM; [`test_class_binding.py`](../examples/tools/targets/test_class_binding.py): the two-JAR table through preparation, JVM and checker |
-| Semantic proof methods: how a claim becomes obligations a solver answers | the checker's engines under [`src/bmc/`](src/bmc/mod.rs) and [`src/equivalence.rs`](src/equivalence.rs); array induction in [`array_induction.py`](../examples/tools/targets/array_induction.py) | [`test_recipes.py`](../examples/tools/targets/test_recipes.py) |
+| Semantic proof methods: how a claim becomes obligations a solver answers | the checker's engines under [`src/bmc/`](src/bmc/mod.rs) and [`src/equivalence.rs`](src/equivalence.rs); array induction in [`python/jvm_array_induction.py`](python/jvm_array_induction.py) ([Array induction](#array-induction)), which the examples reach through an adapter that decides no obligation ([`array_induction.py`](../examples/tools/targets/array_induction.py)) | [`python/test_jvm_array_induction.py`](python/test_jvm_array_induction.py): a search compiled in the test, with no example anywhere, established for `int` and `long` cells and not established when it reads past the end |
 | Receipt qualification: whether what a run reported answers the frozen claim | [`qualification.py`](../examples/tools/targets/qualification.py), with the consumer's own checks ([`native_selectors.py`](../examples/tools/targets/native_selectors.py)'s `disposition`, [`accept.py`](../examples/tools/accept.py)) | [`test_qualification.py`](../examples/tools/targets/test_qualification.py) |
 | Benchmark scoring: what a valid engine answer is worth against the expected one | [`benchmark/run.py`](benchmark/run.py)'s `classify` | [`benchmark/test_run.py`](benchmark/test_run.py) |
 
@@ -398,6 +399,39 @@ The reader keeps three questions apart, each a function of its own:
    scores a valid refutation as the right answer at exit 1, where a proof campaign needs its witness replayed on a
    JVM. What the reader offers for it is typed access (`facts`, `boolean`, `at`): a field that is missing or of
    another type is unknown, and unknown satisfies no claim. The string `"false"` is not a boolean.
+
+## Array induction
+
+A proof by induction over a compiled array loop is a library method, in Python:
+[`python/jvm_array_induction.py`](python/jvm_array_induction.py). It takes a bound method and a declared rule,
+and knows nothing of where the class file came from:
+
+```python
+import jvm_array_induction                      # with lib/python on the path
+proof = jvm_array_induction.prove("javap", "out/Search.class", "indexOf", "([II)I", "first-index", work_dir, 60)
+proof.passed                                    # every obligation answered as expected
+proof.obligations                               # [{"name", "expected", "obtained"}], one solver check each
+proof.smt                                       # the certificate: what the solver was given
+```
+
+- The rules are `first-index` (a search forwarding to a same-class helper over `[0, length)`: the earliest match or
+  -1, the heap unchanged) and `range-fill` (exactly the range written, with a caller that may then be checked
+  against that frame). A rule is chosen by its name and the method's descriptor, never by which example asks:
+  `([JJ)I` gives 64-bit cells, and indices are Java `int`s either way.
+- It walks the method's disassembly ([`python/jvm_disassembly.py`](python/jvm_disassembly.py), which the schedule
+  and monitor experiments read too), writes the entry, back-edge, frame, return, access and termination obligations
+  as one SMT query, and reads Z3's answers. Bytecode a rule does not represent raises: nothing is certified past
+  what was read. It certifies those obligations on those bytes, and no general translation of Java to SMT.
+- Which class file stands for the class is not decided here. The caller binds it
+  ([The selected class binding](#commands)), and what it adds of its own it names:
+  `implementation(extra=[...])` gives each file of the rule by digest, with one digest over them.
+- The examples' adapter is [`array_induction.py`](../examples/tools/targets/array_induction.py)
+  (`build.py NNN --array-induction CONTRACT`): it finds the declared contract, takes the revision, prepares the
+  artifacts, refuses a class whose initializer the rule does not qualify, and publishes the record. A record made
+  since the method moved here (`java-array-induction-result/v2`) names the rule implementation under `rules`. An
+  older one has `rulesSha256`, the digest of the adapter file when it held the method too, and keeps that meaning
+  (`rules_of` reads both). `--compare` proves a contract again into a scratch folder and exits 0 when the stored
+  result is repeated: the named obligations with their answers, the widths, the class digests, the status.
 
 ## How a boundary contract is checked
 

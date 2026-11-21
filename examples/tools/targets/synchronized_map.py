@@ -8,7 +8,8 @@ from dataclasses import replace
 from itertools import permutations
 from pathlib import Path
 
-from targets import array_induction, runtime, runtime_jar
+import jvm_disassembly
+from targets import runtime, runtime_jar
 
 
 def signature(ins):
@@ -68,8 +69,8 @@ def wrapper(jdk, work):
             classes[name] = hashlib.sha256(data).hexdigest()
             file = work / (name.split("/")[-1] + ".class")
             file.write_bytes(data)
-    factory, _ = array_induction.methods(jdk / "bin/javap", work / "Collections.class")
-    methods, _ = array_induction.methods(jdk / "bin/javap", work / "Collections$SynchronizedMap.class")
+    factory, _ = jvm_disassembly.methods(jdk / "bin/javap", work / "Collections.class")
+    methods, _ = jvm_disassembly.methods(jdk / "bin/javap", work / "Collections$SynchronizedMap.class")
     factory = factory["synchronizedMap", "(Ljava/util/Map;)Ljava/util/Map;"]
     c = factory["code"]
     cls = "java/util/Collections$SynchronizedMap"

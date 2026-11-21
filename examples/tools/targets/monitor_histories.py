@@ -15,7 +15,8 @@ import resource
 import tempfile
 import time
 
-from targets import array_induction, interfaces, route, runtime, runtime_jar, runtime_jdk, sidecar, workflow
+import jvm_disassembly
+from targets import interfaces, route, runtime, runtime_jar, runtime_jdk, sidecar, workflow
 
 
 @dataclass(frozen=True)
@@ -129,7 +130,7 @@ class CounterProgram:
         elif op == "goto":
             pc = int(arg)
         elif op == "invokevirtual":
-            owner, member, descriptor = array_induction.Induction.call(ins)
+            owner, member, descriptor = jvm_disassembly.member_call(ins)
             target = self.methods.get((member, descriptor))
             if (
                 owner
@@ -279,7 +280,7 @@ def run(folder, example, target, spec):
         jdk = Path(runtime_jdk.home(feat))
         file = work / (owner.split(".")[-1] + ".class")
         file.write_bytes(data)
-        code, dis = array_induction.methods(jdk / "bin/javap", file)
+        code, dis = jvm_disassembly.methods(jdk / "bin/javap", file)
         ctor = code.get((owner.split(".")[-1], "()V"))
         if ("<clinit>", "()V") in runtime_jar.methods(data):
             raise ValueError("unrepresented receiver startup")

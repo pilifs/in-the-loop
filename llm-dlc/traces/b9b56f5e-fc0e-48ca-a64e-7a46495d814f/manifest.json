@@ -12,27 +12,27 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T21:40:08.458Z",
-  "duration_seconds": 16966,
+  "ended": "2026-11-21T22:11:13.300Z",
+  "duration_seconds": 18831,
   "stats": {
-    "turns": 15,
-    "api_calls": 776,
-    "tool_calls": 872,
-    "tool_errors": 13,
-    "compactions": 4,
+    "turns": 16,
+    "api_calls": 822,
+    "tool_calls": 921,
+    "tool_errors": 14,
+    "compactions": 5,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 1554,
-      "output_tokens": 1066741,
-      "cache_read_input_tokens": 227010866,
-      "cache_creation_input_tokens": 2214879
+      "input_tokens": 1646,
+      "output_tokens": 1123588,
+      "cache_read_input_tokens": 236644406,
+      "cache_creation_input_tokens": 2449593
     }
   },
   "tools": {
-    "Bash": 761,
+    "Bash": 808,
     "Read": 49,
     "Edit": 37,
-    "Write": 25
+    "Write": 27
   },
   "files_touched": [
     ".claude/settings.json",
@@ -41,7 +41,9 @@
     "examples/tools/targets/test_case_pack.py",
     "examples/tools/targets/test_class_binding.py",
     "examples/tools/targets/test_proof_output.py",
+    "lib/benchmark/organic-java/test_run.py",
     "lib/python/jvmcontract_io.py",
+    "lib/python/test_jvm_array_induction.py",
     "lib/python/test_jvmcontract_io.py",
     "lib/src/proof_wire.rs",
     "lib/tests/class_bindings.rs",
@@ -126,24 +128,38 @@
     {
       "index": 4,
       "started": "2026-11-21T20:25:03.278Z",
-      "ended": "2026-11-21T21:40:08.458Z",
+      "ended": "2026-11-21T21:44:31.756Z",
       "turns": 5,
-      "api_calls": 168,
+      "api_calls": 180,
       "usage": {
-        "input_tokens": 338,
-        "output_tokens": 244364,
-        "cache_read_input_tokens": 52333234,
-        "cache_creation_input_tokens": 513248
+        "input_tokens": 362,
+        "output_tokens": 272139,
+        "cache_read_input_tokens": 58876272,
+        "cache_creation_input_tokens": 546379
       },
-      "peak_context_tokens": 528153
+      "peak_context_tokens": 561284
+    },
+    {
+      "index": 5,
+      "started": "2026-11-21T21:46:43.425Z",
+      "ended": "2026-11-21T22:11:13.300Z",
+      "turns": 1,
+      "api_calls": 34,
+      "usage": {
+        "input_tokens": 68,
+        "output_tokens": 29072,
+        "cache_read_input_tokens": 3090502,
+        "cache_creation_input_tokens": 201583
+      },
+      "peak_context_tokens": 122838
     }
   ],
   "log": {
-    "sha256": "ae4c3a89124b5be9ba6d758c906cee0b3e92450031f189975458437e3a3eabfb",
-    "bytes": 18894258,
-    "lines": 6826,
-    "gzip_bytes": 2981390,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/ae4c3a89124b5be9ba6d758c906cee0b3e92450031f189975458437e3a3eabfb.jsonl.gz"
+    "sha256": "934a197df6b5a8b78d60d3de6d91f52f1f20b2993f827ea10dbcb7ac11a3bf1d",
+    "bytes": 20297151,
+    "lines": 7276,
+    "gzip_bytes": 3225380,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/934a197df6b5a8b78d60d3de6d91f52f1f20b2993f827ea10dbcb7ac11a3bf1d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -330,6 +346,14 @@
       "summary": "Bind a proof to the class file a JVM loads: one selection in the checker, observed by a JVM, compared at launch",
       "body": "Part 2 of llm-dlc/loops/lib-architecture-fast-follow.md. Two JARs that differ only in how the manifest spells Multi-Release's value (one line, or folded over two) load different classes on JDK 17, 21 and 25: the versioned entry of the first, the base entry of the second. The preparation took the base class of both; the Python launch guard and the Rust checker bound to release 21 took the versioned class of both, so on the folded JAR the checker refuted a property the JVM satisfies. Three parties each had a rule; now there is one selection, and it is held to a JVM.\n\nlib/src/classpath.rs: ClassPath::bind says which class file stands for a class name on an ordered class path and the bound runtime (provider, JAR entry, SHA-256, how it was selected, every candidate, later holders), or a typed refusal with the candidates' digests and origins; every reader of class bytes in the checker goes through it. The manifest is read as the JDK's reader reads it, measured with fifteen spellings: a spelling on which that reading and the JAR specification's differ is ambiguous, and a class with a versioned entry in such a JAR is refused unless JVMCONTRACT_CLASS_OBSERVATIONS says which class file a JVM of the bound release loaded; an observation of other bytes than the rule's is a refusal with both digests. jvmcontract class-bindings answers for every side and class of a launch in one process, with whether the bound class file declares a method asked about and which entry stands for each logical name of a JAR.\n\nexamples/tools/targets/class_binding.py: the Python tools select nothing by rule. A class with one class file is read as before, and its prepared record is unchanged. A class the original artifact holds several class files of is bound at preparation by LoadedClasses on each JDK the artifact runs on (classSha256, jarEntry, classObservation); JDKs that load different bytes, another code source, or bytes no class file has are refused with both digests. Parameter lookup and every reader of a prepared entry class take the bound entry (runtime.bound_class). The native launch guard asks the checker for its bindings, one process whatever the sides and classes, and compares provider and digest with the prepared ones; the equivalence route extracts a JAR by the checker's own logical entries. A native-selector task asks once, whatever its number of selectors. runtime_jar.effective_entries stays as an inventory view for the upgrade review's tools, with the measured rule.",
       "log_sha256": "ae4c3a89124b5be9ba6d758c906cee0b3e92450031f189975458437e3a3eabfb"
+    },
+    {
+      "change_id": "nwzronuvlnqmsqsxyqnuwuwozskntvoq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Make array induction a library method: lib/python/jvm_array_induction.py, called on a bound method and a rule (verification pending)",
+      "body": "The third part of the brief llm-dlc/loops/lib-architecture-fast-follow.md. The proof by induction over a compiled array loop was 696 lines inside one example tool. The method now lives in lib/python/jvm_array_induction.py: prove(javap, class_file, name, descriptor, rule, work, seconds) walks the method's disassembly, writes the obligations of the declared rule as one SMT query and reads Z3's answers, and knows no example, sidecar, revision or record. Reading a class file's methods from javap is lib/python/jvm_disassembly.py, which the schedule and monitor experiments now import instead of the proof method's module. examples/tools/targets/array_induction.py is left as the adapter: it finds the declared contract, takes the revision, prepares the artifacts, refuses a class whose initializer the rule does not qualify, and publishes the record. Cell width comes from the descriptor and the rule from the contract, with no switch on an example.\n\nA record made from now on (java-array-induction-result/v2) names the rule implementation under rules: each file of the rule and the adapter by digest, and one digest over them. The fifteen stored records keep rulesSha256, the digest of the adapter file when it held the method too, and are read as before; rules_of reads either format. No stored record was rewritten and none was added.\n\nThe organic benchmark's baseline fingerprint and frozen export (lib/benchmark/organic-java/run.py) listed paths under lib/src, lib/models and examples/tools only, so code under lib/python was outside both. They are now versioned inventories that a pin names (inputs): a pin without the key is inventory 1 and is fingerprinted and exported exactly as before; inventory 2, for a new baseline, adds lib/python and verification/layout.py, which the example tools load at import (an export without it did not start since the process-plumbing run). The existing pin is unchanged.\n\nVerified: each of the five declared contracts (336 first-any-length; 337 fill-any-length, caller-any-length and the negative control caller-extra-any-length; 346 first-any-length with 64-bit cells) proved again through the extracted method and compared with its stored record differs in no field: obligations with expected and obtained answers, widths, class digests, bytecode, certificate digest, status. The control stays unresolved on 'caller read follows from the proved frame' (expected unsat, obtained sat). That comparison is a new mode, build.py NNN --array-induction CONTRACT --compare, which writes nothing to the example; job 20261121-220624-array-induction-through-the-library-meth runs the five at this commit. New tests: lib/python/test_jvm_array_induction.py (6: a search compiled in the test, established for int and long cells, not established when it reads past the end, refused for a rule it does not fit), examples/tools/targets/test_array_induction.py (3) and lib/benchmark/organic-java/test_run.py (4: the pinned revision exported by its inventory has the pin's 224 files and fingerprint; a change to the extracted module alone changes inventory 2's fingerprint and not inventory 1's; a frozen export run with python3 -I loads its own reader and rules). test_costs.py run --changed passed 43 of 43, and examples 336, 337, 346, 342 and 343 pass validate_example.py.\n\nlib/README.md gains an Array induction section and the ownership map's row for proof methods now names the library module and its test. llm-dlc/loops/lib-architecture-fast-follow-results.md records part 3 and the brief's exit: both reproducers with their corrected outcomes, the consumers of the extracted method, the historical readings, one more process for a native launch and for a selector task (18 to 29 ms) and none elsewhere, and 0.59 s before against 0.55 s after to read example 359's archived selectors.",
+      "log_sha256": "934a197df6b5a8b78d60d3de6d91f52f1f20b2993f827ea10dbcb7ac11a3bf1d"
     }
   ],
   "logs": {
@@ -403,6 +427,12 @@
       "bytes": 4028424,
       "lines": 1130,
       "gzip_bytes": 695749,
+      "url": null
+    },
+    "934a197df6b5a8b78d60d3de6d91f52f1f20b2993f827ea10dbcb7ac11a3bf1d": {
+      "bytes": 20297151,
+      "lines": 7276,
+      "gzip_bytes": 3225380,
       "url": null
     },
     "94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09": {

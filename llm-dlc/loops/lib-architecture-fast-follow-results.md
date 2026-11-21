@@ -11,8 +11,9 @@ holds the process-plumbing run (`develop` at `86ce57af` when it started, 2026-11
 | Baseline: both disagreements reproduced, callers listed | done (below) |
 | 1. Proof output as a library contract | done: Rust module, Python reader, four consumers switched, typed helper decisions |
 | 2. Bind the proof to the class that ran | done: one binding in `lib/src/classpath.rs`, asked in one process for a launch; the preparation binds by what the JVMs load; the launch guard compares the two |
-| 3. Array induction into `lib` | not started |
-| Ownership map in `lib/README.md` | written; the row for class selection moved with part 2, and the one for proof methods moves with part 3 |
+| 3. Array induction into `lib` | done: the method is `lib/python/jvm_array_induction.py`, called on a bound method and a rule; the examples keep an adapter; the five declared contracts repeat their stored results |
+| Ownership map in `lib/README.md` | written, five rows, each with its owner and one working control |
+| The brief's exit | [reported below](#the-exit-what-the-brief-asked-to-be-shown) |
 
 ## Baseline (before any change)
 
@@ -203,3 +204,102 @@ call as cross-check in the tests: a custom loader or a bytecode transformation i
 what Temurin 17.0.21, 21.0.13 and 25.0.5 do; `lib/tests/class_bindings.rs` asks the JVM at hand again on every run.
 An equivalence over a JAR with an ambiguous manifest and versioned entries is refused whole: which of its other
 classes a JVM loads was not observed.
+
+## Part 3 · Array induction as a library method
+
+**What moved.** The proof method is `lib/python/jvm_array_induction.py` (530 lines): the walk over a method's
+disassembled instructions, the obligations of each rule, the SMT query and the solver's answers read back. Its entry
+is `prove(javap, class_file, name, descriptor, rule, work, seconds, caller=...)`, which returns the obligations with
+their expected and obtained answers, the certificate, the widths and the bytecode walked. It takes a bound method
+and a declared rule and has no knowledge of an example, a sidecar, a revision or a record. The reading of a class
+file's methods from `javap` is `lib/python/jvm_disassembly.py` (53 lines), which three other tools used through the
+old module.
+
+**What stayed.** `examples/tools/targets/array_induction.py` (696 lines before, 315 now) is the adapter: it finds the
+declared contract, takes the revision the contract names, prepares the artifacts, loads the classes by the prepared
+class path, refuses a class whose initializer the rule does not qualify, and publishes the record. It decides no
+obligation. It still exports the names other modules took from it.
+
+**The consumers outside the defining module.** The adapter (examples 336, 337 and 346 through
+`build.py NNN --array-induction`); `lib/python/test_jvm_array_induction.py`, which compiles a search of its own and
+proves it with no example anywhere; and, for the disassembly reader, `monitor_histories.py`,
+`schedule_reduction.py` and `synchronized_map.py`, which now import `jvm_disassembly` and no proof method.
+
+**No switch on an example.** Cell width is read from the descriptor (`([JJ)I` is 64-bit cells), indices are Java
+`int`s either way, and the rule is named by the contract. The library test shows it on classes that are no example's:
+`int` and `long` searches established, a search with `<=` for `<` not established on a `safe array access`
+obligation (expected `unsat`, obtained `sat`), an unknown rule and a method the rule does not fit refused.
+
+**The five contracts, before and after.** Each was proved again through the extracted method into a scratch folder
+and compared with the stored record of the same source, field by field (source key, entry, revision, rule, status,
+domain, preparation, class path, class digests, cell and index widths, the bytecode walked, every obligation's name
+with its expected and obtained answer, the certificate's digest, the caller's evidence; and, as the machine's own,
+the JDK, `javap`, the solver and the disassembly's digest).
+
+| Example | Contract | Stored | Proved again | Obligations | Cells, indices | Differs in |
+|---|---|---|---|---|---|---|
+| 336 | `first-any-length` | established | established | 10 of 10 as expected | 32, 32 | nothing |
+| 337 | `fill-any-length` | established | established | 10 of 10 | 32, 32 | nothing |
+| 337 | `caller-any-length` | established | established | 12 of 12 | 32, 32 | nothing |
+| 337 | `caller-extra-any-length` (the negative control) | unresolved | unresolved | 13 of 14: `caller read follows from the proved frame` expected `unsat`, obtained `sat` | 32, 32 | nothing |
+| 346 | `first-any-length` | established | established | 11 of 11 | 64, 32 | nothing |
+
+The SMT certificates are the same bytes as the stored ones. All five take 7 s together. This comparison is now a
+mode of the adapter, `build.py NNN --array-induction CONTRACT --compare`: it writes nothing to the example and exits
+0 when the stored result is repeated, whatever its status, so the negative control passes by staying unresolved on
+the same obligation. Job `20261121-220624-array-induction-through-the-library-meth` runs the five at the commit.
+
+**The rule implementation in a record.** A stored record has `rulesSha256`: the digest of the one adapter file as it
+was when it held the method. After the move that digest would cover the adapter alone, a wrapper. A new record
+(`java-array-induction-result/v2`) has `rules` instead: each file of the rule by digest (`jvm_array_induction.py`,
+`jvm_disassembly.py`, and the adapter, which qualifies initializers) and one digest over them. The fifteen stored
+records are untouched and are read as before (`evidence` reads neither field); `rules_of` gives either format in one
+shape, the old one as the one file's digest with no combined digest invented for it. No new record was added to an
+example: a claim's next run writes one.
+
+**The organic benchmark's baseline.** `lib/benchmark/organic-java/run.py` fingerprints a baseline's inputs and exports
+them for a frozen run, and both lists named paths under `lib/src`, `lib/models` and `examples/tools` only. Code
+moved to `lib/python` would have been outside the fingerprint, and an export of a new baseline would not have
+started: the example tools import the reader from `lib/python` since part 1. The lists are now versioned
+inventories, and a pin names its own (`inputs`; none is inventory 1).
+
+| | Inventory 1 (the pin of 2026-11, and any pin without the key) | Inventory 2 (a new baseline) |
+|---|---|---|
+| Fingerprint covers | `lib/src`, `lib/models`, `examples/tools/targets`, four named files | the same, and `lib/python`, `verification/layout.py` |
+| Export for a frozen run | as it was | the same, and `lib/python`, `verification/layout.py` |
+| The pinned revision `5e41cd71`, exported | 224 files, `3e212359370b…`: the pin's own numbers | not asked: the pin has no `inputs` |
+| This tree | 228 files, `80d0426b1534…` | 232 files, `8e174eb1aa63…` |
+| Only `lib/python/jvm_array_induction.py` changed | the same fingerprint | another fingerprint |
+| A frozen export, run with `python3 -I` from inside it | does not start: `jvmcontract_io` is not found | loads its own `jvmcontract_io`, `jvm_array_induction` and `jvm_disassembly` |
+
+`verification/layout.py` is in inventory 2 because `examples/tools/accept.py` loads it at import since the
+process-plumbing run: an export without it stopped there, whatever this run did. The existing pin is not re-pinned:
+which revision a new baseline freezes is a decision about the benchmark, not about this change.
+
+Tests: `lib/python/test_jvm_array_induction.py` (6, with `javac`, `javap` and Z3 on formulas of a few hundred
+terms, 3.5 s), `examples/tools/targets/test_array_induction.py` (3), `lib/benchmark/organic-java/test_run.py` (4,
+among them the pinned revision exported by its inventory and the frozen export under `-I`). Examples 336, 337, 346,
+342 and 343 pass `validate_example.py`.
+
+**Not done in part 3, on purpose.** No port to Rust, and no generic backend interface: the brief asks for neither.
+The method still shells out to `javap` and Z3 exactly as before, so it starts no new process. The schedule and
+monitor experiments were moved onto the disassembly reader and otherwise left alone.
+
+## The exit: what the brief asked to be shown
+
+| Asked | Where |
+|---|---|
+| The two reproducers and their corrected outcomes | [Proof output: three readers, one row](#proof-output-three-readers-one-row) and [the same table after](#part-1--proof-output-as-a-library-contract), kept as `examples/tools/targets/test_proof_output.py`; [The class that ran](#the-class-that-ran-two-jars-five-jvms) and [the table, after](#the-table-after), kept as `examples/tools/targets/test_class_binding.py` and `lib/tests/class_bindings.rs` |
+| One real consumer of the extracted induction core outside its defining module | the examples' adapter, on 336, 337 and 346, with the five contracts repeated (above); and the library test |
+| Unchanged or explicitly explained historical readings | 58 archived selector records validate to the same lines; none of 2,933 published benchmark and solver records would be scored differently; the fifteen array records are read as before; the old organic pin exports and matches. Changed on purpose, and only for new readings: an unknown wire version, a mistyped field or a failed process no longer earns a selector row or benchmark credit; a class with several class files is bound by what a JVM loads, and the folded-manifest JAR is no longer read as versioned |
+| The ownership map | [`lib/README.md`](../../lib/README.md#who-owns-which-decision), five rows |
+| New subprocesses for a proof | one for a native verifier launch and one for a native-selector task (`class-bindings`, 18 to 29 ms), whatever the number of sides, classes and selectors; none for reading output, none for array induction, none at an ordinary JAR's preparation; `javac` once and one JVM for each JDK only when a class has several class files |
+| Time to read 359's archived selectors, same machine | 0.59 s before, 0.55 s after (7 records, 2,871 cases, second and third of three passes, two alternating rounds: 0.58 to 0.60 against 0.55 to 0.56). No process is started |
+
+**Left open, for a person.**
+
+- The organic benchmark's pin still names the revision of 2026-11 and inventory 1. A new baseline, pinned with
+  `"inputs": 2`, is a decision about the benchmark.
+- `equivalence::Search` and `Replay` were not moved beside the wire module: nothing in the three parts needed it.
+- A class loaded by a custom class loader or changed by an agent is outside what `LoadedClasses` observes; the
+  binding says so in its scope and refuses nothing for it.
