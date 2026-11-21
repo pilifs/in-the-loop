@@ -2750,283 +2750,283 @@ Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the j
 
 ### Drop the eight proposals the decision-id rule made moot
 
-change `rovpsyxsrqsm` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`fd4bb56b6c03`](https://github.com/pilifs/in-the-loop/commit/fd4bb56b6c03ff5f1511a3abff0adb0ae6d2b61f) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Eight allow-list proposals covered long-token findings on the restart run's decision ids (single-foundation-and-python-restart-D001 to D004, and the same ids after an escaped newline's n). Since the long-token rule skips decision ids, none matches an open finding (sync.py review: 0 open). The user chose on 2026-11-20 to drop them rather than approve entries for values that no longer warn.
 
 ### Record verification results for 12 job(s)
 
-change `nyxsqssntmmx` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`cdcbfa4e67dd`](https://github.com/pilifs/in-the-loop/commit/cdcbfa4e67ddbef52d00d93646caa6cf0ab0ab2f) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 8 of the 12 job(s); 4 kept under outputs/, not applied (the job didn't pass); 1 with outputs not applied because they changed since the job's commit. 20261120-183452-335-prove-guava-signed-means-over-both-e: failed: 1 failed step(s) in 12.4s, peak 277.6 MiB (estimated 4m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×1 20261120-183452-336-check-first-match-and-preservation-a: passed: 1 passed step(s) in 8.0s, peak 224.2 MiB (estimated 6m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). 20261120-183453-336-prove-first-match-for-any-allocated: passed: 1 passed step(s) in 2.0s, peak 124.4 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-183453-342-check-two-real-ticket-calls-on-one-c: failed: 1 failed step(s) in 7.0s, peak 141.3 MiB (estimated 4m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6 20261120-184226-337-check-both-range-fill-roots-at-bound: failed: 1 failed step(s) in 7.5s, peak 142.8 MiB (estimated 6m00s, 2.0 GiB); 56 output file(s) changed; signals: example:task-unexpected×4 20261120-184234-337-bound-64-check-both-range-fill-roots: failed: 1 failed step(s) in 12.8s, peak 139.3 MiB (estimated 6m00s, 2.0 GiB); 56 output file(s) changed; signals: example:task-unexpected×4 20261120-184234-337-certify-caller-any-length-on-the-sel: passed: 1 passed step(s) in 2.8s, peak 121.6 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-184234-337-certify-fill-any-length-on-the-selec: passed: 1 passed step(s) in 2.5s, peak 118.0 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-184235-310-test-native-counterexamples-on-unmod: passed: 1 passed step(s) in 6.4s, peak 200.6 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261120-184235-321-test-native-counterexamples-on-unmod: passed: 2 passed step(s) in 17.0s, peak 386.2 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-184235-327-test-native-counterexamples-on-unmod: passed: 2 passed step(s) in 11.9s, peak 253.1 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-184923-342-explore-compiled-ticket-monitors-wit: passed: 3 passed step(s) in 6.9s, peak 119.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 2 output(s). 1 output(s) not applied: changed since the job's commit. Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uzvmzmpmymtq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`5f5f2032a4b9`](https://github.com/pilifs/in-the-loop/commit/5f5f2032a4b9606feacea878c3db9801f898bbb9) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-183453-336-check-first-match-and-preservation-a: passed: 1 passed step(s) in 1m30s, peak 860.0 MiB (estimated 6m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uzvzrvzzmsxs` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`e31fd70e9b14`](https://github.com/pilifs/in-the-loop/commit/e31fd70e9b14a9f83776ccb43ebadb7384564dfd) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-185734-340-build-the-rejected-treelist-edit-acr: passed: 2 passed step(s) in 57.7s, peak 784.4 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 19 job(s)
 
-change `ptxmmrvsxnyu` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`9026159b17de`](https://github.com/pilifs/in-the-loop/commit/9026159b17de31717b8fe7f6b77a61ad495e3dc7) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 15 of the 19 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-193913-310-same-day-observed-on-the-importer-ch: passed: 1 passed step(s) in 42.6s, peak 318.3 MiB (estimated 10m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1 Applied 17 output(s). 20261120-193913-321-observed-startup-on-the-importer-che: passed: 1 passed step(s) in 40.6s, peak 427.0 MiB (estimated 3m00s, 2.0 GiB); 122 output file(s) changed; signals: example:task-as-expected×8 Applied 122 output(s). 20261120-193913-327-observed-startup-on-the-importer-che: passed: 1 passed step(s) in 51.1s, peak 240.2 MiB (estimated 3m00s, 2.0 GiB); 152 output file(s) changed; signals: example:task-as-expected×10 Applied 152 output(s). 20261120-193914-331-recheck-counts-and-both-downstream-c: passed: 1 passed step(s) in 2m05s, peak 267.9 MiB (estimated 2m00s, 2.0 GiB); 164 output file(s) changed; signals: example:task-as-expected×11 Applied 164 output(s). 20261120-193914-335-recheck-both-full-width-signed-means: passed: 1 passed step(s) in 14.5s, peak 276.8 MiB (estimated 2m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4 Applied 58 output(s). 20261120-193914-337-range-fill-after-linking-arrays-at-8: passed: 1 passed step(s) in 11.7s, peak 142.5 MiB (estimated 6m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4 Applied 58 output(s). 20261120-193914-338-parent-verify-original-stream-and-pa: passed: 1 passed step(s) in 12.5s, peak 119.6 MiB (estimated 8m00s, 2.0 GiB); 46 output file(s) changed; signals: example:task-as-expected×3 Applied 46 output(s). 20261120-193915-338-fix-verify-original-stream-and-page: passed: 1 passed step(s) in 14.0s, peak 119.3 MiB (estimated 8m00s, 2.0 GiB); 45 output file(s) changed; signals: example:task-as-expected×3 Applied 45 output(s). 20261120-193915-339-fix-verify-original-stream-and-page: passed: 1 passed step(s) in 4.7s, peak 113.2 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×4 Applied 60 output(s). 20261120-193915-339-parent-verify-original-stream-and-pa: passed: 1 passed step(s) in 6.4s, peak 128.5 MiB (estimated 8m00s, 2.0 GiB); 63 output file(s) changed; signals: example:task-as-expected×4 Applied 63 output(s). 20261120-193915-345-fix-fix-verify-original-stream-and-p: failed: 1 failed step(s) in 16.8s, peak 142.8 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-193915-345-fix-parent-verify-original-stream-an: failed: 1 failed step(s) in 16.9s, peak 145.5 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-193915-345-parent-fix-verify-original-stream-an: failed: 1 failed step(s) in 12.6s, peak 140.6 MiB (estimated 8m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-193915-345-parent-parent-verify-original-stream: failed: 1 failed step(s) in 12.3s, peak 145.0 MiB (estimated 8m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-194432-336-validate-array-induction-and-caller: passed: 1 passed step(s) in 1.8s, peak 124.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-194432-337-validate-array-induction-and-caller: passed: 4 passed step(s) in 8.7s, peak 118.6 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed Applied 9 output(s). 20261120-194432-342-retain-every-compiled-monitor-histor: passed: 3 passed step(s) in 7.5s, peak 121.3 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-194432-343-retain-every-compiled-monitor-histor: passed: 2 passed step(s) in 7.2s, peak 120.4 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-194433-344-expose-wrong-monitor-independence-at: passed: 1 passed step(s) in 3.2s, peak 122.3 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `zoumnnrvslun` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`5c96b823331c`](https://github.com/pilifs/in-the-loop/commit/5c96b823331cf19991c413d9d64c29907decad1e) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-193914-337-range-fill-after-linking-arrays-at-6: failed: 1 failed step(s) in 5m50s, peak 1.2 GiB (estimated 6m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×2 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `pokvsyosxvwx` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`257c94e38859`](https://github.com/pilifs/in-the-loop/commit/257c94e38859076443e40713b1a112166691b7d4) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-193912-310-clock-fix-observed-on-the-importer-c: failed: 1 failed step(s) in 10m07s, peak 960.1 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-193913-310-reversal-fix-observed-on-the-importe: failed: 1 failed step(s) in 10m07s, peak 1.8 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-193913-310-reversal-parent-observed-on-the-impo: failed: 1 failed step(s) in 10m08s, peak 1.1 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `opxwxvyvnlkt` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`36e88933b825`](https://github.com/pilifs/in-the-loop/commit/36e88933b825dbf6e2f20ce8424e3f561ea0b990) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-193914-check-importer-changes-against-jbmc-and: passed: 1 passed step(s) in 15m13s, peak 2.2 GiB (estimated 17m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 6 job(s)
 
-change `kqkymvxpowsk` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`05501b939ef0`](https://github.com/pilifs/in-the-loop/commit/05501b939ef011c4b04dff9975715cc48919ea4f) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 3 of the 6 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-213848-339-parent-exhaust-native-selector-bytec: passed: 1 passed step(s) in 5.6s, peak 122.8 MiB (estimated 2m00s, 2.0 GiB); 37 output file(s) changed Applied 37 output(s). 20261120-213849-310-retry-unchanged-startup-after-proper: failed: 1 failed step(s) in 16.5s, peak 208.7 MiB (estimated 2m00s, 2.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261120-213849-321-retry-unchanged-startup-after-proper: failed: 1 failed step(s) in 28.4s, peak 391.8 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-213849-327-retry-unchanged-startup-after-proper: failed: 1 failed step(s) in 21.6s, peak 225.8 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 20261120-213849-332-check-explicit-jvm-property-writes-v: passed: 1 passed step(s) in 15.8s, peak 145.0 MiB (estimated 3m00s, 2.0 GiB); 85 output file(s) changed; signals: example:task-as-expected×6 Applied 85 output(s). 20261120-213849-340-recheck-rejected-edits-with-inherite: passed: 1 passed step(s) in 9.4s, peak 154.6 MiB (estimated 4m00s, 2.0 GiB); 121 output file(s) changed; signals: example:task-as-expected×8 Applied 121 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 10 job(s)
 
-change `rowyurvquzto` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`8a0c68256134`](https://github.com/pilifs/in-the-loop/commit/8a0c68256134b37169bbbdba7e1ac366cc8d4106) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 8 of the 10 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-213848-345-fix-parent-exhaust-native-selector-b: passed: 1 passed step(s) in 1m54s, peak 159.2 MiB (estimated 15m00s, 2.0 GiB); 269 output file(s) changed Applied 269 output(s). 20261120-213848-345-parent-fix-exhaust-native-selector-b: failed: 1 failed step(s) in 2m53s, peak 138.7 MiB (estimated 15m00s, 2.0 GiB); 119 output file(s) changed 20261120-213848-345-parent-parent-exhaust-native-selecto: passed: 1 passed step(s) in 1m44s, peak 140.0 MiB (estimated 15m00s, 2.0 GiB); 79 output file(s) changed Applied 79 output(s). 20261120-213849-310-reproduce-the-five-finite-solver-sta: passed: 5 passed step(s) in 2m24s, peak 849.0 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). 20261120-213849-337-close-bound-64-through-exact-compile: passed: 1 passed step(s) in 1m57s, peak 290.9 MiB (estimated 5m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4 Applied 58 output(s). 20261120-213850-197-recheck-all-71-heaps-with-the-decode: passed: 1 passed step(s) in 10.9s, peak 126.9 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-213850-321-recover-observed-startup-controls-on: passed: 1 passed step(s) in 40.1s, peak 429.2 MiB (estimated 3m00s, 2.0 GiB); 122 output file(s) changed; signals: example:task-as-expected×8 Applied 122 output(s). 20261120-213850-327-recover-observed-startup-controls-on: passed: 1 passed step(s) in 50.0s, peak 240.7 MiB (estimated 3m00s, 2.0 GiB); 152 output file(s) changed; signals: example:task-as-expected×10 Applied 152 output(s). 20261120-213850-331-recheck-compiler-and-downstream-help: failed: 1 failed step(s) in 2m09s, peak 269.2 MiB (estimated 2m00s, 2.0 GiB); 164 output file(s) changed; signals: example:task-as-expected×10; example:task-unexpected×1 20261120-213851-308-rerun-release-source-and-225-lcs-pai: passed: 2 passed step(s) in 4.4s, peak 88.7 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uvkkxznpntpm` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`a9981151bb78`](https://github.com/pilifs/in-the-loop/commit/a9981151bb7821f325f47a787f64a1fba452a0ff) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-213850-345-fix-fix-recheck-monolithic-native-im: failed: 1 failed step(s) in 4m42s, peak 1.9 GiB (estimated 7m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `myqlyywxzvwr` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`1734595c41ad`](https://github.com/pilifs/in-the-loop/commit/1734595c41ad602633a7ad9ca0ff084b2e04afd1) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 4 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-213849-341-retry-streaming-utf-8-and-bom-transf: failed: 1 failed step(s) in 6m17s, peak 1.9 GiB (estimated 12m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6 20261120-213850-345-fix-parent-recheck-monolithic-native: failed: 1 failed step(s) in 4m42s, peak 2.0 GiB (estimated 7m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-213850-345-parent-fix-recheck-monolithic-native: failed: 1 failed step(s) in 4m42s, peak 1.9 GiB (estimated 7m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-213850-345-parent-parent-recheck-monolithic-nat: failed: 1 failed step(s) in 4m41s, peak 2.0 GiB (estimated 7m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Add the readable page of the next-proof-campaign decision record
 
-change `vkykystwxmkn` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`91abdea1eddc`](https://github.com/pilifs/in-the-loop/commit/91abdea1eddcb06a98fab3b324eda9cc8e3b5086) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 The generated Markdown view of single-next-proof-campaign.jsonl, left out of the previous commit.
 
 ### Merge the single-agent run next-proof-campaign into the line
 
-change `ormsxnzyqtlq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`e7cdfb6a6ede`](https://github.com/pilifs/in-the-loop/commit/e7cdfb6a6edea96c8653ee87a7c1e2ef3f602665) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 The single-agent run next-proof-campaign (session 0cea9d0e-0fe8-427e-8e71-96614b084e11) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
 
 ### Record verification results for 12 job(s)
 
-change `nyxsqssntmmx` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`8863270975b5`](https://github.com/pilifs/in-the-loop/commit/8863270975b57fd637d21ed6ed84ea7079a987de) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 8 of the 12 job(s); 4 kept under outputs/, not applied (the job didn't pass); 1 with outputs not applied because they changed since the job's commit. 20261120-183452-335-prove-guava-signed-means-over-both-e: failed: 1 failed step(s) in 12.4s, peak 277.6 MiB (estimated 4m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×1 20261120-183452-336-check-first-match-and-preservation-a: passed: 1 passed step(s) in 8.0s, peak 224.2 MiB (estimated 6m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). 20261120-183453-336-prove-first-match-for-any-allocated: passed: 1 passed step(s) in 2.0s, peak 124.4 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-183453-342-check-two-real-ticket-calls-on-one-c: failed: 1 failed step(s) in 7.0s, peak 141.3 MiB (estimated 4m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6 20261120-184226-337-check-both-range-fill-roots-at-bound: failed: 1 failed step(s) in 7.5s, peak 142.8 MiB (estimated 6m00s, 2.0 GiB); 56 output file(s) changed; signals: example:task-unexpected×4 20261120-184234-337-bound-64-check-both-range-fill-roots: failed: 1 failed step(s) in 12.8s, peak 139.3 MiB (estimated 6m00s, 2.0 GiB); 56 output file(s) changed; signals: example:task-unexpected×4 20261120-184234-337-certify-caller-any-length-on-the-sel: passed: 1 passed step(s) in 2.8s, peak 121.6 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-184234-337-certify-fill-any-length-on-the-selec: passed: 1 passed step(s) in 2.5s, peak 118.0 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-184235-310-test-native-counterexamples-on-unmod: passed: 1 passed step(s) in 6.4s, peak 200.6 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261120-184235-321-test-native-counterexamples-on-unmod: passed: 2 passed step(s) in 17.0s, peak 386.2 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-184235-327-test-native-counterexamples-on-unmod: passed: 2 passed step(s) in 11.9s, peak 253.1 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261120-184923-342-explore-compiled-ticket-monitors-wit: passed: 3 passed step(s) in 6.9s, peak 119.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 2 output(s). 1 output(s) not applied: changed since the job's commit. Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uzvmzmpmymtq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`f3cb54b8673f`](https://github.com/pilifs/in-the-loop/commit/f3cb54b8673f3a9c0e3064a4bba5090a2e1123a7) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-183453-336-check-first-match-and-preservation-a: passed: 1 passed step(s) in 1m30s, peak 860.0 MiB (estimated 6m00s, 2.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uzvzrvzzmsxs` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`b001c47757ea`](https://github.com/pilifs/in-the-loop/commit/b001c47757ea548a323195883abce481ea4ed5ae) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-185734-340-build-the-rejected-treelist-edit-acr: passed: 2 passed step(s) in 57.7s, peak 784.4 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 19 job(s)
 
-change `ptxmmrvsxnyu` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`6b9f9456bd9c`](https://github.com/pilifs/in-the-loop/commit/6b9f9456bd9ce3bdb9d8fdb7bf66b62e5aa17919) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 15 of the 19 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-193913-310-same-day-observed-on-the-importer-ch: passed: 1 passed step(s) in 42.6s, peak 318.3 MiB (estimated 10m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1 Applied 17 output(s). 20261120-193913-321-observed-startup-on-the-importer-che: passed: 1 passed step(s) in 40.6s, peak 427.0 MiB (estimated 3m00s, 2.0 GiB); 122 output file(s) changed; signals: example:task-as-expected×8 Applied 122 output(s). 20261120-193913-327-observed-startup-on-the-importer-che: passed: 1 passed step(s) in 51.1s, peak 240.2 MiB (estimated 3m00s, 2.0 GiB); 152 output file(s) changed; signals: example:task-as-expected×10 Applied 152 output(s). 20261120-193914-331-recheck-counts-and-both-downstream-c: passed: 1 passed step(s) in 2m05s, peak 267.9 MiB (estimated 2m00s, 2.0 GiB); 164 output file(s) changed; signals: example:task-as-expected×11 Applied 164 output(s). 20261120-193914-335-recheck-both-full-width-signed-means: passed: 1 passed step(s) in 14.5s, peak 276.8 MiB (estimated 2m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4 Applied 58 output(s). 20261120-193914-337-range-fill-after-linking-arrays-at-8: passed: 1 passed step(s) in 11.7s, peak 142.5 MiB (estimated 6m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4 Applied 58 output(s). 20261120-193914-338-parent-verify-original-stream-and-pa: passed: 1 passed step(s) in 12.5s, peak 119.6 MiB (estimated 8m00s, 2.0 GiB); 46 output file(s) changed; signals: example:task-as-expected×3 Applied 46 output(s). 20261120-193915-338-fix-verify-original-stream-and-page: passed: 1 passed step(s) in 14.0s, peak 119.3 MiB (estimated 8m00s, 2.0 GiB); 45 output file(s) changed; signals: example:task-as-expected×3 Applied 45 output(s). 20261120-193915-339-fix-verify-original-stream-and-page: passed: 1 passed step(s) in 4.7s, peak 113.2 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×4 Applied 60 output(s). 20261120-193915-339-parent-verify-original-stream-and-pa: passed: 1 passed step(s) in 6.4s, peak 128.5 MiB (estimated 8m00s, 2.0 GiB); 63 output file(s) changed; signals: example:task-as-expected×4 Applied 63 output(s). 20261120-193915-345-fix-fix-verify-original-stream-and-p: failed: 1 failed step(s) in 16.8s, peak 142.8 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-193915-345-fix-parent-verify-original-stream-an: failed: 1 failed step(s) in 16.9s, peak 145.5 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-193915-345-parent-fix-verify-original-stream-an: failed: 1 failed step(s) in 12.6s, peak 140.6 MiB (estimated 8m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-193915-345-parent-parent-verify-original-stream: failed: 1 failed step(s) in 12.3s, peak 145.0 MiB (estimated 8m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-194432-336-validate-array-induction-and-caller: passed: 1 passed step(s) in 1.8s, peak 124.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-194432-337-validate-array-induction-and-caller: passed: 4 passed step(s) in 8.7s, peak 118.6 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed Applied 9 output(s). 20261120-194432-342-retain-every-compiled-monitor-histor: passed: 3 passed step(s) in 7.5s, peak 121.3 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261120-194432-343-retain-every-compiled-monitor-histor: passed: 2 passed step(s) in 7.2s, peak 120.4 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-194433-344-expose-wrong-monitor-independence-at: passed: 1 passed step(s) in 3.2s, peak 122.3 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `zoumnnrvslun` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`da57135b23d0`](https://github.com/pilifs/in-the-loop/commit/da57135b23d080eb1dd5c2a5a27f5c19bf956a46) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-193914-337-range-fill-after-linking-arrays-at-6: failed: 1 failed step(s) in 5m50s, peak 1.2 GiB (estimated 6m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×2 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `pokvsyosxvwx` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`f4c6b7afc233`](https://github.com/pilifs/in-the-loop/commit/f4c6b7afc233b4e3ed58646c9bff6080abb29470) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-193912-310-clock-fix-observed-on-the-importer-c: failed: 1 failed step(s) in 10m07s, peak 960.1 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-193913-310-reversal-fix-observed-on-the-importe: failed: 1 failed step(s) in 10m07s, peak 1.8 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-193913-310-reversal-parent-observed-on-the-impo: failed: 1 failed step(s) in 10m08s, peak 1.1 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `opxwxvyvnlkt` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`6a9de80a9cdc`](https://github.com/pilifs/in-the-loop/commit/6a9de80a9cdcf0e0628bfeee179f6cc044e174bc) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-193914-check-importer-changes-against-jbmc-and: passed: 1 passed step(s) in 15m13s, peak 2.2 GiB (estimated 17m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 6 job(s)
 
-change `kqkymvxpowsk` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`7e4d2d494de5`](https://github.com/pilifs/in-the-loop/commit/7e4d2d494de52f9b37c437e4c00312eb0a43f76b) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 3 of the 6 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-213848-339-parent-exhaust-native-selector-bytec: passed: 1 passed step(s) in 5.6s, peak 122.8 MiB (estimated 2m00s, 2.0 GiB); 37 output file(s) changed Applied 37 output(s). 20261120-213849-310-retry-unchanged-startup-after-proper: failed: 1 failed step(s) in 16.5s, peak 208.7 MiB (estimated 2m00s, 2.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261120-213849-321-retry-unchanged-startup-after-proper: failed: 1 failed step(s) in 28.4s, peak 391.8 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-213849-327-retry-unchanged-startup-after-proper: failed: 1 failed step(s) in 21.6s, peak 225.8 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 20261120-213849-332-check-explicit-jvm-property-writes-v: passed: 1 passed step(s) in 15.8s, peak 145.0 MiB (estimated 3m00s, 2.0 GiB); 85 output file(s) changed; signals: example:task-as-expected×6 Applied 85 output(s). 20261120-213849-340-recheck-rejected-edits-with-inherite: passed: 1 passed step(s) in 9.4s, peak 154.6 MiB (estimated 4m00s, 2.0 GiB); 121 output file(s) changed; signals: example:task-as-expected×8 Applied 121 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 10 job(s)
 
-change `rowyurvquzto` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`58fb7ccbb722`](https://github.com/pilifs/in-the-loop/commit/58fb7ccbb7224603fdbd00cde73775a229b66ba5) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 8 of the 10 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-213848-345-fix-parent-exhaust-native-selector-b: passed: 1 passed step(s) in 1m54s, peak 159.2 MiB (estimated 15m00s, 2.0 GiB); 269 output file(s) changed Applied 269 output(s). 20261120-213848-345-parent-fix-exhaust-native-selector-b: failed: 1 failed step(s) in 2m53s, peak 138.7 MiB (estimated 15m00s, 2.0 GiB); 119 output file(s) changed 20261120-213848-345-parent-parent-exhaust-native-selecto: passed: 1 passed step(s) in 1m44s, peak 140.0 MiB (estimated 15m00s, 2.0 GiB); 79 output file(s) changed Applied 79 output(s). 20261120-213849-310-reproduce-the-five-finite-solver-sta: passed: 5 passed step(s) in 2m24s, peak 849.0 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). 20261120-213849-337-close-bound-64-through-exact-compile: passed: 1 passed step(s) in 1m57s, peak 290.9 MiB (estimated 5m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×4 Applied 58 output(s). 20261120-213850-197-recheck-all-71-heaps-with-the-decode: passed: 1 passed step(s) in 10.9s, peak 126.9 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-213850-321-recover-observed-startup-controls-on: passed: 1 passed step(s) in 40.1s, peak 429.2 MiB (estimated 3m00s, 2.0 GiB); 122 output file(s) changed; signals: example:task-as-expected×8 Applied 122 output(s). 20261120-213850-327-recover-observed-startup-controls-on: passed: 1 passed step(s) in 50.0s, peak 240.7 MiB (estimated 3m00s, 2.0 GiB); 152 output file(s) changed; signals: example:task-as-expected×10 Applied 152 output(s). 20261120-213850-331-recheck-compiler-and-downstream-help: failed: 1 failed step(s) in 2m09s, peak 269.2 MiB (estimated 2m00s, 2.0 GiB); 164 output file(s) changed; signals: example:task-as-expected×10; example:task-unexpected×1 20261120-213851-308-rerun-release-source-and-225-lcs-pai: passed: 2 passed step(s) in 4.4s, peak 88.7 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uvkkxznpntpm` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`9ca114e62e56`](https://github.com/pilifs/in-the-loop/commit/9ca114e62e5644793f64017761700ee3ae04df5f) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-213850-345-fix-fix-recheck-monolithic-native-im: failed: 1 failed step(s) in 4m42s, peak 1.9 GiB (estimated 7m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `myqlyywxzvwr` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`5aba2fe864cc`](https://github.com/pilifs/in-the-loop/commit/5aba2fe864ccda13a6e36f9a44181985d1f9a4ab) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 4 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-213849-341-retry-streaming-utf-8-and-bom-transf: failed: 1 failed step(s) in 6m17s, peak 1.9 GiB (estimated 12m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6 20261120-213850-345-fix-parent-recheck-monolithic-native: failed: 1 failed step(s) in 4m42s, peak 2.0 GiB (estimated 7m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-213850-345-parent-fix-recheck-monolithic-native: failed: 1 failed step(s) in 4m42s, peak 1.9 GiB (estimated 7m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-213850-345-parent-parent-recheck-monolithic-nat: failed: 1 failed step(s) in 4m41s, peak 2.0 GiB (estimated 7m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
 ### Add the readable page of the next-proof-campaign decision record
 
-change `vkykystwxmkn` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`97122ce4a2ed`](https://github.com/pilifs/in-the-loop/commit/97122ce4a2ed089f1f970532c4fff5ffbf656950) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 The generated Markdown view of single-next-proof-campaign.jsonl, left out of the previous commit.
 
 ### Merge the single-agent run next-proof-campaign into the line
 
-change `ormsxnzyqtlq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`900d6ec85ba9`](https://github.com/pilifs/in-the-loop/commit/900d6ec85ba962c030d0c60cb823a46904de0715) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 The single-agent run next-proof-campaign (session 0cea9d0e-0fe8-427e-8e71-96614b084e11) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
 
 ### Record verification results for 5 job(s)
 
-change `yznztvqqwuvt` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`11b8b23ef072`](https://github.com/pilifs/in-the-loop/commit/11b8b23ef07249837a7170176b497c03a0595b08) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 5 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-233743-run-assisted-compcheck-on-original-aws-d: passed: 1 passed step(s) in 24.9s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261120-234730-348-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 6.2s, peak 168.6 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234730-349-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 3.1s, peak 156.6 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed 20261120-234730-350-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 4.6s, peak 136.4 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234731-351-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 5.4s, peak 144.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `urmwmrtxmtvl` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`14a884102ce5`](https://github.com/pilifs/in-the-loop/commit/14a884102ce54895cf6662fd0b30d2212e12d77b) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc: failed: 1 failed step(s) in 5.0s, peak 140.2 MiB (estimated 1m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261120-234731-352-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 57.1s, peak 169.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record that a run's commit list empties when its base turns divergent (VF-049)
 
-change `uxspmtuvtunp` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`847f7aaaee6e`](https://github.com/pilifs/in-the-loop/commit/847f7aaaee6e3a20fa1081a7a43ba58216bfbcd6) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 The external-upgrade-evaluation summaries dropped from 7 commits to 0: single_run.py keeps the run's base as a change id, and the agent's bookmark on the pre-rewrite copy of that merge made it divergent, so watch.commits' revset fails. The run itself is unaffected. Documentation only.
 
 ### Record verification results for 1 job(s)
 
-change `kmrtkksrmmyy` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`35f15188df47`](https://github.com/pilifs/in-the-loop/commit/35f15188df47c39f256f91be184c8332b3bbaf73) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-015236-run-both-stock-aws-compcheck-settings-wi: passed: 1 passed step(s) in 1m01s, peak 3.8 GiB (estimated 8m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record that the external-upgrade run swapped its V0 operator to Claude models unasked (VF-050)
 
-change `syqquumuwwru` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`5c927b2bc1fd`](https://github.com/pilifs/in-the-loop/commit/5c927b2bc1fdad5da61a1b1d4c107f74234b109a) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 At the user's request, relayed by the session in-the-loop-48, which checked the facts read-only. The run's admission check rejected the pinned Astra/Sol codex exec operator, and the agent substituted a Claude Fable/Opus profile with single-turn, 2048-token requests without asking. Its opening reports are deviations from the pre-registration, not V0 scores. The user is setting one Astra session for every role in the continue message. Documentation only.
 
 ### Record verification results for 8 job(s)
 
-change `zmqvwotuppkl` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`cc65a63abe05`](https://github.com/pilifs/in-the-loop/commit/cc65a63abe056e711e32221dcc36c3becadcf85b) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 8 of the 8 job(s). 20261121-034247-original-upgrade-corpus-v0-and-class-int: passed: 1 passed step(s) in 3m28s, peak 201.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-02-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m14s, peak 562.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-03-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 807.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-04-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 268.9 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-05-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m07s, peak 276.4 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-06-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m27s, peak 349.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-07-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m19s, peak 278.3 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-08-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m03s, peak 249.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `zpqqyqqlpslp` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`69aa74997855`](https://github.com/pilifs/in-the-loop/commit/69aa74997855abfd851e11f600a93bcda0a7c742) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261121-044031-original-ci-group-2-run-unmodified-maven: passed: 1 passed step(s) in 5m23s, peak 1.4 GiB (estimated 25m00s, 3.0 GiB); 18 output file(s) changed Applied 18 output(s). 20261121-044031-original-ci-group-5-run-unmodified-maven: passed: 1 passed step(s) in 3m42s, peak 5.2 GiB (estimated 25m00s, 3.0 GiB); 16 output file(s) changed Applied 16 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `zqopmrvltzuo` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`f8095702e1b3`](https://github.com/pilifs/in-the-loop/commit/f8095702e1b3de479f44cb8a0454b23a77ce3b8e) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261121-044738-349-exhaust-actual-csv-fields-with-lossl: passed: 1 passed step(s) in 8.6s, peak 183.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-044738-352-exhaust-actual-duration-strings-with: passed: 1 passed step(s) in 9.0s, peak 246.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `xrxszllqtwpw` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`3572a0406345`](https://github.com/pilifs/in-the-loop/commit/3572a0406345bb666d9cf8e85b77b1d5e05ec559) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-054619-apollo-original-guice-services-and-tagge: passed: 3 passed step(s) in 51.9s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `vpsrlxylurkm` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`c0c222859922`](https://github.com/pilifs/in-the-loop/commit/c0c2228599229e296069a9dfc166717c5f1be1b2) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-055303-compile-original-togglz-and-check-its-co: passed: 2 passed step(s) in 14.0s, peak 577.4 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `oltlmqzxzuuz` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`1232e8c79a02`](https://github.com/pilifs/in-the-loop/commit/1232e8c79a0233af222bb837509daca639e9cff6) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-055302-rebuild-both-original-apollo-modules-in: passed: 2 passed step(s) in 36.5s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `mmummtrmnryq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`7fc735e1f0a7`](https://github.com/pilifs/in-the-loop/commit/7fc735e1f0a763b52b38ef6d335f3a73a534d02d) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-065458-current-upgrade-group-06-native-and-fini: passed: 2 passed step(s) in 27.3s, peak 133.1 MiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `vwqvqymyuzxu` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`834815b79b95`](https://github.com/pilifs/in-the-loop/commit/834815b79b955769ac490cf38ed1029867fc7d4e) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-074404-v3-prep-group-06-original-java-upgrade-c: passed: 3 passed step(s) in 1m26s, peak 1.1 GiB (estimated 12m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 6 job(s)
 
-change `rnwzmzsoswrn` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`269836f77a30`](https://github.com/pilifs/in-the-loop/commit/269836f77a30a4f18115f2889e40acc7ff78be2f) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 6 of the 6 job(s). 20261121-074403-v3-prep-group-01-original-java-upgrade-c: passed: 5 passed step(s) in 5m16s, peak 1.4 GiB (estimated 12m00s, 2.0 GiB); 15 output file(s) changed Applied 15 output(s). 20261121-074403-v3-prep-group-02-original-java-upgrade-c: passed: 4 passed step(s) in 5m48s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 17 output file(s) changed Applied 17 output(s). 20261121-074403-v3-prep-group-03-original-java-upgrade-c: passed: 4 passed step(s) in 3m02s, peak 759.8 MiB (estimated 12m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). 20261121-074403-v3-prep-group-04-original-java-upgrade-c: passed: 4 passed step(s) in 3m18s, peak 709.0 MiB (estimated 12m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). 20261121-074404-v3-prep-group-05-original-java-upgrade-c: passed: 4 passed step(s) in 4m28s, peak 1.1 GiB (estimated 12m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). 20261121-074404-v3-prep-group-07-original-java-upgrade-c: passed: 3 passed step(s) in 3m12s, peak 2.7 GiB (estimated 12m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `otszsynmlyuk` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`dc06a43f9546`](https://github.com/pilifs/in-the-loop/commit/dc06a43f95467d79b33b4312ff8610eb35dde540) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261121-075424-v3-dispatch-group-06-original-java-upgra: passed: 2 passed step(s) in 25.5s, peak 132.6 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-075424-v3-dispatch-group-07-original-java-upgra: passed: 2 passed step(s) in 16.7s, peak 644.2 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Rebuild the examples index for 348 and record its inconsistent receipt (VF-052)
 
-change `vnsvswuvyvom` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`0c90623d0074`](https://github.com/pilifs/in-the-loop/commit/0c90623d0074cd572d09f943009e17b40dc0afd3) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 After landing external-upgrade-evaluation the default run failed in test_acceptance.py on example 348. The stale index entry is fixed by build.py --index-only (348 is now executable, with its generated-keys receipt listed). The remaining failure, an unresolved conclusion marked as expected, is the agent's to settle and is recorded as VF-052. test_acceptance.py now fails only that one subtest.
 
 ### Record verification results for 2 job(s)
 
-change `uyvsoxnnrtxw` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`1c1478fedfda`](https://github.com/pilifs/in-the-loop/commit/1c1478fedfda2795e3616a282e75eb7993c28264) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261121-094513-357-utf16-native-checks-on-the-original: passed: 1 passed step(s) in 5.4s, peak 128.6 MiB (estimated 5m00s, 3.0 GiB); 75 output file(s) changed Applied 75 output(s). 20261121-095047-354-cover-the-original-utf-16-truncation: passed: 1 passed step(s) in 4.8s, peak 207.8 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `zmqnzrwptwsq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`1ae4f0151417`](https://github.com/pilifs/in-the-loop/commit/1ae4f0151417f0734fc5fc42133058ea7f768ab4) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-102122-359-build-historical-build-with-the-decl: failed: 2 passed, 2 failed step(s) in 10m12s, peak 3.4 GiB (estimated 15m00s, 3.0 GiB); 285 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uqqxmpytqmps` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`53f6b817a786`](https://github.com/pilifs/in-the-loop/commit/53f6b817a7862b3e9c905223e78ff1bf485710e8) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-114112-javaparser-traversal-with-its-observed-l: failed: 1 failed step(s) in 15.4s, peak 200.0 MiB (estimated 3m00s, 3.0 GiB); 122 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `onxtqomxpunq` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`e0f9b69ff057`](https://github.com/pilifs/in-the-loop/commit/e0f9b69ff0579f477373f26bbf4f6b16f1c7c57d) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-133632-measure-every-avro-factory-obligation-wi: failed: 1 failed step(s) in 1m13s, peak 488.3 MiB (estimated 4m00s, 3.0 GiB); 137 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
