@@ -1,0 +1,344 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-013031-348-reproduce-stock-compsuite-and-the-en",
+  "title": "348 reproduce stock CompSuite and the entire original H2 Maven suite",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m54s, peak 1.4 GiB (estimated 12m00s, 4.0 GiB); 17 output file(s) changed",
+  "attention": [
+    "step 2 (Run the whole original Maven test suite on each tag) was held back 21.9s by its 4-CPU quota in 24.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-013031-348-reproduce-stock-compsuite-and-the-en.json",
+    "sha256": "173ecdd12a04feb9bc94746e5936fbbe3d08b3d66adaea049ea783835c02cf54",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-013031-348-reproduce-stock-compsuite-and-the-en",
+      "title": "348 reproduce stock CompSuite and the entire original H2 Maven suite",
+      "description": "Use the documented CompSuite reference tools on its first disclosed example. Invoke unchanged main.py --info and --incompat, and each individual old/new test in separate fresh checkouts with genuine original Git tag identities. Also run the whole Maven JUnit suite on the two original revisions. A networkless guest with CPython 3.11.14, Maven 3.6.3 and Temurin 8 uses a serial public Central cache. Collect wrapper exits and strings independently of actual named Surefire testcase records.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "baseline:original-ci"
+      ],
+      "links": {
+        "examples": [
+          "348"
+        ]
+      },
+      "expected": "Every submitted original Maven process starts. Inspect actual named XML and assertion outcomes even if the wrapper exits zero or its install fails, and report whole-suite totals separately.",
+      "submitted": {
+        "at": "2026-11-21T01:30:31+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "python3",
+        "git",
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "4G",
+        "duration": "12m",
+        "memoryLimit": "16G",
+        "timeout": "2h",
+        "notes": "Original provider-only run had 454 tests per pin. The standard Maven lifecycle and one combined plus two independent stock CLI attempts share previously downloaded public dependencies."
+      },
+      "steps": [
+        {
+          "name": "Run stock CLI with the documented tool versions and independent named test worktrees",
+          "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 348 --stock-compsuite --out examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm",
+          "cwd": "."
+        },
+        {
+          "name": "Run the whole original Maven test suite on each tag",
+          "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 348 --out examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm",
+        "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci"
+      ]
+    }
+  },
+  "sourceCommit": "7059b651e93fad9e1368400e714fd81ef9cff22d",
+  "startedAt": "2026-11-21T01:44:31+00:00",
+  "finishedAt": "2026-11-21T01:46:30+00:00",
+  "wallSeconds": 119.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1323496,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 17179869184,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 720.0,
+    "notes": "Original provider-only run had 454 tests per pin. The standard Maven lifecycle and one combined plus two independent stock CLI attempts share previously downloaded public dependencies."
+  },
+  "usage": {
+    "peakMemoryBytes": 1524994048,
+    "wallSeconds": 114.5,
+    "cpuSeconds": 189.1,
+    "memoryOfEstimate": 0.36,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run stock CLI with the documented tool versions and independent named test worktrees",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 348 --stock-compsuite --out examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 89.606,
+      "cpuSeconds": 129.945,
+      "cpuThrottledSeconds": 27.254,
+      "peakMemoryBytes": 1102467072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-stock-cli-with-the-documen.log",
+        "lines": 3,
+        "bytes": 340,
+        "sha256": "0bada3443f029e4a3191871eedff88411f6a426d23f27c57c40d8ca2a4e9fac6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"side\": \"combined\", \"exit\": 0, \"tests\": 1, \"failures\": 1, \"errors\": 0, \"skipped\": 0, \"named\": 1, \"seconds\": 68.412}",
+        "{\"side\": \"old\", \"exit\": 0, \"tests\": 1, \"failures\": 0, \"errors\": 0, \"skipped\": 0, \"named\": 1, \"seconds\": 10.731}",
+        "{\"side\": \"new\", \"exit\": 0, \"tests\": 1, \"failures\": 1, \"errors\": 0, \"skipped\": 0, \"named\": 1, \"seconds\": 9.504}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Run the whole original Maven test suite on each tag",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 348 --out examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 24.846,
+      "cpuSeconds": 59.114,
+      "cpuThrottledSeconds": 21.897,
+      "peakMemoryBytes": 1524994048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-run-the-whole-original-maven-t.log",
+        "lines": 2,
+        "bytes": 232,
+        "sha256": "f87032ea6e5cf170bac8842eaf21a128a0579d9497ecbfd78715063e1f59692e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"side\": \"old\", \"exit\": 0, \"tests\": 454, \"failures\": 0, \"errors\": 0, \"skipped\": 2, \"named\": 115, \"seconds\": 10.527}",
+        "{\"side\": \"new\", \"exit\": 1, \"tests\": 454, \"failures\": 3, \"errors\": 0, \"skipped\": 2, \"named\": 115, \"seconds\": 13.501}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/1.4.192.log.gz",
+      "change": "added",
+      "bytes": 1202,
+      "sha256": "67aec84a01dae76e6617eb555f588645c06427dd2d2a9067d44962c5c1536ebf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/1.4.200.log.gz",
+      "change": "added",
+      "bytes": 1758,
+      "sha256": "b369c4a1b721db9e67c6ad7db178fd38f32059f9c9dd90b7e9270c4b498b892f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "d1d7a3c660a8938803116b004990bc9c9e2c2c98aaffd58d5f10aaa61beeca87",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/install.log.gz",
+      "change": "added",
+      "bytes": 44631,
+      "sha256": "a371f6d06b8ed23080a3a1b3492dc0c2bf403c2a90323ca929b009312ca6c90a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/maven.log.gz",
+      "change": "added",
+      "bytes": 980,
+      "sha256": "9020a8385369bf3feae7d12f3c3bad6c53f793f22db60e6d302b20874605acc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/new/1.4.200.log.gz",
+      "change": "added",
+      "bytes": 27103,
+      "sha256": "7b06144966f4235964f905554752b87e613f0acaa73f82feb6d5523263f16cd7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/new/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "30cf5ea526f1ee94cc19feff97b253e2a7063f1b994e0fc6f2a72620506f717d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/new/maven.log.gz",
+      "change": "added",
+      "bytes": 345,
+      "sha256": "18381d6b9cc6149c25b7492e0938942be98fd907689af64fae1410b22d9595f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/old/1.4.192.log.gz",
+      "change": "added",
+      "bytes": 26162,
+      "sha256": "254b2c636b37b8504052581172eb35f20d10efef9b8d8e185b6a6625b78eb7b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/old/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "change": "added",
+      "bytes": 1370,
+      "sha256": "b77744fabf063201a693e837609836dde4eec811b02111146ee578b738871b2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/old/maven.log.gz",
+      "change": "added",
+      "bytes": 276,
+      "sha256": "31002e681d802bd0037d7f7a23aac49a149f83d8efd6c875ada9eb42a630bc65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/result.json",
+      "change": "added",
+      "bytes": 9838,
+      "sha256": "8b49049374809307fe6366e1af1f5102c94e8f6330481d6345712e27486e3377",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/new/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "change": "added",
+      "bytes": 3519,
+      "sha256": "11a49a1974963edc6a1368afc69aa8e44769b630705d0633f9f94e52a8ec53fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/new/maven.log.gz",
+      "change": "added",
+      "bytes": 13491,
+      "sha256": "339e95175e76b9691aa7b3792a3a981e4fa4e31e3213651252cd461de72fa38c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/old/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "change": "added",
+      "bytes": 2898,
+      "sha256": "5eb8f6559708b1b7b7e848fd703c1056dbc39ef330b105278afd06a181400c8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/old/maven.log.gz",
+      "change": "added",
+      "bytes": 12478,
+      "sha256": "ae37ed5998eac5e8a8f8e250184a76800856b8a8888f07d43610b5a451020ee9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/result.json",
+      "change": "added",
+      "bytes": 34738,
+      "sha256": "aecf1076fbb9a5bde5dcf282edd2bedf45201b0cfcdb2adb4d2e2717cd1377ae",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T01:46:43+00:00",
+    "applied": [
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/1.4.192.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/1.4.200.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/install.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/combined/maven.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/new/1.4.200.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/new/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/new/maven.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/old/1.4.192.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/old/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/old/maven.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/result.json",
+      "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/new/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/new/maven.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/old/TEST-com.github.davidmoten.rx.jdbc.DatabaseSyncTest.xml.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/old/maven.log.gz",
+      "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
