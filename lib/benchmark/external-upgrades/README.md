@@ -20,6 +20,14 @@ python3 lib/benchmark/external-upgrades/engineering.py --build V0 --build curren
 
 Each report records the original commits, exact caller bytes, classpath hashes when available, concrete preparation or checker diagnostic and elapsed time. The V0 checker digest is checked before starting. In a checkout or queue archive without Git history, place V0's `examples/tools/targets/runtime_jar.py` at `$TMPDIR/upgrade-builds/v0-runtime_jar.py`. Its digest is checked before use. The CLI refuses to overwrite a first report.
 
+The [finite caller scenarios](scenarios) take the original classpaths prepared during the corpus run and use the public `build.py --review-upgrade` route. Each scope lists ordinary inputs, independently expected old observations and the reviewed Java source that constructs the real receiver. The debugger observes the exact original method entry in every fresh JVM. These runs report engineering-assisted finite claims separately from the automatic native result.
+
+```sh
+python3 lib/benchmark/external-upgrades/check_scenarios.py --case compsuite-i-38 \
+  --preparations "$TMPDIR/upgrade-builds" --maven-cache "$MAVEN_CACHE" \
+  --output "$TMPDIR/reflectasm-results"
+```
+
 ## Reproduce an open calibration
 
 Examples 348 and 349 include a source-build reproduction in their own folders. For 350, 351 or 352, obtain the two commits and the JARs in that example's `materials.json`. Give the script the local Git repository, directory of named JARs, recorded subject JDK and an empty output location. It checks every JAR digest, the parent relationship, the POM-only tracked diff, loaded class origins and the original caller's observations. For the two named JUnit 4 tests it requires the specified class and method to appear exactly once in fresh Surefire XML.

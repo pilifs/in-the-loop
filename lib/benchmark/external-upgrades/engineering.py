@@ -24,7 +24,7 @@ from types import SimpleNamespace
 from pin import OPERATOR, ROOT, digest
 
 sys.path.insert(0, str(ROOT / "examples/tools"))
-from targets import runtime
+from targets import runtime, upgrade_claims
 
 
 HERE = Path(__file__).resolve().parent
@@ -185,6 +185,7 @@ def screen(case, inputs, build, checker, args):
               "observer": case["observer"], "revisions": case["revisions"], "result": "open",
               "readerSha256": reader_sha, "checkerSha256": digest(checker), "sides": {}}
     paths = {}
+    caller_bytes = {}
     owner, method = case["entry"].split("#")
     for side, prepared in inputs.items():
         evidence = {k: v for k, v in prepared.items() if k != "classpath"}
@@ -199,6 +200,7 @@ def screen(case, inputs, build, checker, args):
             data = parser.read_class(paths[side][0], owner.replace(".", "/"))
             if not data:
                 raise ValueError("the original artifact does not contain the selected caller class")
+            caller_bytes[side] = data
             evidence["callerClassSha256"] = hashlib.sha256(data).hexdigest()
             names = sorted(d for n,d in parser.methods(data) if n == method)
             if not names:
@@ -225,30 +227,53 @@ def screen(case, inputs, build, checker, args):
                     for side, row in report["sides"].items()}
         directories = runtime._class_dirs(sides, work, work, {s: [{"path": a[0].path}] for s,a in originals.items()},
                                           feature, bindings if feature is not None else None)
-        cmd = [str(checker), "equivalence", "--before", str(work / directories["old"]["dir"]),
-               "--after", str(work / directories["new"]["dir"]),
-               "--engine", "native", "--gaps", "strict", "--target", case.get("checkerTarget", case["entry"]),
-               "--timeout", str(args.check_seconds), "--work", td, "--json"]
-        for side, flag in (("old", "--before-classpath"), ("new", "--classpath")):
-            for jar in paths[side][1:]:
-                cmd.extend([flag, str(jar)])
-        started = time.monotonic()
-        code, output = run(cmd, ROOT, env, args.check_seconds + 10)
-        output = output.replace(str(args.work), "$WORK").replace(str(args.maven_cache), "$MAVEN_REPOSITORY")
-        report["native"] = {"exit": code, "seconds": round(time.monotonic()-started, 3),
-                            "outputSha256": hashlib.sha256(output.encode()).hexdigest()}
-        try:
-            # The checker may also print JDK diagnostics outside its single JSON document.
-            value = json.loads(output[output.index("{"):output.rindex("}")+1])
-            report["native"]["outcome"] = value
-            report["firstBlocker"] = "review native outcome and original observer"
-            if isinstance(value, dict) and value.get("verdict") == "unverifiable":
-                report["firstBlocker"] = value.get("problem") or "native checker could not decide the claim"
-            elif isinstance(value, dict) and value.get("verdict") in ("verified", "violation"):
-                report["native"]["scopeReviewRequired"] = True
-        except ValueError:
-            report["native"]["diagnostic"] = failure(output)
-            report["firstBlocker"] = "native time budget" if code == 124 else "native checker"
+        targets = [case.get("checkerTarget", case["entry"])]
+        if build == "current":
+            overloads = upgrade_claims.named_overloads(caller_bytes["old"], caller_bytes["new"], method)
+            report["declarations"] = overloads
+            targets = list(dict.fromkeys(runtime.java_target(case["entry"] + desc) for desc in overloads["common"]))
+        if not targets:
+            report["firstBlocker"] = "no common original overload"
+            return report
+        results = []
+        first = time.monotonic()
+        for index, target in enumerate(targets):
+            remaining = args.check_seconds - (time.monotonic() - first)
+            if remaining < 1:
+                results.append({"target": target, "firstBlocker": "shared overload time budget", "exit": 124})
+                continue
+            seconds = max(1, int(remaining / (len(targets) - index)))
+            # Single-target runs retain their full configured limit.
+            if len(targets) == 1:
+                seconds = args.check_seconds
+            stage = work / ("overload-" + str(index))
+            stage.mkdir()
+            cmd = [str(checker), "equivalence", "--before", str(work / directories["old"]["dir"]),
+                   "--after", str(work / directories["new"]["dir"]), "--engine", "native", "--gaps", "strict",
+                   "--target", target, "--timeout", str(seconds), "--work", str(stage), "--json"]
+            for side, flag in (("old", "--before-classpath"), ("new", "--classpath")):
+                for jar in paths[side][1:]:
+                    cmd.extend([flag, str(jar)])
+            started = time.monotonic()
+            code, output = run(cmd, ROOT, env, min(seconds + 2, max(1, remaining)))
+            output = output.replace(str(args.work), "$WORK").replace(str(args.maven_cache), "$MAVEN_REPOSITORY")
+            item = {"target": target, "exit": code, "seconds": round(time.monotonic() - started, 3),
+                    "outputSha256": hashlib.sha256(output.encode()).hexdigest()}
+            try:
+                value = json.loads(output[output.index("{"):output.rindex("}") + 1])
+                item["outcome"] = value
+                item["firstBlocker"] = value.get("problem") or "review native outcome and original observer"
+                if value.get("verdict") in ("verified", "violation"):
+                    item["scopeReviewRequired"] = True
+            except (ValueError, AttributeError):
+                item["diagnostic"] = failure(output)
+                item["firstBlocker"] = "native time budget" if code == 124 else "native checker"
+            results.append(item)
+        report["native"] = results[0]
+        report["firstBlocker"] = results[0]["firstBlocker"]
+        if len(results) > 1:
+            report["nativeOverloads"] = results
+            report["firstBlocker"] = "review the recorded exact overloads"
     return report
 
 

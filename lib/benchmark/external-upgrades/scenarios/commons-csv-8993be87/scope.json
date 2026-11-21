@@ -1,0 +1,40 @@
+{
+  "entry": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+  "probeClass": "org.apache.commons.csv.UpgradeProbe",
+  "observer": "Read all records through the original parser. Compare each field in order up to end of input.",
+  "basis": "The four CSV literals cover a quoted separator, doubled quotes, embedded LF, empty fields and multiple records. An independent CSV reader supplies the expected field sequences. Length prefixes preserve the field boundaries.",
+  "cases": [
+    {
+      "args": [
+        "a,b\r\n"
+      ],
+      "expected": {
+        "return": "[1:a1:b]"
+      }
+    },
+    {
+      "args": [
+        "\"a,b\",c\r\n"
+      ],
+      "expected": {
+        "return": "[3:a,b1:c]"
+      }
+    },
+    {
+      "args": [
+        "\"a\"\"b\",\"x\ny\"\r\n"
+      ],
+      "expected": {
+        "return": "[3:a\"b3:x\ny]"
+      }
+    },
+    {
+      "args": [
+        "a,,c\n,,\n"
+      ],
+      "expected": {
+        "return": "[1:a0:1:c]|[0:0:0:]"
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "entry": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I",
+  "probeClass": "UpgradeProbe",
+  "observer": "The exact bytes delivered by the real decompression stream up to EOF on four valid frames.",
+  "basis": "The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum.",
+  "cases": [
+    {
+      "args": [
+        "BCJNGGRApwAAAAAFXcwC"
+      ],
+      "expected": {
+        "return": ""
+      }
+    },
+    {
+      "args": [
+        "BCJNGGRApwYAAIBoZWxsbwoAAAAA+VtrlA=="
+      ],
+      "expected": {
+        "return": "aGVsbG8K"
+      }
+    },
+    {
+      "args": [
+        "BCJNGGRApwQAAIAA/wCAAAAAAO1tWiE="
+      ],
+      "expected": {
+        "return": "AP8AgA=="
+      }
+    },
+    {
+      "args": [
+        "BCJNGGRApxAAAIAAAQIDBAUGBwgJCgsMDQ4PAAAAAPQ3KLc="
+      ],
+      "expected": {
+        "return": "AAECAwQFBgcICQoLDA0ODw=="
+      }
+    }
+  ]
+}

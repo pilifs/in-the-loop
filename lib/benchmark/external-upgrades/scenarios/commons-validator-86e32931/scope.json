@@ -1,0 +1,44 @@
+{
+  "entry": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Read a real JavaBean property through the validator and observe the returned string.",
+  "basis": "Two public bean getters return the supplied string and integer 7. String conversion preserves the exact string or null and renders the integer in decimal.",
+  "cases": [
+    {
+      "args": [
+        "blue",
+        "title"
+      ],
+      "expected": {
+        "return": "blue"
+      }
+    },
+    {
+      "args": [
+        "",
+        "title"
+      ],
+      "expected": {
+        "return": ""
+      }
+    },
+    {
+      "args": [
+        "blue",
+        "quantity"
+      ],
+      "expected": {
+        "return": "7"
+      }
+    },
+    {
+      "args": [
+        null,
+        "title"
+      ],
+      "expected": {
+        "return": null
+      }
+    }
+  ]
+}

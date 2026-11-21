@@ -12,25 +12,25 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T04:27:47.456Z",
-  "duration_seconds": 111018,
+  "ended": "2026-11-21T04:37:35.442Z",
+  "duration_seconds": 111606,
   "stats": {
     "turns": 15,
-    "api_calls": 4966,
-    "tool_calls": 12564,
-    "tool_errors": 384,
+    "api_calls": 4995,
+    "tool_calls": 12625,
+    "tool_errors": 386,
     "compactions": 15,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 8584347,
-      "output_tokens": 2587914,
-      "cache_read_input_tokens": 1562547712,
+      "input_tokens": 8616180,
+      "output_tokens": 2610854,
+      "cache_read_input_tokens": 1573715072,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 7260,
-    "exec": 4502,
+    "Bash": 7293,
+    "exec": 4530,
     "apply_patch": 502,
     "send_message": 148,
     "sleep": 55,
@@ -519,24 +519,24 @@
     {
       "index": 15,
       "started": "2026-11-21T03:22:22.532Z",
-      "ended": "2026-11-21T04:27:47.456Z",
+      "ended": "2026-11-21T04:37:35.442Z",
       "turns": 0,
-      "api_calls": 228,
+      "api_calls": 257,
       "usage": {
-        "input_tokens": 750996,
-        "output_tokens": 150033,
-        "cache_read_input_tokens": 56375552,
+        "input_tokens": 782829,
+        "output_tokens": 172973,
+        "cache_read_input_tokens": 67542912,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 381856
+      "peak_context_tokens": 411617
     }
   ],
   "log": {
-    "sha256": "def570a776624dbbe523636e1cac1b2555eca57caf2a61cdc2df941afc5f8967",
-    "bytes": 112868901,
-    "lines": 39296,
-    "gzip_bytes": 44729299,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/def570a776624dbbe523636e1cac1b2555eca57caf2a61cdc2df941afc5f8967.jsonl.gz"
+    "sha256": "d301ca335404e11a1e84f319f621fb28c96ad4ef07b541e3ac8b2d958ed4ae49",
+    "bytes": 113492488,
+    "lines": 39517,
+    "gzip_bytes": 45004147,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/d301ca335404e11a1e84f319f621fb28c96ad4ef07b541e3ac8b2d958ed4ae49.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2061,20 +2061,20 @@
       "log_sha256": "630fbe121bdd26856751727e804e487bf8403545740413a83c3e30fd1c9ec0f9"
     },
     {
-      "change_id": "rlkpwrkpnnnpunoptyttouyzvuuuwvmt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "def570a776624dbbe523636e1cac1b2555eca57caf2a61cdc2df941afc5f8967"
-    },
-    {
       "change_id": "zuvmpvqnzovzkxmsskmxmpnntsotwwst",
       "commit_id": null,
       "immutable": false,
       "summary": "Load the actual multi-release JAR entries for a pinned native JVM (verification pending)",
       "body": "Native target workflows bind JAR selection to a verified Java release. Read the highest eligible class or resource, preserve classpath precedence, include the selection in the proof cache and check actual caller bytes during preparation. Unbound or overridden runtimes retain the conservative refusal. The original JVM countermodel now proves the versioned result 20 and rejects the base result 1. Tested folded manifests, lower and higher feature releases, and entry sections. The changed run exercised 58 Rust targets and 42 Python groups. After correcting inventory and keeping the selected revision local to the binding check, reran the lint and both workflow regressions successfully. Queue jobs 20261121-042108-multi-release-corpus-group-1-check-eight, 20261121-042108-multi-release-corpus-group-2-check-eight, 20261121-042109-multi-release-corpus-group-3-check-eight, 20261121-042109-multi-release-corpus-group-4-check-eight, 20261121-042108-352-check-the-actual-duration-caller-thr repeat all 32 original upgrades and the Jackson calibration.",
       "log_sha256": "def570a776624dbbe523636e1cac1b2555eca57caf2a61cdc2df941afc5f8967"
+    },
+    {
+      "change_id": "mxuwkwnryoptqvpnqyxvownnxzkqruqk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Find and replay the real caller on original dependency upgrade classpaths (verification pending)",
+      "body": "Discover concrete caller methods and exact overloads from original bytecode, then run a finite, source-reviewed observer on the original classpaths. The debugger sees a real entry into the declared method and descriptor for every input and repetition. JAR origins, exact UTF-16 results or escaping exceptions, independent expectations and stable repeated JVMs qualify each decision. The negative regression loads the client and references a call in an untaken branch, and correctly earns no result. A real ReflectASM probe reproduced the changed behavior with all eight original method-entry checks. Of 42 affected test groups, the history-span test failed while collection was active and passed when repeated; the updated three replay tests and tier lint pass. Jobs 20261121-042207-finite-caller-group-1-qualify-original-a, 20261121-042207-finite-caller-group-2-qualify-original-a, 20261121-042207-finite-caller-group-3-qualify-original-a, 20261121-042207-finite-caller-group-4-qualify-original-a, 20261121-043632-finite-caller-group-5-replay-original-ma, 20261121-043632-finite-caller-group-6-replay-original-ma, 20261121-043003-overload-recovery-group-1-compare-sixtee, 20261121-043003-overload-recovery-group-2-compare-sixtee cover 63 finite inputs across 16 upgrades and a full 32-case exact-overload rerun.",
+      "log_sha256": "d301ca335404e11a1e84f319f621fb28c96ad4ef07b541e3ac8b2d958ed4ae49"
     }
   ],
   "logs": {
@@ -2659,6 +2659,12 @@
       "lines": 5057,
       "gzip_bytes": 5986504,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/d2d1e15888046da0e5dad33d3a0e92a08f96621346ba9af2ca203dac4a462b51.jsonl.gz"
+    },
+    "d301ca335404e11a1e84f319f621fb28c96ad4ef07b541e3ac8b2d958ed4ae49": {
+      "bytes": 113492488,
+      "lines": 39517,
+      "gzip_bytes": 45004147,
+      "url": null
     },
     "d92e3ef2b35400f865f99dfb43e73c81ab5561ccd93dde994745f2540581c118": {
       "bytes": 101904320,

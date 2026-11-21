@@ -339,6 +339,8 @@ your plan asks for.
    [`target-claim.schema.json`](../examples/schema/target-claim.schema.json) says, and each task as the sidecar's
    tasks: the setup writes them as they are. Stage 4 may not change a claim to fit a result, so a claim you are not
    sure of is an open question for the user, not a guess.
+   For a dependency-only change with compiled client and dependency JARs, run `examples/tools/build.py --upgrade-claims` before broad source browsing. It gives exact caller and callee descriptors and identifies return, exception or callback observations. Select a reachable receiver and a domain the maintainer can recognize. The finite original-classpath route accepts a small reviewed observer and independent expected values for that domain. [Upgrade claim and replay commands](../examples/README.md#dependency-upgrade-observations)
+
 6. **The order,** the most accessible first: a proof that lands early can extend the verifier under the later ones,
    and a hard one first can use up the run.
 7. **The plan.** Fill in [`prove-plan-template.md`](prove-plan-template.md) as

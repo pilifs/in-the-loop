@@ -1,0 +1,24 @@
+{
+  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Observe the logger name behind the INFO output stream for a caller-relative short name and for an explicit full name.",
+  "basis": "The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger.",
+  "cases": [
+    {
+      "args": [
+        "MyLogger"
+      ],
+      "expected": {
+        "return": "UpgradeProbe.MyLogger"
+      }
+    },
+    {
+      "args": [
+        "example.full.name"
+      ],
+      "expected": {
+        "return": "example.full.name"
+      }
+    }
+  ]
+}

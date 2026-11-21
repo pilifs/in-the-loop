@@ -1,0 +1,44 @@
+{
+  "entry": "org.apache.commons.configuration2.JSONConfiguration#read(Ljava/io/Reader;)V",
+  "probeClass": "UpgradeProbe",
+  "observer": "Read the configuration through the original Reader API and inspect the named string list.",
+  "basis": "The literals in each document specify the expected scalar or ordered sequence. The four selected states contain no comma or bracket inside a list element, so this encoding distinguishes the observed values.",
+  "cases": [
+    {
+      "args": [
+        "{\"colors\":[\"red\",\"blue\"]}",
+        "colors"
+      ],
+      "expected": {
+        "return": "[red, blue]"
+      }
+    },
+    {
+      "args": [
+        "{\"cfg\":{\"name\":\"Ada\"}}",
+        "cfg.name"
+      ],
+      "expected": {
+        "return": "[Ada]"
+      }
+    },
+    {
+      "args": [
+        "{\"count\":7}",
+        "count"
+      ],
+      "expected": {
+        "return": "[7]"
+      }
+    },
+    {
+      "args": [
+        "{}",
+        "absent"
+      ],
+      "expected": {
+        "return": "[]"
+      }
+    }
+  ]
+}

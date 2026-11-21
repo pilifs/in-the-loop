@@ -1,0 +1,40 @@
+{
+  "entry": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+  "probeClass": "UpgradeProbe",
+  "observer": "Exact bytes and byte count from a single ordinary MIME part, including empty, binary and multiline bodies.",
+  "basis": "The framing and headers are fixed and syntactically separate from the independently supplied payload. The expected count is the number of payload bytes and their encoding is lossless.",
+  "cases": [
+    {
+      "args": [
+        ""
+      ],
+      "expected": {
+        "return": "0:"
+      }
+    },
+    {
+      "args": [
+        "aGVsbG8="
+      ],
+      "expected": {
+        "return": "5:aGVsbG8="
+      }
+    },
+    {
+      "args": [
+        "bGluZTENCmxpbmUy"
+      ],
+      "expected": {
+        "return": "12:bGluZTENCmxpbmUy"
+      }
+    },
+    {
+      "args": [
+        "AP8NCgE="
+      ],
+      "expected": {
+        "return": "5:AP8NCgE="
+      }
+    }
+  ]
+}

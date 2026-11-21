@@ -1,0 +1,24 @@
+{
+  "entry": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Resolve and invoke an overloaded method for a boxed integer paired with a StringBuilder or a String.",
+  "basis": "The service signatures and boxed-integer/StringBuilder setup mirror the original developer test. The expected overload accepts the exact boxed argument and the most specific compatible reference type.",
+  "cases": [
+    {
+      "args": [
+        "builder"
+      ],
+      "expected": {
+        "return": "Integer/CharSequence"
+      }
+    },
+    {
+      "args": [
+        "string"
+      ],
+      "expected": {
+        "return": "Integer/String"
+      }
+    }
+  ]
+}

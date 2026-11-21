@@ -1,0 +1,48 @@
+{
+  "entry": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
+  "probeClass": "UpgradeProbe",
+  "observer": "The formal parameter type of the accessible overload selected for five distinct real Java argument types.",
+  "basis": "An exact public overload wins. Short is assignable only to Number. Boolean matches none of the three reference parameters.",
+  "cases": [
+    {
+      "args": [
+        "Integer"
+      ],
+      "expected": {
+        "return": "java.lang.Integer"
+      }
+    },
+    {
+      "args": [
+        "Short"
+      ],
+      "expected": {
+        "return": "java.lang.Number"
+      }
+    },
+    {
+      "args": [
+        "Number"
+      ],
+      "expected": {
+        "return": "java.lang.Number"
+      }
+    },
+    {
+      "args": [
+        "String"
+      ],
+      "expected": {
+        "return": "java.lang.String"
+      }
+    },
+    {
+      "args": [
+        "Boolean"
+      ],
+      "expected": {
+        "return": null
+      }
+    }
+  ]
+}

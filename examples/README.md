@@ -745,6 +745,17 @@ whether it is static, the receiver as a record of its components, and the argume
 name the expression that computed them, and a record it is called on is built from those values. `foundInputs` are the
 inputs before shrinking. Counterexamples recorded before 2026-11-05 have no `witness`.
 
+### Dependency upgrade observations
+
+Find concrete client methods that invoke a changed library, then select a caller-visible claim and prepare its receiver. The command names the original bytecode descriptors, direct dependency calls and observable return, exception or emitted values. A service interface package is a lead to inspect. Claim discovery is static.
+
+```sh
+python3 examples/tools/build.py --upgrade-claims --client client.jar --old-dependency old.jar \
+  --new-dependency new.jar --jdk "$JAVA_HOME"
+```
+
+For an explicitly finite domain, `build.py --review-upgrade` compiles a reviewed Java observer once and runs it twice per input on each original classpath, with a fresh JVM and working directory every time. The observer bytecode must invoke the declared caller. A JDI breakpoint verifies entry into that exact method on every input and repetition. The JVM must load the caller from the original client, and the upgraded artifact must supply runtime classes. A return preserves its UTF-16 contents. An escaping exception must have reached the declared caller. The report keeps the independently expected old observation, both repeated outcomes and all JAR digests. [Runnable domains and observers](../lib/benchmark/external-upgrades/scenarios)
+
 ### Local source pairs
 
 Set `TARGETS_LOCAL_GIT_ROOT` to an absolute directory and place the source repository under a name such as `review`. Use `local-git:review` for `history.repository` and the two exact Git commit IDs for the revisions. The normal plan, preparation and replay commands accept this identity. A source slice can run offline when all pinned dependency JARs are in the target cache.

@@ -1,0 +1,44 @@
+{
+  "entry": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+  "probeClass": "UpgradeProbe",
+  "observer": "The exact escaped and highlighted text returned for empty, ordinary and HTML-sensitive step arguments.",
+  "basis": "Escape HTML characters in the original step text, then mark the specified nonempty argument span at its zero-based offset. Empty and absent argument lists contribute no marks.",
+  "cases": [
+    {
+      "args": [
+        "a & b",
+        "[]"
+      ],
+      "expected": {
+        "return": "a &amp; b"
+      }
+    },
+    {
+      "args": [
+        "eat red now",
+        "[{\"val\":\"red\",\"offset\":4}]"
+      ],
+      "expected": {
+        "return": "eat <b>red</b> now"
+      }
+    },
+    {
+      "args": [
+        "a<b",
+        "[{\"val\":\"<\",\"offset\":1}]"
+      ],
+      "expected": {
+        "return": "a<b>&lt;</b>b"
+      }
+    },
+    {
+      "args": [
+        "",
+        "[]"
+      ],
+      "expected": {
+        "return": ""
+      }
+    }
+  ]
+}

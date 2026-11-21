@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-043003-overload-recovery-group-1-compare-sixtee",
+  "title": "Overload recovery group 1 compare sixteen original upgrades",
+  "description": "Run each common original overload at its exact JVM parameter types. The attempts share the case deadline. Preserve newly exposed receiver, parameter, dependency and proof diagnostics. Cases: compsuite-i-38, ea-async-27, whatjdk-12, incremental-analysis-28, compsuite-i-1, compsuite-i-70, compsuite-i-10, compsuite-i-85, compsuite-i-9, compsuite-i-4, compsuite-i-62, compsuite-i-94, compsuite-i-81, compsuite-i-39, compsuite-i-29, compsuite-i-36.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "external-upgrade-evaluation"
+  ],
+  "links": {},
+  "expected": "Every upgrade has a report. For an overloaded caller, the report records each prepared common signature and every checker outcome.",
+  "submitted": {
+    "at": "2026-11-21T04:30:03+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "10m",
+    "memoryLimit": "6G",
+    "timeout": "2h"
+  },
+  "steps": [
+    {
+      "name": "Run the exact-overload workflow",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/overloads/01 --case compsuite-i-38 --case ea-async-27 --case whatjdk-12 --case incremental-analysis-28 --case compsuite-i-1 --case compsuite-i-70 --case compsuite-i-10 --case compsuite-i-85 --case compsuite-i-9 --case compsuite-i-4 --case compsuite-i-62 --case compsuite-i-94 --case compsuite-i-81 --case compsuite-i-39 --case compsuite-i-29 --case compsuite-i-36",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/overloads/01"
+  ]
+}

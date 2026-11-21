@@ -1,0 +1,251 @@
+{
+  "route": "public bytecode candidate discovery on the registered original client class and two original dependency JARs",
+  "cases": {
+    "commons-text-775": {
+      "status": "candidates",
+      "complete": true,
+      "candidates": [
+        {
+          "entry": "org.apache.commons.text.WordUtils#abbreviate(Ljava/lang/String;IILjava/lang/String;)Ljava/lang/String;",
+          "observation": "return and escaping exception",
+          "boundaryCalls": [
+            {
+              "entry": "org.apache.commons.lang3.StringUtils#defaultString(Ljava/lang/String;)Ljava/lang/String;",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.apache.commons.lang3.StringUtils#isEmpty(Ljava/lang/CharSequence;)Z",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.apache.commons.lang3.Strings#indexOf(Ljava/lang/CharSequence;Ljava/lang/CharSequence;I)I",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.apache.commons.lang3.Validate#isTrue(ZLjava/lang/String;[Ljava/lang/Object;)V",
+              "basis": "changed dependency class"
+            }
+          ],
+          "callbacks": [],
+          "publicOrProtected": true,
+          "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8"
+        },
+        {
+          "entry": "org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
+          "observation": "return and escaping exception",
+          "boundaryCalls": [
+            {
+              "entry": "org.apache.commons.lang3.StringUtils#isEmpty(Ljava/lang/CharSequence;)Z",
+              "basis": "changed dependency class"
+            }
+          ],
+          "callbacks": [],
+          "publicOrProtected": true,
+          "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8"
+        },
+        {
+          "entry": "org.apache.commons.text.WordUtils#containsAllWords(Ljava/lang/CharSequence;[Ljava/lang/CharSequence;)Z",
+          "observation": "return and escaping exception",
+          "boundaryCalls": [
+            {
+              "entry": "org.apache.commons.lang3.ArrayUtils#isEmpty([Ljava/lang/Object;)Z",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.apache.commons.lang3.StringUtils#isBlank(Ljava/lang/CharSequence;)Z",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.apache.commons.lang3.StringUtils#isEmpty(Ljava/lang/CharSequence;)Z",
+              "basis": "changed dependency class"
+            }
+          ],
+          "callbacks": [],
+          "publicOrProtected": true,
+          "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8"
+        },
+        {
+          "entry": "org.apache.commons.text.WordUtils#initials(Ljava/lang/String;[C)Ljava/lang/String;",
+          "observation": "return and escaping exception",
+          "boundaryCalls": [
+            {
+              "entry": "org.apache.commons.lang3.StringUtils#isEmpty(Ljava/lang/CharSequence;)Z",
+              "basis": "changed dependency class"
+            }
+          ],
+          "callbacks": [],
+          "publicOrProtected": true,
+          "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8"
+        },
+        {
+          "entry": "org.apache.commons.text.WordUtils#swapCase(Ljava/lang/String;)Ljava/lang/String;",
+          "observation": "return and escaping exception",
+          "boundaryCalls": [
+            {
+              "entry": "org.apache.commons.lang3.StringUtils#isEmpty(Ljava/lang/CharSequence;)Z",
+              "basis": "changed dependency class"
+            }
+          ],
+          "callbacks": [],
+          "publicOrProtected": true,
+          "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8"
+        },
+        {
+          "entry": "org.apache.commons.text.WordUtils#wrap(Ljava/lang/String;ILjava/lang/String;ZLjava/lang/String;)Ljava/lang/String;",
+          "observation": "return and escaping exception",
+          "boundaryCalls": [
+            {
+              "entry": "org.apache.commons.lang3.StringUtils#isBlank(Ljava/lang/CharSequence;)Z",
+              "basis": "changed dependency class"
+            }
+          ],
+          "callbacks": [],
+          "publicOrProtected": true,
+          "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8"
+        },
+        {
+          "entry": "org.apache.commons.text.WordUtils#applyWordCaseTransform(Ljava/lang/String;[CLjava/util/function/IntUnaryOperator;)Ljava/lang/String;",
+          "observation": "return and escaping exception",
+          "boundaryCalls": [
+            {
+              "entry": "org.apache.commons.lang3.StringUtils#isEmpty(Ljava/lang/CharSequence;)Z",
+              "basis": "changed dependency class"
+            }
+          ],
+          "callbacks": [],
+          "publicOrProtected": false,
+          "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8"
+        }
+      ],
+      "scope": "Direct bytecode calls in the supplied client. A service package is a candidate boundary. Each proposed claim still needs a concrete receiver, input domain and verification."
+    },
+    "compsuite-i-38": {
+      "status": "candidates",
+      "complete": true,
+      "candidates": [
+        {
+          "entry": "com.esotericsoftware.reflectasm.MethodAccess#get(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;",
+          "observation": "return and escaping exception",
+          "boundaryCalls": [
+            {
+              "entry": "org.objectweb.asm.ClassWriter#<init>(I)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.ClassWriter#toByteArray()[B",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.ClassWriter#visit(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.ClassWriter#visitEnd()V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.ClassWriter#visitMethod(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)Lorg/objectweb/asm/MethodVisitor;",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.Label#<init>()V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitCode()V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitEnd()V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitFrame(II[Ljava/lang/Object;I[Ljava/lang/Object;)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitInsn(I)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitIntInsn(II)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitLabel(Lorg/objectweb/asm/Label;)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitLdcInsn(Ljava/lang/Object;)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitMaxs(II)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitMethodInsn(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitTableSwitchInsn(IILorg/objectweb/asm/Label;[Lorg/objectweb/asm/Label;)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitTypeInsn(ILjava/lang/String;)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.MethodVisitor#visitVarInsn(II)V",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.Type#getDescriptor()Ljava/lang/String;",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.Type#getDescriptor(Ljava/lang/Class;)Ljava/lang/String;",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.Type#getInternalName()Ljava/lang/String;",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.Type#getSort()I",
+              "basis": "changed dependency class"
+            },
+            {
+              "entry": "org.objectweb.asm.Type#getType(Ljava/lang/Class;)Lorg/objectweb/asm/Type;",
+              "basis": "changed dependency class"
+            }
+          ],
+          "callbacks": [],
+          "publicOrProtected": true,
+          "callerClassSha256": "0c119cffb1287f9fe7f6793a241cafd2e15dea30b18e5c9fd2927179b4dce246"
+        }
+      ],
+      "scope": "Direct bytecode calls in the supplied client. A service package is a candidate boundary. Each proposed claim still needs a concrete receiver, input domain and verification."
+    },
+    "whatjdk-12": {
+      "status": "candidates",
+      "complete": true,
+      "candidates": [
+        {
+          "entry": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+          "observation": "return and escaping exception",
+          "boundaryCalls": [
+            {
+              "entry": "org.objectweb.asm.ClassReader#<init>(Ljava/io/InputStream;)V",
+              "basis": "changed dependency class"
+            }
+          ],
+          "callbacks": [],
+          "publicOrProtected": true,
+          "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93"
+        }
+      ],
+      "scope": "Direct bytecode calls in the supplied client. A service package is a candidate boundary. Each proposed claim still needs a concrete receiver, input domain and verification."
+    }
+  }
+}
