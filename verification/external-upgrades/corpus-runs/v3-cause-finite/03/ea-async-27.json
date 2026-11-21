@@ -1,0 +1,592 @@
+{
+  "entry": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+  "observer": "Transform and execute eight fixed bytecode/future combinations. Read completion at return and the eventual integer.",
+  "domainBasis": "Each class has zero through three extra uninitialized stack copies across await. The already resolved input completes synchronously. The pending input completes after the argument is supplied. The generated function constructs the integer represented by that argument. The same original class bytes are passed on both releases.",
+  "cases": [
+    {
+      "args": [
+        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjAHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAhAAQAAgAAABW7ABBZK8AAErgAGMAAGrcAHbgAILAAAAAAACIAAAAEAAEADgAA",
+        "true",
+        "100"
+      ],
+      "expected": {
+        "return": "true/100"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjAHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAhAAQAAgAAABW7ABBZK8AAErgAGMAAGrcAHbgAILAAAAAAACIAAAAEAAEADgAA",
+        "false",
+        "101"
+      ],
+      "expected": {
+        "return": "false/101"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjEHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAjAAUAAgAAABe7ABBZWSvAABK4ABjAABq3AB1XuAAgsAAAAAAAIgAAAAQAAQAOAAA=",
+        "true",
+        "110"
+      ],
+      "expected": {
+        "return": "true/110"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjEHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAjAAUAAgAAABe7ABBZWSvAABK4ABjAABq3AB1XuAAgsAAAAAAAIgAAAAQAAQAOAAA=",
+        "false",
+        "111"
+      ],
+      "expected": {
+        "return": "false/111"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjIHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAlAAYAAgAAABm7ABBZWVkrwAASuAAYwAAatwAdV1e4ACCwAAAAAAAiAAAABAABAA4AAA==",
+        "true",
+        "120"
+      ],
+      "expected": {
+        "return": "true/120"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjIHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAlAAYAAgAAABm7ABBZWVkrwAASuAAYwAAatwAdV1e4ACCwAAAAAAAiAAAABAABAA4AAA==",
+        "false",
+        "121"
+      ],
+      "expected": {
+        "return": "false/121"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjMHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAnAAcAAgAAABu7ABBZWVlZK8AAErgAGMAAGrcAHVdXV7gAILAAAAAAACIAAAAEAAEADgAA",
+        "true",
+        "130"
+      ],
+      "expected": {
+        "return": "true/130"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjMHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAnAAcAAgAAABu7ABBZWVlZK8AAErgAGMAAGrcAHVdXV7gAILAAAAAAACIAAAAEAAEADgAA",
+        "false",
+        "131"
+      ],
+      "expected": {
+        "return": "false/131"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "d27b7bd79486cbc164fd45498f24cb24f0f18833b40b31fe160492b38b79c612",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "763bd3db216f9c24f6471a2499ab64b3322814f5fa5a015c86d0c74d2bd962a0",
+  "lookupSha256": "30971c39575b8efb44b21922c700ac183160fcfa8c8dfd090f17e7f427d96ae0",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
+      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
+      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
+      "classpath": [
+        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
+        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
+        "f2820ea6ef069b83f37d805f5cec58b2872a25650f5f95b4f3cc572156323df0",
+        "62b2c0d818fde5c52cf6404aa10836dbb170a2c3fa8466e656f0f991732fa01f",
+        "02317d9ed739dab470a96f44de712fde51a811362ca26852b34324388e61257c",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
+      ],
+      "dependency": "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 24,
+      "resources": 1,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "6f8ba097d94830c63908364c5882afe8c41bb2a06baefdf027cf445fcddda826",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true/100"
+            },
+            {
+              "return": "true/100"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false/101"
+            },
+            {
+              "return": "false/101"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true/110"
+            },
+            {
+              "return": "true/110"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false/111"
+            },
+            {
+              "return": "false/111"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 4,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true/120"
+            },
+            {
+              "return": "true/120"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 5,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false/121"
+            },
+            {
+              "return": "false/121"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 6,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true/130"
+            },
+            {
+              "return": "true/130"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 7,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false/131"
+            },
+            {
+              "return": "false/131"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.AnnotationVisitor",
+        "org.objectweb.asm.AnnotationWriter",
+        "org.objectweb.asm.Attribute",
+        "org.objectweb.asm.ByteVector",
+        "org.objectweb.asm.ClassReader",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.ClassWriter",
+        "org.objectweb.asm.Context",
+        "org.objectweb.asm.CurrentFrame",
+        "org.objectweb.asm.FieldVisitor",
+        "org.objectweb.asm.FieldWriter",
+        "org.objectweb.asm.Frame",
+        "org.objectweb.asm.Handle",
+        "org.objectweb.asm.Handler",
+        "org.objectweb.asm.Label",
+        "org.objectweb.asm.MethodVisitor",
+        "org.objectweb.asm.MethodWriter",
+        "org.objectweb.asm.ModuleVisitor",
+        "org.objectweb.asm.ModuleWriter",
+        "org.objectweb.asm.Opcodes",
+        "org.objectweb.asm.Symbol",
+        "org.objectweb.asm.SymbolTable",
+        "org.objectweb.asm.SymbolTable$Entry",
+        "org.objectweb.asm.Type"
+      ]
+    },
+    "new": {
+      "commit": "a99e044708fac3654f621649d89bf1820bcd44a0",
+      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
+      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
+      "classpath": [
+        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
+        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
+        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
+        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
+        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
+      ],
+      "dependency": "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 24,
+      "resources": 1,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "f8261e3dc39157d1fd02e4566a7e22d3106325aea39ae5615149c6aad50f2567",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true/100"
+            },
+            {
+              "return": "true/100"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false/101"
+            },
+            {
+              "return": "false/101"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true/110"
+            },
+            {
+              "return": "true/110"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false/111"
+            },
+            {
+              "return": "false/111"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 4,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true/120"
+            },
+            {
+              "return": "true/120"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 5,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false/121"
+            },
+            {
+              "return": "false/121"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 6,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true/130"
+            },
+            {
+              "return": "true/130"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 7,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false/131"
+            },
+            {
+              "return": "false/131"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.AnnotationVisitor",
+        "org.objectweb.asm.AnnotationWriter",
+        "org.objectweb.asm.Attribute",
+        "org.objectweb.asm.ByteVector",
+        "org.objectweb.asm.ClassReader",
+        "org.objectweb.asm.ClassTooLargeException",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.ClassWriter",
+        "org.objectweb.asm.Context",
+        "org.objectweb.asm.CurrentFrame",
+        "org.objectweb.asm.FieldVisitor",
+        "org.objectweb.asm.FieldWriter",
+        "org.objectweb.asm.Frame",
+        "org.objectweb.asm.Handle",
+        "org.objectweb.asm.Handler",
+        "org.objectweb.asm.Label",
+        "org.objectweb.asm.MethodTooLargeException",
+        "org.objectweb.asm.MethodVisitor",
+        "org.objectweb.asm.MethodWriter",
+        "org.objectweb.asm.ModuleVisitor",
+        "org.objectweb.asm.ModuleWriter",
+        "org.objectweb.asm.Opcodes",
+        "org.objectweb.asm.Symbol",
+        "org.objectweb.asm.SymbolTable",
+        "org.objectweb.asm.SymbolTable$Entry",
+        "org.objectweb.asm.Type"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+    "codeIndices": [
+      30
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "0f55b338ff13c2f8139f7c230eaca196bf130f34c33d895c6d942a1bb47c7e64",
+    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+    "UpgradeProbe$1": "92bfade61d193455621fb76ee748ede8d628742399186ac09c23973742a90a52",
+    "UpgradeProbe$AF": "ec59f52e6c5b3b10c7864b8945a89a98836e374915b1fbe9a775d80c24d77e44",
+    "UpgradeProbe$Loader": "6df9b262cec70d26ab314e6951d7b9a1a3ccd3a1c743955e1488f8d222dc80a4",
+    "UpgradeProbe": "840979dac8afabb76c8e3be534eec34429c2e09d83246ad25610b4bb0c77176b",
+    "UpgradeTrace": "f36308e72104193d580b4c244dae7b9e4c43c815f2d647c9e0347b86faa5cbae"
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 23.399,
+  "specSha256": "122eb0714c3ec4b4d856cab8aa17709903691056cbc15e9173bb92502c3daa0b"
+}
