@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-21T08:45:13.772Z",
-  "duration_seconds": 487067,
+  "ended": "2026-11-21T08:58:34.282Z",
+  "duration_seconds": 487868,
   "stats": {
-    "turns": 648,
-    "api_calls": 3159,
-    "tool_calls": 2720,
+    "turns": 649,
+    "api_calls": 3175,
+    "tool_calls": 2735,
     "tool_errors": 39,
     "compactions": 10,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 7606,
-      "output_tokens": 1475372,
-      "cache_read_input_tokens": 778225575,
-      "cache_creation_input_tokens": 3872072
+      "input_tokens": 7642,
+      "output_tokens": 1481252,
+      "cache_read_input_tokens": 784578585,
+      "cache_creation_input_tokens": 3884614
     }
   },
   "tools": {
-    "Bash": 2599,
+    "Bash": 2612,
     "Edit": 28,
     "SendMessage": 19,
-    "ToolSearch": 17,
-    "TaskStop": 13,
+    "ToolSearch": 18,
+    "TaskStop": 14,
     "Write": 10,
     "ListAgents": 8,
     "AskUserQuestion": 7,
@@ -207,24 +207,24 @@
     {
       "index": 10,
       "started": "2026-11-20T21:07:50.949Z",
-      "ended": "2026-11-21T08:45:13.772Z",
-      "turns": 149,
-      "api_calls": 551,
+      "ended": "2026-11-21T08:58:34.282Z",
+      "turns": 150,
+      "api_calls": 567,
       "usage": {
-        "input_tokens": 1400,
-        "output_tokens": 139814,
-        "cache_read_input_tokens": 131605170,
-        "cache_creation_input_tokens": 356952
+        "input_tokens": 1436,
+        "output_tokens": 145694,
+        "cache_read_input_tokens": 137958180,
+        "cache_creation_input_tokens": 369494
       },
-      "peak_context_tokens": 392010
+      "peak_context_tokens": 404661
     }
   ],
   "log": {
-    "sha256": "68714581b4bb8c5566bbfcc32871ba0c82ff8c7756dc260959000051dae49b50",
-    "bytes": 51589131,
-    "lines": 25234,
-    "gzip_bytes": 8360649,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/68714581b4bb8c5566bbfcc32871ba0c82ff8c7756dc260959000051dae49b50.jsonl.gz"
+    "sha256": "2b74b6b26e74fd939ec98429d8409a4fc106dfc098316ce7595307c06a531b37",
+    "bytes": 51872252,
+    "lines": 25349,
+    "gzip_bytes": 8413269,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/2b74b6b26e74fd939ec98429d8409a4fc106dfc098316ce7595307c06a531b37.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -6315,6 +6315,14 @@
       "summary": "Merge the single-agent run external-upgrade-evaluation into the line",
       "body": "Lands run 6 (3 cycles, V0 to V3 on 32 real Java dependency upgrades; committed through 590002b6). The only real conflict was six results recorded twice when the agent started a second runner (VF-051): the agent's copies are kept, since its reports cite them and two of them passed in full, where the watcher's copies were cut off by SIGTERM. verification/results/index.json was rebuilt from the result folders with pipeline.write_index(), and the trace files regenerated.",
       "log_sha256": "68714581b4bb8c5566bbfcc32871ba0c82ff8c7756dc260959000051dae49b50"
+    },
+    {
+      "change_id": "vnsvswuvyvommyqlprryuxmppoowzyoy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Rebuild the examples index for 348 and record its inconsistent receipt (VF-052)",
+      "body": "After landing external-upgrade-evaluation the default run failed in test_acceptance.py on example 348. The stale index entry is fixed by build.py --index-only (348 is now executable, with its generated-keys receipt listed). The remaining failure, an unresolved conclusion marked as expected, is the agent's to settle and is recorded as VF-052. test_acceptance.py now fails only that one subtest.",
+      "log_sha256": "2b74b6b26e74fd939ec98429d8409a4fc106dfc098316ce7595307c06a531b37"
     }
   ],
   "logs": {
@@ -6677,6 +6685,12 @@
       "lines": 18895,
       "gzip_bytes": 6788637,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/2988eb89da8412b96b06912768511f270be7e4672f86cee3332e968c5585ce5e.jsonl.gz"
+    },
+    "2b74b6b26e74fd939ec98429d8409a4fc106dfc098316ce7595307c06a531b37": {
+      "bytes": 51872252,
+      "lines": 25349,
+      "gzip_bytes": 8413269,
+      "url": null
     },
     "2bc94a811e5517b9ea26e981a72247c3fa41f654bab6f5ed36a6abd239c1784d": {
       "bytes": 28584168,

@@ -18,6 +18,24 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-052: 348's generated-keys receipt is unresolved yet marked as expected, which fails the default run
+
+- **Status**: open.
+- **Raised**: 2026-11-21 by the watcher, from the default test run after landing the single-agent run
+  `external-upgrade-evaluation` (merge `ovuysqys`): 65 of 66 groups passed.
+- **Found**: `examples/tools/targets/test_acceptance.py` failed twice on example 348 (rxjava-jdbc generated keys).
+  (1) The committed `examples/index.json` was stale for 348 (`scaffolded` where the projection gives `executable`).
+  The watcher reran `build.py --index-only` and committed it. (2) The receipt
+  `examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/result.json` has
+  conclusion `status: unresolved` with `expectation: "yes"`. The task is an equivalence task expecting `refuted`.
+  `test_execution_conclusion_expectation_scope_and_replay_stay_apart` holds that a refusal is never a verdict and
+  never as expected, so an unresolved conclusion must carry `expectation: "no"`. The run's agent wrote the receipt at
+  the start of its run (23:23 UTC on 2026-11-20). The watcher has not changed it: whether the receipt or the code that
+  wrote it is wrong is the agent's work.
+- **Needs**: the agent of the next run, in the same session, to correct the receipt or the code that produced it, and
+  rerun the default test run.
+- **Closes when**: `test_acceptance.py` passes on the default line.
+
 ### VF-051: a second runner in the agent's workspace killed the watcher's runs of the same six jobs
 
 - **Status**: open.
