@@ -1,0 +1,463 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-074403-v3-prep-group-01-original-java-upgrade-c",
+  "title": "V3 prep group 01 original Java upgrade caller replays",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 5m16s, peak 1.4 GiB (estimated 12m00s, 2.0 GiB); 15 output file(s) changed",
+  "attention": [
+    "step 1 (Prepare original Maven modules compsuite-i-1, compsuite-i-4, compsuite-i-70) was held back 3m53s by its 2-CPU quota in 3m30s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Prepare original Maven modules compsuite-i-38) was held back 22.1s by its 2-CPU quota in 25.1s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (Prepare original Maven modules compsuite-i-81) was held back 1m11s by its 2-CPU quota in 44.3s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-074403-v3-prep-group-01-original-java-upgrade-c.json",
+    "sha256": "b452fd2296062899798c17f88ccdb766b259c27f1d1a0f82674a540018f4df7a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-074403-v3-prep-group-01-original-java-upgrade-c",
+      "title": "V3 prep group 01 original Java upgrade caller replays",
+      "description": "Rebuild each selected module or source slice at its two original Git revisions. For the ordering and validation cases, compile the upstream test fixtures and preserve the production runtime ahead of the fixture classpath. Run strict native and finite checks on both revisions, keeping original intake failures, pre-entry exceptions, and per-input replay evidence. Cases compsuite-i-1, compsuite-i-38, compsuite-i-4, compsuite-i-70, compsuite-i-81.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T07:44:03+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "Prepare original Maven modules compsuite-i-1, compsuite-i-4, compsuite-i-70",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase package --output verification/external-upgrades/corpus-runs/v3-inputs/01 --case compsuite-i-1 --case compsuite-i-4 --case compsuite-i-70",
+          "cwd": "."
+        },
+        {
+          "name": "Prepare original Maven modules compsuite-i-38",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase compile --output verification/external-upgrades/corpus-runs/v3-inputs/01 --case compsuite-i-38",
+          "cwd": "."
+        },
+        {
+          "name": "Prepare original Maven modules compsuite-i-81",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase compile --operand-scope provided --output verification/external-upgrades/corpus-runs/v3-inputs/01 --case compsuite-i-81",
+          "cwd": "."
+        },
+        {
+          "name": "Run native checking for each original pair",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/v3-prep-native/01 --case compsuite-i-1 --case compsuite-i-38 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-81",
+          "cwd": "."
+        },
+        {
+          "name": "Replay scoped original caller behavior",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/external-upgrades/corpus-runs/v3-prep-finite/01 --case compsuite-i-1 --case compsuite-i-38 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-81",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/v3-inputs/01",
+        "verification/external-upgrades/corpus-runs/v3-prep-native/01",
+        "verification/external-upgrades/corpus-runs/v3-prep-finite/01"
+      ]
+    }
+  },
+  "sourceCommit": "c4ad82d4dd94854b0d79bfaa98ddeb6761f9525d",
+  "startedAt": "2026-11-21T07:51:01+00:00",
+  "finishedAt": "2026-11-21T07:56:25+00:00",
+  "wallSeconds": 324.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1999537,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1497907200,
+    "wallSeconds": 316.4,
+    "cpuSeconds": 375.9,
+    "memoryOfEstimate": 0.7,
+    "durationOfEstimate": 0.44
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prepare original Maven modules compsuite-i-1, compsuite-i-4, compsuite-i-70",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase package --output verification/external-upgrades/corpus-runs/v3-inputs/01 --case compsuite-i-1 --case compsuite-i-4 --case compsuite-i-70",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 210.505,
+      "cpuSeconds": 209.897,
+      "cpuThrottledSeconds": 233.431,
+      "peakMemoryBytes": 1497907200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prepare-original-maven-modules.log",
+        "lines": 6,
+        "bytes": 206,
+        "sha256": "5f4cc690f76cbd735fa91b1af02c958a3e9b99c7d43e9637eae807a5a6b88a36",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-1 old artifacts ready",
+        "compsuite-i-1 new artifacts ready",
+        "compsuite-i-4 old artifacts ready",
+        "compsuite-i-4 new artifacts ready",
+        "compsuite-i-70 old artifacts ready",
+        "compsuite-i-70 new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Prepare original Maven modules compsuite-i-38",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase compile --output verification/external-upgrades/corpus-runs/v3-inputs/01 --case compsuite-i-38",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 25.057,
+      "cpuSeconds": 44.733,
+      "cpuThrottledSeconds": 22.07,
+      "peakMemoryBytes": 780529664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-prepare-original-maven-modules.log",
+        "lines": 2,
+        "bytes": 70,
+        "sha256": "8e0daa1d1dc530b98890bcdf7e271975fab9e2180b9e937bdc49cb2b0bb81f49",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-38 old artifacts ready",
+        "compsuite-i-38 new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Prepare original Maven modules compsuite-i-81",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase compile --operand-scope provided --output verification/external-upgrades/corpus-runs/v3-inputs/01 --case compsuite-i-81",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 44.308,
+      "cpuSeconds": 82.344,
+      "cpuThrottledSeconds": 71.667,
+      "peakMemoryBytes": 837672960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-prepare-original-maven-modules.log",
+        "lines": 2,
+        "bytes": 70,
+        "sha256": "92ae1d7c38b74160e3169d84c230076b1a834897fc0c33324faf2a1c4e22cf6e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-81 old artifacts ready",
+        "compsuite-i-81 new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Run native checking for each original pair",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/v3-prep-native/01 --case compsuite-i-1 --case compsuite-i-38 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-81",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 2.004,
+      "cpuSeconds": 1.844,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 163381248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-run-native-checking-for-each-o.log",
+        "lines": 5,
+        "bytes": 2299,
+        "sha256": "695832970df5d9f4ef379a447900b975a6ce7ce2ac39eebca80f9180dc426e75",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-38 current open parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co",
+        "compsuite-i-1 current open convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponse",
+        "compsuite-i-70 current open getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lan",
+        "compsuite-i-4 current open getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's con",
+        "compsuite-i-81 current open getPropertyValue is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy made by its constructor: org.togglz.deltaspike.activation.DeltaSpikePro"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Replay scoped original caller behavior",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/external-upgrades/corpus-runs/v3-prep-finite/01 --case compsuite-i-1 --case compsuite-i-38 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-81",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 34.48,
+      "cpuSeconds": 37.073,
+      "cpuThrottledSeconds": 3.117,
+      "peakMemoryBytes": 152973312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-replay-scoped-original-caller.log",
+        "lines": 10,
+        "bytes": 1673,
+        "sha256": "57f29379d8f9c1a60c36285214c529ded25bc0c6d8c395efe787acccd73abf13",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
+        "compsuite-i-1 preserved",
+        "changed com.esotericsoftware.reflectasm.MethodAccess#get(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;",
+        "compsuite-i-38 changed",
+        "open new input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused b",
+        "compsuite-i-4 open",
+        "open new input 0: the original caller method was never entered. java.lang.IncompatibleClassChangeError: Found class org.apache.poi.util.POILogger, but interface was expected at org.apache.poi.openxml4j.opc.PackageRelationshipCollection.parseRelationshipsPart(PackageRelationshipCollection.java:303)",
+        "compsuite-i-70 open",
+        "changed org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+        "compsuite-i-81 changed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-1.json",
+      "change": "added",
+      "bytes": 3033,
+      "sha256": "28085d8267be97fead776c9c3c67b4e60ed3c183f6b15fa9bc6d29ceb04aa675",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-38.json",
+      "change": "added",
+      "bytes": 2197,
+      "sha256": "15d6bf168a1b7d9e51af62689e594288abf581a045dd4d62985944ea4341a482",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 4547,
+      "sha256": "debd9323fe12993b7d205b7a160e48a08f96f2b03efb6fe8b2dbed0ce7f6cbbd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-70.json",
+      "change": "added",
+      "bytes": 4271,
+      "sha256": "f56551fbde04892e7c5c482efaaafc06c95654ad6c50a65b5d028ac1b44c2d19",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-81.json",
+      "change": "added",
+      "bytes": 3279,
+      "sha256": "d533a7085fe83bad189c3e5c4369e488001b1bff9c68987be8490612c10de12c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-1.json",
+      "change": "added",
+      "bytes": 7868,
+      "sha256": "37e88c441997b1332b2a13f5c5718a49d1edf820b3d6ccf951fea01fc2c9573a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-38.json",
+      "change": "added",
+      "bytes": 6072,
+      "sha256": "ead4a61d9b8b94e1fdb21aba96b211a656c1488bcc8b2e8d5983ed580c60991a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 9860,
+      "sha256": "ae8db1337dd73f3fe18cf1a940c95891b5fbbea24790dacf3146a84729bb2b7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-70.json",
+      "change": "added",
+      "bytes": 8531,
+      "sha256": "dfa9c6e2b64239afc7002bcdc9e850e9b6065d25ad58e50cedd5092ee842caa8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-81.json",
+      "change": "added",
+      "bytes": 8497,
+      "sha256": "1cef04ebe704ff63f3010d06d2ca6c02db19d141b8ea7ae69ebe790a924d8d96",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-1.json",
+      "change": "added",
+      "bytes": 8671,
+      "sha256": "7e59f8201677c6ae5f781b47c1661e1ca55fd71ad65cddf91746dbd1e37e5f81",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-38.json",
+      "change": "added",
+      "bytes": 6540,
+      "sha256": "727fe0a402e86c71cecdf2193f6b94f21faf4405a977ca3cab9dffb6cacbbbf6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 43728,
+      "sha256": "537179b3d4f80ffef1fb38c9f2a260f92855e259029b5fd209f2edb8a7e84707",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-70.json",
+      "change": "added",
+      "bytes": 25405,
+      "sha256": "b2b50303148137d10a42d45da473f80ab6ce9003f2dbf561f7e719d6ba386938",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-81.json",
+      "change": "added",
+      "bytes": 8337,
+      "sha256": "79c22304a9ae449d472ee170f884ecb9618a6b5d083fd241a9be459d5c960529",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T07:57:20+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-1.json",
+      "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-38.json",
+      "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-4.json",
+      "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-70.json",
+      "verification/external-upgrades/corpus-runs/v3-inputs/01/compsuite-i-81.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-1.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-38.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-4.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-70.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-native/01/current/compsuite-i-81.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-1.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-38.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-4.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-70.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-finite/01/compsuite-i-81.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
