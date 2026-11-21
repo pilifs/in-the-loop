@@ -3042,6 +3042,12 @@ change `rqsswoxxxwnr` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-trac
 
 At the user's request when run 7 (organic-java-pr-campaign) stopped: 39/46 primary obligations are decided at original native scope, and the seven open ones are Avro's universal properties, proved only under one recorded JVM startup. Strict checking with ordinary startup stops at Hadoop Configuration.&lt;clinit> and Avro Schema.&lt;clinit>. The finding also records JavaParser's System.getProperty refusal, two 60-second checker timeouts (354, 359), and the Temurin-hash-bound JDK models, and asks for an analysis of proving over every startup state before any brief. Documentation only.
 
+### Add the lib architecture fast-follow brief
+
+change `ppuqvlpymstl` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The user's brief, copied unchanged from their analysis folder, for a single-agent run that continues the dlc-process-plumbing Fable session once that run ends: one shared Rust/Python contract for proof output, binding preparation and checking to the class bytes the JVM loads, and moving array induction into lib. Documentation only.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz) has every step in between: reasoning, tool calls and their results.
