@@ -128,6 +128,7 @@ pub struct Options {
     /// `prove`'s): for a check made as a property of the pair of versions, each observed on a JVM in each version
     /// that has the class, on that version's own class path.
     pub observed_initializers: Vec<String>,
+    pub observed_runtime: crate::observed::Runtime,
     /// The models on request the own checker runs (`--model CLASS`, as `prove`'s), for such a check.
     pub requested_models: Vec<String>,
     /// The previous version's method, `pkg.Class#method`, when it is not the target's: renamed or moved.
@@ -211,6 +212,7 @@ impl Options {
             shared_callees: true,
             before_classpath: None,
             observed_initializers: Vec::new(),
+            observed_runtime: Default::default(),
             requested_models: Vec::new(),
             before_target: None,
             before_arguments: None,
@@ -1022,6 +1024,9 @@ fn as_parameter(v: Value, t: &Type) -> Value {
 
 /// Runs the regression proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
+    if options.observed_runtime != Default::default() && options.observed_initializers.is_empty() {
+        return Err(Error::new("--observed-runtime requires an initializer to observe"));
+    }
     crate::phases::begin();
     let outcome = run_check(options);
     let runs = outcome.as_ref().ok().and_then(|o| o.search.as_ref()).map(|s| s.runs.iter().map(|r| r.seconds).sum()).unwrap_or(0.0);

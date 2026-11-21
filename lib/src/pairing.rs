@@ -273,6 +273,7 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
     // previous version's).
     property.requested_models = options.requested_models.clone();
     property.observed_initializers = observed.0;
+    property.observed_runtime = options.observed_runtime;
     property.previous = Some((previous, observed.1));
     let mut outcome = crate::property::run(&property)?;
     if let Some(profile) = roots {

@@ -92,9 +92,47 @@ fn indirect_setting_reads_refuse_the_observed_initializer() {
 }
 
 #[test]
+fn an_empty_observer_environment_and_processor_count_are_explicit_and_independent() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let original = Command::new("java").arg("-XX:ActiveProcessorCount=3").env("SC_VALUE", "fixture-only")
+        .arg("-cp").arg(classes).args(["sc.M", "process"]).output().unwrap();
+    assert_eq!(String::from_utf8_lossy(&original.stdout).trim(), "process=3");
+    let run = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).env("SC_VALUE", "fixture-only")
+        .args(["prove", "sc.M#process", "--engine", "native", "--assert", "result == 102", "--observed-initializer", "sc.M$ProcessSettings",
+            "--observed-runtime", r#"{"processors":2,"emptyEnvironment":true}"#, "--classes"]).arg(classes)
+        .args(["--json", "--work"]).arg(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("setting-countermodels/empty-pinned"))
+        .output().unwrap();
+    assert!(run.status.success(), "{}", String::from_utf8_lossy(&run.stderr));
+    let result: serde_json::Value = serde_json::from_slice(&run.stdout).unwrap();
+    assert_eq!(result[0]["verdict"], "verified");
+    assert!(result[0]["stated"]["assumptions"].as_array().unwrap().iter().any(|a| a["text"].as_str()
+        .is_some_and(|s| s.contains("empty process environment") && s.contains("-XX:ActiveProcessorCount=2"))));
+    assert!(!String::from_utf8_lossy(&run.stdout).contains("fixture-only"));
+    check_refusal("process", "sc.M$ProcessSettings", 3, "-XX:ActiveProcessorCount=3", &[("SC_VALUE", "fixture-only")], "environment");
+}
+
+#[test]
 fn startup_setting_reads_refuse_the_observed_initializer() {
     jvmcontract::tool_tier!();
-    check_refusal("counted", "sc.Counted", 3, "-XX:ActiveProcessorCount=3", &[], "JVM resource configuration");
+    check_refusal("counted", "sc.Counted", 3, "", &[], "JVM resource configuration");
     check_refusal("rooted", "sc.Rooted", 4, "-Duser.dir=/abc", &[], "JVM working directory");
     check_refusal("encoded", "sc.Encoded", 1, "-Dfile.encoding=COMPAT", &[("LC_ALL", "C")], "default charset");
+    let Some(classes) = classes() else { return };
+    let mut ids = Vec::new();
+    for count in [3, 5] {
+        let flag = format!("-XX:ActiveProcessorCount={count}");
+        let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract")).env("JAVA_TOOL_OPTIONS", &flag)
+            .args(["prove", "sc.M#counted", "--assert", &format!("result == {count}"), "--observed-initializer", "sc.Counted",
+                "--engine", "native", "--classes"]).arg(classes).args(["--json", "--work"])
+            .arg(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("setting-countermodels").join(format!("pinned-{count}")))
+            .output().unwrap();
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        let result: serde_json::Value = serde_json::from_slice(&out.stdout).unwrap();
+        assert_eq!(result[0]["verdict"], "verified");
+        let assumption = result[0]["stated"]["assumptions"].as_array().unwrap().iter()
+            .find(|a| a["text"].as_str().unwrap_or("").contains(&flag)).expect("the statement binds the processor count");
+        ids.push(assumption["id"].as_str().unwrap().to_string());
+    }
+    assert_ne!(ids[0], ids[1]);
 }

@@ -5,6 +5,12 @@ package sc;
  * what it returns: {@code java -cp CLASSES sc.M mapped}.
  */
 public class M {
+    static final class ProcessSettings {
+        static final int VALUE = (System.getenv("SC_VALUE") == null && System.getenv().isEmpty() ? 100 : 0)
+                + Runtime.getRuntime().availableProcessors();
+    }
+
+    public static int process() { return ProcessSettings.VALUE; }
     /** The length of the property Mapped read: 6 ("absent") where sc.value is not set. */
     public static int mapped() {
         return Mapped.VALUE.length();
@@ -41,6 +47,7 @@ public class M {
             case "kept" -> kept();
             case "looked" -> looked();
             case "counted" -> counted();
+            case "process" -> process();
             case "rooted" -> rooted();
             case "encoded" -> encoded();
             default -> throw new IllegalArgumentException(args[0]);

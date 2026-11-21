@@ -255,6 +255,12 @@ class RecipesTest(unittest.TestCase):
         original = self.plan("310", "same-day")
         self.assertNotEqual(original.claim["key"], plan.claim["key"])
         self.assertEqual(original.artifacts, plan.artifacts)
+        settings = {"processors": 2, "emptyEnvironment": True}
+        scoped = replace(plan, claim={**plan.claim, "observedRuntime": settings})
+        self.assertNotEqual(workflow.claim_key(scoped.claim), plan.claim["key"])
+        self.assertIn(("--observed-runtime", '{"emptyEnvironment":true,"processors":2}'),
+                      [(a.flag, a.value) for a in recipes.translate(scoped).arguments])
+        self.assertIsInstance(recipes.translate(replace(original, claim={**original.claim, "observedRuntime": settings})), interfaces.Unsupported)
         recipe = recipes.translate(plan)
         name, state = next(iter(plan.claim["observedInitializers"].items()))
         model, = plan.claim["namedModels"]

@@ -559,6 +559,10 @@ struct EquivalenceArgs {
     /// result states it.
     #[arg(long = "observed-initializer")]
     observed_initializer: Vec<String>,
+    /// Process settings for initializer observation, e.g. '{"processors":2,"emptyEnvironment":true}'.
+    /// The subject JVM confirms each selected setting and the result records it.
+    #[arg(long, requires = "observed_initializer")]
+    observed_runtime: Option<jvmcontract::observed::Runtime>,
     /// As prove's: a JDK class the tool's own checker is to run its model of (java.util.ArrayList); may be
     /// repeated. For a check made as a property of the pair of versions.
     #[arg(long = "model")]
@@ -751,6 +755,10 @@ struct ProveArgs {
     /// to be what the initializer leaves in every run. Never for the class under proof. Not with --cache.
     #[arg(long = "observed-initializer")]
     observed_initializer: Vec<String>,
+    /// Process settings for initializer observation, e.g. '{"processors":2,"emptyEnvironment":true}'.
+    /// The subject JVM confirms each selected setting and the result records it.
+    #[arg(long, requires = "observed_initializer")]
+    observed_runtime: Option<jvmcontract::observed::Runtime>,
     /// A JDK class the tool's own checker is to run its model of, `pkg.Class`; may be repeated. For the models it
     /// runs only on request: java.util.ArrayList (ArrayList(), ArrayList(int), size, isEmpty, get, add, addAll,
     /// toArray, iterator). Without it the class is the JDK's, and each of its calls is a gap. The result states
@@ -944,6 +952,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.before_classpath = Some(args.before_classpath.iter().flat_map(|s| std::env::split_paths(s).collect::<Vec<_>>()).collect());
             }
             options.observed_initializers = args.observed_initializer;
+            options.observed_runtime = args.observed_runtime.unwrap_or_default();
             options.requested_models = args.model;
             options.work = args.work;
             options.report = args.report;
@@ -1043,6 +1052,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.writes = declaration.writes.clone();
                 options.lemmas = args.lemmas.clone();
                 options.observed_initializers = args.observed_initializer.clone();
+                options.observed_runtime = args.observed_runtime.unwrap_or_default();
                 options.requested_models = args.model.clone();
                 options.stand_ins = args.stand_in.clone();
                 let outcome = property::run(&options)?;

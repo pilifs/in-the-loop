@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-120341-avro-factory-and-nested-converter-with-m",
+  "title": "Avro factory and nested converter with measured process settings",
+  "description": "Recheck the fixed original factory and direct nested converter over all 21 capacity/logical-length pairs on their original 124-entry closure. Bind both observer and comparison JVMs to two processors and run the Hadoop factory observer with an empty environment. Preserve the next refusal if startup writes another class or needs other external settings.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T12:03:41+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Run the fixed original Avro factory and converter",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage observed-process --tasks bounds-fix-process-startup,direct-limit-fix-process-startup",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/observed-process-native"
+  ]
+}

@@ -303,6 +303,7 @@ public final class ObservedInitializer {
         String display = Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag();
         String zone = java.util.TimeZone.getDefault().getID();
         Path log = args.length > 1 ? Path.of(args[1]) : null;
+        boolean emptyEnvironment = emptyEnvironment();
         Properties original = System.getProperties();
         Recording recording = new Recording();
         recording.putAll(original);
@@ -337,7 +338,8 @@ public final class ObservedInitializer {
         // Alone, the class is what another initialization's is compared with: described in full.
         String state = new Dump(log == null).of(c);
         if (log == null) {
-            System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + "}");
+            System.out.println("@observed {\"jdk\":" + text(jdk) + ",\"fixedProcessors\":" + fixedProcessors()
+                    + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment()) + "," + state + "}");
             return;
         }
         // The classes the initialization initialized: what the JVM logged after the mark, of the class path.
@@ -384,8 +386,27 @@ public final class ObservedInitializer {
         System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + ",\"on\":{\"sha256\":" + text(sha256(app, internal))
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
-                + text(display) + "},\"zone\":" + text(zone) + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
+                + text(display) + "},\"zone\":" + text(zone) + ",\"fixedProcessors\":" + fixedProcessors() + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment())
+                + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
                 + (recording.whole == null ? "null" : text(recording.whole)) + ",\"changed\":[" + changes + "],\"initialized\":[" + initialized + "]}}");
+    }
+
+    private static boolean emptyEnvironment() {
+        try { return System.getenv().isEmpty(); }
+        catch (SecurityException unavailable) { return false; }
+    }
+
+    /** A positive, read-only VM option pins this value throughout startup. Read it after capturing the subject. */
+    private static Integer fixedProcessors() {
+        try {
+            var bean = java.lang.management.ManagementFactory.getPlatformMXBean(com.sun.management.HotSpotDiagnosticMXBean.class);
+            if (bean == null) return null;
+            var option = bean.getVMOption("ActiveProcessorCount");
+            int count = Integer.parseInt(option.getValue());
+            return !option.isWriteable() && count > 0 && count == Runtime.getRuntime().availableProcessors() ? count : null;
+        } catch (RuntimeException | LinkageError unavailable) {
+            return null;
+        }
     }
 
     /** A class with calendar state can qualify the factory environment for later calls.

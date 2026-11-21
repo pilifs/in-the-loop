@@ -1,0 +1,36 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "bounds",
+  "statement": "The factory result starts at position zero, has the logical length as limit and remaining, and retains the physical capacity.",
+  "assume": "code >= 0 && code < 21",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.WritableBuffer#bounds(I)I",
+    "mapping": "The factory result starts at position zero, has the logical length as limit and remaining, and retains the physical capacity. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 21
+  },
+  "observedInitializers": {
+    "org.apache.hadoop.conf.Configuration": "c6f4c5e284f3130cadd293a43b50af0e807ceb51dbe4c1c47d6dbf0ddf2869bf"
+  },
+  "observedRuntime": {
+    "emptyEnvironment": true,
+    "processors": 2
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13"
+  },
+  "notes": [
+    "The original factory runs with Configuration startup observed on JDK 21.0.13 in an empty process environment and with two available processors. Each observation is conditional on the complete state and all transitive comparisons qualifying."
+  ]
+}

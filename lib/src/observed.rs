@@ -60,8 +60,11 @@
 //!   properties as a whole (their keys, entries or values, a copy) is refused, since the observation lists only the
 //!   ones read by name. The JDK's reads of its own configuration, as it opens a JAR or first uses one of its
 //!   classes, are not listed: the check takes the JDK at its defaults throughout.
-//! - The environment: an observation does not record it, so one whose initialization initialized a class whose code
-//!   reads it (`System.getenv`, `ProcessBuilder.environment`, as `ob.Environ` does) is refused, by the class.
+//! - `System.getenv` requires an empty process environment verified by the subject JVM. A caller can select
+//!   it with `--observed-runtime '{"emptyEnvironment":true}'`. The observer records only emptiness.
+//!   `ProcessBuilder.environment` and reads under an inherited nonempty environment remain unbound.
+//! - A read of `Runtime.availableProcessors()` requires a positive, immutable HotSpot
+//!   `-XX:ActiveProcessorCount=N` matching the observed JVM. This count enters the statement and state digest.
 //! - The JDK: its release must be the check's, and its vendor and home are stated.
 //!
 //! What is still assumed, and stated: that a write of the value a field already had is none; that the settings it
@@ -162,6 +165,9 @@ pub struct On {
     pub zone: String,
     /// Both standard calendar factories met the fixed-UTC Gregorian profile on the observed JVM.
     pub utc_gregorian: bool,
+    /// Runtime.availableProcessors() on a JVM whose read-only ActiveProcessorCount pins it.
+    pub fixed_processors: Option<i32>,
+    pub empty_environment: bool,
     /// Each system property the initialization read, in the order it first did, and the value it had.
     pub properties: Vec<(String, Option<String>)>,
     /// The first class of the class path that read the system properties as a whole, if one did.
@@ -185,6 +191,25 @@ pub struct Initialized {
 /// The observations a check was given, by the class's internal name.
 pub type Observations = BTreeMap<String, Observed>;
 
+/// Launch settings for a separately scoped initializer observation and its comparison JVMs.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, serde::Deserialize)]
+#[serde(default, rename_all = "camelCase", deny_unknown_fields)]
+pub struct Runtime {
+    pub processors: Option<std::num::NonZeroI32>,
+    pub empty_environment: bool,
+}
+
+impl std::str::FromStr for Runtime {
+    type Err = String;
+    fn from_str(text: &str) -> Result<Self, Self::Err> {
+        let r: Self = serde_json::from_str(text).map_err(|e| format!("invalid observed runtime: {e}"))?;
+        if r == Self::default() || r.processors.is_some_and(|n| n.get() < 1) {
+            return Err("provide a positive processors count or emptyEnvironment=true".into());
+        }
+        Ok(r)
+    }
+}
+
 /// What a result that took the observed state of `class`'s initializer rests on.
 pub fn assumption(class: &str, observed: &Observed) -> String {
     let jdk = &observed.jdk;
@@ -193,6 +218,8 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
         None => "the check's class path".to_string(),
     };
     let bound = &observed.on;
+    let processors = bound.fixed_processors.map(|n| format!("; Runtime.availableProcessors() was pinned to {n} (-XX:ActiveProcessorCount={n}) throughout initialization")).unwrap_or_default();
+    let environment = if bound.empty_environment { ", with an empty process environment throughout initialization" } else { "" };
     let short = |h: &str| h.chars().take(12).collect::<String>();
     let properties = if bound.properties.is_empty() {
         "it read no system property".to_string()
@@ -207,7 +234,7 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
         format!("; it initialized {} besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements)", names.join(", "))
     };
     format!(
-        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the class first thing on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the class first thing on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{processors}{environment}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
         class.replace('/', "."),
         bound.vendor,
         short(&bound.sha256),
@@ -222,6 +249,11 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
 /// files under `work`, and checks what each was observed on ([`On`]). An error where there is no JDK, the class is
 /// not found, its initializer throws, or the observation is not bound to what the check holds.
 pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result<Observations, Error> {
+    observe_on(classes, classpath, work, Runtime::default())
+}
+
+fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: Runtime) -> Result<Observations, Error> {
+    if runtime.processors.is_some_and(|n| n.get() < 1) { return Err(Error::new("--observed-runtime requires a positive processor count")); }
     let mut out = Observations::new();
     if classes.is_empty() {
         return Ok(out);
@@ -245,7 +277,7 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
     for entry in &entries[1..] {
         tool.add(entry)?;
     }
-    let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone() };
+    let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime };
     let mut alone: BTreeMap<String, serde_json::Value> = BTreeMap::new();
     for class in classes {
         let internal = class.replace('.', "/");
@@ -253,10 +285,14 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
         let log = dir.join(format!("{binary}.init.log"));
         let line = jvm.run(&binary, Some(&log))?;
         let observed = parse(&binary, &line)?;
+        if runtime.empty_environment && !observed.on.empty_environment
+            || runtime.processors.is_some_and(|n| observed.on.fixed_processors != Some(n.get())) {
+            return Err(Error::new(format!("--observed-initializer {binary}: the observing JVM did not confirm its requested process settings")));
+        }
         bind(&binary, &internal, &observed.on, &entries, &tool)?;
         bind_values(&binary, &observed, &tool)?;
         for ran in std::iter::once(internal.as_str()).chain(observed.on.initialized.iter().map(|i| i.name.as_str())) {
-            if let Some((setting, call)) = unbound_setting(&tool, ran)? {
+            if let Some((setting, call)) = unbound_setting(&tool, ran, &observed.on)? {
                 let whose = if ran == internal { "its code".to_string() } else { format!("its initialization initialized {}, whose code", ran.replace('/', ".")) };
                 return Err(Error::new(format!(
                     "--observed-initializer {binary}: {whose} reads {setting} ({call}), which the observation cannot bind"
@@ -270,7 +306,7 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
             }
             if !alone.contains_key(&other.name) {
                 let line = jvm.run(&name, None)?;
-                alone.insert(other.name.clone(), state(&name, &line)?);
+                alone.insert(other.name.clone(), state(&name, &line, &observed.on)?);
             }
             if let Some(value) = undescribed(&other.state).or_else(|| undescribed(&alone[&other.name])) {
                 return Err(Error::new(format!(
@@ -293,6 +329,7 @@ struct Jvm {
     java: PathBuf,
     class_path: std::ffi::OsString,
     dir: PathBuf,
+    runtime: Runtime,
 }
 
 impl Jvm {
@@ -303,6 +340,8 @@ impl Jvm {
         let stdout = self.dir.join(format!("{binary}{suffix}.stdout"));
         let stderr = self.dir.join(format!("{binary}{suffix}.stderr"));
         let mut command = Command::new(&self.java);
+        if self.runtime.empty_environment { command.env_clear(); }
+        if let Some(n) = self.runtime.processors { command.arg(format!("-XX:ActiveProcessorCount={n}")); }
         command.args(["-Xmx256m", "-XX:+UseSerialGC", "-XX:TieredStopAtLevel=1", "-XX:-UsePerfData"]);
         // The observer reads a lambda's constant pool to say which method it calls (its Describe and Pool).
         command.args(["--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED", "--add-exports", "java.base/jdk.internal.reflect=ALL-UNNAMED"]);
@@ -413,7 +452,7 @@ fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::Class
 
 /// Settings outside the observation's dynamic recorder. Scan the observed class and the application classes
 /// initialized with it. A reference in an unexecuted method can conservatively refuse an observation.
-fn unbound_setting(tool: &crate::classpath::ClassPath, internal: &str) -> Result<Option<(&'static str, String)>, Error> {
+fn unbound_setting(tool: &crate::classpath::ClassPath, internal: &str, on: &On) -> Result<Option<(&'static str, String)>, Error> {
     let Some(bytes) = tool.application_bytes(internal)? else { return Ok(None) };
     let class = crate::classfile::ClassFile::parse(&bytes).map_err(|e| Error::new(format!("--observed-initializer: the class file of {} does not parse: {e}", internal.replace('/', "."))))?;
     for (index, constant) in class.pool.entries().iter().enumerate() {
@@ -425,10 +464,12 @@ fn unbound_setting(tool: &crate::classpath::ClassPath, internal: &str) -> Result
         };
         let Ok(member) = class.pool.member(index) else { continue };
         let setting = match (member.owner.as_str(), member.name.as_str()) {
+            ("java/lang/System", "getenv") if on.empty_environment && matches!(member.descriptor.as_str(), "()Ljava/util/Map;" | "(Ljava/lang/String;)Ljava/lang/String;") => continue,
             ("java/lang/System", "getenv") | ("java/lang/ProcessBuilder", "environment") => "the environment",
             ("java/lang/System", "getProperty" | "getProperties") if handle => "a system property through a method handle",
             ("java/util/Properties" | "java/util/Hashtable", "putIfAbsent" | "replace" | "replaceAll" | "merge" | "compute" | "computeIfAbsent" | "computeIfPresent") => "a possible system property through a map update",
             ("java/lang/invoke/MethodHandles$Lookup", name) if name.starts_with("find") || name.starts_with("unreflect") => "a dynamically looked-up member",
+            ("java/lang/Runtime", "availableProcessors") if member.descriptor == "()I" && on.fixed_processors.is_some() => continue,
             ("java/lang/Runtime", "availableProcessors" | "maxMemory" | "totalMemory" | "freeMemory") => "the JVM resource configuration",
             ("java/io/File", "getAbsolutePath" | "getAbsoluteFile" | "getCanonicalPath" | "getCanonicalFile")
             | ("java/nio/file/Path", "toAbsolutePath" | "toRealPath") => "the JVM working directory",
@@ -541,17 +582,37 @@ fn changed(after: &serde_json::Value, alone: &serde_json::Value) -> Option<Strin
 }
 
 /// A class's static state alone, from the observer's line without a log: `fields` and `objects`.
-fn state(binary: &str, line: &str) -> Result<serde_json::Value, Error> {
+fn state(binary: &str, line: &str, on: &On) -> Result<serde_json::Value, Error> {
     let json: serde_json::Value = serde_json::from_str(line).map_err(|e| Error::new(format!("--observed-initializer {binary}: the observation is not one the tool reads ({e})")))?;
     if let Some(threw) = json.get("threw").and_then(|t| t.as_str()) {
         return Err(Error::new(format!("--observed-initializer {binary}: initialized alone on the JVM, the class threw {threw}")));
     }
+    if fixed_processors(&json)? != on.fixed_processors || empty_environment(&json)? != on.empty_environment {
+        return Err(Error::new(format!("--observed-initializer {binary}: initialized alone under different process settings")));
+    }
     Ok(serde_json::json!({ "fields": json.get("fields"), "objects": json.get("objects") }))
+}
+
+fn empty_environment(settings: &serde_json::Value) -> Result<bool, Error> {
+    settings.get("emptyEnvironment").map(|v| v.as_bool().ok_or_else(|| Error::new("--observed-initializer: invalid process environment observation")))
+        .unwrap_or(Ok(false))
+}
+
+fn fixed_processors(settings: &serde_json::Value) -> Result<Option<i32>, Error> {
+    match settings.get("fixedProcessors") {
+        None | Some(serde_json::Value::Null) => Ok(None),
+        Some(n) => n.as_i64().and_then(|v| i32::try_from(v).ok()).filter(|v| *v > 0).map(Some)
+            .ok_or_else(|| Error::new("--observed-initializer: invalid fixed JVM processor count")),
+    }
 }
 
 /// [`observe`] for a check: the observations must be of the JDK the check's facts about the JDK are of.
 pub fn observe_for(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result<Observations, Error> {
-    let observed = observe(classes, classpath, work)?;
+    observe_for_runtime(classes, classpath, work, Runtime::default())
+}
+
+pub(crate) fn observe_for_runtime(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: Runtime) -> Result<Observations, Error> {
+    let observed = observe_on(classes, classpath, work, runtime)?;
     if let (Some(release), Some((class, o))) = (crate::bmc::gaps::jdk_release(), observed.iter().next()) {
         if o.jdk != release {
             return Err(Error::new(format!("--observed-initializer {}: the JVM that observed it is JDK {}, and the check's JDK is {release}", class.replace('/', "."), o.jdk)));
@@ -565,9 +626,13 @@ pub fn observe_for(classes: &[String], classpath: &[PathBuf], work: &Path) -> Re
 /// `Class` it holds being the copy's where the check holds a copy of that class. An error where it holds the
 /// `Class` of a class of the previous version that the check has no copy of.
 pub fn observe_previous(classes: &[String], previous: &crate::relocate::Previous, work: &Path) -> Result<Observations, Error> {
+    observe_previous_on(classes, previous, work, Runtime::default())
+}
+
+pub(crate) fn observe_previous_on(classes: &[String], previous: &crate::relocate::Previous, work: &Path, runtime: Runtime) -> Result<Observations, Error> {
     use crate::relocate::Found;
     let mut out = Observations::new();
-    for (class, mut observed) in observe_for(classes, &previous.classpath, &work.join("previous"))? {
+    for (class, mut observed) in observe_for_runtime(classes, &previous.classpath, &work.join("previous"), runtime)? {
         let binary = class.replace('/', ".");
         if !previous.relocated.contains(&class) {
             return Err(Error::new(format!("--observed-initializer {binary}: the check holds no copy of the previous version's class")));
@@ -685,6 +750,8 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         display: text(locale, "display")?,
         zone: text(on, "zone")?,
         utc_gregorian: on.get("utcGregorian").and_then(|v| v.as_bool()).unwrap_or(false),
+        fixed_processors: fixed_processors(on)?,
+        empty_environment: empty_environment(on)?,
         properties: list("properties")?.iter().map(|p| Ok((text(p, "name")?, p.get("value").and_then(|v| v.as_str()).map(String::from)))).collect::<Result<_, Error>>()?,
         all_properties: match on.get("allProperties") {
             Some(serde_json::Value::Null) => None,
@@ -697,7 +764,9 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
             .map(|i| Ok(Initialized { name: text(i, "name")?, sha256: text(i, "sha256")?, state: serde_json::json!({ "fields": i.get("fields"), "objects": i.get("objects") }) }))
             .collect::<Result<_, Error>>()?,
     };
-    let state = serde_json::json!({"fields": json.get("fields"), "objects": json.get("objects")});
+    let mut state = serde_json::json!({"fields": json.get("fields"), "objects": json.get("objects")});
+    if let Some(n) = on.fixed_processors { state["fixedProcessors"] = n.into(); }
+    if on.empty_environment { state["emptyEnvironment"] = true.into(); }
     let state_sha256 = crate::digest::sha256_hex(state.to_string().as_bytes());
     let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), state_sha256, fields, objects, previous: None, on };
     let within = |s: &Slot| !matches!(s, Slot::Object(i) if *i >= observed.objects.len());
@@ -764,6 +833,18 @@ mod tests {
         assert_eq!((o.on.sha256.as_str(), o.on.locale.as_str(), o.on.format.as_str()), ("ab12", "en-US", "de-DE"));
         assert_eq!(o.on.properties, vec![("p.value".to_string(), Some("xyz".to_string())), ("p.unset".to_string(), None)]);
         assert_eq!(o.on.initialized[0].name, "p/B");
+        let with_count = |count: &str| line.replace("\"zone\":", &format!("\"fixedProcessors\":{count},\"zone\":"));
+        let three = parse("p.C", &with_count("3")).unwrap();
+        let five = parse("p.C", &with_count("5")).unwrap();
+        assert_eq!(three.objects, five.objects);
+        assert_ne!(three.state_sha256, five.state_sha256);
+        assert_eq!(o.state_sha256, parse("p.C", &with_count("null")).unwrap().state_sha256);
+        let empty = parse("p.C", &line.replace("\"zone\":", "\"emptyEnvironment\":true,\"zone\":")).unwrap();
+        assert_ne!(empty.state_sha256, o.state_sha256);
+        assert!(state("p.C", r#"{"fields":[],"objects":[]}"#, &empty.on).is_err());
+        for invalid in ["0", "-1", "\"3\"", "2147483648"] {
+            assert!(parse("p.C", &with_count(invalid)).is_err());
+        }
         let said = assumption("p/C", &o);
         for part in ["JDK 25.0.5, Eclipse Adoptium", "sha256 ab12", "default locale was en-US (formatting de-DE", "default time zone Asia/Tokyo", "p.value = \"xyz\"", "p.unset, not set", "it initialized p.B besides"] {
             assert!(said.contains(part), "{part}: {said}");

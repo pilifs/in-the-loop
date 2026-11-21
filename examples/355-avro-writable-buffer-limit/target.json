@@ -231,6 +231,34 @@
       ],
       "expected": "established",
       "revision": "fix"
+    },
+    {
+      "id": "bounds-fix-process-startup",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+      "claim": "claims/bounds-process-startup.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "direct-limit-fix-process-startup",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory$BytesWritableConverter#convert(Lorg/apache/hadoop/io/BytesWritable;)Ljava/nio/ByteBuffer;",
+      "claim": "claims/direct-limit-process-startup.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
     }
   ],
   "controls": [

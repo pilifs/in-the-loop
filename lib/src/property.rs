@@ -121,6 +121,7 @@ pub struct Options {
     /// initialized on a JVM, on the check's class path, and the checker takes the static state it left there
     /// ([`crate::observed`]). The result states it.
     pub observed_initializers: Vec<String>,
+    pub observed_runtime: crate::observed::Runtime,
     /// The models on request the tool's own checker runs for their classes (`--model CLASS`,
     /// [`crate::models::ON_REQUEST`]). The result states each.
     pub requested_models: Vec<String>,
@@ -186,6 +187,7 @@ impl Options {
             lemmas: None,
             summary: false,
             observed_initializers: Vec::new(),
+            observed_runtime: Default::default(),
             requested_models: Vec::new(),
             stand_ins: Vec::new(),
             previous: None,
@@ -277,6 +279,10 @@ pub const WIDENED_DOMAIN: &str = "widened-domain";
 
 /// Runs the property proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
+    if options.observed_runtime != Default::default() && options.observed_initializers.is_empty()
+        && !options.previous.as_ref().is_some_and(|(_, classes)| !classes.is_empty()) {
+        return Err(Error::new("--observed-runtime requires an initializer to observe"));
+    }
     crate::phases::begin();
     // The proof cache (`reuse::property_lookup`, `reuse::property_store`): a stored result for the same property
     // claim is the result, and a verified or refuted one is stored. The claim's key reads a construction plan whole,
@@ -1025,9 +1031,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if !options.observed_initializers.is_empty() && options.engine == crate::Engine::Jbmc {
         return Err(Error::new("--observed-initializer is for the tool's own checker (--engine native or auto): JBMC runs no observation"));
     }
-    let mut observed = crate::observed::observe_for(&options.observed_initializers, &entries, &work)?;
+    let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, &entries, &work, options.observed_runtime)?;
     if let Some((previous, classes)) = &options.previous {
-        observed.extend(crate::observed::observe_previous(classes, previous, &work)?);
+        observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime)?);
     }
     let observed = std::sync::Arc::new(observed);
     let previous = options.previous.as_ref().map(|(p, _)| std::sync::Arc::new(p.clone()));
