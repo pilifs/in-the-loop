@@ -1,0 +1,1377 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-232059-domain-foundations-360-ordinary-and-obse",
+  "title": "Domain foundations 360 ordinary and observed startup",
+  "status": "failed",
+  "summary": "failed: 2 failed step(s) in 25.7s, peak 174.6 MiB (estimated 5m00s, 3.0 GiB); 140 output file(s) changed",
+  "attention": [
+    "step 1 (Check foundation-baseline) exited 1, expected 0",
+    "step 2 (Check foundation-baseline-observed) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-232059-domain-foundations-360-ordinary-and-obse.json",
+    "sha256": "7f06264e14c3710393b14eff6e74e22f9e46a6923effc5fefc44c4b99f42a4b6",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-232059-domain-foundations-360-ordinary-and-obse",
+      "title": "Domain foundations 360 ordinary and observed startup",
+      "description": "Compare the frozen strict native obligations and their recorded JVM startup companions on the post-architecture verifier. Retain refusals and the actual checker, bounds and artifact identities.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:20:59+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d",
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check foundation-baseline",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage foundation-baseline --tasks postorder-fix,terminal-fix,preorder-parent,preorder-fix,nonempty-parent,nonempty-fix --seconds 60",
+          "cwd": "."
+        },
+        {
+          "name": "Check foundation-baseline-observed",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage foundation-baseline-observed --tasks postorder-fix-node-startup,postorder-parent-node-startup,postorder-fix-observed --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/360-javaparser-postorder-root/records/foundation-baseline-native",
+        "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native"
+      ]
+    }
+  },
+  "sourceCommit": "3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d",
+  "startedAt": "2026-11-21T23:24:54+00:00",
+  "finishedAt": "2026-11-21T23:29:00+00:00",
+  "wallSeconds": 246.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2195921,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 183066624,
+    "wallSeconds": 25.7,
+    "cpuSeconds": 39.3,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 208.508,
+      "cpuSeconds": 208.71,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2223796224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d1a69b319b90e778d0b90550cd51a6a028644ece8108c02db157f0123ea3ae5d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-232059-domain-foundations-360-ordinary-and-obse/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 28s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check foundation-baseline",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage foundation-baseline --tasks postorder-fix,terminal-fix,preorder-parent,preorder-fix,nonempty-parent,nonempty-fix --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 10.631,
+      "cpuSeconds": 14.871,
+      "cpuThrottledSeconds": 0.729,
+      "peakMemoryBytes": 183066624,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-foundation-baseline.log",
+        "lines": 1,
+        "bytes": 565,
+        "sha256": "e503c0ecfb2d0ffb8191a547cecff4c8efb1a2de7b96ce279f6aa9529bb27c99",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"360\", \"route\": \"native\", \"stage\": \"foundation-baseline\", \"workflowExit\": 1, \"seconds\": 10.348, \"checkerSeconds\": 60, \"tasks\": [\"postorder-fix\", \"terminal-fix\", \"preorder-parent\", \"preorder-fix\", \"nonempty-parent\", \"nonempty-fix\"], \"verifierCommit\": \"3b9d82ef7513e702b0d2fbc9b0638b6e03012"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check foundation-baseline-observed",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage foundation-baseline-observed --tasks postorder-fix-node-startup,postorder-parent-node-startup,postorder-fix-observed --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 15.029,
+      "cpuSeconds": 24.397,
+      "cpuThrottledSeconds": 2.716,
+      "peakMemoryBytes": 182116352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-foundation-baseline-obse.log",
+        "lines": 1,
+        "bytes": 560,
+        "sha256": "47d8d8e68a19eedca349b1e6d10de5b3aa59dfc4b7b8e6cf952dbc422b027a9e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"360\", \"route\": \"native\", \"stage\": \"foundation-baseline-observed\", \"workflowExit\": 1, \"seconds\": 14.884, \"checkerSeconds\": 60, \"tasks\": [\"postorder-fix-node-startup\", \"postorder-parent-node-startup\", \"postorder-fix-observed\"], \"verifierCommit\": \"3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d\","
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2011210ffbf63a95b40d185702a0faf2a2becefd03f182bd5628c45a4c796afd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/plan.json",
+      "change": "added",
+      "bytes": 7519,
+      "sha256": "a58e38fe819dfab666820c22f536e5d4b1a90e8847398c797a5d9645b22fdbf1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/controls.json",
+      "change": "added",
+      "bytes": 4435,
+      "sha256": "c9fb6ec05cd4390cd264b0f61d2a0b3ef639c746edcc8f1b8623c3f0bd4783d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/execution.json",
+      "change": "added",
+      "bytes": 34545,
+      "sha256": "a1293b20ad24d7986b4479999579374d60e671120df8bf35428a704dd42bf78b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "a7afb228dabddfbb95d40c11a7daf21cd0262992c645820e5dd34fe51a40e438",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 505,
+      "sha256": "2182e9c61c58456046049043b071e7389bb14a6f4a8077b4f55117c4dd62f21e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/verifier.json",
+      "change": "added",
+      "bytes": 29416,
+      "sha256": "35c740b9a35ab04ec0b08759699189a84c9c37d69c64428061b07fa36ef6a7f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6188,
+      "sha256": "d6a9924b08acdcabb88e51e1f4c77a14e90249ff70e960ae3c49a0a577f0af7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/result.json",
+      "change": "added",
+      "bytes": 14744,
+      "sha256": "596eb078f90fbe0b166d2e7cf62d51fefdb6bb16c140372728001950f7efba71",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/executions/20261121T232844Z-7a811172/attempt.json",
+      "change": "added",
+      "bytes": 25628,
+      "sha256": "5e141bc9f342c26ffbd3ac538648aff6465f194cb1906e3fb39a000e908d9702",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/executions/20261121T232844Z-7a811172/checker.json",
+      "change": "added",
+      "bytes": 7506,
+      "sha256": "2b8629ad691cbc368082f15e650e202de58a849730a553ed13394b407d59873c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/executions/20261121T232844Z-7a811172/correspondence.json",
+      "change": "added",
+      "bytes": 1696,
+      "sha256": "a20e83f33d7d78b8612790f9f9a739fb4ef922630ad36ccbda3e0345a62c7e7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2f70b27374e14d8a32aec047b66e09329a07664aab42e5e047d72b555e401624",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/plan.json",
+      "change": "added",
+      "bytes": 7428,
+      "sha256": "94452ecebf5920150b4928f39f617e6c06db8eaec57b3f7cbb3ed2e4f3885f76",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/controls.json",
+      "change": "added",
+      "bytes": 4375,
+      "sha256": "0477924b253762f216c57cb4903ecd1271f07c607a8736fb2351326795530248",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/execution.json",
+      "change": "added",
+      "bytes": 34458,
+      "sha256": "6ed45cbda2284d02392ff19669a494ae212dbfea781e3efd749d5556d65447b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "6054f59744f78801416b3123448cd6f3107633fcf736c77bc17d2ba20d1f8791",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 505,
+      "sha256": "2182e9c61c58456046049043b071e7389bb14a6f4a8077b4f55117c4dd62f21e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/verifier.json",
+      "change": "added",
+      "bytes": 29408,
+      "sha256": "06d6e019ecbffce85df5e258fe81148ddbdc0f159f8785e95f460200d089b745",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6188,
+      "sha256": "787c6881f6e22a8c1ee0a10a4317b448ce635aee85a16c754b879812b657cabe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/result.json",
+      "change": "added",
+      "bytes": 14798,
+      "sha256": "a82723a7595d9a22e5ccf931b31633c748089effdd3eb1b5099c71d67599fbf0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/executions/20261121T232843Z-d6aab628/attempt.json",
+      "change": "added",
+      "bytes": 25624,
+      "sha256": "95ea5777e38e5526bdba9399100af467c7d87ac254f60f8d30103ac7a6ea8395",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/executions/20261121T232843Z-d6aab628/checker.json",
+      "change": "added",
+      "bytes": 7515,
+      "sha256": "2d6417d03c8776e9bbd0ddb9e9f10939a9be37a8fb204837bd7fd56b9aca1718",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/executions/20261121T232843Z-d6aab628/correspondence.json",
+      "change": "added",
+      "bytes": 1699,
+      "sha256": "2875944eeed0214dfa1f9c72d74c67442cefedc9eac0150bcbee203f34d7b3cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "62b3c5bf731bda0753fab0884a1670c1382a2a2f3dc0fbc6ca91034456166a42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/plan.json",
+      "change": "added",
+      "bytes": 7668,
+      "sha256": "398068970816159a51197f336997e524ad464a9a482dc3bba6c2587e21ff1f65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/controls.json",
+      "change": "added",
+      "bytes": 4437,
+      "sha256": "bcfb47eed51db6f52550f75e8ef04fdf0c71ec3f52f5f02b41f9e8678883defa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/execution.json",
+      "change": "added",
+      "bytes": 34650,
+      "sha256": "4ea9d2113b403693230f183b09a3c7aa086ac886369e8fbb85ec591d25a42af6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "33effb7b3da50a0d630aeb912f1b434f274489b7d7243f2f5085f1dca6a42bda",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 505,
+      "sha256": "2182e9c61c58456046049043b071e7389bb14a6f4a8077b4f55117c4dd62f21e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/verifier.json",
+      "change": "added",
+      "bytes": 29523,
+      "sha256": "644e915d9c4c4d5d89223e31ba37f7c0cdfb0ff75e05cf1d324e3d74b09d074f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6187,
+      "sha256": "d84dab6f165a494484e88de4eb2e146472554e5b222fd29b8d0658c71a2ea22d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/result.json",
+      "change": "added",
+      "bytes": 14819,
+      "sha256": "1ade421045a0f22c2c4332b1a6014236e39f744e9b8fe426ec7d5c4d68b3bbfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/executions/20261121T232835Z-3491d405/attempt.json",
+      "change": "added",
+      "bytes": 25735,
+      "sha256": "b06c7352a57e68368be0487232575aa8bb05124772b347626a35301fa4cde750",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/executions/20261121T232835Z-3491d405/checker.json",
+      "change": "added",
+      "bytes": 7505,
+      "sha256": "b1c0c6e49886bba5ad5f3801451a6a2813fe7c2df85db841103d30510eb127ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/executions/20261121T232835Z-3491d405/correspondence.json",
+      "change": "added",
+      "bytes": 1731,
+      "sha256": "7b177adcc67da250db8d3606702e3e9de60f0709e20bd9f4b6ae8fa64d725cbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d45200441bd1d41402414a59d1d1f18597acf7d6cf38bf18b29012c3205850a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/plan.json",
+      "change": "added",
+      "bytes": 7565,
+      "sha256": "e4e61306adaf1da732aec540df175bd55a14a485732e3a6c0aa55e3aeab9e3db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/controls.json",
+      "change": "added",
+      "bytes": 4435,
+      "sha256": "7142367981af1aa6c522c0c2a754510154d3205610ff37f136396e9369e9f970",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/execution.json",
+      "change": "added",
+      "bytes": 34569,
+      "sha256": "f1cd0121ae8cd2b7170b0e06294ebe26d5b6449895902b02a46257f9c00e5596",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "b75a5513bc80181a3d88478a98fd5e3b4e8ca327b9baa928f6dab7abff43cd4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 504,
+      "sha256": "abea86517f30fe30e71d07c269f56e79aa3eb9c66ced92d188d348848841779f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/verifier.json",
+      "change": "added",
+      "bytes": 29440,
+      "sha256": "78c85883477ddc4a7e8d0f3510c7b5f28490880c68adbbbde975f69a240f2d69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6183,
+      "sha256": "6fef79f12e2d464a48d6a4d01db62f4db82e0261e740b3dadc6a166bfb90dbc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/result.json",
+      "change": "added",
+      "bytes": 14764,
+      "sha256": "e0d9f369c5290e11dd6a59c8a19a70b6c70c4d068d26b13b2410b2529eb72b4d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/executions/20261121T232843Z-3aab6e57/attempt.json",
+      "change": "added",
+      "bytes": 25657,
+      "sha256": "8c80ed8bb7aaa1ecbc3bb0ca902e9090e597ab352d3c580aaaa7346473f5e244",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/executions/20261121T232843Z-3aab6e57/checker.json",
+      "change": "added",
+      "bytes": 7500,
+      "sha256": "e17ec1a753c0149fbd931340fa522f419e3de3c21c79f00f222883cc77c77743",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/executions/20261121T232843Z-3aab6e57/correspondence.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "84465a17769654ceba9dc25f4687c9ecc7d7a1a3ed50afd9edf827472915b6dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e18db74020ce04f44dadf20f581315ebecf3e18153e0acb8e2acf6a92a9360eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/plan.json",
+      "change": "added",
+      "bytes": 7474,
+      "sha256": "9e59bc44557e4f5488e84a0c2104a5b1919a94444162c97ef3dc1b233b633b0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/controls.json",
+      "change": "added",
+      "bytes": 4375,
+      "sha256": "3e5a4c2ba3e523056b71c41502906e6985f2a8e3c0b64c0f01bf8fbe0429ff5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/execution.json",
+      "change": "added",
+      "bytes": 34484,
+      "sha256": "07eda90f10356a1ad9741073db9a55388811320f64fef17aa08e291d95ad24c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "a4e20930cc26ed1ccc510811a3250b147230f41eb4fd5e7bacb45f457fab9099",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 504,
+      "sha256": "abea86517f30fe30e71d07c269f56e79aa3eb9c66ced92d188d348848841779f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/verifier.json",
+      "change": "added",
+      "bytes": 29434,
+      "sha256": "322d77d235c0fb823eb028e998ce8f80c27a929ecc765bfa6ad40f6e506fea3d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6185,
+      "sha256": "66414609bd7f6bc1225b82d7775dbd07df243570db73367ac0d4414d64b37cb6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/result.json",
+      "change": "added",
+      "bytes": 14820,
+      "sha256": "81fdecea9c61929b1d47dd5a7358c60adb38488cd5429901d0ab391c6f2920fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/executions/20261121T232840Z-96546d04/attempt.json",
+      "change": "added",
+      "bytes": 25653,
+      "sha256": "cd4ab6c988ecd0d75cca4783c34545f2b2c461644c7697d6f74b7661cf83aef3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/executions/20261121T232840Z-96546d04/checker.json",
+      "change": "added",
+      "bytes": 7511,
+      "sha256": "b8579ff87188051a0ed6df9fca901f8c4adc54241c55069645ae9729eaf828a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/executions/20261121T232840Z-96546d04/correspondence.json",
+      "change": "added",
+      "bytes": 1710,
+      "sha256": "505484d459527882396e1618c04f5500c36643e11dab271e54bcab0802e34d89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/run.json",
+      "change": "added",
+      "bytes": 627,
+      "sha256": "ad0b53b0e8b95de7bdf84514049f6e2e69342778202bbc4aabd6f3d34c9f2195",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c11c768fccbd2f4159dfb775dab992061382e0cad23bd85b5ac80f44bcd83084",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/plan.json",
+      "change": "added",
+      "bytes": 7493,
+      "sha256": "dd3312c145571a4ac7f0aac665c791ff32779828bcc1cd4e995e7579b2f2910f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/controls.json",
+      "change": "added",
+      "bytes": 4434,
+      "sha256": "c6d412770391efa17a0d9c0c764bffbe1409614d729e3519b4c6ebb1af784ebd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/execution.json",
+      "change": "added",
+      "bytes": 30064,
+      "sha256": "4ea87acc47129ae434d521533c577f397637d6aa7d88b8bd558a4195336a9b61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "cf62c69f646530181691cd006b3462b1f0c09b7d9476a39c70f15066dbd8b7e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 504,
+      "sha256": "ee12187ced50e4ec6391c02f7e687181c82ef49d7e972de4c4dd48e8dedef8ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/verifier.json",
+      "change": "added",
+      "bytes": 25117,
+      "sha256": "e9bfee1d3936fc7ae3305bd526948be4d2e736560d62d270c7bca1c2e4c4f13e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6181,
+      "sha256": "0456afe94826d21f7768a2aac3c9d3ab851de0d6a0684d6084c1e4810a6bf500",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/result.json",
+      "change": "added",
+      "bytes": 14726,
+      "sha256": "5705f4e821e4df899585789a4a2f0de65ab07bd76bdc910dda934e159c1e1946",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/executions/20261121T232838Z-10dff20b/attempt.json",
+      "change": "added",
+      "bytes": 21490,
+      "sha256": "4ed2b6e4baf147d032eaab9873f9c13a2d318b66e6d049bc4dff46c9318a1cd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/executions/20261121T232838Z-10dff20b/checker.json",
+      "change": "added",
+      "bytes": 7497,
+      "sha256": "4a6980a19cc42881a49bcfa54ba2036812feaaafc9725ed86ca9ae35b636251f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/executions/20261121T232838Z-10dff20b/correspondence.json",
+      "change": "added",
+      "bytes": 1689,
+      "sha256": "c72aa4c98dc1fbbac2037174b1893ae6b7108d8106af11311bb2a99a7d5fc66e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-native/workflow.log",
+      "change": "added",
+      "bytes": 1491,
+      "sha256": "cddc19ae425b19294d67ad6fa54306c909e2a71295b2fea609d9224e3e0ad2e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6da68bc94cf4585c3c910279cea485fa01b35fc8308a7ba8a3ec0825980e26e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/plan.json",
+      "change": "added",
+      "bytes": 8183,
+      "sha256": "e2a3a5d5cee79c0ae2b9bb28693b8f11619190909a7b478b671e00f867a05d73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/controls.json",
+      "change": "added",
+      "bytes": 4476,
+      "sha256": "6a5eca5cfd9db53b7b3e056d8a68f78255d08acf225042c9f31bc850a9c80561",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/execution.json",
+      "change": "added",
+      "bytes": 38034,
+      "sha256": "ab69ef5c91248ccd938d349d9d0a290b9c5631a8398f6730c7da648e390b01aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "50959d1516b8cabe3e563e92d9aea320af52fd0a61246adf189875d77c529029",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "2c38d3f6d212f46dc457f579a4124ae07ccd9c820e7bee7d33658f4d64d1b091",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/verifier.json",
+      "change": "added",
+      "bytes": 32865,
+      "sha256": "4e18570bf928cc67a817e10538e17d07e17a4d75155d4939d3aa34e320881f07",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8771,
+      "sha256": "f256699a9cbc85cbed39f97f058f0da0e7f48bd3fce76c6facc6527a258ee847",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/result.json",
+      "change": "added",
+      "bytes": 22463,
+      "sha256": "a68758b1174685e9bcdf7e060574406a5b948644032b79e28155a3f2491a0f3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/executions/20261121T232845Z-a6ed6ea5/attempt.json",
+      "change": "added",
+      "bytes": 25902,
+      "sha256": "2bcd67ebe6075e68a3604d01093d381abf1d92c610e976a1448dc2c71297672c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/executions/20261121T232845Z-a6ed6ea5/checker.json",
+      "change": "added",
+      "bytes": 10193,
+      "sha256": "e3423b09f886ca78b1edde50b3304d9b23a0e57fa249793ff3869985fe2fd934",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/executions/20261121T232845Z-a6ed6ea5/correspondence.json",
+      "change": "added",
+      "bytes": 1731,
+      "sha256": "7b177adcc67da250db8d3606702e3e9de60f0709e20bd9f4b6ae8fa64d725cbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "504cde20acc1370dbcb1d478f4f6f4edd74207329577d9e571594817507353f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/plan.json",
+      "change": "added",
+      "bytes": 8053,
+      "sha256": "6f7341673c68f6c02dcf9e8e8a642a0979bae00982cd55cf843ace59112c5ead",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/controls.json",
+      "change": "added",
+      "bytes": 4468,
+      "sha256": "868b3ee0e45685c2540ceaf660410b1c0d65fff873901f8405cc2c104dd521ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/execution.json",
+      "change": "added",
+      "bytes": 37275,
+      "sha256": "0704ad8e25a1afe982f2bbaf1661cdf0ba043a88afd078a57daba97c26e86067",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "24120c6543c1533059a1b9e1fe628ae681093eba75e960a55b33d78d0ff2b638",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 614,
+      "sha256": "3a069906bfcf7c316d965d908077cd07c35091f5f93e44a7416220c3649c0458",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/verifier.json",
+      "change": "added",
+      "bytes": 32122,
+      "sha256": "f0783b0ecc94974c62370b87c56911d0d63aaca577501f7209e1cb3a56d20cdd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8115,
+      "sha256": "2d2a53961cdc74126dc4b6d592397c14707045cc9b66d39e074185232f0ce110",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/result.json",
+      "change": "added",
+      "bytes": 16984,
+      "sha256": "4c03af6e075977e414d026ee4e4a6edb65531adccd620b763ece09ad6d2dd9a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/executions/20261121T232858Z-223c11d9/attempt.json",
+      "change": "added",
+      "bytes": 26444,
+      "sha256": "6e0370d9d752db2778113a2d1bd864f1d7cc74831d5ea9998f08f88e1d850933",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/executions/20261121T232858Z-223c11d9/checker.json",
+      "change": "added",
+      "bytes": 9530,
+      "sha256": "c578be71821fd9aa3739e019fd8f85daa525ccb183a0e8a3ece67fe326504562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/executions/20261121T232858Z-223c11d9/correspondence.json",
+      "change": "added",
+      "bytes": 1731,
+      "sha256": "7b177adcc67da250db8d3606702e3e9de60f0709e20bd9f4b6ae8fa64d725cbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c33943517bdececaeb3f9c9084a6d68b8aaf7903458c2f7183bc3c9811b3bea3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/plan.json",
+      "change": "added",
+      "bytes": 8088,
+      "sha256": "2432546f631cbff1757959db9d790e4f31c0bb60ee4a0b21f2b55e1741ec8bac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/controls.json",
+      "change": "added",
+      "bytes": 4417,
+      "sha256": "3ecbdca55f8fc94621c18316807b7816a9f55c8c150c6077828a02db84d12d33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/execution.json",
+      "change": "added",
+      "bytes": 40989,
+      "sha256": "836b4b2582a64dddf19530b5bd186201650c6269b65f9ee63f04b2e4c402812f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "6502cf61b0a057166b9034c0eced055273f10e68a7b32f34fe958080716f4682",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 550,
+      "sha256": "0f61ed387ab4ba0ae2bca563cb67ceaae8c900063dd19bd9d6298b57788ed44f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/verifier.json",
+      "change": "added",
+      "bytes": 33384,
+      "sha256": "2c92f07d500762331d34a15c1cfe3f32698177f12b97eb08401f389547d9c05e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9247,
+      "sha256": "a589d0fafca9d51ff9f07de2d839ed3fb1c8d832ac3d5b78fdc74b37269626f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/result.json",
+      "change": "added",
+      "bytes": 23294,
+      "sha256": "4c479a36831a1cd55caf900989e393e499220021be08817c66212eec7001cb49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/executions/20261121T232851Z-80de7298/attempt.json",
+      "change": "added",
+      "bytes": 26021,
+      "sha256": "fbf19594099b960c23babcbb3b89c21b22605dff2d82e7448017b86131453bb3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/executions/20261121T232851Z-80de7298/checker.json",
+      "change": "added",
+      "bytes": 10703,
+      "sha256": "dac443f75e9bd530c10a8698b764f1432b4a8dfece0ea83e1cf38aaf4454ec5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/executions/20261121T232851Z-80de7298/correspondence.json",
+      "change": "added",
+      "bytes": 1734,
+      "sha256": "1c2de98fbc9cb49cca2ba4258a84d0efdf7d8c57ce3e1cd33805ae59d28cb83c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/executions/20261121T232851Z-80de7298/replay.json",
+      "change": "added",
+      "bytes": 1995,
+      "sha256": "4a168f8f1e0f06b1b344fbd3ab562c31f49b5acb5b7bd3ea216e38699b4b957b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/run.json",
+      "change": "added",
+      "bytes": 610,
+      "sha256": "ac540077cfe8910e0f6f841327ece4a6ac7687848214e09faa6b5cd8a9350015",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/workflow.log",
+      "change": "added",
+      "bytes": 820,
+      "sha256": "f7a6e309c7507d3552e89f948f861c3c906771f109e242a07938139470979743",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T23:29:15+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/completion.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/plan.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/20261121T232844Z-7a811172/result.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/executions/20261121T232844Z-7a811172/attempt.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/executions/20261121T232844Z-7a811172/checker.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-fix/executions/20261121T232844Z-7a811172/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/completion.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/plan.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/20261121T232843Z-d6aab628/result.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/executions/20261121T232843Z-d6aab628/attempt.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/executions/20261121T232843Z-d6aab628/checker.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/nonempty-parent/executions/20261121T232843Z-d6aab628/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/completion.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/plan.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/20261121T232835Z-3491d405/result.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/executions/20261121T232835Z-3491d405/attempt.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/executions/20261121T232835Z-3491d405/checker.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/postorder-fix/executions/20261121T232835Z-3491d405/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/completion.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/plan.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/20261121T232843Z-3aab6e57/result.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/executions/20261121T232843Z-3aab6e57/attempt.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/executions/20261121T232843Z-3aab6e57/checker.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-fix/executions/20261121T232843Z-3aab6e57/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/completion.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/plan.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/20261121T232840Z-96546d04/result.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/executions/20261121T232840Z-96546d04/attempt.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/executions/20261121T232840Z-96546d04/checker.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/preorder-parent/executions/20261121T232840Z-96546d04/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/run.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/completion.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/plan.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/20261121T232838Z-10dff20b/result.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/executions/20261121T232838Z-10dff20b/attempt.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/executions/20261121T232838Z-10dff20b/checker.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/terminal-fix/executions/20261121T232838Z-10dff20b/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-native/workflow.log",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/completion.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/plan.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/20261121T232845Z-a6ed6ea5/result.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/executions/20261121T232845Z-a6ed6ea5/attempt.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/executions/20261121T232845Z-a6ed6ea5/checker.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-node-startup/executions/20261121T232845Z-a6ed6ea5/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/completion.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/plan.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/20261121T232858Z-223c11d9/result.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/executions/20261121T232858Z-223c11d9/attempt.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/executions/20261121T232858Z-223c11d9/checker.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-fix-observed/executions/20261121T232858Z-223c11d9/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/completion.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/plan.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/20261121T232851Z-80de7298/result.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/executions/20261121T232851Z-80de7298/attempt.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/executions/20261121T232851Z-80de7298/checker.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/executions/20261121T232851Z-80de7298/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/postorder-parent-node-startup/executions/20261121T232851Z-80de7298/replay.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/run.json",
+      "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 1319341,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "426f4c91db2e578a5a5744892da13f5391cb9b51",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/426f4c91db2e578a5a5744892da13f5391cb9b51/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T232900Z-784139ed28513281",
+      "outputs": "20261121T232900Z-8312338a09046909",
+      "diff": "20261121T232900Z-86820360e5824419",
+      "workdir": "20261121T232905Z-9956542f7c5bd603"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261121-232059-domain-foundations-360-ordinary-and-obse"
+}
