@@ -1,0 +1,184 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-000827-351-compare-jbmc-on-the-matched-external",
+  "title": "351 compare JBMC on the matched external caller observer",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.8s, peak 116.9 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-000827-351-compare-jbmc-on-the-matched-external.json",
+    "sha256": "79c208cef1261f61e2539284c56093704dce307fe9e4bdba4b3584fb33d0091e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-000827-351-compare-jbmc-on-the-matched-external",
+      "title": "351 compare JBMC on the matched external caller observer",
+      "description": "Run the installed hash-checked JBMC engine through the frozen V0 CLI on the public AWS SDK millisecond round-trip on the two original instants. Before solver launch require both real JVM controls and equality with the earlier native task of the entry bindings, ordered classpath, bounds, JDK, deadline and command excluding engine selection. Retain missing-body or unwinding diagnostics and distinguish the engine result from property selection.",
+      "kind": "real-world",
+      "capabilities": [
+        "jbmc:equivalence",
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "examples": [
+          "351"
+        ]
+      },
+      "expected": "The benchmark reports whether JBMC supports the unchanged harness and finite domain. The job validates evidence collection; only a non-vacuous, qualified result or independently replayed witness receives engine credit.",
+      "submitted": {
+        "at": "2026-11-21T00:08:27+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "16G",
+        "timeout": "2h",
+        "notes": "The matching preparation ran in 3–5 seconds; identical checker deadline is 600 seconds and the per-case end-to-end budget is two hours."
+      },
+      "steps": [
+        {
+          "name": "Compare the actual JBMC check",
+          "run": "python3 lib/benchmark/external-upgrades/baselines/jbmc_pair.py 351 --output lib/benchmark/external-upgrades/baselines/jbmc-351",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/external-upgrades/baselines/jbmc-351"
+      ]
+    }
+  },
+  "sourceCommit": "5983089444b0b2e300ab37001032c321dffcfae4",
+  "startedAt": "2026-11-21T00:11:53+00:00",
+  "finishedAt": "2026-11-21T00:12:04+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4121124,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 17179869184,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": "The matching preparation ran in 3–5 seconds; identical checker deadline is 600 seconds and the per-case end-to-end budget is two hours."
+  },
+  "usage": {
+    "peakMemoryBytes": 122601472,
+    "wallSeconds": 4.8,
+    "cpuSeconds": 7.8,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare the actual JBMC check",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/jbmc_pair.py 351 --output lib/benchmark/external-upgrades/baselines/jbmc-351",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 4.808,
+      "cpuSeconds": 7.815,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 122601472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-the-actual-jbmc-check.log",
+        "lines": 1,
+        "bytes": 57,
+        "sha256": "8a3538c84c761821b42edc6680226fd2812d1419df1d1e619c4cce75db977670",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "351: matched input True, tool exit 1, measurement 3.999s"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/jbmc-351/checker.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/jbmc-351/checker.stdout",
+      "change": "added",
+      "bytes": 1011,
+      "sha256": "66fdd5d5529a794dbe8260409c1253c93bc69acf62d4162614b884a3c972b250",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/jbmc-351/measurement.json",
+      "change": "added",
+      "bytes": 5876,
+      "sha256": "95ed40369194b6f08ac05289962c62d67505303858260c7e5bbb35cc2b3a2e99",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T00:12:32+00:00",
+    "applied": [
+      "lib/benchmark/external-upgrades/baselines/jbmc-351/checker.stderr",
+      "lib/benchmark/external-upgrades/baselines/jbmc-351/checker.stdout",
+      "lib/benchmark/external-upgrades/baselines/jbmc-351/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

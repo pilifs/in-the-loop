@@ -118,5 +118,5 @@ def isolate(image, project, repository, scratch, command):
 
 def environment():
     return {"PATH": f"{JAVA}/bin:{MAVEN}/bin:/usr/bin:/bin", "JAVA_HOME": JAVA,
-            "MAVEN_OPTS": "-Xmx768m -Duser.home=/work/home", "TZ": "UTC", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
+            "MAVEN_OPTS": "-Duser.home=/work/home", "TZ": "UTC", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
             "TMPDIR": "/tmp"}

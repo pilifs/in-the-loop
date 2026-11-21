@@ -49,7 +49,7 @@ class UpgradeScoringTest(unittest.TestCase):
                 sc.read_first(sealed, "V0", case, sc.timestamp(doc["intake_utc"]), DIGEST)
 
     def test_signed_roster_has_fixed_denominators_and_cannot_be_used_as_a_grade(self):
-        rows = [{"case_id": f"case{i}", "input_sha256": DIGEST, "reference_sha256": DIGEST,
+        rows = [{"case_id": f"case{i}", "input_sha256": DIGEST, "reference_sha256": DIGEST, "artifacts": operator()["artifacts"],
                  "stratum": "change" if i < 12 else "preservation"} for i in range(24)]
         roster = {"phase": "main", "cases": rows, "locked_utc": "2020-01-01T00:00:00Z"}
         key = Ed25519PrivateKey.generate()
@@ -89,7 +89,7 @@ class UpgradeScoringTest(unittest.TestCase):
                 changed = i < 12
                 correct = i % 12 < 8
                 cases.append({"case_id": cid, "stratum": "change" if changed else "preservation",
-                              "input_sha256": DIGEST, "reference_sha256": DIGEST})
+                              "input_sha256": DIGEST, "reference_sha256": DIGEST, "artifacts": operator()["artifacts"]})
                 doc = operator(cid)
                 doc["route"] = "jvm-witness" if changed else "exhaustive-jvm"
                 reports[cid] = doc, DIGEST, 60, sealed_at
@@ -111,6 +111,10 @@ class UpgradeScoringTest(unittest.TestCase):
             self.assertTrue(scored["pilotGate"])
             reports["case0"][0]["assisted"] = True
             self.assertFalse(sc.score(roster, reports, root, "V0", DIGEST, budget, sealed_at, key.public_key())["pilotGate"])
+            reports["case0"][0]["assisted"] = False
+            reports["case0"][0]["artifacts"] = {"old": ["7" * 64], "new": ["8" * 64]}
+            changed = sc.score(roster, reports, root, "V0", DIGEST, budget, sealed_at, key.public_key())
+            self.assertEqual(changed["relevantChange"], 7)
             with self.assertRaisesRegex(ValueError, "before the last first report"):
                 sc.score(roster, reports, root, "V0", DIGEST, budget, sc.timestamp("2020-01-02T00:00:00Z"),
                          key.public_key())

@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a1fb31-b3fa-7a63-8674-07981a22dff9` (open) |
+| Session | `01a1fb31-b3fa-7a63-8674-07981a22dff9` (ended) |
 | When | 2026-11-20 23:37 UTC to 2026-11-21 00:07 UTC (30 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |

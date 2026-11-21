@@ -1,0 +1,172 @@
+--- /dev/null
++++ b/lib/benchmark/external-upgrades/baselines/jbmc-351/checker.stdout
+@@ -0,0 +1,20 @@
++{
++  "wire_version": 1,
++  "verdict": "unverifiable",
++  "target": "calibration.Projection#roundtrip(boolean)",
++  "domain": null,
++  "counterexample": null,
++  "proof": null,
++  "problem": "has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)",
++  "statement": null,
++  "findings": [
++    {
++      "rule_id": "unverifiable",
++      "message": "calibration.Projection#roundtrip(boolean) cannot be verified: has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)",
++      "uri": null,
++      "line": 8
++    }
++  ],
++  "output": "✗ calibration.Projection#roundtrip(boolean) cannot be verified: has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)\n",
++  "work": "verifier/work"
++}
+--- /dev/null
++++ b/lib/benchmark/external-upgrades/baselines/jbmc-351/measurement.json
+@@ -0,0 +1,146 @@
++{
++  "schema": "external-upgrade-engine-baseline/v1",
++  "example": "351",
++  "task": "roundtrip",
++  "sourceClaimKey": "636fd8e9f73b016f",
++  "nativeRecord": "verification/results/20261120-234731-351-run-the-frozen-v0-dependency-upgrade/outputs/examples/351-aws-joda-instant/receipts/roundtrip/20261120T235148Z-805adb23/records/verifier.json",
++  "nativeRecordSha256": "d016f3435c4b9d27beffefb586254fad0511d3af60e9bbc954f484190f0019b3",
++  "jvmcontractSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "protectedSources": 459,
++  "matchedInvocation": true,
++  "correspondence": [
++    {
++      "revision": "old",
++      "entry": "calibration.Projection#roundtrip(Z)J",
++      "adapterSha256": "a6b4c604f41bc5dcda6273d51c6882badf5d85b9b8c9f32a355fbc2d6c28a496",
++      "adapterClassSha256": "86bff6b180c0382de7c3623dee5328ebc5d3da1501bb9e6a4335053f546d1890",
++      "subject": {
++        "class": "com.amazonaws.util.DateUtils",
++        "method": "parseISO8601Date",
++        "descriptor": "(Ljava/lang/String;)Ljava/util/Date;",
++        "loadedFrom": "lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
++        "classSha256": "328d5964abe28852e2f085e626893291f365da139b9b42fc6651c298ac2d9055",
++        "adapterCalls": [
++          "com.amazonaws.util.DateUtils#formatISO8601Date(Ljava/util/Date;)Ljava/lang/String;",
++          "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 2,
++      "disagreements": 0
++    },
++    {
++      "revision": "new",
++      "entry": "calibration.Projection#roundtrip(Z)J",
++      "adapterSha256": "a6b4c604f41bc5dcda6273d51c6882badf5d85b9b8c9f32a355fbc2d6c28a496",
++      "adapterClassSha256": "86bff6b180c0382de7c3623dee5328ebc5d3da1501bb9e6a4335053f546d1890",
++      "subject": {
++        "class": "com.amazonaws.util.DateUtils",
++        "method": "parseISO8601Date",
++        "descriptor": "(Ljava/lang/String;)Ljava/util/Date;",
++        "loadedFrom": "lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
++        "classSha256": "328d5964abe28852e2f085e626893291f365da139b9b42fc6651c298ac2d9055",
++        "adapterCalls": [
++          "com.amazonaws.util.DateUtils#formatISO8601Date(Ljava/util/Date;)Ljava/lang/String;",
++          "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 2,
++      "disagreements": 0
++    }
++  ],
++  "matchedFields": [
++    "jvmcontract",
++    "jdkRelease",
++    "gaps",
++    "bounds",
++    "timeout",
++    "checkedEntry",
++    "entryBindings",
++    "classpath",
++    "commits"
++  ],
++  "argv": [
++    "/home/filip/.cache/in-the-loop/external-upgrades/b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d/jvmcontract",
++    "equivalence",
++    "--before",
++    "verifier/classes/old",
++    "--after",
++    "verifier/classes/new",
++    "--target",
++    "calibration.Projection#roundtrip(boolean)",
++    "--classpath",
++    "prepare/new/lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
++    "--classpath",
++    "prepare/new/lib/joda-time/joda-time-2.10.5.jar",
++    "--before-classpath",
++    "prepare/old/lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
++    "--before-classpath",
++    "prepare/old/lib/joda-time/joda-time-2.8.1.jar",
++    "--unchanged-unless",
++    "false",
++    "--engine",
++    "jbmc",
++    "--gaps",
++    "strict",
++    "--unwind",
++    "32",
++    "--max-array-length",
++    "96",
++    "--timeout",
++    "600",
++    "--work",
++    "verifier/work",
++    "--report",
++    "verifier/report",
++    "--json"
++  ],
++  "workflowStatus": "exited",
++  "toolExit": 1,
++  "observations": [
++    {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "calibration.Projection#roundtrip(boolean)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "calibration.Projection#roundtrip(boolean) cannot be verified: has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)",
++          "uri": null,
++          "line": 8
++        }
++      ],
++      "output": "✗ calibration.Projection#roundtrip(boolean) cannot be verified: has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)\n",
++      "work": "verifier/work"
++    }
++  ],
++  "problem": null,
++  "checkerSeconds": 0.032,
++  "jbmcLogs": [],
++  "qualification": "Assess unwinding and abstraction from these logs and replay any candidate on the unchanged JVM. A job exit alone establishes no application claim.",
++  "elapsedSeconds": 3.999,
++  "sourcesAfter": 459
++}

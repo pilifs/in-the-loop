@@ -50,6 +50,14 @@ def hex_digest(value):
     return value
 
 
+def check_artifacts(artifacts):
+    require(isinstance(artifacts, dict) and set(artifacts) == {"old", "new"}, "bind both ordered classpaths")
+    for side in artifacts.values():
+        require(isinstance(side, list) and side, "empty runtime classpath")
+        for artifact in side:
+            hex_digest(artifact)
+
+
 def verified_document(path, key, purpose):
     envelope = json.loads(path.read_bytes())
     data = canonical(envelope["payload"])
@@ -78,12 +86,7 @@ def check_operator(doc):
     if doc["route"] != "unavailable":
         for name in ("primary_claim", "observer", "domain", "scope"):
             require(isinstance(doc[name], str) and doc[name].strip(), f"missing {name}")
-        require(isinstance(doc["artifacts"], dict) and set(doc["artifacts"]) == {"old", "new"},
-                "bind both ordered classpaths")
-        for side in doc["artifacts"].values():
-            require(isinstance(side, list) and side, "empty runtime classpath")
-            for artifact in side:
-                hex_digest(artifact)
+        check_artifacts(doc["artifacts"])
     require(doc.get("first_blocker") or doc["route"] not in {"open", "unavailable"}, "unresolved case needs its blocker")
     start, end = timestamp(doc["intake_utc"]), timestamp(doc["finished_utc"])
     seconds = (end - start).total_seconds()
@@ -142,6 +145,7 @@ def roster(doc):
     for row in rows:
         for key in ("input_sha256", "reference_sha256"):
             hex_digest(row[key])
+        check_artifacts(row["artifacts"])
     if doc["phase"] == "main":
         require(Counter(r["stratum"] for r in rows) == {"change": 12, "preservation": 12},
                 "primary denominator is twelve changes and twelve preservations")
@@ -198,7 +202,8 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
         require(grade["ci_result"].strip() and grade["action_grade"].strip(), "CI and review action must be graded")
         if grade.get("improved_capability"):
             evidence_file(path.parent, grade["improved_capability"]["evidence"])
-        correct = decision["relevant"] and decision["scope_supported"] and decision["original_domain"]
+        matched = doc.get("artifacts") == case["artifacts"]
+        correct = matched and decision["relevant"] and decision["scope_supported"] and decision["original_domain"]
         if case["stratum"] == "change":
             correct = correct and decision["replayed"] and doc["route"] not in {"open", "unavailable"}
         else:
@@ -211,6 +216,7 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
         require(credit or grade["primary_reason"].strip(), "a miss needs a reason")
         outcomes.append({"case_id": cid, "stratum": case["stratum"], "family": case.get("family"),
                          "credit": credit, "technicalResult": correct, "assisted": doc["assisted"], "route": doc["route"],
+                         "originalArtifacts": matched,
                          "seconds": seconds, "cache": doc["cache"], "environmentSha256": doc["environment_sha256"],
                          "cpuLimit": doc["cpu_limit"], "memoryGiB": doc["memory_gib"],
                          "firstActionableUtc": doc["first_actionable_utc"], "humanMinutes": doc["human_minutes"],

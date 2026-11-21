@@ -1,0 +1,170 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-000727-replay-bump-assertj-guava-enforcer-on-bo",
+  "title": "Replay BUMP AssertJ Guava Enforcer on both dependency revisions",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 36.1s, peak 1.0 GiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Run both original AssertJ Guava Maven lifecycles) was held back 2m12s by its 2-CPU quota in 36.1s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-000727-replay-bump-assertj-guava-enforcer-on-bo.json",
+    "sha256": "4522ac9702761c6e283d4186a55c572912574f7d59761c7648d2d8d8b92a1600",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-000727-replay-bump-assertj-guava-enforcer-on-bo",
+      "title": "Replay BUMP AssertJ Guava Enforcer on both dependency revisions",
+      "description": "Run each original AssertJ Guava checkout with its own original OCI image dependency cache, original Alpine OpenJDK 11.0.19+7 and Maven 3.9.2, offline and unprivileged. Repeat clean test on the historical two revisions, distinguishing the old 355 test execution from the breaking BannedDependencies rejection of Byte Buddy 1.12.10 and any new local reproduction failure.",
+      "kind": "real-world",
+      "capabilities": [
+        "baseline:bump"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/baselines/bump/replay.py"
+        ]
+      },
+      "expected": "Two records distinguish actual Surefire execution and the exact pre-test Enforcer rule, including any earlier local setup failure.",
+      "submitted": {
+        "at": "2026-11-21T00:07:27+00:00",
+        "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+      },
+      "requires": [
+        "bwrap",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "10m",
+        "notes": "Both original historical runs used a modest single Maven module. The pre image includes 355 Java tests. Input hash checks and rebuilding the stripped runtime take seconds."
+      },
+      "steps": [
+        {
+          "name": "Run both original AssertJ Guava Maven lifecycles",
+          "run": "python3 -I lib/benchmark/external-upgrades/baselines/bump/replay.py assertj --output lib/benchmark/external-upgrades/baselines/bump/assertj-replay.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/external-upgrades/baselines/bump/assertj-replay.json"
+      ]
+    }
+  },
+  "sourceCommit": "5983089444b0b2e300ab37001032c321dffcfae4",
+  "startedAt": "2026-11-21T00:11:53+00:00",
+  "finishedAt": "2026-11-21T00:12:35+00:00",
+  "wallSeconds": 42.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4121124,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": "Both original historical runs used a modest single Maven module. The pre image includes 355 Java tests. Input hash checks and rebuilding the stripped runtime take seconds."
+  },
+  "usage": {
+    "peakMemoryBytes": 1098776576,
+    "wallSeconds": 36.1,
+    "cpuSeconds": 58.8,
+    "memoryOfEstimate": 0.51,
+    "durationOfEstimate": 0.3
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run both original AssertJ Guava Maven lifecycles",
+      "run": "python3 -I lib/benchmark/external-upgrades/baselines/bump/replay.py assertj --output lib/benchmark/external-upgrades/baselines/bump/assertj-replay.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 36.064,
+      "cpuSeconds": 58.826,
+      "cpuThrottledSeconds": 132.666,
+      "peakMemoryBytes": 1098776576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-both-original-assertj-guav.log",
+        "lines": 2,
+        "bytes": 47,
+        "sha256": "56510509289d0b135ef9869c8d538cf5c333152a3cb2ca75bd1df3ad47f86b4c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "assertj pre measured",
+        "assertj breaking measured"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/bump/assertj-replay.json",
+      "change": "added",
+      "bytes": 3598,
+      "sha256": "0cab6848acce5453d91d26a9cd8c273bba856b67f436d30cd0cd41fc799b1714",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T00:15:57+00:00",
+    "applied": [
+      "lib/benchmark/external-upgrades/baselines/bump/assertj-replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

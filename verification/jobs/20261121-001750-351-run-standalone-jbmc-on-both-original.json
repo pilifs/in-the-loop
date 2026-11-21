@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-001750-351-run-standalone-jbmc-on-both-original",
+  "title": "351 run standalone JBMC on both original runtime closures",
+  "description": "Following the paired frontend refusal, execute standalone JBMC independently on the old and new ordered adapter/application/dependency classpaths that were bound by the V0 native receipt. Use identical harness bytes per side, true and false original JVM controls, the same original return observer and recorded bounds; preserve all unwind assertions and missing-body diagnostics. This is an assisted per-side engine baseline and cannot count as automated claim selection.",
+  "kind": "real-world",
+  "capabilities": [
+    "jbmc:per-side-contract",
+    "external-upgrade-evaluation"
+  ],
+  "links": {
+    "examples": [
+      "351"
+    ]
+  },
+  "expected": "Both actual JBMC invocations have a recorded exit or timeout on verified classpaths. A proof requires complete unwinding and supported library semantics; candidates require independent JVM reproduction.",
+  "submitted": {
+    "at": "2026-11-21T00:17:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "3G",
+    "duration": "6m",
+    "memoryLimit": "16G",
+    "timeout": "2h",
+    "notes": "The two solver processes share the 600-second native search budget. Per-side pressure is unknown on historical libraries, so retain the full 16 GiB ceiling."
+  },
+  "steps": [
+    {
+      "name": "Execute standalone JBMC for both original sides",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/jbmc_sides.py 351 --output lib/benchmark/external-upgrades/baselines/standalone-jbmc-351",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/external-upgrades/baselines/standalone-jbmc-351"
+  ]
+}

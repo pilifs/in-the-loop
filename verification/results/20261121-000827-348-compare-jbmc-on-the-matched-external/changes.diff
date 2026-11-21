@@ -1,0 +1,210 @@
+--- /dev/null
++++ b/lib/benchmark/external-upgrades/baselines/jbmc-348/checker.stdout
+@@ -0,0 +1,20 @@
++{
++  "wire_version": 1,
++  "verdict": "unverifiable",
++  "target": "calibration.GeneratedKeys#keys(boolean)",
++  "domain": null,
++  "counterexample": null,
++  "proof": null,
++  "problem": "has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)",
++  "statement": null,
++  "findings": [
++    {
++      "rule_id": "unverifiable",
++      "message": "calibration.GeneratedKeys#keys(boolean) cannot be verified: has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)",
++      "uri": null,
++      "line": 13
++    }
++  ],
++  "output": "✗ calibration.GeneratedKeys#keys(boolean) cannot be verified: has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)\n",
++  "work": "verifier/work"
++}
+--- /dev/null
++++ b/lib/benchmark/external-upgrades/baselines/jbmc-348/measurement.json
+@@ -0,0 +1,184 @@
++{
++  "schema": "external-upgrade-engine-baseline/v1",
++  "example": "348",
++  "task": "generated-keys",
++  "sourceClaimKey": "8a3ffbec57461471",
++  "nativeRecord": "verification/results/20261120-234730-348-run-the-frozen-v0-dependency-upgrade/outputs/examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T235140Z-237629dc/records/verifier.json",
++  "nativeRecordSha256": "8dae8453b95d137726e57d7c322d177083f90cde4dcad99315f207c0a527d022",
++  "jvmcontractSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "protectedSources": 459,
++  "matchedInvocation": true,
++  "correspondence": [
++    {
++      "revision": "old",
++      "entry": "calibration.GeneratedKeys#keys(Z)[I",
++      "adapterSha256": "d53485122d67cc2a1654fd32457e4574e9a390bd2ba84c12b71d44236d32d758",
++      "adapterClassSha256": "bab0c4b33c7bbf8eaa0ed49c8b3a41472441e4b1bf7554bc773c8096528d0604",
++      "subject": {
++        "class": "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder",
++        "method": "returnGeneratedKeys",
++        "descriptor": "()Lcom/github/davidmoten/rx/jdbc/QueryUpdate$ReturnGeneratedKeysBuilder;",
++        "loadedFrom": "lib/com.github.davidmoten/rxjava-jdbc-0.7.15.jar",
++        "classSha256": "91711b23415cc2b32b60f0cda9ad4d737fa5472ebb01e5fcd5a8d85720f2d8c3",
++        "adapterCalls": [
++          "com.github.davidmoten.rx.jdbc.Database#from(Ljava/sql/Connection;)Lcom/github/davidmoten/rx/jdbc/Database;",
++          "com.github.davidmoten.rx.jdbc.Database#update(Ljava/lang/String;)Lcom/github/davidmoten/rx/jdbc/QueryUpdate$Builder;",
++          "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder#parameters([Ljava/lang/Object;)Lcom/github/davidmoten/rx/jdbc/QueryUpdate$Builder;",
++          "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder#returnGeneratedKeys()Lcom/github/davidmoten/rx/jdbc/QueryUpdate$ReturnGeneratedKeysBuilder;",
++          "com.github.davidmoten.rx.jdbc.QueryUpdate$ReturnGeneratedKeysBuilder#getAs(Ljava/lang/Class;)Lrx/Observable;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The boolean selects one two-row statement or two single-row inserts. An unnamed H2 database belongs to a fresh JDBC connection. The original rxjava-jdbc subscriber drains the keys and the adapter copies each returned integer at its original index.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 2,
++      "disagreements": 0
++    },
++    {
++      "revision": "new",
++      "entry": "calibration.GeneratedKeys#keys(Z)[I",
++      "adapterSha256": "d53485122d67cc2a1654fd32457e4574e9a390bd2ba84c12b71d44236d32d758",
++      "adapterClassSha256": "bab0c4b33c7bbf8eaa0ed49c8b3a41472441e4b1bf7554bc773c8096528d0604",
++      "subject": {
++        "class": "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder",
++        "method": "returnGeneratedKeys",
++        "descriptor": "()Lcom/github/davidmoten/rx/jdbc/QueryUpdate$ReturnGeneratedKeysBuilder;",
++        "loadedFrom": "lib/com.github.davidmoten/rxjava-jdbc-0.7.15.jar",
++        "classSha256": "91711b23415cc2b32b60f0cda9ad4d737fa5472ebb01e5fcd5a8d85720f2d8c3",
++        "adapterCalls": [
++          "com.github.davidmoten.rx.jdbc.Database#from(Ljava/sql/Connection;)Lcom/github/davidmoten/rx/jdbc/Database;",
++          "com.github.davidmoten.rx.jdbc.Database#update(Ljava/lang/String;)Lcom/github/davidmoten/rx/jdbc/QueryUpdate$Builder;",
++          "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder#parameters([Ljava/lang/Object;)Lcom/github/davidmoten/rx/jdbc/QueryUpdate$Builder;",
++          "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder#returnGeneratedKeys()Lcom/github/davidmoten/rx/jdbc/QueryUpdate$ReturnGeneratedKeysBuilder;",
++          "com.github.davidmoten.rx.jdbc.QueryUpdate$ReturnGeneratedKeysBuilder#getAs(Ljava/lang/Class;)Lrx/Observable;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The boolean selects one two-row statement or two single-row inserts. An unnamed H2 database belongs to a fresh JDBC connection. The original rxjava-jdbc subscriber drains the keys and the adapter copies each returned integer at its original index.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 2,
++      "disagreements": 0
++    }
++  ],
++  "matchedFields": [
++    "jvmcontract",
++    "jdkRelease",
++    "gaps",
++    "bounds",
++    "timeout",
++    "checkedEntry",
++    "entryBindings",
++    "classpath",
++    "commits"
++  ],
++  "argv": [
++    "/home/filip/.cache/in-the-loop/external-upgrades/b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d/jvmcontract",
++    "equivalence",
++    "--before",
++    "verifier/classes/old",
++    "--after",
++    "verifier/classes/new",
++    "--target",
++    "calibration.GeneratedKeys#keys(boolean)",
++    "--classpath",
++    "prepare/new/lib/com.github.davidmoten/rxjava-jdbc-0.7.15.jar",
++    "--classpath",
++    "prepare/new/lib/io.reactivex/rxjava-1.3.7.jar",
++    "--classpath",
++    "prepare/new/lib/com.github.davidmoten/rxjava-extras-0.8.0.14.jar",
++    "--classpath",
++    "prepare/new/lib/commons-io/commons-io-2.4.jar",
++    "--classpath",
++    "prepare/new/lib/org.slf4j/slf4j-api-1.7.21.jar",
++    "--classpath",
++    "prepare/new/lib/com.zaxxer/HikariCP-java6-2.3.13.jar",
++    "--classpath",
++    "prepare/new/lib/com.github.davidmoten/guava-mini-0.1.1.jar",
++    "--classpath",
++    "prepare/new/lib/org.slf4j/slf4j-log4j12-1.7.21.jar",
++    "--classpath",
++    "prepare/new/lib/log4j/log4j-1.2.17.jar",
++    "--classpath",
++    "prepare/new/lib/com.h2database/h2-1.4.200.jar",
++    "--before-classpath",
++    "prepare/old/lib/com.github.davidmoten/rxjava-jdbc-0.7.15.jar",
++    "--before-classpath",
++    "prepare/old/lib/io.reactivex/rxjava-1.3.7.jar",
++    "--before-classpath",
++    "prepare/old/lib/com.github.davidmoten/rxjava-extras-0.8.0.14.jar",
++    "--before-classpath",
++    "prepare/old/lib/commons-io/commons-io-2.4.jar",
++    "--before-classpath",
++    "prepare/old/lib/org.slf4j/slf4j-api-1.7.21.jar",
++    "--before-classpath",
++    "prepare/old/lib/com.zaxxer/HikariCP-java6-2.3.13.jar",
++    "--before-classpath",
++    "prepare/old/lib/com.github.davidmoten/guava-mini-0.1.1.jar",
++    "--before-classpath",
++    "prepare/old/lib/org.slf4j/slf4j-log4j12-1.7.21.jar",
++    "--before-classpath",
++    "prepare/old/lib/log4j/log4j-1.2.17.jar",
++    "--before-classpath",
++    "prepare/old/lib/com.h2database/h2-1.4.192.jar",
++    "--unchanged-unless",
++    "false",
++    "--engine",
++    "jbmc",
++    "--gaps",
++    "strict",
++    "--unwind",
++    "16",
++    "--max-array-length",
++    "16",
++    "--timeout",
++    "600",
++    "--work",
++    "verifier/work",
++    "--report",
++    "verifier/report",
++    "--json"
++  ],
++  "workflowStatus": "exited",
++  "toolExit": 1,
++  "observations": [
++    {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "calibration.GeneratedKeys#keys(boolean)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "calibration.GeneratedKeys#keys(boolean) cannot be verified: has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)",
++          "uri": null,
++          "line": 13
++        }
++      ],
++      "output": "✗ calibration.GeneratedKeys#keys(boolean) cannot be verified: has a previous version with a dependency closure of its own (--before-classpath), which only the tool's own checker is given (--engine native or auto, without --confirm)\n",
++      "work": "verifier/work"
++    }
++  ],
++  "problem": null,
++  "checkerSeconds": 0.113,
++  "jbmcLogs": [],
++  "qualification": "Assess unwinding and abstraction from these logs and replay any candidate on the unchanged JVM. A job exit alone establishes no application claim.",
++  "elapsedSeconds": 5.281,
++  "sourcesAfter": 459
++}

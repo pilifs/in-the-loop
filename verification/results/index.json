@@ -2,6 +2,121 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261121-000727-replay-bump-assertj-guava-enforcer-on-bo",
+      "title": "Replay BUMP AssertJ Guava Enforcer on both dependency revisions",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 36.1s, peak 1.0 GiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+      "attention": [
+        "step 1 (Run both original AssertJ Guava Maven lifecycles) was held back 2m12s by its 2-CPU quota in 36.1s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "baseline:bump"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/baselines/bump/replay.py"
+        ]
+      },
+      "sourceCommit": "5983089444b0b2e300ab37001032c321dffcfae4",
+      "finishedAt": "2026-11-21T00:12:35+00:00",
+      "wallSeconds": 36.1,
+      "peakMemoryBytes": 1098776576,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 120.0,
+        "notes": "Both original historical runs used a modest single Maven module. The pre image includes 355 Java tests. Input hash checks and rebuilding the stripped runtime take seconds."
+      },
+      "host": "vm-1",
+      "result": "20261121-000727-replay-bump-assertj-guava-enforcer-on-bo/result.json"
+    },
+    {
+      "id": "20261121-000827-348-compare-jbmc-on-the-matched-external",
+      "title": "348 compare JBMC on the matched external caller observer",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 6.0s, peak 146.2 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed",
+      "attention": [],
+      "capabilities": [
+        "jbmc:equivalence",
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "examples": [
+          "348"
+        ]
+      },
+      "sourceCommit": "5983089444b0b2e300ab37001032c321dffcfae4",
+      "finishedAt": "2026-11-21T00:12:05+00:00",
+      "wallSeconds": 6.0,
+      "peakMemoryBytes": 153268224,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 300.0,
+        "notes": "The matching preparation ran in 3–5 seconds; identical checker deadline is 600 seconds and the per-case end-to-end budget is two hours."
+      },
+      "host": "vm-1",
+      "result": "20261121-000827-348-compare-jbmc-on-the-matched-external/result.json"
+    },
+    {
+      "id": "20261121-000827-351-compare-jbmc-on-the-matched-external",
+      "title": "351 compare JBMC on the matched external caller observer",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 4.8s, peak 116.9 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed",
+      "attention": [],
+      "capabilities": [
+        "jbmc:equivalence",
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "examples": [
+          "351"
+        ]
+      },
+      "sourceCommit": "5983089444b0b2e300ab37001032c321dffcfae4",
+      "finishedAt": "2026-11-21T00:12:04+00:00",
+      "wallSeconds": 4.8,
+      "peakMemoryBytes": 122601472,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 300.0,
+        "notes": "The matching preparation ran in 3–5 seconds; identical checker deadline is 600 seconds and the per-case end-to-end budget is two hours."
+      },
+      "host": "vm-1",
+      "result": "20261121-000827-351-compare-jbmc-on-the-matched-external/result.json"
+    },
+    {
+      "id": "20261121-000727-replay-fscrawler-ordinary-docx-across-th",
+      "title": "Replay FSCrawler ordinary DOCX across the BUMP POI upgrade",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 2.8s, peak 488.7 MiB (estimated 5m00s, 4.0 GiB)",
+      "attention": [
+        "declared output lib/benchmark/external-upgrades/baselines/bump/fscrawler-replay.json was not produced",
+        "step 1 (Replay original FSCrawler tests and caller fields on the historical runtime) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "baseline:bump"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/baselines/bump/replay.py"
+        ]
+      },
+      "sourceCommit": "5983089444b0b2e300ab37001032c321dffcfae4",
+      "finishedAt": "2026-11-21T00:12:02+00:00",
+      "wallSeconds": 2.8,
+      "peakMemoryBytes": 512446464,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 300.0,
+        "notes": "The historical full breaking build took 2m53s. This paired offline job selects two named tests through the original Maven reactor, with four bounded JVM test runs."
+      },
+      "host": "vm-1",
+      "result": "20261121-000727-replay-fscrawler-ordinary-docx-across-th/result.json"
+    },
+    {
       "id": "20261120-233716-recheck-the-frozen-rxjava-key-equivalenc",
       "title": "Recheck the frozen rxjava key equivalence against its semantic expectation",
       "status": "failed",
