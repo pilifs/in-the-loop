@@ -1,0 +1,251 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-194629-345-native-selectors-again-the-run-packs",
+  "title": "345 native selectors again: the run packs its per-case output and the packed record validates",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 1.2s, peak 49.1 MiB (estimated 10m00s, 1.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-194629-345-native-selectors-again-the-run-packs.json",
+    "sha256": "436026dd4c269a5d81399e701ad8a8f2d4898d47b424bdd9514d44985ce542cc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-194629-345-native-selectors-again-the-run-packs",
+      "title": "345 native selectors again: the run packs its per-case output and the packed record validates",
+      "description": "The selector route of example 345 (four parent-fix tasks, every admitted selector checked natively on the real classpath, as job 20261120-213848-345-parent-fix-exhaust-native-selector-b ran it), on the commit where a run replaces each cases/ folder of its record with cases.tar.gz at its end and the validator reads a case from the folder or from the pack (examples/tools/targets/case_pack.py, VF-053). The first step is that run; its exit 1 is the outcome the earlier job had, since some of the four claims are refuted. The second step fails if any folder named cases is left under the example's selector records or the records are over the budget sync.py check holds them to. The third reads the example's claim history, which validates every retained record through the packs, and fails if it cites no record of this run or reports a case as missing, altered or unreadable.",
+      "kind": "example",
+      "capabilities": [
+        "native:finite-partition",
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "345"
+        ],
+        "paths": [
+          "examples/tools/targets/case_pack.py",
+          "examples/tools/targets/native_selectors.py"
+        ]
+      },
+      "expected": "All three steps pass: the run ends 0 or 1 as before, no loose per-case folder is left, and the claim history cites the new packed record with no missing or altered case.",
+      "submitted": {
+        "at": "2026-11-21T19:46:29+00:00",
+        "session": "b9b56f5e-fc0e-48ca-a64e-7a46495d814f"
+      },
+      "requires": [],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "10m",
+        "memoryLimit": "4G",
+        "timeout": "30m",
+        "notes": "The same run took 2m53s and 139 MiB as job 20261120-213848-345-parent-fix-exhaust-native-selector-b; the two checks after it take seconds."
+      },
+      "steps": [
+        {
+          "name": "Prove original properties by complete native case analysis",
+          "run": "python3 examples/tools/build.py 345 --native-selectors bytes-parent-fix,count-parent-fix,page-parent-fix,positive-parent-fix --checker-seconds 90 --first 6; code=$?; echo \"selector run exited $code\"; test $code -le 1",
+          "cwd": "."
+        },
+        {
+          "name": "No per-case folder is left loose, and the records are within their budget",
+          "run": "python3 examples/tools/targets/case_pack.py budget 345 && python3 examples/tools/targets/case_pack.py verify 345 && test -z \"$(find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix -type d -name cases)\" && ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix",
+          "cwd": "."
+        },
+        {
+          "name": "The claim history validates the packed record of this run",
+          "run": "new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); python3 examples/tools/targets/workflow_handoff.py handoff 345 | NEW=$new python3 -c \"import os, sys; t = sys.stdin.read(); bad = [w for w in ('does not exist', 'different raw checker output', 'cannot be read') if w in t]; print(len(t), 'bytes of claim history; cites', os.environ['NEW'], os.environ['NEW'] in t, '; failure phrases', bad); sys.exit(0 if t and not bad and os.environ['NEW'] in t else 1)\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/345-paged-importer-upgrades/records/native-selectors/parent-fix"
+      ]
+    }
+  },
+  "sourceCommit": "4e3308463cd4b45cb5fdb25b68899ec209b7c28a",
+  "startedAt": "2026-11-21T19:47:12+00:00",
+  "finishedAt": "2026-11-21T19:47:21+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3948568,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 600.0,
+    "notes": "The same run took 2m53s and 139 MiB as job 20261120-213848-345-parent-fix-exhaust-native-selector-b; the two checks after it take seconds."
+  },
+  "usage": {
+    "peakMemoryBytes": 51445760,
+    "wallSeconds": 1.2,
+    "cpuSeconds": 0.8,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove original properties by complete native case analysis",
+      "run": "python3 examples/tools/build.py 345 --native-selectors bytes-parent-fix,count-parent-fix,page-parent-fix,positive-parent-fix --checker-seconds 90 --first 6; code=$?; echo \"selector run exited $code\"; test $code -le 1",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.241,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 51445760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-original-properties-by-c.log",
+        "lines": 2,
+        "bytes": 81,
+        "sha256": "2d8268a970f6dcaaac126cf6f1fcfe4fa53e728dd1a585e2e9d6958eb6d1a84d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "native selector checks unresolved: no built native checker",
+        "selector run exited 1"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "No per-case folder is left loose, and the records are within their budget",
+      "run": "python3 examples/tools/targets/case_pack.py budget 345 && python3 examples/tools/targets/case_pack.py verify 345 && test -z \"$(find examples/345-paged-importer-upgrades/records/native-selectors/parent-fix -type d -name cases)\" && ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.091,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 12496896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-no-per-case-folder-is-left-loo.log",
+        "lines": 5,
+        "bytes": 163,
+        "sha256": "4d5d183e2273c6580c2a9d529231da82c588a39f33b614a62f5200c03965967c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0 error(s), 0 warning(s)",
+        "345-paged-importer-upgrades: 12 pack(s) read, 1,070 members",
+        "20261120T213516Z-d5b684fd",
+        "20261120T213550Z-d07309cd",
+        "20261120T220835Z-adb5055d"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "The claim history validates the packed record of this run",
+      "run": "new=$(ls examples/345-paged-importer-upgrades/records/native-selectors/parent-fix | sort | tail -1); python3 examples/tools/targets/workflow_handoff.py handoff 345 | NEW=$new python3 -c \"import os, sys; t = sys.stdin.read(); bad = [w for w in ('does not exist', 'different raw checker output', 'cannot be read') if w in t]; print(len(t), 'bytes of claim history; cites', os.environ['NEW'], os.environ['NEW'] in t, '; failure phrases', bad); sys.exit(0 if t and not bad and os.environ['NEW'] in t else 1)\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 0.601,
+      "cpuSeconds": 0.461,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 40067072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-the-claim-history-validates-th.log",
+        "lines": 1,
+        "bytes": 89,
+        "sha256": "2fba31180b94f593564243df946967ab2aa132289b67d1246d2957b8286131cb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "288181 bytes of claim history; cites 20261120T220835Z-adb5055d True ; failure phrases []"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-21T19:47:30+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T194721Z-3465507f7230b66e"
+    }
+  }
+}
