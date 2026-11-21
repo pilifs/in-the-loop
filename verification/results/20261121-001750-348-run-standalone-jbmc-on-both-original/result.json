@@ -1,0 +1,200 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-001750-348-run-standalone-jbmc-on-both-original",
+  "title": "348 run standalone JBMC on both original runtime closures",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 16.2s, peak 417.6 MiB (estimated 6m00s, 3.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-001750-348-run-standalone-jbmc-on-both-original.json",
+    "sha256": "bfabb8697fdf9ce40ceee8f5ffcddb06aa026533e8424a988c2c6358f0c3513a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-001750-348-run-standalone-jbmc-on-both-original",
+      "title": "348 run standalone JBMC on both original runtime closures",
+      "description": "Following the paired frontend refusal, execute standalone JBMC independently on the old and new ordered adapter/application/dependency classpaths that were bound by the V0 native receipt. Use identical harness bytes per side, true and false original JVM controls, the same original return observer and recorded bounds; preserve all unwind assertions and missing-body diagnostics. This is an assisted per-side engine baseline and cannot count as automated claim selection.",
+      "kind": "real-world",
+      "capabilities": [
+        "jbmc:per-side-contract",
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "examples": [
+          "348"
+        ]
+      },
+      "expected": "Both actual JBMC invocations have a recorded exit or timeout on verified classpaths. A proof requires complete unwinding and supported library semantics; candidates require independent JVM reproduction.",
+      "submitted": {
+        "at": "2026-11-21T00:17:50+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "3G",
+        "duration": "6m",
+        "memoryLimit": "16G",
+        "timeout": "2h",
+        "notes": "The two solver processes share the 600-second native search budget. Per-side pressure is unknown on historical libraries, so retain the full 16 GiB ceiling."
+      },
+      "steps": [
+        {
+          "name": "Execute standalone JBMC for both original sides",
+          "run": "python3 lib/benchmark/external-upgrades/baselines/jbmc_sides.py 348 --output lib/benchmark/external-upgrades/baselines/standalone-jbmc-348",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/external-upgrades/baselines/standalone-jbmc-348"
+      ]
+    }
+  },
+  "sourceCommit": "aaf9c20b75e0ea6651756296fd20de400b26766d",
+  "startedAt": "2026-11-21T00:21:04+00:00",
+  "finishedAt": "2026-11-21T00:21:25+00:00",
+  "wallSeconds": 21.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 22328,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 17179869184,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": "The two solver processes share the 600-second native search budget. Per-side pressure is unknown on historical libraries, so retain the full 16 GiB ceiling."
+  },
+  "usage": {
+    "peakMemoryBytes": 437854208,
+    "wallSeconds": 16.2,
+    "cpuSeconds": 20.5,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Execute standalone JBMC for both original sides",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/jbmc_sides.py 348 --output lib/benchmark/external-upgrades/baselines/standalone-jbmc-348",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 16.244,
+      "cpuSeconds": 20.538,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 437854208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-execute-standalone-jbmc-for-bo.log",
+        "lines": 9,
+        "bytes": 583,
+        "sha256": "b36c56aab3f821a7138f6cdd632ecde152f70ed78984595a2e92f12439ace916",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "348 standalone-jbmc [('old', 10), ('new', 10)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/standalone-jbmc-348/CallerBaseline.java",
+      "change": "added",
+      "bytes": 614,
+      "sha256": "b38450cf05881072c37ab4435b4c8e4bfe936c4c7bba63b8234ea167a1addefb",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/standalone-jbmc-348/measurement.json",
+      "change": "added",
+      "bytes": 35563,
+      "sha256": "fc7a00369f3eb93fd36eb5963dd5bcab82d376d2f3ca74b4f05cfead2633dcf3",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/standalone-jbmc-348/new.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/standalone-jbmc-348/old.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T00:21:43+00:00",
+    "applied": [
+      "lib/benchmark/external-upgrades/baselines/standalone-jbmc-348/CallerBaseline.java",
+      "lib/benchmark/external-upgrades/baselines/standalone-jbmc-348/measurement.json",
+      "lib/benchmark/external-upgrades/baselines/standalone-jbmc-348/new.stderr",
+      "lib/benchmark/external-upgrades/baselines/standalone-jbmc-348/old.stderr"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
