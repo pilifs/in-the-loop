@@ -1,0 +1,107 @@
+{
+  "entry": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;",
+  "observer": "Retrieve the registered original factory from the Guice-backed client registry for two namespaces.",
+  "domainBasis": "Registration associates the supplied namespace with a specific factory. The factory manager publicly checks that registry first. Each test uses a fresh JVM and the real client injector.",
+  "cases": [
+    {
+      "args": [
+        "application"
+      ],
+      "expected": {
+        "return": "true"
+      }
+    },
+    {
+      "args": [
+        "custom.namespace"
+      ],
+      "expected": {
+        "return": "true"
+      }
+    }
+  ],
+  "probeSha256": "0291ccc423cb4d1cbb9ade56e67fc727c6fccae446fcff38159774b198b9895a",
+  "launcherSha256": "807dfe7c538df322ab8d36aa13b60fedfe4a27f5577d7c2fcb032d6b0c5b3ebc",
+  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "6b0a06a4682e8171cc17f5f61ccc8d87f6871b6d",
+      "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5",
+      "callerClassSha256": "96820d55b1c3570f156a3bf3176a7f9e9e1e5b6e8607b49ab0f5c5d279e0124a",
+      "classpath": [
+        "4594c682eea12f22876e03a3ca813bfcda180af15f8cfc1bfd3283fa3ea5657e",
+        "48c5c6b91a200ebecae3c3cdd66de1863d1346bf8ce89e6871b08e4ac10718bc",
+        "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
+        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
+        "9b9df27a5b8c7864112b4137fd92b36c3f1395bfe57be42fedf2f520ead1a93e",
+        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+        "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
+        "5666b36f9db46f06dd5a19d73bbff3b588d5969c0f4b8848fde0f5ec849430a5",
+        "1047f472714896535b9e8ca1f39ed4f2137e3a27aec4c2956a686b4d94a550cb",
+        "831882a70b701e527d03cc3fd6796598347e1415024fb103fb2da9bcf6b03d81",
+        "88785cd6d433df6d69224622f52cedfc29d1e7a38c61d7dac29c75965cb93fcd",
+        "0c2e0f3df6ea22558546dac4900094df815acf5ec17ef869969816de6a100a34",
+        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
+        "88998e5bbab12a965f304815159670238b24d272b24339a9a8545b3913eb640a",
+        "e72b76416888c0a7fa2cd98e155a5981c7fe021b78777091d83da7c82992ae92",
+        "a67f9c8b8f0ae92f458b5d685e135574254e1712cc2b04db99511086ae1b57d3"
+      ],
+      "dependency": "9b9df27a5b8c7864112b4137fd92b36c3f1395bfe57be42fedf2f520ead1a93e",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 0,
+          "observations": []
+        }
+      ]
+    },
+    "new": {
+      "commit": "b494d596132961f8f6dc7f229a1d0e4919da151b",
+      "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5",
+      "callerClassSha256": "96820d55b1c3570f156a3bf3176a7f9e9e1e5b6e8607b49ab0f5c5d279e0124a",
+      "classpath": [
+        "4594c682eea12f22876e03a3ca813bfcda180af15f8cfc1bfd3283fa3ea5657e",
+        "48c5c6b91a200ebecae3c3cdd66de1863d1346bf8ce89e6871b08e4ac10718bc",
+        "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
+        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
+        "d258ff1bd9b8b527872f8402648226658ad3149f1f40e74b0566d69e7e042fbc",
+        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+        "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
+        "5666b36f9db46f06dd5a19d73bbff3b588d5969c0f4b8848fde0f5ec849430a5",
+        "1047f472714896535b9e8ca1f39ed4f2137e3a27aec4c2956a686b4d94a550cb",
+        "831882a70b701e527d03cc3fd6796598347e1415024fb103fb2da9bcf6b03d81",
+        "88785cd6d433df6d69224622f52cedfc29d1e7a38c61d7dac29c75965cb93fcd",
+        "0c2e0f3df6ea22558546dac4900094df815acf5ec17ef869969816de6a100a34",
+        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
+        "88998e5bbab12a965f304815159670238b24d272b24339a9a8545b3913eb640a",
+        "e72b76416888c0a7fa2cd98e155a5981c7fe021b78777091d83da7c82992ae92",
+        "a67f9c8b8f0ae92f458b5d685e135574254e1712cc2b04db99511086ae1b57d3"
+      ],
+      "dependency": "d258ff1bd9b8b527872f8402648226658ad3149f1f40e74b0566d69e7e042fbc"
+    }
+  },
+  "status": "open",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "originalInvocation": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;",
+  "probeClasses": {
+    "UpgradeObservation": "1256d91e4c0016731af534c5a9f816c7ddf526a82c2b90a6d30cd316bbbd63a6",
+    "UpgradeProbe": "e38c195911ee946a885a2d00daa3d9074aa36df99a2d8a4d4fe9a96384476558",
+    "UpgradeTrace": "277b76611afd28946e5d4af6dec4e2e5e9cde0d4b9a5ffa433701743a03c339e"
+  },
+  "stoppedAt": {
+    "side": "old",
+    "input": 0,
+    "repetition": 1,
+    "exception": "com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Apollo Injector! at com.ctrip.framework.apollo.build.ApolloInjector.getInjector(ApolloInjector.java:22) caused by java.lang.IllegalStateException: No implementation defined in /META-INF/services/com.ctrip.framework.apollo.internals.Injector, please check whether the file exists and has the right implementation class! at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadFirst(ServiceBootstrap.java:10)"
+  },
+  "reason": "old input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Apollo Injector! at com.ctrip.framework.apollo.build.ApolloInjector.getInjector(ApolloInjector.java:22) caused by java.lang.IllegalStateException: No implementation defined in /META-INF/services/com.ctrip.framework.apollo.internals.Injector, please check whether the file exists and has the right implementation class! at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadFirst(ServiceBootstrap.java:10)",
+  "specSha256": "6ffb9e20b7e92618bb8525741b139eccb04aefa89d9bb999a065af0a8d953970"
+}

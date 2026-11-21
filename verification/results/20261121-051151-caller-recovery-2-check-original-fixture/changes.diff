@@ -1,0 +1,1168 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-1.json
+@@ -0,0 +1,189 @@
++{
++  "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++  "observer": "The original Wire response converter decodes the developer fixture and returns the phone-number field.",
++  "domainBasis": "The checked-in generated Phone message has a length-delimited string in protobuf field 1. The first body is byte-for-byte the historical developer test. The short-string companion uses the same wire rule.",
++  "cases": [
++    {
++      "args": [
++        "Cg4oNTE5KSA4NjctNTMwOQ=="
++      ],
++      "expected": {
++        "return": "(519) 867-5309"
++      }
++    },
++    {
++      "args": [
++        "CgMxMjM="
++      ],
++      "expected": {
++        "return": "123"
++      }
++    }
++  ],
++  "probeSha256": "329082b43120ffabdd16c02fe3ebccfc7bac361a10941103eb0ca93fdc9bb3b6",
++  "launcherSha256": "807dfe7c538df322ab8d36aa13b60fedfe4a27f5577d7c2fcb032d6b0c5b3ebc",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "callerClassSha256": "8a4010b976f74535ba8b1afaa9315536c21cfe2b5df97e2f01742c5d7aacff93",
++      "classpath": [
++        "079fc0eeac81d826f9bb68ee98219c0743f40415e78ce7f6c221135eb42635c3",
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa"
++      ],
++      "dependency": "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "(519) 867-5309"
++            },
++            {
++              "return": "(519) 867-5309"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "123"
++            },
++            {
++              "return": "123"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "com.squareup.wire.FieldEncoding",
++        "com.squareup.wire.Message",
++        "com.squareup.wire.Message$Builder",
++        "com.squareup.wire.Preconditions",
++        "com.squareup.wire.ProtoAdapter",
++        "com.squareup.wire.ProtoAdapter$1",
++        "com.squareup.wire.ProtoAdapter$10",
++        "com.squareup.wire.ProtoAdapter$11",
++        "com.squareup.wire.ProtoAdapter$12",
++        "com.squareup.wire.ProtoAdapter$13",
++        "com.squareup.wire.ProtoAdapter$14",
++        "com.squareup.wire.ProtoAdapter$15",
++        "com.squareup.wire.ProtoAdapter$2",
++        "com.squareup.wire.ProtoAdapter$3",
++        "com.squareup.wire.ProtoAdapter$4",
++        "com.squareup.wire.ProtoAdapter$5",
++        "com.squareup.wire.ProtoAdapter$6",
++        "com.squareup.wire.ProtoAdapter$7",
++        "com.squareup.wire.ProtoAdapter$8",
++        "com.squareup.wire.ProtoAdapter$9",
++        "com.squareup.wire.ProtoAdapter$MapProtoAdapter",
++        "com.squareup.wire.ProtoReader",
++        "com.squareup.wire.RuntimeMessageAdapter"
++      ]
++    },
++    "new": {
++      "commit": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "callerClassSha256": "8a4010b976f74535ba8b1afaa9315536c21cfe2b5df97e2f01742c5d7aacff93",
++      "classpath": [
++        "079fc0eeac81d826f9bb68ee98219c0743f40415e78ce7f6c221135eb42635c3",
++        "cbf7c823e7225e02a34d087be63f58c4e3f372e4b663235e195d08fd9398358c",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c"
++      ],
++      "dependency": "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "(519) 867-5309"
++            },
++            {
++              "return": "(519) 867-5309"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "123"
++            },
++            {
++              "return": "123"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "com.squareup.wire.FieldEncoding",
++        "com.squareup.wire.FieldEncoding$Companion",
++        "com.squareup.wire.Message",
++        "com.squareup.wire.Message$Builder",
++        "com.squareup.wire.Message$Companion",
++        "com.squareup.wire.PackedProtoAdapter",
++        "com.squareup.wire.ProtoAdapter",
++        "com.squareup.wire.ProtoAdapter$Companion",
++        "com.squareup.wire.ProtoAdapterKt",
++        "com.squareup.wire.ProtoAdapterKt$commonBool$1",
++        "com.squareup.wire.ProtoAdapterKt$commonBytes$1",
++        "com.squareup.wire.ProtoAdapterKt$commonDouble$1",
++        "com.squareup.wire.ProtoAdapterKt$commonFixed32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonFixed64$1",
++        "com.squareup.wire.ProtoAdapterKt$commonFloat$1",
++        "com.squareup.wire.ProtoAdapterKt$commonInt32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonInt64$1",
++        "com.squareup.wire.ProtoAdapterKt$commonSint32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonSint64$1",
++        "com.squareup.wire.ProtoAdapterKt$commonString$1",
++        "com.squareup.wire.ProtoAdapterKt$commonUint32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonUint64$1",
++        "com.squareup.wire.ProtoReader",
++        "com.squareup.wire.ProtoReader$Companion",
++        "com.squareup.wire.RepeatedProtoAdapter"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [
++    {
++      "kind": "java",
++      "file": "Phone.java",
++      "source": "retrofit-converters/wire/src/test/java/retrofit2/converter/wire/Phone.java",
++      "sha256": "1666f5317a58c0507f121d65da1469efe33df538157ed79fe3da9aaba5dd416e",
++      "class": "retrofit2.converter.wire.Phone"
++    }
++  ],
++  "runtimeCompanions": [],
++  "originalInvocation": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++  "probeClasses": {
++    "UpgradeObservation": "1256d91e4c0016731af534c5a9f816c7ddf526a82c2b90a6d30cd316bbbd63a6",
++    "UpgradeTrace": "277b76611afd28946e5d4af6dec4e2e5e9cde0d4b9a5ffa433701743a03c339e",
++    "retrofit2/converter/wire/Phone$Builder": "8451b9e39010e8d6cc2829ae91b086f9561a3f8aa4ce6f44eff4e40e5932f06e",
++    "retrofit2/converter/wire/Phone$ProtoAdapter_Phone": "38b290db8860e9055de3f5927ea9b6f1c1bb55e4e2cf962bafae65fc2402b2fa",
++    "retrofit2/converter/wire/Phone": "aeebb56a4f0c53cdd99c3b94924495ddabe40f900e12dcf1ec388a2d5fdd3157",
++    "retrofit2/converter/wire/UpgradeProbe": "ea4b14c09cdc2859717abe3ce688a057f06160f9a1cc38b42b66fa4586bcba3f"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 5.177
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-29.json
+@@ -0,0 +1,693 @@
++{
++  "entry": "com.uber.profiling.Arguments#runConfigProvider()V",
++  "observer": "The real profiler applies a root configuration and then a tag-specific override. Observe the retained tag, interval and I/O flag.",
++  "domainBasis": "The declared provider supplies input settings only. An exact tag1 has an explicit override, while a different tag uses root values. Both expectations follow the original configuration contract and historical test.",
++  "cases": [
++    {
++      "args": [
++        "tag1"
++      ],
++      "expected": {
++        "return": "tag1/9001/false"
++      }
++    },
++    {
++      "args": [
++        "other"
++      ],
++      "expected": {
++        "return": "other/9000/true"
++      }
++    }
++  ],
++  "probeSha256": "7769f3f07c25fed9f80f0f97ad871a364748aed09cb3e4420e8626540ed54909",
++  "launcherSha256": "807dfe7c538df322ab8d36aa13b60fedfe4a27f5577d7c2fcb032d6b0c5b3ebc",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "03a21825f87a95b1d1291c035b9f885066dca9d0",
++      "sourceSha256": "8421ad7ad0c7d9f401939cbe2b14ba21b1752376096124f5b6b17fc5cda1c473",
++      "callerClassSha256": "23a2056ed3423643602a2021229f1fb693e71a3ccf5ff46c70319a1c17e6f223",
++      "classpath": [
++        "cf94182da7222e6cdcb51ce74a4a2ba8fc0d008cd3e74721e35cc2d73badb1dd",
++        "d3fa64afcb23bcc4c588108294109533185a274f91c1ea7caf14a497b7e3b722",
++        "b877a4d4a3a0140486d3d0f83d9058e7c0ff6ca80b00d2f7b77145935b385b56",
++        "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "8ac96fc686512d777fca85e144f196cd7cfe0c0aec23127229497d1a38ff651c",
++        "b51bf33caa83a10b67a30fceb3111a58df1089cc1b59c23f0442661ecbef7f22",
++        "737c1165a617eac7275431f76615fd18447b001c0dc4f4f4db4e24b3b3cce0f9",
++        "c876f2e85d0f108a34cdd11ccc9d8d7875697367efc75bf10a89c2c26aee994c",
++        "7aa59e031f941984af07dacc6ca85e6dc9bd3a485e9aa2494cbc034efa1225d0",
++        "81bf4c29d0275dace75fadb5febf5384553422816256023efa83b2b15a9ced60",
++        "79838d9eaef73d4f852c63a480830c3a2d4b590f0ab3ae815a489463e4714004",
++        "5285de80af1651c489313b91a9f40c65a4cdcb6b3bde716fcc028d16869a5a93",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "54b34e941b8e1414bd3e40d736efd3481772dc26db3296f6aa45cec9f6203d86"
++      ],
++      "dependency": "737c1165a617eac7275431f76615fd18447b001c0dc4f4f4db4e24b3b3cce0f9",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "tag1/9001/false"
++            },
++            {
++              "return": "tag1/9001/false"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "other/9000/true"
++            },
++            {
++              "return": "other/9000/true"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "com.fasterxml.jackson.databind.AbstractTypeResolver",
++        "com.fasterxml.jackson.databind.AnnotationIntrospector",
++        "com.fasterxml.jackson.databind.BeanDescription",
++        "com.fasterxml.jackson.databind.BeanProperty",
++        "com.fasterxml.jackson.databind.DatabindContext",
++        "com.fasterxml.jackson.databind.DeserializationConfig",
++        "com.fasterxml.jackson.databind.DeserializationContext",
++        "com.fasterxml.jackson.databind.DeserializationFeature",
++        "com.fasterxml.jackson.databind.JavaType",
++        "com.fasterxml.jackson.databind.JsonDeserializer",
++        "com.fasterxml.jackson.databind.JsonMappingException",
++        "com.fasterxml.jackson.databind.JsonNode",
++        "com.fasterxml.jackson.databind.JsonSerializable",
++        "com.fasterxml.jackson.databind.JsonSerializable$Base",
++        "com.fasterxml.jackson.databind.JsonSerializer",
++        "com.fasterxml.jackson.databind.KeyDeserializer",
++        "com.fasterxml.jackson.databind.MapperFeature",
++        "com.fasterxml.jackson.databind.MappingJsonFactory",
++        "com.fasterxml.jackson.databind.Module$SetupContext",
++        "com.fasterxml.jackson.databind.ObjectMapper",
++        "com.fasterxml.jackson.databind.PropertyName",
++        "com.fasterxml.jackson.databind.SerializationConfig",
++        "com.fasterxml.jackson.databind.SerializationFeature",
++        "com.fasterxml.jackson.databind.SerializerProvider",
++        "com.fasterxml.jackson.databind.annotation.JsonDeserialize",
++        "com.fasterxml.jackson.databind.annotation.JsonSerialize",
++        "com.fasterxml.jackson.databind.annotation.JsonTypeResolver",
++        "com.fasterxml.jackson.databind.cfg.BaseSettings",
++        "com.fasterxml.jackson.databind.cfg.ConfigFeature",
++        "com.fasterxml.jackson.databind.cfg.ConfigOverride",
++        "com.fasterxml.jackson.databind.cfg.ConfigOverride$Empty",
++        "com.fasterxml.jackson.databind.cfg.ConfigOverrides",
++        "com.fasterxml.jackson.databind.cfg.ContextAttributes",
++        "com.fasterxml.jackson.databind.cfg.ContextAttributes$Impl",
++        "com.fasterxml.jackson.databind.cfg.DeserializerFactoryConfig",
++        "com.fasterxml.jackson.databind.cfg.MapperConfig",
++        "com.fasterxml.jackson.databind.cfg.MapperConfigBase",
++        "com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig",
++        "com.fasterxml.jackson.databind.deser.AbstractDeserializer",
++        "com.fasterxml.jackson.databind.deser.BasicDeserializerFactory",
++        "com.fasterxml.jackson.databind.deser.BeanDeserializer",
++        "com.fasterxml.jackson.databind.deser.BeanDeserializerBase",
++        "com.fasterxml.jackson.databind.deser.BeanDeserializerFactory",
++        "com.fasterxml.jackson.databind.deser.BeanDeserializerModifier",
++        "com.fasterxml.jackson.databind.deser.ContextualDeserializer",
++        "com.fasterxml.jackson.databind.deser.CreatorProperty",
++        "com.fasterxml.jackson.databind.deser.DefaultDeserializationContext",
++        "com.fasterxml.jackson.databind.deser.DefaultDeserializationContext$Impl",
++        "com.fasterxml.jackson.databind.deser.DeserializerCache",
++        "com.fasterxml.jackson.databind.deser.DeserializerFactory",
++        "com.fasterxml.jackson.databind.deser.Deserializers",
++        "com.fasterxml.jackson.databind.deser.KeyDeserializers",
++        "com.fasterxml.jackson.databind.deser.NullValueProvider",
++        "com.fasterxml.jackson.databind.deser.ResolvableDeserializer",
++        "com.fasterxml.jackson.databind.deser.SettableBeanProperty",
++        "com.fasterxml.jackson.databind.deser.UnresolvedForwardReference",
++        "com.fasterxml.jackson.databind.deser.ValueInstantiator",
++        "com.fasterxml.jackson.databind.deser.ValueInstantiator$Base",
++        "com.fasterxml.jackson.databind.deser.ValueInstantiator$Gettable",
++        "com.fasterxml.jackson.databind.deser.ValueInstantiators",
++        "com.fasterxml.jackson.databind.deser.impl.ErrorThrowingDeserializer",
++        "com.fasterxml.jackson.databind.deser.impl.FieldProperty",
++        "com.fasterxml.jackson.databind.deser.impl.MethodProperty",
++        "com.fasterxml.jackson.databind.deser.impl.PropertyBasedObjectIdGenerator",
++        "com.fasterxml.jackson.databind.deser.impl.SetterlessProperty",
++        "com.fasterxml.jackson.databind.deser.impl.TypeWrappedDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ArrayBlockingQueueDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.AtomicReferenceDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.CollectionDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase",
++        "com.fasterxml.jackson.databind.deser.std.EnumDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.EnumMapDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.EnumSetDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.JsonLocationInstantiator",
++        "com.fasterxml.jackson.databind.deser.std.MapDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.MapEntryDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ObjectArrayDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ReferenceTypeDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdDelegatingDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$DelegatingKD",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$EnumKD",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$StringCtorKeyDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$StringFactoryKeyDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializers",
++        "com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StringDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ThrowableDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.TokenBufferDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer",
++        "com.fasterxml.jackson.databind.exc.InvalidDefinitionException",
++        "com.fasterxml.jackson.databind.exc.InvalidFormatException",
++        "com.fasterxml.jackson.databind.exc.InvalidTypeIdException",
++        "com.fasterxml.jackson.databind.exc.MismatchedInputException",
++        "com.fasterxml.jackson.databind.exc.PropertyBindingException",
++        "com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException",
++        "com.fasterxml.jackson.databind.ext.Java7Support",
++        "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
++        "com.fasterxml.jackson.databind.ext.NioPathDeserializer",
++        "com.fasterxml.jackson.databind.ext.NioPathSerializer",
++        "com.fasterxml.jackson.databind.introspect.Annotated",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedClass",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedClass$Creators",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedClassResolver",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedConstructor",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedField",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedMember",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedMethod",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedParameter",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedWithParams",
++        "com.fasterxml.jackson.databind.introspect.AnnotationCollector",
++        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$EmptyCollector",
++        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$NoAnnotations",
++        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$OneCollector",
++        "com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair",
++        "com.fasterxml.jackson.databind.introspect.BasicBeanDescription",
++        "com.fasterxml.jackson.databind.introspect.BasicClassIntrospector",
++        "com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition",
++        "com.fasterxml.jackson.databind.introspect.ClassIntrospector",
++        "com.fasterxml.jackson.databind.introspect.ClassIntrospector$MixInResolver",
++        "com.fasterxml.jackson.databind.introspect.ConcreteBeanPropertyBase",
++        "com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector",
++        "com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector",
++        "com.fasterxml.jackson.databind.introspect.SimpleMixInResolver",
++        "com.fasterxml.jackson.databind.introspect.TypeResolutionContext",
++        "com.fasterxml.jackson.databind.introspect.VirtualAnnotatedMember",
++        "com.fasterxml.jackson.databind.introspect.VisibilityChecker",
++        "com.fasterxml.jackson.databind.introspect.VisibilityChecker$Std",
++        "com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitable",
++        "com.fasterxml.jackson.databind.jsonschema.SchemaAware",
++        "com.fasterxml.jackson.databind.jsontype.SubtypeResolver",
++        "com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder",
++        "com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver",
++        "com.fasterxml.jackson.databind.node.BaseJsonNode",
++        "com.fasterxml.jackson.databind.node.BigIntegerNode",
++        "com.fasterxml.jackson.databind.node.BinaryNode",
++        "com.fasterxml.jackson.databind.node.BooleanNode",
++        "com.fasterxml.jackson.databind.node.ContainerNode",
++        "com.fasterxml.jackson.databind.node.DecimalNode",
++        "com.fasterxml.jackson.databind.node.DoubleNode",
++        "com.fasterxml.jackson.databind.node.FloatNode",
++        "com.fasterxml.jackson.databind.node.IntNode",
++        "com.fasterxml.jackson.databind.node.JsonNodeCreator",
++        "com.fasterxml.jackson.databind.node.JsonNodeFactory",
++        "com.fasterxml.jackson.databind.node.LongNode",
++        "com.fasterxml.jackson.databind.node.NullNode",
++        "com.fasterxml.jackson.databind.node.NumericNode",
++        "com.fasterxml.jackson.databind.node.ObjectNode",
++        "com.fasterxml.jackson.databind.node.POJONode",
++        "com.fasterxml.jackson.databind.node.ShortNode",
++        "com.fasterxml.jackson.databind.node.TextNode",
++        "com.fasterxml.jackson.databind.node.TreeTraversingParser",
++        "com.fasterxml.jackson.databind.node.ValueNode",
++        "com.fasterxml.jackson.databind.ser.BasicSerializerFactory",
++        "com.fasterxml.jackson.databind.ser.BeanPropertyWriter",
++        "com.fasterxml.jackson.databind.ser.BeanSerializer",
++        "com.fasterxml.jackson.databind.ser.BeanSerializerFactory",
++        "com.fasterxml.jackson.databind.ser.BeanSerializerModifier",
++        "com.fasterxml.jackson.databind.ser.ContainerSerializer",
++        "com.fasterxml.jackson.databind.ser.ContextualSerializer",
++        "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider",
++        "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider$Impl",
++        "com.fasterxml.jackson.databind.ser.PropertyWriter",
++        "com.fasterxml.jackson.databind.ser.ResolvableSerializer",
++        "com.fasterxml.jackson.databind.ser.SerializerCache",
++        "com.fasterxml.jackson.databind.ser.SerializerFactory",
++        "com.fasterxml.jackson.databind.ser.Serializers",
++        "com.fasterxml.jackson.databind.ser.VirtualBeanPropertyWriter",
++        "com.fasterxml.jackson.databind.ser.impl.AttributePropertyWriter",
++        "com.fasterxml.jackson.databind.ser.impl.FailingSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.IndexedStringListSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.IteratorSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.MapEntrySerializer",
++        "com.fasterxml.jackson.databind.ser.impl.PropertyBasedObjectIdGenerator",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Double",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Empty",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$SerializerAndMapResult",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Single",
++        "com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap",
++        "com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap$Bucket",
++        "com.fasterxml.jackson.databind.ser.impl.StringArraySerializer",
++        "com.fasterxml.jackson.databind.ser.impl.StringCollectionSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.TypeWrappedSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.UnknownSerializer",
++        "com.fasterxml.jackson.databind.ser.std.ArraySerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.BeanSerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.BooleanSerializer",
++        "com.fasterxml.jackson.databind.ser.std.BooleanSerializer$AsNumber",
++        "com.fasterxml.jackson.databind.ser.std.ByteBufferSerializer",
++        "com.fasterxml.jackson.databind.ser.std.CalendarSerializer",
++        "com.fasterxml.jackson.databind.ser.std.ClassSerializer",
++        "com.fasterxml.jackson.databind.ser.std.CollectionSerializer",
++        "com.fasterxml.jackson.databind.ser.std.DateSerializer",
++        "com.fasterxml.jackson.databind.ser.std.DateTimeSerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.EnumSerializer",
++        "com.fasterxml.jackson.databind.ser.std.EnumSetSerializer",
++        "com.fasterxml.jackson.databind.ser.std.FileSerializer",
++        "com.fasterxml.jackson.databind.ser.std.InetAddressSerializer",
++        "com.fasterxml.jackson.databind.ser.std.InetSocketAddressSerializer",
++        "com.fasterxml.jackson.databind.ser.std.IterableSerializer",
++        "com.fasterxml.jackson.databind.ser.std.JsonValueSerializer",
++        "com.fasterxml.jackson.databind.ser.std.MapProperty",
++        "com.fasterxml.jackson.databind.ser.std.MapSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NullSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$Base",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$DoubleSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$FloatSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntLikeSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntegerSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$LongSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$ShortSerializer",
++        "com.fasterxml.jackson.databind.ser.std.ObjectArraySerializer",
++        "com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer",
++        "com.fasterxml.jackson.databind.ser.std.SerializableSerializer",
++        "com.fasterxml.jackson.databind.ser.std.SqlDateSerializer",
++        "com.fasterxml.jackson.databind.ser.std.SqlTimeSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StaticListSerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers",
++        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicBooleanSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicIntegerSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicLongSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$Default",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$Dynamic",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$EnumKeySerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$StringKeySerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdScalarSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StringSerializer",
++        "com.fasterxml.jackson.databind.ser.std.TimeZoneSerializer",
++        "com.fasterxml.jackson.databind.ser.std.ToStringSerializer",
++        "com.fasterxml.jackson.databind.ser.std.TokenBufferSerializer",
++        "com.fasterxml.jackson.databind.ser.std.UUIDSerializer",
++        "com.fasterxml.jackson.databind.type.ArrayType",
++        "com.fasterxml.jackson.databind.type.ClassStack",
++        "com.fasterxml.jackson.databind.type.CollectionLikeType",
++        "com.fasterxml.jackson.databind.type.CollectionType",
++        "com.fasterxml.jackson.databind.type.MapLikeType",
++        "com.fasterxml.jackson.databind.type.MapType",
++        "com.fasterxml.jackson.databind.type.PlaceholderForType",
++        "com.fasterxml.jackson.databind.type.ReferenceType",
++        "com.fasterxml.jackson.databind.type.ResolvedRecursiveType",
++        "com.fasterxml.jackson.databind.type.SimpleType",
++        "com.fasterxml.jackson.databind.type.TypeBase",
++        "com.fasterxml.jackson.databind.type.TypeBindings",
++        "com.fasterxml.jackson.databind.type.TypeBindings$AsKey",
++        "com.fasterxml.jackson.databind.type.TypeBindings$TypeParamStash",
++        "com.fasterxml.jackson.databind.type.TypeFactory",
++        "com.fasterxml.jackson.databind.type.TypeParser",
++        "com.fasterxml.jackson.databind.util.Annotations",
++        "com.fasterxml.jackson.databind.util.ArrayIterator",
++        "com.fasterxml.jackson.databind.util.ClassUtil",
++        "com.fasterxml.jackson.databind.util.ClassUtil$Ctor",
++        "com.fasterxml.jackson.databind.util.ConstantValueInstantiator",
++        "com.fasterxml.jackson.databind.util.LRUMap",
++        "com.fasterxml.jackson.databind.util.Named",
++        "com.fasterxml.jackson.databind.util.RootNameLookup",
++        "com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition",
++        "com.fasterxml.jackson.databind.util.StdDateFormat",
++        "com.fasterxml.jackson.databind.util.TokenBuffer",
++        "com.fasterxml.jackson.databind.util.TypeKey"
++      ]
++    },
++    "new": {
++      "commit": "279ece31518ff797eb149c57df01093cdd376daf",
++      "sourceSha256": "8421ad7ad0c7d9f401939cbe2b14ba21b1752376096124f5b6b17fc5cda1c473",
++      "callerClassSha256": "23a2056ed3423643602a2021229f1fb693e71a3ccf5ff46c70319a1c17e6f223",
++      "classpath": [
++        "cf94182da7222e6cdcb51ce74a4a2ba8fc0d008cd3e74721e35cc2d73badb1dd",
++        "d3fa64afcb23bcc4c588108294109533185a274f91c1ea7caf14a497b7e3b722",
++        "b877a4d4a3a0140486d3d0f83d9058e7c0ff6ca80b00d2f7b77145935b385b56",
++        "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "8ac96fc686512d777fca85e144f196cd7cfe0c0aec23127229497d1a38ff651c",
++        "b51bf33caa83a10b67a30fceb3111a58df1089cc1b59c23f0442661ecbef7f22",
++        "2d23f47001492233565adf5a34f225f2ae89564cee08024873ec36b7842ede46",
++        "673f8ae16becea4fa937404b3a851417faf42df3bbc592028bbe2bfe0cc9d8cb",
++        "7aa59e031f941984af07dacc6ca85e6dc9bd3a485e9aa2494cbc034efa1225d0",
++        "81bf4c29d0275dace75fadb5febf5384553422816256023efa83b2b15a9ced60",
++        "79838d9eaef73d4f852c63a480830c3a2d4b590f0ab3ae815a489463e4714004",
++        "5285de80af1651c489313b91a9f40c65a4cdcb6b3bde716fcc028d16869a5a93",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "54b34e941b8e1414bd3e40d736efd3481772dc26db3296f6aa45cec9f6203d86"
++      ],
++      "dependency": "2d23f47001492233565adf5a34f225f2ae89564cee08024873ec36b7842ede46",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "tag1/9000/true"
++            },
++            {
++              "return": "tag1/9000/true"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "other/9000/true"
++            },
++            {
++              "return": "other/9000/true"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "com.fasterxml.jackson.databind.AbstractTypeResolver",
++        "com.fasterxml.jackson.databind.AnnotationIntrospector",
++        "com.fasterxml.jackson.databind.BeanDescription",
++        "com.fasterxml.jackson.databind.BeanProperty",
++        "com.fasterxml.jackson.databind.DatabindContext",
++        "com.fasterxml.jackson.databind.DeserializationConfig",
++        "com.fasterxml.jackson.databind.DeserializationContext",
++        "com.fasterxml.jackson.databind.DeserializationFeature",
++        "com.fasterxml.jackson.databind.JavaType",
++        "com.fasterxml.jackson.databind.JsonDeserializer",
++        "com.fasterxml.jackson.databind.JsonMappingException",
++        "com.fasterxml.jackson.databind.JsonNode",
++        "com.fasterxml.jackson.databind.JsonSerializable",
++        "com.fasterxml.jackson.databind.JsonSerializable$Base",
++        "com.fasterxml.jackson.databind.JsonSerializer",
++        "com.fasterxml.jackson.databind.KeyDeserializer",
++        "com.fasterxml.jackson.databind.MapperFeature",
++        "com.fasterxml.jackson.databind.MappingJsonFactory",
++        "com.fasterxml.jackson.databind.Module$SetupContext",
++        "com.fasterxml.jackson.databind.ObjectMapper",
++        "com.fasterxml.jackson.databind.PropertyName",
++        "com.fasterxml.jackson.databind.SerializationConfig",
++        "com.fasterxml.jackson.databind.SerializationFeature",
++        "com.fasterxml.jackson.databind.SerializerProvider",
++        "com.fasterxml.jackson.databind.annotation.JsonDeserialize",
++        "com.fasterxml.jackson.databind.annotation.JsonSerialize",
++        "com.fasterxml.jackson.databind.annotation.JsonTypeResolver",
++        "com.fasterxml.jackson.databind.cfg.BaseSettings",
++        "com.fasterxml.jackson.databind.cfg.ConfigFeature",
++        "com.fasterxml.jackson.databind.cfg.ConfigOverride",
++        "com.fasterxml.jackson.databind.cfg.ConfigOverride$Empty",
++        "com.fasterxml.jackson.databind.cfg.ConfigOverrides",
++        "com.fasterxml.jackson.databind.cfg.ContextAttributes",
++        "com.fasterxml.jackson.databind.cfg.ContextAttributes$Impl",
++        "com.fasterxml.jackson.databind.cfg.DeserializerFactoryConfig",
++        "com.fasterxml.jackson.databind.cfg.MapperConfig",
++        "com.fasterxml.jackson.databind.cfg.MapperConfigBase",
++        "com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig",
++        "com.fasterxml.jackson.databind.deser.AbstractDeserializer",
++        "com.fasterxml.jackson.databind.deser.BasicDeserializerFactory",
++        "com.fasterxml.jackson.databind.deser.BeanDeserializer",
++        "com.fasterxml.jackson.databind.deser.BeanDeserializerBase",
++        "com.fasterxml.jackson.databind.deser.BeanDeserializerFactory",
++        "com.fasterxml.jackson.databind.deser.BeanDeserializerModifier",
++        "com.fasterxml.jackson.databind.deser.ContextualDeserializer",
++        "com.fasterxml.jackson.databind.deser.CreatorProperty",
++        "com.fasterxml.jackson.databind.deser.DefaultDeserializationContext",
++        "com.fasterxml.jackson.databind.deser.DefaultDeserializationContext$Impl",
++        "com.fasterxml.jackson.databind.deser.DeserializerCache",
++        "com.fasterxml.jackson.databind.deser.DeserializerFactory",
++        "com.fasterxml.jackson.databind.deser.Deserializers",
++        "com.fasterxml.jackson.databind.deser.KeyDeserializers",
++        "com.fasterxml.jackson.databind.deser.NullValueProvider",
++        "com.fasterxml.jackson.databind.deser.ResolvableDeserializer",
++        "com.fasterxml.jackson.databind.deser.SettableBeanProperty",
++        "com.fasterxml.jackson.databind.deser.UnresolvedForwardReference",
++        "com.fasterxml.jackson.databind.deser.ValueInstantiator$Gettable",
++        "com.fasterxml.jackson.databind.deser.ValueInstantiators",
++        "com.fasterxml.jackson.databind.deser.impl.ErrorThrowingDeserializer",
++        "com.fasterxml.jackson.databind.deser.impl.FieldProperty",
++        "com.fasterxml.jackson.databind.deser.impl.MethodProperty",
++        "com.fasterxml.jackson.databind.deser.impl.PropertyBasedObjectIdGenerator",
++        "com.fasterxml.jackson.databind.deser.impl.SetterlessProperty",
++        "com.fasterxml.jackson.databind.deser.impl.TypeWrappedDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ArrayBlockingQueueDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.AtomicReferenceDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.CollectionDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase",
++        "com.fasterxml.jackson.databind.deser.std.EnumDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.EnumMapDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.EnumSetDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.MapDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.MapEntryDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ObjectArrayDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ReferenceTypeDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdDelegatingDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$DelegatingKD",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$EnumKD",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$StringCtorKeyDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$StringFactoryKeyDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializers",
++        "com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.StringDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.ThrowableDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.TokenBufferDeserializer",
++        "com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer",
++        "com.fasterxml.jackson.databind.exc.InvalidDefinitionException",
++        "com.fasterxml.jackson.databind.exc.InvalidFormatException",
++        "com.fasterxml.jackson.databind.exc.InvalidTypeIdException",
++        "com.fasterxml.jackson.databind.exc.MismatchedInputException",
++        "com.fasterxml.jackson.databind.exc.PropertyBindingException",
++        "com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException",
++        "com.fasterxml.jackson.databind.exc.ValueInstantiationException",
++        "com.fasterxml.jackson.databind.ext.Java7Support",
++        "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
++        "com.fasterxml.jackson.databind.introspect.Annotated",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedClass",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedClass$Creators",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedClassResolver",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedConstructor",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedField",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedMember",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedMethod",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedParameter",
++        "com.fasterxml.jackson.databind.introspect.AnnotatedWithParams",
++        "com.fasterxml.jackson.databind.introspect.AnnotationCollector",
++        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$EmptyCollector",
++        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$NoAnnotations",
++        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$OneCollector",
++        "com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair",
++        "com.fasterxml.jackson.databind.introspect.BasicBeanDescription",
++        "com.fasterxml.jackson.databind.introspect.BasicClassIntrospector",
++        "com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition",
++        "com.fasterxml.jackson.databind.introspect.ClassIntrospector",
++        "com.fasterxml.jackson.databind.introspect.ClassIntrospector$MixInResolver",
++        "com.fasterxml.jackson.databind.introspect.ConcreteBeanPropertyBase",
++        "com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector",
++        "com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector",
++        "com.fasterxml.jackson.databind.introspect.SimpleMixInResolver",
++        "com.fasterxml.jackson.databind.introspect.TypeResolutionContext",
++        "com.fasterxml.jackson.databind.introspect.VirtualAnnotatedMember",
++        "com.fasterxml.jackson.databind.introspect.VisibilityChecker",
++        "com.fasterxml.jackson.databind.introspect.VisibilityChecker$Std",
++        "com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitable",
++        "com.fasterxml.jackson.databind.jsonschema.SchemaAware",
++        "com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator",
++        "com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator$Base",
++        "com.fasterxml.jackson.databind.jsontype.SubtypeResolver",
++        "com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder",
++        "com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator",
++        "com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver",
++        "com.fasterxml.jackson.databind.node.BaseJsonNode",
++        "com.fasterxml.jackson.databind.node.BigIntegerNode",
++        "com.fasterxml.jackson.databind.node.BinaryNode",
++        "com.fasterxml.jackson.databind.node.BooleanNode",
++        "com.fasterxml.jackson.databind.node.ContainerNode",
++        "com.fasterxml.jackson.databind.node.DecimalNode",
++        "com.fasterxml.jackson.databind.node.DoubleNode",
++        "com.fasterxml.jackson.databind.node.FloatNode",
++        "com.fasterxml.jackson.databind.node.IntNode",
++        "com.fasterxml.jackson.databind.node.JsonNodeCreator",
++        "com.fasterxml.jackson.databind.node.JsonNodeFactory",
++        "com.fasterxml.jackson.databind.node.LongNode",
++        "com.fasterxml.jackson.databind.node.MissingNode",
++        "com.fasterxml.jackson.databind.node.NullNode",
++        "com.fasterxml.jackson.databind.node.NumericNode",
++        "com.fasterxml.jackson.databind.node.ObjectNode",
++        "com.fasterxml.jackson.databind.node.POJONode",
++        "com.fasterxml.jackson.databind.node.ShortNode",
++        "com.fasterxml.jackson.databind.node.TextNode",
++        "com.fasterxml.jackson.databind.node.TreeTraversingParser",
++        "com.fasterxml.jackson.databind.node.ValueNode",
++        "com.fasterxml.jackson.databind.ser.BasicSerializerFactory",
++        "com.fasterxml.jackson.databind.ser.BeanPropertyWriter",
++        "com.fasterxml.jackson.databind.ser.BeanSerializer",
++        "com.fasterxml.jackson.databind.ser.BeanSerializerFactory",
++        "com.fasterxml.jackson.databind.ser.BeanSerializerModifier",
++        "com.fasterxml.jackson.databind.ser.ContainerSerializer",
++        "com.fasterxml.jackson.databind.ser.ContextualSerializer",
++        "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider",
++        "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider$Impl",
++        "com.fasterxml.jackson.databind.ser.PropertyWriter",
++        "com.fasterxml.jackson.databind.ser.ResolvableSerializer",
++        "com.fasterxml.jackson.databind.ser.SerializerCache",
++        "com.fasterxml.jackson.databind.ser.SerializerFactory",
++        "com.fasterxml.jackson.databind.ser.Serializers",
++        "com.fasterxml.jackson.databind.ser.VirtualBeanPropertyWriter",
++        "com.fasterxml.jackson.databind.ser.impl.AttributePropertyWriter",
++        "com.fasterxml.jackson.databind.ser.impl.FailingSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.IndexedStringListSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.IteratorSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.MapEntrySerializer",
++        "com.fasterxml.jackson.databind.ser.impl.PropertyBasedObjectIdGenerator",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Double",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Empty",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$SerializerAndMapResult",
++        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Single",
++        "com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap",
++        "com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap$Bucket",
++        "com.fasterxml.jackson.databind.ser.impl.StringArraySerializer",
++        "com.fasterxml.jackson.databind.ser.impl.StringCollectionSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.TypeWrappedSerializer",
++        "com.fasterxml.jackson.databind.ser.impl.UnknownSerializer",
++        "com.fasterxml.jackson.databind.ser.std.ArraySerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.BeanSerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.BooleanSerializer",
++        "com.fasterxml.jackson.databind.ser.std.BooleanSerializer$AsNumber",
++        "com.fasterxml.jackson.databind.ser.std.ByteBufferSerializer",
++        "com.fasterxml.jackson.databind.ser.std.CalendarSerializer",
++        "com.fasterxml.jackson.databind.ser.std.ClassSerializer",
++        "com.fasterxml.jackson.databind.ser.std.CollectionSerializer",
++        "com.fasterxml.jackson.databind.ser.std.DateSerializer",
++        "com.fasterxml.jackson.databind.ser.std.DateTimeSerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.EnumSerializer",
++        "com.fasterxml.jackson.databind.ser.std.EnumSetSerializer",
++        "com.fasterxml.jackson.databind.ser.std.FileSerializer",
++        "com.fasterxml.jackson.databind.ser.std.InetAddressSerializer",
++        "com.fasterxml.jackson.databind.ser.std.InetSocketAddressSerializer",
++        "com.fasterxml.jackson.databind.ser.std.IterableSerializer",
++        "com.fasterxml.jackson.databind.ser.std.JsonValueSerializer",
++        "com.fasterxml.jackson.databind.ser.std.MapProperty",
++        "com.fasterxml.jackson.databind.ser.std.MapSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NullSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializer$BigDecimalAsStringSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$Base",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$DoubleSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$FloatSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntLikeSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntegerSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$LongSerializer",
++        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$ShortSerializer",
++        "com.fasterxml.jackson.databind.ser.std.ObjectArraySerializer",
++        "com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer",
++        "com.fasterxml.jackson.databind.ser.std.SerializableSerializer",
++        "com.fasterxml.jackson.databind.ser.std.SqlDateSerializer",
++        "com.fasterxml.jackson.databind.ser.std.SqlTimeSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StaticListSerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers",
++        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicBooleanSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicIntegerSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicLongSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$Default",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$Dynamic",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$EnumKeySerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$StringKeySerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdScalarSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StdSerializer",
++        "com.fasterxml.jackson.databind.ser.std.StringSerializer",
++        "com.fasterxml.jackson.databind.ser.std.TimeZoneSerializer",
++        "com.fasterxml.jackson.databind.ser.std.ToStringSerializer",
++        "com.fasterxml.jackson.databind.ser.std.ToStringSerializerBase",
++        "com.fasterxml.jackson.databind.ser.std.TokenBufferSerializer",
++        "com.fasterxml.jackson.databind.ser.std.UUIDSerializer",
++        "com.fasterxml.jackson.databind.type.ArrayType",
++        "com.fasterxml.jackson.databind.type.ClassStack",
++        "com.fasterxml.jackson.databind.type.CollectionLikeType",
++        "com.fasterxml.jackson.databind.type.CollectionType",
++        "com.fasterxml.jackson.databind.type.MapLikeType",
++        "com.fasterxml.jackson.databind.type.MapType",
++        "com.fasterxml.jackson.databind.type.PlaceholderForType",
++        "com.fasterxml.jackson.databind.type.ReferenceType",
++        "com.fasterxml.jackson.databind.type.ResolvedRecursiveType",
++        "com.fasterxml.jackson.databind.type.SimpleType",
++        "com.fasterxml.jackson.databind.type.TypeBase",
++        "com.fasterxml.jackson.databind.type.TypeBindings",
++        "com.fasterxml.jackson.databind.type.TypeBindings$AsKey",
++        "com.fasterxml.jackson.databind.type.TypeBindings$TypeParamStash",
++        "com.fasterxml.jackson.databind.type.TypeFactory",
++        "com.fasterxml.jackson.databind.type.TypeParser",
++        "com.fasterxml.jackson.databind.util.Annotations",
++        "com.fasterxml.jackson.databind.util.ArrayIterator",
++        "com.fasterxml.jackson.databind.util.ClassUtil",
++        "com.fasterxml.jackson.databind.util.ClassUtil$Ctor",
++        "com.fasterxml.jackson.databind.util.LRUMap",
++        "com.fasterxml.jackson.databind.util.Named",
++        "com.fasterxml.jackson.databind.util.RootNameLookup",
++        "com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition",
++        "com.fasterxml.jackson.databind.util.StdDateFormat",
++        "com.fasterxml.jackson.databind.util.TokenBuffer",
++        "com.fasterxml.jackson.databind.util.TypeKey"
++      ]
++    }
++  },
++  "status": "changed",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.uber.profiling.Arguments#runConfigProvider()V",
++  "probeClasses": {
++    "UpgradeObservation": "1256d91e4c0016731af534c5a9f816c7ddf526a82c2b90a6d30cd316bbbd63a6",
++    "UpgradeProbe$Settings": "4fcac9ec73bef36e5665d8311f34193d60daffaf3c7fcc54b5fff30771081e3a",
++    "UpgradeProbe": "21ac2cef1bead32eef6f0f7eff5501dbd44a5c074cfb43206766cb86483ba4fb",
++    "UpgradeTrace": "277b76611afd28946e5d4af6dec4e2e5e9cde0d4b9a5ffa433701743a03c339e"
++  },
++  "differences": [
++    0
++  ],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 6.416
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-4.json
+@@ -0,0 +1,107 @@
++{
++  "entry": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;",
++  "observer": "Retrieve the registered original factory from the Guice-backed client registry for two namespaces.",
++  "domainBasis": "Registration associates the supplied namespace with a specific factory. The factory manager publicly checks that registry first. Each test uses a fresh JVM and the real client injector.",
++  "cases": [
++    {
++      "args": [
++        "application"
++      ],
++      "expected": {
++        "return": "true"
++      }
++    },
++    {
++      "args": [
++        "custom.namespace"
++      ],
++      "expected": {
++        "return": "true"
++      }
++    }
++  ],
++  "probeSha256": "0291ccc423cb4d1cbb9ade56e67fc727c6fccae446fcff38159774b198b9895a",
++  "launcherSha256": "807dfe7c538df322ab8d36aa13b60fedfe4a27f5577d7c2fcb032d6b0c5b3ebc",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "6b0a06a4682e8171cc17f5f61ccc8d87f6871b6d",
++      "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5",
++      "callerClassSha256": "96820d55b1c3570f156a3bf3176a7f9e9e1e5b6e8607b49ab0f5c5d279e0124a",
++      "classpath": [
++        "4594c682eea12f22876e03a3ca813bfcda180af15f8cfc1bfd3283fa3ea5657e",
++        "48c5c6b91a200ebecae3c3cdd66de1863d1346bf8ce89e6871b08e4ac10718bc",
++        "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "9b9df27a5b8c7864112b4137fd92b36c3f1395bfe57be42fedf2f520ead1a93e",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
++        "5666b36f9db46f06dd5a19d73bbff3b588d5969c0f4b8848fde0f5ec849430a5",
++        "1047f472714896535b9e8ca1f39ed4f2137e3a27aec4c2956a686b4d94a550cb",
++        "831882a70b701e527d03cc3fd6796598347e1415024fb103fb2da9bcf6b03d81",
++        "88785cd6d433df6d69224622f52cedfc29d1e7a38c61d7dac29c75965cb93fcd",
++        "0c2e0f3df6ea22558546dac4900094df815acf5ec17ef869969816de6a100a34",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "88998e5bbab12a965f304815159670238b24d272b24339a9a8545b3913eb640a",
++        "e72b76416888c0a7fa2cd98e155a5981c7fe021b78777091d83da7c82992ae92",
++        "a67f9c8b8f0ae92f458b5d685e135574254e1712cc2b04db99511086ae1b57d3"
++      ],
++      "dependency": "9b9df27a5b8c7864112b4137fd92b36c3f1395bfe57be42fedf2f520ead1a93e",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 0,
++          "observations": []
++        }
++      ]
++    },
++    "new": {
++      "commit": "b494d596132961f8f6dc7f229a1d0e4919da151b",
++      "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5",
++      "callerClassSha256": "96820d55b1c3570f156a3bf3176a7f9e9e1e5b6e8607b49ab0f5c5d279e0124a",
++      "classpath": [
++        "4594c682eea12f22876e03a3ca813bfcda180af15f8cfc1bfd3283fa3ea5657e",
++        "48c5c6b91a200ebecae3c3cdd66de1863d1346bf8ce89e6871b08e4ac10718bc",
++        "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "d258ff1bd9b8b527872f8402648226658ad3149f1f40e74b0566d69e7e042fbc",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
++        "5666b36f9db46f06dd5a19d73bbff3b588d5969c0f4b8848fde0f5ec849430a5",
++        "1047f472714896535b9e8ca1f39ed4f2137e3a27aec4c2956a686b4d94a550cb",
++        "831882a70b701e527d03cc3fd6796598347e1415024fb103fb2da9bcf6b03d81",
++        "88785cd6d433df6d69224622f52cedfc29d1e7a38c61d7dac29c75965cb93fcd",
++        "0c2e0f3df6ea22558546dac4900094df815acf5ec17ef869969816de6a100a34",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "88998e5bbab12a965f304815159670238b24d272b24339a9a8545b3913eb640a",
++        "e72b76416888c0a7fa2cd98e155a5981c7fe021b78777091d83da7c82992ae92",
++        "a67f9c8b8f0ae92f458b5d685e135574254e1712cc2b04db99511086ae1b57d3"
++      ],
++      "dependency": "d258ff1bd9b8b527872f8402648226658ad3149f1f40e74b0566d69e7e042fbc"
++    }
++  },
++  "status": "open",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;",
++  "probeClasses": {
++    "UpgradeObservation": "1256d91e4c0016731af534c5a9f816c7ddf526a82c2b90a6d30cd316bbbd63a6",
++    "UpgradeProbe": "e38c195911ee946a885a2d00daa3d9074aa36df99a2d8a4d4fe9a96384476558",
++    "UpgradeTrace": "277b76611afd28946e5d4af6dec4e2e5e9cde0d4b9a5ffa433701743a03c339e"
++  },
++  "stoppedAt": {
++    "side": "old",
++    "input": 0,
++    "repetition": 1,
++    "exception": "com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Apollo Injector! at com.ctrip.framework.apollo.build.ApolloInjector.getInjector(ApolloInjector.java:22) caused by java.lang.IllegalStateException: No implementation defined in /META-INF/services/com.ctrip.framework.apollo.internals.Injector, please check whether the file exists and has the right implementation class! at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadFirst(ServiceBootstrap.java:10)"
++  },
++  "reason": "old input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Apollo Injector! at com.ctrip.framework.apollo.build.ApolloInjector.getInjector(ApolloInjector.java:22) caused by java.lang.IllegalStateException: No implementation defined in /META-INF/services/com.ctrip.framework.apollo.internals.Injector, please check whether the file exists and has the right implementation class! at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadFirst(ServiceBootstrap.java:10)",
++  "specSha256": "6ffb9e20b7e92618bb8525741b139eccb04aefa89d9bb999a065af0a8d953970"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-80.json
+@@ -0,0 +1,167 @@
++{
++  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++  "observer": "Observe the logger name behind the INFO output stream for a caller-relative short name and for an explicit full name.",
++  "domainBasis": "The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger. Both original POMs select logback-classic 1.1.2 for the registered test, including its logback-core dependency. That backend is fixed across the two runs. With the production API alone the old and new versions both used NOP.",
++  "cases": [
++    {
++      "args": [
++        "MyLogger"
++      ],
++      "expected": {
++        "return": "UpgradeProbe.MyLogger"
++      }
++    },
++    {
++      "args": [
++        "example.full.name"
++      ],
++      "expected": {
++        "return": "example.full.name"
++      }
++    }
++  ],
++  "probeSha256": "6fc25fee9e5643ede0b9e3908a61807d4a0563b8d7a0a0b1aa5ed171e305bed4",
++  "launcherSha256": "807dfe7c538df322ab8d36aa13b60fedfe4a27f5577d7c2fcb032d6b0c5b3ebc",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "classpath": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22",
++        "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
++      ],
++      "dependency": "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "UpgradeProbe.MyLogger"
++            },
++            {
++              "return": "UpgradeProbe.MyLogger"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "example.full.name"
++            },
++            {
++              "return": "example.full.name"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.slf4j.ILoggerFactory",
++        "org.slf4j.Logger",
++        "org.slf4j.LoggerFactory",
++        "org.slf4j.helpers.NOPLoggerFactory",
++        "org.slf4j.helpers.SubstituteLoggerFactory",
++        "org.slf4j.spi.LocationAwareLogger",
++        "org.slf4j.spi.LoggerFactoryBinder"
++      ]
++    },
++    "new": {
++      "commit": "938bbeb343eb5fd465517c713fe9065ce997058a",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "classpath": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5",
++        "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22",
++        "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
++      ],
++      "dependency": "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.slf4j.ILoggerFactory",
++        "org.slf4j.IMarkerFactory",
++        "org.slf4j.Logger",
++        "org.slf4j.LoggerFactory",
++        "org.slf4j.Marker",
++        "org.slf4j.event.LoggingEvent",
++        "org.slf4j.helpers.BasicMDCAdapter",
++        "org.slf4j.helpers.BasicMDCAdapter$1",
++        "org.slf4j.helpers.BasicMarkerFactory",
++        "org.slf4j.helpers.MarkerIgnoringBase",
++        "org.slf4j.helpers.NOPLogger",
++        "org.slf4j.helpers.NOPLoggerFactory",
++        "org.slf4j.helpers.NOPMDCAdapter",
++        "org.slf4j.helpers.NOPServiceProvider",
++        "org.slf4j.helpers.NamedLoggerBase",
++        "org.slf4j.helpers.SubstituteLoggerFactory",
++        "org.slf4j.helpers.SubstituteServiceProvider",
++        "org.slf4j.helpers.Util",
++        "org.slf4j.spi.LoggingEventBuilder",
++        "org.slf4j.spi.MDCAdapter",
++        "org.slf4j.spi.SLF4JServiceProvider"
++      ]
++    }
++  },
++  "status": "changed",
++  "originalFixtures": [],
++  "runtimeCompanions": [
++    {
++      "mavenPath": "ch/qos/logback/logback-classic/1.1.2/logback-classic-1.1.2.jar",
++      "sha256": "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22"
++    },
++    {
++      "mavenPath": "ch/qos/logback/logback-core/1.1.2/logback-core-1.1.2.jar",
++      "sha256": "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
++    }
++  ],
++  "originalInvocation": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++  "probeClasses": {
++    "UpgradeObservation": "1256d91e4c0016731af534c5a9f816c7ddf526a82c2b90a6d30cd316bbbd63a6",
++    "UpgradeProbe": "5998336ad04eddf16db692500cb64b2af4d27499c36ac8bd0d869cfeec53f718",
++    "UpgradeTrace": "277b76611afd28946e5d4af6dec4e2e5e9cde0d4b9a5ffa433701743a03c339e"
++  },
++  "differences": [
++    0,
++    1
++  ],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 5.197
++}
