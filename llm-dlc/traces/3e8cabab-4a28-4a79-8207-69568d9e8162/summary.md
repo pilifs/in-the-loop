@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 15:15 UTC (5511 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -3035,6 +3035,12 @@ Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the j
 change `tsovozrrxxtm` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 The user's brief, copied unchanged from their analysis folder, for a single-agent run on Fable 5.2 at high effort to start after organic-java-pr-campaign ends: develop checkpoints and gated promotion to main, private custody of original outputs in R2, watcher-delegated redaction decisions, and less churn in traces and the verification layout. Documentation only.
+
+### Record that Avro #3878's seven universal results hold only under a recorded startup (VF-054)
+
+change `rqsswoxxxwnr` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+At the user's request when run 7 (organic-java-pr-campaign) stopped: 39/46 primary obligations are decided at original native scope, and the seven open ones are Avro's universal properties, proved only under one recorded JVM startup. Strict checking with ordinary startup stops at Hadoop Configuration.&lt;clinit> and Avro Schema.&lt;clinit>. The finding also records JavaParser's System.getProperty refusal, two 60-second checker timeouts (354, 359), and the Temurin-hash-bound JDK models, and asks for an analysis of proving over every startup state before any brief. Documentation only.
 
 ## Conversation
 

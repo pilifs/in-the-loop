@@ -18,6 +18,28 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-054: Avro #3878's seven universal results hold under one recorded startup, not at original scope
+
+- **Status**: open. To be analyzed first, probably with a brief of its own.
+- **Raised**: 2026-11-21 by the watcher at the user's request, when organic-java-pr-campaign (run 7) was stopped after its last cycle (decision single-organic-java-pr-campaign-D004).
+- **Found**:
+  - **Where run 7 left the campaign:** 39/46 primary obligations decided at original native scope (from 17/46 at baseline); 5/6 PRs fully decided natively; 46/46 decided by finite JVM runs. On the transfer PRs, Eclipse Collections reached 8/8 at original scope and JavaParser 2/8 (8/8 with its observed `Node` startup).
+  - **The seven open obligations** are Avro #3878's universal properties: the fixed nested converter, and six of the public factory's eight obligations. All seven are proved, but only under a recorded startup. That startup is a two-processor JVM with an empty environment and Unix root working directory, which initialized `org.apache.avro.Schema`, `BytesWritable`, `JobConf` and Hadoop `Credentials`, in order. Both original 124-entry classpaths produced the same 220-class, 1,079-object state (`540f78ac…`). The direct path produced 197 classes and 696 objects (`cf029b22…`). The parent's refutations stand at original scope: each reproduced on a fresh JVM with ordinary startup.
+  - **The original-scope blockers.** With ordinary startup, strict native checking stops at Hadoop `Configuration.<clinit>` on the factory path and at Avro `Schema.<clinit>` on the direct path. The checker refuses to assume how the class initializer ran. The frozen repeat `20261121-155347-repeat-organic-java-example-355-on-the-f` shows the same refusal.
+  - **Other startup dependences the same repeats exposed:**
+    - JavaParser (360) is refused at original scope by `System.getProperty`, called from `LineSeparator.<clinit>`. The checker has no value to give it, and only a contract (`--gaps advised`) closes it.
+    - Two native tasks hit the jobs' 60-second checker limit and stayed unresolved, not wrong: 354 `truncate-fix` and 359 `contents-fix`.
+  - **Narrow pieces worth reusing:** the JDK models added for this path (WeakHashMap with null-valued registries, `Properties` and its overlay copy, Buffer bounds messages, the constructor's `Unsafe.storeFence`) are bound by class hash to Temurin 21.0.13 and 25.0.5. Any other JDK is refused, which is sound, but the models are narrow.
+- **Needs**: an analysis before any implementation. It should find out:
+  - what "every startup state" means for these initializers: which static fields `Schema`, `Configuration`, `Credentials` and their dependencies read from the environment, system properties, files, processor count and class-loading order, and how large that space is;
+  - whether a sound abstraction exists, by quantifying over those inputs or by proving that the initializers' results don't affect the claims, or whether a contract per initializer is the honest boundary;
+  - what the same treatment would give JavaParser's `LineSeparator` and the other cases blocked by `<clinit>` or properties, including run 6's 23 of 32 upgrade cases blocked at object construction;
+  - the checker budget the two 60-second timeouts need.
+
+  The analysis decides whether this becomes a brief, and what its first target is.
+- **Tracked in**: this finding. Evidence: `llm-dlc/loops/organic-java-pr-campaign-results.md` ("Conditional transfer cases" and "Avro at original scope"), `verification/organic-java-pr-campaign.json`, and the job results named above.
+- **Closes when**: the analysis is written and either a brief is queued for it or the startup condition is accepted as the documented boundary for these claims.
+
 ### VF-053: the DLC lets unpushed commits, bulky records and deferred reviews pile up across runs
 
 - **Status**: open.
