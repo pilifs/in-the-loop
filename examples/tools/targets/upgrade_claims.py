@@ -15,7 +15,7 @@ from targets import runtime_jar
 
 
 MEMBER = re.compile(r"^  (\S.*)\((.*)\).*;$")
-CALL = re.compile(r"\b(invokevirtual|invokestatic|invokespecial|invokeinterface)\s+.*?// (?:InterfaceMethod|Method) ([^: ]+):(\S+)")
+CALL = re.compile(r"^\s*(\d+):\s+(?:invokevirtual|invokestatic|invokespecial|invokeinterface)\s+.*?// (?:InterfaceMethod|Method) ([^: ]+):(\S+)")
 CALLBACKS = {"onNext", "onError", "onComplete", "onCompleted", "complete", "completeExceptionally"}
 
 
@@ -28,8 +28,7 @@ def named_overloads(old_data, new_data, name):
     return {"common": sorted(old & new), "removed": sorted(old-new), "added": sorted(new-old)}
 
 
-def calls_in_methods(javap, owner):
-    calls = defaultdict(list)
+def invocation_sites(javap, owner):
     member = descriptor = None
     for line in javap.splitlines():
         if match := MEMBER.fullmatch(line):
@@ -41,19 +40,28 @@ def calls_in_methods(javap, owner):
             member, descriptor = "<clinit>", None
         elif member and line.startswith("    descriptor: "):
             descriptor = line.split(": ", 1)[1].strip()
-        elif descriptor and (match := CALL.search(line)):
+        elif descriptor and (match := CALL.match(line)):
             target = match[2].replace('"', "")
             cls, dot, method = target.rpartition(".")
-            calls[member, descriptor].append((cls if dot else owner, method, match[3]))
+            yield (member, descriptor), int(match[1]), (cls if dot else owner, method, match[3])
+
+
+def calls_in_methods(javap, owner):
+    calls = defaultdict(list)
+    for member, _, operand in invocation_sites(javap, owner):
+        calls[member].append(operand)
     return calls
 
 
-def listing(jdk, classpath, owner, seconds):
+def disassemble(jdk, classpath, owner, seconds):
     tmp = os.environ.get("TMPDIR")
     argv = [str(Path(jdk)/"bin/javap"), *([f"-J-Djava.io.tmpdir={tmp}"] if tmp else []), "-p", "-s", "-c",
             "-classpath", os.pathsep.join(map(str,classpath)), owner.replace("/", ".")]
-    output = subprocess.check_output(argv, text=True, errors="replace", timeout=seconds)
-    return calls_in_methods(output, owner)
+    return subprocess.check_output(argv, text=True, errors="replace", timeout=seconds)
+
+
+def listing(jdk, classpath, owner, seconds):
+    return calls_in_methods(disassemble(jdk, classpath, owner, seconds), owner)
 
 
 def jar_index(jar, feature):

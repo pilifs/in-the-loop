@@ -1,0 +1,43 @@
+{
+  "probeClass": "UpgradeProbe",
+  "entry": "com.alibaba.citrus.service.form.impl.validation.DateValidator#validate(Lcom/alibaba/citrus/service/form/Validator$Context;Ljava/lang/String;)Z",
+  "withTestFixtures": true,
+  "invocationVia": "UpgradeProbe$FormRequest#submit(Ljava/lang/String;)Ljava/lang/String;",
+  "observer": "Submit the original form through its servlet test client and read validity and message for the date field.",
+  "basis": "The configured minimum is 1911-10-10. The original developer assertions accept the minimum and following day and require the preceding date to return the field-specific validation message. The request traverses the original form service and validator.",
+  "workingDirectory": "fixtures",
+  "cases": [
+    {
+      "args": [
+        " 1911-10-10 "
+      ],
+      "expected": {
+        "return": "true|null"
+      }
+    },
+    {
+      "args": [
+        " 1911-10-11 "
+      ],
+      "expected": {
+        "return": "true|null"
+      }
+    },
+    {
+      "args": [
+        " 1911-10-9 "
+      ],
+      "expected": {
+        "return": "false|field3 should be after 1911-10-10"
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "resource",
+      "file": "src/test/config/services-form-validators.xml",
+      "source": "service/form/src/test/config/services-form-validators.xml",
+      "sha256": "f95702217fa96f95316b02717ca553b6d7eaa9119c1f076a6427dc3b6c3a7a70"
+    }
+  ]
+}

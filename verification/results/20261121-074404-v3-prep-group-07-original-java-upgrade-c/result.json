@@ -1,0 +1,265 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-074404-v3-prep-group-07-original-java-upgrade-c",
+  "title": "V3 prep group 07 original Java upgrade caller replays",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 3m12s, peak 2.7 GiB (estimated 12m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (Prepare original Maven modules compsuite-i-9) was held back 4m28s by its 2-CPU quota in 2m50s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-074404-v3-prep-group-07-original-java-upgrade-c.json",
+    "sha256": "37ff5cff00723de5c6b5ec8130de56a38ac3a95a24c087e535cf1db6681bb5a1",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-074404-v3-prep-group-07-original-java-upgrade-c",
+      "title": "V3 prep group 07 original Java upgrade caller replays",
+      "description": "Rebuild each selected module or source slice at its two original Git revisions. For the ordering and validation cases, compile the upstream test fixtures and preserve the production runtime ahead of the fixture classpath. Run strict native and finite checks on both revisions, keeping original intake failures, pre-entry exceptions, and per-input replay evidence. Cases compsuite-i-9.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T07:44:04+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "Prepare original Maven modules compsuite-i-9",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase package --operand-scope test --output verification/external-upgrades/corpus-runs/v3-inputs/07 --case compsuite-i-9",
+          "cwd": "."
+        },
+        {
+          "name": "Run native checking for each original pair",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/v3-prep-native/07 --case compsuite-i-9",
+          "cwd": "."
+        },
+        {
+          "name": "Replay scoped original caller behavior",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/external-upgrades/corpus-runs/v3-prep-finite/07 --case compsuite-i-9",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/v3-inputs/07",
+        "verification/external-upgrades/corpus-runs/v3-prep-native/07",
+        "verification/external-upgrades/corpus-runs/v3-prep-finite/07"
+      ]
+    }
+  },
+  "sourceCommit": "c4ad82d4dd94854b0d79bfaa98ddeb6761f9525d",
+  "startedAt": "2026-11-21T07:51:01+00:00",
+  "finishedAt": "2026-11-21T07:54:21+00:00",
+  "wallSeconds": 200.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1999537,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2916352000,
+    "wallSeconds": 192.3,
+    "cpuSeconds": 184.9,
+    "memoryOfEstimate": 1.36,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prepare original Maven modules compsuite-i-9",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase package --operand-scope test --output verification/external-upgrades/corpus-runs/v3-inputs/07 --case compsuite-i-9",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 170.19,
+      "cpuSeconds": 158.862,
+      "cpuThrottledSeconds": 268.293,
+      "peakMemoryBytes": 2916352000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prepare-original-maven-modules.log",
+        "lines": 2,
+        "bytes": 68,
+        "sha256": "18af9699c69c26fb42f38039d08f2db9260268d1b2b46bd1345f114e90f30e0a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-9 old artifacts ready",
+        "compsuite-i-9 new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Run native checking for each original pair",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/v3-prep-native/07 --case compsuite-i-9",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 2.212,
+      "cpuSeconds": 2.059,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 671449088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-run-native-checking-for-each-o.log",
+        "lines": 1,
+        "bytes": 433,
+        "sha256": "db3537df35c3ffa451c05dcf8558898d001bbbde73682d920acb993de12d4e5f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-9 current open add is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.languagetool.dev.wikipedia.atom.MatchDatabase made by its constructor: the field conn of org.languagetool.dev.wikipedia.atom.MatchDatabase has type jav"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Replay scoped original caller behavior",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/external-upgrades/corpus-runs/v3-prep-finite/07 --case compsuite-i-9",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 19.865,
+      "cpuSeconds": 23.985,
+      "cpuThrottledSeconds": 1.354,
+      "peakMemoryBytes": 206086144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-replay-scoped-original-caller.log",
+        "lines": 2,
+        "bytes": 437,
+        "sha256": "cef4a16d850e8e19d1300dc50375cf9bd88388007ad034abc57c096125541fa6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "open new input 0: the original caller method was never entered. java.lang.RuntimeException: Could not get database connection to jdbc:derby:atomFeedChecksDB;create=true at org.languagetool.dev.wikipedia.atom.MatchDatabase.<init>(MatchDatabase.java:45) caused by java.sql.SQLException: No suitable dri",
+        "compsuite-i-9 open"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-inputs/07/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 20514,
+      "sha256": "35703adfcf361b936d048efeee37f36ecfce89a71d8cb4ea9e7133c61ddfe98f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-native/07/current/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 25554,
+      "sha256": "3dc0bcbfa25adfba34bc33fd2f8db177e10c0a115be60909b566b43d24cf02c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-prep-finite/07/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 85864,
+      "sha256": "ecd0d0af03c9a067d85af0cf59028c151a10b6eb716e6de44d3666fc72127542",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T07:57:20+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/v3-inputs/07/compsuite-i-9.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-native/07/current/compsuite-i-9.json",
+      "verification/external-upgrades/corpus-runs/v3-prep-finite/07/compsuite-i-9.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

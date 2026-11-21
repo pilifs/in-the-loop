@@ -1,0 +1,26 @@
+{
+  "probeClass": "UpgradeProbe",
+  "entry": "pl.com.bottega.ecommerce.sales.application.impl.OrderingServiceImpl#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V",
+  "withTestFixtures": true,
+  "invocationVia": "pl.com.bottega.ecommerce.sales.application.api.service.OrderingService#confirm(Lpl/com/bottega/ecommerce/canonicalmodel/publishedlanguage/AggregateId;Lpl/com/bottega/ecommerce/sales/application/api/command/OrderDetailsCommand;Lpl/com/bottega/ecommerce/sales/domain/offer/Offer;)V",
+  "observer": "Confirm the original Spring-backed order with its current offer or after a change in quantity.",
+  "basis": "The unchanged OrderingTest expects confirmation to succeed for its current offer and to reject its stale offer with OfferChangedExcpetion. Both inputs use the original test profile, persistence mapping and request/session scopes.",
+  "cases": [
+    {
+      "args": [
+        "stale"
+      ],
+      "expected": {
+        "return": "offer-changed"
+      }
+    },
+    {
+      "args": [
+        "current"
+      ],
+      "expected": {
+        "return": "confirmed"
+      }
+    }
+  ]
+}

@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T07:48:53.259Z",
-  "duration_seconds": 123083,
+  "ended": "2026-11-21T07:58:29.196Z",
+  "duration_seconds": 123659,
   "stats": {
     "turns": 17,
-    "api_calls": 5634,
-    "tool_calls": 14376,
-    "tool_errors": 419,
+    "api_calls": 5685,
+    "tool_calls": 14488,
+    "tool_errors": 422,
     "compactions": 18,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 9725083,
-      "output_tokens": 3003341,
-      "cache_read_input_tokens": 1744841472,
+      "input_tokens": 9772414,
+      "output_tokens": 3022236,
+      "cache_read_input_tokens": 1753365504,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8342,
-    "exec": 5155,
-    "apply_patch": 569,
+    "Bash": 8398,
+    "exec": 5206,
+    "apply_patch": 574,
     "send_message": 148,
     "sleep": 64,
     "wait": 54,
@@ -135,6 +135,7 @@
     "examples/tools/targets/test_runtime_upstream.py",
     "examples/tools/targets/test_upgrade_review.py",
     "examples/tools/targets/test_workflow_refusal.py",
+    "examples/tools/targets/upgrade_claims.py",
     "examples/tools/targets/upgrade_linkage.py",
     "examples/tools/targets/upgrade_replay.py",
     "examples/tools/targets/upstream_artifact.py",
@@ -579,24 +580,24 @@
     {
       "index": 18,
       "started": "2026-11-21T07:39:27.990Z",
-      "ended": "2026-11-21T07:48:53.259Z",
+      "ended": "2026-11-21T07:58:29.196Z",
       "turns": 1,
-      "api_calls": 37,
+      "api_calls": 88,
       "usage": {
-        "input_tokens": 135423,
-        "output_tokens": 20854,
-        "cache_read_input_tokens": 4027136,
+        "input_tokens": 182754,
+        "output_tokens": 39749,
+        "cache_read_input_tokens": 12551168,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 146348
+      "peak_context_tokens": 189724
     }
   ],
   "log": {
-    "sha256": "818cfeaa59d542ab7b60c904cdc111151bd6fb56ba5fb430862a63dbd47f698c",
-    "bytes": 128790137,
-    "lines": 44758,
-    "gzip_bytes": 51156706,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/818cfeaa59d542ab7b60c904cdc111151bd6fb56ba5fb430862a63dbd47f698c.jsonl.gz"
+    "sha256": "20219ee1f82bd879788b90573d0f0925ec212d94f51cd56cdf16e200f4efbf7b",
+    "bytes": 129673574,
+    "lines": 45123,
+    "gzip_bytes": 51482015,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/20219ee1f82bd879788b90573d0f0925ec212d94f51cd56cdf16e200f4efbf7b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2295,6 +2296,14 @@
       "summary": "Prepare original framework fixtures behind the Java runtime (verification pending)",
       "body": "Compile and retain the upstream Maven test classes, resources and additional companions needed to construct real Spring receivers. Preserve the complete production classpath first and check that the upgraded dependency is already on it independently of any tests. Record the fixture digest and require an explicit match between the observer scope and its prepared classpath. Keep discoverable package directories for component scans.\n\nAll 28 changed test groups passed, including 58 Rust test binaries. The five original-input tests and verification job validation passed. Seven jobs rebuild and replay all 32 original pairs after the intake change at 20261121-074403-v3-prep-group-01-original-java-upgrade-c through 20261121-074404-v3-prep-group-07-original-java-upgrade-c.",
       "log_sha256": "818cfeaa59d542ab7b60c904cdc111151bd6fb56ba5fb430862a63dbd47f698c"
+    },
+    {
+      "change_id": "kxnnqqkwxyxztpnkoyuqwkwtwnnkwvtn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Trace Java interface dispatch and exceptions through original framework calls (verification pending)",
+      "body": "At an original method breakpoint, match the observer’s real bytecode offset against its exact invoke instruction and record the runtime dispatch frame. This qualifies calls through Spring proxies. Match an escaping exception by JVM object identity and a throw that crosses the selected invocation, including when the application cleared its Java stack trace. Add original-scope order confirmation, car validation and servlet date-field observations. Each old framework exercised its real business operation and matched the developer expectation in the capped probes.\n\nAll 28 affected test groups passed, including 58 Rust binaries. Six upgrade-review controls passed, including a real interface dispatch, a cleared genuine stack and a forged stack after a successful call. Cost and pipeline validation passed. The seven original-fixture intake batches repeated all 32 pairs. Jobs 20261121-075423-v3-dispatch-group-01-original-java-upgra through 20261121-075424-v3-dispatch-group-07-original-java-upgra repeat native and finite checks on the new product.",
+      "log_sha256": "20219ee1f82bd879788b90573d0f0925ec212d94f51cd56cdf16e200f4efbf7b"
     }
   ],
   "logs": {
@@ -2440,6 +2449,12 @@
       "bytes": 78403430,
       "lines": 26017,
       "gzip_bytes": 30183705,
+      "url": null
+    },
+    "20219ee1f82bd879788b90573d0f0925ec212d94f51cd56cdf16e200f4efbf7b": {
+      "bytes": 129673574,
+      "lines": 45123,
+      "gzip_bytes": 51482015,
       "url": null
     },
     "2027d4aa1858621bc270952c862e9af3ab1e07e0a25fd8d295a671a57a016024": {

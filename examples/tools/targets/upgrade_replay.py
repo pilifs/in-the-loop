@@ -88,18 +88,18 @@ def typed_outcome(records):
     raise ValueError("unknown observation record")
 
 
-def parse_output(text, caller, original, dependency, observation_text=None):
+def parse_output(text, caller, original, dependency, observation_text=None, *, escape=None):
     loaded = class_origins(text)
     if loaded.get(caller.split("#")[0]) != {original}:
         raise ValueError("the JVM did not load the declared caller from the selected original client JAR")
     records = (observation_text if observation_text is not None else text).splitlines()
     outcome = typed_outcome(records)
-    if "throws" in outcome and "UPGRADE-FRAME " + caller.split("(")[0] not in records:
+    if "throws" in outcome and (not escape or escape["entry"] != caller or escape["throws"] != outcome["throws"]):
         raise ValueError("exception occurred outside the declared original caller")
     return outcome, sorted(name for name, origins in loaded.items() if origins == {dependency})
 
 
-def early_failure(debugger_marks, loaded, files, artifact_hashes, dependency, records):
+def throw_evidence(debugger_marks, loaded, files, artifact_hashes, dependency, records):
     """Bind the JVM's live throw stack to unambiguous files on this side's ordered classpath."""
     evidence = {"causes": [s.removeprefix("UPGRADE-CAUSE ") for s in records if s.startswith("UPGRADE-CAUSE ")],
                 "frames": [], "observerCodeIndex": None}
@@ -120,6 +120,9 @@ def early_failure(debugger_marks, loaded, files, artifact_hashes, dependency, re
         if fields[0] == "observer":
             events[-1]["observerCodeIndex"] = int(fields[1])
             continue
+        if fields[0] == "escape":
+            events[-1]["escapingMember"] = fields[1]
+            continue
         entry, code_index, source_line = fields
         origins = loaded.get(entry.partition("#")[0], set())
         if len(origins) != 1:
@@ -132,6 +135,10 @@ def early_failure(debugger_marks, loaded, files, artifact_hashes, dependency, re
                                      "artifact": "client" if index == 0 else "upgrade" if jar == dependency else "classpath",
                                      "classpathIndex": index, "jarSha256": artifact_hashes[index]})
     if events:
+        for event in events:
+            for frame in event["frames"]:
+                if frame["artifact"] == "client" and frame["entry"] == event.get("escapingMember"):
+                    evidence["escapingInvocation"] = {**frame, "observerCodeIndex": event["observerCodeIndex"]}
         # Keep the last attributed throw and show any subsequent propagation of the
         # identical object after those frames unwound. A replacement gets its own stack.
         attributed = [i for i, event in enumerate(events)
@@ -160,14 +167,17 @@ def compare_before_entry(sides, domain):
     return comparisons
 
 
-def run_observation(run_dir, launch, subject_cp, via, main, encoded, trace_exception, env, resources, deadline):
+def run_observation(run_dir, launch, subject_cp, sites, main, encoded, trace_exception, env, resources,
+                    deadline, working_directory):
     run_dir.mkdir()
+    cwd = run_dir / working_directory
+    cwd.mkdir(exist_ok=True)
     for original, relative_file in resources:
         destination = run_dir / "fixtures" / relative_file
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(original.read_bytes())
-    command = [*launch, str(run_dir), subject_cp, via, main, trace_exception, *encoded]
-    with subprocess.Popen(command, cwd=run_dir, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    command = [*launch, str(run_dir), subject_cp, sites, main, trace_exception, *encoded]
+    with subprocess.Popen(command, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                           start_new_session=True) as child:
         try:
             stdout, stderr = child.communicate(timeout=max(0.01, deadline-time.monotonic()))
@@ -186,6 +196,9 @@ def run_observation(run_dir, launch, subject_cp, via, main, encoded, trace_excep
 
 def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None):
     spec = json.loads(specfile.read_text())
+    working_directory = spec.get("workingDirectory", ".")
+    if working_directory not in (".", "fixtures"):
+        raise ValueError("the observation must run in its fresh trial or fixtures directory")
     domain = spec["cases"]
     if (not domain or len({tuple(c["args"]) for c in domain}) != len(domain)
             or any(not isinstance(c["args"],list) or any(x is not None and not isinstance(x,str) for x in c["args"]) for c in domain)):
@@ -280,9 +293,15 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         direct = via or caller
         declared_owner, declared_method, declared_descriptor = runtime_jar.parse_target(direct)
         operand = (runtime_jar.internal(declared_owner), declared_method, declared_descriptor)
-        methods = upgrade_claims.listing(jdk, [output], main.replace(".", "/"), max(0.01, timeout-(time.monotonic()-start)))
-        if operand not in methods.get(("observe", "([Ljava/lang/String;)Ljava/lang/String;"), []):
+        probe_owner = main.replace(".", "/")
+        code = upgrade_claims.disassemble(jdk, [output], probe_owner, max(0.01, timeout-(time.monotonic()-start)))
+        sites = [pc for member, pc, ref in upgrade_claims.invocation_sites(code, probe_owner)
+                 if member == ("observe", "([Ljava/lang/String;)Ljava/lang/String;") and ref == operand]
+        if not sites:
             raise ValueError("observe() must directly invoke the declared method or its specified synchronous caller")
+        report["observerInvocation"] = {"declaration": direct, "codeIndices": sites}
+        report["workingDirectory"] = working_directory
+        site_argument = ",".join(map(str, sites))
         report["originalInvocation"] = caller
         report["invocationVia"] = via or None
         report["probeClasses"]={helper_class(f):sha(f) for f in compiled}
@@ -305,13 +324,14 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                 loaded_each_time = True
                 enc=["-" if x is None else base64.b64encode(x.encode("utf-16-be","surrogatepass")).decode() for x in case["args"]]
                 def run(directory, trace_exception):
-                    return run_observation(directory, launch, subject_cp, via, main, enc, trace_exception,
-                                           env, resources, start+timeout)
+                    return run_observation(directory, launch, subject_cp, site_argument, main, enc, trace_exception,
+                                           env, resources, start+timeout, working_directory)
 
                 for trial in range(2):
                     run_dir = temp / f"{side}-{index}-{trial}"
                     report["stoppedAt"] = {"side": side, "input": index, "repetition": trial+1}
-                    trace_exception = early[0]["throws"] if early else ""
+                    previous = early or trials
+                    trace_exception = previous[0].get("throws", "") if previous else ""
                     child_output, marks, observation_text = run(run_dir, trace_exception)
                     detail = next((line[len("UPGRADE-DETAIL "):] for line in observation_text.splitlines()
                                    if line.startswith("UPGRADE-DETAIL ")), "")
@@ -334,15 +354,37 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         classes = [name for name, origins in loaded.items() if origins == {dependency}]
                         operand_classes.update(classes)
                         loaded_each_time = loaded_each_time and bool(classes)
-                        evidence = early_failure(marks, loaded, files, side_record["classpath"],
-                                                 dependency, observation_text.splitlines())
+                        evidence = throw_evidence(marks, loaded, files, side_record["classpath"],
+                                                  dependency, observation_text.splitlines())
                         early.append({**outcome, **evidence})
                         trial_record["beforeEntry"] = early
                         if first_early is None:
                             first_early = dict(report["stoppedAt"])
                         continue
+                    outcome = typed_outcome(observation_text.splitlines())
+                    escape = None
+                    if "throws" in outcome:
+                        if not trace_exception:
+                            child_output, marks, observation_text = run(temp / f"{side}-{index}-{trial}-escape", outcome["throws"])
+                        if typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + caller not in marks:
+                            raise ValueError(f"{side} input {index}: inconsistent exception across original caller replays")
+                        evidence = throw_evidence(marks, class_origins(child_output), files, side_record["classpath"],
+                                                  dependency, observation_text.splitlines())
+                        escape = evidence.get("escapingInvocation")
+                        if escape:
+                            escape["throws"] = outcome["throws"]
+                            trial_record.setdefault("escapingExceptions", []).append(escape)
+                    site_marks = [line.removeprefix("UPGRADE-CALL-SITE ") for line in marks
+                                  if line.startswith("UPGRADE-CALL-SITE ")]
+                    if len(site_marks) != 1:
+                        raise ValueError("the debugger did not report one live observer call site")
+                    pc, dispatched = site_marks[0].split("\t", 1)
+                    if int(pc) not in sites or "#" not in dispatched:
+                        raise ValueError("the live caller does not match the declared observer instruction")
+                    trial_record.setdefault("entryInvocations", []).append(
+                        {"observerCodeIndex": int(pc), "dispatchedTo": dispatched})
                     trial_record["qualifiedMethodEntries"] += 1
-                    observation,classes=parse_output(child_output,caller,files[0],dependency,observation_text)
+                    observation,classes=parse_output(child_output,caller,files[0],dependency,observation_text,escape=escape)
                     trials.append(observation)
                     operand_classes.update(classes)
                     loaded_each_time = loaded_each_time and bool(classes)

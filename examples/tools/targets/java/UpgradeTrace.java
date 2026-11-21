@@ -22,6 +22,8 @@ import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Observe an actual entry in the child JVM launched here. The class files on its classpath are untouched. */
 public final class UpgradeTrace {
@@ -76,8 +78,11 @@ public final class UpgradeTrace {
 
     // A Java Throwable can have its stack replaced. Snapshot the actual throwing thread and
     // retain only events below observe(). The catcher selects the escaping object by JDI identity.
-    private static List<String> throwingStack(ExceptionEvent event, String observer) throws Exception {
+    private static List<String> throwingStack(ExceptionEvent event, String observer, String entry,
+                                               Set<Long> sites) throws Exception {
         List<String> result = new ArrayList<>();
+        Location catcher = event.catchLocation();
+        boolean caughtBelow = false, escapesEntry = false;
         for (StackFrame frame : event.thread().frames()) {
             Location location = frame.location();
             ReferenceType type = location.declaringType();
@@ -87,8 +92,13 @@ public final class UpgradeTrace {
                 return null;
             if (member.equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) {
                 result.add("observer\t" + location.codeIndex());
+                if (escapesEntry && sites.contains(location.codeIndex())) result.add("escape\t" + entry);
                 return result;
             }
+            // An exception caught inside the selected call has not crossed its boundary.
+            // A finally block that rethrows it generates another event for the same object.
+            if (catcher != null && method.equals(catcher.method())) caughtBelow = true;
+            if (member.equals(entry) && !caughtBelow) escapesEntry = true;
             // A class loaded by two class loaders cannot be attributed by a name in the JVM load log.
             if (event.virtualMachine().classesByName(type.name()).size() == 1)
                 result.add(member + "\t" + location.codeIndex() + "\t" + location.lineNumber());
@@ -96,15 +106,18 @@ public final class UpgradeTrace {
         return null;
     }
 
-    private static boolean calledFromObserver(BreakpointEvent hit, String observer, String via) throws Exception {
-        boolean sawVia = via.isEmpty();
+    private static String invocation(BreakpointEvent hit, String observer, Set<Long> sites) throws Exception {
+        String dispatched = null;
         for (StackFrame frame : hit.thread().frames()) {
             Method method = frame.location().method();
             String name = method.declaringType().name() + "#" + method.name() + method.signature();
-            if (name.equals(via)) sawVia = true;
-            if (name.equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) return sawVia;
+            if (name.equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) {
+                long pc = frame.location().codeIndex();
+                return dispatched != null && sites.contains(pc) ? pc + "\t" + dispatched : null;
+            }
+            dispatched = name;
         }
-        return false;
+        return null;
     }
 
     public static void main(String[] args) throws Exception {
@@ -114,6 +127,8 @@ public final class UpgradeTrace {
         String method = entry.substring(hash + 1, paren);
         String descriptor = entry.substring(paren);
         String observer = args[5], exception = args[6];
+        Set<Long> sites = new HashSet<>();
+        for (String index : args[4].split(",")) sites.add(Long.parseLong(index));
         LaunchingConnector connector = Bootstrap.virtualMachineManager().defaultConnector();
         Map<String, Connector.Argument> launch = connector.defaultArguments();
         launch.get("home").setValue(args[1]);
@@ -129,7 +144,8 @@ public final class UpgradeTrace {
         Process child = vm.process();
         OutputStream diagnostics = Files.newOutputStream(Paths.get(args[2], "child.stderr"));
         Thread stdout = forward(child.getInputStream(), System.out), stderr = forward(child.getErrorStream(), diagnostics);
-        boolean hit = false, finished = false;
+        String entryInvocation = null;
+        boolean finished = false;
         Map<String, List<String>> thrown = new LinkedHashMap<>();
         try {
             List<String> watched = exception.isEmpty() ? Arrays.asList(owner)
@@ -148,7 +164,7 @@ public final class UpgradeTrace {
                         ExceptionEvent raised = (ExceptionEvent) event;
                         if (!raised.exception().referenceType().name().equals(exception)) continue;
                         String id = raised.thread().uniqueID() + "/" + raised.exception().uniqueID();
-                        List<String> stack = throwingStack(raised, observer);
+                        List<String> stack = throwingStack(raised, observer, entry, sites);
                         if (stack != null) {
                             // try-with-resources and finally can rethrow the very same object
                             // from the caller after the library's frame has been unwound.
@@ -171,9 +187,12 @@ public final class UpgradeTrace {
                             if (stack != null && escaping.referenceType().name().equals(exception))
                                 System.err.println("UPGRADE-THROW-STACK " + Base64.getEncoder().encodeToString(
                                         String.join("\n", stack).getBytes(StandardCharsets.UTF_8)));
-                        } else if (calledFromObserver(point, observer, args[4])) {
-                            hit = true;
-                            point.request().disable();
+                        } else if (vm.classesByName(owner).size() == 1 && vm.classesByName(observer).size() == 1) {
+                            String site = invocation(point, observer, sites);
+                            if (site != null) {
+                                entryInvocation = site;
+                                point.request().disable();
+                            }
                         }
                     } else if (event instanceof VMDisconnectEvent) {
                         finished = true;
@@ -191,7 +210,10 @@ public final class UpgradeTrace {
             diagnostics.close();
         }
         int status = child.waitFor();
-        if (hit) System.err.println("UPGRADE-HIT " + entry);
+        if (entryInvocation != null) {
+            System.err.println("UPGRADE-HIT " + entry);
+            System.err.println("UPGRADE-CALL-SITE " + entryInvocation);
+        }
         System.exit(status);
     }
 }

@@ -1,0 +1,219 @@
+{
+  "entry": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+  "observer": "Read the classfile, fields and methods delivered by the original WhatJDK archive reader. The four inputs cover reference arrays, overloads, a long field and an empty class.",
+  "domainBasis": "The input bytes and classfile declarations were fixed independently of application execution. Each class is packaged as the only member of a ZIP and consumed through the original archive iterator.",
+  "cases": [
+    {
+      "args": [
+        "yv66vgAAADQAEAoAAwANBwAOBwAPAQAFdG90YWwBAAFKAQAFbmFtZXMBABNbTGphdmEvbGFuZy9TdHJpbmc7AQAGPGluaXQ+AQADKClWAQAEQ29kZQEABmNob29zZQEAKChbTGphdmEvbGFuZy9TdHJpbmc7SSlMamF2YS9sYW5nL09iamVjdDsMAAgACQEAJmV2YWx1YXRpb24vZml4dHVyZS9BcnJheXNBbmRSZWZlcmVuY2VzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAIABAAEAAUAAAABAAYABwAAAAIAAQAIAAkAAQAKAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEACwAMAAEACgAAABAAAgADAAAABCscMrAAAAAAAAA="
+      ],
+      "expected": {
+        "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQACgoAAwAHBwAIBwAJAQAGPGluaXQ+AQADKClWAQAEQ29kZQwABAAFAQAYZXZhbHVhdGlvbi9maXh0dXJlL0VtcHR5AQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAA=="
+      ],
+      "expected": {
+        "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFKAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAcZXZhbHVhdGlvbi9maXh0dXJlL0xvbmdGaWVsZAEAEGphdmEvbGFuZy9PYmplY3QBAAVsYWJlbAAxAAQABQAAAAIAAgAGAAcAAAAZAAgACQABAAoAAAACAAsAAwABAAwADQABAA4AAAARAAEAAQAAAAUqtwABsQAAAAAAAQAPABAAAQAOAAAAEAACAAIAAAAEGwRgrAAAAAAAAQAPABEAAQAOAAAAEgAEAAMAAAAGHxQAAmGtAAAAAAAA"
+      ],
+      "expected": {
+        "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFJAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAaZXZhbHVhdGlvbi9maXh0dXJlL051bWJlcnMBABBqYXZhL2xhbmcvT2JqZWN0AQAFbGFiZWwAMQAEAAUAAAACAAIABgAHAAAAGQAIAAkAAQAKAAAAAgALAAMAAQAMAA0AAQAOAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEADwAQAAEADgAAABAAAgACAAAABBsEYKwAAAAAAAEADwARAAEADgAAABIABAADAAAABh8UAAJhrQAAAAAAAA=="
+      ],
+      "expected": {
+        "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "872f10271ddc3fb0b3bf843c4ee11297bd31e6c01fdfe9852a7a74d12680dc14",
+  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
+  "tracerSha256": "0c743a41b737519d631100cac2b373643bb8126aa81ba212dfede4b364d78345",
+  "lookupSha256": "9741b5b930d633aad3a52416527d8bc3b67a5935d9edd2f506100506dfa9e9b7",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "206adaf9371d37dd308122f5f17e0f7cdaf3568c",
+      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
+      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
+      "classpath": [
+        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
+        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
+        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
+        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8"
+      ],
+      "dependency": "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 2,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+            },
+            {
+              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+            },
+            {
+              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            },
+            {
+              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            },
+            {
+              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.Attribute",
+        "org.objectweb.asm.ClassReader",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.Context"
+      ]
+    },
+    "new": {
+      "commit": "e5574c3c06f9db307b96baa5937f9c19039df605",
+      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
+      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
+      "classpath": [
+        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
+        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
+        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
+        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085"
+      ],
+      "dependency": "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 2,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+            },
+            {
+              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+            },
+            {
+              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            },
+            {
+              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            },
+            {
+              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.Attribute",
+        "org.objectweb.asm.ClassReader",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.Context"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "originalInvocation": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "e78038c73163797a854e1fc4fd20fc892ccbe87ab2e51185ac5da972d9439bd7",
+    "UpgradeObservation": "4458672664859b208593e55a5a3197334370d3a2663d504a8f74a206981bdc45",
+    "UpgradeTrace": "f4c79150d4d539f31e65e9f154b4f3c6d0a6adce73a391e8284aad0de8b4aa95",
+    "com/iodesystems/whatjdk/UpgradeProbe$1": "513889c08c5463fca230569f7cc3be52e30afbc41b72c9c97cd9586657753827",
+    "com/iodesystems/whatjdk/UpgradeProbe": "2eea25b749f3563b19628dc08a40c80e7ec322c603a9c5e137bacadfdadf5a68"
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 13.631,
+  "specSha256": "2a4b25018cdfde34a5d83d652d50a1b49cf3699f123c7a4cfd08b5c48c60f7f2"
+}

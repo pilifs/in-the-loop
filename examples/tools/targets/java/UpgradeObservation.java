@@ -68,8 +68,5 @@ public final class UpgradeObservation {
         }
         output.write("UPGRADE-LAST-CAUSE " + encode(last.getMessage()) + "\n");
         output.write("UPGRADE-DETAIL " + encode(detail.toString()) + "\n");
-        for (StackTraceElement frame : thrown.getStackTrace()) {
-            output.write("UPGRADE-FRAME " + frame.getClassName() + "#" + frame.getMethodName() + "\n");
-        }
     }
 }

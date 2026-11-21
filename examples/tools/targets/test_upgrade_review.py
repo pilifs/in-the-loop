@@ -81,6 +81,55 @@ class UpgradeReviewTest(unittest.TestCase):
                 upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
 
     @cost("tool")
+    def test_interface_call_site_and_escaping_throwable_are_observed_in_the_live_jvm(self):
+        home = runtime_jdk.home("21")
+        if not home:
+            self.skipTest("requires JDK 21")
+        jdk = Path(home)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            client = """public interface Service { int read(); }
+                public static class Proxy implements Service { public int read() { return call(); } }
+                public static int call() { return dep.Number.value(); }"""
+            prepared, dependencies = self.prepared_pair(root, jdk, client, {
+                "old": "public static int value() { return 7; }",
+                "new": """public static int value() { IllegalStateException failure = new IllegalStateException();
+                    failure.setStackTrace(new StackTraceElement[0]); throw failure; }"""})
+            probe = root / "UpgradeProbe.java"
+            probe.write_text("""public class UpgradeProbe { public static String observe(String[] x) {
+                app.Real.Service service = new app.Real.Proxy();
+                return Integer.toString(service.read());
+            } }""")
+            spec = root / "scope.json"
+            spec.write_text(json.dumps({"entry": "app.Real#call()I", "invocationVia": "app.Real$Service#read()I",
+                "probeClass": "UpgradeProbe", "observer": "service response", "basis": "control",
+                "cases": [{"args": [], "expected": {"return": "7"}}]}))
+            result = upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
+            self.assertEqual(result["status"], "changed")
+            for side in result["sides"].values():
+                entries = side["trials"][0]["entryInvocations"]
+                self.assertEqual([e["dispatchedTo"] for e in entries], ["app.Real$Proxy#read()I"] * 2)
+                self.assertEqual({e["observerCodeIndex"] for e in entries}, set(result["observerInvocation"]["codeIndices"]))
+            escapes = result["sides"]["new"]["trials"][0]["escapingExceptions"]
+            self.assertEqual([e["entry"] for e in escapes], ["app.Real#call()I"] * 2)
+            probe.write_text("""public class UpgradeProbe { public static String observe(String[] x) {
+                app.Real.Service service = new app.Real.Proxy();
+                service.read();
+                RuntimeException fake = new IllegalStateException();
+                fake.setStackTrace(new StackTraceElement[]{new StackTraceElement("app.Real", "call", "Real.java", 1)});
+                throw fake;
+            } }""")
+            with self.assertRaisesRegex(ValueError, "outside the declared original caller"):
+                upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
+            # A fixture JAR that supplies the upgrade on its own cannot qualify as a runtime operand.
+            fixture = json.loads(prepared[0].read_text())
+            fixture.update(operandScope="runtime", modulePomSha256="pom",
+                           frameworkFixtures={"runtimeCount": 1, "testClassesSha256": dependencies[0]})
+            prepared[0].write_text(json.dumps(fixture))
+            with self.assertRaisesRegex(ValueError, "original production runtime"):
+                upgrade_replay.check_input(prepared[0], "app.Real#call()I", dependencies[0])
+
+    @cost("tool")
     def test_failure_before_entry_is_bound_to_the_escaping_object_and_original_jars(self):
         home = runtime_jdk.home("21")
         if not home:
@@ -196,8 +245,8 @@ class UpgradeReviewTest(unittest.TestCase):
         failed = origins + "UPGRADE-OBSERVATION throw java.lang.IllegalStateException\n"
         with self.assertRaisesRegex(ValueError, "outside"):
             upgrade_replay.parse_output(failed, entry, client, library)
-        self.assertEqual(upgrade_replay.parse_output(failed + "UPGRADE-FRAME app.Client#read", entry, client, library)[0],
-                         {"throws": "java.lang.IllegalStateException"})
+        with self.assertRaisesRegex(ValueError, "outside"):
+            upgrade_replay.parse_output(failed + "UPGRADE-FRAME app.Client#read", entry, client, library)
 
 
 if __name__ == "__main__":
