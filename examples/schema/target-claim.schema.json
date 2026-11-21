@@ -68,8 +68,9 @@
     "observedRuntime": {
       "description": "Process settings confirmed inside the initializer observer and every comparison JVM.",
       "type": "object", "minProperties": 1, "additionalProperties": false,
-      "properties": {"processors": {"type": "integer", "minimum": 1, "maximum": 2147483647}, "emptyEnvironment": {"const": true}, "preinitializeTogether": {"const": true}, "rootWorkingDirectory": {"const": true}, "weakMapValues": {"const": true}},
-      "dependentRequired": {"weakMapValues": ["preinitializeTogether"]}
+      "properties": {"processors": {"type": "integer", "minimum": 1, "maximum": 2147483647}, "emptyEnvironment": {"const": true}, "preinitializeTogether": {"const": true}, "rootWorkingDirectory": {"const": true}, "weakMapValues": {"const": true},
+        "captureObjects": {"type": "array", "items": {"$ref": "#/$defs/javaClass"}, "minItems": 1, "uniqueItems": true}},
+      "dependentRequired": {"weakMapValues": ["preinitializeTogether"], "captureObjects": ["preinitializeTogether"]}
     },
     "plan": { "description": "A construction plan (`--plan`), in the example's folder.", "$ref": "#/$defs/file" },
     "contracts": { "description": "Gap contracts for `--gaps advised` (`--contracts`), in the example's folder.", "$ref": "#/$defs/file" },

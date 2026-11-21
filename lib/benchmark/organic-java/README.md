@@ -19,6 +19,8 @@ Avro has separate tasks for ambient startup and JVM-preinitialized state. The `*
 
 The `bounds-fix-registry-startup` claim enables `weakMapValues` on the same three roots. The JVM checks that every existing value of the exact weak map is null. Collection can remove keys while preserving this fact. The `bounds-fix-credentials-startup` claim also initializes Hadoop's `Credentials` as a fourth root before running the same factory. Each observation has its own state digest.
 
+The eight `*-lookup-startup` tasks use those four roots and request the atomic deprecation context, its application receiver, the Commons Collections map wrappers, and the backing String-key tables. The checker binds each application's class bytes and field layout. Lookup preserves collisions, missing keys and present null values. Both original classpaths produced the same 220-class, 1,079-object state.
+
 To repeat the direct converter comparison, queue the first command below as a verification job. Run the witness review after the normal workflow has produced a matching native refutation.
 
 ```sh

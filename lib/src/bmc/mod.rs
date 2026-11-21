@@ -4862,6 +4862,13 @@ impl<'a> Engine<'a> {
         if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
             return unsupported(format!("the observed WeakHashMap does not supply its internal field {name}"));
         }
+        if path.objects[o].fields.contains_key(observed::LOOKUP_MAP) {
+            return unsupported(format!("the observed lookup table does not supply its internal field {name}"));
+        }
+        if path.objects[o].fields.contains_key(observed::ATOMIC_REF)
+            && (owner, name, descriptor) != ("java/util/concurrent/atomic/AtomicReference", "value", "Ljava/lang/Object;") {
+            return unsupported(format!("the observed atomic reference does not supply its internal field {name}"));
+        }
         if owner == throwables::THROWABLE && name == "suppressedExceptions" && descriptor == "Ljava/util/List;" {
             return Ok(throwables::SUPPRESSED.into());
         }
@@ -5261,6 +5268,19 @@ impl<'a> Engine<'a> {
         };
         if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
             return self.null_valued_weak_map_call(path, o, special, member, &args);
+        }
+        if path.objects[o].fields.contains_key(observed::LOOKUP_MAP) {
+            return self.captured_lookup(path, o, special, member, &args);
+        }
+        if path.objects[o].fields.contains_key(observed::ATOMIC_REF) {
+            if !special && self.cp.is_subtype(&path.objects[o].class, &member.owner) {
+                if let Some((cf, method)) = self.cp.atomic_reference_accessor(&member.name, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
+            }
+            return unsupported(format!("AtomicReference.{}{} is outside the captured value accessors", member.name, member.descriptor));
         }
         let special = special;
         // A virtual call on an object whose class the engine does not know: an override of that class may run.

@@ -863,6 +863,26 @@ impl ClassPath {
             | "f9bdfff0be7df1a7633155c47b51ff4e0c02b9288c6755529512c6b2ffbaff55") // Temurin 25.0.5
     }
 
+    /// Bind the public atomic accessors to the same volatile field that the subject JVM observed.
+    pub(crate) fn atomic_reference_accessor(&self, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
+        use crate::classfile::{Insn, Kind};
+        const CLASS: &str = "java/util/concurrent/atomic/AtomicReference";
+        let Loaded { class, origin: Origin::Jdk } = self.load(CLASS).ok()?? else { return None };
+        let method = class.method(name, desc)?.clone();
+        let code = method.code.as_ref()?;
+        if !method.is_final() || !method.is_public() || method.is_static() || !code.exception_table.is_empty() { return None; }
+        let ops = code.instructions().ok()?;
+        let index = match (name, desc, ops.as_slice()) {
+            ("get", "()Ljava/lang/Object;", [(_, Insn::Load(Kind::Ref, 0)), (_, Insn::GetField(i)), (_, Insn::Return(Some(Kind::Ref)))]) => *i,
+            ("set", "(Ljava/lang/Object;)V", [(_, Insn::Load(Kind::Ref, 0)), (_, Insn::Load(Kind::Ref, 1)), (_, Insn::PutField(i)), (_, Insn::Return(None))]) => *i,
+            _ => return None,
+        };
+        let f = class.pool.member(index).ok()?;
+        let field = class.field("value")?;
+        (f.owner == CLASS && f.name == field.name && f.descriptor == "Ljava/lang/Object;" && f.descriptor == field.descriptor
+            && !field.is_static() && field.access & crate::classfile::flags::VOLATILE != 0).then_some((class, method))
+    }
+
     /// Methods of an image-backed byte or char buffer with an ordinary Java heap array.
     /// Foreign segments and native memory operations keep their separate call boundaries.
     pub(crate) fn heap_buffer_method(&self, owner: &str, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {

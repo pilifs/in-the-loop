@@ -218,6 +218,29 @@ fn weak_registry_values_survive_collection_without_assuming_membership() {
 }
 
 #[test]
+fn selected_startup_receivers_keep_field_owners_cycles_and_lookup_aliases() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(&c.app).arg("oc.PublishedLookup").output().unwrap();
+    assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
+    for (method, expected) in [("reads", None), ("unknownValue", Some("uncaptured reference")),
+        ("mutation", Some("read-only lookup table"))] {
+        let mut o = proving(&format!("oc.PublishedLookup#{method}"), "result", method);
+        o.observed_initializers = vec!["oc.PublishedLookup$Root".into()];
+        o.observed_runtime.preinitialize_together = true;
+        o.observed_runtime.capture_objects = ["oc.PublishedLookup$Holder", "java.util.HashMap", "java.util.concurrent.atomic.AtomicReference"]
+            .into_iter().map(str::to_owned).collect();
+        let result = property::run(&o).unwrap();
+        if let Some(reason) = expected {
+            assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
+            assert!(result.output.contains(reason), "{}", result.output);
+        } else {
+            assert_eq!(result.verdict, Verdict::Verified, "{}", result.output);
+        }
+    }
+}
+
+#[test]
 fn observed_enum_constants_keep_their_aliases_and_both_declaring_classes_fields() {
     jvmcontract::tool_tier!();
     let Some(c) = classes() else { return };

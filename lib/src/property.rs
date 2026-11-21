@@ -1031,9 +1031,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if !options.observed_initializers.is_empty() && options.engine == crate::Engine::Jbmc {
         return Err(Error::new("--observed-initializer is for the tool's own checker (--engine native or auto): JBMC runs no observation"));
     }
-    let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, &entries, &work, options.observed_runtime)?;
+    let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, &entries, &work, options.observed_runtime.clone())?;
     if let Some((previous, classes)) = &options.previous {
-        observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime)?);
+        observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime.clone())?);
     }
     let observed = std::sync::Arc::new(observed);
     let previous = options.previous.as_ref().map(|(p, _)| std::sync::Arc::new(p.clone()));

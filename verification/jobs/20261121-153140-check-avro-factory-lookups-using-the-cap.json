@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-153140-check-avro-factory-lookups-using-the-cap",
+  "title": "Check Avro factory lookups using the captured configuration objects",
+  "description": "Recheck the parent and fixed factory bounds claims using the exact application configuration objects and their String-keyed maps, observed on each original 124-entry classpath. Record how far both factories get past the atomic deprecation context. The selector, public calls and input bounds match the frozen original tasks.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T15:31:40+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Check the original factory on both revisions",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage captured-lookups --tasks bounds-parent-lookup-startup,bounds-fix-lookup-startup",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/captured-lookups-native"
+  ]
+}

@@ -126,6 +126,8 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
     settings = claim.get("observedRuntime", {})
     if settings.get("weakMapValues") and not settings.get("preinitializeTogether"):
         return refused("observedRuntime", "weakMapValues requires a shared pre-entry heap")
+    if settings.get("captureObjects") and not settings.get("preinitializeTogether"):
+        return refused("observedRuntime", "captureObjects requires a shared pre-entry heap")
     arguments = []
     def add(field, flag, values):
         arguments.extend(Argument(field, flag, str(value)) for value in values)
