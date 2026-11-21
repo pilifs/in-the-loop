@@ -46,6 +46,41 @@ def build_args(case):
     return [*OPTIONS, *module_args(case, case["module"]), "-Dmaven.test.skip=true", "install"]
 
 
+def toolchains(command, case, work, jdk26):
+    """Expose the project's requested compilers and test JVMs inside the isolated Maven build."""
+    if case["module"] not in ("guava", "mapred"):
+        return command, {}
+    homes = {v: runtime_jdk.home(v) for v in ("11", "17", "21")}
+    if case["module"] == "guava":
+        homes["26"] = jdk26 or runtime_jdk.home("26")
+        if homes["26"] is None:
+            raise ValueError("Guava requires Temurin 26 for compilation")
+        pin = json.loads((HERE / "temurin26.json").read_text())
+        if digest(homes["26"] / "lib/modules") != pin["moduleImageSha256"]:
+            raise ValueError("Guava compiler differs from the pinned Temurin 26 module image")
+    mounts, identities = [], {}
+    document = ET.Element("toolchains")
+    for version, home in homes.items():
+        if home is None:
+            raise ValueError(f"missing required JDK {version}")
+        home = Path(home)
+        guest = "/opt/java-" + version
+        mounts.extend(["--ro-bind", str(home.resolve()), guest])
+        identities[version] = runtime_jdk.identity(home)
+        for kind in (("jdk", "testJdk") if version == "21" else ("jdk",)):
+            chain = ET.SubElement(document, "toolchain")
+            ET.SubElement(chain, "type").text = kind
+            provides = ET.SubElement(chain, "provides")
+            ET.SubElement(provides, "version").text = version
+            ET.SubElement(provides, "vendor").text = "temurin"
+            ET.SubElement(ET.SubElement(chain, "configuration"), "jdkHome").text = guest
+    where = work / "home/.m2/toolchains.xml"
+    where.parent.mkdir(exist_ok=True)
+    ET.ElementTree(document).write(where, encoding="utf-8", xml_declaration=True)
+    i = command.index("--chdir")
+    return [*command[:i], *mounts, *command[i:]], identities
+
+
 def maven(command, args, directory, name):
     start = time.monotonic()
     log = directory / (name + ".log")
@@ -60,7 +95,7 @@ def maven(command, args, directory, name):
             "tail": lines[-9:]}
 
 
-def capture(case, side, project, module, local_repo, out, build, cp, jdk):
+def capture(case, side, project, module, local_repo, out, build, cp, jdk, compilers):
     """Store only JARs from the original owning module and Maven's ordered runtime resolution."""
     revision = case[side]
     cls = case["productionClass"].replace(".", "/") + ".class"
@@ -90,7 +125,16 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk):
     add(original, "built/" + original.name, "original", None,
         f"built by maven from {case['repository']} at {revision}: {jar_name}")
     listing = (module / "target/organic-runtime.txt").read_text().strip()
-    for item in listing.split(":") if listing else []:
+    entries = listing.split(":") if listing else []
+    provided = module / "target/organic-compile.txt"
+    if case["module"] == "mapred":
+        declared = ET.parse(module / "pom.xml").findall(".//{*}dependencies/{*}dependency")
+        if not any(d.findtext("{*}artifactId") == "hadoop-client" and d.findtext("{*}scope") == "provided" for d in declared):
+            raise ValueError("the original Avro module did not declare its Hadoop host")
+        for item in provided.read_text().strip().split(":"):
+            if item and item not in entries:
+                entries.append(item)
+    for item in entries:
         relative = Path(item).relative_to("/work/repository")
         if ".." in relative.parts:
             raise ValueError("dependency outside the resolved Maven repository")
@@ -113,8 +157,10 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk):
     outputs = {"original": jar_name, "jars": [{"path": jar_name, "sha256": records[0]["sha256"], "auxiliary": False}],
                "selectedClass": cls, "selectedClassSha256": cls_digest, "sourceSha256": digest(project / case["productionSource"])}
     record = {"schema": "upstream-jar-build/v1", "recipe": recipe, "artifacts": records,
-              "build": {"checkout": checkout, "outputs": outputs, "toolchain": {"jdk": runtime_jdk.identity(jdk)},
+              "build": {"checkout": checkout, "outputs": outputs, "toolchain": {"jdk": runtime_jdk.identity(jdk), "declaredCompilers": compilers},
                         "steps": [build, cp]}}
+    if case["module"] == "mapred":
+        record["build"]["outputs"]["hostClasspath"] = "Maven runtime, followed by the original module's compile-only entries including its provided Hadoop client"
     upstream_artifact.products(record, {"repository": case["repository"], "commit": revision,
                                        "parent": recipe.get("parent"), **recipe["build"]})
     write(out / ("build-" + side + ".json"), record)
@@ -167,6 +213,7 @@ def run_side(case, side, args):
         if git(project, "rev-parse", "HEAD").decode().strip() != case[side]:
             raise ValueError("the original checkout differs from the pinned revision")
         command = namespace(project, work, scratch, sockets, args.maven, jdk)
+        command, compilers = toolchains(command, case, work, args.jdk26)
         module = project / Path(case["reactorPom"]).parent / case["module"]
         with serve(args.maven_cache, sockets, 3 * 1024**3) as requests:
             build = maven(command, build_args(case), base, "module-build")
@@ -176,10 +223,18 @@ def run_side(case, side, args):
                                      DEPENDENCIES, "-DincludeScope=runtime", "-Dmdep.outputFile=" +
                                      str(Path("/project") / module.relative_to(project) / "target/organic-runtime.txt")],
                            base, "classpath")
+                if cp["exit"] == 0 and case["module"] == "mapred":
+                    host = maven(command, [*OPTIONS, "-f", str((module / "pom.xml").relative_to(project)),
+                                 DEPENDENCIES, "-DincludeScope=compile", "-Dmdep.outputFile=" +
+                                 str(Path("/project") / module.relative_to(project) / "target/organic-compile.txt")],
+                                 base, "host-classpath")
+                    status["providedClasspath"] = host
+                    if host["exit"] != 0:
+                        cp = host
                 status["classpath"] = cp
                 if cp["exit"] == 0:
                     try:
-                        status["artifact"] = capture(case, side, project, module, work / "repository", out, build, cp, jdk)
+                        status["artifact"] = capture(case, side, project, module, work / "repository", out, build, cp, jdk, compilers)
                     except (ValueError, OSError, runtime_maven.Blocked) as error:
                         status["artifactError"] = str(error)
             status["upstreamTest"] = tests(case, side, project, command, base, out)
@@ -196,6 +251,7 @@ def main():
     parser.add_argument("--repos", type=Path, help="local clones holding the original public commits")
     parser.add_argument("--maven-cache", type=Path, required=True)
     parser.add_argument("--maven", type=Path, default=Path.home() / ".sdkman/candidates/maven/current")
+    parser.add_argument("--jdk26", type=Path, help="pinned Guava build compiler")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     results = []

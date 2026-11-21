@@ -16044,17 +16044,17 @@
           "replay",
           "generated-keys"
         ],
-        "readiness": "executable",
+        "readiness": "scaffolded",
         "taskReadiness": {
           "replay": "scaffolded",
-          "generated-keys": "executable"
+          "generated-keys": "scaffolded"
         },
         "expected": {
           "replay": null,
           "generated-keys": "refuted"
         },
         "claims": {
-          "generated-keys": "unresolved"
+          "generated-keys": null
         },
         "receipts": {
           "replay": {
@@ -16064,14 +16064,6 @@
             "status": null,
             "expectation": "yes",
             "attempts": 2
-          },
-          "generated-keys": {
-            "path": "receipts/generated-keys/20261120T232346Z-e35e180a/result.json",
-            "attempt": "20261120T232346Z-e35e180a",
-            "execution": "completed",
-            "status": "unresolved",
-            "expectation": "yes",
-            "attempts": 1
           }
         },
         "staleReceipts": [],
@@ -16442,6 +16434,640 @@
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 352 TASK"
+      }
+    },
+    {
+      "id": "353",
+      "path": "examples/353-guava-saturated-sum",
+      "title": "Saturating counts through a live Guava multiset sum",
+      "summary": "Two independently populated backing multisets expose their capped mathematical sum through lookup, size and entry iteration.",
+      "origin": "real-world",
+      "system": "Guava",
+      "symbol": "com.google.common.collect.Multisets#sum(Lcom/google/common/collect/Multiset;Lcom/google/common/collect/Multiset;)Lcom/google/common/collect/Multiset;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The frozen independent observation table has 49 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+      ],
+      "source": "https://github.com/google/guava/pull/8509",
+      "target": {
+        "family": "guava",
+        "role": "calibration",
+        "case": "guava-saturated-sum",
+        "tasks": [
+          "replay",
+          "lookup-parent",
+          "lookup-fix",
+          "entries-parent",
+          "entries-fix",
+          "size-parent",
+          "size-fix",
+          "absent-parent",
+          "absent-fix",
+          "live-parent",
+          "live-fix"
+        ],
+        "readiness": "partial",
+        "taskReadiness": {
+          "replay": "partial",
+          "lookup-parent": "partial",
+          "lookup-fix": "partial",
+          "entries-parent": "partial",
+          "entries-fix": "partial",
+          "size-parent": "partial",
+          "size-fix": "partial",
+          "absent-parent": "partial",
+          "absent-fix": "partial",
+          "live-parent": "partial",
+          "live-fix": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "lookup-parent": "refuted",
+          "lookup-fix": "established",
+          "entries-parent": "refuted",
+          "entries-fix": "established",
+          "size-parent": "established",
+          "size-fix": "established",
+          "absent-parent": "established",
+          "absent-fix": "established",
+          "live-parent": "established",
+          "live-fix": "established"
+        },
+        "claims": {
+          "lookup-parent": null,
+          "lookup-fix": null,
+          "entries-parent": null,
+          "entries-fix": null,
+          "size-parent": null,
+          "size-fix": null,
+          "absent-parent": null,
+          "absent-fix": null,
+          "live-parent": null,
+          "live-fix": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/google/guava/pull/8509",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 353 TASK"
+      }
+    },
+    {
+      "id": "354",
+      "path": "examples/354-commons-lang-surrogate-cuts",
+      "title": "UTF-16 cuts through Commons Lang's public string operations",
+      "summary": "Truncation copies exactly the complete UTF-16 tokens inside the original window. Abbreviation also keeps surrogate pairs intact.",
+      "origin": "real-world",
+      "system": "Apache Commons Lang",
+      "symbol": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The frozen independent observation table has 1515 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+      ],
+      "source": "https://github.com/apache/commons-lang/pull/1719",
+      "target": {
+        "family": "commons-lang",
+        "role": "calibration",
+        "case": "commons-lang-surrogate-cuts",
+        "tasks": [
+          "replay",
+          "fixed-cut-parent",
+          "fixed-cut-fix",
+          "truncate-parent",
+          "truncate-fix",
+          "abbreviate-parent",
+          "abbreviate-fix",
+          "intact-parent",
+          "intact-fix",
+          "width-five-parent",
+          "width-five-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "fixed-cut-parent": "scaffolded",
+          "fixed-cut-fix": "scaffolded",
+          "truncate-parent": "scaffolded",
+          "truncate-fix": "scaffolded",
+          "abbreviate-parent": "scaffolded",
+          "abbreviate-fix": "scaffolded",
+          "intact-parent": "scaffolded",
+          "intact-fix": "scaffolded",
+          "width-five-parent": "scaffolded",
+          "width-five-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "fixed-cut-parent": "refuted",
+          "fixed-cut-fix": "established",
+          "truncate-parent": "refuted",
+          "truncate-fix": "established",
+          "abbreviate-parent": "refuted",
+          "abbreviate-fix": "established",
+          "intact-parent": "established",
+          "intact-fix": "established",
+          "width-five-parent": "established",
+          "width-five-fix": "established"
+        },
+        "claims": {
+          "fixed-cut-parent": null,
+          "fixed-cut-fix": null,
+          "truncate-parent": null,
+          "truncate-fix": null,
+          "abbreviate-parent": null,
+          "abbreviate-fix": null,
+          "intact-parent": null,
+          "intact-fix": null,
+          "width-five-parent": null,
+          "width-five-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261121T091834Z-6a42a687/result.json",
+            "attempt": "20261121T091834Z-6a42a687",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/apache/commons-lang/pull/1719",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 354 TASK"
+      }
+    },
+    {
+      "id": "355",
+      "path": "examples/355-avro-writable-buffer-limit",
+      "title": "Logical buffer limits through Avro's Hadoop converter",
+      "summary": "The original converter factory must preserve the physical capacity and expose exactly the BytesWritable logical prefix.",
+      "origin": "real-world",
+      "system": "Apache Avro",
+      "symbol": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The frozen independent observation table has 21 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+      ],
+      "source": "https://github.com/apache/avro/pull/3878",
+      "target": {
+        "family": "avro",
+        "role": "calibration",
+        "case": "avro-writable-buffer-limit",
+        "tasks": [
+          "replay",
+          "bounds-parent",
+          "bounds-fix",
+          "rejected-parent",
+          "rejected-fix",
+          "prefix-parent",
+          "prefix-fix",
+          "full-length-parent",
+          "full-length-fix",
+          "direct-limit-parent",
+          "direct-limit-fix"
+        ],
+        "readiness": "partial",
+        "taskReadiness": {
+          "replay": "partial",
+          "bounds-parent": "partial",
+          "bounds-fix": "partial",
+          "rejected-parent": "partial",
+          "rejected-fix": "partial",
+          "prefix-parent": "partial",
+          "prefix-fix": "partial",
+          "full-length-parent": "partial",
+          "full-length-fix": "partial",
+          "direct-limit-parent": "partial",
+          "direct-limit-fix": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "bounds-parent": "refuted",
+          "bounds-fix": "established",
+          "rejected-parent": "refuted",
+          "rejected-fix": "established",
+          "prefix-parent": "established",
+          "prefix-fix": "established",
+          "full-length-parent": "established",
+          "full-length-fix": "established",
+          "direct-limit-parent": "refuted",
+          "direct-limit-fix": "established"
+        },
+        "claims": {
+          "bounds-parent": null,
+          "bounds-fix": null,
+          "rejected-parent": null,
+          "rejected-fix": null,
+          "prefix-parent": null,
+          "prefix-fix": null,
+          "full-length-parent": null,
+          "full-length-fix": null,
+          "direct-limit-parent": null,
+          "direct-limit-fix": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/apache/avro/pull/3878",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 355 TASK"
+      }
+    },
+    {
+      "id": "356",
+      "path": "examples/356-gson-overflowing-number",
+      "title": "An overflowing accumulator and its original JSON number text",
+      "summary": "On the same strict JsonReader, every one-digit extension of 2⁶⁴ is a number and retains all 21 decimal characters.",
+      "origin": "real-world",
+      "system": "Gson",
+      "symbol": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "deserialization"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The frozen independent observation table has 13 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+      ],
+      "source": "https://github.com/google/gson/pull/3034",
+      "target": {
+        "family": "gson",
+        "role": "calibration",
+        "case": "gson-overflowing-number",
+        "tasks": [
+          "replay",
+          "token-parent",
+          "token-fix",
+          "lexeme-parent",
+          "lexeme-fix",
+          "controls-parent",
+          "controls-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "token-parent": "scaffolded",
+          "token-fix": "scaffolded",
+          "lexeme-parent": "scaffolded",
+          "lexeme-fix": "scaffolded",
+          "controls-parent": "scaffolded",
+          "controls-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "token-parent": "refuted",
+          "token-fix": "established",
+          "lexeme-parent": "refuted",
+          "lexeme-fix": "established",
+          "controls-parent": "established",
+          "controls-fix": "established"
+        },
+        "claims": {
+          "token-parent": null,
+          "token-fix": null,
+          "lexeme-parent": null,
+          "lexeme-fix": null,
+          "controls-parent": null,
+          "controls-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261121T091838Z-7f67ebc2/result.json",
+            "attempt": "20261121T091838Z-7f67ebc2",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/google/gson/pull/3034",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 356 TASK"
+      }
+    },
+    {
+      "id": "357",
+      "path": "examples/357-gson-repeated-bom",
+      "title": "A byte-order mark across short JsonReader reads",
+      "summary": "A lenient reader consumes exactly the initial mark for zero, one or two marks across three distinct short-read schedules.",
+      "origin": "real-world",
+      "system": "Gson",
+      "symbol": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "side-effecting-read"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The frozen independent observation table has 9 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+      ],
+      "source": "https://github.com/google/gson/pull/3137",
+      "target": {
+        "family": "gson",
+        "role": "calibration",
+        "case": "gson-repeated-bom",
+        "tasks": [
+          "replay",
+          "chunked-parent",
+          "chunked-fix",
+          "plain-parent",
+          "plain-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "chunked-parent": "scaffolded",
+          "chunked-fix": "scaffolded",
+          "plain-parent": "scaffolded",
+          "plain-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "chunked-parent": "refuted",
+          "chunked-fix": "established",
+          "plain-parent": "established",
+          "plain-fix": "established"
+        },
+        "claims": {
+          "chunked-parent": null,
+          "chunked-fix": null,
+          "plain-parent": null,
+          "plain-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261121T091841Z-6ec26695/result.json",
+            "attempt": "20261121T091841Z-6ec26695",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/google/gson/pull/3137",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 357 TASK"
+      }
+    },
+    {
+      "id": "358",
+      "path": "examples/358-commons-codec-partitioned-base16",
+      "title": "Half-byte retention across sliced base16 stream writes",
+      "summary": "A public decoding stream receives one backing byte array at its actual changing offsets. Closing it yields the mathematically decoded bytes.",
+      "origin": "real-world",
+      "system": "Apache Commons Codec",
+      "symbol": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The frozen independent observation table has 2051 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+      ],
+      "source": "https://github.com/apache/commons-codec/pull/135",
+      "target": {
+        "family": "commons-codec",
+        "role": "calibration",
+        "case": "commons-codec-partitioned-base16",
+        "tasks": [
+          "replay",
+          "bytes-parent",
+          "bytes-fix",
+          "ten-parent",
+          "ten-fix",
+          "controls-parent",
+          "controls-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "bytes-parent": "scaffolded",
+          "bytes-fix": "scaffolded",
+          "ten-parent": "scaffolded",
+          "ten-fix": "scaffolded",
+          "controls-parent": "scaffolded",
+          "controls-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "bytes-parent": "refuted",
+          "bytes-fix": "established",
+          "ten-parent": "refuted",
+          "ten-fix": "established",
+          "controls-parent": "established",
+          "controls-fix": "established"
+        },
+        "claims": {
+          "bytes-parent": null,
+          "bytes-fix": null,
+          "ten-parent": null,
+          "ten-fix": null,
+          "controls-parent": null,
+          "controls-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261121T091844Z-6cc99129/result.json",
+            "attempt": "20261121T091844Z-6cc99129",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/apache/commons-codec/pull/135",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 358 TASK"
       }
     }
   ]

@@ -1,5 +1,6 @@
 """Regenerate the independent public-observation tables for the six organic Java PRs."""
 import argparse
+import copy
 import itertools
 import json
 from pathlib import Path
@@ -83,6 +84,44 @@ def table(number):
     return {"schema": "finite-jvm-observations/v1", "fields": fields, "cases": cases}
 
 
+def wrong_results(number):
+    """Deliberately wrong observations at specific boundary inputs, independent of either implementation."""
+    if number == "353":
+        return [(32, "lookup", -(2**31)), (32, "size", -(2**31)),
+                (32, "entries", "java.lang.IllegalArgumentException"), (0, "absent", 1),
+                (0, "live", [[6, 6, 6], [6, 6, 6]])]
+    if number == "354":
+        values = list(rows(number))
+        cut = next(i for i, (a, _) in enumerate(values) if a == {"units": units("a😀a"), "start": 0, "width": 2})
+        return [(cut, "truncate", [97, 0xd83d]), (2, "fixedCut", [97, 0xd83d]), (0, "abbreviate", [0xd83d, 46, 46, 46])]
+    if number == "355":
+        return [(18, "bounds", [0, 5, 5, 5]), (18, "prefix", [[1, 1], [2, 2], [3, 3]]),
+                (18, "rejected", {"first": 4, "position": 0}),
+                (18, "directLimit", {"capacity": 5, "limit": 5, "first": 4, "position": 0})]
+    if number == "356":
+        return [(0, "token", "peek:MalformedJsonException"), (0, "lexeme", str(2**64))]
+    if number == "357":
+        return [(6, "chunked", units("foo")), (8, "plain", units("foo"))]
+    return [(2048, "bytes", list(b"ABCD"))]
+
+
+def check_controls(number, path):
+    import sys
+    sys.path.insert(0, str(ROOT / "examples/tools"))
+    from targets.finite_oracle import Table
+    observer = Table(path)
+    data = [{"id": i, "input": case["input"], "direct": copy.deepcopy(case["expected"])}
+            for i, case in observer.cases.items()]
+    if observer.problems(data):
+        raise ValueError("the independent correct observations failed")
+    for index, field, wrong in wrong_results(number):
+        correct = data[index]["direct"][field]
+        data[index]["direct"][field] = wrong
+        if observer.problems(data) != [[index, field]]:
+            raise ValueError(f"{number} field {field} failed to distinguish its wrong-result control")
+        data[index]["direct"][field] = correct
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
@@ -99,7 +138,8 @@ def main():
                 parser.error(f"{dest} differs from its independent input/observation oracle")
         else:
             dest.write_text(body)
-        print(n, len(spec["cases"]), "inputs")
+        check_controls(n, dest)
+        print(n, len(spec["cases"]), "inputs,", len(wrong_results(n)), "wrong-result controls rejected")
 
 
 if __name__ == "__main__":

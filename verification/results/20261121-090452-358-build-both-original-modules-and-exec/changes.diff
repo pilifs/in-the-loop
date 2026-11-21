@@ -1,0 +1,581 @@
+--- /dev/null
++++ b/examples/358-commons-codec-partitioned-base16/records/upstream/build-fix.json
+@@ -0,0 +1,142 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/apache/commons-codec",
++    "commit": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb",
++    "class": "org.apache.commons.codec.binary.Base16",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    },
++    "parent": "b22276db7282efa0794e2cca02a32006c0bca0dd"
++  },
++  "artifacts": [
++    {
++      "path": "built/commons-codec-1.16-SNAPSHOT.jar",
++      "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/apache/commons-codec at 7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb: target/commons-codec-1.16-SNAPSHOT.jar"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb",
++      "tree": "19614927a06bfbe99364ec9548c9ba2eb36b97de",
++      "parents": [
++        "b22276db7282efa0794e2cca02a32006c0bca0dd"
++      ],
++      "fetchedFrom": "https://github.com/apache/commons-codec",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "target/commons-codec-1.16-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "target/commons-codec-1.16-SNAPSHOT.jar",
++          "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "org/apache/commons/codec/binary/Base16.class",
++      "selectedClassSha256": "ac6ee640ed12050123f6bd8900545d1d5241d4ca60b2df715a123e4c9157d64d",
++      "sourceSha256": "154db827b5e218bba39ca474a8799a873012e4be53cacd372462a3ba080e3cd6"
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      }
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "-Dmaven.test.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 19.07,
++        "logSha256": "638eab5f893f1df2060ed896dc758ae862ff1990063b804d80c9aa6e1cf958bb",
++        "errors": [],
++        "tail": [
++          "[INFO] Installing /project/pom.xml to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT.pom",
++          "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-sources.jar",
++          "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-test-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-test-sources.jar",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  17.325 s",
++          "[INFO] Finished at: 2026-11-21T09:14:02Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 4.9,
++        "logSha256": "08e5ed700a87af141ce9f38956b003628cf5fb8089a4c72d0be49dce5a7a1cd3",
++        "errors": [],
++        "tail": [
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-codec ---",
++          "[INFO] No dependencies found.",
++          "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  3.205 s",
++          "[INFO] Finished at: 2026-11-21T09:14:07Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+--- /dev/null
++++ b/examples/358-commons-codec-partitioned-base16/records/upstream/build-parent.json
+@@ -0,0 +1,139 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/apache/commons-codec",
++    "commit": "b22276db7282efa0794e2cca02a32006c0bca0dd",
++    "class": "org.apache.commons.codec.binary.Base16",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    }
++  },
++  "artifacts": [
++    {
++      "path": "built/commons-codec-1.16-SNAPSHOT.jar",
++      "sha256": "d7c85c44b0fe1606e37d16c5420853802b5afefe450cdb30c02f6a9c56a81f78",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/apache/commons-codec at b22276db7282efa0794e2cca02a32006c0bca0dd: target/commons-codec-1.16-SNAPSHOT.jar"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "b22276db7282efa0794e2cca02a32006c0bca0dd",
++      "tree": "f302746558b9307296133707c77f925f9e7b24af",
++      "parents": [],
++      "fetchedFrom": "https://github.com/apache/commons-codec",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "target/commons-codec-1.16-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "target/commons-codec-1.16-SNAPSHOT.jar",
++          "sha256": "d7c85c44b0fe1606e37d16c5420853802b5afefe450cdb30c02f6a9c56a81f78",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "org/apache/commons/codec/binary/Base16.class",
++      "selectedClassSha256": "32f332a61114dc34d4a89fb1bb3115df01ea4248208ce02e0e5d7909a5c68f36",
++      "sourceSha256": "0e8525e2a53ffa0d347adab91a74234097869c96e3cceff3748501647338a41a"
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      }
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "-Dmaven.test.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 59.9,
++        "logSha256": "9343aed21191bf2fa5d81920d74fed94e848c2ff5a04fc54d20b2fbba104df3c",
++        "errors": [],
++        "tail": [
++          "[INFO] Installing /project/pom.xml to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT.pom",
++          "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-sources.jar",
++          "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-test-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-test-sources.jar",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  58.224 s",
++          "[INFO] Finished at: 2026-11-21T09:13:18Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 4.83,
++        "logSha256": "fddf9d764b4b635a178e7cb81d72bcf1a2283594b7a4532bf0fca2964c79aa61",
++        "errors": [],
++        "tail": [
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-codec ---",
++          "[INFO] No dependencies found.",
++          "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  3.197 s",
++          "[INFO] Finished at: 2026-11-21T09:13:23Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+Binary file examples/358-commons-codec-partitioned-base16/records/upstream/fix-TEST-org.apache.commons.codec.binary.Base16Test.xml.gz changed
+--- /dev/null
++++ b/examples/358-commons-codec-partitioned-base16/records/upstream/fix-upstream.json
+@@ -0,0 +1,134 @@
++{
++  "revision": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb",
++  "side": "fix",
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 19.07,
++    "logSha256": "638eab5f893f1df2060ed896dc758ae862ff1990063b804d80c9aa6e1cf958bb",
++    "errors": [],
++    "tail": [
++      "[INFO] Installing /project/pom.xml to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT.pom",
++      "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-sources.jar",
++      "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-test-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-test-sources.jar",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  17.325 s",
++      "[INFO] Finished at: 2026-11-21T09:14:02Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 4.9,
++    "logSha256": "08e5ed700a87af141ce9f38956b003628cf5fb8089a4c72d0be49dce5a7a1cd3",
++    "errors": [],
++    "tail": [
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-codec ---",
++      "[INFO] No dependencies found.",
++      "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  3.205 s",
++      "[INFO] Finished at: 2026-11-21T09:14:07Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "target/commons-codec-1.16-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "target/commons-codec-1.16-SNAPSHOT.jar",
++        "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "org/apache/commons/codec/binary/Base16.class",
++    "selectedClassSha256": "ac6ee640ed12050123f6bd8900545d1d5241d4ca60b2df715a123e4c9157d64d",
++    "sourceSha256": "154db827b5e218bba39ca474a8799a873012e4be53cacd372462a3ba080e3cd6"
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=Base16Test#testOddEvenDecoding",
++        "test"
++      ],
++      "exit": 0,
++      "seconds": 17.36,
++      "logSha256": "fc49c7ea6b1a33823a1c2d4eaa2ce8b7bf57af44a25125d2e3b72f0ef606f7f6",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0",
++        "[INFO] ",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  15.663 s",
++        "[INFO] Finished at: 2026-11-21T09:14:24Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ]
++    },
++    "testSourceSha256": {
++      "src/test/java/org/apache/commons/codec/binary/Base16Test.java": "878905642cff4816216c449cb67a1afb3d366430b5a2bff0b412f5248da15ab5"
++    },
++    "transplant": [],
++    "named": {
++      "Base16Test#testOddEvenDecoding": [
++        {
++          "status": "passed",
++          "class": "org.apache.commons.codec.binary.Base16Test",
++          "method": "testOddEvenDecoding",
++          "xmlSha256": "cf4477fbe7afc2bbded1ffe292f36a255fcb17793508d7435df000c9613620b2"
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "cachedRequests": 2764
++  }
++}
+Binary file examples/358-commons-codec-partitioned-base16/records/upstream/parent-TEST-org.apache.commons.codec.binary.Base16Test.xml.gz changed
+--- /dev/null
++++ b/examples/358-commons-codec-partitioned-base16/records/upstream/parent-upstream.json
+@@ -0,0 +1,152 @@
++{
++  "revision": "b22276db7282efa0794e2cca02a32006c0bca0dd",
++  "side": "parent",
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 59.9,
++    "logSha256": "9343aed21191bf2fa5d81920d74fed94e848c2ff5a04fc54d20b2fbba104df3c",
++    "errors": [],
++    "tail": [
++      "[INFO] Installing /project/pom.xml to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT.pom",
++      "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-sources.jar",
++      "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-test-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-test-sources.jar",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  58.224 s",
++      "[INFO] Finished at: 2026-11-21T09:13:18Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 4.83,
++    "logSha256": "fddf9d764b4b635a178e7cb81d72bcf1a2283594b7a4532bf0fca2964c79aa61",
++    "errors": [],
++    "tail": [
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-codec ---",
++      "[INFO] No dependencies found.",
++      "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  3.197 s",
++      "[INFO] Finished at: 2026-11-21T09:13:23Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "target/commons-codec-1.16-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "target/commons-codec-1.16-SNAPSHOT.jar",
++        "sha256": "d7c85c44b0fe1606e37d16c5420853802b5afefe450cdb30c02f6a9c56a81f78",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "org/apache/commons/codec/binary/Base16.class",
++    "selectedClassSha256": "32f332a61114dc34d4a89fb1bb3115df01ea4248208ce02e0e5d7909a5c68f36",
++    "sourceSha256": "0e8525e2a53ffa0d347adab91a74234097869c96e3cceff3748501647338a41a"
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=Base16Test#testOddEvenDecoding",
++        "test"
++      ],
++      "exit": 1,
++      "seconds": 19.18,
++      "logSha256": "0ff2757bb55d2a28ba33a63d72a1f3681b4ee1cbd1753c37f0b9bed119bc7d5b",
++      "errors": [
++        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.125 s <<< FAILURE! - in org.apache.commons.codec.binary.Base16Test",
++        "[ERROR] org.apache.commons.codec.binary.Base16Test.testOddEvenDecoding  Time elapsed: 0.102 s  <<< FAILURE!",
++        "[ERROR] Failures: ",
++        "[ERROR]   Base16Test.testOddEvenDecoding:599 expected: <ABCDE> but was: <ABCD>",
++        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",
++        "[ERROR] BUILD FAILURE",
++        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M6:test (default-test) on project commons-codec: There are test failures.",
++        "[ERROR] ",
++        "[ERROR] Please refer to /project/target/surefire-reports for the individual test results.",
++        "[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] "
++      ],
++      "tail": [
++        "[ERROR] Please refer to /project/target/surefire-reports for the individual test results.",
++        "[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++      ]
++    },
++    "testSourceSha256": {
++      "src/test/java/org/apache/commons/codec/binary/Base16Test.java": "878905642cff4816216c449cb67a1afb3d366430b5a2bff0b412f5248da15ab5"
++    },
++    "transplant": [
++      "src/test/java/org/apache/commons/codec/binary/Base16Test.java"
++    ],
++    "named": {
++      "Base16Test#testOddEvenDecoding": [
++        {
++          "status": "failure",
++          "class": "org.apache.commons.codec.binary.Base16Test",
++          "method": "testOddEvenDecoding",
++          "xmlSha256": "e1235a5a8e8968cfd644e43b02b1b7bff865ddf0d05a9eff5051ba425975c4a2"
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "from https://repo.maven.apache.org/maven2/": 505,
++    "downloadedBytes": 21830676,
++    "downloadedFiles": 505,
++    "cachedRequests": 2259
++  }
++}

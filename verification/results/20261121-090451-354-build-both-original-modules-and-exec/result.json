@@ -1,0 +1,225 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-090451-354-build-both-original-modules-and-exec",
+  "title": "354 build both original modules and execute the landed commons-lang regression",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m42s, peak 1.7 GiB (estimated 8m00s, 3.0 GiB); 8 output file(s) changed",
+  "attention": [
+    "step 1 (Build and run both original revisions) was held back 7m32s by its 2-CPU quota in 2m42s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-090451-354-build-both-original-modules-and-exec.json",
+    "sha256": "5199f3390c8a26f00b1dc3378697d197e8b559e2cfb12aa687f2b363016c25d8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-090451-354-build-both-original-modules-and-exec",
+      "title": "354 build both original modules and execute the landed commons-lang regression",
+      "description": "Build both pinned revisions of https://github.com/apache/commons-lang PR 1719 on JDK 21. Record the original production class, ordered runtime closure, and fresh named Surefire reports. Transplant only the landed test sources to the parent.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "original-upstream-test"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/organic-java/cases.json"
+        ]
+      },
+      "expected": "Original JARs captured on both revisions, the historical tests fail on the parent and pass on the fix.",
+      "submitted": {
+        "at": "2026-11-21T09:04:51+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "maven",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "8m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Build and run both original revisions",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 354 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output examples/354-commons-lang-surrogate-cuts/records/upstream",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/354-commons-lang-surrogate-cuts/records/upstream"
+      ]
+    }
+  },
+  "sourceCommit": "28141df762fedbcdbc8d369d662324ae46f56081",
+  "startedAt": "2026-11-21T09:12:11+00:00",
+  "finishedAt": "2026-11-21T09:15:01+00:00",
+  "wallSeconds": 170.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3339959,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1852452864,
+    "wallSeconds": 163.0,
+    "cpuSeconds": 255.5,
+    "memoryOfEstimate": 0.58,
+    "durationOfEstimate": 0.34
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build and run both original revisions",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 354 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output examples/354-commons-lang-surrogate-cuts/records/upstream",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 162.962,
+      "cpuSeconds": 255.49,
+      "cpuThrottledSeconds": 452.911,
+      "peakMemoryBytes": 1852452864,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-and-run-both-original-re.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "1f32831caed30870e802f112e04c343ac1e9abd45f34530d282bcfaa6ea1d9b1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "354 parent qualified",
+        "354 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/upstream/build-fix.json",
+      "change": "added",
+      "bytes": 7314,
+      "sha256": "d13c775114ef73c16f962ba18d4e2942ae253a43f7954f835486526c5f40a50b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/upstream/build-parent.json",
+      "change": "added",
+      "bytes": 7199,
+      "sha256": "26031cf6c75b40deecc3435baede53c63b71adf6ffb1b3122d4ecd2ad3a7a2d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/upstream/fix-TEST-org.apache.commons.lang3.StringUtilsAbbreviateTest.xml.gz",
+      "change": "added",
+      "bytes": 1755,
+      "sha256": "e8536f7ffab2be17dcca24dfd79b5658465a3570b81167097299bcd2c07d7141",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/upstream/fix-TEST-org.apache.commons.lang3.StringUtilsTest.xml.gz",
+      "change": "added",
+      "bytes": 1751,
+      "sha256": "d3d2bb4db8acdd5853069c11ca99b4a22b46d5ab90e2e618dbd795f6c057f135",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/upstream/fix-upstream.json",
+      "change": "added",
+      "bytes": 5712,
+      "sha256": "ecfb3acd07e13786f50f6b1e12335567f68d9501aab771719783689579df6866",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/upstream/parent-TEST-org.apache.commons.lang3.StringUtilsAbbreviateTest.xml.gz",
+      "change": "added",
+      "bytes": 1854,
+      "sha256": "c2d86d8b7851a96660ee0638489b678eafc366a4e91394b85372d9c76821536c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/upstream/parent-TEST-org.apache.commons.lang3.StringUtilsTest.xml.gz",
+      "change": "added",
+      "bytes": 1849,
+      "sha256": "8cf2a7d95bcfa1524a5bb9e4e0bbe0f7ff9cf6d548e487b52d8d4e7f7a19680b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/upstream/parent-upstream.json",
+      "change": "added",
+      "bytes": 7354,
+      "sha256": "29a92033e9586c1ac505c77a803556af83541f5a76cdb4f22c70170285bdebe4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T09:17:22+00:00",
+    "applied": [
+      "examples/354-commons-lang-surrogate-cuts/records/upstream/build-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/upstream/build-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/upstream/fix-TEST-org.apache.commons.lang3.StringUtilsAbbreviateTest.xml.gz",
+      "examples/354-commons-lang-surrogate-cuts/records/upstream/fix-TEST-org.apache.commons.lang3.StringUtilsTest.xml.gz",
+      "examples/354-commons-lang-surrogate-cuts/records/upstream/fix-upstream.json",
+      "examples/354-commons-lang-surrogate-cuts/records/upstream/parent-TEST-org.apache.commons.lang3.StringUtilsAbbreviateTest.xml.gz",
+      "examples/354-commons-lang-surrogate-cuts/records/upstream/parent-TEST-org.apache.commons.lang3.StringUtilsTest.xml.gz",
+      "examples/354-commons-lang-surrogate-cuts/records/upstream/parent-upstream.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

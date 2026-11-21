@@ -1,0 +1,155 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "repository": "https://github.com/google/gson",
+    "commit": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
+    "class": "com.google.gson.stream.JsonReader",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "gson",
+        "-am",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    },
+    "parent": "216c41b6e70dc04e6856418dd76bb00c854eb6b4"
+  },
+  "artifacts": [
+    {
+      "path": "built/gson-2.14.1-SNAPSHOT.jar",
+      "sha256": "99b53ca06707602a957850200a88504717a570b17270a93ac84f1e0bd7c05767",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/google/gson at 845664ba1c307e6c1910d07cfed2f622e0ad8df1: gson/target/gson-2.14.1-SNAPSHOT.jar"
+    },
+    {
+      "path": "lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+      "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
+      "role": "dependency",
+      "coordinates": "com.google.errorprone:error_prone_annotations:2.50.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
+      "tree": "2e4eb85b5b5587d5d95ac1b3d830d5113a16fa14",
+      "parents": [
+        "216c41b6e70dc04e6856418dd76bb00c854eb6b4"
+      ],
+      "fetchedFrom": "https://github.com/google/gson",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "gson/target/gson-2.14.1-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "gson/target/gson-2.14.1-SNAPSHOT.jar",
+          "sha256": "99b53ca06707602a957850200a88504717a570b17270a93ac84f1e0bd7c05767",
+          "auxiliary": false
+        }
+      ],
+      "selectedClass": "com/google/gson/stream/JsonReader.class",
+      "selectedClassSha256": "763474506dafc04ab0fdf3c745ea39017c58d015e3fb9366e0b413f25e41c785",
+      "sourceSha256": "327b49717142389329bc3786690f0fe1a1b6269e34999b888446d203f6526167"
+    },
+    "toolchain": {
+      "jdk": {
+        "feature": "21",
+        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        }
+      }
+    },
+    "steps": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "pom.xml",
+          "-pl",
+          "gson",
+          "-am",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 22.85,
+        "logSha256": "78516bbc7729a345ee7df5e95c48cdbeb09ed64cff1e435c7bd5029b9457bafa",
+        "errors": [],
+        "tail": [
+          "[INFO] ",
+          "[INFO] Gson Parent ........................................ SUCCESS [  3.630 s]",
+          "[INFO] Gson ............................................... SUCCESS [ 15.461 s]",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  21.049 s",
+          "[INFO] Finished at: 2026-11-21T09:14:15Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "gson/pom.xml",
+          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+          "-DincludeScope=runtime",
+          "-Dmdep.outputFile=/project/gson/target/organic-runtime.txt"
+        ],
+        "exit": 0,
+        "seconds": 4.99,
+        "logSha256": "7899af52fc6029751f1fbd3fedda807d30372dbd9de26149a96e37caa1c25f35",
+        "errors": [],
+        "tail": [
+          "[INFO] ",
+          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ gson ---",
+          "[INFO] Wrote classpath file '/project/gson/target/organic-runtime.txt'.",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  3.200 s",
+          "[INFO] Finished at: 2026-11-21T09:14:20Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ]
+  }
+}

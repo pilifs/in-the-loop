@@ -1,0 +1,142 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "repository": "https://github.com/apache/commons-codec",
+    "commit": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb",
+    "class": "org.apache.commons.codec.binary.Base16",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    },
+    "parent": "b22276db7282efa0794e2cca02a32006c0bca0dd"
+  },
+  "artifacts": [
+    {
+      "path": "built/commons-codec-1.16-SNAPSHOT.jar",
+      "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/apache/commons-codec at 7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb: target/commons-codec-1.16-SNAPSHOT.jar"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb",
+      "tree": "19614927a06bfbe99364ec9548c9ba2eb36b97de",
+      "parents": [
+        "b22276db7282efa0794e2cca02a32006c0bca0dd"
+      ],
+      "fetchedFrom": "https://github.com/apache/commons-codec",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "target/commons-codec-1.16-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "target/commons-codec-1.16-SNAPSHOT.jar",
+          "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326",
+          "auxiliary": false
+        }
+      ],
+      "selectedClass": "org/apache/commons/codec/binary/Base16.class",
+      "selectedClassSha256": "ac6ee640ed12050123f6bd8900545d1d5241d4ca60b2df715a123e4c9157d64d",
+      "sourceSha256": "154db827b5e218bba39ca474a8799a873012e4be53cacd372462a3ba080e3cd6"
+    },
+    "toolchain": {
+      "jdk": {
+        "feature": "21",
+        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        }
+      }
+    },
+    "steps": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 19.07,
+        "logSha256": "638eab5f893f1df2060ed896dc758ae862ff1990063b804d80c9aa6e1cf958bb",
+        "errors": [],
+        "tail": [
+          "[INFO] Installing /project/pom.xml to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT.pom",
+          "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-sources.jar",
+          "[INFO] Installing /project/target/commons-codec-1.16-SNAPSHOT-test-sources.jar to /work/repository/commons-codec/commons-codec/1.16-SNAPSHOT/commons-codec-1.16-SNAPSHOT-test-sources.jar",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  17.325 s",
+          "[INFO] Finished at: 2026-11-21T09:14:02Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "pom.xml",
+          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+          "-DincludeScope=runtime",
+          "-Dmdep.outputFile=/project/target/organic-runtime.txt"
+        ],
+        "exit": 0,
+        "seconds": 4.9,
+        "logSha256": "08e5ed700a87af141ce9f38956b003628cf5fb8089a4c72d0be49dce5a7a1cd3",
+        "errors": [],
+        "tail": [
+          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-codec ---",
+          "[INFO] No dependencies found.",
+          "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  3.205 s",
+          "[INFO] Finished at: 2026-11-21T09:14:07Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ]
+  }
+}

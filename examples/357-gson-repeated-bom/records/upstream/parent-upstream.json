@@ -1,0 +1,158 @@
+{
+  "revision": "216c41b6e70dc04e6856418dd76bb00c854eb6b4",
+  "side": "parent",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-pl",
+      "gson",
+      "-am",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 57.5,
+    "logSha256": "e9398e5a1ba58f884d5ac59663f6216f93d3ddc7953b52894c88f3884a5827a1",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] Gson Parent ........................................ SUCCESS [ 12.208 s]",
+      "[INFO] Gson ............................................... SUCCESS [ 37.639 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  55.889 s",
+      "[INFO] Finished at: 2026-11-21T09:13:16Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "gson/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/gson/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 4.7,
+    "logSha256": "ed171ead5e69d85270f6b34a5d900994423ae79067bf157bcdd55e82b32208f4",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ gson ---",
+      "[INFO] Wrote classpath file '/project/gson/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  3.084 s",
+      "[INFO] Finished at: 2026-11-21T09:13:21Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "gson/target/gson-2.14.1-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "gson/target/gson-2.14.1-SNAPSHOT.jar",
+        "sha256": "6dff7278b3b9777948151ea567614237c654aaa1db9c73cc761792c67682dbb5",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "com/google/gson/stream/JsonReader.class",
+    "selectedClassSha256": "6d6709eabd46ade454dc77f588421efa21aa4431c9058934c470aa15f3e3ab6b",
+    "sourceSha256": "46321d93477d0ca372aea8d8f62431ea44b7ca8947afea2f474bdebc2ff1e589"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "gson",
+        "-am",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=JsonReaderTest#testRepeatedBom",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 30.85,
+      "logSha256": "b8cfb457c3515f523b1de5c0231bd530be0a09cae5cab7b8e4a16c965d6b7d13",
+      "errors": [
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.152 s <<< FAILURE! -- in com.google.gson.stream.JsonReaderTest",
+        "[ERROR] com.google.gson.stream.JsonReaderTest.testRepeatedBom -- Time elapsed: 0.062 s <<< FAILURE!",
+        "[ERROR] Failures: ",
+        "[ERROR]   JsonReaderTest.testRepeatedBom:1691 value of: nextString()",
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",
+        "[ERROR] Gson ............................................... FAILURE [ 27.873 s]",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project gson: There are test failures.",
+        "[ERROR] ",
+        "[ERROR] See /project/gson/target/surefire-reports for the individual test results.",
+        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]"
+      ],
+      "tail": [
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+        "[ERROR] ",
+        "[ERROR] After correcting the problems, you can resume the build with the command",
+        "[ERROR]   mvn <args> -rf :gson"
+      ]
+    },
+    "testSourceSha256": {
+      "gson/src/test/java/com/google/gson/stream/JsonReaderTest.java": "6ff9c53471017f442478fc86c9761d48a27c01b727cc5224dea533acb3eded28"
+    },
+    "transplant": [
+      "gson/src/test/java/com/google/gson/stream/JsonReaderTest.java"
+    ],
+    "named": {
+      "JsonReaderTest#testRepeatedBom": [
+        {
+          "status": "failure",
+          "class": "com.google.gson.stream.JsonReaderTest",
+          "method": "testRepeatedBom",
+          "xmlSha256": "0ab96203434f0641d3fa3a37241504f43b141b78357abcf167feec2dff73cc75"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "from https://repo.maven.apache.org/maven2/": 267,
+    "downloadedBytes": 36241934,
+    "downloadedFiles": 267,
+    "cachedRequests": 1569
+  }
+}

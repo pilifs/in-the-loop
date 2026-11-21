@@ -1,0 +1,164 @@
+{
+  "revision": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+  "side": "parent",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 67.27,
+    "logSha256": "3a825e366a1f3d9f31e3612a6f6f46b05e7bb50a3a549d4e55382c2685d1c5cd",
+    "errors": [
+      "[ERROR] I/O error reading license TOC"
+    ],
+    "tail": [
+      "[INFO] Installing /project/target/commons-lang3-3.21.0-SNAPSHOT-bom.xml to /work/repository/org/apache/commons/commons-lang3/3.21.0-SNAPSHOT/commons-lang3-3.21.0-SNAPSHOT-cyclonedx.xml",
+      "[INFO] Installing /project/target/commons-lang3-3.21.0-SNAPSHOT-bom.json to /work/repository/org/apache/commons/commons-lang3/3.21.0-SNAPSHOT/commons-lang3-3.21.0-SNAPSHOT-cyclonedx.json",
+      "[INFO] Installing /project/target/site/org.apache.commons_commons-lang3-3.21.0-SNAPSHOT.spdx.json to /work/repository/org/apache/commons/commons-lang3/3.21.0-SNAPSHOT/commons-lang3-3.21.0-SNAPSHOT.spdx.json",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  01:05 min",
+      "[INFO] Finished at: 2026-11-21T09:13:26Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 4.35,
+    "logSha256": "0ba8af319cf36c0cdee7e076fd8391fbf37c9585695ffe36c132f3edc00973be",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-lang3 ---",
+      "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  2.649 s",
+      "[INFO] Finished at: 2026-11-21T09:13:30Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "target/commons-lang3-3.21.0-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "target/commons-lang3-3.21.0-SNAPSHOT.jar",
+        "sha256": "a72622f4c9439d585e2b73bc063fb0141bc404b2055a5fb944580779a5c5e62a",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "org/apache/commons/lang3/StringUtils.class",
+    "selectedClassSha256": "0c55f85f2cd2bbe3f2f925396104a9e970721a56c4a803dbb0393a67d2157525",
+    "sourceSha256": "a5fa3f53ac38895e2ff5e40ace7f602996ec17a20ddcc4c7bb5e05248cec3bb8"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=StringUtilsTest#testTruncate_StringIntInt_surrogatePair,StringUtilsAbbreviateTest#testAbbreviateSurrogatePair",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 28.34,
+      "logSha256": "a59e7b192d2135640b9662ec84f9fc56c2deb72c7b1159bf1e10e73eeaa8a7d9",
+      "errors": [
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.193 s <<< FAILURE! -- in org.apache.commons.lang3.StringUtilsAbbreviateTest",
+        "[ERROR] org.apache.commons.lang3.StringUtilsAbbreviateTest.testAbbreviateSurrogatePair -- Time elapsed: 0.116 s <<< FAILURE!",
+        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.011 s <<< FAILURE! -- in org.apache.commons.lang3.StringUtilsTest",
+        "[ERROR] org.apache.commons.lang3.StringUtilsTest.testTruncate_StringIntInt_surrogatePair -- Time elapsed: 0.003 s <<< FAILURE!",
+        "[ERROR] Failures: ",
+        "[ERROR]   StringUtilsAbbreviateTest.testAbbreviateSurrogatePair:179 expected: <...> but was: <",
+        "[ERROR]   StringUtilsTest.testTruncate_StringIntInt_surrogatePair:3062 expected: <a> but was: <a",
+        "[ERROR] Tests run: 2, Failures: 2, Errors: 0, Skipped: 0",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project commons-lang3: There are test failures.",
+        "[ERROR] ",
+        "[ERROR] See /project/target/surefire-reports for the individual test results."
+      ],
+      "tail": [
+        "[ERROR] See /project/target/surefire-reports for the individual test results.",
+        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      ]
+    },
+    "testSourceSha256": {
+      "src/test/java/org/apache/commons/lang3/StringUtilsTest.java": "3defcb5d5b046dc324198cfd3ee3100b889fc2359404027790149a7605ccd114",
+      "src/test/java/org/apache/commons/lang3/StringUtilsAbbreviateTest.java": "57f46446806ffc9ffaf51c53ce9690e4ffb674472440131da929b4538e02e808"
+    },
+    "transplant": [
+      "src/test/java/org/apache/commons/lang3/StringUtilsAbbreviateTest.java",
+      "src/test/java/org/apache/commons/lang3/StringUtilsTest.java"
+    ],
+    "named": {
+      "StringUtilsTest#testTruncate_StringIntInt_surrogatePair": [
+        {
+          "status": "failure",
+          "class": "org.apache.commons.lang3.StringUtilsTest",
+          "method": "testTruncate_StringIntInt_surrogatePair",
+          "xmlSha256": "907293a919277d7948b2e61f5769fe9d3a1a75beb32495443bcdc518f7ee85c4"
+        }
+      ],
+      "StringUtilsAbbreviateTest#testAbbreviateSurrogatePair": [
+        {
+          "status": "failure",
+          "class": "org.apache.commons.lang3.StringUtilsAbbreviateTest",
+          "method": "testAbbreviateSurrogatePair",
+          "xmlSha256": "e900a1baa1cff8cdd91dcbc7b0c3a92a5cc9d0db9b955686e2909457370d677b"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 2662,
+    "from https://repo.maven.apache.org/maven2/": 98,
+    "downloadedBytes": 16623787,
+    "downloadedFiles": 98
+  }
+}
