@@ -1,0 +1,171 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-235615-rebuild-receiver-cohort-group-06-on-its",
+  "title": "Rebuild receiver cohort group 06 on its original Maven classpaths",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 38.1s, peak 1.2 GiB (estimated 9m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Prepare original Maven modules commons-vfs-55c96cfd) was held back 53.8s by its 3-CPU quota in 38.1s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-235615-rebuild-receiver-cohort-group-06-on-its.json",
+    "sha256": "883a09903a8c99c03bea8ccc872b387087916fa127d0e210aacf4b4a7ea3fda2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-235615-rebuild-receiver-cohort-group-06-on-its",
+      "title": "Rebuild receiver cohort group 06 on its original Maven classpaths",
+      "description": "Repeat the original complete-module recipes for this portion of the fixed 32-pair corpus, including generated classes, processed resources and each original test or provided scope. Serialize dependency acquisition through the common Maven cache. Preserve preparation failures beside successful class hashes.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T23:56:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "maven"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "3G",
+        "duration": "9m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Prepare original Maven modules commons-vfs-55c96cfd",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --output verification/domain-foundations/receiver-builds/06 --phase compile --case commons-vfs-55c96cfd",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/receiver-builds/06"
+      ]
+    }
+  },
+  "sourceCommit": "9709378d3b74acd83c4c42b2f599500b74d6fb57",
+  "startedAt": "2026-11-21T23:57:29+00:00",
+  "finishedAt": "2026-11-21T23:58:27+00:00",
+  "wallSeconds": 58.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2683971,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1298690048,
+    "wallSeconds": 38.1,
+    "cpuSeconds": 95.9,
+    "memoryOfEstimate": 0.4,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prepare original Maven modules commons-vfs-55c96cfd",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --output verification/domain-foundations/receiver-builds/06 --phase compile --case commons-vfs-55c96cfd",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 38.084,
+      "cpuSeconds": 95.912,
+      "cpuThrottledSeconds": 53.763,
+      "peakMemoryBytes": 1298690048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prepare-original-maven-modules.log",
+        "lines": 2,
+        "bytes": 82,
+        "sha256": "93acabb9b5e0c2048f792f826a7918284e0bec4509a7178fd7b9fa2e8ea420e4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commons-vfs-55c96cfd old artifacts ready",
+        "commons-vfs-55c96cfd new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-builds/06/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 4246,
+      "sha256": "2e446ea6ce0e12114620fdd809140e0e5cd2781bc1fef338a362bd49ba63372b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T23:58:37+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-builds/06/commons-vfs-55c96cfd.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T235827Z-62147412c3e13736",
+      "outputs": "20261121T235827Z-6490404908e36c85",
+      "diff": "20261121T235827Z-665730d7adba1c52"
+    }
+  }
+}

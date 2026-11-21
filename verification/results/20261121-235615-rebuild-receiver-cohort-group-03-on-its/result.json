@@ -1,0 +1,222 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-235615-rebuild-receiver-cohort-group-03-on-its",
+  "title": "Rebuild receiver cohort group 03 on its original Maven classpaths",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 41.5s, peak 799.0 MiB (estimated 9m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (Prepare original Maven modules compsuite-i-62) was held back 30.4s by its 3-CPU quota in 27.1s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Prepare original Maven modules ea-async-27) was held back 8.9s by its 3-CPU quota in 14.4s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-235615-rebuild-receiver-cohort-group-03-on-its.json",
+    "sha256": "063d00dea80d9fad856d8a9940f8bc454bfbdb95dfb06f939cc8703fe34c10a4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-235615-rebuild-receiver-cohort-group-03-on-its",
+      "title": "Rebuild receiver cohort group 03 on its original Maven classpaths",
+      "description": "Repeat the original complete-module recipes for this portion of the fixed 32-pair corpus, including generated classes, processed resources and each original test or provided scope. Serialize dependency acquisition through the common Maven cache. Preserve preparation failures beside successful class hashes.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T23:56:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "maven"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "3G",
+        "duration": "9m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Prepare original Maven modules compsuite-i-62",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --output verification/domain-foundations/receiver-builds/03 --phase compile --with-test-fixtures --case compsuite-i-62",
+          "cwd": "."
+        },
+        {
+          "name": "Prepare original Maven modules ea-async-27",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --output verification/domain-foundations/receiver-builds/03 --phase compile --case ea-async-27",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/receiver-builds/03"
+      ]
+    }
+  },
+  "sourceCommit": "9709378d3b74acd83c4c42b2f599500b74d6fb57",
+  "startedAt": "2026-11-21T23:57:29+00:00",
+  "finishedAt": "2026-11-21T23:58:31+00:00",
+  "wallSeconds": 62.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2683971,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 837799936,
+    "wallSeconds": 41.5,
+    "cpuSeconds": 98.8,
+    "memoryOfEstimate": 0.26,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prepare original Maven modules compsuite-i-62",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --output verification/domain-foundations/receiver-builds/03 --phase compile --with-test-fixtures --case compsuite-i-62",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 27.054,
+      "cpuSeconds": 66.144,
+      "cpuThrottledSeconds": 30.356,
+      "peakMemoryBytes": 837799936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prepare-original-maven-modules.log",
+        "lines": 2,
+        "bytes": 70,
+        "sha256": "27beb62246baae3e4b7be94359b9cc90d3fd4bff27eabb8058de16455cb58929",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-62 old artifacts ready",
+        "compsuite-i-62 new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Prepare original Maven modules ea-async-27",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --output verification/domain-foundations/receiver-builds/03 --phase compile --case ea-async-27",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 14.434,
+      "cpuSeconds": 32.632,
+      "cpuThrottledSeconds": 8.879,
+      "peakMemoryBytes": 649207808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-prepare-original-maven-modules.log",
+        "lines": 2,
+        "bytes": 64,
+        "sha256": "34bf00c4ba01fcab947790c66f95bc63327a482208590bbcfbc20239ee18ca1a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ea-async-27 old artifacts ready",
+        "ea-async-27 new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-builds/03/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 9377,
+      "sha256": "86114cc1ed998d484fb714abcdaff697e054a5ed1bba188b9b0425b0e32e2765",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-builds/03/ea-async-27.json",
+      "change": "added",
+      "bytes": 3031,
+      "sha256": "f3f1d1f795e9721246a4ff7c19d73b74e44c382db64ada0424a619be041cc127",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T23:58:37+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-builds/03/compsuite-i-62.json",
+      "verification/domain-foundations/receiver-builds/03/ea-async-27.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T235831Z-05768897dcb40cc3",
+      "outputs": "20261121T235831Z-080189198163ff87",
+      "diff": "20261121T235831Z-097080cdc2f9702a"
+    }
+  }
+}
