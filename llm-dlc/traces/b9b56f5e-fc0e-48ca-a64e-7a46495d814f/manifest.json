@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T22:11:13.300Z",
-  "duration_seconds": 18831,
+  "ended": "2026-11-21T22:12:44.521Z",
+  "duration_seconds": 18922,
   "stats": {
     "turns": 16,
-    "api_calls": 822,
-    "tool_calls": 921,
+    "api_calls": 831,
+    "tool_calls": 930,
     "tool_errors": 14,
     "compactions": 5,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 1646,
-      "output_tokens": 1123588,
-      "cache_read_input_tokens": 236644406,
-      "cache_creation_input_tokens": 2449593
+      "input_tokens": 1664,
+      "output_tokens": 1130918,
+      "cache_read_input_tokens": 237829515,
+      "cache_creation_input_tokens": 2467566
     }
   },
   "tools": {
-    "Bash": 808,
+    "Bash": 817,
     "Read": 49,
     "Edit": 37,
     "Write": 27
@@ -142,24 +142,24 @@
     {
       "index": 5,
       "started": "2026-11-21T21:46:43.425Z",
-      "ended": "2026-11-21T22:11:13.300Z",
+      "ended": "2026-11-21T22:12:44.521Z",
       "turns": 1,
-      "api_calls": 34,
+      "api_calls": 43,
       "usage": {
-        "input_tokens": 68,
-        "output_tokens": 29072,
-        "cache_read_input_tokens": 3090502,
-        "cache_creation_input_tokens": 201583
+        "input_tokens": 86,
+        "output_tokens": 36402,
+        "cache_read_input_tokens": 4275611,
+        "cache_creation_input_tokens": 219556
       },
-      "peak_context_tokens": 122838
+      "peak_context_tokens": 140811
     }
   ],
   "log": {
-    "sha256": "934a197df6b5a8b78d60d3de6d91f52f1f20b2993f827ea10dbcb7ac11a3bf1d",
-    "bytes": 20297151,
-    "lines": 7276,
-    "gzip_bytes": 3225380,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/934a197df6b5a8b78d60d3de6d91f52f1f20b2993f827ea10dbcb7ac11a3bf1d.jsonl.gz"
+    "sha256": "94cd11b17191770b39a9048882302bd0bea56c4f7be0dfef87c1a99e4b8d6038",
+    "bytes": 20436695,
+    "lines": 7350,
+    "gzip_bytes": 3240885,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/94cd11b17191770b39a9048882302bd0bea56c4f7be0dfef87c1a99e4b8d6038.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -354,6 +354,14 @@
       "summary": "Make array induction a library method: lib/python/jvm_array_induction.py, called on a bound method and a rule (verification pending)",
       "body": "The third part of the brief llm-dlc/loops/lib-architecture-fast-follow.md. The proof by induction over a compiled array loop was 696 lines inside one example tool. The method now lives in lib/python/jvm_array_induction.py: prove(javap, class_file, name, descriptor, rule, work, seconds) walks the method's disassembly, writes the obligations of the declared rule as one SMT query and reads Z3's answers, and knows no example, sidecar, revision or record. Reading a class file's methods from javap is lib/python/jvm_disassembly.py, which the schedule and monitor experiments now import instead of the proof method's module. examples/tools/targets/array_induction.py is left as the adapter: it finds the declared contract, takes the revision, prepares the artifacts, refuses a class whose initializer the rule does not qualify, and publishes the record. Cell width comes from the descriptor and the rule from the contract, with no switch on an example.\n\nA record made from now on (java-array-induction-result/v2) names the rule implementation under rules: each file of the rule and the adapter by digest, and one digest over them. The fifteen stored records keep rulesSha256, the digest of the adapter file when it held the method too, and are read as before; rules_of reads either format. No stored record was rewritten and none was added.\n\nThe organic benchmark's baseline fingerprint and frozen export (lib/benchmark/organic-java/run.py) listed paths under lib/src, lib/models and examples/tools only, so code under lib/python was outside both. They are now versioned inventories that a pin names (inputs): a pin without the key is inventory 1 and is fingerprinted and exported exactly as before; inventory 2, for a new baseline, adds lib/python and verification/layout.py, which the example tools load at import (an export without it did not start since the process-plumbing run). The existing pin is unchanged.\n\nVerified: each of the five declared contracts (336 first-any-length; 337 fill-any-length, caller-any-length and the negative control caller-extra-any-length; 346 first-any-length with 64-bit cells) proved again through the extracted method and compared with its stored record differs in no field: obligations with expected and obtained answers, widths, class digests, bytecode, certificate digest, status. The control stays unresolved on 'caller read follows from the proved frame' (expected unsat, obtained sat). That comparison is a new mode, build.py NNN --array-induction CONTRACT --compare, which writes nothing to the example; job 20261121-220624-array-induction-through-the-library-meth runs the five at this commit. New tests: lib/python/test_jvm_array_induction.py (6: a search compiled in the test, established for int and long cells, not established when it reads past the end, refused for a rule it does not fit), examples/tools/targets/test_array_induction.py (3) and lib/benchmark/organic-java/test_run.py (4: the pinned revision exported by its inventory has the pin's 224 files and fingerprint; a change to the extracted module alone changes inventory 2's fingerprint and not inventory 1's; a frozen export run with python3 -I loads its own reader and rules). test_costs.py run --changed passed 43 of 43, and examples 336, 337, 346, 342 and 343 pass validate_example.py.\n\nlib/README.md gains an Array induction section and the ownership map's row for proof methods now names the library module and its test. llm-dlc/loops/lib-architecture-fast-follow-results.md records part 3 and the brief's exit: both reproducers with their corrected outcomes, the consumers of the extracted method, the historical readings, one more process for a native launch and for a selector task (18 to 29 ms) and none elsewhere, and 0.59 s before against 0.55 s after to read example 359's archived selectors.",
       "log_sha256": "934a197df6b5a8b78d60d3de6d91f52f1f20b2993f827ea10dbcb7ac11a3bf1d"
+    },
+    {
+      "change_id": "rpwqotxstrstnuuovosqwvwmnuponwmq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the proof tier after the proof-output module and the selected class binding (verification pending)",
+      "body": "Job 20261121-221235-the-proof-tier-after-the-proof-output-mo runs the proof tier of the Rust tests, with cargo's --no-fail-fast and without the three heap tests VF-018 tracks, as the jobs after examples 287 and 288 did. Parts 1 and 2 of the run of llm-dlc/loops/lib-architecture-fast-follow.md changed what every proof-tier test goes through: what prove --json and equivalence --json print and how a run exits (lib/src/proof_wire.rs, with a cached regression check's helper decisions as data), and every reading of a class's bytes in the checker (ClassPath::bind and read_class in lib/src/classpath.rs). The unit and tool tiers passed at each of those commits; the proof tier runs only as a job.\n\nThe results page llm-dlc/loops/lib-architecture-fast-follow-results.md lists this job and the array-induction one under what is queued. Nothing else changed, so no test was run for this commit.",
+      "log_sha256": "94cd11b17191770b39a9048882302bd0bea56c4f7be0dfef87c1a99e4b8d6038"
     }
   ],
   "logs": {
@@ -433,6 +441,12 @@
       "bytes": 20297151,
       "lines": 7276,
       "gzip_bytes": 3225380,
+      "url": null
+    },
+    "94cd11b17191770b39a9048882302bd0bea56c4f7be0dfef87c1a99e4b8d6038": {
+      "bytes": 20436695,
+      "lines": 7350,
+      "gzip_bytes": 3240885,
       "url": null
     },
     "94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09": {

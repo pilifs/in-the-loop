@@ -296,6 +296,14 @@ monitor experiments were moved onto the disassembly reader and otherwise left al
 | New subprocesses for a proof | one for a native verifier launch and one for a native-selector task (`class-bindings`, 18 to 29 ms), whatever the number of sides, classes and selectors; none for reading output, none for array induction, none at an ordinary JAR's preparation; `javac` once and one JVM for each JDK only when a class has several class files |
 | Time to read 359's archived selectors, same machine | 0.59 s before, 0.55 s after (7 records, 2,871 cases, second and third of three passes, two alternating rounds: 0.58 to 0.60 against 0.55 to 0.56). No process is started |
 
+**Queued for the verification pipeline.**
+
+- `20261121-220624-array-induction-through-the-library-meth`: the five array contracts proved again at the commit
+  of part 3 and compared with their stored records.
+- `20261121-221235-the-proof-tier-after-the-proof-output-mo`: the proof tier of the Rust tests (VF-018's three
+  apart) after parts 1 and 2, which changed what every one of them reads classes and prints results through. The
+  default tier passed at each commit; the proof tier is run by neither.
+
 **Left open, for a person.**
 
 - The organic benchmark's pin still names the revision of 2026-11 and inventory 1. A new baseline, pinned with
