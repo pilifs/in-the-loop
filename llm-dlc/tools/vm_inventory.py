@@ -356,9 +356,8 @@ class Protector:
     def transcripts(self) -> None:
         """Source transcripts, unredacted, into restricted custody, each as a stream: what a session gained since
         it was last sealed. A subagent's transcript is a stream of its own."""
-        files = [(f"claude/{p.parent.relative_to(Path.home() / '.claude/projects')}/{p.name}", p)
-                 for folder in claude_projects() for p in sorted(folder.rglob("*.jsonl"))]
-        files += [(f"codex/{p.name}", p) for p in codex_rollouts()]
+        files = [(artifacts.transcript_key(p), p) for folder in claude_projects() for p in sorted(folder.rglob("*.jsonl"))]
+        files += [(artifacts.transcript_key(p), p) for p in codex_rollouts()]
         for key, path in files:
             session = codex_rollout.session_id(path) if key.startswith("codex/") else path.parts[len(Path.home().parts) + 3].removesuffix(".jsonl")
             if self.dry:

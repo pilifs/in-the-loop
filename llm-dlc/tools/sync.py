@@ -2519,7 +2519,7 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
     paths = [transcript_of(a) for a in named] if named else session_transcripts()
     redact = redact or Redactor()
     cache, states = transcript_cache(redact, full), sync_cache(redact, trusted=not every)
-    me, index, unchanged = running_session(), commit_index(), 0
+    me, index, unchanged, synced = running_session(), commit_index(), 0, []
     with journaled("sync"):
         publish_runs(redact)  # before the sessions: their summaries list the copies
         for p in paths:
@@ -2531,6 +2531,7 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
                 perf.count("sessions unchanged, not synced")
                 continue
             state = session_state(p, status, current, None)  # its sources, before they are read
+            synced.append(p)
             with perf.phase("process"):
                 m = process(p, redact, status, live, current=current, publishing=publishing, cache=cache)
             index = commit_index()  # process may have described changes
@@ -2543,6 +2544,8 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
                   f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
         if unchanged:
             print(f"{unchanged} sessions unchanged since their last sync (--all syncs them anyway)")
+        with perf.phase("seal transcripts"):
+            seal_transcripts(synced)
         with perf.phase("metrics elsewhere"):
             refresh_metrics({sid_of(p) for p in session_transcripts()}, redact, states)
         publish_runs(redact)  # again, for a session whose trace the loop above started
@@ -2553,6 +2556,32 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
         with perf.phase("index"):
             write_index()  # once, after every session: it reads all their manifests
     return redact
+
+
+def seal_transcripts(transcripts: list[Path]) -> None:
+    """Hand each synced session's source transcript, and its subagents', to the private archive (artifacts.py), in
+    restricted custody, as an append-only stream: what the file gained since it was last sealed, so a commit seals
+    the turns that led to it and the transfer off this machine starts then. The redacted log is what is published;
+    this is the original it was made from. Only a file in a client's own session store is sealed (a test's is not),
+    and nothing here fails a sync: an error goes to the hook log."""
+    try:
+        import artifacts
+        if artifacts.off():
+            return
+        todo = [(key, path, sid_of(t)) for t in transcripts for _, path in transcripts_of(t)
+                if (key := artifacts.transcript_key(path))]
+        if not todo:
+            return
+        archive = artifacts.Archive()
+        try:
+            for key, path, session in todo:
+                if archive.capture_stream(path, key, "session-transcript", f"transcripts/{key}", session=session):
+                    perf.count("transcript segments sealed")
+        finally:
+            archive.close()
+        artifacts.kick()
+    except Exception:
+        log(traceback.format_exc())
 
 
 def refresh_metrics(here: set[str], redact: Redactor, states: LocalCache) -> int:

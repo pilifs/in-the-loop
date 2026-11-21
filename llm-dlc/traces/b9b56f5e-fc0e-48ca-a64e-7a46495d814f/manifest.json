@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T17:44:01.688Z",
-  "duration_seconds": 2799,
+  "ended": "2026-11-21T17:54:36.520Z",
+  "duration_seconds": 3434,
   "stats": {
     "turns": 1,
-    "api_calls": 97,
-    "tool_calls": 113,
-    "tool_errors": 4,
+    "api_calls": 119,
+    "tool_calls": 135,
+    "tool_errors": 5,
     "compactions": 0,
-    "peak_context_tokens": 444005,
+    "peak_context_tokens": 478222,
     "usage": {
-      "input_tokens": 194,
-      "output_tokens": 218992,
-      "cache_read_input_tokens": 27470799,
-      "cache_creation_input_tokens": 432388
+      "input_tokens": 238,
+      "output_tokens": 241260,
+      "cache_read_input_tokens": 37609112,
+      "cache_creation_input_tokens": 466605
     }
   },
   "tools": {
-    "Bash": 84,
+    "Bash": 106,
     "Read": 19,
     "Write": 7,
     "Edit": 3
@@ -48,24 +48,24 @@
     {
       "index": 0,
       "started": "2026-11-21T16:57:22.471Z",
-      "ended": "2026-11-21T17:44:01.688Z",
+      "ended": "2026-11-21T17:54:36.520Z",
       "turns": 1,
-      "api_calls": 97,
+      "api_calls": 119,
       "usage": {
-        "input_tokens": 194,
-        "output_tokens": 218992,
-        "cache_read_input_tokens": 27470799,
-        "cache_creation_input_tokens": 432388
+        "input_tokens": 238,
+        "output_tokens": 241260,
+        "cache_read_input_tokens": 37609112,
+        "cache_creation_input_tokens": 466605
       },
-      "peak_context_tokens": 444005
+      "peak_context_tokens": 478222
     }
   ],
   "log": {
-    "sha256": "5ce35f7c96910fff53d2472c707a6e927ca2e3e9b21085fc2eb4480a067903e9",
-    "bytes": 3406144,
-    "lines": 833,
-    "gzip_bytes": 623592,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/5ce35f7c96910fff53d2472c707a6e927ca2e3e9b21085fc2eb4480a067903e9.jsonl.gz"
+    "sha256": "ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad",
+    "bytes": 3739945,
+    "lines": 1016,
+    "gzip_bytes": 659165,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -100,6 +100,14 @@
       "summary": "Add sync.py checkpoint: one committed revision to origin's develop, forward only, with outgoing-object checks",
       "body": "llm-dlc/tools/checkpoint.py gives code checkpoints a job of their own, apart from promotion (the brief, section 1). sync.py checkpoint --rev REV resolves REV once to one committed revision, reads the remote's develop and main, and pushes exactly SHA:refs/heads/develop to origin when develop can move forward to it, carrying the commit develop was read at so the push cannot land on a branch that moved. It runs no test, renders no trace file, uploads no log and waits for no job or uploader, and every jj call it makes ignores the working copy, so another session's uncommitted files are neither snapshotted nor moved. --bootstrap creates develop where main is. Any other ref, remote, pattern or force is refused as an argument.\n\nBefore anything leaves the machine it reads every git object and commit message the push would expose for the first time, through every outgoing commit and merge parent, and refuses an unresolved conflict, a raw payload path, an unsafe file name, a blob over 16 MiB, a message-less or set-aside commit, a recognisable credential or one of this machine's own secrets or account identifiers anywhere, anything the redactor would still change in a trace file, and a redaction decision no person is recorded as having taken. A scan of the 18 commits then unpushed showed why the context-shaped kinds are refused in trace files only: the home path and the user name occur in 5,153 result and receipt files of the kind main already publishes, and KEY=value in 109 ordinary fixtures. A blob's verdict is kept by its git id under the policy, rules and decisions in force. A push whose answer is lost is settled by reading the remote. The receipt, outside the tree and sealed into the private archive, says which trace logs are public and which pending and what the archive holds on this machine only. After a push, develop@origin counts among jj's immutable heads.\n\nThe redactor now also treats the private archive's three R2 tokens as this machine's secrets. Verified by llm-dlc/tools/test_checkpoint.py, 12 tests on real jj repositories with a bare remote: a dirty workspace is checkpointed at its last commit with the foreign files' hashes and the working-copy commit unchanged, a fresh clone reads the code at develop, and the test gate, the session sync and the log upload are each patched to fail if called; a credential in a parent commit is refused though the tip deleted it; an unsafe message, a run record, an environment file, an oversized blob, a bad name, a conflict and a forged allow-list approval are refused with the remote unchanged; --all, --bookmark, --force, --remote, a refspec and a pattern exit 2; a develop that moved elsewhere is never forced; a lost answer is one push. The tests the change selects passed (22 files). llm-dlc/specification.md, Checkpoints, is the contract. The first push to the real develop is the watcher's, at this cycle's end (the user's decision); a rehearsal on the real history against a bare remote follows. The allow list gains one proposal (a82875ef, a made-up home directory in test_vm_inventory.py), for the user to approve.",
       "log_sha256": "5ce35f7c96910fff53d2472c707a6e927ca2e3e9b21085fc2eb4480a067903e9"
+    },
+    {
+      "change_id": "tuskxpzmmyzwwomvlxsxuwruzvytqvvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal source transcripts at each sync; reproduce example 359's native-selector route from hydrated evidence",
+      "body": "sync.py now hands each synced session's source transcript, and its subagents', to the private archive as an append-only stream in restricted custody (seal_transcripts): what the file gained since it was last sealed, so a commit seals the turns that led to it and the upload starts then. Only a file in a client's own session store is sealed, and an error there goes to the hook log and fails no sync. artifacts.transcript_key names the streams, as vm_inventory.py protect did.\n\nThe archive's list was slow on first use, one request a receipt for 1,182 receipts: it now reads what it lacks on 16 threads, and on the capturing machine takes from the journal the receipts that machine wrote (1.5 s). Occurrence ids now carry the microsecond before their random bits, so they sort in the order they were made; a test had shown two made in one second in either order.\n\nThe brief's exercise on evidence semantics, run on the line's commit 7d865e55 with an empty cache and the reader's token: example 359's records (6,374 files, 97.5 MB) restored from the store into a plain export in 2.5 s, and the run directory of job 20261121-155348-repeat-organic-java-example-359-on-the-f (5,905 files, 64.6 MB) in 1.8 s, both identical to the checkout by diff -r; workflow_handoff.py handoff 359 --revision fix there reported contents-fix native selectors established, 2,865 admitted, 2,865 checked, no first blocker, and the same routes and coverage as in the checkout; with one native.json removed, then with one byte changed, that record became ineligible while the other record and the four finite-JVM routes stayed established. llm-dlc/loops/llm-dlc-process-plumbing-results.md records it, with the rehearsal of sync.py checkpoint on the real history against a bare remote on disk (0.9 to 2.3 s for one commit, 15.0 s for 17 commits and 5,877 new blobs, the working copy unread).\n\nVerified by two new tests in test_artifacts.py (a synced session sealed as streams with its subagent, a file outside a client's store left alone, a second sync sealing only what was gained; sealing never fails a sync), by test_artifacts.py, test_vm_inventory.py, test_checkpoint.py and test_capture.py run again after the last edits, and by the tests the change to sync.py selects (22 files).",
+      "log_sha256": "ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad"
     }
   ],
   "logs": {
@@ -125,6 +133,12 @@
       "bytes": 2519976,
       "lines": 520,
       "gzip_bytes": 522803,
+      "url": null
+    },
+    "ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad": {
+      "bytes": 3739945,
+      "lines": 1016,
+      "gzip_bytes": 659165,
       "url": null
     }
   },

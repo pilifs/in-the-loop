@@ -131,8 +131,10 @@ def iso(t: datetime | None = None) -> str:
 
 
 def new_id(t: datetime | None = None) -> str:
-    """An occurrence id: when it was made, and 64 random bits. Neither a time nor a path names an occurrence."""
-    return f"{(t or now()).strftime('%Y%m%dT%H%M%SZ')}-{secrets.token_hex(8)}"
+    """An occurrence id: when it was made, to the second and then to the microsecond, and 40 random bits, so ids
+    sort in the order they were made. Neither a time nor a path names an occurrence."""
+    t = t or now()
+    return f"{t.strftime('%Y%m%dT%H%M%SZ')}-{t.microsecond:06d}{secrets.token_hex(5)}"
 
 
 def id_date(occurrence: str) -> str:
@@ -141,6 +143,18 @@ def id_date(occurrence: str) -> str:
 
 def access_of(kind: str) -> str:
     return "ordinary" if kind in ORDINARY_KINDS else "restricted"
+
+
+def transcript_key(path: Path) -> str | None:
+    """The stream a client's transcript file is sealed under, or None for a file that is not in a client's own
+    session store (a test's, a copy): Claude Code's by its place under ~/.claude/projects, a Codex rollout by name."""
+    path = Path(path).resolve()
+    claude, codex = (Path.home() / ".claude" / "projects").resolve(), (Path.home() / ".codex").resolve()
+    if claude in path.parents:
+        return f"claude/{path.relative_to(claude).as_posix()}"
+    if codex in path.parents:
+        return f"codex/{path.name}"
+    return None
 
 
 def canonical(doc) -> bytes:
@@ -1149,7 +1163,7 @@ class Archive:
             if value is not None:
                 clauses.append(f"{column}=?")
                 values.append(value)
-        sql = "SELECT * FROM occurrences" + (" WHERE " + " AND ".join(clauses) if clauses else "") + " ORDER BY id"
+        sql = "SELECT * FROM occurrences" + (" WHERE " + " AND ".join(clauses) if clauses else "") + " ORDER BY rowid"
         out = []
         for r in self.db.execute(sql, values):
             record = json.loads(r["record"])
@@ -1224,6 +1238,7 @@ class Reader:
         """Every occurrence that can be known of from here, by id: the store's receipts (verified), its intents
         (pending), the ordinary archive's stubs of restricted ones, and, on the capturing machine, the journal."""
         found: dict[str, dict] = {}
+        local = {} if self.journal is None or remote_only else {r["id"]: r for r in self.journal.rows()}
         try:
             if self.offline:
                 raise Unavailable("offline")
@@ -1231,9 +1246,24 @@ class Reader:
             for prefix in ("intents/", "restricted/intents/", "occurrences/", "restricted/occurrences/"):
                 for key, _ in store.list(prefix):
                     keys.setdefault(key.rsplit("/", 1)[1].removesuffix(".json"), {})[prefix] = key
+            wanted = []
             for occurrence, by in keys.items():
                 final = by.get("occurrences/") or by.get("restricted/occurrences/")
-                doc = self._get_json("ordinary", final or by.get("intents/") or by["restricted/intents/"], immutable=bool(final))
+                mine = local.get(occurrence)
+                if mine is not None and (mine.get("custody") or {}).get("state") in ("remote_verified", "missing_input"):
+                    continue  # this machine wrote that receipt: its journal holds the same record
+                wanted.append((occurrence, final or by.get("intents/") or by["restricted/intents/"], bool(final)))
+
+            def get(item):
+                occurrence, key, final = item
+                return occurrence, final, self._get_json("ordinary", key, immutable=final)
+            if len(wanted) > 4:  # a first read on a fresh machine: many small documents, fetched side by side
+                from concurrent.futures import ThreadPoolExecutor
+                with ThreadPoolExecutor(max_workers=16) as pool:
+                    docs = list(pool.map(get, wanted))
+            else:
+                docs = [get(item) for item in wanted]
+            for occurrence, final, doc in docs:
                 if doc:
                     if not final:
                         doc.setdefault("custody", {})["state"] = "pending" if doc.get("status") != "missing" else "missing_input"
@@ -1243,10 +1273,9 @@ class Reader:
             for path in sorted((self.cache / "catalog" / "ordinary").glob("**/occurrences/*/*/*/*.json")):
                 doc = json.loads(path.read_text())
                 found.setdefault(doc["id"], doc)
-        if self.journal is not None and not remote_only:
-            for record in self.journal.rows():
-                if record["id"] not in found or found[record["id"]].get("custody", {}).get("state") == "pending":
-                    found[record["id"]] = record if record["access"] == "ordinary" else {**Archive.stub_of(record), "custody": record["custody"]}
+        for record in local.values():
+            if record["id"] not in found or found[record["id"]].get("custody", {}).get("state") == "pending":
+                found[record["id"]] = record if record["access"] == "ordinary" else {**Archive.stub_of(record), "custody": record["custody"]}
         return found
 
     def find(self, remote_only: bool = False, **where) -> list[dict]:

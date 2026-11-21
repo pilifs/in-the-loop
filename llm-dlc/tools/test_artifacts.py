@@ -208,6 +208,37 @@ class Streams(Case):
         self.assertEqual((out / "runs/run.log").read_bytes(), b"first version\n")
 
 
+class Transcripts(Case):
+    def test_a_synced_session_is_sealed_as_streams_and_a_file_outside_a_clients_store_is_not(self):
+        import sync
+        home = self.dir / "user"
+        folder = home / ".claude/projects/-made-up-project"
+        (folder / "s1/subagents").mkdir(parents=True)
+        (folder / "s1.jsonl").write_bytes(b'{"turn": 1}\n')
+        (folder / "s1/subagents/agent-a.jsonl").write_bytes(b'{"sub": 1}\n')
+        stray = self.dir / "copy.jsonl"
+        stray.write_bytes(b'{"turn": 1}\n')
+        with mock.patch.object(Path, "home", lambda: home), mock.patch.dict(os.environ, {"ITL_ORIGINALS_UPLOAD": "manual"}):
+            self.assertEqual(artifacts.transcript_key(folder / "s1.jsonl"), "claude/-made-up-project/s1.jsonl")
+            self.assertIsNone(artifacts.transcript_key(stray))
+            sync.seal_transcripts([folder / "s1.jsonl", stray])
+            sync.seal_transcripts([folder / "s1.jsonl"])  # nothing gained: nothing sealed
+            with open(folder / "s1.jsonl", "ab") as f:
+                f.write(b'{"turn": 2}\n')
+            sync.seal_transcripts([folder / "s1.jsonl"])
+        rows = self.archive.rows()
+        self.assertEqual([(r["kind"], r["access"], r["session"], r["stream"]["key"], r["stream"]["offset"]) for r in rows], [
+            ("session-transcript", "restricted", "s1", "claude/-made-up-project/s1.jsonl", 0),
+            ("session-transcript", "restricted", "s1", "claude/-made-up-project/s1/subagents/agent-a.jsonl", 0),
+            ("session-transcript", "restricted", "s1", "claude/-made-up-project/s1.jsonl", 12)])
+
+    def test_sealing_never_fails_a_sync(self):
+        import sync
+        with mock.patch.object(artifacts, "transcript_key", side_effect=RuntimeError("made up")), mock.patch.object(sync, "log") as said:
+            sync.seal_transcripts([self.dir / "anything.jsonl"])
+        self.assertIn("made up", said.call_args[0][0])
+
+
 class Crashes(Case):
     def test_killed_after_the_intake_record_and_before_the_journal_the_occurrence_is_recovered(self):
         root = self.tree()
