@@ -3410,6 +3410,12 @@ change `mzpztwwvkuqq` · [log `7b47c375e52a`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 1 of the 1 job(s). 20261121-020417-repeat-one-sequestered-bump-testcase-in: passed: 1 passed step(s) in 1m32s, peak 1.2 GiB (estimated 4m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
+### Record verification results for 1 job(s)
+
+change `vskoqlnrxppp` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-021356-349-calibrate-verified-native-tool-resul: passed: 1 passed step(s) in 2m07s, peak 432.5 MiB (estimated 12m00s, 3.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz) has every step in between: reasoning, tool calls and their results.
