@@ -1,0 +1,73 @@
+{
+  "revision": "9c5a614e5875c5cf03434510c25b9f2b3505342a",
+  "historicalCiFiles": {
+    ".travis.yml": {
+      "sha256": "704852e07808a4294397cc10fbb5e0638fb0a4e7d14e60c0ccb6f334391f688e",
+      "mavenCommandLines": [
+        "- mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V",
+        "- travis_retry mvn clean test"
+      ]
+    }
+  },
+  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
+  "module": "jupiter-common",
+  "goals": [
+    "-pl",
+    "jupiter-common",
+    "-am",
+    "verify"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client and serialized Maven Central mirror",
+  "resolver": {
+    "cachedRequests": 730,
+    "downloadedBytes": 80,
+    "downloadedFiles": 2
+  },
+  "exit": 1,
+  "seconds": 20.01,
+  "logSha256": "74360232aaad46629d5ed5829f64c19b429740ec6d91e6ae971e6ff34149663a",
+  "freshReports": {
+    "tests": 3,
+    "failures": 0,
+    "errors": 2,
+    "skipped": 0,
+    "named": [
+      {
+        "class": "org.jupiter.common.util.ReflectsTest",
+        "method": "testFindMatchingMethod",
+        "outcome": "error",
+        "type": "java.lang.IllegalArgumentException",
+        "message": "Class versions V1_5 or less must use F_NEW frames."
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "org.jupiter.common.util.ReflectsTest",
+        "method": "testFindMatchingMethod",
+        "outcome": "error",
+        "type": "java.lang.IllegalArgumentException",
+        "message": "Class versions V1_5 or less must use F_NEW frames."
+      },
+      {
+        "class": "org.jupiter.common.util.ReflectsTest",
+        "method": "testFastInvoke",
+        "outcome": "error",
+        "type": "java.lang.IllegalArgumentException",
+        "message": "Class versions V1_5 or less must use F_NEW frames."
+      }
+    ],
+    "reportCount": 2,
+    "reportsSha256": "2b9564ce9729ad255fce6e5da74de84ef4d093953a6e3eab1d154cdbb138109b"
+  },
+  "diagnostic": [
+    "java.lang.IllegalArgumentException: Class versions V1_5 or less must use F_NEW frames.",
+    "java.lang.IllegalArgumentException: Class versions V1_5 or less must use F_NEW frames.",
+    "Tests in error:",
+    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project jupiter-common: There are test failures."
+  ],
+  "namedTest": "ReflectsTest#testFindMatchingMethod",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}

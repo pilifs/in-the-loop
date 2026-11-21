@@ -1,0 +1,61 @@
+{
+  "revision": "279ece31518ff797eb149c57df01093cdd376daf",
+  "historicalCiFiles": {
+    ".travis.yml": {
+      "sha256": "99c1f91ee84415555a7a654b767e920746d91a1d1ea71e1104b4d37f6631cb61",
+      "mavenCommandLines": []
+    }
+  },
+  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
+  "module": ".",
+  "goals": [
+    "verify"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client and serialized Maven Central mirror",
+  "resolver": {
+    "cachedRequests": 633,
+    "downloadedBytes": 120,
+    "downloadedFiles": 3
+  },
+  "exit": 1,
+  "seconds": 9.6,
+  "logSha256": "e8904c7a436e961bde576b85c0124443baef7894de814a9cc2529a3c93ef02be",
+  "freshReports": {
+    "tests": 64,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "named": [
+      {
+        "class": "com.uber.profiling.ArgumentsTest",
+        "method": "processConfigProvider_OverrideConfigProvider",
+        "outcome": "failure",
+        "type": "java.lang.AssertionError",
+        "message": "expected:<9001> but was:<9000>"
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "com.uber.profiling.ArgumentsTest",
+        "method": "processConfigProvider_OverrideConfigProvider",
+        "outcome": "failure",
+        "type": "java.lang.AssertionError",
+        "message": "expected:<9001> but was:<9000>"
+      }
+    ],
+    "reportCount": 23,
+    "reportsSha256": "438986099cea60fe3569e07213c0648d78fff88a5ac0dfc7264b2d41a87cceb6"
+  },
+  "diagnostic": [
+    "1795236658211 com.uber.profiling.util.ExponentialBackoffRetryPolicy: Retrying (after sleeping 119 milliseconds) on exception: java.nio.file.NoSuchFileException: not_exiting_file",
+    "1795236658330 com.uber.profiling.util.ExponentialBackoffRetryPolicy: Retrying (after sleeping 391 milliseconds) on exception: java.nio.file.NoSuchFileException: not_exiting_file",
+    "[WARNING] 1795236658722 com.uber.profiling.YamlConfigProvider: Failed to read file: not_exiting_file java.lang.RuntimeException: Failed after trying 3 times",
+    "Caused by: java.nio.file.NoSuchFileException: not_exiting_file",
+    "at sun.nio.fs.UnixException.translateToIOException(UnixException.java:86)"
+  ],
+  "namedTest": "ArgumentsTest#processConfigProvider_OverrideConfigProvider",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}
