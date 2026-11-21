@@ -1,0 +1,262 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-093137-353-baseline-finite-checks-on-the-origin",
+  "title": "353 baseline finite checks on the original guava public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 13.4s, peak 152.4 MiB (estimated 5m00s, 3.0 GiB); 13 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-093137-353-baseline-finite-checks-on-the-origin.json",
+    "sha256": "e9dcbaa492b052579f8297342f51dbedef8e4cf8798923f418aaf7423cb2fe2f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-093137-353-baseline-finite-checks-on-the-origin",
+      "title": "353 baseline finite checks on the original guava public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/google/guava#8509 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:finite"
+      ],
+      "links": {
+        "examples": [
+          "353"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T09:31:37+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 353 --route finite --stage baseline --seconds 180",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/353-guava-saturated-sum/records/baseline-finite"
+      ]
+    }
+  },
+  "sourceCommit": "c2e96866bc8837a711eef630520b368c32c823cb",
+  "startedAt": "2026-11-21T09:40:46+00:00",
+  "finishedAt": "2026-11-21T09:41:05+00:00",
+  "wallSeconds": 19.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3972090,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 159793152,
+    "wallSeconds": 13.4,
+    "cpuSeconds": 23.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 353 --route finite --stage baseline --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 13.431,
+      "cpuSeconds": 23.293,
+      "cpuThrottledSeconds": 1.784,
+      "peakMemoryBytes": 159793152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 601,
+        "sha256": "79f41152ef9e6cdfd53254ff1d468de8b17d59bc4c4c8fabc147cc84931928de",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"353\", \"route\": \"finite\", \"stage\": \"baseline\", \"workflowExit\": 0, \"seconds\": 13.173, \"checkerSeconds\": 180, \"tasks\": [\"lookup-parent\", \"lookup-fix\", \"entries-parent\", \"entries-fix\", \"size-parent\", \"size-fix\", \"absent-parent\", \"absent-fix\", \"live-parent\", \"live-fix\"], \"verifierCommit\": \"5"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/absent-fix.json",
+      "change": "added",
+      "bytes": 14779,
+      "sha256": "54c3da81b856fbf9c36770517f6cdc8c3386817d888cc4752e2bf71e082e60b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/absent-parent.json",
+      "change": "added",
+      "bytes": 14800,
+      "sha256": "5602d7d90428b402a69b0575ff44b5fb75d5fbcf854e0dd800f9a619e09cdca9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/batch.json",
+      "change": "added",
+      "bytes": 5751,
+      "sha256": "9b96bd0acc15d0cb9fe2935774e83df8a6f24b113c505fb65244a5eebe389d7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/entries-fix.json",
+      "change": "added",
+      "bytes": 14831,
+      "sha256": "7077725ed6c8935be9fbc9f20f5736297e3ee83eb08f4d685e29693ab30d24e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/entries-parent.json",
+      "change": "added",
+      "bytes": 17441,
+      "sha256": "8c709cf908d0ba8361a329c8114a3fce798b36dcb494e8c0fac310baa7d9649f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/live-fix.json",
+      "change": "added",
+      "bytes": 6509,
+      "sha256": "c37c764d6ccf5b5814fb1bcfaed7a75bc99b02b1aac5282fe0ceccf3aaeec730",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/live-parent.json",
+      "change": "added",
+      "bytes": 6532,
+      "sha256": "29bc2a4ec506b9910761464b227d5ec6aaeb02afb14c68e371fd9fa9f8d60ae3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/lookup-fix.json",
+      "change": "added",
+      "bytes": 14799,
+      "sha256": "d183bacfbdd786ea923943d49737c4a298d7b8e3098913e296adcc28c7134045",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/lookup-parent.json",
+      "change": "added",
+      "bytes": 17405,
+      "sha256": "5dcad92c87ae3b7c5b0254507dceb222396c98904ac68ba00f3ebb92383ea82f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/size-fix.json",
+      "change": "added",
+      "bytes": 14778,
+      "sha256": "f64b1f61f8e227dfceec9beae1820b715c7769df19f70d19ebb4680d5f65ce36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/size-parent.json",
+      "change": "added",
+      "bytes": 14799,
+      "sha256": "3c10939ccfb2ccb6a2c030afd644360894098e98e7daac2bcb37df6038487942",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/run.json",
+      "change": "added",
+      "bytes": 679,
+      "sha256": "f2d5ee8168876af2c5fd8e3d5d5d1a18c491ed9480ba7276c573b2042038a52a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/baseline-finite/workflow.log",
+      "change": "added",
+      "bytes": 399,
+      "sha256": "6625549ba1c0312233fc8ec12016b56a12e0f4f87f15c50204ba4471be741d11",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T09:41:26+00:00",
+    "applied": [
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/absent-fix.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/absent-parent.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/batch.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/entries-fix.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/entries-parent.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/live-fix.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/live-parent.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/lookup-fix.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/lookup-parent.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/size-fix.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/20261121T094052Z-6d034f16/size-parent.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/run.json",
+      "examples/353-guava-saturated-sum/records/baseline-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
