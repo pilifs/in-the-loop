@@ -49,6 +49,7 @@ Every test, Rust and Python, has a cost tier, listed in `lib/tests/costs.json` (
 
 - Put what you learn about one example in that example's `notes` in its `example.json`, not in a shared README. Duplicating context there is fine: examples are often read alone.
 - Shared pages (`examples/README.md`, `examples/approaches.md`, the apps' and models' READMEs, `lib/README.md`) describe what holds for many examples, and point at examples by tag or number rather than narrating them. A new model configuration is described in its model's README.
+- An example's per-case output (the `cases/` folders a native-selector run writes) is committed as one `cases.tar.gz` a folder: the run packs its own, and `python3 examples/tools/targets/case_pack.py pack NNN` packs what was left loose. The validators read a case from either, so nothing changes for a reader. `check` reports more than 50 loose per-case files as an `ERROR` that names this command, and warns when an example's `records/` pass 2,000 files ([`examples/approaches.md`](examples/approaches.md)).
 - Tag a new example with at least one domain and one defect tag; add to the vocabulary only when nothing fits. `python3 examples/tools/build.py --render-only NNN` rewrites a page and the router without running anything.
 
 ## Operating notes

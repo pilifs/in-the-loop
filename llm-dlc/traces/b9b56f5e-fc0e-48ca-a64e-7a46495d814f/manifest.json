@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T19:50:31.830Z",
-  "duration_seconds": 10389,
+  "ended": "2026-11-21T19:53:48.310Z",
+  "duration_seconds": 10586,
   "stats": {
     "turns": 6,
-    "api_calls": 499,
-    "tool_calls": 571,
+    "api_calls": 506,
+    "tool_calls": 578,
     "tool_errors": 12,
     "compactions": 2,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 998,
-      "output_tokens": 705766,
-      "cache_read_input_tokens": 150775193,
-      "cache_creation_input_tokens": 1414935
+      "input_tokens": 1012,
+      "output_tokens": 709874,
+      "cache_read_input_tokens": 153356540,
+      "cache_creation_input_tokens": 1421841
     }
   },
   "tools": {
-    "Bash": 478,
+    "Bash": 485,
     "Read": 44,
     "Edit": 32,
     "Write": 17
@@ -88,24 +88,24 @@
     {
       "index": 2,
       "started": "2026-11-21T19:12:09.670Z",
-      "ended": "2026-11-21T19:50:31.830Z",
+      "ended": "2026-11-21T19:53:48.310Z",
       "turns": 1,
-      "api_calls": 198,
+      "api_calls": 205,
       "usage": {
-        "input_tokens": 396,
-        "output_tokens": 152878,
-        "cache_read_input_tokens": 43446884,
-        "cache_creation_input_tokens": 350279
+        "input_tokens": 410,
+        "output_tokens": 156986,
+        "cache_read_input_tokens": 46028231,
+        "cache_creation_input_tokens": 357185
       },
-      "peak_context_tokens": 365184
+      "peak_context_tokens": 372090
     }
   ],
   "log": {
-    "sha256": "dfb2ee0284896d923cf8aa009b8df678ed243669d8b0bfd92d962aeb087caa5e",
-    "bytes": 12112065,
-    "lines": 4331,
-    "gzip_bytes": 1920308,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/dfb2ee0284896d923cf8aa009b8df678ed243669d8b0bfd92d962aeb087caa5e.jsonl.gz"
+    "sha256": "61eb9ee5c1c26d6c2a7786e6a4eb9485ce5be6b0913a24f4288eafefb08312e6",
+    "bytes": 12190040,
+    "lines": 4383,
+    "gzip_bytes": 1928786,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/61eb9ee5c1c26d6c2a7786e6a4eb9485ce5be6b0913a24f4288eafefb08312e6.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -244,6 +244,14 @@
       "summary": "Queue example 345's selector route again, requiring the built checker (verification pending)",
       "body": "Job 20261121-195020-345-native-selectors-with-the-built-chec replaces 20261121-194629-345-native-selectors-again-the-run-packs, whose pass shows nothing: I had not declared that the job requires jvmcontract, so its run ended in 0.4 s with 'no built native checker', and its three checks accepted that (an exit of 1 is also what a real run with refuted claims ends with, and the newest record cited by the claim history was an old one). The new job requires java, javac and jvmcontract, and its first step fails unless the run left a record newer than the newest the commit holds, with the page task's result in it; the second fails unless that record holds a pack and no loose per-case folder; the third fails unless the claim history cites that record and reports no case missing, altered or unreadable.\n\nThe results page names the first job's pass for what it is. The packing at the end of a selector run stays unshown by a real run of the checker until this job is in.",
       "log_sha256": "dfb2ee0284896d923cf8aa009b8df678ed243669d8b0bfd92d962aeb087caa5e"
+    },
+    {
+      "change_id": "srxyqurwokvlwqvwxkqxwloskmmynmnz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Tell every agent two rules of this cycle: per-case records are committed packed, and a job's pass must rest on a real run",
+      "body": "CLAUDE.md, under Examples: an example's per-case output is committed as one cases.tar.gz a folder (the selector run packs its own; case_pack.py pack NNN packs what was left loose), the validators read a case from either, and check reports loose per-case files as an error that names the command. The operating notes, under Verification jobs: a job declares every tool its steps call and makes its pass depend on something only a real run produces, with the job of 2026-11-21 that passed in 1.2 s on 'no built native checker' as the reason; a result much faster than its estimate is read before it is believed.",
+      "log_sha256": "61eb9ee5c1c26d6c2a7786e6a4eb9485ce5be6b0913a24f4288eafefb08312e6"
     }
   ],
   "logs": {
@@ -269,6 +277,12 @@
       "bytes": 3406144,
       "lines": 833,
       "gzip_bytes": 623592,
+      "url": null
+    },
+    "61eb9ee5c1c26d6c2a7786e6a4eb9485ce5be6b0913a24f4288eafefb08312e6": {
+      "bytes": 12190040,
+      "lines": 4383,
+      "gzip_bytes": 1928786,
       "url": null
     },
     "6539b8c25da5cf36832489d005548735fe9fa8f7c385e8a9a85d02a0d4a55f4a": {

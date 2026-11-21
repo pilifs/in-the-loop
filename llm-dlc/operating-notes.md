@@ -246,6 +246,12 @@ repository: probe from a scratch folder.
 - A plain `pipeline.py run` collects nothing until every job of its batch has ended, so one long job delays the
   results of the short ones queued with it.
 - `default_tests.py queue` queues a run at `@-`: commit the work first, then queue, then commit the job.
+- A job declares every tool its steps call (`--requires jvmcontract`, `java`, `javac`, ...), and its pass must
+  depend on something only a real run produces: a new record, a count, a named line of output. Without the
+  requirement a step that calls the checker ends at once with "no built native checker"; a step written to accept
+  an exit of 1 (which a run with refuted claims also ends with) then passes on nothing. Job
+  `20261121-194629-345-native-selectors-again-the-run-packs` passed that way in 1.2 s (2026-11-21); a result that is
+  much faster than its estimate is read before it is believed.
 
 **Why:** a started job burns machine time and leaves a stray result that another agent has to triage.
 
