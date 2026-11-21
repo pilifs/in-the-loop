@@ -1,0 +1,1180 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-114112-javaparser-traversal-with-its-observed-l",
+  "title": "JavaParser traversal with its observed LineSeparator constants",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 15.4s, peak 200.0 MiB (estimated 3m00s, 3.0 GiB); 122 output file(s) changed",
+  "attention": [
+    "step 1 (Replay both original trees and check eight scoped tasks) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-114112-javaparser-traversal-with-its-observed-l.json",
+    "sha256": "287b3c527f9eaba6353faf4c48ec09d0734aaa0bca9adeca585792a5fd501c3a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-114112-javaparser-traversal-with-its-observed-l",
+      "title": "JavaParser traversal with its observed LineSeparator constants",
+      "description": "Run the frozen postorder, iterator-exhaustion, nonempty and preorder checks on both original Maven artifacts. The separately scoped claims require the byte-checked enum and the actual subject JVM state on JDK 21. Preserve every outcome including the next unsupported operation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T11:41:12+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "12m",
+        "notes": "The original 8-task native run took 10 s. Each new task starts an additional small observed JVM."
+      },
+      "steps": [
+        {
+          "name": "Replay both original trees and check eight scoped tasks",
+          "run": "python3 lib/benchmark/organic-java/run.py 360 --route native --stage enum-snapshot --tasks postorder-parent-observed,postorder-fix-observed,terminal-parent-observed,terminal-fix-observed,preorder-parent-observed,preorder-fix-observed,nonempty-parent-observed,nonempty-fix-observed",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/360-javaparser-postorder-root/records/enum-snapshot-native"
+      ]
+    }
+  },
+  "sourceCommit": "a44b71decb609cb1a03aa08ecf5e798ed1160d58",
+  "startedAt": "2026-11-21T11:49:22+00:00",
+  "finishedAt": "2026-11-21T11:52:34+00:00",
+  "wallSeconds": 192.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1847113,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": "The original 8-task native run took 10 s. Each new task starts an additional small observed JVM."
+  },
+  "usage": {
+    "peakMemoryBytes": 209731584,
+    "wallSeconds": 15.4,
+    "cpuSeconds": 25.8,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 168.838,
+      "cpuSeconds": 169.113,
+      "cpuThrottledSeconds": 0.002,
+      "peakMemoryBytes": 2173001728,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "b54e31125344f100a7e559135f664ad95b28dab39f105c632e728981da468f69",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-114112-javaparser-traversal-with-its-observed-l/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 48s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Replay both original trees and check eight scoped tasks",
+      "run": "python3 lib/benchmark/organic-java/run.py 360 --route native --stage enum-snapshot --tasks postorder-parent-observed,postorder-fix-observed,terminal-parent-observed,terminal-fix-observed,preorder-parent-observed,preorder-fix-observed,nonempty-parent-observed,nonempty-fix-observed",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 15.436,
+      "cpuSeconds": 25.798,
+      "cpuThrottledSeconds": 3.445,
+      "peakMemoryBytes": 209731584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-both-original-trees-and.log",
+        "lines": 1,
+        "bytes": 670,
+        "sha256": "f8a5f547ed151318d267f474c20c170895ec61a606c59650c08e6b8933ee0bf7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"360\", \"route\": \"native\", \"stage\": \"enum-snapshot\", \"workflowExit\": 1, \"seconds\": 15.164, \"checkerSeconds\": 60, \"tasks\": [\"postorder-parent-observed\", \"postorder-fix-observed\", \"terminal-parent-observed\", \"terminal-fix-observed\", \"preorder-parent-observed\", \"preorder-fix-observed\", \"none"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5656ad63600bfb5746ef673ab8a2507736cf7c6ff6e7aca568dbb42b73a575f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/plan.json",
+      "change": "added",
+      "bytes": 7904,
+      "sha256": "3e4bfea03309c6d3afad74a76f3a61a52d7a22089e9c89ee79287251da3348ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/controls.json",
+      "change": "added",
+      "bytes": 4334,
+      "sha256": "13f199cb080b52ef83d531b2bf19116baae97939d56a1b5268d5d1463b035227",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/execution.json",
+      "change": "added",
+      "bytes": 37309,
+      "sha256": "61145e75dc5cb3571a657c05a01e0cc7ea8e173b5403d07841cbdaf3b380c848",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "59c666608d3166301b355a4fc0b2d852247d33c504c5b3429cd6ee648e84fc78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "853cf8a611684184cc6bc3cf3142371cf44623b1a9663f20ba0b654a3c42fe6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/verifier.json",
+      "change": "added",
+      "bytes": 32266,
+      "sha256": "10fc5ee10712632a49a9edadad11ab3c7bff4277cb676dec0b7e490d2f13e782",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8001,
+      "sha256": "cbac6be80ebfc3c7c0d5bc842aa0f2246ce19d9423dab74b83c743a6af13a216",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/result.json",
+      "change": "added",
+      "bytes": 16832,
+      "sha256": "ff09fe196f5280dc3dd20092234af69efd7dd6412d462587e92705c9c1d531e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/executions/20261121T115232Z-4cc3a873/attempt.json",
+      "change": "added",
+      "bytes": 26651,
+      "sha256": "63b8518ffa20863ec624db4db7f19470af7a3f63c9e4bb2c7ccdcf21b303d8d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/executions/20261121T115232Z-4cc3a873/checker.json",
+      "change": "added",
+      "bytes": 9416,
+      "sha256": "3f82f1d818c4975cf0b524c60f576d6ec2ff69ad0f5325c88d37371f6e3a44a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/executions/20261121T115232Z-4cc3a873/correspondence.json",
+      "change": "added",
+      "bytes": 1696,
+      "sha256": "a20e83f33d7d78b8612790f9f9a739fb4ef922630ad36ccbda3e0345a62c7e7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0932b5ad0d2cf835581fa30bd367a7a55f0eec65172b16ffa25a88885a5cfcb8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/plan.json",
+      "change": "added",
+      "bytes": 7813,
+      "sha256": "c96ff79723fc185200f5399835164e7af065f8c462cb047fcf86f3116d8d1729",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/controls.json",
+      "change": "added",
+      "bytes": 4275,
+      "sha256": "c57c01e9bd14795d8986d13947cf90f3f582f92714e4a699f2522e20638d6a8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/execution.json",
+      "change": "added",
+      "bytes": 37220,
+      "sha256": "af660e7f982c0a5386e2dbade3a71c3bf619f29e7b76b8b58a062d4d74bac752",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "993eac814981ff40608e7cfde06071312a80b925262324e692a644195747b070",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "853cf8a611684184cc6bc3cf3142371cf44623b1a9663f20ba0b654a3c42fe6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/verifier.json",
+      "change": "added",
+      "bytes": 32256,
+      "sha256": "00b03307b79602cb35d173a6842c9f3b65406ca73dd14093a1c592f458ba9bba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7999,
+      "sha256": "75926d40acbdf56eea549eb42f4c61cf140a44c19c498e62f98196739d167864",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/result.json",
+      "change": "added",
+      "bytes": 16884,
+      "sha256": "2e64f69242df098c15cf70354aef0a286212baea6ad4f23503bbd704b652a45c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/executions/20261121T115231Z-0da4565e/attempt.json",
+      "change": "added",
+      "bytes": 26649,
+      "sha256": "744342af1bcf116489aa4d5fbd822fa7d99e79b009e21bf79243ef6ee79ff540",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/executions/20261121T115231Z-0da4565e/checker.json",
+      "change": "added",
+      "bytes": 9423,
+      "sha256": "76dd6daad18cb1d2fcaf606f164a7d73d1f32b6d5d9238a4fea3cdc2e83c8088",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/executions/20261121T115231Z-0da4565e/correspondence.json",
+      "change": "added",
+      "bytes": 1699,
+      "sha256": "2875944eeed0214dfa1f9c72d74c67442cefedc9eac0150bcbee203f34d7b3cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f739fbee6679b1bd2c8962de76ca7b2011b8c3b783f2ad66043f86783119b2d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/plan.json",
+      "change": "added",
+      "bytes": 8053,
+      "sha256": "7afe204281d84f12bd6a62543a31e43c8ad224ec210e93e9d3228c9afb89830b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/controls.json",
+      "change": "added",
+      "bytes": 4336,
+      "sha256": "0ee18941e7fb9fa778d119a645d8a4d0fe0ad9bee10c7885681f75d11d47cffc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/execution.json",
+      "change": "added",
+      "bytes": 37413,
+      "sha256": "7dfc254a05c4afa99f4d0bba89f7b98c8dfdfc998e866d15628cd29e43b231a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "c4d6a729272cfb57af1ec7957c40f86c3d8d853767cc01c3e7bfab20a4bccfa4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "853cf8a611684184cc6bc3cf3142371cf44623b1a9663f20ba0b654a3c42fe6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/verifier.json",
+      "change": "added",
+      "bytes": 32372,
+      "sha256": "b24948b60580c2a617eba2a6b5b8749841d098092218a8fc653583cf68bb1aa1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8000,
+      "sha256": "2fccbe39c25f6915702059ae8b2a04d64ff9fe459aa70c7c598d3731cb504501",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/result.json",
+      "change": "added",
+      "bytes": 16905,
+      "sha256": "d23bbaa7de6fba0ded9e3d1d85387ecd1e40940c603a39d9561977508fbd7051",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/executions/20261121T115221Z-47b187b1/attempt.json",
+      "change": "added",
+      "bytes": 26758,
+      "sha256": "88266ded6f7db5fefd30e013abb2fe751afd05464d6108de53889d4fc6f1951e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/executions/20261121T115221Z-47b187b1/checker.json",
+      "change": "added",
+      "bytes": 9414,
+      "sha256": "d382c3354254c84bd2179939cd4550677d850b23451fbed21c9e56d15c56eeb2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/executions/20261121T115221Z-47b187b1/correspondence.json",
+      "change": "added",
+      "bytes": 1731,
+      "sha256": "7b177adcc67da250db8d3606702e3e9de60f0709e20bd9f4b6ae8fa64d725cbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "41a32673c4bf2d179dd41badfaec7c33491c6beb6b0d09d350e20672ed43f3f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/plan.json",
+      "change": "added",
+      "bytes": 7958,
+      "sha256": "979edd871df821d6d074d556a165e637e44fcb9a1939cfca2dc4e100031de5d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/controls.json",
+      "change": "added",
+      "bytes": 4277,
+      "sha256": "7ffd62c0123865fae68d111487a7523bb583d87bd4a63665d8f710d708674d79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/execution.json",
+      "change": "added",
+      "bytes": 37328,
+      "sha256": "8387f04d7ee1f933aac8fc328a2db436ebc360b4fa061ff2c33139926d380f93",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "77feca09b34acb556ad4d9c911ea66e85491b71fabd89d9344749efd25ea63fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "853cf8a611684184cc6bc3cf3142371cf44623b1a9663f20ba0b654a3c42fe6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/verifier.json",
+      "change": "added",
+      "bytes": 32366,
+      "sha256": "028877e0616f6eb74b521e461bf322d7f87b51ac1e396aadfe526492e1094c59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8001,
+      "sha256": "71ceae960ded61909c2724bf48e8d672638c13134386c8ba339938f4b1b9cbd8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/result.json",
+      "change": "added",
+      "bytes": 16958,
+      "sha256": "878af9886e05d1a0544e6a7bc90f7b0dd18fec59bd3178bc20403647063efac9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/executions/20261121T115218Z-ae85ba0a/attempt.json",
+      "change": "added",
+      "bytes": 26756,
+      "sha256": "f785eb7345451703e3f3225c7ec591db8cf048d2ebc38b529cc72eaad70cfea3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/executions/20261121T115218Z-ae85ba0a/checker.json",
+      "change": "added",
+      "bytes": 9425,
+      "sha256": "9be0150fbd6731857392019b20c6c90d909d3ea6a479521668a0e4daec8bc9d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/executions/20261121T115218Z-ae85ba0a/correspondence.json",
+      "change": "added",
+      "bytes": 1734,
+      "sha256": "1c2de98fbc9cb49cca2ba4258a84d0efdf7d8c57ce3e1cd33805ae59d28cb83c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6270ff37e72f015043e05430f9156a79f3a3866a336bef834ab0e6e61e730a5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/plan.json",
+      "change": "added",
+      "bytes": 7950,
+      "sha256": "dbd79126464d69454226e589153c86cd7db38da6d6ba2d1288d656b5252f934d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/controls.json",
+      "change": "added",
+      "bytes": 4334,
+      "sha256": "54d25566958ce042afb41bd3ac80b3f4d81012a81bf6b2675da03f4a5dfeb9b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/execution.json",
+      "change": "added",
+      "bytes": 37331,
+      "sha256": "7b0f2c9ad667b3630af74ac792231f1cfb8f88c482c83874225df4b4493e0a56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "63bdc55ab241300a9dc62c6d55bf0cc41acdb60756d178b36557fbc476eece1f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 577,
+      "sha256": "3f3050745741a0631ff0882d221a617bef25613340b4ab14e8abb7f3f187d27e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/verifier.json",
+      "change": "added",
+      "bytes": 32288,
+      "sha256": "ed052d03b42b12e635db6cdf47a71baf3571f9a6149d53150eb48ba9f7758d3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7995,
+      "sha256": "1d871baef9b2c03d17584c96b7d6d3c29b37566b3b833dd0f4ee62e7843e0d6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/result.json",
+      "change": "added",
+      "bytes": 16851,
+      "sha256": "03a0914977ff1b3b9e0b7cd9160fc8d94efd0e20f8c158fee64493edeef230a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/executions/20261121T115229Z-c85a3b0a/attempt.json",
+      "change": "added",
+      "bytes": 26676,
+      "sha256": "dbc3c896916362616e8248233705a71bf014e5c668995239c8866e4f0c939c53",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/executions/20261121T115229Z-c85a3b0a/checker.json",
+      "change": "added",
+      "bytes": 9408,
+      "sha256": "ec028b09f5d12e2478b79f6d4fbfb528c2375356c214ffec7db643600801a08a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/executions/20261121T115229Z-c85a3b0a/correspondence.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "84465a17769654ceba9dc25f4687c9ecc7d7a1a3ed50afd9edf827472915b6dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "27eb4102e5619d1abea1afe8bc7f883e1a1a0cda5567b083917bac78f2e986a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/plan.json",
+      "change": "added",
+      "bytes": 7859,
+      "sha256": "440601f114cc8abe776017e26bed9dd9c9a012cab8bd48f6da84731b651ddbba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/controls.json",
+      "change": "added",
+      "bytes": 4275,
+      "sha256": "875f7c3a40f795360b6c57450eedd904ebd495f5907171cc163891e6aee0c54d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/execution.json",
+      "change": "added",
+      "bytes": 37247,
+      "sha256": "91dfb70744b702fb0b175b1f419d54a99071b85e663cacda39baf53c2f0c99b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "ec98536520c7a69aa6df430d468a987479b32507fb4e57f6459986dcad6c9458",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 577,
+      "sha256": "3f3050745741a0631ff0882d221a617bef25613340b4ab14e8abb7f3f187d27e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/verifier.json",
+      "change": "added",
+      "bytes": 32283,
+      "sha256": "1f1cd5feae8243d60b59817847eff7b713fd4b259d78b91893ae43d594b42085",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7998,
+      "sha256": "34d830febd1ef59b627ef7efb36ed82691759964c5a75bd8f9229759a79e5bae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/result.json",
+      "change": "added",
+      "bytes": 16905,
+      "sha256": "1612be9a3464d51eed02ee82c5cc9322b225cbe7e0682e45eaf3f84215707b9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/executions/20261121T115228Z-9b8be8d8/attempt.json",
+      "change": "added",
+      "bytes": 26678,
+      "sha256": "6df68f5a2145c45ccd12aaa44ecb692c7a7fde9001322a6883ce9eb47312a532",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/executions/20261121T115228Z-9b8be8d8/checker.json",
+      "change": "added",
+      "bytes": 9420,
+      "sha256": "55905a8f8107d88dfce69910ce4bfae274803dd1555adbf9c71726be8a194fe0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/executions/20261121T115228Z-9b8be8d8/correspondence.json",
+      "change": "added",
+      "bytes": 1710,
+      "sha256": "505484d459527882396e1618c04f5500c36643e11dab271e54bcab0802e34d89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/run.json",
+      "change": "added",
+      "bytes": 740,
+      "sha256": "52be6774d372cc09b8e173be0460efde8fc2a32fa13dd98b59e7b0bffb80a082",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "13fddc011c14b322f6bd2a0982e34b0cb227cb146211da3cb2f129c757471667",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/plan.json",
+      "change": "added",
+      "bytes": 7878,
+      "sha256": "3861fc0f7711411b2aa01087e4801d480f27a319565eccb3728212541390ff5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/controls.json",
+      "change": "added",
+      "bytes": 4333,
+      "sha256": "7123dd138f3f532f9726066183280042b080f21412c211e72d3d3d2ab6176d92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/execution.json",
+      "change": "added",
+      "bytes": 32448,
+      "sha256": "cd866c8bc7f57ca669f739b13615ebb9d988be667a9ca4f2eb1ea1cea33a9c5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "322fb2caee25e767ee7e0be2a7f4cf7fbd51548aa22f69d6fa2aca8874ba960e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 577,
+      "sha256": "ce2eedd8af003f74aec0e432b4fd13acb78ea07869eacd54d90a1fe424aefd7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/verifier.json",
+      "change": "added",
+      "bytes": 27603,
+      "sha256": "6238023e441df473fbfc9ad6b015acccdfe03bca1ecf697418081fe8ab293e27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7998,
+      "sha256": "4be11337282f967ae77da7726f8a1afc8d6af898e44f4579945883ebfa7631d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/result.json",
+      "change": "added",
+      "bytes": 16815,
+      "sha256": "bd629689c7a31df1ed05144324f661619af75757a7e5f21c5815e0ca21899a7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/executions/20261121T115226Z-2c0307fa/attempt.json",
+      "change": "added",
+      "bytes": 22160,
+      "sha256": "31ef1bcb407ff3c78d9d881aee0ec2fe4e9beb40c558bf75cf5f8a0a0dd12e35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/executions/20261121T115226Z-2c0307fa/checker.json",
+      "change": "added",
+      "bytes": 9409,
+      "sha256": "97a2f66adf25f10263acf87478580e9ddff00d8aded2333020f71e1b89ff4fcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/executions/20261121T115226Z-2c0307fa/correspondence.json",
+      "change": "added",
+      "bytes": 1689,
+      "sha256": "c72aa4c98dc1fbbac2037174b1893ae6b7108d8106af11311bb2a99a7d5fc66e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4f744bd8469e78736e48e50479d927e6c612f490d2d4f9c56ecb59ccf3258223",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/plan.json",
+      "change": "added",
+      "bytes": 7783,
+      "sha256": "0e3afb5843119f360132649706c27e808f2ba035934f28515b2c0a4f0311ad50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/controls.json",
+      "change": "added",
+      "bytes": 4274,
+      "sha256": "1291b6e6be5c9065b3a67bc93972d3695cb5a737e78a1b94de35a031c40d8f7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/execution.json",
+      "change": "added",
+      "bytes": 32433,
+      "sha256": "554e4f38bdc094def6a1bc7b7ade97789a1ce356fc607382ccc043b0674b53de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "66e873e25f5c4e869abc04c698031c7ef72e4e8228abb4c86c55950a276eac74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 577,
+      "sha256": "ce2eedd8af003f74aec0e432b4fd13acb78ea07869eacd54d90a1fe424aefd7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/verifier.json",
+      "change": "added",
+      "bytes": 27665,
+      "sha256": "fe3397ccb5097c87d3c1b8dc70103cac49c4ef8ec16591d7dc5bbd52067d6ae9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7997,
+      "sha256": "eb438798787539187463447f48e1046f06a19b523b03a35a0dc97867af040b6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/result.json",
+      "change": "added",
+      "bytes": 16867,
+      "sha256": "2c8f6b1efe3d6668f50920d2fff8115a0790dbbeee664f5643c717049aa380a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/executions/20261121T115223Z-ab344290/attempt.json",
+      "change": "added",
+      "bytes": 22227,
+      "sha256": "873aabab4001744de5f83f19fe8645da47ec053ea9f7fc38310b02370c7d8f13",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/executions/20261121T115223Z-ab344290/checker.json",
+      "change": "added",
+      "bytes": 9420,
+      "sha256": "4dc0fc96efbfd4e73b7a859083a5298e2f2acdc4724d46716ae072cb4f1bf92a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/executions/20261121T115223Z-ab344290/correspondence.json",
+      "change": "added",
+      "bytes": 1692,
+      "sha256": "d1891fd7a3c734b9c5a685154313e6d39e2b14c44c04216269f8a75c387059f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/workflow.log",
+      "change": "added",
+      "bytes": 2210,
+      "sha256": "266790df2ce7b3f0f29ec2de198878c10941205fb5d51ce46f1455c3b7502738",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T11:52:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/completion.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/plan.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/result.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/executions/20261121T115232Z-4cc3a873/attempt.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/executions/20261121T115232Z-4cc3a873/checker.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/executions/20261121T115232Z-4cc3a873/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/completion.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/plan.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/result.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/executions/20261121T115231Z-0da4565e/attempt.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/executions/20261121T115231Z-0da4565e/checker.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/executions/20261121T115231Z-0da4565e/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/completion.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/plan.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/result.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/executions/20261121T115221Z-47b187b1/attempt.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/executions/20261121T115221Z-47b187b1/checker.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/executions/20261121T115221Z-47b187b1/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/completion.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/plan.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/result.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/executions/20261121T115218Z-ae85ba0a/attempt.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/executions/20261121T115218Z-ae85ba0a/checker.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/executions/20261121T115218Z-ae85ba0a/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/completion.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/plan.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/result.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/executions/20261121T115229Z-c85a3b0a/attempt.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/executions/20261121T115229Z-c85a3b0a/checker.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/executions/20261121T115229Z-c85a3b0a/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/completion.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/plan.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/result.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/executions/20261121T115228Z-9b8be8d8/attempt.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/executions/20261121T115228Z-9b8be8d8/checker.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/executions/20261121T115228Z-9b8be8d8/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/run.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/completion.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/plan.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/result.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/executions/20261121T115226Z-2c0307fa/attempt.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/executions/20261121T115226Z-2c0307fa/checker.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/executions/20261121T115226Z-2c0307fa/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/completion.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/plan.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/result.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/executions/20261121T115223Z-ab344290/attempt.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/executions/20261121T115223Z-ab344290/checker.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/executions/20261121T115223Z-ab344290/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/enum-snapshot-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 1202743,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "2d308ecac5670063ef1f82948a2fcfd7e4528ff3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d308ecac5670063ef1f82948a2fcfd7e4528ff3/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}

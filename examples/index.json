@@ -16865,7 +16865,8 @@
       "notes": [
         "The frozen independent observation table has 21 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
         "With capacity five and logical length three, the parent had position/limit/capacity/remaining (0,5,5,5) and read 4 at index 3. The fix had (0,3,5,3) and threw IndexOutOfBoundsException. Both returned the prefix 1, 2, 3 with position zero. The nested converter is scored separately from the real JobConf(false) factory.",
-        "Class intake now checks the actual source and bytes selected by the subject JVM for declared dependency overlaps. Both historical closures contain 124 entries and seven differing package metadata classes. Native startup reaches Hadoop Configuration from the factory and Avro Schema from the direct route. Observing startup exposes System.getenv and Runtime.availableProcessors respectively."
+        "Class intake now checks the actual source and bytes selected by the subject JVM for declared dependency overlaps. Both historical closures contain 124 entries and seven differing package metadata classes. Native startup reaches Hadoop Configuration from the factory and Avro Schema from the direct route. The initial startup observations stopped at System.getenv and Runtime.availableProcessors respectively.",
+        "On the original JDK with two processors and an empty process environment, the factory observation reaches Hadoop Configuration’s use of File.getAbsoluteFile. The nested converter with two processors reaches a write by Avro Schema initialization into Accessor.jsonPropertiesAccessor. It holds a JsonProperties$1 instance after Schema initializes and is null when Accessor initializes alone. Both native properties remain open."
       ],
       "source": "https://github.com/apache/avro/pull/3878",
       "target": {
@@ -17587,7 +17588,7 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Strict native 0/8, finite JVM 8/8",
+      "verdictLabel": "Native 2/8 at original scope, 8/8 with observed Node startup, finite JVM 8/8",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
@@ -17595,7 +17596,8 @@
         "This is a conditional transfer case outside the six primary PRs. Guava's entry iterator carried the backing count through its nested frames and exhausted normally.",
         "The independent original-scope grid has 2 inputs. Both revisions use the same declared receiver shapes.",
         "Postorder findAll on an empty root threw EmptyStackException on the parent and returned the original root once on the fix. Both revisions preserved Name, PackageDeclaration, CompilationUnit order for package com, with receiver identity and preorder as controls.",
-        "The input adapter now calls the declaring Node.findAll method on the same CompilationUnit, matching the upstream test. The strict run reaches System.getProperty(\"line.separator\") in LineSeparator.<clinit>. A separate observed-startup diagnostic reads the live SYSTEM enum instance, whose object state the verifier cannot bind. The original JDK replay and finite checks retain both tree shapes and preorder controls."
+        "The original ambient native run stopped at System.getProperty(\"line.separator\") in LineSeparator initialization. Observing only that enum now retains its constants, names, ordinals and text. This route reaches the printer configuration’s HashSet(Collection) constructor.",
+        "A separately scoped run initialized the original Node on JDK 21.0.13, bound its state digest, and compared 14 other classes with their state after independent initialization. All eight traversal and preservation obligations were decided under that condition. The empty-root postorder and terminal counterexamples also reproduced on the original parent without the startup condition. The other six original native obligations remain open."
       ],
       "source": "https://github.com/javaparser/javaparser/pull/4538",
       "target": {
@@ -17648,14 +17650,14 @@
           "preorder-fix-observed": "scaffolded",
           "nonempty-parent-observed": "scaffolded",
           "nonempty-fix-observed": "scaffolded",
-          "postorder-parent-node-startup": "scaffolded",
-          "postorder-fix-node-startup": "scaffolded",
-          "terminal-parent-node-startup": "scaffolded",
-          "terminal-fix-node-startup": "scaffolded",
-          "preorder-parent-node-startup": "scaffolded",
-          "preorder-fix-node-startup": "scaffolded",
-          "nonempty-parent-node-startup": "scaffolded",
-          "nonempty-fix-node-startup": "scaffolded"
+          "postorder-parent-node-startup": "executable",
+          "postorder-fix-node-startup": "executable",
+          "terminal-parent-node-startup": "executable",
+          "terminal-fix-node-startup": "executable",
+          "preorder-parent-node-startup": "executable",
+          "preorder-fix-node-startup": "executable",
+          "nonempty-parent-node-startup": "executable",
+          "nonempty-fix-node-startup": "executable"
         },
         "expected": {
           "replay": null,
@@ -17701,14 +17703,14 @@
           "preorder-fix-observed": null,
           "nonempty-parent-observed": null,
           "nonempty-fix-observed": null,
-          "postorder-parent-node-startup": null,
-          "postorder-fix-node-startup": null,
-          "terminal-parent-node-startup": null,
-          "terminal-fix-node-startup": null,
-          "preorder-parent-node-startup": null,
-          "preorder-fix-node-startup": null,
-          "nonempty-parent-node-startup": null,
-          "nonempty-fix-node-startup": null
+          "postorder-parent-node-startup": "refuted",
+          "postorder-fix-node-startup": "established",
+          "terminal-parent-node-startup": "refuted",
+          "terminal-fix-node-startup": "established",
+          "preorder-parent-node-startup": "established",
+          "preorder-fix-node-startup": "established",
+          "nonempty-parent-node-startup": "established",
+          "nonempty-fix-node-startup": "established"
         },
         "receipts": {
           "replay": {
@@ -17718,6 +17720,70 @@
             "status": null,
             "expectation": "yes",
             "attempts": 4
+          },
+          "postorder-parent-node-startup": {
+            "path": "receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/result.json",
+            "attempt": "20261121T122208Z-94d7d09b",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "postorder-fix-node-startup": {
+            "path": "receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/result.json",
+            "attempt": "20261121T122213Z-0b612b77",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "terminal-parent-node-startup": {
+            "path": "receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/result.json",
+            "attempt": "20261121T122216Z-bdb8281d",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "terminal-fix-node-startup": {
+            "path": "receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/result.json",
+            "attempt": "20261121T122221Z-0c0e4d32",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "preorder-parent-node-startup": {
+            "path": "receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/result.json",
+            "attempt": "20261121T122224Z-b2fd157a",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "preorder-fix-node-startup": {
+            "path": "receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/result.json",
+            "attempt": "20261121T122227Z-2b10dce6",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "nonempty-parent-node-startup": {
+            "path": "receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/result.json",
+            "attempt": "20261121T122229Z-7b30d9e8",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "nonempty-fix-node-startup": {
+            "path": "receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/result.json",
+            "attempt": "20261121T122231Z-ce6b70b1",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
           }
         },
         "staleReceipts": [],
@@ -17727,7 +17793,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Strict native 0/8, finite JVM 8/8",
+          "verdictLabel": "Native 2/8 at original scope, 8/8 with observed Node startup, finite JVM 8/8",
           "source": "https://github.com/javaparser/javaparser/pull/4538",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },

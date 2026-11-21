@@ -1,0 +1,1449 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-120554-recheck-all-node-startup-claims-and-orig",
+  "title": "Recheck all Node-startup claims and original witnesses on the corrected traversal revision",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 30.7s, peak 190.9 MiB (estimated 4m00s, 3.0 GiB); 132 output file(s) changed; signals: example:task-as-expected×8",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-120554-recheck-all-node-startup-claims-and-orig.json",
+    "sha256": "62143692cca5ff1be7431c84aa1d1a222cecc01e763e8e602f4a67ee36db1b1e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-120554-recheck-all-node-startup-claims-and-orig",
+      "title": "Recheck all Node-startup claims and original witnesses on the corrected traversal revision",
+      "description": "Run all eight separately registered Node-startup tasks on the two original JavaParser Maven artifacts, including the preserved preorder and nonempty controls. Re-test the native candidates for postorder and iterator exhaustion on the original ambient JVM claims. Preserve accepted receipts, rejected attempts, class identities and fresh replays. Replaces the earlier attempt stopped by an incomplete verifier build.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer",
+        "jvm:counterexample"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T12:05:54+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "7dc35cf64662150aeaee63ba50f45757639fc067",
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Prove the Node-startup traversal claims",
+          "run": "python3 examples/tools/build.py 360 --tasks postorder-parent-node-startup,postorder-fix-node-startup,terminal-parent-node-startup,terminal-fix-node-startup,preorder-parent-node-startup,preorder-fix-node-startup,nonempty-parent-node-startup,nonempty-fix-node-startup --checker-seconds 60",
+          "cwd": "."
+        },
+        {
+          "name": "Replay the traversal counterexample on the original claim",
+          "run": "python3 examples/tools/build.py 360 --original-witness postorder-parent --from-task postorder-parent-node-startup",
+          "cwd": "."
+        },
+        {
+          "name": "Replay the iterator counterexample on the original claim",
+          "run": "python3 examples/tools/build.py 360 --original-witness terminal-parent --from-task terminal-parent-node-startup",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/360-javaparser-postorder-root/receipts",
+        "examples/360-javaparser-postorder-root/records/original-witnesses"
+      ]
+    }
+  },
+  "sourceCommit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+  "startedAt": "2026-11-21T12:19:04+00:00",
+  "finishedAt": "2026-11-21T12:22:39+00:00",
+  "wallSeconds": 215.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2466630,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 200130560,
+    "wallSeconds": 30.7,
+    "cpuSeconds": 49.1,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 174.264,
+      "cpuSeconds": 174.603,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2195652608,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d31a5602a62fdc5493445a3df66e33705a58b74565199bbf1439fa080672d77f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-120554-recheck-all-node-startup-claims-and-orig/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 54s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Prove the Node-startup traversal claims",
+      "run": "python3 examples/tools/build.py 360 --tasks postorder-parent-node-startup,postorder-fix-node-startup,terminal-parent-node-startup,terminal-fix-node-startup,preorder-parent-node-startup,preorder-fix-node-startup,nonempty-parent-node-startup,nonempty-fix-node-startup --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 26.054,
+      "cpuSeconds": 41.439,
+      "cpuThrottledSeconds": 4.057,
+      "peakMemoryBytes": 200130560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-the-node-startup-travers.log",
+        "lines": 16,
+        "bytes": 2170,
+        "sha256": "82c702e69fac69e69182706002f48605ad99a033204a3888ae8e12d488d13f12",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 8
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "360-javaparser-postorder-root: task postorder-parent-node-startup: refuted (completed; as expected), receipt receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/result.json",
+          "groups": [
+            "360",
+            "postorder-parent-node-startup",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "360-javaparser-postorder-root: task postorder-fix-node-startup: established (completed; as expected), receipt receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/result.json",
+          "groups": [
+            "360",
+            "postorder-fix-node-startup",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "360-javaparser-postorder-root: task terminal-parent-node-startup: refuted (completed; as expected), receipt receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/result.json",
+          "groups": [
+            "360",
+            "terminal-parent-node-startup",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "360-javaparser-postorder-root: task terminal-fix-node-startup: established (completed; as expected), receipt receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/result.json",
+          "groups": [
+            "360",
+            "terminal-fix-node-startup",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 10,
+          "text": "360-javaparser-postorder-root: task preorder-parent-node-startup: established (completed; as expected), receipt receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/result.json",
+          "groups": [
+            "360",
+            "preorder-parent-node-startup",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "360-javaparser-postorder-root: task preorder-fix-node-startup: established (completed; as expected), receipt receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/result.json",
+          "groups": [
+            "360",
+            "preorder-fix-node-startup",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 14,
+          "text": "360-javaparser-postorder-root: task nonempty-parent-node-startup: established (completed; as expected), receipt receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/result.json",
+          "groups": [
+            "360",
+            "nonempty-parent-node-startup",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 16,
+          "text": "360-javaparser-postorder-root: task nonempty-fix-node-startup: established (completed; as expected), receipt receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/result.json",
+          "groups": [
+            "360",
+            "nonempty-fix-node-startup",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "360-javaparser-postorder-root: running task postorder-parent-node-startup (target route)",
+        "360-javaparser-postorder-root: task postorder-parent-node-startup: refuted (completed; as expected), receipt receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/result.json",
+        "360-javaparser-postorder-root: running task postorder-fix-node-startup (target route)",
+        "360-javaparser-postorder-root: task postorder-fix-node-startup: established (completed; as expected), receipt receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/result.json",
+        "360-javaparser-postorder-root: running task terminal-parent-node-startup (target route)",
+        "360-javaparser-postorder-root: task terminal-parent-node-startup: refuted (completed; as expected), receipt receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/result.json",
+        "360-javaparser-postorder-root: running task terminal-fix-node-startup (target route)",
+        "360-javaparser-postorder-root: task terminal-fix-node-startup: established (completed; as expected), receipt receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/result.json",
+        "360-javaparser-postorder-root: running task preorder-parent-node-startup (target route)",
+        "360-javaparser-postorder-root: task preorder-parent-node-startup: established (completed; as expected), receipt receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/result.json",
+        "360-javaparser-postorder-root: running task preorder-fix-node-startup (target route)",
+        "360-javaparser-postorder-root: task preorder-fix-node-startup: established (completed; as expected), receipt receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/result.json",
+        "360-javaparser-postorder-root: running task nonempty-parent-node-startup (target route)",
+        "360-javaparser-postorder-root: task nonempty-parent-node-startup: established (completed; as expected), receipt receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/result.json",
+        "360-javaparser-postorder-root: running task nonempty-fix-node-startup (target route)",
+        "360-javaparser-postorder-root: task nonempty-fix-node-startup: established (completed; as expected), receipt receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Replay the traversal counterexample on the original claim",
+      "run": "python3 examples/tools/build.py 360 --original-witness postorder-parent --from-task postorder-parent-node-startup",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 2.204,
+      "cpuSeconds": 3.69,
+      "cpuThrottledSeconds": 0.262,
+      "peakMemoryBytes": 123437056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-replay-the-traversal-counterex.log",
+        "lines": 1,
+        "bytes": 146,
+        "sha256": "72cebe159f2ae3bf74e04d61200f2244a2e51c3c1732ac6a3562c4365b559e42",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "postorder-parent refuted [{'name': 'code', 'type': 'int', 'value': 0}] receipts/postorder-parent/executions/20261121T122234Z-81490a45/replay.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Replay the iterator counterexample on the original claim",
+      "run": "python3 examples/tools/build.py 360 --original-witness terminal-parent --from-task terminal-parent-node-startup",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 2.405,
+      "cpuSeconds": 3.927,
+      "cpuThrottledSeconds": 0.368,
+      "peakMemoryBytes": 118972416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-replay-the-iterator-counterexa.log",
+        "lines": 1,
+        "bytes": 144,
+        "sha256": "1a7a6882c22aabd46cdcd4a8264e6bd0b66bd46462ca8043e53648acab6989c7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "terminal-parent refuted [{'name': 'code', 'type': 'int', 'value': 0}] receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/replay.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "1988080507d40efa2000488d0b71dde8034d5f7fff4609a9624678ce2f7a904b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/plan.json",
+      "change": "added",
+      "bytes": 8034,
+      "sha256": "769f6f36d055d33690c8e209bab8cb0163bceffa2588f3360463f254d72795bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/controls.json",
+      "change": "added",
+      "bytes": 4346,
+      "sha256": "b9e20e0bd4b75d46342a41f83dffa363e4f38bf4553d2f8e59fe16ef22c019cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/execution.json",
+      "change": "added",
+      "bytes": 37810,
+      "sha256": "8f91ec293b5ab490f44f838b6cd373956c13c8c849588af4ff29376572e1a568",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "b730e41941c48046bd8a561079a1e7216813b239cc9fd9098db6d3cd5d2489b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "c4c4a059dffa82e76b4639ebe2074a86cd3b03864240037b2442df579d08f7d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/verifier.json",
+      "change": "added",
+      "bytes": 32767,
+      "sha256": "9e9c6e66afd8604f9b9fa738e1f024fa41b949981b0d2118663d03b0da9881af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8782,
+      "sha256": "8ef8d695f5cae1c7d38d2a4aedd1f4c671ed8e3d66f31a0a0935833fa172aafc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/result.json",
+      "change": "added",
+      "bytes": 22393,
+      "sha256": "aa6ec1620342d67edd049429ef3483fc460e038efd5903e2f0eb8cda1fa05c87",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/executions/20261121T122231Z-ce6b70b1/attempt.json",
+      "change": "added",
+      "bytes": 25794,
+      "sha256": "43b8f1960c90fe0e3417e447c798420662bfb2ff98729610cd86d81d92990ea2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/executions/20261121T122231Z-ce6b70b1/checker.json",
+      "change": "added",
+      "bytes": 10204,
+      "sha256": "295ec71f3bedace04128e63a7bad7122b7e5795db356c911d053e6986171a3c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/executions/20261121T122231Z-ce6b70b1/correspondence.json",
+      "change": "added",
+      "bytes": 1696,
+      "sha256": "a20e83f33d7d78b8612790f9f9a739fb4ef922630ad36ccbda3e0345a62c7e7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "98dbdf0e0e47571db566d95003ae5c259d767c0cf12395ea10189bd9c62addf0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/plan.json",
+      "change": "added",
+      "bytes": 7943,
+      "sha256": "7bb95112803c3c4947297ad2a188dd54d557326e452c7ae14321c6ed750ff6b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/controls.json",
+      "change": "added",
+      "bytes": 4287,
+      "sha256": "07436be019a9ea28df43ada7baff1966686e1261b8c85e142c9e9a509cfc7668",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/execution.json",
+      "change": "added",
+      "bytes": 37717,
+      "sha256": "57e2d56a3dfc038815d5ea86afbaad98bdce3e9f13803f55ecb40a27d9c6b70b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "83f51fb8c10633628fb00b01e059edd2700ebce327aaea429ee4745c12e50c3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "c4c4a059dffa82e76b4639ebe2074a86cd3b03864240037b2442df579d08f7d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/verifier.json",
+      "change": "added",
+      "bytes": 32753,
+      "sha256": "2d1ca8484fc26d8e54f370dce36fad6cd2e0b1cce3954699c39281bf954f7ac5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8776,
+      "sha256": "6950fc82223a816d48fd3ee3af9b55bd0a39e34e81a254ebed62a1aed66e5a16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/result.json",
+      "change": "added",
+      "bytes": 22448,
+      "sha256": "db17580bd5a55fe796928296552840025ec6ea8e98a8da8aa5d6272587c5f0fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/executions/20261121T122229Z-7b30d9e8/attempt.json",
+      "change": "added",
+      "bytes": 25792,
+      "sha256": "908e7108ba49a5f3fd67025e2a5fd151243496069a2d26c395c5b161c96292bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/executions/20261121T122229Z-7b30d9e8/checker.json",
+      "change": "added",
+      "bytes": 10206,
+      "sha256": "ac98742f48cefb9652efef0667896357d2bac6b7f705fae225187da7c739a93b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/executions/20261121T122229Z-7b30d9e8/correspondence.json",
+      "change": "added",
+      "bytes": 1699,
+      "sha256": "2875944eeed0214dfa1f9c72d74c67442cefedc9eac0150bcbee203f34d7b3cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b30cacef45b80a49b7ee21104fa6996bac3304791306a12fec3d747c6db379ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/plan.json",
+      "change": "added",
+      "bytes": 8183,
+      "sha256": "ef1fa7cff413cfff72bc2ada4d484dd2d70491949183cec021c85c42ef95e409",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/controls.json",
+      "change": "added",
+      "bytes": 4348,
+      "sha256": "66d9fb8f89f5364b8693150dfcbf6ee5f6d62cd52fca9df076224acabf11cf27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/execution.json",
+      "change": "added",
+      "bytes": 37910,
+      "sha256": "9fa2d3dfbe7d87e6b434b3bfd5c9caab8680502511b127aae71c4dc95dc48383",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "cc47763193a1a516372d053446639932ba56af537c08f83ffd0cd84b9576121d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "1d8efdba4352e3c2e1b0d21c6266e9a4c267256913ddbd5ac82e3b3072c7812c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/verifier.json",
+      "change": "added",
+      "bytes": 32869,
+      "sha256": "69e00aaa8c8473eab8a75d8063b5ceb93426a5a0dd65834a6be8328ff86a9f10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8775,
+      "sha256": "56eb1136e37812e03e0ae258a9f5db5ba9cd58dd76754bae36ec39b6276a7773",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/result.json",
+      "change": "added",
+      "bytes": 22472,
+      "sha256": "99312d81d885174d6bc4ffa474f323d33837e5319c2df84906c6dde2f51a2241",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/executions/20261121T122213Z-0b612b77/attempt.json",
+      "change": "added",
+      "bytes": 25902,
+      "sha256": "f52533bc49865abf7dc17e92fc9c78d7de6e746201855c86a285650635419d9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/executions/20261121T122213Z-0b612b77/checker.json",
+      "change": "added",
+      "bytes": 10197,
+      "sha256": "04af0d02046d7f1e44bc8cd7122c0bcf9c9b051c9e5b04fe5fa45d7856a41a02",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/executions/20261121T122213Z-0b612b77/correspondence.json",
+      "change": "added",
+      "bytes": 1731,
+      "sha256": "7b177adcc67da250db8d3606702e3e9de60f0709e20bd9f4b6ae8fa64d725cbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions/20261121T122234Z-81490a45/attempt.json",
+      "change": "added",
+      "bytes": 3909,
+      "sha256": "d78cfdd680a7e6b0517156f60fa90bcc9b8db9642649176a448a4f45f0c466b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions/20261121T122234Z-81490a45/candidate.json",
+      "change": "added",
+      "bytes": 187,
+      "sha256": "2cfdfca8b810157ab17a26e3b4c8106b3ed86335ff0daa8caa8d768d41fd11eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions/20261121T122234Z-81490a45/correspondence.json",
+      "change": "added",
+      "bytes": 1734,
+      "sha256": "1c2de98fbc9cb49cca2ba4258a84d0efdf7d8c57ce3e1cd33805ae59d28cb83c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions/20261121T122234Z-81490a45/replay.json",
+      "change": "added",
+      "bytes": 1877,
+      "sha256": "a7619b54b0ea4351d29184ec7d531449fead30b14b9b988b45b4161388f491e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "52e604c8b4ecf9aa82c5a2bbe191d4348b0d10d45b1aa7748db7ea248d5a8aaf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/plan.json",
+      "change": "added",
+      "bytes": 8088,
+      "sha256": "2dddaf68360aa6a94fe223624476b8b6007bf8c2cc5d51a7d8ca35b679f2a8da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/controls.json",
+      "change": "added",
+      "bytes": 4289,
+      "sha256": "478464298cd6cbd7060d3f033cde29b9e1a8eb2f92a6cd84811923f10a2b0458",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/execution.json",
+      "change": "added",
+      "bytes": 40873,
+      "sha256": "4976a8f0bae245b1e0e956d6a5fd31e5de769c35c3c6de0c075ef53b887103ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "8f037f7572a00cb77768fd86593e28e85a5cef98226ab8bf7382702562e3535b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 550,
+      "sha256": "07757aa70ac8cd97f3e8d03da9881fc8901f6c0098502d18b96049275ed544e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/verifier.json",
+      "change": "added",
+      "bytes": 33396,
+      "sha256": "e1bc19096ab12238bed8553e632a622154360d794b5e64c262d1d51d3c205340",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9258,
+      "sha256": "c1a61cb166f7f51044d2d7addf45e88f359bb44953ee5d74cb274601c669f9da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/result.json",
+      "change": "added",
+      "bytes": 23301,
+      "sha256": "a6d86979da36a3a74fdc37955634285c1fd7f4731b63c7825892b65f47344f0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/executions/20261121T122208Z-94d7d09b/attempt.json",
+      "change": "added",
+      "bytes": 26019,
+      "sha256": "03b5e8baaea7cf909087c4b296885f3afce9d0ca53201ba7c71868dfd7621406",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/executions/20261121T122208Z-94d7d09b/checker.json",
+      "change": "added",
+      "bytes": 10715,
+      "sha256": "9cfd8e3dd0667ecbff4173baceb7eed117a1676c6a7dc5884669287a515e49be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/executions/20261121T122208Z-94d7d09b/correspondence.json",
+      "change": "added",
+      "bytes": 1734,
+      "sha256": "1c2de98fbc9cb49cca2ba4258a84d0efdf7d8c57ce3e1cd33805ae59d28cb83c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/executions/20261121T122208Z-94d7d09b/replay.json",
+      "change": "added",
+      "bytes": 1995,
+      "sha256": "4a168f8f1e0f06b1b344fbd3ab562c31f49b5acb5b7bd3ea216e38699b4b957b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "89c493b71a458532ecd53e2f45dfc9eaa663ff3b60e4466e950417fe1b99770e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/plan.json",
+      "change": "added",
+      "bytes": 8080,
+      "sha256": "9442b9827610c4ed092b41370209576dd2e2c6886d2e2aa2b92127dafc585297",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/controls.json",
+      "change": "added",
+      "bytes": 4346,
+      "sha256": "2de16e1a7a3df70880dadcb9fd7adc5979b559ca02227fed37fd50a0298f1f59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/execution.json",
+      "change": "added",
+      "bytes": 37830,
+      "sha256": "4afbb90e0223b15eab7b297cff0c5d97d3ba1ffa2053ae38947d893de3a7e316",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "02bc4bdb992c585289c19587b8541b5126845d014ee21037a84a435f0918dab6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 286,
+      "sha256": "b07a530bf49718ae2e40247fb24e032e632bea8c8f2568f8bab78ce1cf516543",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/verifier.json",
+      "change": "added",
+      "bytes": 32787,
+      "sha256": "86336f72ff4571aa34f3555f4145ae35263e6408d171fd87e6b97171ca726cd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8772,
+      "sha256": "f8b99a04124779b8b43107a121e0124adbb28dc149d722533d2b5853cb30eb47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/result.json",
+      "change": "added",
+      "bytes": 22414,
+      "sha256": "8511026e28552d1b50f235fb231885a3c144fe0de56bcf1e0238f713488749e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/executions/20261121T122227Z-2b10dce6/attempt.json",
+      "change": "added",
+      "bytes": 25825,
+      "sha256": "c826e27317c9d5f54911d70856b19e3c3690d81002d9368b566da7587b9e532b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/executions/20261121T122227Z-2b10dce6/checker.json",
+      "change": "added",
+      "bytes": 10193,
+      "sha256": "0e546af0114cc01f8e94c962c1c3890a013990418d2a9f90f79e449bf811a3fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/executions/20261121T122227Z-2b10dce6/correspondence.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "84465a17769654ceba9dc25f4687c9ecc7d7a1a3ed50afd9edf827472915b6dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "22c73dbcf1ff7075ac5743002f579817c47e3dda62a499d9311a059cd097ad4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/plan.json",
+      "change": "added",
+      "bytes": 7989,
+      "sha256": "029eff8ac13af679216464e9af607324c64ac79e8dd431d491b96612358e3234",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/controls.json",
+      "change": "added",
+      "bytes": 4287,
+      "sha256": "9a115b3519f1b8456f4bb6cd4a74b62d59a0e2b97fb1eddf5f5afbe39ed8e789",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/execution.json",
+      "change": "added",
+      "bytes": 37739,
+      "sha256": "9acd84d76125d9c9b047c0aeeaf1f28a2bc1f67331d340b80d61c266d1d1adcd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "7391e393b4567b2be17f4f96ea658cacabe3310e824b3b2367ca56003c5dded8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 286,
+      "sha256": "b07a530bf49718ae2e40247fb24e032e632bea8c8f2568f8bab78ce1cf516543",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/verifier.json",
+      "change": "added",
+      "bytes": 32775,
+      "sha256": "35354505c76c7a73d7b295d14b3ae4ba8cedfba181f8a7da1867441d20b5b7fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8769,
+      "sha256": "b3a7ea0bb0bb518f659847f9301edd0b2b38a478e04fceec8c823dae351bc4c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/result.json",
+      "change": "added",
+      "bytes": 22465,
+      "sha256": "68cbc47fc3980e18b5328cdb76958cc6bd641fa49339e36988118e67549e315d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/executions/20261121T122224Z-b2fd157a/attempt.json",
+      "change": "added",
+      "bytes": 25820,
+      "sha256": "a790af30b6976e7885a448ceac758df0f69774509c2acf948c175408fba8862d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/executions/20261121T122224Z-b2fd157a/checker.json",
+      "change": "added",
+      "bytes": 10198,
+      "sha256": "34eaf38e8e990259fa610b0dd02945c3bbaa7ce67db9dcae9af6a1c40af6dd21",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/executions/20261121T122224Z-b2fd157a/correspondence.json",
+      "change": "added",
+      "bytes": 1710,
+      "sha256": "505484d459527882396e1618c04f5500c36643e11dab271e54bcab0802e34d89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8f9c8a81404e0450569897470544e2c5bd3eef3ea53f8f4a52977857ce2a7adf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/plan.json",
+      "change": "added",
+      "bytes": 8008,
+      "sha256": "eb6db519f5c8e53e734c716bbaf3440c76f24989cd60fc87deb64d83b5e63b2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/controls.json",
+      "change": "added",
+      "bytes": 4345,
+      "sha256": "4100c0f77c62d4a0d2781679d923f7a9c767f9f722a30a2fe2daf0344e915661",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/execution.json",
+      "change": "added",
+      "bytes": 33335,
+      "sha256": "c64541fffc0c7982bb023bab3a34717143f5f634f8470f64106f5dd995aa2842",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "7a633c2e7aa5b11dc3294b3cae3f72da4e66b6fdaf2ca9b2734f98a56825e68a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 286,
+      "sha256": "dad4d21e1ba5acc9ea0c23ea6b0c65c50c8a952225b46be3bca92f12f221865a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/verifier.json",
+      "change": "added",
+      "bytes": 28474,
+      "sha256": "7536077067b14435b98a829b080a9096cf801deedcfcc6b6e0fbd8b7a694aeeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8779,
+      "sha256": "bc0e66f6670a0b2506a5588723cf65b9dd6bce3f717a15b5f95ef2e4d59bab2d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/result.json",
+      "change": "added",
+      "bytes": 22378,
+      "sha256": "57036395d1a854fcc74180a87a69901c6ec52f95bd482c632aeb5849402aa828",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/executions/20261121T122221Z-0c0e4d32/attempt.json",
+      "change": "added",
+      "bytes": 21658,
+      "sha256": "d0587295efe457e40279e8b9f450b6cdbefe74f5103a66ae8a7f2a48fdcfb6ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/executions/20261121T122221Z-0c0e4d32/checker.json",
+      "change": "added",
+      "bytes": 10200,
+      "sha256": "9fb87c95c0c4e6144f5b70320a961c0f6ae3e2d45b018e20ad50b3c137dc8c16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/executions/20261121T122221Z-0c0e4d32/correspondence.json",
+      "change": "added",
+      "bytes": 1689,
+      "sha256": "c72aa4c98dc1fbbac2037174b1893ae6b7108d8106af11311bb2a99a7d5fc66e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/attempt.json",
+      "change": "added",
+      "bytes": 3879,
+      "sha256": "1871553c94587cd5606ddea561244a8d8ab5781c62f15b8ad0b043b5c2d09e76",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/candidate.json",
+      "change": "added",
+      "bytes": 187,
+      "sha256": "7a51b290c60e430afb98f49bd4b8d437e8bb2bffaa3a58a93faaa6f785e53f92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/correspondence.json",
+      "change": "added",
+      "bytes": 1692,
+      "sha256": "d1891fd7a3c734b9c5a685154313e6d39e2b14c44c04216269f8a75c387059f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/replay.json",
+      "change": "added",
+      "bytes": 1874,
+      "sha256": "609341b565646946b360023fc656836320b88af2d0f2631fd959f8d5f4360d78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5ec086acc7e2e533675328ce2b65929678e86b52e7b61b4e1a492e2ecd370c92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/plan.json",
+      "change": "added",
+      "bytes": 7913,
+      "sha256": "6cee88f84c2dbe81da6989b5f590d9ff96ff8385bfc138e589fb086f92254c30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/controls.json",
+      "change": "added",
+      "bytes": 4286,
+      "sha256": "c2ba5945abb87d2503415b4e69706cec0720588ba54a88a4b1aab3520d0aa21b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/execution.json",
+      "change": "added",
+      "bytes": 36347,
+      "sha256": "deba15c2c4a43caa458ca0642725f54410139191bcd7c4bcc6c2756c0c022066",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "43fdc5dbcbf4838ccfab0bc7ae4aa3229db9c921754c207a335a63ee168fad1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 548,
+      "sha256": "c63477ab47a4c6c280b6cf095f9a8c6f0ec48e24c0d7c76a39151502c89bc47c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/verifier.json",
+      "change": "added",
+      "bytes": 29051,
+      "sha256": "d39f15287c99b4375d2242b854812f0184ca65b7b21a612b805099ace98790bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9243,
+      "sha256": "3053419c129e8ff12ef9f802ea9b26132d65493096127bddf9ebc33a0452f507",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/result.json",
+      "change": "added",
+      "bytes": 23207,
+      "sha256": "17041df9f68de2986343e721b91a91a72a0b6a33804c0355ebc3419b03441ed9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/executions/20261121T122216Z-bdb8281d/attempt.json",
+      "change": "added",
+      "bytes": 21841,
+      "sha256": "ee4b4453d092af6754b3c3c7c7c44ba8df421897cb8bfbb1506938e72648fead",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/executions/20261121T122216Z-bdb8281d/checker.json",
+      "change": "added",
+      "bytes": 10700,
+      "sha256": "e1904c4e1c01eb06d30c8f453ebd294cf82194cab24724f00a61a226853323ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/executions/20261121T122216Z-bdb8281d/correspondence.json",
+      "change": "added",
+      "bytes": 1692,
+      "sha256": "d1891fd7a3c734b9c5a685154313e6d39e2b14c44c04216269f8a75c387059f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/executions/20261121T122216Z-bdb8281d/replay.json",
+      "change": "added",
+      "bytes": 1992,
+      "sha256": "93433cdce62c181cbf47a671da2ec62747a117a0660b1c476a8cce7ebcb47828",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/original-witnesses/postorder-parent/20261121T122234Z-81490a45.json",
+      "change": "added",
+      "bytes": 1802,
+      "sha256": "61a07531c422188f9ef25921a63dfbad7253cbbf1ba2960d7d00a841f29f7b80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/original-witnesses/terminal-parent/20261121T122236Z-bd4b4e52.json",
+      "change": "added",
+      "bytes": 1768,
+      "sha256": "40b241b9bb33064241cc8b94517b52d983e1c88fdbef0be973404b1cef570384",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T12:22:49+00:00",
+    "applied": [
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/completion.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/plan.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/controls.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/execution.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/streams.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/verifier.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/result.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/executions/20261121T122231Z-ce6b70b1/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/executions/20261121T122231Z-ce6b70b1/checker.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/executions/20261121T122231Z-ce6b70b1/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/completion.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/plan.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/controls.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/execution.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/streams.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/verifier.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/result.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/executions/20261121T122229Z-7b30d9e8/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/executions/20261121T122229Z-7b30d9e8/checker.json",
+      "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/executions/20261121T122229Z-7b30d9e8/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/completion.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/plan.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/controls.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/execution.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/streams.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/verifier.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/result.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/executions/20261121T122213Z-0b612b77/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/executions/20261121T122213Z-0b612b77/checker.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/executions/20261121T122213Z-0b612b77/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions/20261121T122234Z-81490a45/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions/20261121T122234Z-81490a45/candidate.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions/20261121T122234Z-81490a45/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions/20261121T122234Z-81490a45/replay.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/completion.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/plan.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/controls.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/execution.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/streams.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/verifier.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/result.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/executions/20261121T122208Z-94d7d09b/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/executions/20261121T122208Z-94d7d09b/checker.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/executions/20261121T122208Z-94d7d09b/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/executions/20261121T122208Z-94d7d09b/replay.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/completion.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/plan.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/controls.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/execution.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/streams.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/verifier.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/result.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/executions/20261121T122227Z-2b10dce6/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/executions/20261121T122227Z-2b10dce6/checker.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/executions/20261121T122227Z-2b10dce6/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/completion.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/plan.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/controls.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/execution.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/streams.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/verifier.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/result.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/executions/20261121T122224Z-b2fd157a/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/executions/20261121T122224Z-b2fd157a/checker.json",
+      "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/executions/20261121T122224Z-b2fd157a/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/completion.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/plan.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/controls.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/execution.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/streams.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/verifier.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/result.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/executions/20261121T122221Z-0c0e4d32/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/executions/20261121T122221Z-0c0e4d32/checker.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/executions/20261121T122221Z-0c0e4d32/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/candidate.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/replay.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/completion.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/plan.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/controls.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/execution.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/streams.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/verifier.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/result.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/executions/20261121T122216Z-bdb8281d/attempt.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/executions/20261121T122216Z-bdb8281d/checker.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/executions/20261121T122216Z-bdb8281d/correspondence.json",
+      "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/executions/20261121T122216Z-bdb8281d/replay.json",
+      "examples/360-javaparser-postorder-root/records/original-witnesses/postorder-parent/20261121T122234Z-81490a45.json",
+      "examples/360-javaparser-postorder-root/records/original-witnesses/terminal-parent/20261121T122236Z-bd4b4e52.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1295124,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/71bb18fc207bfb71de138f12cd33e37667149be5/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}

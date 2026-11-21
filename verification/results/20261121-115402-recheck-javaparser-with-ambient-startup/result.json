@@ -1,0 +1,190 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-115402-recheck-javaparser-with-ambient-startup",
+  "title": "Recheck JavaParser with ambient startup and with only the line separator bound",
+  "status": "error",
+  "summary": "error: ",
+  "attention": [
+    "jvmcontract did not build at this commit; see the build step's log"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-115402-recheck-javaparser-with-ambient-startup.json",
+    "sha256": "68887ca580b0ce806cb95c2556018eed41dbdcfe3b1b9d3b8a02496e1b3abf5e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-115402-recheck-javaparser-with-ambient-startup",
+      "title": "Recheck JavaParser with ambient startup and with only the line separator bound",
+      "description": "Keep the remaining startup boundaries independently reproducible on the same verifier as the traversal proofs. Recheck the fixed original without assumptions, then the same public call with only the observed LineSeparator state, retaining the first refusal in each ordinary strict run.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T11:54:02+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Run the two less constrained JavaParser claims",
+          "run": "python3 lib/benchmark/organic-java/run.py 360 --route native --stage traversal-boundaries --tasks postorder-fix,postorder-fix-observed",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/360-javaparser-postorder-root/records/traversal-boundaries-native"
+      ]
+    }
+  },
+  "sourceCommit": "8d195048cbecc90d160e04b9534e49e7e7133a43",
+  "startedAt": "2026-11-21T12:02:20+00:00",
+  "finishedAt": "2026-11-21T12:03:14+00:00",
+  "wallSeconds": 54.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2071707,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": null,
+    "wallSeconds": 0,
+    "cpuSeconds": 0,
+    "memoryOfEstimate": null,
+    "durationOfEstimate": null
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 11.425,
+      "cpuSeconds": 11.304,
+      "cpuThrottledSeconds": 0.004,
+      "peakMemoryBytes": 994156544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 38,
+        "bytes": 2150,
+        "sha256": "63c126aba08c9e3012369e4fd4690a65ef74fc73cb2557915075dd7db6d2c557",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-115402-recheck-javaparser-with-ambient-startup/lib)",
+        "error[E0425]: cannot find type `Runtime` in module `crate::observed`",
+        "   --> src/equivalence.rs:131:44",
+        "    |",
+        "131 |     pub observed_runtime: crate::observed::Runtime,",
+        "    |                                            ^^^^^^^ not found in `crate::observed`",
+        "",
+        "error[E0425]: cannot find type `Runtime` in module `crate::observed`",
+        "   --> src/property.rs:124:44",
+        "    |",
+        "124 |     pub observed_runtime: crate::observed::Runtime,",
+        "    |                                            ^^^^^^^ not found in `crate::observed`",
+        "",
+        "error[E0425]: cannot find function `observe_for_runtime` in module `crate::observed`",
+        "    --> src/property.rs:1030:41",
+        "     |",
+        "1030 |     let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, &entries, &work, options.observed_runt...",
+        "     |                                         ^^^^^^^^^^^^^^^^^^^ not found in `crate::observed`",
+        "",
+        "error[E0425]: cannot find function `observe_previous_on` in module `crate::observed`",
+        "    --> src/property.rs:1032:42",
+        "     |",
+        "1032 |         observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime)?);",
+        "     |                                          ^^^^^^^^^^^^^^^^^^^",
+        "     |",
+        "    ::: src/observed.rs:567:1",
+        "     |",
+        " 567 | pub fn observe_previous(classes: &[String], previous: &crate::relocate::Previous, work: &Path) -> Result<Observations, Error> {",
+        "     | ----------------------------------------------------------------------------------------------------------------------------- similarly named function `observe_previous` defined here",
+        "     |",
+        "help: a function with a similar name exists",
+        "     |",
+        "1032 -         observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime)?);",
+        "1032 +         observed.extend(crate::observed::observe_previous(classes, previous, &work, options.observed_runtime)?);",
+        "     |",
+        "",
+        "For more information about this error, try `rustc --explain E0425`.",
+        "error: could not compile `jvmcontract` (lib) due to 4 previous errors"
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-21T12:03:31+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job error"
+  }
+}

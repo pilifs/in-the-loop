@@ -12,7 +12,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "examples/tools"))
 import build
-from targets import finite_check, finite_oracle, native_selectors, route, sidecar
+from targets import finite_check, finite_oracle, native_selectors, original_witness, qualification, route, sidecar
 from domains import check_controls, wrong_results
 from public_observations import complete_stream
 from upstream import named_failure
@@ -70,7 +70,7 @@ def original_observations(folder, table):
 
 def native(folder, task, stages, plan):
     for stage in stages:
-        base = folder / "records" / (stage + "-native") / task["id"]
+        base = ((folder / "receipts") if stage == "workflow" else folder / "records" / (stage + "-native")) / task["id"]
         for path in sorted(base.glob("*/result.json"), reverse=True):
             d = read(path)
             c, e, a = d["conclusion"], d["evidence"], d["attempt"]
@@ -90,7 +90,20 @@ def native(folder, task, stages, plan):
                               checkerSeconds=execution.get("checkerSeconds"), budget=execution["budget"])
                 checker = journal.with_name("checker.json")
                 if checker.exists():
-                    timings = [o.get("search") or {} for o in read(checker).get("outcomes", [])]
+                    raw = read(checker)
+                    if plan.claim.get("observedInitializers"):
+                        argv = raw["argv"]
+                        observed_runtime = [json.loads(argv[j + 1]) for j, arg in enumerate(argv) if arg == "--observed-runtime"]
+                        wanted = [plan.claim["observedRuntime"]] if "observedRuntime" in plan.claim else []
+                        if observed_runtime != wanted:
+                            raise ValueError(f"{checker}: the observed process settings differ from the claim")
+                        if c["status"] is None:
+                            result.update(status="open", checkerExit=raw["exitCode"])
+                        refused = next((line for line in (raw.get("stderr") or {}).get("excerpt", "").splitlines()
+                                        if line.startswith("jvmcontract: --observed-initializer")), None)
+                        if refused:
+                            result["startupRefusal"] = refused
+                    timings = [o.get("search") or {} for o in raw.get("outcomes", [])]
                     result["solverSeconds"] = sum((t.get("native") or {}).get("solving_seconds", 0) for t in timings)
             if c["status"] not in ("established", "refuted"):
                 return result
@@ -99,6 +112,13 @@ def native(folder, task, stages, plan):
                 result.update(status="superseded", recordedStatus=c["status"], problem="the recorded adapter or claim inputs have changed")
                 return result
             assert a["engine"] == "native" and stated["gapMode"] == "strict" and not c["vacuous"]
+            if plan.claim.get("observedInitializers"):
+                execution = read(path.parent / "records/execution.json")
+                verifier, = [r["identities"] for r in execution["records"] if r["kind"] == "verifier"]
+                classes = {rev: entry["initializerClasses"] for rev, entry in verifier["entryBindings"].items()}
+                problem = qualification.library_bindings_problem(plan, {"stated": stated}, classes)
+                if problem:
+                    raise ValueError(f"{path}: {problem}")
             if c["status"] == "established":
                 assert stated["vacuity"]["status"] == "non-vacuous"
             else:
@@ -128,6 +148,33 @@ def finite(folder, task, plan, stages):
     return {"status": "open", "qualified": False, "reason": "no complete finite record"}
 
 
+def startup_companions(folder, example, target, frozen_tasks):
+    """Recount conditional tasks independently of the obligations registered at baseline."""
+    results = {}
+    for task in target["tasks"]:
+        if task["id"] in frozen_tasks or task["kind"] == "replay":
+            continue
+        plan = route.resolve(folder, example, target, task["id"])
+        initializers = plan.claim.get("observedInitializers")
+        if not initializers:
+            continue
+        attempts = []
+        seen = set()
+        for stage in ("enum-snapshot", "traversal-boundaries", "observed-process", "workflow"):
+            result = native(folder, task, [stage], plan)
+            if not result.get("receipt"):
+                continue
+            identity = Path(result["receipt"]).parent.name
+            if identity not in seen:
+                seen.add(identity)
+                attempts.append(result)
+        if attempts:
+            results[task["id"]] = {"claimKey": plan.claim["key"], "guard": plan.claim["assume"], "expected": task["expected"],
+                                   "observedInitializers": initializers, "observedRuntime": plan.claim.get("observedRuntime", {}),
+                                   "attempts": attempts}
+    return results
+
+
 def score(number, case, stages):
     folder = ROOT / "examples" / case["folder"]
     ex = build.load_example(folder)
@@ -145,6 +192,9 @@ def score(number, case, stages):
         plan = route.resolve(folder, ex, target, task["id"])
         original = native(folder, task, ["baseline"], plan)
         current = native(folder, task, stages, plan)
+        boundary = folder / "records/traversal-boundaries-native" / task["id"]
+        if "startup" in stages and boundary.is_dir():
+            current = native(folder, task, ["traversal-boundaries"], plan)
         if not current["qualified"]:
             for proof in native_selectors.evidence(folder, plan):
                 if proof.get("status") == task["expected"]:
@@ -158,6 +208,22 @@ def score(number, case, stages):
                                "receipt": rel(file), "checker": report["checker"], "admitted": proof["admitted"],
                                "checked": proof["checked"], "cost": report["cost"], "solverSeconds": solving, "unsplit": current}
                     break
+        if "startup" in stages and not current["qualified"] and task["expected"] == "refuted":
+            replays = original_witness.evidence(folder, plan)
+            if replays:
+                witness = replays[-1]
+                file = folder / witness["file"]
+                record = read(file)
+                source = record["nativeSource"]
+                replay = read(folder / record["original"]["replay"])
+                if (replay["claimKey"] != plan.claim["key"] or not replay["reproduced"] or replay["inputs"] != witness["inputs"]
+                        or set(replay["sides"]) != set(plan.revisions)
+                        or any(not side["admitted"] or side["satisfies"] is not False for side in replay["sides"].values())):
+                    raise ValueError(f"the candidate fails to reproduce the original violation in {file}")
+                current = {"status": "refuted", "qualified": True, "route": "native candidate replayed on the original JVM",
+                           "receipt": rel(file), "inputs": witness["inputs"], "sourceTask": source["task"],
+                           "checkerSha256": source["checkerSha256"], "originalJVMReplay": rel(folder / record["original"]["replay"]),
+                           "unsplit": current}
         results[task["id"]] = {"expected": task["expected"], "guard": plan.claim["assume"], "claimKey": plan.claim["key"],
                                "baseline": original, "current": current, "finiteBaseline": finite(folder, task, plan, ["baseline"]),
                                "finite": finite(folder, task, plan, stages)}
@@ -233,7 +299,9 @@ def score(number, case, stages):
         replay = doc["originalJVMReplay"]
         original_replays.append({"task": plan.task, "status": result["status"], "inputs": replay["inputs"],
                                  "publicEntry": replay["entry"], "jdk": replay["jdkRelease"], "checker": doc["checker"], "receipt": rel(path)})
-    return {"handwrittenAdapters": adapters, "wrongResultControlsRejected": len(wrong_results(number)), "nativeSelectorJVMReplays": original_replays,
+    startup = startup_companions(folder, ex, target, frozen_tasks) if "startup" in stages else {}
+    return {**({"startupCompanions": startup} if startup else {}),
+            "handwrittenAdapters": adapters, "wrongResultControlsRejected": len(wrong_results(number)), "nativeSelectorJVMReplays": original_replays,
             "runs": runs, "upstream": case["repository"] + "/pull/" + str(case["pullRequest"]), "history": target["history"]["revisions"],
             "inputs": len(table.cases), "builds": builds, "originals": original_observations(folder, table), "upstreamTests": upstream,
             "primary": PRIMARY[number], "preservation": PRESERVED[number], "caseDecided": formal, "tasks": results}
@@ -241,7 +309,7 @@ def score(number, case, stages):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--stages", default="confirmation,final,reserve,ordered,streams,utf16,baseline", help="most recent first")
+    ap.add_argument("--stages", default="startup,confirmation,final,reserve,ordered,streams,utf16,baseline", help="most recent first")
     ap.add_argument("--output", type=Path, default=ROOT / "verification/organic-java-pr-campaign.json")
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()

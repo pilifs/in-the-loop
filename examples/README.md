@@ -367,7 +367,7 @@ it was produced. Its `example.json` holds what the router needs, with its notes.
 | 357 | [A byte-order mark across short JsonReader reads](357-gson-repeated-bom/README.md) | real-world | Gson | B11 | Strict native 4/4, finite JVM 4/4 |  | text-encoding, side-effecting-read, external-target, own-checker |
 | 358 | [Half-byte retention across sliced base16 stream writes](358-commons-codec-partitioned-base16/README.md) | real-world | Apache Commons Codec | B11 | Strict native 6/6, finite JVM 6/6 |  | text-encoding, buffer-bounds, external-target, own-checker |
 | 359 | [Boolean list insertion at every boundary in a single word](359-eclipse-boolean-list-insertion/README.md) | real-world | Eclipse Collections | B11 | Strict native 8/8, finite JVM 8/8 |  | open-source-libraries, off-by-one, external-target, own-checker |
-| 360 | [Postorder traversal of the root and its original children](360-javaparser-postorder-root/README.md) | real-world | JavaParser | B11 | Strict native 0/8, finite JVM 8/8 |  | open-source-libraries, dropped-case, external-target, own-checker |
+| 360 | [Postorder traversal of the root and its original children](360-javaparser-postorder-root/README.md) | real-world | JavaParser | B11 | Native 2/8 at original scope, 8/8 with observed Node startup, finite JVM 8/8 |  | open-source-libraries, dropped-case, external-target, own-checker |
 <!-- examples:end -->
 
 ## Examples by tag

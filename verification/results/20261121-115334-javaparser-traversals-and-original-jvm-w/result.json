@@ -1,0 +1,204 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-115334-javaparser-traversals-and-original-jvm-w",
+  "title": "JavaParser traversals and original JVM witnesses from observed Node startup",
+  "status": "error",
+  "summary": "error: ",
+  "attention": [
+    "jvmcontract did not build at this commit; see the build step's log"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-115334-javaparser-traversals-and-original-jvm-w.json",
+    "sha256": "5e62bef8209fb54981cb35a03bb272bfff9ff0058e959df90cb9cc26cd49070e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-115334-javaparser-traversals-and-original-jvm-w",
+      "title": "JavaParser traversals and original JVM witnesses from observed Node startup",
+      "description": "Run all eight separately registered Node-startup tasks on the two original JavaParser Maven artifacts, including the preserved preorder and nonempty controls. Re-test the native candidates for postorder and iterator exhaustion on the original ambient JVM claims. Preserve accepted receipts, rejected attempts, class identities and fresh replays.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer",
+        "jvm:counterexample"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T11:53:34+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "15m",
+        "notes": "On the original fixed and parent JDK 21 inputs, one Node observation and native claim took approximately two seconds. The public workflow also prepares both artifacts, qualifies independent JVM replays and records receipts."
+      },
+      "steps": [
+        {
+          "name": "Prove the Node-startup traversal claims",
+          "run": "python3 examples/tools/build.py 360 --tasks postorder-parent-node-startup,postorder-fix-node-startup,terminal-parent-node-startup,terminal-fix-node-startup,preorder-parent-node-startup,preorder-fix-node-startup,nonempty-parent-node-startup,nonempty-fix-node-startup --checker-seconds 60",
+          "cwd": "."
+        },
+        {
+          "name": "Replay the traversal counterexample on the original claim",
+          "run": "python3 examples/tools/build.py 360 --original-witness postorder-parent --from-task postorder-parent-node-startup",
+          "cwd": "."
+        },
+        {
+          "name": "Replay the iterator counterexample on the original claim",
+          "run": "python3 examples/tools/build.py 360 --original-witness terminal-parent --from-task terminal-parent-node-startup",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/360-javaparser-postorder-root/receipts",
+        "examples/360-javaparser-postorder-root/records/original-witnesses"
+      ]
+    }
+  },
+  "sourceCommit": "8d195048cbecc90d160e04b9534e49e7e7133a43",
+  "startedAt": "2026-11-21T12:02:20+00:00",
+  "finishedAt": "2026-11-21T12:03:02+00:00",
+  "wallSeconds": 42.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2071707,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": "On the original fixed and parent JDK 21 inputs, one Node observation and native claim took approximately two seconds. The public workflow also prepares both artifacts, qualifies independent JVM replays and records receipts."
+  },
+  "usage": {
+    "peakMemoryBytes": null,
+    "wallSeconds": 0,
+    "cpuSeconds": 0,
+    "memoryOfEstimate": null,
+    "durationOfEstimate": null
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 14.233,
+      "cpuSeconds": 14.03,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 994127872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 38,
+        "bytes": 2151,
+        "sha256": "3b41aac90b8b7195c39a896e86e0ee8679c4ff1fb38c4218115b789c1589a774",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-115334-javaparser-traversals-and-original-jvm-w/lib)",
+        "error[E0425]: cannot find type `Runtime` in module `crate::observed`",
+        "   --> src/equivalence.rs:131:44",
+        "    |",
+        "131 |     pub observed_runtime: crate::observed::Runtime,",
+        "    |                                            ^^^^^^^ not found in `crate::observed`",
+        "",
+        "error[E0425]: cannot find type `Runtime` in module `crate::observed`",
+        "   --> src/property.rs:124:44",
+        "    |",
+        "124 |     pub observed_runtime: crate::observed::Runtime,",
+        "    |                                            ^^^^^^^ not found in `crate::observed`",
+        "",
+        "error[E0425]: cannot find function `observe_for_runtime` in module `crate::observed`",
+        "    --> src/property.rs:1030:41",
+        "     |",
+        "1030 |     let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, &entries, &work, options.observed_runt...",
+        "     |                                         ^^^^^^^^^^^^^^^^^^^ not found in `crate::observed`",
+        "",
+        "error[E0425]: cannot find function `observe_previous_on` in module `crate::observed`",
+        "    --> src/property.rs:1032:42",
+        "     |",
+        "1032 |         observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime)?);",
+        "     |                                          ^^^^^^^^^^^^^^^^^^^",
+        "     |",
+        "    ::: src/observed.rs:567:1",
+        "     |",
+        " 567 | pub fn observe_previous(classes: &[String], previous: &crate::relocate::Previous, work: &Path) -> Result<Observations, Error> {",
+        "     | ----------------------------------------------------------------------------------------------------------------------------- similarly named function `observe_previous` defined here",
+        "     |",
+        "help: a function with a similar name exists",
+        "     |",
+        "1032 -         observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime)?);",
+        "1032 +         observed.extend(crate::observed::observe_previous(classes, previous, &work, options.observed_runtime)?);",
+        "     |",
+        "",
+        "For more information about this error, try `rustc --explain E0425`.",
+        "error: could not compile `jvmcontract` (lib) due to 4 previous errors"
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-21T12:03:31+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job error"
+  }
+}

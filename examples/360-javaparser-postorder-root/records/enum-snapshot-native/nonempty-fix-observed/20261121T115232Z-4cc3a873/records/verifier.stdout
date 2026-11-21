@@ -1,0 +1,173 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "organic.TreeOrder#postorder(int)",
+    "domain": "code: int",
+    "assume": "code >= 1 && code < 2",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "organic.TreeOrder#postorder(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+        "uri": null,
+        "line": 33
+      }
+    ],
+    "output": "✗ organic.TreeOrder#postorder(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.914582664,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 64,
+      "stage": null,
+      "native": {
+        "paths": 3,
+        "merges": 0,
+        "solver_calls": 3,
+        "solving_seconds": 0.000033872,
+        "gates_evaluated": 183,
+        "evaluating_seconds": 5.18e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 245,
+        "clauses": 698,
+        "seconds": 0.005354029,
+        "loading_seconds": 0.002244109,
+        "decoding_seconds": 0.000121605,
+        "encoding_seconds": 0.000106272,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "the class initializer of com.github.javaparser.utils.LineSeparator was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 0413a3f8b470), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.Object.getClass()",
+          "sites": [
+            "com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 59.092,
+          "seconds": 0.005,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.002,
+            "lowering": 0.0,
+            "symbolic": 0.003,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 245,
+            "clauses": 698
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.923,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.005,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.917
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 1 && code < 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of com.github.javaparser.utils.LineSeparator was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 0413a3f8b470), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine",
+          "id": "observed-initializer:com.github.javaparser.utils.LineSeparator:0413a3f8b4707638860dc0dea988cdf0dae425da5eeae8cc803cae7724919e56:a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

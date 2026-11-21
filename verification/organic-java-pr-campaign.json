@@ -2327,6 +2327,101 @@
       }
     },
     "355": {
+      "startupCompanions": {
+        "bounds-fix-process-startup": {
+          "claimKey": "b1c3dbe7c4ae05d7",
+          "guard": "code >= 0 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.hadoop.conf.Configuration": "c6f4c5e284f3130cadd293a43b50af0e807ceb51dbe4c1c47d6dbf0ddf2869bf"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "processors": 2
+          },
+          "attempts": [
+            {
+              "status": "open",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/result.json",
+              "seconds": 1.6,
+              "stage": "observed-process",
+              "problem": "the verifier failed with exit code 2, printing nothing",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.186,
+                "peakRssBytes": 180854784,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/executions/20261121T122511Z-2a14f226/attempt.json",
+              "checker": {
+                "commit": "3a462fddbcbc6a8b478d015ec360de714caacdbe",
+                "libTree": "18435d1f9282f60672e6ac4252c4ce362142296d",
+                "jvmcontract": "a858444b5947c0ec0976942f80891a568dae96eab0c603939586095e412f06d5",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.279,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "checkerExit": 2,
+              "startupRefusal": "jvmcontract: --observed-initializer org.apache.hadoop.conf.Configuration: its code reads the JVM working directory (java.io.File.getAbsoluteFile), which the observation cannot bind",
+              "solverSeconds": 0
+            }
+          ]
+        },
+        "direct-limit-fix-process-startup": {
+          "claimKey": "71c98ca4bf96d069",
+          "guard": "code >= 0 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "46362dd64bbfb47c11ac894616c2e053feaa0280f114c9f73595f49223170821"
+          },
+          "observedRuntime": {
+            "processors": 2
+          },
+          "attempts": [
+            {
+              "status": "open",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/result.json",
+              "seconds": 2.1,
+              "stage": "observed-process",
+              "problem": "the verifier failed with exit code 2, printing nothing",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 3.0477,
+                "peakRssBytes": 190291968,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/executions/20261121T122522Z-aa73eef0/attempt.json",
+              "checker": {
+                "commit": "3a462fddbcbc6a8b478d015ec360de714caacdbe",
+                "libTree": "18435d1f9282f60672e6ac4252c4ce362142296d",
+                "jvmcontract": "a858444b5947c0ec0976942f80891a568dae96eab0c603939586095e412f06d5",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.824,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "checkerExit": 2,
+              "startupRefusal": "jvmcontract: --observed-initializer org.apache.avro.Schema: its initialization initialized org.apache.avro.util.internal.Accessor and left it other than it is initialized alone (its field jsonPropertiesAccessor was an object of org.apache.avro.JsonProperties$1 (org.apache.avro.JsonProperties$1{;org.apache.avro.util.internal.Accessor$JsonPropertiesAccessor:}) after it and is null alone): it wrote another class's static state, which an observation does not carry (it holds only org.apache.avro.Schema's own fields), so the check cannot take it",
+              "solverSeconds": 0
+            }
+          ]
+        }
+      },
       "handwrittenAdapters": {
         "adapter/organic/WritableBuffer.java": {
           "sha256": "b104a923ceae282544fce0f642e5bdf197eb962c5b3cee8595fcfa965b0c65b1",
@@ -6285,6 +6380,711 @@
       }
     },
     "360": {
+      "startupCompanions": {
+        "postorder-parent-observed": {
+          "claimKey": "238b13ba3d65a5a3",
+          "guard": "code >= 0 && code < 2",
+          "expected": "refuted",
+          "observedInitializers": {
+            "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/20261121T115218Z-ae85ba0a/result.json",
+              "seconds": 1.0,
+              "stage": "enum-snapshot",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 1.6864,
+                "peakRssBytes": 149426176,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-parent-observed/executions/20261121T115218Z-ae85ba0a/attempt.json",
+              "checker": {
+                "commit": "a44b71decb609cb1a03aa08ecf5e798ed1160d58",
+                "libTree": "2d308ecac5670063ef1f82948a2fcfd7e4528ff3",
+                "jvmcontract": "b9d1c4ab4e8abd5867f81d5b7746151c3ac22b758e5d751fe4890f63dfce425d",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 0.924,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.0577e-05
+            }
+          ]
+        },
+        "postorder-fix-observed": {
+          "claimKey": "238b13ba3d65a5a3",
+          "guard": "code >= 0 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/20261121T115221Z-47b187b1/result.json",
+              "seconds": 1.0,
+              "stage": "enum-snapshot",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 1.7277,
+                "peakRssBytes": 133533696,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/postorder-fix-observed/executions/20261121T115221Z-47b187b1/attempt.json",
+              "checker": {
+                "commit": "a44b71decb609cb1a03aa08ecf5e798ed1160d58",
+                "libTree": "2d308ecac5670063ef1f82948a2fcfd7e4528ff3",
+                "jvmcontract": "b9d1c4ab4e8abd5867f81d5b7746151c3ac22b758e5d751fe4890f63dfce425d",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 0.93,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 4.7569e-05
+            },
+            {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/result.json",
+              "seconds": 2.1,
+              "stage": "traversal-boundaries",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.HashSet.<init>(Ljava/util/Collection;)V@jdk-21.0.13 (java.util.HashSet.<init>(java.util.Collection) at com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.<init>:130). With --gaps assume it assumes instead that java.util.HashSet.<init>(java.util.Collection) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 1.9343,
+                "peakRssBytes": 115326976,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/executions/20261121T122514Z-806410a3/attempt.json",
+              "checker": {
+                "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+                "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+                "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 1.94,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.2751e-05
+            }
+          ]
+        },
+        "terminal-parent-observed": {
+          "claimKey": "92e0ff4b40aefea3",
+          "guard": "code >= 0 && code < 2",
+          "expected": "refuted",
+          "observedInitializers": {
+            "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/20261121T115223Z-ab344290/result.json",
+              "seconds": 1.1,
+              "stage": "enum-snapshot",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 1.8082,
+                "peakRssBytes": 145485824,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-parent-observed/executions/20261121T115223Z-ab344290/attempt.json",
+              "checker": {
+                "commit": "a44b71decb609cb1a03aa08ecf5e798ed1160d58",
+                "libTree": "2d308ecac5670063ef1f82948a2fcfd7e4528ff3",
+                "jvmcontract": "b9d1c4ab4e8abd5867f81d5b7746151c3ac22b758e5d751fe4890f63dfce425d",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 0.959,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.9706e-05
+            }
+          ]
+        },
+        "terminal-fix-observed": {
+          "claimKey": "92e0ff4b40aefea3",
+          "guard": "code >= 0 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/20261121T115226Z-2c0307fa/result.json",
+              "seconds": 1.1,
+              "stage": "enum-snapshot",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 1.8557,
+                "peakRssBytes": 142163968,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/terminal-fix-observed/executions/20261121T115226Z-2c0307fa/attempt.json",
+              "checker": {
+                "commit": "a44b71decb609cb1a03aa08ecf5e798ed1160d58",
+                "libTree": "2d308ecac5670063ef1f82948a2fcfd7e4528ff3",
+                "jvmcontract": "b9d1c4ab4e8abd5867f81d5b7746151c3ac22b758e5d751fe4890f63dfce425d",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 1.0,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.3794e-05
+            }
+          ]
+        },
+        "preorder-parent-observed": {
+          "claimKey": "67aaaad7a7309a5a",
+          "guard": "code >= 0 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/20261121T115228Z-9b8be8d8/result.json",
+              "seconds": 1.0,
+              "stage": "enum-snapshot",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 1.6855,
+                "peakRssBytes": 135049216,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-parent-observed/executions/20261121T115228Z-9b8be8d8/attempt.json",
+              "checker": {
+                "commit": "a44b71decb609cb1a03aa08ecf5e798ed1160d58",
+                "libTree": "2d308ecac5670063ef1f82948a2fcfd7e4528ff3",
+                "jvmcontract": "b9d1c4ab4e8abd5867f81d5b7746151c3ac22b758e5d751fe4890f63dfce425d",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 0.922,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.2111e-05
+            }
+          ]
+        },
+        "preorder-fix-observed": {
+          "claimKey": "67aaaad7a7309a5a",
+          "guard": "code >= 0 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/20261121T115229Z-c85a3b0a/result.json",
+              "seconds": 1.0,
+              "stage": "enum-snapshot",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 1.7423,
+                "peakRssBytes": 139649024,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/preorder-fix-observed/executions/20261121T115229Z-c85a3b0a/attempt.json",
+              "checker": {
+                "commit": "a44b71decb609cb1a03aa08ecf5e798ed1160d58",
+                "libTree": "2d308ecac5670063ef1f82948a2fcfd7e4528ff3",
+                "jvmcontract": "b9d1c4ab4e8abd5867f81d5b7746151c3ac22b758e5d751fe4890f63dfce425d",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 0.92,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 4.6918e-05
+            }
+          ]
+        },
+        "nonempty-parent-observed": {
+          "claimKey": "f48f82de03a820c8",
+          "guard": "code >= 1 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/20261121T115231Z-0da4565e/result.json",
+              "seconds": 1.0,
+              "stage": "enum-snapshot",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 1.7204,
+                "peakRssBytes": 139227136,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-parent-observed/executions/20261121T115231Z-0da4565e/attempt.json",
+              "checker": {
+                "commit": "a44b71decb609cb1a03aa08ecf5e798ed1160d58",
+                "libTree": "2d308ecac5670063ef1f82948a2fcfd7e4528ff3",
+                "jvmcontract": "b9d1c4ab4e8abd5867f81d5b7746151c3ac22b758e5d751fe4890f63dfce425d",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 0.934,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 4.3832e-05
+            }
+          ]
+        },
+        "nonempty-fix-observed": {
+          "claimKey": "f48f82de03a820c8",
+          "guard": "code >= 1 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/20261121T115232Z-4cc3a873/result.json",
+              "seconds": 1.0,
+              "stage": "enum-snapshot",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:63). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 1.7423,
+                "peakRssBytes": 135991296,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/enum-snapshot-native/nonempty-fix-observed/executions/20261121T115232Z-4cc3a873/attempt.json",
+              "checker": {
+                "commit": "a44b71decb609cb1a03aa08ecf5e798ed1160d58",
+                "libTree": "2d308ecac5670063ef1f82948a2fcfd7e4528ff3",
+                "jvmcontract": "b9d1c4ab4e8abd5867f81d5b7746151c3ac22b758e5d751fe4890f63dfce425d",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 0.932,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.3872e-05
+            }
+          ]
+        },
+        "postorder-parent-node-startup": {
+          "claimKey": "7c41ca21867f55f0",
+          "guard": "code >= 0 && code < 2",
+          "expected": "refuted",
+          "observedInitializers": {
+            "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "refuted",
+              "receipt": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/20261121T122208Z-94d7d09b/result.json",
+              "seconds": 2.3,
+              "stage": "workflow",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 3.4208,
+                "peakRssBytes": 135827456,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup/executions/20261121T122208Z-94d7d09b/attempt.json",
+              "checker": {
+                "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+                "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+                "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 2.14,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 4.4845e-05
+            }
+          ]
+        },
+        "postorder-fix-node-startup": {
+          "claimKey": "7c41ca21867f55f0",
+          "guard": "code >= 0 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "established",
+              "receipt": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/20261121T122213Z-0b612b77/result.json",
+              "seconds": 2.2,
+              "stage": "workflow",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 3.2692,
+                "peakRssBytes": 130928640,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup/executions/20261121T122213Z-0b612b77/attempt.json",
+              "checker": {
+                "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+                "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+                "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 2.043,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.6619e-05
+            }
+          ]
+        },
+        "terminal-parent-node-startup": {
+          "claimKey": "b578ccfda4253a97",
+          "guard": "code >= 0 && code < 2",
+          "expected": "refuted",
+          "observedInitializers": {
+            "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "refuted",
+              "receipt": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/20261121T122216Z-bdb8281d/result.json",
+              "seconds": 2.2,
+              "stage": "workflow",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 3.4118,
+                "peakRssBytes": 140034048,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup/executions/20261121T122216Z-bdb8281d/attempt.json",
+              "checker": {
+                "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+                "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+                "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 2.121,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 6.6465e-05
+            }
+          ]
+        },
+        "terminal-fix-node-startup": {
+          "claimKey": "b578ccfda4253a97",
+          "guard": "code >= 0 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "established",
+              "receipt": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/20261121T122221Z-0c0e4d32/result.json",
+              "seconds": 2.1,
+              "stage": "workflow",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 3.3037,
+                "peakRssBytes": 130736128,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup/executions/20261121T122221Z-0c0e4d32/attempt.json",
+              "checker": {
+                "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+                "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+                "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 2.028,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.5608e-05
+            }
+          ]
+        },
+        "preorder-parent-node-startup": {
+          "claimKey": "12a6356b35cec02c",
+          "guard": "code >= 0 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "established",
+              "receipt": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/20261121T122224Z-b2fd157a/result.json",
+              "seconds": 2.2,
+              "stage": "workflow",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 3.3657,
+                "peakRssBytes": 129097728,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup/executions/20261121T122224Z-b2fd157a/attempt.json",
+              "checker": {
+                "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+                "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+                "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 2.05,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.5858e-05
+            }
+          ]
+        },
+        "preorder-fix-node-startup": {
+          "claimKey": "12a6356b35cec02c",
+          "guard": "code >= 0 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "established",
+              "receipt": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/20261121T122227Z-2b10dce6/result.json",
+              "seconds": 2.1,
+              "stage": "workflow",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 3.2588,
+                "peakRssBytes": 131538944,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup/executions/20261121T122227Z-2b10dce6/attempt.json",
+              "checker": {
+                "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+                "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+                "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 2.001,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.4355e-05
+            }
+          ]
+        },
+        "nonempty-parent-node-startup": {
+          "claimKey": "e972cbbae579e14e",
+          "guard": "code >= 1 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "established",
+              "receipt": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/20261121T122229Z-7b30d9e8/result.json",
+              "seconds": 2.1,
+              "stage": "workflow",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 3.2742,
+                "peakRssBytes": 138752000,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup/executions/20261121T122229Z-7b30d9e8/attempt.json",
+              "checker": {
+                "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+                "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+                "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 2.01,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 5.9612e-05
+            }
+          ]
+        },
+        "nonempty-fix-node-startup": {
+          "claimKey": "e972cbbae579e14e",
+          "guard": "code >= 1 && code < 2",
+          "expected": "established",
+          "observedInitializers": {
+            "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+          },
+          "observedRuntime": {},
+          "attempts": [
+            {
+              "status": "established",
+              "receipt": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/20261121T122231Z-ce6b70b1/result.json",
+              "seconds": 2.1,
+              "stage": "workflow",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 3.233,
+                "peakRssBytes": 136781824,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup/executions/20261121T122231Z-ce6b70b1/attempt.json",
+              "checker": {
+                "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+                "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+                "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 2.002,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 6.5192e-05
+            }
+          ]
+        }
+      },
       "handwrittenAdapters": {
         "adapter/organic/TreeOrder.java": {
           "sha256": "d7145bf220668f8b7cf53b5e3138d5222114b749e3f8e1c404fd60fea662a84d",
@@ -6479,35 +7279,51 @@
             "lastCompletedStage": "controls-returned"
           },
           "current": {
-            "status": "unresolved",
-            "receipt": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/result.json",
-            "seconds": 0.1,
-            "stage": "confirmation",
-            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
-            "qualified": false,
-            "usage": {
-              "cpuSeconds": 0.0196,
-              "peakRssBytes": 83189760,
-              "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
-            },
-            "execution": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/executions/20261121T110655Z-998cbd9f/attempt.json",
-            "checker": {
-              "commit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
-              "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
-              "jvmcontract": "8a4891a9c50c7f2bd62410d871c3f3f7e7289c047b13c6a99a301cb241bd4563",
-              "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
-              "engine": "native",
-              "gaps": "strict",
-              "bounds": {
-                "unwind": 96,
-                "maxArrayLength": 64
+            "status": "refuted",
+            "qualified": true,
+            "route": "native candidate replayed on the original JVM",
+            "receipt": "examples/360-javaparser-postorder-root/records/original-witnesses/postorder-parent/20261121T122234Z-81490a45.json",
+            "inputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 0
               }
-            },
-            "checkerSeconds": 0.022,
-            "budget": {
-              "checkerSeconds": 60
-            },
-            "solverSeconds": 2.2903e-05
+            ],
+            "sourceTask": "postorder-parent-node-startup",
+            "checkerSha256": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+            "originalJVMReplay": "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions/20261121T122234Z-81490a45/replay.json",
+            "unsplit": {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/result.json",
+              "seconds": 0.1,
+              "stage": "confirmation",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 0.0196,
+                "peakRssBytes": 83189760,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/executions/20261121T110655Z-998cbd9f/attempt.json",
+              "checker": {
+                "commit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
+                "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
+                "jvmcontract": "8a4891a9c50c7f2bd62410d871c3f3f7e7289c047b13c6a99a301cb241bd4563",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 0.022,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.2903e-05
+            }
           },
           "finiteBaseline": {
             "status": "open",
@@ -6547,21 +7363,21 @@
           },
           "current": {
             "status": "unresolved",
-            "receipt": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/result.json",
+            "receipt": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/result.json",
             "seconds": 0.1,
-            "stage": "confirmation",
+            "stage": "traversal-boundaries",
             "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
             "qualified": false,
             "usage": {
-              "cpuSeconds": 0.024,
-              "peakRssBytes": 83189760,
+              "cpuSeconds": 0.0229,
+              "peakRssBytes": 69582848,
               "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
             },
-            "execution": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/executions/20261121T110655Z-f052e5a3/attempt.json",
+            "execution": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/executions/20261121T122511Z-2d7bbef5/attempt.json",
             "checker": {
-              "commit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
-              "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
-              "jvmcontract": "8a4891a9c50c7f2bd62410d871c3f3f7e7289c047b13c6a99a301cb241bd4563",
+              "commit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+              "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+              "jvmcontract": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
               "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
               "engine": "native",
               "gaps": "strict",
@@ -6570,11 +7386,11 @@
                 "maxArrayLength": 64
               }
             },
-            "checkerSeconds": 0.031,
+            "checkerSeconds": 0.032,
             "budget": {
               "checkerSeconds": 60
             },
-            "solverSeconds": 3.3584e-05
+            "solverSeconds": 2.3955e-05
           },
           "finiteBaseline": {
             "status": "open",
@@ -6630,35 +7446,51 @@
             "solverSeconds": 3.9294e-05
           },
           "current": {
-            "status": "unresolved",
-            "receipt": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/result.json",
-            "seconds": 0.2,
-            "stage": "confirmation",
-            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
-            "qualified": false,
-            "usage": {
-              "cpuSeconds": 0.0214,
-              "peakRssBytes": 83189760,
-              "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
-            },
-            "execution": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/executions/20261121T110656Z-59a398f0/attempt.json",
-            "checker": {
-              "commit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
-              "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
-              "jvmcontract": "8a4891a9c50c7f2bd62410d871c3f3f7e7289c047b13c6a99a301cb241bd4563",
-              "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
-              "engine": "native",
-              "gaps": "strict",
-              "bounds": {
-                "unwind": 96,
-                "maxArrayLength": 64
+            "status": "refuted",
+            "qualified": true,
+            "route": "native candidate replayed on the original JVM",
+            "receipt": "examples/360-javaparser-postorder-root/records/original-witnesses/terminal-parent/20261121T122236Z-bd4b4e52.json",
+            "inputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 0
               }
-            },
-            "checkerSeconds": 0.031,
-            "budget": {
-              "checkerSeconds": 60
-            },
-            "solverSeconds": 2.4446e-05
+            ],
+            "sourceTask": "terminal-parent-node-startup",
+            "checkerSha256": "1f2729ac1f473ed27a8efad162839f0f719baff3d52a83cf8b9f697dd02185f1",
+            "originalJVMReplay": "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions/20261121T122236Z-bd4b4e52/replay.json",
+            "unsplit": {
+              "status": "unresolved",
+              "receipt": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/result.json",
+              "seconds": 0.2,
+              "stage": "confirmation",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 0.0214,
+                "peakRssBytes": 83189760,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/executions/20261121T110656Z-59a398f0/attempt.json",
+              "checker": {
+                "commit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
+                "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
+                "jvmcontract": "8a4891a9c50c7f2bd62410d871c3f3f7e7289c047b13c6a99a301cb241bd4563",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 96,
+                  "maxArrayLength": 64
+                }
+              },
+              "checkerSeconds": 0.031,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.4446e-05
+            }
           },
           "finiteBaseline": {
             "status": "open",
