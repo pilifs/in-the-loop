@@ -15,7 +15,14 @@ The `records` folder in each example contains original Maven build and Surefire 
 
 A receipt retains the size and SHA-256 of a large JVM stream plus its first 512 KiB. For a public finite grid that exceeds it, `public_observations.py NNN` repeats the same original JVM controls, checks every byte against that receipt and retains whole JSON rows in small text files. The scorecard joins and validates these files before counting a grid.
 
-The Avro startup companions set `observedRuntime` alongside `observedInitializers` in their claim files. The equivalent CLI options are `--observed-initializer CLASS --observed-runtime '{"processors":2,"emptyEnvironment":true}'`. Each observation JVM confirms its processor setting and its empty environment, including JVMs used to compare transitive initialization. The verifier checks these facts as part of the state digest. The converter companion sets only the processor count. The original Avro tasks retain their ambient startup.
+Avro has separate tasks for ambient startup and JVM-preinitialized state. The `*-writable-startup` tasks initialize `org.apache.avro.Schema` and `org.apache.hadoop.io.BytesWritable` in one JVM, in that order. The `bounds-fix-factory-startup` task adds `org.apache.hadoop.mapred.JobConf` as the third root. Each claim pins the common state digest and sets `observedRuntime` to `{"processors":2,"emptyEnvironment":true,"rootWorkingDirectory":true,"preinitializeTogether":true}`. The subject JVM checks the process settings, while the native checker binds the original classes and shared static fields before running the public entry. The earlier single-class observations are retained under their own task names.
+
+To repeat the direct converter comparison, queue the first command below as a verification job. Run the witness review after the normal workflow has produced a matching native refutation.
+
+```sh
+python3 examples/tools/build.py 355 --tasks direct-limit-parent-writable-startup,direct-limit-fix-writable-startup
+python3 examples/tools/build.py 355 --original-witness direct-limit-parent --from-task direct-limit-parent-writable-startup
+```
 
 To rebuild the original library, submit `upstream.py NNN --maven-cache PATH --output PATH` as a verification job. Set `TMPDIR` under `~/.cache/in-the-loop/` and give all jobs the same Maven cache outside the checkout. `--repos PATH` optionally supplies existing Git mirrors named for the upstream projects. For Guava, use `--jdk26 PATH` for the pinned compiler. The build records both revision identities and the original production class digest before transplanting only the landed test source on the parent. After obtaining both build records, `upstream.py NNN --bind-existing --output PATH` binds the example to them. [Guava compiler distribution](temurin26.json)
 

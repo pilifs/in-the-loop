@@ -12,28 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T13:42:34.605Z",
-  "duration_seconds": 144305,
+  "ended": "2026-11-21T14:03:02.465Z",
+  "duration_seconds": 145533,
   "stats": {
     "turns": 21,
-    "api_calls": 6901,
-    "tool_calls": 17265,
-    "tool_errors": 519,
+    "api_calls": 6976,
+    "tool_calls": 17411,
+    "tool_errors": 526,
     "compactions": 22,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 11496034,
-      "output_tokens": 3647718,
-      "cache_read_input_tokens": 2082429312,
+      "input_tokens": 11550881,
+      "output_tokens": 3677767,
+      "cache_read_input_tokens": 2109836288,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 9879,
-    "exec": 6380,
+    "Bash": 9950,
+    "exec": 6451,
     "apply_patch": 662,
     "send_message": 148,
-    "sleep": 76,
+    "sleep": 80,
     "wait": 75,
     "wait_agent": 14,
     "send_message_to_user_async": 10,
@@ -660,24 +660,24 @@
     {
       "index": 22,
       "started": "2026-11-21T12:43:15.016Z",
-      "ended": "2026-11-21T13:42:34.605Z",
+      "ended": "2026-11-21T14:03:02.465Z",
       "turns": 1,
-      "api_calls": 232,
+      "api_calls": 307,
       "usage": {
-        "input_tokens": 344091,
-        "output_tokens": 111862,
-        "cache_read_input_tokens": 53349632,
+        "input_tokens": 398938,
+        "output_tokens": 141911,
+        "cache_read_input_tokens": 80756608,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 340158
+      "peak_context_tokens": 389825
     }
   ],
   "log": {
-    "sha256": "da41651bfd84875a9fa58c97f6b45d81a7667dee2ff203a3a9c686a17e8b1ab7",
-    "bytes": 157431154,
-    "lines": 54348,
-    "gzip_bytes": 62473136,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/da41651bfd84875a9fa58c97f6b45d81a7667dee2ff203a3a9c686a17e8b1ab7.jsonl.gz"
+    "sha256": "66eacf469daa7c6e4f8e16aa16a40687d4af102c95c086d5e160c81668a58300",
+    "bytes": 158567716,
+    "lines": 54893,
+    "gzip_bytes": 62992082,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/66eacf469daa7c6e4f8e16aa16a40687d4af102c95c086d5e160c81668a58300.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3160,6 +3160,14 @@
       "summary": "Verify absolute bounds on wrapped byte buffers (verification pending)",
       "body": "Run the original ByteBuffer.wrap overloads and real heap-buffer accessors. The selected JDK performs the signed index check. For the known Temurin 21 and 25 bounds formatters, four image class hashes bind the formatting path and the checker runs the actual no-argument exception factory. Buffer position, backing-array aliases, capacity and the constructor's invalid-range behavior remain visible.\n\nPhysical JVM and native tests passed on JDK 21.0.13 and 25.0.5, including negative and excluded indices, null exception messages, invalid slices and writes shared with the original array. The 28 selected groups and the Avro example validator passed. On the original 124-entry closures the capped checker proved the fixed nested converter for all 21 admitted inputs and found the parent at code=1. Job 20261121-133632-prove-avro-buffer-bounds-and-replay-the repeats both and submits that native candidate to an ambient original JVM. Job 20261121-133632-measure-every-avro-factory-obligation-wi records every factory companion and the additional three-root JobConf scope.",
       "log_sha256": "da41651bfd84875a9fa58c97f6b45d81a7667dee2ff203a3a9c686a17e8b1ab7"
+    },
+    {
+      "change_id": "vmkuzruunqzmnqxwoqxsxzmkspmmmylp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record Avro's native buffer proof and original parent counterexample",
+      "body": "On the original Avro parent a one-byte writable shrunk to zero exposes its byte. The fixed public nested converter rejects absolute index zero, retains capacity one and leaves position zero. The native checker established the fixed contract across all 21 capacity/length pairs with the 197-class startup snapshot and refuted the parent. An independent JVM admitted selector 1 on the original parent without preinitialization and reproduced the violation. This takes original-scope native decisions from 36 to 37 of 46 across the six primary PRs. The fixed establishment retains its explicit startup condition.\n\nAll five runner results and 287 output hashes were checked against committed collector data, the original 124-entry closures, checker identity, frozen claims and JVM observations. The direct proof and ambient witness steps passed in 23.9 seconds. Four diagnostic jobs preserved the earlier stops and all nine open factory attempts, including Collections.newSetFromMap after JobConf startup. The campaign score and all 20 report links were checked, example 355 passed validation, and the results index was regenerated for all 973 collected jobs. All 66 default test groups passed while the last collector record arrived. An additional default run on the committed evidence supplies the final coverage record.",
+      "log_sha256": "66eacf469daa7c6e4f8e16aa16a40687d4af102c95c086d5e160c81668a58300"
     }
   ],
   "logs": {
@@ -3551,6 +3559,12 @@
       "bytes": 117011987,
       "lines": 40597,
       "gzip_bytes": 46592329,
+      "url": null
+    },
+    "66eacf469daa7c6e4f8e16aa16a40687d4af102c95c086d5e160c81668a58300": {
+      "bytes": 158567716,
+      "lines": 54893,
+      "gzip_bytes": 62992082,
       "url": null
     },
     "67f2fa9b3e92de959997e66858e2622f9e7722a0067603863c6c1e6585959f9b": {

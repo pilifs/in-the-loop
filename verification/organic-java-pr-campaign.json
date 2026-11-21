@@ -24,10 +24,10 @@
     },
     "current": {
       "completeCases": 5,
-      "qualifiedObligations": 36,
+      "qualifiedObligations": 37,
       "established": 26,
-      "refuted": 10,
-      "open": 10
+      "refuted": 11,
+      "open": 9
     },
     "finiteBaseline": {
       "completeCases": 5,
@@ -2420,6 +2420,704 @@
               "solverSeconds": 0
             }
           ]
+        },
+        "direct-limit-fix-joint-startup": {
+          "claimKey": "3a7a4a6041051eec",
+          "guard": "code >= 0 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "7efe08d0f2a9a920472517c9fb2942ff38fbe1dca71c7b88b843067446941b42"
+          },
+          "observedRuntime": {
+            "processors": 2,
+            "preinitializeTogether": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/joint-startup-native/direct-limit-fix-joint-startup/20261121T130809Z-1ac19e96/result.json",
+              "seconds": 1.7,
+              "stage": "joint-startup",
+              "problem": "outside the fragment: reads the static field org.apache.avro.Schema.SCHEMA_RESERVED, which the class's observed initializer left as an object of java.util.HashSet: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.3601,
+                "peakRssBytes": 197181440,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/joint-startup-native/direct-limit-fix-joint-startup/executions/20261121T130809Z-1ac19e96/attempt.json",
+              "checker": {
+                "commit": "57e9ac50c9082f510a1514469f9005619fc03e4e",
+                "libTree": "eff6e25d0c7980bc7f30b3922fd5dd7313c77366",
+                "jvmcontract": "73cb5bf750c6bb24486c27bc00b67b3f442e35ee4ef3f2a87188d4d14b677159",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.402,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.6159e-05
+            },
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/20261121T132357Z-1b5264f5/result.json",
+              "seconds": 2.5,
+              "stage": "constructor-transport",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.conf.Configuration.<clinit>()V (org.apache.hadoop.conf.Configuration.<clinit>() at org.apache.hadoop.io.WritableComparator.<init>:145). With --gaps assume it assumes instead that org.apache.hadoop.conf.Configuration.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 3.5711,
+                "peakRssBytes": 204718080,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/constructor-transport-native/direct-limit-fix-joint-startup/executions/20261121T132357Z-1b5264f5/attempt.json",
+              "checker": {
+                "commit": "0e7664ba5823f60cc2718b523d3bccfe68578338",
+                "libTree": "985d2888a4d7262fc9d1a20ec8faa057b5932077",
+                "jvmcontract": "e52d756fd7b9b571f713b292637d65a9b7df91d3e90186091581559512fa0c02",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 2.094,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 0.000424335
+            }
+          ]
+        },
+        "bounds-parent-writable-startup": {
+          "claimKey": "a3e2935d89bf6582",
+          "guard": "code >= 0 && code < 21",
+          "expected": "refuted",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/bounds-parent-writable-startup/20261121T135037Z-17f80a6e/result.json",
+              "seconds": 1.9,
+              "stage": "factory-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.6264,
+                "peakRssBytes": 202813440,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/bounds-parent-writable-startup/executions/20261121T135037Z-17f80a6e/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.566,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.204e-05
+            }
+          ]
+        },
+        "bounds-fix-writable-startup": {
+          "claimKey": "a3e2935d89bf6582",
+          "guard": "code >= 0 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/writable-startup-native/bounds-fix-writable-startup/20261121T133816Z-cfa611e3/result.json",
+              "seconds": 2.6,
+              "stage": "writable-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 3.3519,
+                "peakRssBytes": 202862592,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/writable-startup-native/bounds-fix-writable-startup/executions/20261121T133816Z-cfa611e3/attempt.json",
+              "checker": {
+                "commit": "eee001b79830e66d209baadd1a77181ca749d372",
+                "libTree": "06c5a0a6cce22aafd69362cfc572e484ae59de46",
+                "jvmcontract": "f86083da58cccaf41e177238c509f186193bc9f390adb39d36aa1e8185450d43",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 2.285,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 4.8421e-05
+            },
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/bounds-fix-writable-startup/20261121T135048Z-73502bb6/result.json",
+              "seconds": 1.7,
+              "stage": "factory-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.4398,
+                "peakRssBytes": 202928128,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/bounds-fix-writable-startup/executions/20261121T135048Z-73502bb6/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.428,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.5197e-05
+            }
+          ]
+        },
+        "rejected-parent-writable-startup": {
+          "claimKey": "bf3ff99cfb24bdac",
+          "guard": "code >= 0 && code < 21",
+          "expected": "refuted",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/rejected-parent-writable-startup/20261121T135059Z-b0955479/result.json",
+              "seconds": 1.8,
+              "stage": "factory-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.6303,
+                "peakRssBytes": 203022336,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/rejected-parent-writable-startup/executions/20261121T135059Z-b0955479/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.526,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.7132e-05
+            }
+          ]
+        },
+        "rejected-fix-writable-startup": {
+          "claimKey": "bf3ff99cfb24bdac",
+          "guard": "code >= 0 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/rejected-fix-writable-startup/20261121T135106Z-e7fe76f1/result.json",
+              "seconds": 1.8,
+              "stage": "factory-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.4644,
+                "peakRssBytes": 202973184,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/rejected-fix-writable-startup/executions/20261121T135106Z-e7fe76f1/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.496,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.6249e-05
+            }
+          ]
+        },
+        "prefix-parent-writable-startup": {
+          "claimKey": "3d94f0be3a8db1a3",
+          "guard": "code >= 0 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/prefix-parent-writable-startup/20261121T135113Z-cbc99678/result.json",
+              "seconds": 1.9,
+              "stage": "factory-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.7703,
+                "peakRssBytes": 203108352,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/prefix-parent-writable-startup/executions/20261121T135113Z-cbc99678/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.6,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.5546e-05
+            }
+          ]
+        },
+        "prefix-fix-writable-startup": {
+          "claimKey": "3d94f0be3a8db1a3",
+          "guard": "code >= 0 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/prefix-fix-writable-startup/20261121T135121Z-0f939723/result.json",
+              "seconds": 1.8,
+              "stage": "factory-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.5856,
+                "peakRssBytes": 202264576,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/prefix-fix-writable-startup/executions/20261121T135121Z-0f939723/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.531,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 2.8233e-05
+            }
+          ]
+        },
+        "full-length-parent-writable-startup": {
+          "claimKey": "649573577bb05d0c",
+          "guard": "code >= 20 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/full-length-parent-writable-startup/20261121T135128Z-4a1c221d/result.json",
+              "seconds": 1.8,
+              "stage": "factory-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.6587,
+                "peakRssBytes": 203210752,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/full-length-parent-writable-startup/executions/20261121T135128Z-4a1c221d/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.57,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.7331e-05
+            }
+          ]
+        },
+        "full-length-fix-writable-startup": {
+          "claimKey": "649573577bb05d0c",
+          "guard": "code >= 20 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/full-length-fix-writable-startup/20261121T135135Z-8cc58e79/result.json",
+              "seconds": 2.0,
+              "stage": "factory-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at organic.WritableBuffer.converted:30). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.6741,
+                "peakRssBytes": 202059776,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/full-length-fix-writable-startup/executions/20261121T135135Z-8cc58e79/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.671,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 3.4274e-05
+            }
+          ]
+        },
+        "direct-limit-parent-writable-startup": {
+          "claimKey": "90ed9b1fa5b6d6ed",
+          "guard": "code >= 0 && code < 21",
+          "expected": "refuted",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/writable-startup-native/direct-limit-parent-writable-startup/20261121T133800Z-327d9c05/result.json",
+              "seconds": 2.0,
+              "stage": "writable-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.ByteBuffer.wrap([B)Ljava/nio/ByteBuffer;@jdk-21.0.13 (java.nio.ByteBuffer.wrap(byte[]) at org.apache.avro.hadoop.io.AvroDatumConverterFactory$BytesWritableConverter.convert:202). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.8211,
+                "peakRssBytes": 203763712,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/writable-startup-native/direct-limit-parent-writable-startup/executions/20261121T133800Z-327d9c05/attempt.json",
+              "checker": {
+                "commit": "eee001b79830e66d209baadd1a77181ca749d372",
+                "libTree": "06c5a0a6cce22aafd69362cfc572e484ae59de46",
+                "jvmcontract": "f86083da58cccaf41e177238c509f186193bc9f390adb39d36aa1e8185450d43",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.692,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 0.00080023
+            },
+            {
+              "status": "refuted",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/result.json",
+              "seconds": 3.7,
+              "stage": "buffer-wrap",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 4.5504,
+                "peakRssBytes": 1144246272,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 3.457,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 0.00023968
+            }
+          ]
+        },
+        "direct-limit-fix-writable-startup": {
+          "claimKey": "90ed9b1fa5b6d6ed",
+          "guard": "code >= 0 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+            "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/writable-startup-native/direct-limit-fix-writable-startup/20261121T133807Z-df4af4c9/result.json",
+              "seconds": 2.2,
+              "stage": "writable-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.ByteBuffer.wrap([BII)Ljava/nio/ByteBuffer;@jdk-21.0.13 (java.nio.ByteBuffer.wrap(byte[], int, int) at org.apache.avro.hadoop.io.AvroDatumConverterFactory$BytesWritableConverter.convert:202). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.9753,
+                "peakRssBytes": 203993088,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/writable-startup-native/direct-limit-fix-writable-startup/executions/20261121T133807Z-df4af4c9/attempt.json",
+              "checker": {
+                "commit": "eee001b79830e66d209baadd1a77181ca749d372",
+                "libTree": "06c5a0a6cce22aafd69362cfc572e484ae59de46",
+                "jvmcontract": "f86083da58cccaf41e177238c509f186193bc9f390adb39d36aa1e8185450d43",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.796,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 0.000880111
+            },
+            {
+              "status": "established",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/result.json",
+              "seconds": 1.9,
+              "stage": "buffer-wrap",
+              "problem": null,
+              "qualified": true,
+              "usage": {
+                "cpuSeconds": 2.694,
+                "peakRssBytes": 207548416,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.606,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 0.00141299
+            }
+          ]
+        },
+        "bounds-fix-factory-startup": {
+          "claimKey": "e8016ea09dede14d",
+          "guard": "code >= 0 && code < 21",
+          "expected": "established",
+          "observedInitializers": {
+            "org.apache.avro.Schema": "11f4ae845761a347264d1d4451fb998cbba603e195c473b6fa7e602e0ea135f3",
+            "org.apache.hadoop.io.BytesWritable": "11f4ae845761a347264d1d4451fb998cbba603e195c473b6fa7e602e0ea135f3",
+            "org.apache.hadoop.mapred.JobConf": "11f4ae845761a347264d1d4451fb998cbba603e195c473b6fa7e602e0ea135f3"
+          },
+          "observedRuntime": {
+            "emptyEnvironment": true,
+            "preinitializeTogether": true,
+            "processors": 2,
+            "rootWorkingDirectory": true
+          },
+          "attempts": [
+            {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/bounds-fix-factory-startup/20261121T135142Z-e2be586d/result.json",
+              "seconds": 1.8,
+              "stage": "factory-startup",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Collections.newSetFromMap(Ljava/util/Map;)Ljava/util/Set;@jdk-21.0.13 (java.util.Collections.newSetFromMap(java.util.Map) at org.apache.hadoop.conf.Configuration.<init>:317). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 2.4046,
+                "peakRssBytes": 202801152,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/factory-startup-native/bounds-fix-factory-startup/executions/20261121T135142Z-e2be586d/attempt.json",
+              "checker": {
+                "commit": "d17721692d44d6bbd633ad750bca925220f79770",
+                "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+                "jvmcontract": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 1.463,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 7.0202e-05
+            }
+          ]
         }
       },
       "handwrittenAdapters": {
@@ -3292,35 +3990,51 @@
             "lastCompletedStage": "planned"
           },
           "current": {
-            "status": "unresolved",
-            "receipt": "examples/355-avro-writable-buffer-limit/records/confirmation-native/direct-limit-parent/20261121T110746Z-725eeab1/result.json",
-            "seconds": 0.5,
-            "stage": "confirmation",
-            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.Schema.<clinit>()V (org.apache.avro.Schema.<clinit>() at org.apache.avro.hadoop.io.AvroDatumConverterFactory$BytesWritableConverter.<init>:196). With --gaps assume it assumes instead that org.apache.avro.Schema.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
-            "qualified": false,
-            "usage": {
-              "cpuSeconds": 0.1428,
-              "peakRssBytes": 189644800,
-              "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
-            },
-            "execution": "examples/355-avro-writable-buffer-limit/records/confirmation-native/direct-limit-parent/executions/20261121T110746Z-725eeab1/attempt.json",
-            "checker": {
-              "commit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
-              "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
-              "jvmcontract": "8a4891a9c50c7f2bd62410d871c3f3f7e7289c047b13c6a99a301cb241bd4563",
-              "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
-              "engine": "native",
-              "gaps": "strict",
-              "bounds": {
-                "unwind": 64,
-                "maxArrayLength": 128
+            "status": "refuted",
+            "qualified": true,
+            "route": "native candidate replayed on the original JVM",
+            "receipt": "examples/355-avro-writable-buffer-limit/records/original-witnesses/direct-limit-parent/20261121T135054Z-48d28626.json",
+            "inputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 1
               }
-            },
-            "checkerSeconds": 0.153,
-            "budget": {
-              "checkerSeconds": 60
-            },
-            "solverSeconds": 1.7623e-05
+            ],
+            "sourceTask": "direct-limit-parent-writable-startup",
+            "checkerSha256": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+            "originalJVMReplay": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/replay.json",
+            "unsplit": {
+              "status": "unresolved",
+              "receipt": "examples/355-avro-writable-buffer-limit/records/confirmation-native/direct-limit-parent/20261121T110746Z-725eeab1/result.json",
+              "seconds": 0.5,
+              "stage": "confirmation",
+              "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.Schema.<clinit>()V (org.apache.avro.Schema.<clinit>() at org.apache.avro.hadoop.io.AvroDatumConverterFactory$BytesWritableConverter.<init>:196). With --gaps assume it assumes instead that org.apache.avro.Schema.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+              "qualified": false,
+              "usage": {
+                "cpuSeconds": 0.1428,
+                "peakRssBytes": 189644800,
+                "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+              },
+              "execution": "examples/355-avro-writable-buffer-limit/records/confirmation-native/direct-limit-parent/executions/20261121T110746Z-725eeab1/attempt.json",
+              "checker": {
+                "commit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
+                "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
+                "jvmcontract": "8a4891a9c50c7f2bd62410d871c3f3f7e7289c047b13c6a99a301cb241bd4563",
+                "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+                "engine": "native",
+                "gaps": "strict",
+                "bounds": {
+                  "unwind": 64,
+                  "maxArrayLength": 128
+                }
+              },
+              "checkerSeconds": 0.153,
+              "budget": {
+                "checkerSeconds": 60
+              },
+              "solverSeconds": 1.7623e-05
+            }
           },
           "finiteBaseline": {
             "status": "open",
